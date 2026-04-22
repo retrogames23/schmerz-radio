@@ -45,6 +45,31 @@ interface GameContextValue extends GameState {
   setRadioActive: (active: boolean) => void;
   bumpResonance: (delta: number) => void;
   resetResonance: () => void;
+  saveGame: (slot: number) => SaveSummary;
+  loadGame: (slot: number) => boolean;
+  listSaves: () => Array<SaveSummary | null>;
+  deleteSave: (slot: number) => void;
+}
+
+export interface SaveSummary {
+  slot: number;
+  scene: SceneId;
+  savedAt: string; // ISO
+  flagCount: number;
+  inventoryCount: number;
+}
+
+const SAVE_PREFIX = "schmerz-radio.save.v1.";
+const NUM_SLOTS = 3;
+
+interface PersistedState {
+  scene: SceneId;
+  flags: StoryFlag[];
+  knowledge: KnowledgeFlag[];
+  inventory: InventoryItem[];
+  resonance: number;
+  ending: boolean;
+  savedAt: string;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -75,6 +100,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
   knowledgeRef.current = knowledge;
   const radioActiveRef = useRef(radioActive);
   radioActiveRef.current = radioActive;
+  const sceneRef = useRef(scene);
+  sceneRef.current = scene;
+  const resonanceRef = useRef(resonance);
+  resonanceRef.current = resonance;
+  const endingRef = useRef(ending);
+  endingRef.current = ending;
 
   const api = useMemo<GameApi>(
     () => ({
