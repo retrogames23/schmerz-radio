@@ -1,5 +1,8 @@
+import { useEffect } from "react";
 import { useGame } from "@/game/GameContext";
 import { dialogs } from "@/game/dialogs";
+import { useSettings } from "@/audio/SettingsContext";
+import { speak, stopSpeech } from "@/audio/speech";
 
 export function DialogOverlay() {
   const {
@@ -10,12 +13,26 @@ export function DialogOverlay() {
     radioActive,
     api,
   } = useGame();
+  const { ttsEnabled } = useSettings();
 
-  if (!dialogId || !dialogLineId) return null;
-  const tree = dialogs[dialogId];
-  if (!tree) return null;
-  const line = tree.lines[dialogLineId];
-  if (!line) return null;
+  const tree = dialogId ? dialogs[dialogId] : null;
+  const line = tree && dialogLineId ? tree.lines[dialogLineId] : null;
+
+  // Speak the line whenever it changes
+  useEffect(() => {
+    if (!line) {
+      stopSpeech();
+      return;
+    }
+    if (!ttsEnabled) {
+      stopSpeech();
+      return;
+    }
+    speak(line.speaker, line.text);
+    return () => stopSpeech();
+  }, [line, ttsEnabled]);
+
+  if (!line || !tree) return null;
 
   const visibleChoices =
     line.choices?.filter((c) => {
@@ -45,7 +62,10 @@ export function DialogOverlay() {
           </span>
           <button
             type="button"
-            onClick={closeDialog}
+            onClick={() => {
+              stopSpeech();
+              closeDialog();
+            }}
             className="text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground"
           >
             ✕

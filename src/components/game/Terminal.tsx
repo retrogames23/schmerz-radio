@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/game/GameContext";
+import { useSettings } from "@/audio/SettingsContext";
+import { playBeep, playKeypress, playUnlock } from "@/audio/sfx";
 
 interface Line {
   text: string;
@@ -26,6 +28,7 @@ export function Terminal() {
     api,
     knowledge,
   } = useGame();
+  const { sfxVolume } = useSettings();
   const [lines, setLines] = useState<Line[]>([]);
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -55,6 +58,7 @@ export function Terminal() {
     e.preventDefault();
     const cmd = input.trim().toLowerCase();
     if (!cmd) return;
+    playBeep(0.4 * sfxVolume);
     const newLines: Line[] = [{ text: `>> ${input}`, kind: "in" }];
 
     if (cmd === "help") {
@@ -135,6 +139,7 @@ export function Terminal() {
           { text: ">> AUTHENTIFIZIERUNG …", kind: "system" },
           { text: ">> ZUGANG GEWÄHRT — SEKTOR-TÜR ENTRIEGELT", kind: "system" },
         );
+        playUnlock(0.7 * sfxVolume);
         api.setFlag("sectorDoorOpen");
         api.addItem({
           id: "exitCode",
@@ -206,7 +211,12 @@ export function Terminal() {
           <input
             ref={inputRef}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value.length > input.length) {
+                playKeypress(0.3 * sfxVolume);
+              }
+              setInput(e.target.value);
+            }}
             className="flex-1 bg-transparent font-mono-crt text-base text-phosphor caret-phosphor outline-none placeholder:text-phosphor-dim/60"
             placeholder="Befehl eingeben …"
             spellCheck={false}

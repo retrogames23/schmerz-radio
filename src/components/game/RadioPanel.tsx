@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/game/GameContext";
+import { useSettings } from "@/audio/SettingsContext";
+import {
+  playDoorbell,
+  playTuningClick,
+  startResonanceDrone,
+} from "@/audio/sfx";
 
 const BANDS = [
   { from: 100.0, to: 101.9, label: "Angst / Panik", art: "Statisch, zitternd" },
@@ -25,10 +31,45 @@ export function RadioPanel() {
     resonance,
     flags,
   } = useGame();
+  const { sfxVolume } = useSettings();
 
   const [freq, setFreq] = useState(102.3);
   const [volume, setVolume] = useState(0.5);
   const lastTickRef = useRef<number | null>(null);
+  const droneStopRef = useRef<(() => void) | null>(null);
+  const lastFreqRef = useRef(freq);
+
+  // Tuning clicks when frequency changes
+  useEffect(() => {
+    if (Math.abs(freq - lastFreqRef.current) > 0.01) {
+      playTuningClick(0.2 * sfxVolume);
+      lastFreqRef.current = freq;
+    }
+  }, [freq, sfxVolume]);
+
+  // Resonance drone — plays when overload is imminent
+  useEffect(() => {
+    if (resonance > 65 && !droneStopRef.current) {
+      droneStopRef.current = startResonanceDrone(0.45 * sfxVolume);
+    } else if (resonance <= 50 && droneStopRef.current) {
+      droneStopRef.current();
+      droneStopRef.current = null;
+    }
+  }, [resonance, sfxVolume]);
+
+  // Cleanup drone on unmount / radio close
+  useEffect(() => {
+    if (!radioOpen && droneStopRef.current) {
+      droneStopRef.current();
+      droneStopRef.current = null;
+    }
+    return () => {
+      if (droneStopRef.current) {
+        droneStopRef.current();
+        droneStopRef.current = null;
+      }
+    };
+  }, [radioOpen]);
 
   // Resonance build-up while on 104.6 with high volume
   useEffect(() => {
@@ -55,6 +96,7 @@ export function RadioPanel() {
         api.setFlag("doorbellRang");
         setRadioActive(true);
         resetResonance();
+        playDoorbell(0.7 * sfxVolume);
         api.showText([
           ">> SCHMERZ-RADIO 104,6 — ENGEL-TRAUER",
           "Eine Stimme, die nichts sagt. Nur trauert.",
@@ -67,7 +109,7 @@ export function RadioPanel() {
       }, 900);
       return () => clearTimeout(t);
     }
-  }, [freq, volume, flags, api, setRadioActive, resetResonance, closeRadio]);
+  }, [freq, volume, flags, api, setRadioActive, resetResonance, closeRadio, sfxVolume]);
 
   if (!radioOpen) return null;
 
