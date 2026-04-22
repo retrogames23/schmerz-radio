@@ -152,5 +152,142 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: grayscale;
+    image-rendering: pixelated;
   }
+}
+
+/* ==== Schmerz-Radio Game Utilities ==== */
+
+@font-face {
+  font-family: "Special Elite";
+  src: url("https://fonts.gstatic.com/s/specialelite/v18/9oRONYodvDEyjuhOrCg5MtPyAcg.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "VT323";
+  src: url("https://fonts.gstatic.com/s/vt323/v17/pxiKyp0ihIEF2isfFJU.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-mono-crt {
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+/* CRT Scanline overlay */
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.18) 0px,
+    rgba(0, 0, 0, 0.18) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: multiply;
+  z-index: 30;
+}
+
+.crt-flicker {
+  animation: crt-flicker 4.2s infinite steps(1);
+}
+@keyframes crt-flicker {
+  0%, 92%, 100% { opacity: 1; }
+  93% { opacity: 0.85; }
+  94% { opacity: 1; }
+  96% { opacity: 0.92; }
+}
+
+/* Bernstein-Vignette wenn Schmerz-Radio aktiv */
+.amber-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center,
+      transparent 35%,
+      color-mix(in oklch, var(--amber-deep) 40%, transparent) 75%,
+      color-mix(in oklch, var(--amber-deep) 70%, transparent) 100%);
+  mix-blend-mode: screen;
+  z-index: 25;
+  animation: amber-pulse 3.5s ease-in-out infinite;
+}
+@keyframes amber-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.85; }
+}
+
+.resonance-shake {
+  animation: resonance-shake 0.18s infinite;
+}
+@keyframes resonance-shake {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 1px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, 2px); }
+  100% { transform: translate(1px, 0); }
+}
+
+.phosphor-glow {
+  color: var(--phosphor);
+  text-shadow:
+    0 0 4px color-mix(in oklch, var(--phosphor) 80%, transparent),
+    0 0 12px color-mix(in oklch, var(--phosphor) 50%, transparent);
+}
+
+.amber-glow {
+  color: var(--amber-glow);
+  text-shadow:
+    0 0 6px color-mix(in oklch, var(--amber-glow) 70%, transparent),
+    0 0 14px color-mix(in oklch, var(--amber-deep) 50%, transparent);
+}
+
+.hotspot-pulse {
+  animation: hotspot-pulse 1.6s ease-in-out infinite;
+}
+@keyframes hotspot-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--amber-glow) 60%, transparent); }
+  50%      { box-shadow: 0 0 0 6px color-mix(in oklch, var(--amber-glow) 0%, transparent); }
+}
+
+.text-shadow-hard {
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.85);
+}
+
+.bg-bureaucracy {
+  background:
+    linear-gradient(180deg,
+      oklch(0.18 0.012 150) 0%,
+      oklch(0.13 0.01 145) 100%);
+}
+
+/* Frequenz-Wellen-Animation */
+.wave-pulse {
+  animation: wave-pulse 1.4s ease-in-out infinite;
+}
+@keyframes wave-pulse {
+  0%, 100% { transform: scaleY(0.4); opacity: 0.6; }
+  50%      { transform: scaleY(1);   opacity: 1; }
+}
+
+.fade-in {
+  animation: fade-in 0.6s ease-out both;
+}
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.slow-fade-in {
+  animation: fade-in 1.6s ease-out both;
 }
