@@ -1,11 +1,12 @@
 import { useGame } from "@/game/GameContext";
 
-export function TopBar() {
-  const { scene, inventory, radioActive, api, openRadioFromBar } = {
-    ...useGame(),
-    openRadioFromBar: () => {},
-  };
+interface Props {
+  onOpenPause: () => void;
+}
+
+export function TopBar({ onOpenPause }: Props) {
   const game = useGame();
+  const { scene, inventory, radioActive } = game;
 
   return (
     <header className="border-b border-border bg-background/95 px-4 py-2 backdrop-blur">
@@ -39,6 +40,14 @@ export function TopBar() {
             title="CentralOS Terminal"
           >
             ▣ Terminal
+          </button>
+          <button
+            type="button"
+            onClick={onOpenPause}
+            className="rounded-sm border border-border px-3 py-1 text-xs uppercase tracking-widest text-foreground transition hover:border-amber-glow/60 hover:text-amber-glow"
+            title="Menü (ESC)"
+          >
+            ☰ Menü
           </button>
           <div className="ml-2 flex items-center gap-1 rounded-sm border border-border px-2 py-1 text-xs">
             <span className="text-muted-foreground">Inv:</span>
