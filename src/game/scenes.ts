@@ -1093,9 +1093,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "back36",
-        x: 80,
-        y: 30,
-        w: 18,
+        x: 50,
+        y: 27,
+        w: 22,
         h: 60,
         label: "Zurück zum Aufzug",
         onUse: (api) => api.goTo("elevator"),
