@@ -1203,7 +1203,7 @@ export function Terminal() {
       newLines.push(
         { text: "SYSTEMSTATUS:", kind: "system" },
         {
-          text: `  CENTRALOS         [ v${flags.has("centralOsUpdated") ? "2.3.1" : "2.3"} ]`,
+          text: `  CENTRALOS         [ v${osVersion(flags.has("centralOsUpdated"))} ]`,
           kind: "out",
         },
         { text: "  E67.NETZ          [ STABIL ]", kind: "out" },
