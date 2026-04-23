@@ -8,7 +8,6 @@ export const dialogs: Record<string, DialogTree> = {
     id: "philippeAtDoor",
     start: "p1",
     onEnd: (api) => {
-      api.setFlag("enteredApt2613");
       api.goTo("apt2613");
     },
     lines: {
@@ -358,7 +357,7 @@ export const dialogs: Record<string, DialogTree> = {
       st1: {
         id: "st1",
         speaker: "SYSTEM",
-        text: "[ Verbindungsaufbau zu ZENTRAL.NETZ schlägt fehl. ROUTER567.ZENTRAL.NETZ → ERROR 4567. Layard wählt erneut die 001. ]",
+        text: "[ Layard versucht, sich am Terminal mit dem ZENTRAL.NETZ zu verbinden. ROUTER567.ZENTRAL.NETZ → ERROR 4567. Er greift wieder zum Hörer und wählt die 001. ]",
         next: "st2",
       },
       st2: {
