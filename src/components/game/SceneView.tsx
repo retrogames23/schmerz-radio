@@ -1,24 +1,12 @@
 import { useEffect, useState } from "react";
 import { scenes, useGame } from "@/game/GameContext";
 import { Hotspot } from "./Hotspot";
-import patientUp from "@/assets/sprite-patient-up.png";
-import patientHit from "@/assets/sprite-patient-hit.png";
-import paramedicSprite from "@/assets/sprite-paramedic.png";
-import philippeSprite from "@/assets/sprite-philippe.png";
+import knockingArm from "@/assets/sprite-arm.png";
 
 export function SceneView() {
   const { scene, caption, radioActive, resonance, api, flags } = useGame();
   const current = scenes[scene];
   const [showIntro, setShowIntro] = useState(true);
-  // Knock animation: alternate between two patient sprite frames.
-  const [knockFrame, setKnockFrame] = useState<0 | 1>(0);
-  useEffect(() => {
-    if (scene !== "apt2615" || flags.has("protocolReceived")) return;
-    const id = setInterval(() => {
-      setKnockFrame((f) => (f === 0 ? 1 : 0));
-    }, 620);
-    return () => clearInterval(id);
-  }, [scene, flags]);
 
   useEffect(() => {
     setShowIntro(true);
@@ -63,31 +51,14 @@ export function SceneView() {
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
       />
 
-      {/* Apartment 2615 character overlays */}
+      {/* Apartment 2615 — animated knocking arm overlay */}
       {scene === "apt2615" && !flags.has("protocolReceived") && (
-        <>
-          {/* Patient — animated knock against the back wall */}
-          <img
-            src={knockFrame === 0 ? patientUp : patientHit}
-            alt=""
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-[28%] z-10 h-[62%] -translate-x-1/2 select-none object-contain drop-shadow-[0_8px_12px_rgba(0,0,0,0.55)]"
-          />
-          {/* Paramedic — to the right of the patient */}
-          <img
-            src={paramedicSprite}
-            alt=""
-            aria-hidden
-            className="pointer-events-none absolute right-[8%] top-[24%] z-10 h-[68%] select-none object-contain drop-shadow-[0_8px_12px_rgba(0,0,0,0.55)]"
-          />
-          {/* Philippe — in the broken doorway, far left */}
-          <img
-            src={philippeSprite}
-            alt=""
-            aria-hidden
-            className="pointer-events-none absolute left-[6%] top-[26%] z-10 h-[66%] select-none object-contain drop-shadow-[0_8px_12px_rgba(0,0,0,0.55)]"
-          />
-        </>
+        <img
+          src={knockingArm}
+          alt=""
+          aria-hidden
+          className="knock-arm pointer-events-none absolute left-[55%] top-[44%] z-10 h-[14%] select-none object-contain"
+        />
       )}
 
       {/* Hotspots */}
