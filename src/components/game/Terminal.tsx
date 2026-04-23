@@ -1196,8 +1196,14 @@ export function Terminal() {
         flags.has("calledInsa2") &&
         !flags.has("reportedExit") &&
         !flags.has("calledStegmann");
+      const showStegmannMail = flags.has("calledStegmann");
+      const showTicketMail = flags.has("troubleReported");
       const count =
-        2 + (flags.has("calledForCode") ? 1 : 0) + (showExitMail ? 1 : 0);
+        2 +
+        (flags.has("calledForCode") ? 1 : 0) +
+        (showExitMail ? 1 : 0) +
+        (showStegmannMail ? 1 : 0) +
+        (showTicketMail ? 1 : 0);
       newLines.push(
         { text: `POSTEINGANG (${count}):`, kind: "system" },
         { text: "  [001] 06.11.1997  Insa Bauerfeind — Wartungsfenster Gateway", kind: "out" },
@@ -1213,6 +1219,18 @@ export function Terminal() {
         newLines.push({
           text: "  [003] 06.11.1997  Insa Bauerfeind — Sektor-Tür: Manueller Code  ✶NEU",
           kind: "system",
+        });
+      }
+      if (showStegmannMail) {
+        newLines.push({
+          text: `  [005] 06.11.1997  Stegmann (IT)    — Anweisung: sysupdate + trouble net  ${flags.has("centralOsUpdated") && flags.has("troubleReported") ? "" : "✶NEU"}`.trimEnd(),
+          kind: "system",
+        });
+      }
+      if (showTicketMail) {
+        newLines.push({
+          text: "  [006] 06.11.1997  ZENTRAL.NETZ     — Ticket #E67-19971106-0042 angenommen",
+          kind: "out",
         });
       }
     } else if (cmd === "read 001") {
