@@ -206,6 +206,10 @@ export function Terminal() {
   const [input, setInput] = useState("");
   const [cwd, setCwd] = useState<string[]>([...HOME_PATH]);
   const [advState, setAdvState] = useState<AdvState | null>(null);
+  // Aktive Telnet-Sitzung (null = keine).
+  const [telnetHost, setTelnetHost] = useState<string | null>(null);
+  // Telnet wartet auf Passworteingabe für diesen Host.
+  const [telnetAwaitPass, setTelnetAwaitPass] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastTabRef = useRef<{ input: string; matches: string[] } | null>(null);
