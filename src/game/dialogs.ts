@@ -655,6 +655,120 @@ export const dialogs: Record<string, DialogTree> = {
     },
   },
 
+  // ─────────────────────────────────────────────────────────────
+  // Philippe als Wander-NPC — vor der Resonanz-Überlastung
+  // (Kurze, nervöse Begegnungen an unterschiedlichen Orten.)
+  // ─────────────────────────────────────────────────────────────
+  philippeInLobby: {
+    id: "philippeInLobby",
+    start: "pl1",
+    lines: {
+      pl1: {
+        id: "pl1",
+        speaker: "SYSTEM",
+        text: "[ Ein Mann Anfang 40 lehnt am Tresen. Beiger Cardigan, müde Augen. Er sieht auf, als Layard näher kommt. ]",
+        next: "pl2",
+      },
+      pl2: {
+        id: "pl2",
+        speaker: "PHILIPPE",
+        text: "Oh — hallo. Sie wohnen im 26er, nicht? 2611. Ich bin Philippe. 2613.",
+        subtext: "Er nuschelt. Er probiert die Begrüßung im Kopf, bevor er sie ausspricht.",
+        next: "pl3",
+      },
+      pl3: {
+        id: "pl3",
+        speaker: "LAYARD",
+        text: "Layard. — Was machen Sie hier unten?",
+        next: "pl4",
+      },
+      pl4: {
+        id: "pl4",
+        speaker: "PHILIPPE",
+        text: "Ich … bin viel unterwegs. Wenn ich zu lange in der Wohnung bin, höre ich Dinge. Aus der Nachbarwand.",
+        subtext: "Er sagt das so, wie man Wetterprognosen sagt.",
+        next: "pl5",
+      },
+      pl5: {
+        id: "pl5",
+        speaker: "PHILIPPE",
+        text: "Wahrscheinlich nichts. Wahrscheinlich.",
+        end: true,
+      },
+    },
+  },
+
+  philippeInCorridor36: {
+    id: "philippeInCorridor36",
+    start: "pc1",
+    lines: {
+      pc1: {
+        id: "pc1",
+        speaker: "SYSTEM",
+        text: "[ Philippe steht vor einer geschlossenen Verwaltungstür, beide Hände in den Cardiganstaschen. Er nickt Layard zu. ]",
+        next: "pc2",
+      },
+      pc2: {
+        id: "pc2",
+        speaker: "PHILIPPE",
+        text: "Worag, oder? Aus 2611. Ich bin Philippe — von gegenüber, 2613.",
+        next: "pc3",
+      },
+      pc3: {
+        id: "pc3",
+        speaker: "PHILIPPE",
+        text: "Ich wollte hier eigentlich etwas erledigen. Aber dann war niemand da. Wie immer.",
+        subtext: "Er sagt „wie immer“ ohne Bitterkeit. Eher wie eine Wettermeldung.",
+        next: "pc4",
+      },
+      pc4: {
+        id: "pc4",
+        speaker: "LAYARD",
+        text: "Was wollten Sie melden?",
+        next: "pc5",
+      },
+      pc5: {
+        id: "pc5",
+        speaker: "PHILIPPE",
+        text: "Ach. Ein Klopfen. Bei mir an der Wand. Seit Tagen. Aber das ist sicher nichts. Schönen Tag noch, Herr Worag.",
+        end: true,
+      },
+    },
+  },
+
+  philippeInCorridor46: {
+    id: "philippeInCorridor46",
+    start: "pq1",
+    lines: {
+      pq1: {
+        id: "pq1",
+        speaker: "SYSTEM",
+        text: "[ Philippe steht vor dem abblätternden Plakat, als läse er es zum dritten Mal. Er sieht überrascht auf. ]",
+        next: "pq2",
+      },
+      pq2: {
+        id: "pq2",
+        speaker: "PHILIPPE",
+        text: "Sie auch hier? — Entschuldigung. Ich bin Philippe, wir wohnen Tür an Tür. 2611, 2613.",
+        next: "pq3",
+      },
+      pq3: {
+        id: "pq3",
+        speaker: "PHILIPPE",
+        text: "Ich laufe heute viel. Etage rauf, Etage runter. In der Wohnung wird es manchmal … laut. Ohne dass jemand spricht, meine ich.",
+        subtext: "Er meint es genau so, wie er es sagt.",
+        next: "pq4",
+      },
+      pq4: {
+        id: "pq4",
+        speaker: "PHILIPPE",
+        text: "Vielleicht sehen wir uns mal. Bei einem Kaffee. Echtem.",
+        end: true,
+      },
+    },
+  },
+
+
   // ---------------------------------------------------------------
   // 10. E71 — reception
   // ---------------------------------------------------------------
