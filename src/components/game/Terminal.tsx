@@ -82,6 +82,8 @@ const COMMANDS = [
   "./adventure.bin",
   "net",
   "telnet",
+  "sysupdate",
+  "trouble",
 ];
 
 /** Longest common string prefix across all candidates. */
