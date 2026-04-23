@@ -70,7 +70,17 @@ export type StoryFlag =
   | "philippeNote2"
   | "philippeNote3"
   | "philippeNote4"
-  | "philippeNote5";
+  | "philippeNote5"
+  | "philippeProbe1"
+  | "philippeProbe2"
+  | "philippeProbe3"
+  | "philippeProbe4"
+  | "philippeProbe5"
+  | "philippeProbeNote1"
+  | "philippeProbeNote2"
+  | "philippeProbeNote3"
+  | "philippeProbeNote4"
+  | "philippeProbeNote5";
 
 export interface InventoryItem {
   id: InventoryItemId;
