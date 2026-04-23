@@ -57,6 +57,102 @@ function buildTree(
   return out;
 }
 
+const COMMANDS = [
+  "help",
+  "inbox",
+  "read",
+  "status",
+  "unlock",
+  "clear",
+  "exit",
+  "pwd",
+  "ls",
+  "cd",
+  "cat",
+  "tree",
+];
+
+/** Longest common string prefix across all candidates. */
+function commonPrefix(strs: string[]): string {
+  if (!strs.length) return "";
+  let prefix = strs[0];
+  for (let i = 1; i < strs.length; i++) {
+    while (strs[i].indexOf(prefix) !== 0) {
+      prefix = prefix.slice(0, -1);
+      if (!prefix) return "";
+    }
+  }
+  return prefix;
+}
+
+interface CompleteResult {
+  newInput: string;
+  matches: string[];
+}
+
+/**
+ * Compute tab-completion for the current input.
+ * - First token → command names.
+ * - cd → directories only.
+ * - cat → files only.
+ * - Otherwise → both.
+ */
+function complete(
+  input: string,
+  cwd: string[],
+  hasFlag: (f: StoryFlag) => boolean,
+): CompleteResult {
+  const tokens = input.split(/\s+/);
+  const lastToken = tokens[tokens.length - 1] ?? "";
+
+  // Completing the command itself.
+  if (tokens.length === 1) {
+    const matches = COMMANDS.filter((c) => c.startsWith(lastToken.toLowerCase()));
+    if (!matches.length) return { newInput: input, matches: [] };
+    const completed = commonPrefix(matches);
+    const newLast = matches.length === 1 ? matches[0] + " " : completed;
+    return { newInput: newLast, matches };
+  }
+
+  // Completing a path argument.
+  const cmd = tokens[0].toLowerCase();
+  const wantDirs = cmd === "cd";
+  const wantFiles = cmd === "cat";
+
+  // Split last token into "directory part" + "name fragment".
+  const isAbsolute = lastToken.startsWith("/");
+  const segments = lastToken.split("/");
+  const fragment = segments.pop() ?? "";
+  const baseSegments = segments.filter(Boolean);
+  const dirParts = isAbsolute ? baseSegments : [...cwd, ...baseSegments];
+  const dir = resolvePath(dirParts);
+  if (!dir || dir.type !== "dir") return { newInput: input, matches: [] };
+
+  // Always show all entries (-a equivalent) so users can complete .hidden_log etc.
+  const candidates = visibleChildren(dir, true, hasFlag).filter((c) => {
+    if (wantDirs && c.type !== "dir") return false;
+    if (wantFiles && c.type !== "file") return false;
+    return c.name.startsWith(fragment);
+  });
+  if (!candidates.length) return { newInput: input, matches: [] };
+
+  const names = candidates.map((c) => c.name);
+  const prefix = commonPrefix(names);
+  let completedName = prefix;
+  if (candidates.length === 1) {
+    const only = candidates[0];
+    completedName = only.type === "dir" ? only.name + "/" : only.name + " ";
+  }
+
+  const dirPrefix = lastToken.slice(0, lastToken.length - fragment.length);
+  const newLastToken = dirPrefix + completedName;
+  const newInput = [...tokens.slice(0, -1), newLastToken].join(" ");
+
+  // For display when ambiguous, append "/" to dir names.
+  const display = candidates.map((c) => (c.type === "dir" ? c.name + "/" : c.name));
+  return { newInput, matches: display };
+}
+
 const HELP_LINES: Line[] = [
   { text: "VERFÜGBARE BEFEHLE:", kind: "system" },
   { text: "  help          — Diese Liste anzeigen", kind: "out" },
@@ -71,6 +167,8 @@ const HELP_LINES: Line[] = [
   { text: "  cd <pfad>     — Verzeichnis wechseln (.. = aufwärts, / = root)", kind: "out" },
   { text: "  cat <datei>   — Datei lesen", kind: "out" },
   { text: "  tree          — Baumansicht ab aktuellem Pfad", kind: "out" },
+  { text: "", kind: "out" },
+  { text: "TIPP: <Tab> vervollständigt Befehle und Pfade.", kind: "system" },
   { text: "", kind: "out" },
   { text: "  clear         — Bildschirm leeren", kind: "out" },
   { text: "  exit          — Terminal schließen", kind: "out" },
@@ -91,6 +189,7 @@ export function Terminal() {
   const [cwd, setCwd] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const lastTabRef = useRef<{ input: string; matches: string[] } | null>(null);
 
   useEffect(() => {
     if (terminalOpen) {
@@ -351,6 +450,40 @@ export function Terminal() {
                 playKeypress(0.3 * sfxVolume);
               }
               setInput(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key !== "Tab") {
+                lastTabRef.current = null;
+                return;
+              }
+              e.preventDefault();
+              const result = complete(input, cwd, (f) => flags.has(f));
+              if (!result.matches.length) {
+                playBeep(0.2 * sfxVolume);
+                return;
+              }
+              if (result.newInput !== input) {
+                // Successful expansion — single match or common-prefix grew.
+                setInput(result.newInput);
+                playKeypress(0.3 * sfxVolume);
+                lastTabRef.current = { input: result.newInput, matches: result.matches };
+                return;
+              }
+              // No expansion possible. On second consecutive Tab, list candidates.
+              const prev = lastTabRef.current;
+              if (prev && prev.input === input && result.matches.length > 1) {
+                const promptPath = pathString(cwd).replace("/home/worag", "~");
+                setLines((p) => [
+                  ...p,
+                  { text: `worag@e67:${promptPath}$ ${input}`, kind: "in" },
+                  { text: result.matches.join("   "), kind: "out" },
+                  { text: "", kind: "out" },
+                ]);
+                lastTabRef.current = null;
+              } else {
+                lastTabRef.current = { input, matches: result.matches };
+                playBeep(0.2 * sfxVolume);
+              }
             }}
             className="flex-1 bg-transparent font-mono-crt text-base text-phosphor caret-phosphor outline-none placeholder:text-phosphor-dim/60"
             placeholder="Befehl eingeben …"
