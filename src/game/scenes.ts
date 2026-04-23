@@ -184,6 +184,27 @@ export const scenes: Record<string, Scene> = {
             } else {
               api.startDialog("philippeAfterEarly");
             }
+          } else if (api.hasFlag("protocolReceived")) {
+            // Tür ist versiegelt → Philippe beginnt Layard auszufragen.
+            // Fünf Sondierungs-Dialoge in fester Reihenfolge.
+            if (!api.hasFlag("philippeProbe1")) {
+              api.setFlag("philippeProbe1");
+              api.startDialog("philippeProbe1");
+            } else if (!api.hasFlag("philippeProbe2")) {
+              api.setFlag("philippeProbe2");
+              api.startDialog("philippeProbe2");
+            } else if (!api.hasFlag("philippeProbe3")) {
+              api.setFlag("philippeProbe3");
+              api.startDialog("philippeProbe3");
+            } else if (!api.hasFlag("philippeProbe4")) {
+              api.setFlag("philippeProbe4");
+              api.startDialog("philippeProbe4");
+            } else if (!api.hasFlag("philippeProbe5")) {
+              api.setFlag("philippeProbe5");
+              api.startDialog("philippeProbe5");
+            } else {
+              api.startDialog("philippeSmalltalk");
+            }
           } else {
             api.startDialog("philippeSmalltalk");
           }
