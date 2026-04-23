@@ -329,10 +329,11 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "patient2615",
-        x: 64,
-        y: 55,
-        w: 22,
-        h: 35,
+        // Älterer Mann sitzt rechts auf dem Boden, Rücken an der Wand.
+        x: 62,
+        y: 50,
+        w: 26,
+        h: 45,
         label: "Der Mann an der Wand",
         hiddenWhen: ["sawCatatonic"],
         onUse: (api) => {
@@ -357,10 +358,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "paramedicsHotspot2615",
+        // Beide Sanitäter stehen mittig-links.
         x: 22,
-        y: 38,
-        w: 22,
-        h: 50,
+        y: 35,
+        w: 24,
+        h: 55,
         label: "Sanitäter ansprechen",
         requires: ["sawCatatonic"],
         hiddenWhen: ["protocolReceived"],
@@ -378,10 +380,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "wallDetail2615",
+        // Wand hinter dem Patienten (rechte Hälfte, oberhalb der Lampe).
         x: 50,
-        y: 30,
-        w: 30,
-        h: 22,
+        y: 22,
+        w: 38,
+        h: 24,
         label: "Die Wand",
         requires: ["sawCatatonic"],
         onUse: (api) =>
@@ -393,10 +396,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "exitTo2613",
+        // Aufgebrochene Tür ganz links.
         x: 0,
-        y: 25,
-        w: 18,
-        h: 70,
+        y: 18,
+        w: 22,
+        h: 80,
         label: "Zurück in den Korridor",
         onUse: (api) => {
           if (api.hasFlag("protocolReceived")) {
