@@ -589,13 +589,6 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 15 — Sektor E71",
     intro:
       "Spiegelblanker Linoleum. Drei Lichter flackern. Am Ende des Korridors: eine rote Tür. Zimmer 1534.",
-    doorPlates: [
-      { id: "p1534", x: 50, y: 28, w: 10, label: "1534" },
-      { id: "p1530", x: 12, y: 32, w: 7, label: "1530" },
-      { id: "p1532", x: 28, y: 36, w: 6, label: "1532" },
-      { id: "p1536", x: 72, y: 36, w: 6, label: "1536" },
-      { id: "p1538", x: 88, y: 32, w: 7, label: "1538" },
-    ],
     hotspots: [
       {
         id: "gurney",
