@@ -1788,6 +1788,20 @@ export function Terminal() {
     }
 
     setLines((prev) => [...prev, ...newLines, { text: "", kind: "out" }]);
+    // Bodo-Modus: solange nicht aktualisiert, drängelt das System bei jedem
+    // Befehl mit einer kleinen Warnzeile. Verschwindet nach sysupdate.
+    if (bodoMode && !flags.has("centralOsUpdated") && head !== "sysupdate") {
+      setTimeout(() => {
+        setLines((prev) => [
+          ...prev,
+          {
+            text: ">> Hinweis: Aktualisierung ausstehend. Tippe 'sysupdate'.",
+            kind: "system",
+          },
+          { text: "", kind: "out" },
+        ]);
+      }, 80);
+    }
     // History des Hauptterminals pflegen.
     const h = termHistoryRef.current;
     if (h[h.length - 1] !== raw) h.push(raw);
