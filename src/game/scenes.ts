@@ -1447,6 +1447,8 @@ export const scenes: Record<string, Scene> = {
         onUse: (api) => {
           if (api.hasFlag("tookFlyer")) {
             api.startDialog("miraAfter");
+          } else if (api.hasFlag("miraSystemic")) {
+            api.startDialog("miraSystemicGreeting");
           } else if (api.hasFlag("metMira")) {
             api.startDialog("miraReturn");
           } else {
@@ -1519,6 +1521,8 @@ export const scenes: Record<string, Scene> = {
         onUse: (api) => {
           if (api.hasFlag("tookFlyer")) {
             api.startDialog("miraAfter");
+          } else if (api.hasFlag("miraSystemic")) {
+            api.startDialog("miraSystemicGreeting");
           } else if (api.hasFlag("metMira")) {
             api.startDialog("miraReturn");
           } else {
@@ -1585,6 +1589,8 @@ export const scenes: Record<string, Scene> = {
         onUse: (api) => {
           if (api.hasFlag("tookFlyer")) {
             api.startDialog("miraAfter");
+          } else if (api.hasFlag("miraSystemic")) {
+            api.startDialog("miraSystemicGreeting");
           } else if (api.hasFlag("metMira")) {
             api.startDialog("miraReturn");
           } else {
