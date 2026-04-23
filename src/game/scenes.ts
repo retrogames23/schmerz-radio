@@ -364,6 +364,36 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 26 — Quadrant E67",
     intro:
       "Der Korridor. Wie jeden Morgen. Nur dass Layard ihn jeden Morgen nicht betritt.",
+    doorPlates: [
+      { id: "p2610", x: 14, y: 26, w: 10, label: "2610" },
+      { id: "p2611", x: 86, y: 26, w: 10, label: "2611" },
+      {
+        id: "p2613",
+        x: 36,
+        y: 30,
+        w: 8,
+        label: "2613",
+        requires: ["doorBrokenOpen"],
+        hiddenWhen: ["protocolReceived"],
+      },
+      {
+        id: "p2615",
+        x: 54,
+        y: 30,
+        w: 8,
+        label: "2615",
+        requires: ["doorBrokenOpen"],
+        hiddenWhen: ["protocolReceived"],
+      },
+      {
+        id: "p2613s",
+        x: 36,
+        y: 30,
+        w: 8,
+        label: "2613 ⚠",
+        requires: ["protocolReceived"],
+      },
+    ],
     hotspots: [
       {
         id: "back2611",
