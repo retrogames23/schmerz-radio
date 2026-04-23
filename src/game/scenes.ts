@@ -273,22 +273,6 @@ export const scenes: Record<string, Scene> = {
         },
       },
       {
-        id: "philippe2615",
-        x: 14,
-        y: 28,
-        w: 16,
-        h: 60,
-        label: "Philippe",
-        hiddenWhen: ["sawCatatonic"],
-        onUse: (api) => {
-          api.showText([
-            "Philippe steht an der Tür, die Arme verschränkt.",
-            "„Sehen Sie ihn auch?“ — flüstert er.",
-            "„Ich konnte nicht hinein. Ich konnte einfach nicht.“",
-          ]);
-        },
-      },
-      {
         id: "wallDetail2615",
         x: 38,
         y: 18,
@@ -310,7 +294,17 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 35,
         label: "Zurück in den Korridor",
-        onUse: (api) => api.goTo("hallway"),
+        onUse: (api) => {
+          if (api.hasFlag("protocolReceived")) {
+            api.showText([
+              "Layard tritt zurück auf den Korridor.",
+              "Hinter ihm versiegeln die Sanitäter die Tür mit gelbem Band:",
+              "„Quarantäne — Resonanz-Überlastung — bis auf Widerruf“.",
+              "Niemand wird hier in absehbarer Zeit einziehen.",
+            ]);
+          }
+          api.goTo("hallway");
+        },
       },
     ],
   },
