@@ -184,7 +184,7 @@ export function RadioPanel() {
   const onAngel = freq === 104.6;
 
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 px-4">
+    <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/80 px-4">
       <div className="fade-in relative w-full max-w-2xl rounded-sm border border-amber-glow/50 bg-background p-6 shadow-[0_0_60px_rgba(0,0,0,0.8)]">
         <CloseButton
           onClick={() => {
