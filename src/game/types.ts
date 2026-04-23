@@ -42,6 +42,10 @@ export type StoryFlag =
   | "calledLeitstelle"
   | "smalltalkPhilippe"
   | "paramedicsArrived"
+  // Pro Besuch in Wohnung 2613 nach dem Anruf: zwei Warte-Klicks.
+  // Werden beim Betreten von 2613 zurückgesetzt.
+  | "wait2613Step1"
+  | "wait2613Step2"
   | "doorBrokenOpen"
   | "sawCatatonic"
   | "protocolReceived"
