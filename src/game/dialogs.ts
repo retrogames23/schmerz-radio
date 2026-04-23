@@ -757,4 +757,245 @@ export const dialogs: Record<string, DialogTree> = {
       },
     },
   },
+
+  // ───────────────────────────────────────────────────────────
+  // Etage 3 — Tür 3601, Abschnittsverantwortlicher E67. Heute leer.
+  // ───────────────────────────────────────────────────────────
+  emptyOfficeSign: {
+    id: "emptyOfficeSign",
+    start: "eo1",
+    lines: {
+      eo1: {
+        id: "eo1",
+        speaker: "SYSTEM",
+        text: "[ An der Tür 3601 hängt ein DIN-A5-Zettel. Maschinenschrift, krumm geklebt. ]",
+        next: "eo2",
+      },
+      eo2: {
+        id: "eo2",
+        speaker: "SYSTEM",
+        text: "„HEUTE NICHT BESETZT — Dienstplan-Engpass. Vertretung für E67: Sektor E71, Zimmer 1534.“",
+        next: "eo3",
+      },
+      eo3: {
+        id: "eo3",
+        speaker: "LAYARD",
+        text: "E71. Also wirklich.",
+        subtext: "Er hat gehofft, dass es eine Verwechslung war. Es ist keine.",
+        end: true,
+      },
+    },
+  },
+
+  emptyOfficeBell: {
+    id: "emptyOfficeBell",
+    start: "eb1",
+    lines: {
+      eb1: {
+        id: "eb1",
+        speaker: "SYSTEM",
+        text: "[ Layard drückt den Klingelknopf. Ein dünnes, fernes Klingeln hinter der Tür. ]",
+        next: "eb2",
+      },
+      eb2: {
+        id: "eb2",
+        speaker: "SYSTEM",
+        text: "[ Sieben Sekunden Stille. Ein mechanisches Klacken. Dann nichts mehr. ]",
+        next: "eb3",
+      },
+      eb3: {
+        id: "eb3",
+        speaker: "LAYARD",
+        text: "Niemand. Wirklich niemand.",
+        subtext: "Eine Mischung aus Erleichterung und Wut. Beides gleichzeitig, beides leise.",
+        end: true,
+      },
+    },
+  },
+
+  // ───────────────────────────────────────────────────────────
+  // Mira — die 16-Jährige mit revolutionären Ideen.
+  // ───────────────────────────────────────────────────────────
+  miraIntro: {
+    id: "miraIntro",
+    start: "mi1",
+    lines: {
+      mi1: {
+        id: "mi1",
+        speaker: "SYSTEM",
+        text: "[ An der Wand lehnt eine junge Frau. Sechzehn, vielleicht siebzehn. Kein Empfänger im Ohr. Sie sieht Layard direkt an. ]",
+        next: "mi2",
+      },
+      mi2: {
+        id: "mi2",
+        speaker: "MIRA",
+        text: "Hey. Du bist nicht von dieser Etage. Wer auf einer fremden Etage ankommt, sucht entweder etwas — oder läuft weg.",
+        subtext: "Sie sagt das ohne Vorwurf. Eher wie eine Diagnose.",
+        next: "mi3",
+      },
+      mi3: {
+        id: "mi3",
+        speaker: "LAYARD",
+        text: "Ich suche jemanden. Den Abschnittsverantwortlichen.",
+        next: "mi4",
+      },
+      mi4: {
+        id: "mi4",
+        speaker: "MIRA",
+        text: "Den gibt es heute nicht. Den gibt es eigentlich nie. Das System tut nur so, als ob.",
+        subtext: "Sie hat das schon oft gesagt. Sie wartet darauf, wie er reagiert.",
+        choices: [
+          { text: "Was meinst du damit genau?", next: "miraOpen1" },
+          { text: "Pass auf, was du sagst. Hier hört jemand zu.", next: "miraClosed1" },
+          { text: "Keine Zeit für sowas." },
+        ],
+      },
+      // OFFEN
+      miraOpen1: {
+        id: "miraOpen1",
+        speaker: "MIRA",
+        text: "Frag dich mal, warum 104,6 deinen Schmerz lindert und nicht den Grund dafür wegnimmt. Ein gutes Mittel würde das Problem lösen — nicht dich an das Problem gewöhnen.",
+        next: "miraOpen2",
+      },
+      miraOpen2: {
+        id: "miraOpen2",
+        speaker: "MIRA",
+        text: "Die Frequenz ist eine Leine. Lang genug, dass du dich frei fühlst. Kurz genug, dass du nicht aus dem Quadranten läufst.",
+        next: "miraOpen3",
+      },
+      miraOpen3: {
+        id: "miraOpen3",
+        speaker: "LAYARD",
+        text: "Und wer hält das andere Ende?",
+        next: "miraOpen4",
+      },
+      miraOpen4: {
+        id: "miraOpen4",
+        speaker: "MIRA",
+        text: "Genau die Frage. Und die Antwort steht hier drauf.",
+        next: "miraOpen5",
+      },
+      miraOpen5: {
+        id: "miraOpen5",
+        speaker: "SYSTEM",
+        text: "[ Sie zieht ein gefaltetes Blatt aus der Innentasche und drückt es Layard in die Hand. Schnell. Geübt. ]",
+        next: "miraOpen6",
+        choices: [
+          { text: "[ Annehmen ]", next: "miraOpen7" },
+          { text: "[ Ablehnen ]", next: "miraRefuse" },
+        ],
+      },
+      miraOpen7: {
+        id: "miraOpen7",
+        speaker: "MIRA",
+        text: "Lies es allein. Nicht im Terminal. Niemals im Terminal. Z.K.S.",
+        next: "miraOpen8",
+        action: undefined,
+      },
+      miraOpen8: {
+        id: "miraOpen8",
+        speaker: "LAYARD",
+        text: "Z.K.S.?",
+        next: "miraOpen9",
+      },
+      miraOpen9: {
+        id: "miraOpen9",
+        speaker: "MIRA",
+        text: "Wirst du schon merken. Geh jetzt. Ich war nie hier.",
+        choices: [
+          {
+            text: "[ Beenden ]",
+            action: (api) => {
+              api.setFlag("miraOpenness");
+              api.setFlag("tookFlyer");
+              api.addItem({
+                id: "flyer",
+                name: "Flugblatt",
+                description:
+                  "Ein gefaltetes Blatt, mit Maschinenschrift bedruckt. Unten unterzeichnet: „Z.K.S.“",
+              });
+              api.setKnowledge("frequencyControl");
+            },
+          },
+        ],
+      },
+      miraRefuse: {
+        id: "miraRefuse",
+        speaker: "MIRA",
+        text: "Schade. — Aber ich verstehe. Wenn du es dir anders überlegst: Ich bin oft hier oben.",
+        choices: [
+          {
+            text: "[ Beenden ]",
+            action: (api) => api.setFlag("miraOpenness"),
+          },
+        ],
+      },
+      // GESCHLOSSEN
+      miraClosed1: {
+        id: "miraClosed1",
+        speaker: "MIRA",
+        text: "Ach. Einer von denen. Schon gut. Vergiss, dass ich was gesagt habe.",
+        subtext: "Sie ist nicht überrascht. Sie hat damit gerechnet.",
+        next: "miraClosed2",
+      },
+      miraClosed2: {
+        id: "miraClosed2",
+        speaker: "MIRA",
+        text: "Schönen Tag noch, Bürger.",
+        end: true,
+      },
+    },
+  },
+
+  // Wiederbegegnung: Layard hat noch kein Flugblatt, kann zurückkommen.
+  miraReturn: {
+    id: "miraReturn",
+    start: "mr1",
+    lines: {
+      mr1: {
+        id: "mr1",
+        speaker: "MIRA",
+        text: "Wieder hier. Hast du es dir überlegt?",
+        choices: [
+          { text: "Ja. Gib mir das Blatt.", next: "mr2" },
+          { text: "Nein. Ich wollte nur reden." },
+        ],
+      },
+      mr2: {
+        id: "mr2",
+        speaker: "MIRA",
+        text: "Gut. Lies es allein. Niemals im Terminal. Z.K.S.",
+        choices: [
+          {
+            text: "[ Beenden ]",
+            action: (api) => {
+              api.setFlag("tookFlyer");
+              api.setFlag("miraOpenness");
+              api.addItem({
+                id: "flyer",
+                name: "Flugblatt",
+                description:
+                  "Ein gefaltetes Blatt, mit Maschinenschrift bedruckt. Unten unterzeichnet: „Z.K.S.“",
+              });
+              api.setKnowledge("frequencyControl");
+            },
+          },
+        ],
+      },
+    },
+  },
+
+  // Nach Erhalt des Flugblatts.
+  miraAfter: {
+    id: "miraAfter",
+    start: "ma1",
+    lines: {
+      ma1: {
+        id: "ma1",
+        speaker: "MIRA",
+        text: "Du hast es noch. Gut. — Und du bist immer noch hier. Auch gut.",
+        end: true,
+      },
+    },
+  },
 };
