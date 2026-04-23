@@ -499,7 +499,7 @@ export const dialogs: Record<string, DialogTree> = {
       x4help2: {
         id: "x4help2",
         speaker: "INSA",
-        text: "Beispiel — wenn da steht „01.01.1990\u201C, dann tippen Sie 01011990. Verstanden, Herr Worag?",
+        text: "Beispiel — wenn da steht 01.01.1990, dann tippen Sie 01011990. Verstanden, Herr Worag?",
         next: "x4help3",
       },
       x4help3: {
