@@ -658,6 +658,125 @@ export function Terminal() {
           (t) => ({ text: t, kind: "out" } as Line),
         ),
       );
+    } else if (head === "net") {
+      newLines.push({ text: "BEKANNTE HOSTS — Sektornetz E67/E71:", kind: "system" });
+      newLines.push(
+        { text: "  IP                HOST                  BESCHREIBUNG", kind: "out" },
+        { text: "  ──                ────                  ────────────", kind: "out" },
+      );
+      for (const h of NET_HOSTS) {
+        newLines.push({
+          text: `  ${h.ip.padEnd(17)} ${h.host.padEnd(21)} ${h.desc}`,
+          kind: "out",
+        });
+      }
+      newLines.push({
+        text: "TIPP: 'telnet <host>' — Verbindungsversuch.",
+        kind: "system",
+      });
+    } else if (head === "telnet") {
+      const target = args[0];
+      if (!target) {
+        newLines.push({ text: "telnet: Host fehlt. Beispiel: telnet philippe.e67", kind: "out" });
+      } else {
+        const host = findHost(target);
+        if (!host) {
+          newLines.push({ text: `telnet: ${target}: Host nicht gefunden.`, kind: "out" });
+        } else if (!host.password) {
+          newLines.push(
+            { text: `Versuche ${host.host} (${host.ip})…`, kind: "out" },
+            { text: `>> Verbindung verweigert: kein telnet-daemon auf Port 23.`, kind: "out" },
+          );
+        } else {
+          newLines.push(
+            { text: `Versuche ${host.host} (${host.ip})…`, kind: "out" },
+            { text: ">> Verbunden. Authentifizierung erforderlich.", kind: "system" },
+          );
+          setTelnetAwaitPass(host.host);
+        }
+      }
+    } else if (head === "ps") {
+      newLines.push(
+        { text: "  PID USER       %CPU %MEM  COMMAND", kind: "system" },
+        { text: "    1 root        0.0  0.4  /usr/bin/centralos --boot", kind: "out" },
+        { text: "   23 root        2.1  1.8  /usr/bin/carrier-daemon --keepalive", kind: "out" },
+        { text: "   41 leitstelle  0.3  0.5  /opt/leitstelle-tools/trace --ping", kind: "out" },
+        { text: "   88 root        0.1  0.2  /usr/bin/centralos --rotate-logs", kind: "out" },
+        { text: "  142 worag       0.0  0.1  -sh", kind: "out" },
+        { text: "  143 worag       0.5  0.3  /home/worag/adventure.bin (idle)", kind: "out" },
+        { text: "  201 root        0.0  0.1  [resonance-feedback]", kind: "out" },
+        { text: "  ???   ?           ?    ?  [???]", kind: "out" },
+      );
+    } else if (head === "uname") {
+      const showAll = args.includes("-a");
+      const parts: Record<string, string> = {
+        s: "CentralOS",
+        n: "e67-2611",
+        r: "2.3-resonance",
+        v: "#14 Tue Nov 4 11:04:22 1997",
+        m: "syn33",
+        o: "CentralOS",
+      };
+      if (!args.length || args.includes("-s")) {
+        if (showAll) {
+          newLines.push({
+            text: `${parts.s} ${parts.n} ${parts.r} ${parts.v} ${parts.m} ${parts.o}`,
+            kind: "out",
+          });
+        } else {
+          newLines.push({ text: parts.s, kind: "out" });
+        }
+      } else if (showAll) {
+        newLines.push({
+          text: `${parts.s} ${parts.n} ${parts.r} ${parts.v} ${parts.m} ${parts.o}`,
+          kind: "out",
+        });
+      } else {
+        const out: string[] = [];
+        if (args.includes("-n")) out.push(parts.n);
+        if (args.includes("-r")) out.push(parts.r);
+        if (args.includes("-v")) out.push(parts.v);
+        if (args.includes("-m")) out.push(parts.m);
+        if (args.includes("-o")) out.push(parts.o);
+        newLines.push({ text: out.join(" "), kind: "out" });
+      }
+    } else if (head === "whoami") {
+      newLines.push({ text: "worag", kind: "out" });
+    } else if (head === "id") {
+      newLines.push({
+        text: "uid=2611(worag) gid=100(bewohner) groups=100(bewohner),104(radio-rx)",
+        kind: "out",
+      });
+    } else if (head === "date") {
+      newLines.push({ text: "Don 06 Nov 1997 09:14:42 MEZ", kind: "out" });
+    } else if (head === "uptime") {
+      newLines.push({
+        text: " 09:14:42 up 4012 days, 17:14,  1 user,  load average: 1.04, 1.04, 1.04",
+        kind: "out",
+      });
+    } else if (head === "history") {
+      const h = termHistoryRef.current;
+      if (!h.length) newLines.push({ text: "(leerer Verlauf)", kind: "out" });
+      else {
+        h.forEach((cmd, i) => {
+          newLines.push({
+            text: `  ${(i + 1).toString().padStart(3)}  ${cmd}`,
+            kind: "out",
+          });
+        });
+      }
+    } else if (head === "echo") {
+      newLines.push({ text: args.join(" "), kind: "out" });
+    } else if (head === "sudo") {
+      newLines.push({
+        text: "sudo: worag ist nicht in der sudoers-Datei. Dieser Vorfall wird gemeldet.",
+        kind: "out",
+      });
+    } else if (head === "man") {
+      newLines.push({
+        text: `man: kein Handbuch für "${args[0] ?? ""}" — Tippe 'help'.`,
+        kind: "out",
+      });
     } else {
       newLines.push({
         text: `Unbekannter Befehl: ${cmd}. Tippe 'help'.`,
