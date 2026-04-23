@@ -2,7 +2,8 @@ import apartmentBg from "@/assets/scene-apartment.jpg";
 import hallwayBg from "@/assets/scene-hallway.jpg";
 import apt2613Bg from "@/assets/scene-apt-2613.jpg";
 import apt2615Bg from "@/assets/scene-apt-2615.jpg";
-import apt2612Bg from "@/assets/scene-apt-2612.png";
+import apt2612BgEmpty from "@/assets/scene-apt-2612.png";
+import apt2612BgBodo from "@/assets/scene-apt-2612-bodo.png";
 import sectorBg from "@/assets/scene-sector-door.jpg";
 import e71LobbyBg from "@/assets/scene-e71-lobby.jpg";
 import corridor15Bg from "@/assets/scene-corridor-15.jpg";
@@ -15,8 +16,6 @@ import corridor46Bg from "@/assets/scene-corridor-46.jpg";
 import corridor56Bg from "@/assets/scene-corridor-56.jpg";
 import miraSprite from "@/assets/npc-mira.png";
 import philippeSprite from "@/assets/npc-philippe.png";
-import bodoSprite from "@/assets/npc-bodo.png";
-// Bodo ist das einzige Sprite in 2612 — Lotti & Bildschirm sind Teil des Hintergrunds.
 import type { Scene } from "./types";
 
 export const scenes: Record<string, Scene> = {

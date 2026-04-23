@@ -131,7 +131,12 @@ export interface Hotspot {
 
 export interface Scene {
   id: SceneId;
-  background: string;
+  /**
+   * Hintergrundbild der Szene. Entweder ein statischer Pfad oder eine
+   * Funktion, die abhängig vom Spielzustand das passende Bild liefert
+   * (z.B. „Bodo im Sessel“ vs. „leerer Sessel“).
+   */
+  background: string | ((api: GameApi) => string);
   title: string;
   intro?: string;
   hotspots: Hotspot[];
