@@ -37,10 +37,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "phoneApt",
-        x: 47,
-        y: 52,
+        x: 82,
+        y: 30,
         w: 14,
-        h: 18,
+        h: 25,
         label: "Telefon",
         // Only available after returning from 2613 with the protocol
         requires: ["protocolReceived"],
