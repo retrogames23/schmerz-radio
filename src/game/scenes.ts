@@ -19,17 +19,17 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "radio",
-        x: 5,
-        y: 55,
-        w: 22,
-        h: 18,
+        x: 24,
+        y: 46,
+        w: 18,
+        h: 14,
         label: "Schmerz-Radio",
         onUse: (api) => api.openRadio(),
       },
       {
         id: "terminal",
-        x: 24,
-        y: 48,
+        x: 4,
+        y: 42,
         w: 22,
         h: 22,
         label: "CentralOS Terminal",
@@ -60,10 +60,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "bed",
-        x: 50,
-        y: 72,
-        w: 30,
-        h: 22,
+        x: 38,
+        y: 55,
+        w: 38,
+        h: 35,
         label: "Bett",
         onUse: (api) =>
           api.showText([
@@ -74,9 +74,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "b2",
         x: 4,
-        y: 84,
-        w: 12,
-        h: 14,
+        y: 80,
+        w: 16,
+        h: 18,
         label: "B2-Ration",
         onUse: (api) =>
           api.showText([
