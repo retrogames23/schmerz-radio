@@ -19,7 +19,7 @@ export function Inventory() {
             <button
               key={item.id}
               type="button"
-              onClick={() => api.showText([item.name, "", item.description])}
+              onClick={() => api.showText([item.name, item.description])}
               className="rounded-sm border border-border bg-secondary px-2 py-1 text-xs text-secondary-foreground transition hover:border-amber-glow/60 hover:text-amber-glow"
             >
               {item.name}
