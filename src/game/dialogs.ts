@@ -7,6 +7,10 @@ export const dialogs: Record<string, DialogTree> = {
   philippeAtDoor: {
     id: "philippeAtDoor",
     start: "p1",
+    onEnd: (api) => {
+      api.setFlag("enteredApt2613");
+      api.goTo("apt2613");
+    },
     lines: {
       p1: {
         id: "p1",
@@ -203,6 +207,9 @@ export const dialogs: Record<string, DialogTree> = {
   paramedicsArrive: {
     id: "paramedicsArrive",
     start: "a1",
+    onEnd: (api) => {
+      api.setFlag("doorBrokenOpen");
+    },
     lines: {
       a1: {
         id: "a1",
