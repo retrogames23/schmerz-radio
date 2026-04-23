@@ -618,11 +618,14 @@ export const scenes: Record<string, Scene> = {
             // Bodo merkt es, wenn Layard etwas Sichtbares getan hat —
             // entweder das System aktualisiert oder die Wartungssperre
             // 4711 storniert (beides hinterlässt Spuren im Log).
-            if (
-              api.hasFlag("centralOsUpdated") ||
-              api.hasFlag("elevatorMaintCleared")
-            ) {
+            if (api.hasFlag("centralOsUpdated")) {
+              // v2.3.1-Schock — der eigentliche „Caught"-Dialog dreht
+              // sich um die OS-Aktualisierung.
               api.startDialog("bodoReturnsCaught");
+            } else if (api.hasFlag("elevatorMaintCleared")) {
+              // Layard hat NICHT aktualisiert, aber das Wartungs-Ticket
+              // 4711 storniert. Eigener Pfad ohne v2.3.1-Dialog.
+              api.startDialog("bodoReturnsCaughtMaint");
             } else {
               api.startDialog("bodoReturnsClean");
             }
