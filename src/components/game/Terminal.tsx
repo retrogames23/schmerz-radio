@@ -203,6 +203,13 @@ export function Terminal() {
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastTabRef = useRef<{ input: string; matches: string[] } | null>(null);
+  // Befehlsverlauf — getrennt für Hauptterminal und Adventure.
+  const termHistoryRef = useRef<string[]>([]);
+  const advHistoryRef = useRef<string[]>([]);
+  // Aktueller Verlaufs-Cursor (-1 = nicht im Verlauf, sonst Index von hinten).
+  const historyCursorRef = useRef<number>(-1);
+  // Eingabe, die der Nutzer gerade getippt hat, bevor er in den Verlauf gesprungen ist.
+  const draftRef = useRef<string>("");
 
   useEffect(() => {
     if (terminalOpen) {
