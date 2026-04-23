@@ -1288,8 +1288,9 @@ export function Terminal() {
           { text: "Datum:  06.11.1997 16:48", kind: "out" },
           { text: "Betreff: Sektor-Tür — Manueller Code", kind: "out" },
           { text: "", kind: "out" },
-          { text: "Wie besprochen. Sie kennen das Datum.", kind: "out" },
-          { text: "Tippen Sie es ohne Punkte ein. Acht Ziffern.", kind: "out" },
+          { text: "Wie besprochen. Ich habe den Code extra für Sie geändert.", kind: "out" },
+          { text: "Sie kennen das Datum. Tippen Sie es am Keypad ein —", kind: "out" },
+          { text: "ohne Punkte. Acht Ziffern.", kind: "out" },
           { text: "I. B.", kind: "out" },
           { text: "── Ende ──────────────────────────────", kind: "system" },
         );
