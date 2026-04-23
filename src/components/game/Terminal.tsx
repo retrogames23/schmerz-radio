@@ -1749,6 +1749,7 @@ export function Terminal() {
           <input
             ref={inputRef}
             value={input}
+            disabled={scriptedRunning}
             onChange={(e) => {
               if (e.target.value.length > input.length) {
                 playKeypress(0.3 * sfxVolume);
@@ -1844,8 +1845,8 @@ export function Terminal() {
                 playBeep(0.2 * sfxVolume);
               }
             }}
-            className="flex-1 bg-transparent font-mono-crt text-base text-phosphor caret-phosphor outline-none placeholder:text-phosphor-dim/60"
-            placeholder="Befehl eingeben …"
+            className="flex-1 bg-transparent font-mono-crt text-base text-phosphor caret-phosphor outline-none placeholder:text-phosphor-dim/60 disabled:opacity-40"
+            placeholder={scriptedRunning ? "… Ausgabe läuft …" : "Befehl eingeben …"}
             spellCheck={false}
             autoComplete="off"
           />
