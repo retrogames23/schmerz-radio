@@ -878,8 +878,7 @@ export const dialogs: Record<string, DialogTree> = {
       eo3: {
         id: "eo3",
         speaker: "LAYARD",
-        text: "E71. Also wirklich.",
-        subtext: "Er hat gehofft, dass es eine Verwechslung war. Es ist keine.",
+        text: "Was soll ich jetzt tun? Ich rufe die Leitstelle wieder an.",
         end: true,
       },
     },
