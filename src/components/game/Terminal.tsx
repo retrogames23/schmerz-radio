@@ -187,6 +187,7 @@ export function Terminal() {
   const [cwd, setCwd] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const lastTabRef = useRef<{ input: string; matches: string[] } | null>(null);
 
   useEffect(() => {
     if (terminalOpen) {
@@ -447,6 +448,40 @@ export function Terminal() {
                 playKeypress(0.3 * sfxVolume);
               }
               setInput(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key !== "Tab") {
+                lastTabRef.current = null;
+                return;
+              }
+              e.preventDefault();
+              const result = complete(input, cwd, (f) => flags.has(f));
+              if (!result.matches.length) {
+                playBeep(0.2 * sfxVolume);
+                return;
+              }
+              if (result.newInput !== input) {
+                // Successful expansion — single match or common-prefix grew.
+                setInput(result.newInput);
+                playKeypress(0.3 * sfxVolume);
+                lastTabRef.current = { input: result.newInput, matches: result.matches };
+                return;
+              }
+              // No expansion possible. On second consecutive Tab, list candidates.
+              const prev = lastTabRef.current;
+              if (prev && prev.input === input && result.matches.length > 1) {
+                const promptPath = pathString(cwd).replace("/home/worag", "~");
+                setLines((p) => [
+                  ...p,
+                  { text: `worag@e67:${promptPath}$ ${input}`, kind: "in" },
+                  { text: result.matches.join("   "), kind: "out" },
+                  { text: "", kind: "out" },
+                ]);
+                lastTabRef.current = null;
+              } else {
+                lastTabRef.current = { input, matches: result.matches };
+                playBeep(0.2 * sfxVolume);
+              }
             }}
             className="flex-1 bg-transparent font-mono-crt text-base text-phosphor caret-phosphor outline-none placeholder:text-phosphor-dim/60"
             placeholder="Befehl eingeben …"
