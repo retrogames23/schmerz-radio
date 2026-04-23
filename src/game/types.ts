@@ -72,6 +72,8 @@ export type StoryFlag =
   | "rangEmptyOfficeBell"
   | "metMira"
   | "miraOpenness"
+  | "miraSystemic"
+  | "miraOfferedFlyer"
   | "tookFlyer"
   | "hackedPhilippe"
   | "talkedPhilippeAfter"
