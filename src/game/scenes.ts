@@ -1168,6 +1168,19 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 56 — Dachetage",
     intro:
       "Oben. Am Ende des Korridors: ein vergittertes Fenster auf einen grauen Himmel.",
+    npcs: [
+      {
+        id: "miraSprite56",
+        src: miraSprite,
+        x: 22,
+        y: 36,
+        w: 14,
+        h: 54,
+        alt: "Junge Frau, an die Wand gelehnt",
+        hiddenWhen: ["tookFlyer"],
+        visible: (api) => api.getMiraFloor() === 5,
+      },
+    ],
     hotspots: [
       {
         id: "miraSpot56",
