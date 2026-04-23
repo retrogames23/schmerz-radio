@@ -424,6 +424,19 @@ export const scenes: Record<string, Scene> = {
     title: "Wohnung 2612 — Bodo Marschke",
     intro:
       "Warmes Lampenlicht. Es riecht nach altem Kraut, das jemand „Tee“ nennt. Bodo sitzt tief im Sessel, die Katze hat den vorderen Platz auf der Decke längst für sich beansprucht.",
+    npcs: [
+      {
+        id: "bodoSprite",
+        src: bodoSprite,
+        // Sitzt im Sessel links — Bild mittig auf den Sessel ausgerichtet.
+        x: 6,
+        y: 30,
+        w: 38,
+        h: 60,
+        alt: "Bodo sitzt im Sessel",
+        hiddenWhen: ["bodoLeftForB3"],
+      },
+    ],
     hotspots: [
       {
         id: "bodoNpc",
