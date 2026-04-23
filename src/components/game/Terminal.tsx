@@ -88,7 +88,6 @@ const COMMANDS = [
   "inbox",
   "read",
   "status",
-  "unlock",
   "report",
   "clear",
   "exit",
@@ -932,7 +931,6 @@ const HELP_LINES: Line[] = [
   { text: "  inbox         — Posteingang anzeigen", kind: "out" },
   { text: "  read <id>     — Nachricht öffnen", kind: "out" },
   { text: "  status        — Systemstatus", kind: "out" },
-  { text: "  unlock <code> — Sektor-Tür öffnen (8 Ziffern)", kind: "out" },
   { text: "", kind: "out" },
   { text: "DATEISYSTEM:", kind: "system" },
   { text: "  pwd           — Aktuelles Verzeichnis", kind: "out" },
@@ -1490,26 +1488,6 @@ export function Terminal() {
         draftRef.current = "";
         setInput("");
         return;
-      }
-    } else if (cmd.startsWith("unlock ")) {
-      const code = cmd.slice(7).trim();
-      if (code === "06111997") {
-        newLines.push(
-          { text: ">> AUTHENTIFIZIERUNG …", kind: "system" },
-          { text: ">> ZUGANG GEWÄHRT — SEKTOR-TÜR ENTRIEGELT", kind: "system" },
-        );
-        playUnlock(0.7 * sfxVolume);
-        api.setFlag("sectorDoorOpen");
-        api.addItem({
-          id: "exitCode",
-          name: "Ausgangscode 06111997",
-          description: "Der Code, der die Tür zwischen E67 und E71 öffnet.",
-        });
-      } else {
-        newLines.push({
-          text: `>> FEHLER 4568: Code "${code}" abgelehnt.`,
-          kind: "out",
-        });
       }
     } else if (head === "pwd") {
       newLines.push({ text: pathString(cwd), kind: "out" });
