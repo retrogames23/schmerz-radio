@@ -3,7 +3,6 @@
  * Falls back to browser SpeechSynthesis if the server request fails.
  */
 import { getCachedAudio, setCachedAudio, hashKey } from "./ttsCache";
-import { supabase } from "@/integrations/supabase/client";
 
 type Speaker =
   | "LAYARD"
@@ -76,18 +75,10 @@ async function fetchAndCache(
   const cached = await getCachedAudio(key);
   if (cached) return cached;
 
-  // The /api/tts endpoint requires an authenticated user. If no session
-  // exists, skip the network call and let the caller use the browser
-  // fallback voice instead of triggering a guaranteed 401.
-  const { data: sessionData } = await supabase.auth.getSession();
-  const accessToken = sessionData.session?.access_token;
-  if (!accessToken) return null;
-
   const resp = await fetch("/api/tts", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({
       voiceId: profile.voiceId,
