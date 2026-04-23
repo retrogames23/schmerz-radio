@@ -47,6 +47,8 @@ export function DialogOverlay() {
     SANITÄTER: "text-rust",
     SYSTEM: "text-phosphor",
     RADIO: "text-amber-glow",
+    MIKAEL: "text-amber-glow",
+    RECEPTION: "text-phosphor",
   };
 
   return (
