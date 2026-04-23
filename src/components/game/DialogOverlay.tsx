@@ -51,6 +51,7 @@ export function DialogOverlay() {
     MIKAEL: "text-amber-glow",
     RECEPTION: "text-phosphor",
     MIRA: "text-phosphor",
+    BODO: "text-foreground",
   };
 
   return (
