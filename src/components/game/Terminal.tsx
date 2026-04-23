@@ -2,7 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playBeep, playKeypress, playUnlock } from "@/audio/sfx";
-import { FILESYSTEM, HOME_PATH, resolvePath, pathString, type FsNode } from "@/game/filesystem";
+import {
+  FILESYSTEM,
+  HOME_PATH,
+  HOME_PATH_BODO,
+  resolvePath,
+  pathString,
+  type FsNode,
+} from "@/game/filesystem";
 import type { StoryFlag } from "@/game/types";
 import {
   adventureCommand,
@@ -19,7 +26,8 @@ interface Line {
 }
 
 /** Aktuelle CentralOS-Versionsbezeichnung, abhängig vom Update-Flag. */
-function osVersion(updated: boolean): string {
+function osVersion(updated: boolean, bodo = false): string {
+  if (bodo) return updated ? "2.0.1" : "2.0";
   return updated ? "2.3.1" : "2.3";
 }
 
