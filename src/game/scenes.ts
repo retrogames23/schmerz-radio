@@ -491,7 +491,7 @@ export const scenes: Record<string, Scene> = {
     background: sectorBg,
     title: "Sektor-Tür — Etage 1, E67",
     intro:
-      "Die schwere Schleusentür am Ende der Lobby. Hinter ihr: der Verbindungsgang nach draußen — und Gebäude E71. Daneben: ein Keypad. Darüber: ein Monitor mit grüner Phosphor-Schrift, der „ERROR 4567“ blinkt.",
+      "Die schwere Schleusentür am Ende der Lobby. Hinter ihr: ein Verbindungsgang. Daneben: ein Keypad. Darüber: ein Monitor mit grüner Phosphor-Schrift, der „ERROR 4567“ blinkt.",
     hotspots: [
       {
         id: "monitor",
@@ -517,12 +517,20 @@ export const scenes: Record<string, Scene> = {
         label: "Keypad — Code eingeben",
         onUse: (api) => {
           if (!api.hasFlag("calledForCode")) {
-            api.showText([
-              "Das Keypad blinkt rot.",
-              "Layard hat keinen Code. Noch nicht.",
-              "Es gibt nur einen Weg: 001 anrufen.",
-              "[ Geh zurück in deine Wohnung und benutze dein Telefon. ]",
-            ]);
+            if (!api.hasFlag("calledInsa2")) {
+              api.showText([
+                "Das Keypad blinkt rot.",
+                "Layard kennt keinen Code. Er hat hier auch nichts zu suchen —",
+                "noch nicht. Er hat keinen Auftrag, der ihn hindurchschickt.",
+                "[ Layard betrachtet die Tür eine Weile. Dann dreht er sich um. ]",
+              ]);
+            } else {
+              api.showText([
+                "Das Keypad blinkt rot.",
+                "Layard hat noch keinen Code. Es gibt nur einen Weg: 001 anrufen.",
+                "[ Geh zurück in deine Wohnung und benutze dein Telefon. ]",
+              ]);
+            }
           } else {
             api.openTerminal();
           }
@@ -552,6 +560,25 @@ export const scenes: Record<string, Scene> = {
             api.goTo("passage");
           }
         },
+      },
+      // Eine reine "Beobachten"-Fläche an der Tür, sichtbar bevor Layard
+      // weiß, dass es jenseits der Tür um E71 geht.
+      {
+        id: "doorWonder",
+        x: 48,
+        y: 26,
+        w: 38,
+        h: 60,
+        label: "Tür betrachten",
+        hiddenWhen: ["calledInsa2"],
+        onUse: (api) =>
+          api.showText([
+            "Eine schwere Schleusentür, geschlossen.",
+            "Layard war noch nie hindurch. Er hat auch keinen Grund.",
+            "Was hinter dieser Tür liegt, kennt er nur aus Aushängen:",
+            "ein Verbindungsgang, irgendetwas weiter draußen.",
+            "Er hat keinen Auftrag, der ihn jetzt nach draußen schickt.",
+          ]),
       },
       {
         id: "backHallwayS",
