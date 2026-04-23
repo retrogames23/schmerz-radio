@@ -567,7 +567,6 @@ export const FILESYSTEM: FsDir = {
             "# /etc/passwd — Auszug",
             "root:x:0:0:CentralOS:/root:/bin/sh",
             "worag:x:2611:100:Worag, L.:/home/worag:/bin/sh",
-            "philippe:x:2610:100:Philippe:/home/philippe:/bin/sh",
             "leitstelle:x:1:1:Leitstelle 001:/var/leitstelle:/bin/false",
           ],
         },
