@@ -1,7 +1,8 @@
 /**
- * Browser SpeechSynthesis wrapper with a fixed voice per character.
- * German voices preferred; falls back to default voice.
+ * Character speech via ElevenLabs (server-proxied, cached per line).
+ * Falls back to browser SpeechSynthesis if the server request fails.
  */
+import { getCachedAudio, setCachedAudio, hashKey } from "./ttsCache";
 
 type Speaker =
   | "LAYARD"
@@ -13,140 +14,137 @@ type Speaker =
   | "MIKAEL"
   | "RECEPTION";
 
+
 interface VoiceProfile {
-  pitch: number;
-  rate: number;
-  /** Required gender — voice MUST match this. "any" allows fallback. */
-  gender: "male" | "female" | "any";
+  /** ElevenLabs voice ID. */
+  voiceId: string;
+  /** Speech speed (0.7–1.2). */
+  speed: number;
 }
 
+/**
+ * Character → ElevenLabs voice mapping.
+ * Picked for warm/cinematic narrative tone.
+ */
 const PROFILES: Record<Speaker, VoiceProfile> = {
-  LAYARD: { pitch: 0.85, rate: 0.92, gender: "male" },
-  INSA: { pitch: 1.05, rate: 1.0, gender: "female" },
-  PHILIPPE: { pitch: 1.1, rate: 1.08, gender: "male" },
-  SANITÄTER: { pitch: 0.95, rate: 1.05, gender: "male" },
-  SYSTEM: { pitch: 0.7, rate: 0.95, gender: "any" },
-  RADIO: { pitch: 1.15, rate: 0.9, gender: "female" },
-  MIKAEL: { pitch: 0.7, rate: 0.78, gender: "male" },
-  RECEPTION: { pitch: 1.0, rate: 1.15, gender: "female" },
+  LAYARD: { voiceId: "onwK4e9ZLuTAKqWW03F9", speed: 0.92 }, // Daniel — tief, kontemplativ
+  INSA: { voiceId: "EXAVITQu4vr4xnSDxMaL", speed: 1.0 }, // Sarah — warm, professionell
+  MIKAEL: { voiceId: "nPczCjzI2devNBz1zQrb", speed: 0.85 }, // Brian — autoritär, ruhig
+  PHILIPPE: { voiceId: "IKne3meq5aSn9XLyUdCD", speed: 1.05 }, // Charlie — jünger, freundlich
+  SANITÄTER: { voiceId: "bIHbv24MWmeRgasZH58o", speed: 1.05 }, // Will — sachlich
+  RADIO: { voiceId: "XrExE9yKIg1WjnnlVkGX", speed: 0.92 }, // Matilda — mystisch, weich
+  SYSTEM: { voiceId: "CwhRBWXzGAHq8TQ4Fs17", speed: 0.95 }, // Roger — nüchtern
+  RECEPTION: { voiceId: "Xb7hH8MSUJpSbSDYk0k2", speed: 1.1 }, // Alice — klar
 };
 
-let cachedVoices: SpeechSynthesisVoice[] | null = null;
+/** Currently playing audio element — cancelled before each new line. */
+let currentAudio: HTMLAudioElement | null = null;
+/** AbortController for in-flight TTS fetch — aborted on stop. */
+let currentFetch: AbortController | null = null;
 
-function getVoices(): SpeechSynthesisVoice[] {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return [];
-  if (cachedVoices && cachedVoices.length) return cachedVoices;
-  cachedVoices = window.speechSynthesis.getVoices();
-  return cachedVoices;
-}
-
-if (typeof window !== "undefined" && "speechSynthesis" in window) {
-  window.speechSynthesis.onvoiceschanged = () => {
-    cachedVoices = window.speechSynthesis.getVoices();
-    // Voice list arrived/changed — reset assignments so gender matching uses the full list.
-    speakerVoiceCache.clear();
-  };
-}
-
-// Voice-name heuristics (covers macOS, Windows, Chrome, Edge German voices).
-const FEMALE_HINTS = [
-  "female", "frau", "anna", "petra", "katja", "marlene", "vicki", "hedda",
-  "helga", "steffi", "claudia", "eva", "google deutsch", // Google's "Deutsch" voice is typically female
-];
-const MALE_HINTS = [
-  "male", "mann", "herr", "stefan", "markus", "yannick", "conrad",
-  "michael", "thomas", "klaus", "hans",
-];
-
-function classifyVoice(v: SpeechSynthesisVoice): "male" | "female" | "unknown" {
-  const n = v.name.toLowerCase();
-  if (FEMALE_HINTS.some((h) => n.includes(h))) return "female";
-  if (MALE_HINTS.some((h) => n.includes(h))) return "male";
-  return "unknown";
-}
-
-function getPools(): {
-  male: SpeechSynthesisVoice[];
-  female: SpeechSynthesisVoice[];
-  any: SpeechSynthesisVoice[];
-} {
-  const voices = getVoices();
-  const german = voices.filter((v) => v.lang.toLowerCase().startsWith("de"));
-  const base = german.length ? german : voices;
-  const male: SpeechSynthesisVoice[] = [];
-  const female: SpeechSynthesisVoice[] = [];
-  for (const v of base) {
-    const g = classifyVoice(v);
-    if (g === "male") male.push(v);
-    else if (g === "female") female.push(v);
-  }
-  return { male, female, any: base };
-}
-
-/** Stable voice assignment per speaker. Guarantees gender match when possible. */
-const speakerVoiceCache = new Map<Speaker, SpeechSynthesisVoice>();
-
-function voiceFor(speaker: Speaker): SpeechSynthesisVoice | null {
-  const cached = speakerVoiceCache.get(speaker);
-  if (cached) return cached;
-  const voices = getVoices();
-  if (!voices.length) return null;
-
-  const profile = PROFILES[speaker];
-  const pools = getPools();
-
-  // Determine which pool to draw from based on REQUIRED gender.
-  let primary: SpeechSynthesisVoice[];
-  if (profile.gender === "female") {
-    // Prefer classified-female; if none, fall back to any voice NOT already used as male.
-    primary = pools.female.length ? pools.female : pools.any;
-  } else if (profile.gender === "male") {
-    primary = pools.male.length ? pools.male : pools.any;
-  } else {
-    primary = pools.any;
-  }
-
-  // Avoid clashes within the same gender pool: pick first unused.
-  const used = new Set(Array.from(speakerVoiceCache.values()).map((v) => v.name));
-  const unused = primary.find((v) => !used.has(v.name));
-  const chosen = unused ?? primary[0] ?? null;
-
-  if (chosen) speakerVoiceCache.set(speaker, chosen);
-  return chosen;
-}
-
-export function speak(speaker: Speaker, text: string, volume = 1) {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-  const synth = window.speechSynthesis;
-  // Cancel previous line so we never overlap dialog
-  synth.cancel();
-
-  // Strip stage-direction-style brackets so TTS doesn't read symbols.
-  const cleaned = text
+function cleanText(text: string): string {
+  return text
     .replace(/\[[^\]]*\]/g, "")
     .replace(/[„"”]/g, "")
     .replace(/—/g, ", ")
     .replace(/…/g, "...")
     .trim();
-  if (!cleaned) return;
+}
 
-  const u = new SpeechSynthesisUtterance(cleaned);
-  const profile = PROFILES[speaker];
+/** Browser-SpeechSynthesis fallback — only used if ElevenLabs request fails. */
+function browserFallback(text: string, volume: number) {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  const u = new SpeechSynthesisUtterance(text);
   u.lang = "de-DE";
-  u.pitch = profile.pitch;
-  u.rate = profile.rate;
   u.volume = volume;
-  const v = voiceFor(speaker);
-  if (v) u.voice = v;
   synth.speak(u);
 }
 
-export function stopSpeech() {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
+async function fetchAndCache(
+  speaker: Speaker,
+  cleaned: string,
+  signal: AbortSignal,
+): Promise<Blob | null> {
+  const profile = PROFILES[speaker];
+  const key = hashKey(profile.voiceId, String(profile.speed), cleaned);
+
+  const cached = await getCachedAudio(key);
+  if (cached) return cached;
+
+  const resp = await fetch("/api/tts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      voiceId: profile.voiceId,
+      text: cleaned,
+      speed: profile.speed,
+    }),
+    signal,
+  });
+  if (!resp.ok) {
+    console.warn(`TTS request failed: ${resp.status}`);
+    return null;
+  }
+  const blob = await resp.blob();
+  void setCachedAudio(key, blob);
+  return blob;
 }
 
-/** Warm up the voice list (Chrome lazy-loads it). */
+export async function speak(speaker: Speaker, text: string, volume = 1) {
+  if (typeof window === "undefined") return;
+
+  // Cancel any line currently playing or in-flight.
+  stopSpeech();
+
+  const cleaned = cleanText(text);
+  if (!cleaned) return;
+
+  const ac = new AbortController();
+  currentFetch = ac;
+
+  try {
+    const blob = await fetchAndCache(speaker, cleaned, ac.signal);
+    if (ac.signal.aborted) return;
+    if (!blob) {
+      browserFallback(cleaned, volume);
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.volume = Math.max(0, Math.min(1, volume));
+    audio.onended = () => URL.revokeObjectURL(url);
+    audio.onerror = () => URL.revokeObjectURL(url);
+    currentAudio = audio;
+    void audio.play().catch((err) => {
+      console.warn("Audio playback failed:", err);
+    });
+  } catch (err) {
+    if ((err as Error).name === "AbortError") return;
+    console.warn("speak() failed, using browser fallback:", err);
+    browserFallback(cleaned, volume);
+  } finally {
+    if (currentFetch === ac) currentFetch = null;
+  }
+}
+
+export function stopSpeech() {
+  if (currentFetch) {
+    currentFetch.abort();
+    currentFetch = null;
+  }
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.src = "";
+    currentAudio = null;
+  }
+  if (typeof window !== "undefined" && "speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+/** No-op kept for backwards-compatibility (used to warm up browser voices). */
 export function preloadVoices() {
-  getVoices();
+  /* no longer needed — ElevenLabs voices are server-side */
 }
