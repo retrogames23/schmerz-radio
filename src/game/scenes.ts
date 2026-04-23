@@ -429,10 +429,10 @@ export const scenes: Record<string, Scene> = {
         id: "bodoSprite",
         src: bodoSprite,
         // Sitzt im Sessel links — Bild mittig auf den Sessel ausgerichtet.
-        x: 6,
-        y: 30,
+        x: 14,
+        y: 14,
         w: 38,
-        h: 60,
+        h: 80,
         alt: "Bodo sitzt im Sessel",
         hiddenWhen: ["bodoLeftForB3"],
       },
