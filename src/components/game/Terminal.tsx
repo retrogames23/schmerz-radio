@@ -1338,6 +1338,137 @@ export function Terminal() {
         );
         api.setFlag("reportedExit");
       }
+    } else if (cmd === "read 005") {
+      if (!flags.has("calledStegmann")) {
+        newLines.push({ text: "FEHLER: Nachricht existiert nicht.", kind: "out" });
+      } else {
+        newLines.push(
+          { text: "── Nachricht 005 ─────────────────────", kind: "system" },
+          { text: "Von:    Stegmann (Zentral-IT)", kind: "out" },
+          { text: "Datum:  06.11.1997 16:02", kind: "out" },
+          { text: "Betreff: Anweisung — CentralOS aktualisieren & Störung melden", kind: "out" },
+          { text: "", kind: "out" },
+          { text: "Sehr geehrter Bewohner Worag,", kind: "out" },
+          { text: "wie telefonisch besprochen, führen Sie bitte aus:", kind: "out" },
+          { text: "", kind: "out" },
+          { text: "  1.  sysupdate        — CentralOS-Aktualisierung (E67-Netz)", kind: "system" },
+          { text: "  2.  trouble net      — Netzwerkproblem an Leitstelle E67", kind: "system" },
+          { text: "", kind: "out" },
+          { text: "Bitte in dieser Reihenfolge. Erst nach beiden Schritten", kind: "out" },
+          { text: "wird die Ausgangsmeldung (»report exit«) zugestellt.", kind: "out" },
+          { text: "", kind: "out" },
+          { text: "Hinweis (intern): Die Aktualisierung kann mit dem Schalter", kind: "out" },
+          { text: "»--fast« beschleunigt werden, wenn Sie sie wiederholen müssen.", kind: "out" },
+          { text: "Stegmann", kind: "out" },
+          { text: "── Ende ──────────────────────────────", kind: "system" },
+        );
+      }
+    } else if (cmd === "read 006") {
+      if (!flags.has("troubleReported")) {
+        newLines.push({ text: "FEHLER: Nachricht existiert nicht.", kind: "out" });
+      } else {
+        newLines.push(
+          { text: "── Nachricht 006 ─────────────────────", kind: "system" },
+          { text: "Von:    ZENTRAL.NETZ — Ticket-System", kind: "out" },
+          { text: "Datum:  06.11.1997 16:31", kind: "out" },
+          { text: "Betreff: Ticket #E67-19971106-0042 angenommen", kind: "out" },
+          { text: "", kind: "out" },
+          { text: "Ihr Ticket wurde aufgenommen.", kind: "out" },
+          { text: "Klassifizierung: ROUTING (Code 4567).", kind: "out" },
+          { text: "Bearbeitungszeit: unbestimmt.", kind: "out" },
+          { text: "Vielen Dank für Ihre Mitarbeit.", kind: "out" },
+          { text: "── Ende ──────────────────────────────", kind: "system" },
+        );
+      }
+    } else if (head === "sysupdate") {
+      if (!flags.has("calledStegmann")) {
+        newLines.push({
+          text: "sysupdate: Befehl nicht freigeschaltet. Voraussetzung: Anweisung der Zentral-IT.",
+          kind: "out",
+        });
+      } else if (flags.has("centralOsUpdated")) {
+        newLines.push({ text: "sysupdate: Bereits aktuell (CentralOS v2.3.1).", kind: "out" });
+      } else {
+        const fast = args.includes("--fast");
+        const t = (ms: number) => (fast ? Math.max(40, Math.round(ms / 8)) : ms);
+        setLines((prev) => [...prev, ...newLines]);
+        runScriptedSequence(
+          [
+            { text: ">> sysupdate: Verbinde mit update.e67 …", delayMs: t(0), kind: "system", beep: true },
+            { text: ">> Authentifizierung … OK", delayMs: t(420) },
+            { text: ">> Lade Manifest centralos-2.3.1.pkg …", delayMs: t(380) },
+            { text: "   [████░░░░░░] 12%", delayMs: t(280) },
+            { text: "   [██████░░░░] 47%", delayMs: t(360) },
+            { text: "   [██████████] 100%", delayMs: t(400), beep: true },
+            { text: ">> Verifiziere SHA … OK", delayMs: t(320) },
+            { text: ">> Stoppe Dienste:", delayMs: t(260), kind: "system" },
+            { text: "   carrier-daemon …………… OK", delayMs: t(220) },
+            { text: "   inbox-relay …………………… OK", delayMs: t(200) },
+            { text: "   gateway-watch ……………… OK", delayMs: t(220) },
+            { text: ">> Patch /usr/bin/centralos … OK", delayMs: t(380) },
+            { text: ">> Patch /usr/bin/report …… OK", delayMs: t(360) },
+            { text: ">> Migriere /etc/motd ……… OK", delayMs: t(280) },
+            { text: ">> Starte Dienste neu:", delayMs: t(260), kind: "system" },
+            { text: "   carrier-daemon …………… OK", delayMs: t(220) },
+            { text: "   inbox-relay …………………… OK", delayMs: t(200) },
+            { text: "   gateway-watch ……………… OK", delayMs: t(220) },
+            { text: ">> CentralOS v2.3 → v2.3.1   [OK]", delayMs: t(420), kind: "system", beep: true },
+            { text: ">> Bitte führen Sie nun »trouble net« aus.", delayMs: t(320), kind: "system" },
+          ],
+          () => api.setFlag("centralOsUpdated"),
+        );
+        // History pflegen, Eingabe leeren — Ausgabe läuft asynchron weiter.
+        const h = termHistoryRef.current;
+        if (h[h.length - 1] !== raw) h.push(raw);
+        historyCursorRef.current = -1;
+        draftRef.current = "";
+        setInput("");
+        return;
+      }
+    } else if (head === "trouble") {
+      const sub = (args[0] ?? "").toLowerCase();
+      if (!flags.has("calledStegmann")) {
+        newLines.push({
+          text: "trouble: Befehl nicht freigeschaltet. Voraussetzung: Anweisung der Zentral-IT.",
+          kind: "out",
+        });
+      } else if (sub !== "net") {
+        newLines.push({
+          text: "trouble: Argument fehlt oder unbekannt. Versuchen Sie: trouble net",
+          kind: "out",
+        });
+      } else if (!flags.has("centralOsUpdated")) {
+        newLines.push({
+          text: "trouble: Update erforderlich. Bitte zuerst »sysupdate« ausführen.",
+          kind: "out",
+        });
+      } else if (flags.has("troubleReported")) {
+        newLines.push({
+          text: "trouble: Ticket bereits offen (#E67-19971106-0042).",
+          kind: "out",
+        });
+      } else {
+        setLines((prev) => [...prev, ...newLines]);
+        runScriptedSequence(
+          [
+            { text: ">> trouble: Automatische Problemermittlung gestartet …", delayMs: 0, kind: "system", beep: true },
+            { text: ">> Scanne lokales Segment E67 …………………… OK", delayMs: 520 },
+            { text: ">> Scanne Gateway E67/E71 ……………………………… STÖRUNG", delayMs: 620 },
+            { text: ">> Klassifizierung: ROUTING (Code 4567)", delayMs: 380 },
+            { text: ">> Erzeuge Ticket #E67-19971106-0042 …… OK", delayMs: 460, beep: true },
+            { text: ">> Übermittle an LEITSTELLE25@ZENTRAL.NETZ", delayMs: 380 },
+            { text: ">> Ticket angenommen. Bearbeitungszeit: unbestimmt.", delayMs: 420, kind: "system" },
+            { text: ">> Vielen Dank für Ihre Mitarbeit.", delayMs: 320 },
+          ],
+          () => api.setFlag("troubleReported"),
+        );
+        const h = termHistoryRef.current;
+        if (h[h.length - 1] !== raw) h.push(raw);
+        historyCursorRef.current = -1;
+        draftRef.current = "";
+        setInput("");
+        return;
+      }
     } else if (cmd.startsWith("unlock ")) {
       const code = cmd.slice(7).trim();
       if (code === "06111997") {
