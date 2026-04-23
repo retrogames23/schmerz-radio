@@ -3,6 +3,7 @@ import hallwayBg from "@/assets/scene-hallway.jpg";
 import philippeBg from "@/assets/scene-philippe.jpg";
 import apt2613Bg from "@/assets/scene-apt-2613.jpg";
 import apt2615Bg from "@/assets/scene-apt-2615.jpg";
+import apt2612Bg from "@/assets/scene-apt-2612.jpg";
 import sectorBg from "@/assets/scene-sector-door.jpg";
 import e71LobbyBg from "@/assets/scene-e71-lobby.jpg";
 import corridor15Bg from "@/assets/scene-corridor-15.jpg";
@@ -408,6 +409,113 @@ export const scenes: Record<string, Scene> = {
 
   // Philippe's own apartment is now used only as a small detour after Akt 1
   // is over - it can stay reachable from the hallway as a memory beat.
+  // Bodos Wohnung (2612). Begehbar ab doorBrokenOpen.
+  apt2612: {
+    id: "apt2612",
+    background: apt2612Bg,
+    title: "Wohnung 2612 — Bodo Marschke",
+    intro:
+      "Warmes Lampenlicht. Es riecht nach altem Kraut, das jemand „Tee“ nennt. Auf einem Sessel mit grauer Strickdecke: eine getigerte Katze. Sie zuckt einmal, als die Tür sich öffnet, dann schaut sie weg.",
+    hotspots: [
+      {
+        id: "bodoNpc",
+        x: 38,
+        y: 38,
+        w: 22,
+        h: 50,
+        label: "Bodo Marschke",
+        onUse: (api) => {
+          if (!api.hasFlag("metBodo")) {
+            api.setFlag("metBodo");
+            api.startDialog("bodoIntro");
+          } else if (
+            api.hasFlag("tookFlyer") &&
+            !api.hasFlag("bodoSawFlyer")
+          ) {
+            api.setFlag("bodoSawFlyer");
+            api.startDialog("bodoFlyer");
+          } else if (!api.hasFlag("talkedBodo2")) {
+            api.setFlag("talkedBodo2");
+            api.startDialog("bodoSmalltalk");
+          } else {
+            api.startDialog("bodoSmalltalk");
+          }
+        },
+      },
+      {
+        id: "lottiSpot",
+        x: 16,
+        y: 55,
+        w: 22,
+        h: 30,
+        label: "Sessel mit Decke",
+        onUse: (api) => {
+          if (api.hasFlag("knowsLotti")) {
+            api.showText([
+              "Lotti rollt sich enger ein und blinzelt Layard zu.",
+              "Sie hat 14 Jahre Mensch gesehen. Sie hat eine Meinung.",
+              "Sie behält sie für sich.",
+            ]);
+          } else if (api.hasFlag("metBodo")) {
+            api.startDialog("bodoLotti");
+          } else {
+            api.showText([
+              "Auf dem Sessel: eine grau-getigerte Katze, eingerollt auf einer Strickdecke.",
+              "Sie schaut Layard nicht an. Sie weiß genau, dass er da ist.",
+            ]);
+          }
+        },
+      },
+      {
+        id: "bodoPhone",
+        x: 60,
+        y: 22,
+        w: 12,
+        h: 22,
+        label: "Wandtelefon",
+        onUse: (api) =>
+          api.showText([
+            "Ein schwarzer Bakelit-Apparat. Hörer staubig.",
+            "Bodo, von hinten: „Den hab ich seit zwölf Jahren nicht abgenommen.“",
+            "„Wer was von mir will, klopft. Oder ist die Katze.“",
+          ]),
+      },
+      {
+        id: "bodoTerminal",
+        x: 70,
+        y: 50,
+        w: 18,
+        h: 22,
+        label: "Bodos Terminal",
+        onUse: (api) => {
+          if (api.hasFlag("knowsLotti")) {
+            api.showText([
+              "Bodo nickt knapp: „Wenn Sie das Passwort haben, machen Sie nur.“",
+              "Layard setzt sich an das Terminal. Es ist baugleich mit seinem.",
+              "Tippen Sie: telnet bodo.e67",
+            ]);
+            api.openTerminal();
+          } else {
+            api.showText([
+              "Bodo schüttelt langsam den Kopf.",
+              "„Das ist meiner. Da kommen Sie nur dran, wenn ich Sie ranlasse.“",
+              "„Und ich lass’ Sie nicht ran, solange Sie nicht wissen, mit wem Sie hier eigentlich reden.“",
+            ]);
+          }
+        },
+      },
+      {
+        id: "exit2612",
+        x: 88,
+        y: 30,
+        w: 11,
+        h: 60,
+        label: "Zurück in den Korridor",
+        onUse: (api) => api.goTo("hallway"),
+      },
+    ],
+  },
+
   philippe: {
     id: "philippe",
     background: philippeBg,
@@ -504,6 +612,82 @@ export const scenes: Record<string, Scene> = {
             "„Quarantäne — Resonanz-Überlastung — bis auf Widerruf“.",
             "Niemand wird hier in absehbarer Zeit einziehen.",
           ]),
+      },
+      // Tür 2610 — Helka Vint. Nur Türgespräch, keine Szene.
+      {
+        id: "door2610Helka",
+        x: 2,
+        y: 38,
+        w: 12,
+        h: 50,
+        label: "Tür 2610 (Helka Vint)",
+        requires: ["doorBrokenOpen"],
+        onUse: (api) => {
+          if (!api.hasFlag("metHelka")) {
+            api.setFlag("metHelka");
+            api.startDialog("helkaAtDoor");
+          } else if (
+            api.hasFlag("tookFlyer") &&
+            !api.hasFlag("helkaSawFlyer")
+          ) {
+            api.setFlag("helkaSawFlyer");
+            api.startDialog("helkaFlyer");
+          } else if (!api.hasFlag("talkedHelka2")) {
+            api.setFlag("talkedHelka2");
+            api.startDialog("helkaSmalltalk");
+          } else if (!api.hasFlag("talkedHelka3")) {
+            api.setFlag("talkedHelka3");
+            api.startDialog("helkaSmalltalk2");
+          } else {
+            api.showText([
+              "Layard klopft. Aus der Wohnung 2610: kein Geräusch.",
+              "Helka hat heute genug geredet. Mehr als in den letzten zwei Jahren.",
+            ]);
+          }
+        },
+      },
+      // Tür 2612 — Bodo Marschke. Begehbare Wohnung.
+      {
+        id: "door2612Bodo",
+        x: 18,
+        y: 36,
+        w: 14,
+        h: 52,
+        label: "Tür 2612 (Bodo Marschke)",
+        requires: ["doorBrokenOpen"],
+        onUse: (api) => api.goTo("apt2612"),
+      },
+      // Tür 2614 — Ennis Korr. Nur Türgespräch.
+      {
+        id: "door2614Ennis",
+        x: 38,
+        y: 38,
+        w: 12,
+        h: 50,
+        label: "Tür 2614 (Ennis Korr)",
+        requires: ["doorBrokenOpen"],
+        onUse: (api) => {
+          if (!api.hasFlag("metEnnis")) {
+            api.setFlag("metEnnis");
+            api.startDialog("ennisAtDoor");
+          } else if (
+            api.hasFlag("tookFlyer") &&
+            !api.hasFlag("ennisSawFlyer")
+          ) {
+            api.setFlag("ennisSawFlyer");
+            api.startDialog("ennisFlyer");
+          } else if (api.hasFlag("ennisCracked")) {
+            api.startDialog("ennisAfterFlyer");
+          } else if (!api.hasFlag("talkedEnnis2")) {
+            api.setFlag("talkedEnnis2");
+            api.startDialog("ennisSmalltalk");
+          } else {
+            api.showText([
+              "Layard klopft an 2614. Drinnen: ein Stuhl, der zurückgeschoben wird.",
+              "Dann nichts. Ennis hat heute Nachtschicht. Oder er tut so.",
+            ]);
+          }
+        },
       },
       {
         id: "toSector",

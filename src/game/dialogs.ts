@@ -1325,4 +1325,548 @@ export const dialogs: Record<string, DialogTree> = {
       },
     },
   },
+
+  // ═════════════════════════════════════════════════════════════
+  // HELKA VINT — Tür 2610 (Türgespräch)
+  // ═════════════════════════════════════════════════════════════
+  helkaAtDoor: {
+    id: "helkaAtDoor",
+    start: "h1",
+    lines: {
+      h1: {
+        id: "h1",
+        speaker: "SYSTEM",
+        text: "[ Layard klopft an 2610. Die Tür öffnet sich nur einen Spalt. Eine Frau Mitte fünfzig, grau-meliertes Haar, randlose Brille, mustert ihn von oben. ]",
+        next: "h2",
+      },
+      h2: {
+        id: "h2",
+        speaker: "SYSTEM",
+        text: "Helka Vint: »Sie sind der Schreiber aus 2611. Worag. ›Räume, die zu lange leer stehen, werden zu Räumen, die niemand mehr betritt.‹ — Ihre Zeile, 1991, Morgenblatt, Seite 11.«",
+        next: "h3",
+      },
+      h3: {
+        id: "h3",
+        speaker: "LAYARD",
+        text: "… das habe ich geschrieben?",
+        subtext: "Er erinnert sich nicht. Nicht an den Satz, nicht an die Seite, nicht an 1991.",
+        next: "h4",
+      },
+      h4: {
+        id: "h4",
+        speaker: "SYSTEM",
+        text: "Helka: »Sie haben es geschrieben. Ich habe es archiviert. Das ist mein Beruf gewesen. Bibliothekarin. Bevor sie die Bibliothek geschlossen haben.«",
+        next: "h5",
+      },
+      h5: {
+        id: "h5",
+        speaker: "LAYARD",
+        text: "Es tut mir leid, dass ich störe. Ich gehe jetzt durch den Korridor — Nachbarschaft, sagt man wohl.",
+        next: "h6",
+      },
+      h6: {
+        id: "h6",
+        speaker: "SYSTEM",
+        text: "Helka: »Nachbarschaft. Schönes Wort. Steht nicht mehr im Verzeichnis der Leitstelle.« Sie schließt die Tür einen Spalt weiter. »Kommen Sie wieder. Aber nicht oft.«",
+        end: true,
+      },
+    },
+  },
+
+  helkaSmalltalk: {
+    id: "helkaSmalltalk",
+    start: "hs1",
+    lines: {
+      hs1: {
+        id: "hs1",
+        speaker: "SYSTEM",
+        text: "[ Helka steht wieder im Türspalt. Diesmal mit einer Tasse — der Inhalt klar, geruchlos. ]",
+        next: "hs2",
+      },
+      hs2: {
+        id: "hs2",
+        speaker: "SYSTEM",
+        text: "Helka: »Ich sortiere heute ungelesene Mails der Leitstelle. Schicht acht Stunden. Eintausendzweihundert Stück, durchschnittlich. Niemand wird sie lesen. Ich auch nicht.«",
+        next: "hs3",
+      },
+      hs3: {
+        id: "hs3",
+        speaker: "LAYARD",
+        text: "Bibliothekarin — was haben Sie da gemacht? Ich meine, abgesehen vom Sortieren.",
+        next: "hs4",
+      },
+      hs4: {
+        id: "hs4",
+        speaker: "SYSTEM",
+        text: "Helka: »Wörter aufbewahren. Manche kommen nicht mehr vor in offiziellen Mitteilungen. ›Zärtlich.‹ ›Beliebig.‹ ›Sehnsucht.‹ — Wer das letzte Mal eines davon gehört? Der Sprecher merkt nicht einmal, dass es fehlt.«",
+        subtext: "Das Passwort ihres alten Berufs liegt in dem Satz. Sie weiß es. Sie testet, ob er zuhört.",
+        next: "hs5",
+      },
+      hs5: {
+        id: "hs5",
+        speaker: "LAYARD",
+        text: "Sie führen eine Liste? Solcher Wörter?",
+        next: "hs6",
+      },
+      hs6: {
+        id: "hs6",
+        speaker: "SYSTEM",
+        text: "Helka: »Privat. Auf meinem Rechner. Wer wissen will, wie sie heißt — sie heißt nach dem, was ich war. Das ist alles, was ich Ihnen heute sage.«",
+        end: true,
+      },
+    },
+  },
+
+  helkaSmalltalk2: {
+    id: "helkaSmalltalk2",
+    start: "hs21",
+    lines: {
+      hs21: {
+        id: "hs21",
+        speaker: "SYSTEM",
+        text: "Helka: »Sie sind hartnäckig, Herr Worag. Das ist neu in diesem Korridor.«",
+        next: "hs22",
+      },
+      hs22: {
+        id: "hs22",
+        speaker: "SYSTEM",
+        text: "Helka: »1989 habe ich einmal einen Bewohner gemeldet. Er hat die Frequenz manipuliert. Mit einem Lötkolben und einer Theorie. Es ist nichts passiert. Mit ihm nicht. Mit der Meldung nicht. Mit mir auch nicht — und das hat mir am meisten zu denken gegeben.«",
+        next: "hs23",
+      },
+      hs23: {
+        id: "hs23",
+        speaker: "LAYARD",
+        text: "Was ist mit ihm geschehen?",
+        next: "hs24",
+      },
+      hs24: {
+        id: "hs24",
+        speaker: "SYSTEM",
+        text: "Helka: »Er wohnt noch hier. Drei Türen weiter. Er weiß es nicht. Ich weiß es. Sie wissen es jetzt auch.«",
+        end: true,
+      },
+    },
+  },
+
+  helkaFlyer: {
+    id: "helkaFlyer",
+    start: "hf1",
+    onEnd: (api) => {
+      api.setFlag("helkaWarned");
+    },
+    lines: {
+      hf1: {
+        id: "hf1",
+        speaker: "LAYARD",
+        text: "Darf ich Ihnen etwas zeigen?",
+        next: "hf2",
+      },
+      hf2: {
+        id: "hf2",
+        speaker: "SYSTEM",
+        text: "[ Layard reicht das gefaltete Flugblatt durch den Türspalt. Helka liest es. Einmal. Faltet es zusammen. Liest es noch einmal. ]",
+        next: "hf3",
+      },
+      hf3: {
+        id: "hf3",
+        speaker: "SYSTEM",
+        text: "Helka: »Z.K.S. Das hat schon mal jemand versucht. 1989. Wortgleich, fast. Nehmen Sie es wieder mit, Herr Worag.«",
+        next: "hf4",
+      },
+      hf4: {
+        id: "hf4",
+        speaker: "SYSTEM",
+        text: "Helka: »Und werfen Sie es nicht in meinen Briefschlitz. Ich sortiere alles, was reinkommt. Auch das, was ich nicht sortieren möchte.«",
+        next: "hf5",
+      },
+      hf5: {
+        id: "hf5",
+        speaker: "LAYARD",
+        text: "Sie haben Angst.",
+        next: "hf6",
+      },
+      hf6: {
+        id: "hf6",
+        speaker: "SYSTEM",
+        text: "Helka: »Ich habe Ordnung. Das ist nicht dasselbe. Aber heute, zum ersten Mal seit Jahren: vielleicht ist es das doch.«",
+        end: true,
+      },
+    },
+  },
+
+  // ═════════════════════════════════════════════════════════════
+  // BODO MARSCHKE — Wohnung 2612 (begehbar)
+  // ═════════════════════════════════════════════════════════════
+  bodoIntro: {
+    id: "bodoIntro",
+    start: "b1",
+    lines: {
+      b1: {
+        id: "b1",
+        speaker: "SYSTEM",
+        text: "[ Ein Mann Anfang sechzig, Hände wie Werkzeug, sitzt in einem zweiten Sessel — schmaler als der mit der Decke. Er hebt zur Begrüßung die Tasse, sagt aber nichts. ]",
+        next: "b2",
+      },
+      b2: {
+        id: "b2",
+        speaker: "LAYARD",
+        text: "Entschuldigen Sie das Eindringen. Ich bin Layard Worag, von gegenüber.",
+        next: "b3",
+      },
+      b3: {
+        id: "b3",
+        speaker: "SYSTEM",
+        text: "Bodo: »Bodo Marschke. Tür war offen, also kein Eindringen. Setzen Sie sich, wenn Sie wollen. Tee?«",
+        subtext: "Er deutet auf eine Tasse mit etwas Bräunlichem. Synthetischer Aufguss. Riecht nach Karton.",
+        next: "b4",
+      },
+      b4: {
+        id: "b4",
+        speaker: "LAYARD",
+        text: "Danke, nein. — Sie wohnen hier allein?",
+        next: "b5",
+      },
+      b5: {
+        id: "b5",
+        speaker: "SYSTEM",
+        text: "Bodo: »Allein ist relativ. — Fernmeldetechniker, Stadtwerke, sechsundzwanzig Jahre. Vorruhestand seit der Sektor-Reform. Und seitdem … ja. Hier.«",
+        next: "b6",
+      },
+      b6: {
+        id: "b6",
+        speaker: "SYSTEM",
+        text: "[ Auf dem Sessel mit der Decke bewegt sich etwas. Eine Pfote streckt sich langsam aus den Falten. ]",
+        choices: [
+          { text: "Sie haben ein Tier?", next: "bodoLottiReveal" },
+          { text: "Stadtwerke. Erzählen Sie.", next: "b7" },
+          { text: "[ Beenden ]" },
+        ],
+      },
+      b7: {
+        id: "b7",
+        speaker: "SYSTEM",
+        text: "Bodo: »Funkanlagen. Trägersignale. Verstärker. Wenn die Stadt knirschte, war meistens eine Spule kalt. — Ich rede nicht gern darüber. Es war ein anderer Beruf, in einer anderen Stadt.«",
+        end: true,
+      },
+      bodoLottiReveal: {
+        id: "bodoLottiReveal",
+        speaker: "SYSTEM",
+        text: "Bodo schaut auf den Sessel. Etwas in seinem Gesicht öffnet sich, kurz. »Ja. Lotti. Vierzehn Jahre. Frisst nur noch B3, weil sie nichts anderes mehr mag. Deshalb der Aufstand bei Insa, damals.«",
+        next: "bodoLottiReveal2",
+      },
+      bodoLottiReveal2: {
+        id: "bodoLottiReveal2",
+        speaker: "SYSTEM",
+        text: "Bodo: »Tiere sind im Sektor offiziell nicht erlaubt. Ich hab sie über Insa angemeldet. Sie hat es nie protokolliert. Das ist alles, was ich Ihnen heute über Insa sage.«",
+        next: "bodoLottiReveal3",
+      },
+      bodoLottiReveal3: {
+        id: "bodoLottiReveal3",
+        speaker: "SYSTEM",
+        text: "Bodo: »Sie zuckt, wenn das Radio voll aufgedreht ist. Deshalb läuft hier 104,6 leise. Ist auch alles, was sie hört.«",
+        choices: [
+          {
+            text: "[ Beenden ]",
+            action: (api) => {
+              api.setFlag("knowsLotti");
+            },
+          },
+        ],
+      },
+    },
+  },
+
+  bodoLotti: {
+    id: "bodoLotti",
+    start: "bl1",
+    lines: {
+      bl1: {
+        id: "bl1",
+        speaker: "SYSTEM",
+        text: "[ Layard beugt sich zur Decke hinunter. Die Katze öffnet ein Auge, schließt es wieder. ]",
+        next: "bl2",
+      },
+      bl2: {
+        id: "bl2",
+        speaker: "SYSTEM",
+        text: "Bodo, von hinten: »Sie heißt Lotti. Vierzehn Jahre. Ich hab sie über Insa angemeldet, damals. Tiere sind im Sektor eigentlich nicht erlaubt — Insa hat es nie protokolliert.«",
+        next: "bl3",
+      },
+      bl3: {
+        id: "bl3",
+        speaker: "SYSTEM",
+        text: "Bodo: »Sie zuckt, wenn das Radio voll aufgedreht ist. Deshalb dreh’ ich es hier nicht hoch. Sie ist die Einzige, die mir das übel nehmen würde.«",
+        choices: [
+          {
+            text: "[ Beenden ]",
+            action: (api) => {
+              api.setFlag("knowsLotti");
+            },
+          },
+        ],
+      },
+    },
+  },
+
+  bodoSmalltalk: {
+    id: "bodoSmalltalk",
+    start: "bk1",
+    lines: {
+      bk1: {
+        id: "bk1",
+        speaker: "SYSTEM",
+        text: "Bodo nickt langsam, als Layard wieder in der Tür steht. »Setzen Sie sich. Lotti hat Sie nicht weggebissen. Das ist heute schon viel.«",
+        next: "bk2",
+      },
+      bk2: {
+        id: "bk2",
+        speaker: "SYSTEM",
+        text: "Bodo: »Was treibt Sie eigentlich heute durch die Etagen, Herr Worag? Ich hab Sie noch nie aus 2611 rauskommen sehen. Nicht in den letzten Jahren.«",
+        next: "bk3",
+      },
+      bk3: {
+        id: "bk3",
+        speaker: "LAYARD",
+        text: "Heute habe ich Urlaub. Ich wollte … weiter.",
+        next: "bk4",
+      },
+      bk4: {
+        id: "bk4",
+        speaker: "SYSTEM",
+        text: "Bodo: »Weiter. Schönes Wort. Steht nicht im Lautsprecher.« Er trinkt einen Schluck. »Wenn Sie weiter wollen — gehen Sie zu Helka, drei Türen weiter. Die hat eine Liste. Da steht ›weiter‹ wahrscheinlich auch drin.«",
+        end: true,
+      },
+    },
+  },
+
+  bodoFlyer: {
+    id: "bodoFlyer",
+    start: "bf1",
+    onEnd: (api) => {
+      api.setFlag("bodoToldCarrierTruth");
+    },
+    lines: {
+      bf1: {
+        id: "bf1",
+        speaker: "LAYARD",
+        text: "Darf ich Ihnen etwas zeigen?",
+        next: "bf2",
+      },
+      bf2: {
+        id: "bf2",
+        speaker: "SYSTEM",
+        text: "[ Bodo nimmt das Flugblatt zwischen zwei Finger. Liest. Lange. Lotti zuckt einmal mit dem Ohr, als wäre eine Frequenz gewandert. ]",
+        next: "bf3",
+      },
+      bf3: {
+        id: "bf3",
+        speaker: "SYSTEM",
+        text: "Bodo: »Z.K.S. Den Namen kenne ich. Aus dem Funkprotokoll. — Das hier ist nichts Neues, Herr Worag. Das hier ist nur das erste Mal, dass es jemand auf Papier bringt.«",
+        next: "bf4",
+      },
+      bf4: {
+        id: "bf4",
+        speaker: "LAYARD",
+        text: "Welches Funkprotokoll?",
+        next: "bf5",
+      },
+      bf5: {
+        id: "bf5",
+        speaker: "SYSTEM",
+        text: "Bodo: »Das Trägersignal von 104,6. Stadtwerke-Logbücher, neunzehnhunderteinundneunzig. Seitdem wird der Träger manuell nachgeregelt — von Hand. Ein Mensch, eine Schicht, ein Drehknopf.«",
+        next: "bf6",
+      },
+      bf6: {
+        id: "bf6",
+        speaker: "SYSTEM",
+        text: "Bodo: »Wenn der Mensch geht, geht das Signal. Wenn das Signal geht, hört der Sektor sich selbst. Das ist alles, was Sie wissen müssen — und mehr, als ich heute hätte sagen sollen.«",
+        next: "bf7",
+      },
+      bf7: {
+        id: "bf7",
+        speaker: "SYSTEM",
+        text: "[ Bodo gibt das Flugblatt zurück. Lotti rollt sich enger ein. Bodo sagt nichts mehr. ]",
+        end: true,
+      },
+    },
+  },
+
+  // ═════════════════════════════════════════════════════════════
+  // ENNIS KORR — Tür 2614 (Türgespräch)
+  // ═════════════════════════════════════════════════════════════
+  ennisAtDoor: {
+    id: "ennisAtDoor",
+    start: "e1",
+    lines: {
+      e1: {
+        id: "e1",
+        speaker: "SYSTEM",
+        text: "[ Die Tür 2614 fliegt komplett auf. Ein Mann Anfang dreißig, Schichtarbeiter-Jacke, blockiert den Rahmen mit dem Körper. ]",
+        next: "e2",
+      },
+      e2: {
+        id: "e2",
+        speaker: "SYSTEM",
+        text: "Ennis: »Was wollen Sie? Hören heißt Gehören, Bürger. Was machen Sie um diese Zeit im Korridor und nicht auf Schicht?«",
+        next: "e3",
+      },
+      e3: {
+        id: "e3",
+        speaker: "LAYARD",
+        text: "Ich habe heute Urlaub. Layard Worag, 2611.",
+        next: "e4",
+      },
+      e4: {
+        id: "e4",
+        speaker: "SYSTEM",
+        text: "Ennis: »Urlaub. Schön. — Ich hab Nachtschicht in der Logistik. Sektor-Frachten. Ohne mich kommt Ihre B2 nicht in den Schacht. Sie sind also indirekt mein Bürger. Behalten Sie das im Kopf.«",
+        next: "e5",
+      },
+      e5: {
+        id: "e5",
+        speaker: "LAYARD",
+        text: "Verstanden. Insa hat mich heute schon dreimal —",
+        next: "e6",
+      },
+      e6: {
+        id: "e6",
+        speaker: "SYSTEM",
+        text: "[ Ennis erstarrt für eine Sekunde, als hätte jemand einen Schalter gedrückt. ]",
+        next: "e7",
+      },
+      e7: {
+        id: "e7",
+        speaker: "SYSTEM",
+        text: "Ennis: »Den Namen sagen Sie hier nicht. Nicht in meiner Tür. Schönen Urlaub, Worag.«",
+        next: "e8",
+      },
+      e8: {
+        id: "e8",
+        speaker: "SYSTEM",
+        text: "[ Die Tür schlägt zu. Drinnen: das Geräusch eines Stuhls, der sehr vorsichtig zurückgeschoben wird. ]",
+        end: true,
+      },
+    },
+  },
+
+  ennisSmalltalk: {
+    id: "ennisSmalltalk",
+    start: "es1",
+    lines: {
+      es1: {
+        id: "es1",
+        speaker: "SYSTEM",
+        text: "[ Diesmal öffnet Ennis nur einen Spalt. Die Schichtarbeiterjacke sitzt nicht mehr — er war wohl gerade aufgewacht. ]",
+        next: "es2",
+      },
+      es2: {
+        id: "es2",
+        speaker: "SYSTEM",
+        text: "Ennis: »Sie sind wieder da. Was wollen Sie diesmal von mir, Worag.«",
+        next: "es3",
+      },
+      es3: {
+        id: "es3",
+        speaker: "LAYARD",
+        text: "Nichts. Nachsehen, ob Sie noch wütend sind.",
+        next: "es4",
+      },
+      es4: {
+        id: "es4",
+        speaker: "SYSTEM",
+        text: "Ennis: »Wütend ist Bürgersache. Ich bin auf Linie. — Wenn Sie Smalltalk wollen, gehen Sie zu Marschke, die Katze hört zu. Hier hört nur 104,6 zu, und der zählt nicht.«",
+        subtext: "Er meint den Satz nicht so, wie er ihn sagt. Beides gleichzeitig.",
+        end: true,
+      },
+    },
+  },
+
+  ennisFlyer: {
+    id: "ennisFlyer",
+    start: "ef1",
+    onEnd: (api) => {
+      api.setFlag("ennisCracked");
+    },
+    lines: {
+      ef1: {
+        id: "ef1",
+        speaker: "LAYARD",
+        text: "Darf ich Ihnen etwas zeigen?",
+        next: "ef2",
+      },
+      ef2: {
+        id: "ef2",
+        speaker: "SYSTEM",
+        text: "[ Ennis sieht das Flugblatt. Sein Gesicht zieht sich zu — Wut, Angst, beides verschachtelt. Er reißt es Layard nicht aus der Hand, aber er beugt sich vor, als wollte er es. ]",
+        next: "ef3",
+      },
+      ef3: {
+        id: "ef3",
+        speaker: "SYSTEM",
+        text: "Ennis: »Das ist Hochverrat, Worag. Wissen Sie, was passiert mit Leuten, die so was im Korridor tragen? Wissen Sie, was passiert mit ihren Familien?«",
+        next: "ef4",
+      },
+      ef4: {
+        id: "ef4",
+        speaker: "LAYARD",
+        text: "… ich glaube, Sie wissen es besser als ich.",
+        next: "ef5",
+      },
+      ef5: {
+        id: "ef5",
+        speaker: "SYSTEM",
+        text: "[ Ennis sackt einen halben Schritt zurück. Die Tür schwingt einen Spalt weiter auf, ohne dass er es merkt. ]",
+        next: "ef6",
+      },
+      ef6: {
+        id: "ef6",
+        speaker: "SYSTEM",
+        text: "Ennis, leise: »Mein Vater hatte so ein Blatt. Vor sechs Jahren. Sie haben ihn nach E81 versetzt. Aus E81 kommt niemand zurück. — Ich weiß nicht, warum ich Ihnen das gerade sage.«",
+        next: "ef7",
+      },
+      ef7: {
+        id: "ef7",
+        speaker: "LAYARD",
+        text: "Ihr Vater. Wie hat er geheißen?",
+        next: "ef8",
+      },
+      ef8: {
+        id: "ef8",
+        speaker: "SYSTEM",
+        text: "Ennis: »Vater. Das hat er geheißen. Ich brauche keinen anderen Namen. — Gehen Sie. Bitte. Wenn jemand fragt: Sie waren nie hier.«",
+        next: "ef9",
+      },
+      ef9: {
+        id: "ef9",
+        speaker: "SYSTEM",
+        text: "[ Im Hinterkopf hört Layard das Wort noch nach. Ein Wort, drei Buchstaben mehr — laut, nüchtern, ohne Schmuck. Er wird es nicht vergessen. ]",
+        end: true,
+      },
+    },
+  },
+
+  ennisAfterFlyer: {
+    id: "ennisAfterFlyer",
+    start: "ea1",
+    lines: {
+      ea1: {
+        id: "ea1",
+        speaker: "SYSTEM",
+        text: "[ Ennis öffnet diesmal sofort, schaut links und rechts in den Korridor, zieht Layard fast hinein. ]",
+        next: "ea2",
+      },
+      ea2: {
+        id: "ea2",
+        speaker: "SYSTEM",
+        text: "Ennis: »Wenn Sie noch mal an meinem Rechner sind — Passwort steht in einem Wort, das ich heute zum ersten Mal seit Jahren laut gesagt habe. Sie waren dabei. Mehr sage ich nicht.«",
+        next: "ea3",
+      },
+      ea3: {
+        id: "ea3",
+        speaker: "SYSTEM",
+        text: "Ennis: »Und wenn Sie irgendwann nach E81 kommen — und das wünsche ich Ihnen nicht — fragen Sie nach Korr. Vorname egal. Es gibt nur einen.«",
+        end: true,
+      },
+    },
+  },
 };
