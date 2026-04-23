@@ -102,6 +102,19 @@ export interface Scene {
   title: string;
   intro?: string;
   hotspots: Hotspot[];
+  /** Optional pixel-style door number plates rendered as overlays. */
+  doorPlates?: DoorPlate[];
+}
+
+export interface DoorPlate {
+  id: string;
+  /** % positions on background image (top-center anchor) */
+  x: number;
+  y: number;
+  w: number;
+  label: string;
+  requires?: StoryFlag[];
+  hiddenWhen?: StoryFlag[];
 }
 
 export interface DialogChoice {
