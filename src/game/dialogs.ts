@@ -1,90 +1,240 @@
 import type { DialogTree } from "./types";
 
 export const dialogs: Record<string, DialogTree> = {
-  philippeIntro: {
-    id: "philippeIntro",
+  // ---------------------------------------------------------------
+  // 1. Philippe at Layard's door — first meeting
+  // ---------------------------------------------------------------
+  philippeAtDoor: {
+    id: "philippeAtDoor",
     start: "p1",
     lines: {
       p1: {
         id: "p1",
-        speaker: "PHILIPPE",
-        text: "Worag. Sie müssen sofort kommen. 2613.",
-        subtext: "Angst. Echte Angst. Er hat das nicht im Schauspielkurs gelernt.",
+        speaker: "SYSTEM",
+        text: "[ Layard öffnet die Tür. Im Korridor steht ein Mann Anfang 40. Scheu. Murmelt verhalten. Sein Gesicht: besorgt. ]",
         next: "p2",
       },
       p2: {
         id: "p2",
-        speaker: "LAYARD",
-        text: "Was ist passiert?",
+        speaker: "PHILIPPE",
+        text: "Hallo. Ich bin Philippe. Ich … habe ein Problem. Ich weiß nicht, was ich tun soll.",
+        subtext: "Echte Angst. Er hat das nicht im Schauspielkurs gelernt.",
         next: "p3",
       },
       p3: {
         id: "p3",
-        speaker: "PHILIPPE",
-        text: "Klopfen. Seit … ich weiß nicht, drei Stunden. Erst rhythmisch. Jetzt nur noch — nicht mehr rhythmisch.",
-        subtext: "Er hat zugehört. Lange. Ohne etwas zu tun. Schuld.",
+        speaker: "LAYARD",
+        text: "Was für ein Problem?",
         next: "p4",
       },
       p4: {
         id: "p4",
         speaker: "PHILIPPE",
-        text: "Ich habe versucht zu klingeln. Niemand öffnet. Sie müssen die Leitstelle anrufen. Mein Telefon. Da drüben.",
+        text: "Es klopft. An meiner Wand. Tag und Nacht. Wenn ich rufe, gibt es keine Antwort. Es ist unheimlich.",
+        subtext: "Er hat lange gewartet, bevor er geklingelt hat. Sehr lange.",
         next: "p5",
       },
       p5: {
         id: "p5",
+        speaker: "LAYARD",
+        text: "Ich kann mir das mal anschauen.",
+        subtext: "Layard ist von sich selbst überrascht. Wann hat er das letzte Mal etwas angeboten?",
+        next: "p6",
+      },
+      p6: {
+        id: "p6",
+        speaker: "PHILIPPE",
+        text: "Danke. Folgen Sie mir bitte. Es ist die Wohnung neben mir — 2613.",
+        next: "p7",
+      },
+      p7: {
+        id: "p7",
         speaker: "SYSTEM",
-        text: "[ Philippes alter Beigetelefon-Apparat steht auf dem Beistelltisch. Wähle 001. ]",
+        text: "[ Philippe geht voran in den Korridor. Layard folgt. Drei Schritte. Dann die nächste Tür. Sie steht angelehnt. ]",
         end: true,
       },
     },
   },
 
+  // Philippe inside 2613 — explains the situation
+  philippeIn2613: {
+    id: "philippeIn2613",
+    start: "q1",
+    lines: {
+      q1: {
+        id: "q1",
+        speaker: "PHILIPPE",
+        text: "Es dauert schon mehrere Stunden an. Ich habe die Block-Verwaltung über das Terminal informiert.",
+        next: "q2",
+      },
+      q2: {
+        id: "q2",
+        speaker: "PHILIPPE",
+        text: "Status: „in Bearbeitung“. Seit heute Morgen. Das ist alles, was ich bekomme.",
+        next: "q3",
+      },
+      q3: {
+        id: "q3",
+        speaker: "PHILIPPE",
+        text: "Hier wohnt ein alleinstehender Mann, Anfang dreißig. Ich weiß nicht, wie er heißt. Ich habe geklingelt. Niemand öffnet.",
+        subtext: "Niemand kennt hier den Nachbarn. Das ist Statut, nicht Zufall.",
+        next: "q4",
+      },
+      q4: {
+        id: "q4",
+        speaker: "LAYARD",
+        text: "Vielleicht ein medizinischer Notfall. In dem Fall ist ein Anruf vorgeschrieben.",
+        next: "q5",
+      },
+      q5: {
+        id: "q5",
+        speaker: "SYSTEM",
+        text: "[ Auf dem Beistelltisch des Bewohners: ein Wandtelefon. Nummer 001 ist die Leitstelle E67. ]",
+        end: true,
+      },
+    },
+  },
+
+  // ---------------------------------------------------------------
+  // 2. Phone call to Insa from inside 2613
+  // ---------------------------------------------------------------
   insa1: {
     id: "insa1",
     start: "i1",
     lines: {
       i1: {
         id: "i1",
-        speaker: "INSA",
-        text: "Leitstelle E67. Bauerfeind.",
-        subtext: "Erschöpfung. Routine. Etwas darunter.",
+        speaker: "SYSTEM",
+        text: "[ Layard hebt den Hörer. Wählt 001. Eine Frauenstimme. ]",
         next: "i2",
       },
       i2: {
         id: "i2",
-        speaker: "LAYARD",
-        text: "Worag, 2611. Es gibt einen Vorfall in 2613. Mein Nachbar Philippe sagt — Klopfen, das nicht aufhört.",
+        speaker: "INSA",
+        text: "Hier ist die Leitstelle E67, Sie sprechen mit Insa Bauerfeind. Ihr Anliegen?",
+        subtext: "Erschöpfung. Routine. Etwas darunter.",
         next: "i3",
       },
       i3: {
         id: "i3",
-        speaker: "INSA",
-        text: "Verstanden. Ich habe das Klopfen seit gestern Nacht hier auf dem Bildschirm. Sanitäter sind unterwegs. Bitte bleiben Sie vor Ort.",
+        speaker: "LAYARD",
+        text: "Mein Name ist Layard Worag, Zimmer 2611. Es könnte sich um einen medizinischen Notfall handeln.",
         next: "i4",
       },
       i4: {
         id: "i4",
         speaker: "INSA",
-        text: "Sie nehmen das Einsatzprotokoll von den Sanitätern entgegen. Es ist verschlüsselt. Sie tragen es zur Sektor-Tür E67/E71. Ist das verstanden?",
-        subtext: "Sie ist froh, dass jemand antwortet. Wirklich froh.",
+        text: "Bleiben Sie bitte in der Leitung, ich verbinde Sie gleich. Haben Sie mehr Angaben?",
         next: "i5",
       },
       i5: {
         id: "i5",
         speaker: "LAYARD",
-        text: "Verstanden.",
+        text: "Mein Nachbar — und ich — wir hören seit Stunden ein Klopfen aus 2613. Niemand öffnet. Auf Rufe keine Reaktion.",
         next: "i6",
       },
       i6: {
         id: "i6",
+        speaker: "INSA",
+        text: "Ich verstehe. Ich schicke ein Technik-Team und den diensthabenden Block-Sanitäter. Er kann weitere Kräfte mobilisieren, falls notwendig.",
+        subtext: "Sie ist froh, dass jemand antwortet. Wirklich froh.",
+        next: "i7",
+      },
+      i7: {
+        id: "i7",
         speaker: "SYSTEM",
-        text: "[ Hörer eingehängt. Die Sanitäter klopfen bereits an Tür 2613. ]",
+        text: "[ Hörer eingehängt. Ruhe stellt sich ein. Gleichzeitig: peinliche Stille zwischen Layard und Philippe. Worüber jetzt noch reden? ]",
         end: true,
       },
     },
   },
 
+  // ---------------------------------------------------------------
+  // 3. Smalltalk while waiting for the paramedics
+  // ---------------------------------------------------------------
+  philippeSmalltalk: {
+    id: "philippeSmalltalk",
+    start: "k1",
+    lines: {
+      k1: {
+        id: "k1",
+        speaker: "PHILIPPE",
+        text: "Sagen Sie … diese Kantinenreform. Ich finde, das Essen ist wirklich ein wenig besser geworden. Nutzen Sie die B2?",
+        subtext: "Er sucht etwas. Irgendetwas, um die Stille zu zerschlagen.",
+        next: "k2",
+      },
+      k2: {
+        id: "k2",
+        speaker: "LAYARD",
+        text: "Ja. Überwiegend B2. Einfach bequem zu wissen, dass man alle Nährstoffe zu sich nimmt. Ich verdiente zuletzt wenig mit dem Schreiben.",
+        subtext: "Hat er gerade etwas Persönliches verraten? Einem fast Unbekannten?",
+        next: "k3",
+      },
+      k3: {
+        id: "k3",
+        speaker: "PHILIPPE",
+        text: "Ich habe gehört, B3 sei auch nicht schlecht. Aber ich bin da etwas eigen. Ich mag es, wenn das Essen noch nach etwas schmeckt.",
+        next: "k4",
+      },
+      k4: {
+        id: "k4",
+        speaker: "LAYARD",
+        text: "Ja. Das kann ich verstehen. Manchmal ist es einfach praktischer, nicht darüber nachzudenken, was man isst.",
+        next: "k5",
+      },
+      k5: {
+        id: "k5",
+        speaker: "SYSTEM",
+        text: "[ Eine weitere Stille senkt sich zwischen die beiden. Layard bemerkt: er hat schon lange keine längere Konversation mehr geführt. ]",
+        next: "k6",
+      },
+      k6: {
+        id: "k6",
+        speaker: "SYSTEM",
+        text: "[ Aus dem Korridor: schnelle Schritte. Ein Team der lokalen Noteinsatzkräfte. ]",
+        end: true,
+      },
+    },
+  },
+
+  // ---------------------------------------------------------------
+  // 4. Paramedics arrive and break open the door
+  // ---------------------------------------------------------------
+  paramedicsArrive: {
+    id: "paramedicsArrive",
+    start: "a1",
+    lines: {
+      a1: {
+        id: "a1",
+        speaker: "SANITÄTER",
+        text: "Gehen Sie zurück. Wir brechen die Tür auf.",
+        subtext: "Hochkonzentriert. Routine. Tausend solche Einsätze.",
+        next: "a2",
+      },
+      a2: {
+        id: "a2",
+        speaker: "SYSTEM",
+        text: "[ Layard ist erleichtert. Das Thema liegt jetzt bei den Profis. Philippe geht zurück in seine Wohnung — „Ich lasse Sie mal Ihre Arbeit machen.“ ]",
+        next: "a3",
+      },
+      a3: {
+        id: "a3",
+        speaker: "SYSTEM",
+        text: "[ Zwei Versuche, die Tür aufzubrechen, fruchten nicht. Beim dritten Mal knackt das Schloss. Die Tür schwingt auf. ]",
+        next: "a4",
+      },
+      a4: {
+        id: "a4",
+        speaker: "SYSTEM",
+        text: "[ Die Sanitäter stürmen herein. Layards Körper durchfährt ein intensives Kribbeln — wie er es außerhalb des Schmerz-Radios lange nicht mehr gespürt hat. ]",
+        end: true,
+      },
+    },
+  },
+
+  // ---------------------------------------------------------------
+  // 5. Paramedic hands over the protocol
+  // ---------------------------------------------------------------
   paramedic: {
     id: "paramedic",
     start: "s1",
@@ -92,107 +242,286 @@ export const dialogs: Record<string, DialogTree> = {
       s1: {
         id: "s1",
         speaker: "SANITÄTER",
-        text: "Bewohner Worag? Hier. Einsatzprotokoll, verschlüsselt. Ziel: Sektor E71, Zimmer 1534.",
-        subtext: "Routine. Kein Mitgefühl. Tausend solche Einsätze.",
+        text: "Kein A-, B- oder C-Problem. Transport mit Trage.",
+        subtext: "Der andere Sanitäter nickt knapp. Es geht schnell.",
         next: "s2",
       },
       s2: {
         id: "s2",
         speaker: "LAYARD",
-        text: "Was hat er?",
+        text: "Brauchen Sie mich noch?",
         next: "s3",
       },
       s3: {
         id: "s3",
         speaker: "SANITÄTER",
-        text: "Resonanz-Überlastung. Stand zu lange auf einer Frequenz. Und sein Herz — wir wissen es nicht. Wegen Krankheiten und …",
-        subtext: "Er beendet diesen Satz nie. Niemand beendet ihn.",
+        text: "Ja. Ich drucke Ihnen das Protokoll des Einsatzes aus. Verschlüsselt. Es ist für den Abschnittsverantwortlichen E67.",
         next: "s4",
       },
       s4: {
         id: "s4",
         speaker: "SANITÄTER",
-        text: "Gehen Sie. Sektor-Tür. Code haben Sie hoffentlich.",
+        text: "Wir schicken es per Rohrpost — aber der Verantwortliche sollte heute schon informiert werden. Bitte werfen Sie es ein.",
+        next: "s5",
+      },
+      s5: {
+        id: "s5",
+        speaker: "LAYARD",
+        text: "In Ordnung.",
+        subtext: "Warum hat er gerade ja gesagt? Er hätte nein sagen können.",
+        next: "s6",
+      },
+      s6: {
+        id: "s6",
+        speaker: "SYSTEM",
+        text: "[ Die Sanitäter schieben die Trage hinaus. Layard bleibt allein in der charakterlosen Wohnung des Mannes mit den grünen Augen. ]",
         end: true,
       },
     },
   },
 
+  // ---------------------------------------------------------------
+  // 6. Back in 2611 — first call from his own phone:
+  //    the protocol cannot be delivered, Insa redirects to E71/1534.
+  // ---------------------------------------------------------------
+  insa2a: {
+    id: "insa2a",
+    start: "ia1",
+    lines: {
+      ia1: {
+        id: "ia1",
+        speaker: "SYSTEM",
+        text: "[ Vermittlung: „Worum geht es, Herr Worag?“ — „Ich muss ein Protokoll dem Abschnittsverantwortlichen aushändigen. Er ist nicht da.“ ]",
+        next: "ia2",
+      },
+      ia2: {
+        id: "ia2",
+        speaker: "INSA",
+        text: "Bauerfeind. — Worag, Sie schon wieder.",
+        subtext: "Sie wartet auf etwas. Nicht auf den Feierabend.",
+        next: "ia3",
+      },
+      ia3: {
+        id: "ia3",
+        speaker: "LAYARD",
+        text: "Der Abschnittsverantwortliche von E67 ist nicht da. Ich habe das Protokoll.",
+        next: "ia4",
+      },
+      ia4: {
+        id: "ia4",
+        speaker: "INSA",
+        text: "Der Dienst ist heute in E67 nicht besetzt. Es gibt Engpässe im Dienstplan wegen Krankheiten und …",
+        subtext: "Den Satz beendet sie nicht. Niemand beendet ihn.",
+        next: "ia5",
+      },
+      ia5: {
+        id: "ia5",
+        speaker: "INSA",
+        text: "Gehen Sie bitte zu E71, Zimmer 1534. Sie haben heute die Abschnittsverantwortung auch für E67 übernommen.",
+        next: "ia6",
+      },
+      ia6: {
+        id: "ia6",
+        speaker: "LAYARD",
+        text: "E71. Ich war noch nie dort.",
+        next: "ia7",
+      },
+      ia7: {
+        id: "ia7",
+        speaker: "INSA",
+        text: "Bitte melden Sie zuvor Ihren Ausgang elektronisch beim ZENTRAL.NETZ. Nutzer-Verzeichnis → LEITSTELLE25@ZENTRAL.NETZ. Standardprotokoll.",
+        next: "ia8",
+      },
+      ia8: {
+        id: "ia8",
+        speaker: "SYSTEM",
+        text: "[ Hörer eingehängt. Im Terminal: Eingang einer Nachricht der Leitstelle E67 mit der Anweisung. ]",
+        end: true,
+      },
+    },
+  },
+
+  // ---------------------------------------------------------------
+  // 7. Stegmann (Zentral-IT) — reached after the first failed network attempt
+  // ---------------------------------------------------------------
+  stegmann: {
+    id: "stegmann",
+    start: "st1",
+    lines: {
+      st1: {
+        id: "st1",
+        speaker: "SYSTEM",
+        text: "[ Verbindungsaufbau zu ZENTRAL.NETZ schlägt fehl. ROUTER567.ZENTRAL.NETZ → ERROR 4567. Layard wählt erneut die 001. ]",
+        next: "st2",
+      },
+      st2: {
+        id: "st2",
+        speaker: "INSA",
+        text: "Bauerfeind. — Worag, schon wieder?",
+        next: "st3",
+      },
+      st3: {
+        id: "st3",
+        speaker: "LAYARD",
+        text: "Ich kann mich nicht mit dem ZENTRAL.NETZ verbinden. Error Code 4567. Ich muss aber meinen Ausgang melden.",
+        next: "st4",
+      },
+      st4: {
+        id: "st4",
+        speaker: "INSA",
+        text: "Ich verstehe. Ich stelle Sie durch zum Zentralnetz-Verantwortlichen.",
+        subtext: "Sie merkt nicht an, dass das ungewöhnlich ist. Es ist es nicht.",
+        next: "st5",
+      },
+      st5: {
+        id: "st5",
+        speaker: "SYSTEM",
+        text: "[ Wartetonschleife. Acht Sekunden. Ein Knacken. Eine Männerstimme. ]",
+        next: "st6",
+      },
+      st6: {
+        id: "st6",
+        speaker: "SYSTEM",
+        text: "Hier ist die technische Unterstützung des Zentralnetzes, Stegmann am Apparat. Ihr Anliegen?",
+        next: "st7",
+      },
+      st7: {
+        id: "st7",
+        speaker: "LAYARD",
+        text: "Ich muss mich mit dem Zentralnetz verbinden, um einen Ausgang zu melden. Verbindung gestört. Error 4567.",
+        next: "st8",
+      },
+      st8: {
+        id: "st8",
+        speaker: "SYSTEM",
+        text: "Verstanden. Bitte führen Sie zuerst eine Aktualisierung von CentralOS durch — über das lokale E67-Netz. Verwaltung → System → CentralOS → Aktualisieren.",
+        next: "st9",
+      },
+      st9: {
+        id: "st9",
+        speaker: "SYSTEM",
+        text: "Danach: Verwaltung → Technisches Problem melden → Netzwerkproblem an Leitstelle E67. Die automatische Problemermittlung leitet Ihren Fehler an die Gateway-Verantwortlichen weiter.",
+        next: "st10",
+      },
+      st10: {
+        id: "st10",
+        speaker: "LAYARD",
+        text: "Verstanden.",
+        next: "st11",
+      },
+      st11: {
+        id: "st11",
+        speaker: "SYSTEM",
+        text: "[ Hörer eingehängt. Layard erinnert sich: Stegmann hatte denselben monotonen Tonfall wie die automatischen Ansagen der B2-Kantine. ]",
+        end: true,
+      },
+    },
+  },
+
+  // ---------------------------------------------------------------
+  // 8. Insa releases the door code (mail) — third call
+  // ---------------------------------------------------------------
   insa2: {
     id: "insa2",
     start: "x1",
     lines: {
       x1: {
         id: "x1",
-        speaker: "INSA",
-        text: "Bauerfeind. Worag, schon wieder?",
-        subtext: "Sie wartet auf etwas. Nicht auf den Feierabend.",
+        speaker: "SYSTEM",
+        text: "[ Erneuter Anruf. Vermittlung. Insa, zum dritten Mal heute. ]",
         next: "x2",
       },
       x2: {
         id: "x2",
-        speaker: "LAYARD",
-        text: "Die Sektor-Tür. Error 4567. Ich brauche einen Code.",
+        speaker: "INSA",
+        text: "Worag. Sie haben den Gateway-Fehler gemeldet. Sehr korrekt. Die meisten ignorieren so etwas.",
         next: "x3",
       },
       x3: {
         id: "x3",
-        speaker: "INSA",
-        text: "Wartungsarbeiten am Gateway. Ich sehe es hier. Sie haben vorhin selbst eine Störungsmeldung eingereicht — das war korrekt, Herr Worag. Die meisten Bewohner ignorieren sowas.",
+        speaker: "LAYARD",
+        text: "Ich brauche jetzt einen Code für die Sektor-Tür.",
         next: "x4",
       },
       x4: {
         id: "x4",
-        speaker: "LAYARD",
-        text: "Danke. Und … der Code für die Tür?",
-        next: "x5",
-      },
-      x5: {
-        id: "x5",
         speaker: "INSA",
         text: "Den darf ich nicht direkt herausgeben. Aber er steht in der Mail, die ich Ihnen gerade ins Terminal lege. Sie wissen schon — das Datum.",
         subtext: "Sie hätte ihn sagen können. Sie wollte nicht.",
-        next: "x6",
+        next: "x5",
         choices: [
           {
             text: "Pause … [Schmerz-Radio aktiv lassen]",
             requiresRadio: true,
-            next: "x7radio",
+            next: "x6radio",
           },
           {
             text: "Verstanden. Auf Wiederhören.",
-            next: "x8",
+            next: "x7",
           },
         ],
       },
-      x7radio: {
-        id: "x7radio",
+      x6radio: {
+        id: "x6radio",
         speaker: "INSA",
         text: "[Pause] … Herr Worag. Haben Sie eigentlich schon mal E67 verlassen?",
         subtext: "Sie fragt das nicht aus Höflichkeit.",
-        next: "x7b",
+        next: "x6b",
       },
-      x7b: {
-        id: "x7b",
+      x6b: {
+        id: "x6b",
         speaker: "LAYARD",
         text: "… Nein.",
-        next: "x7c",
+        next: "x6c",
       },
-      x7c: {
-        id: "x7c",
+      x6c: {
+        id: "x6c",
         speaker: "INSA",
         text: "Heute könnten Sie. Auf Wiederhören.",
-        next: "x8",
+        next: "x7",
       },
-      x8: {
-        id: "x8",
+      x7: {
+        id: "x7",
         speaker: "SYSTEM",
-        text: "[ Im Terminal liegt jetzt eine E-Mail. Datum: 06.11.1997. Code-Format: ohne Punkte. ]",
+        text: "[ Im Terminal liegt jetzt eine Nachricht. Datum: 06.11.1997. Code-Format: ohne Punkte. Acht Ziffern. ]",
         end: true,
       },
     },
   },
 
+  // ---------------------------------------------------------------
+  // 9. Detour: Philippe in his own apartment, after E67 is mostly done
+  // ---------------------------------------------------------------
+  philippeAfter: {
+    id: "philippeAfter",
+    start: "pa1",
+    lines: {
+      pa1: {
+        id: "pa1",
+        speaker: "PHILIPPE",
+        text: "Sie gehen also wirklich. Nach E71. Ich hab niemanden je gehen sehen.",
+        subtext: "Er hat heute Kaffee gemacht. Echten. Für sich allein.",
+        next: "pa2",
+      },
+      pa2: {
+        id: "pa2",
+        speaker: "PHILIPPE",
+        text: "Wenn Sie zurückkommen, klopfen Sie. Ich höre das. Ich höre alles.",
+        subtext: "Versprechen klingen anders. Das ist eher: ein Ankerpunkt.",
+        next: "pa3",
+      },
+      pa3: {
+        id: "pa3",
+        speaker: "LAYARD",
+        text: "Wenn ich zurückkomme.",
+        end: true,
+      },
+    },
+  },
+
+  // ---------------------------------------------------------------
+  // 10. E71 — reception
+  // ---------------------------------------------------------------
   reception: {
     id: "reception",
     start: "r1",
@@ -232,6 +561,9 @@ export const dialogs: Record<string, DialogTree> = {
     },
   },
 
+  // ---------------------------------------------------------------
+  // 11. Mikael — first contact
+  // ---------------------------------------------------------------
   mikael: {
     id: "mikael",
     start: "m1",
@@ -271,7 +603,7 @@ export const dialogs: Record<string, DialogTree> = {
       m6: {
         id: "m6",
         speaker: "MIKAEL",
-        text: "Das Schmerz-Radio sendet nicht nur, Herr Worag. Es ist eine Schleife. Wer empfängt, sendet auch. 102,3. Einsamkeit. Sehr klar bei Ihnen.",
+        text: "Das Schmerz-Radio sendet nicht nur. Es ist eine Schleife. Wer empfängt, sendet auch. 102,3. Einsamkeit. Sehr klar bei Ihnen.",
         subtext: "Schuld? Nein. Mitgefühl. Lange geübt.",
         next: "m7",
       },
