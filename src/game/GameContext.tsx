@@ -32,6 +32,7 @@ interface GameState {
   dialogLineId: string | null;
   radioOpen: boolean;
   terminalOpen: boolean;
+  keypadOpen: boolean;
   radioActive: boolean; // tuned to 104.6, providing subtext
   resonance: number; // 0–100
   ending: boolean;
@@ -45,6 +46,7 @@ interface GameContextValue extends GameState {
   closeDialog: () => void;
   closeRadio: () => void;
   closeTerminal: () => void;
+  closeKeypad: () => void;
   setRadioActive: (active: boolean) => void;
   bumpResonance: (delta: number) => void;
   resetResonance: () => void;

@@ -207,6 +207,7 @@ export interface GameApi {
   startDialog: (id: string) => void;
   openTerminal: () => void;
   openRadio: () => void;
+  openKeypad: () => void;
   isRadioActive: () => boolean;
   setEnding: () => void;
   /** Floor (3, 4 or 5) where Mira appears this run; assigned lazily. */
