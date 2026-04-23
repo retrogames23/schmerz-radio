@@ -1232,7 +1232,11 @@ export const dialogs: Record<string, DialogTree> = {
         next: "mi4b",
         choices: [
           { text: "Was meinst du damit genau?", next: "miraOpen1" },
-          { text: "Pass auf, was du sagst. Hier hört jemand zu.", next: "miraClosed1" },
+          {
+            text: "Pass auf, was du sagst. Hier hört jemand zu.",
+            next: "miraClosed1",
+            action: (api) => api.setFlag("miraSystemic"),
+          },
           { text: "Keine Zeit für sowas." },
         ],
       },
@@ -1244,7 +1248,11 @@ export const dialogs: Record<string, DialogTree> = {
         requires: ["sawEmptyOffice"],
         choices: [
           { text: "Was meinst du damit genau?", next: "miraOpen1" },
-          { text: "Pass auf, was du sagst. Hier hört jemand zu.", next: "miraClosed1" },
+          {
+            text: "Pass auf, was du sagst. Hier hört jemand zu.",
+            next: "miraClosed1",
+            action: (api) => api.setFlag("miraSystemic"),
+          },
           { text: "Keine Zeit für sowas." },
         ],
       },
@@ -1279,8 +1287,16 @@ export const dialogs: Record<string, DialogTree> = {
         text: "[ Sie zieht ein gefaltetes Blatt aus der Innentasche und drückt es Layard in die Hand. Schnell. Geübt. ]",
         next: "miraOpen6",
         choices: [
-          { text: "[ Annehmen ]", next: "miraOpen7" },
-          { text: "[ Ablehnen ]", next: "miraRefuse" },
+          {
+            text: "[ Annehmen ]",
+            next: "miraOpen7",
+            action: (api) => api.setFlag("miraOfferedFlyer"),
+          },
+          {
+            text: "[ Ablehnen ]",
+            next: "miraRefuse",
+            action: (api) => api.setFlag("miraOfferedFlyer"),
+          },
         ],
       },
       miraOpen7: {
@@ -1353,11 +1369,15 @@ export const dialogs: Record<string, DialogTree> = {
         id: "mr1",
         speaker: "MIRA",
         text: "Wieder hier. Hast du es dir überlegt?",
+        // Nur, wenn Mira das Blatt schon einmal hervorgeholt hat — sonst
+        // gäbe es nichts „zu überlegen“. Und nicht, wenn Layard im
+        // Suchmodus ist (sawEmptyOffice → eigene Begrüßung mr1b).
+        requires: ["miraOfferedFlyer"],
         hiddenWhen: ["sawEmptyOffice"],
         next: "mr1b",
         choices: [
           { text: "Ja. Gib mir das Blatt.", next: "mr2" },
-          { text: "Nein. Ich wollte nur reden." },
+          { text: "Nein. Ich wollte nur reden.", next: "mrTalk" },
         ],
       },
       mr1b: {
@@ -1365,11 +1385,53 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "MIRA",
         text: "Wieder hier. Hast du ihn gefunden? Den Abschnittsverantwortlichen, meine ich.",
         subtext: "Sie weiß die Antwort schon.",
-        requires: ["sawEmptyOffice"],
+        requires: ["sawEmptyOffice", "miraOfferedFlyer"],
+        next: "mrFresh1",
         choices: [
           { text: "Ja. Gib mir das Blatt.", next: "mr2" },
           { text: "Nein. Aber gib mir trotzdem das Blatt.", next: "mr2" },
-          { text: "Nein. Ich wollte nur reden." },
+          { text: "Nein. Ich wollte nur reden.", next: "mrTalk" },
+        ],
+      },
+      // Layard war noch nicht beim Thema „Frequenz“ — Mira fängt nochmal
+      // von vorn an, ohne ihm direkt das Blatt anzubieten.
+      mrFresh1: {
+        id: "mrFresh1",
+        speaker: "MIRA",
+        text: "Du bist nochmal hier. Das machen die wenigsten zweimal.",
+        subtext: "Keine Begrüßung. Eher eine Notiz.",
+        next: "mrFresh2",
+      },
+      mrFresh2: {
+        id: "mrFresh2",
+        speaker: "MIRA",
+        text: "Sag mal — hörst du eigentlich noch zu, wenn das Radio leise ist? Oder nur, wenn es laut ist?",
+        choices: [
+          { text: "Was willst du damit sagen?", next: "miraOpen1" },
+          { text: "Lass mich in Ruhe damit.", next: "mrSystemic" },
+          { text: "Keine Zeit." },
+        ],
+      },
+      mrTalk: {
+        id: "mrTalk",
+        speaker: "MIRA",
+        text: "Reden. Gut. — Worüber denn?",
+        choices: [
+          { text: "Über das, was du vorhin meintest.", next: "miraOpen1" },
+          { text: "Eigentlich über nichts." },
+        ],
+      },
+      // Spieler weicht beim Wiedersehen aus → wird ab jetzt ebenfalls
+      // als systemtreu behandelt.
+      mrSystemic: {
+        id: "mrSystemic",
+        speaker: "MIRA",
+        text: "Verstanden. — Schönen Tag noch, Bürger.",
+        choices: [
+          {
+            text: "[ Beenden ]",
+            action: (api) => api.setFlag("miraSystemic"),
+          },
         ],
       },
       mr2: {
@@ -1414,6 +1476,22 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "MIRA",
         text: "Du hast es noch. Gut. — Und der Verantwortliche ist immer noch keiner. Auch gut.",
         requires: ["sawEmptyOffice"],
+        end: true,
+      },
+    },
+  },
+
+  // Layard hat sich beim Erstgespräch (oder beim ersten Wiedersehen)
+  // klar systemtreu positioniert. Mira spricht ihn nur noch knapp an.
+  miraSystemicGreeting: {
+    id: "miraSystemicGreeting",
+    start: "msg1",
+    lines: {
+      msg1: {
+        id: "msg1",
+        speaker: "MIRA",
+        text: "Guten Tag, Bürger.",
+        subtext: "Sie sieht ihn nicht einmal an.",
         end: true,
       },
     },
