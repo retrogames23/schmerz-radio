@@ -1603,8 +1603,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       h2: {
         id: "h2",
-        speaker: "SYSTEM",
-        text: "Helka Vint: »Sie sind der Schreiber aus 2611. Worag. ›Räume, die zu lange leer stehen, werden zu Räumen, die niemand mehr betritt.‹ — Ihre Zeile, 1991, Morgenblatt, Seite 11.«",
+        speaker: "HELKA",
+        text: "Sie sind der Schreiber aus 2611. Worag. ›Räume, die zu lange leer stehen, werden zu Räumen, die niemand mehr betritt.‹ — Ihre Zeile, 1991, Morgenblatt, Seite 11.",
         next: "h3",
       },
       h3: {
@@ -1616,8 +1616,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       h4: {
         id: "h4",
-        speaker: "SYSTEM",
-        text: "Helka: »Sie haben es geschrieben. Ich habe es archiviert. Das ist mein Beruf gewesen. Bibliothekarin. Bevor sie die Bibliothek geschlossen haben.«",
+        speaker: "HELKA",
+        text: "Sie haben es geschrieben. Ich habe es archiviert. Das ist mein Beruf gewesen. Bibliothekarin. Bevor sie die Bibliothek geschlossen haben.",
         next: "h5",
       },
       h5: {
@@ -1628,8 +1628,9 @@ export const dialogs: Record<string, DialogTree> = {
       },
       h6: {
         id: "h6",
-        speaker: "SYSTEM",
-        text: "Helka: »Nachbarschaft. Schönes Wort. Steht nicht mehr im Verzeichnis der Leitstelle.« Sie schließt die Tür einen Spalt weiter. »Kommen Sie wieder. Aber nicht oft.«",
+        speaker: "HELKA",
+        text: "Nachbarschaft. Schönes Wort. Steht nicht mehr im Verzeichnis der Leitstelle. Kommen Sie wieder. Aber nicht oft.",
+        subtext: "Sie schließt die Tür einen Spalt weiter.",
         end: true,
       },
     },
@@ -1647,8 +1648,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       hs2: {
         id: "hs2",
-        speaker: "SYSTEM",
-        text: "Helka: »Ich sortiere heute ungelesene Mails der Leitstelle. Schicht acht Stunden. Eintausendzweihundert Stück, durchschnittlich. Niemand wird sie lesen. Ich auch nicht.«",
+        speaker: "HELKA",
+        text: "Ich sortiere heute ungelesene Mails der Leitstelle. Schicht acht Stunden. Eintausendzweihundert Stück, durchschnittlich. Niemand wird sie lesen. Ich auch nicht.",
         next: "hs3",
       },
       hs3: {
@@ -1659,8 +1660,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       hs4: {
         id: "hs4",
-        speaker: "SYSTEM",
-        text: "Helka: »Wörter aufbewahren. Manche kommen nicht mehr vor in offiziellen Mitteilungen. ›Zärtlich.‹ ›Beliebig.‹ ›Sehnsucht.‹ — Wer das letzte Mal eines davon gehört? Der Sprecher merkt nicht einmal, dass es fehlt.«",
+        speaker: "HELKA",
+        text: "Wörter aufbewahren. Manche kommen nicht mehr vor in offiziellen Mitteilungen. ›Zärtlich.‹ ›Beliebig.‹ ›Sehnsucht.‹ — Wer das letzte Mal eines davon gehört? Der Sprecher merkt nicht einmal, dass es fehlt.",
         subtext: "Das Passwort ihres alten Berufs liegt in dem Satz. Sie weiß es. Sie testet, ob er zuhört.",
         next: "hs5",
       },
@@ -1672,8 +1673,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       hs6: {
         id: "hs6",
-        speaker: "SYSTEM",
-        text: "Helka: »Privat. Auf meinem Rechner. Wer wissen will, wie sie heißt — sie heißt nach dem, was ich war. Das ist alles, was ich Ihnen heute sage.«",
+        speaker: "HELKA",
+        text: "Privat. Auf meinem Rechner. Wer wissen will, wie sie heißt — sie heißt nach dem, was ich war. Das ist alles, was ich Ihnen heute sage.",
         end: true,
       },
     },
@@ -1685,14 +1686,14 @@ export const dialogs: Record<string, DialogTree> = {
     lines: {
       hs21: {
         id: "hs21",
-        speaker: "SYSTEM",
-        text: "Helka: »Sie sind hartnäckig, Herr Worag. Das ist neu in diesem Korridor.«",
+        speaker: "HELKA",
+        text: "Sie sind hartnäckig, Herr Worag. Das ist neu in diesem Korridor.",
         next: "hs22",
       },
       hs22: {
         id: "hs22",
-        speaker: "SYSTEM",
-        text: "Helka: »1989 habe ich einmal einen Bewohner gemeldet. Er hat die Frequenz manipuliert. Mit einem Lötkolben und einer Theorie. Es ist nichts passiert. Mit ihm nicht. Mit der Meldung nicht. Mit mir auch nicht — und das hat mir am meisten zu denken gegeben.«",
+        speaker: "HELKA",
+        text: "1989 habe ich einmal einen Bewohner gemeldet. Er hat die Frequenz manipuliert. Mit einem Lötkolben und einer Theorie. Es ist nichts passiert. Mit ihm nicht. Mit der Meldung nicht. Mit mir auch nicht — und das hat mir am meisten zu denken gegeben.",
         next: "hs23",
       },
       hs23: {
@@ -1703,8 +1704,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       hs24: {
         id: "hs24",
-        speaker: "SYSTEM",
-        text: "Helka: »Er wohnt noch hier. Drei Türen weiter. Er weiß es nicht. Ich weiß es. Sie wissen es jetzt auch.«",
+        speaker: "HELKA",
+        text: "Er wohnt noch hier. Drei Türen weiter. Er weiß es nicht. Ich weiß es. Sie wissen es jetzt auch.",
         end: true,
       },
     },
@@ -1731,14 +1732,14 @@ export const dialogs: Record<string, DialogTree> = {
       },
       hf3: {
         id: "hf3",
-        speaker: "SYSTEM",
-        text: "Helka: »Z.K.S. Das hat schon mal jemand versucht. 1989. Wortgleich, fast. Nehmen Sie es wieder mit, Herr Worag.«",
+        speaker: "HELKA",
+        text: "Z.K.S. Das hat schon mal jemand versucht. 1989. Wortgleich, fast. Nehmen Sie es wieder mit, Herr Worag.",
         next: "hf4",
       },
       hf4: {
         id: "hf4",
-        speaker: "SYSTEM",
-        text: "Helka: »Und werfen Sie es nicht in meinen Briefschlitz. Ich sortiere alles, was reinkommt. Auch das, was ich nicht sortieren möchte.«",
+        speaker: "HELKA",
+        text: "Und werfen Sie es nicht in meinen Briefschlitz. Ich sortiere alles, was reinkommt. Auch das, was ich nicht sortieren möchte.",
         next: "hf5",
       },
       hf5: {
@@ -1749,8 +1750,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       hf6: {
         id: "hf6",
-        speaker: "SYSTEM",
-        text: "Helka: »Ich habe Ordnung. Das ist nicht dasselbe. Aber heute, zum ersten Mal seit Jahren: vielleicht ist es das doch.«",
+        speaker: "HELKA",
+        text: "Ich habe Ordnung. Das ist nicht dasselbe. Aber heute, zum ersten Mal seit Jahren: vielleicht ist es das doch.",
         end: true,
       },
     },
@@ -1777,8 +1778,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       b3: {
         id: "b3",
-        speaker: "SYSTEM",
-        text: "Bodo: »Bodo Marschke. Tür war offen, also kein Eindringen. Setzen Sie sich, wenn Sie wollen. Tee?«",
+        speaker: "BODO",
+        text: "Bodo Marschke. Tür war offen, also kein Eindringen. Setzen Sie sich, wenn Sie wollen. Tee?",
         subtext: "Er deutet auf eine Tasse mit etwas Bräunlichem. Synthetischer Aufguss. Riecht nach Karton.",
         next: "b4",
       },
@@ -1790,8 +1791,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       b5: {
         id: "b5",
-        speaker: "SYSTEM",
-        text: "Bodo: »Allein ist relativ. — Fernmeldetechniker, Stadtwerke, sechsundzwanzig Jahre. Vorruhestand seit der Sektor-Reform. Und seitdem … ja. Hier.«",
+        speaker: "BODO",
+        text: "Allein ist relativ. — Fernmeldetechniker, Stadtwerke, sechsundzwanzig Jahre. Vorruhestand seit der Sektor-Reform. Und seitdem … ja. Hier.",
         next: "b6",
       },
       b6: {
@@ -1806,8 +1807,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       b7: {
         id: "b7",
-        speaker: "SYSTEM",
-        text: "Bodo: »Funkanlagen. Trägersignale. Verstärker. Wenn die Stadt knirschte, war meistens eine Spule kalt. — Ich rede nicht gern darüber. Es war ein anderer Beruf, in einer anderen Stadt.«",
+        speaker: "BODO",
+        text: "Funkanlagen. Trägersignale. Verstärker. Wenn die Stadt knirschte, war meistens eine Spule kalt. — Ich rede nicht gern darüber. Es war ein anderer Beruf, in einer anderen Stadt.",
         choices: [
           { text: "Da bewegt sich etwas auf dem Sessel.", next: "bodoLottiReveal" },
           { text: "[ Beenden ]" },
@@ -1815,20 +1816,21 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bodoLottiReveal: {
         id: "bodoLottiReveal",
-        speaker: "SYSTEM",
-        text: "Bodo schaut auf den Sessel. Etwas in seinem Gesicht öffnet sich, kurz. »Ja. Lotti. Vierzehn Jahre. Frisst nur noch B3, weil sie nichts anderes mehr mag. Deshalb der Aufstand bei Insa, damals.«",
+        speaker: "BODO",
+        text: "Ja. Lotti. Vierzehn Jahre. Frisst nur noch B3, weil sie nichts anderes mehr mag. Deshalb der Aufstand bei Insa, damals.",
+        subtext: "Bodo schaut auf den Sessel. Etwas in seinem Gesicht öffnet sich, kurz.",
         next: "bodoLottiReveal2",
       },
       bodoLottiReveal2: {
         id: "bodoLottiReveal2",
-        speaker: "SYSTEM",
-        text: "Bodo: »Tiere sind im Sektor offiziell nicht erlaubt. Ich hab sie über Insa angemeldet. Sie hat es nie protokolliert. Das ist alles, was ich Ihnen heute über Insa sage.«",
+        speaker: "BODO",
+        text: "Tiere sind im Sektor offiziell nicht erlaubt. Ich hab sie über Insa angemeldet. Sie hat es nie protokolliert. Das ist alles, was ich Ihnen heute über Insa sage.",
         next: "bodoLottiReveal3",
       },
       bodoLottiReveal3: {
         id: "bodoLottiReveal3",
-        speaker: "SYSTEM",
-        text: "Bodo: »Sie zuckt, wenn das Radio voll aufgedreht ist. Deshalb läuft hier 104,6 leise. Ist auch alles, was sie hört.«",
+        speaker: "BODO",
+        text: "Sie zuckt, wenn das Radio voll aufgedreht ist. Deshalb läuft hier 104,6 leise. Ist auch alles, was sie hört.",
         choices: [
           {
             text: "[ Beenden ]",
@@ -1853,14 +1855,14 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bl2: {
         id: "bl2",
-        speaker: "SYSTEM",
-        text: "Bodo, von hinten: »Sie heißt Lotti. Vierzehn Jahre. Ich hab sie über Insa angemeldet, damals. Tiere sind im Sektor eigentlich nicht erlaubt — Insa hat es nie protokolliert.«",
+        speaker: "BODO",
+        text: "Sie heißt Lotti. Vierzehn Jahre. Ich hab sie über Insa angemeldet, damals. Tiere sind im Sektor eigentlich nicht erlaubt — Insa hat es nie protokolliert.",
         next: "bl3",
       },
       bl3: {
         id: "bl3",
-        speaker: "SYSTEM",
-        text: "Bodo: »Sie zuckt, wenn das Radio voll aufgedreht ist. Deshalb dreh’ ich es hier nicht hoch. Sie ist die Einzige, die mir das übel nehmen würde.«",
+        speaker: "BODO",
+        text: "Sie zuckt, wenn das Radio voll aufgedreht ist. Deshalb dreh’ ich es hier nicht hoch. Sie ist die Einzige, die mir das übel nehmen würde.",
         choices: [
           {
             text: "[ Beenden ]",
@@ -1879,14 +1881,15 @@ export const dialogs: Record<string, DialogTree> = {
     lines: {
       bk1: {
         id: "bk1",
-        speaker: "SYSTEM",
-        text: "Bodo nickt langsam, als Layard wieder in der Tür steht. »Setzen Sie sich. Lotti hat Sie nicht weggebissen. Das ist heute schon viel.«",
+        speaker: "BODO",
+        text: "Setzen Sie sich. Lotti hat Sie nicht weggebissen. Das ist heute schon viel.",
+        subtext: "Bodo nickt langsam, als Layard wieder in der Tür steht.",
         next: "bk2",
       },
       bk2: {
         id: "bk2",
-        speaker: "SYSTEM",
-        text: "Bodo: »Was treibt Sie eigentlich heute durch die Etagen, Herr Worag? Ich hab Sie noch nie aus 2611 rauskommen sehen. Nicht in den letzten Jahren.«",
+        speaker: "BODO",
+        text: "Was treibt Sie eigentlich heute durch die Etagen, Herr Worag? Ich hab Sie noch nie aus 2611 rauskommen sehen. Nicht in den letzten Jahren.",
         next: "bk3",
       },
       bk3: {
@@ -1897,8 +1900,9 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bk4: {
         id: "bk4",
-        speaker: "SYSTEM",
-        text: "Bodo: »Weiter. Schönes Wort. Steht nicht im Lautsprecher.« Er trinkt einen Schluck. »Wenn Sie weiter wollen — gehen Sie zu Helka, drei Türen weiter. Die hat eine Liste. Da steht ›weiter‹ wahrscheinlich auch drin.«",
+        speaker: "BODO",
+        text: "Weiter. Schönes Wort. Steht nicht im Lautsprecher. Wenn Sie weiter wollen — gehen Sie zu Helka, drei Türen weiter. Die hat eine Liste. Da steht ›weiter‹ wahrscheinlich auch drin.",
+        subtext: "Er trinkt einen Schluck.",
         choices: [
           {
             text: "Da bewegt sich etwas auf dem Sessel.",
@@ -1911,20 +1915,21 @@ export const dialogs: Record<string, DialogTree> = {
       // im Smalltalk anspricht (statt im Intro).
       bodoLottiReveal: {
         id: "bodoLottiReveal",
-        speaker: "SYSTEM",
-        text: "Bodo schaut auf den Sessel. Etwas in seinem Gesicht öffnet sich, kurz. »Ja. Lotti. Vierzehn Jahre. Frisst nur noch B3, weil sie nichts anderes mehr mag. Deshalb der Aufstand bei Insa, damals.«",
+        speaker: "BODO",
+        text: "Ja. Lotti. Vierzehn Jahre. Frisst nur noch B3, weil sie nichts anderes mehr mag. Deshalb der Aufstand bei Insa, damals.",
+        subtext: "Bodo schaut auf den Sessel. Etwas in seinem Gesicht öffnet sich, kurz.",
         next: "bodoLottiReveal2",
       },
       bodoLottiReveal2: {
         id: "bodoLottiReveal2",
-        speaker: "SYSTEM",
-        text: "Bodo: »Tiere sind im Sektor offiziell nicht erlaubt. Ich hab sie über Insa angemeldet. Sie hat es nie protokolliert. Das ist alles, was ich Ihnen heute über Insa sage.«",
+        speaker: "BODO",
+        text: "Tiere sind im Sektor offiziell nicht erlaubt. Ich hab sie über Insa angemeldet. Sie hat es nie protokolliert. Das ist alles, was ich Ihnen heute über Insa sage.",
         next: "bodoLottiReveal3",
       },
       bodoLottiReveal3: {
         id: "bodoLottiReveal3",
-        speaker: "SYSTEM",
-        text: "Bodo: »Sie zuckt, wenn das Radio voll aufgedreht ist. Deshalb läuft hier 104,6 leise. Ist auch alles, was sie hört.«",
+        speaker: "BODO",
+        text: "Sie zuckt, wenn das Radio voll aufgedreht ist. Deshalb läuft hier 104,6 leise. Ist auch alles, was sie hört.",
         choices: [
           {
             text: "[ Verstanden. ]",
@@ -1958,8 +1963,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bf3: {
         id: "bf3",
-        speaker: "SYSTEM",
-        text: "Bodo: »Z.K.S. Den Namen kenne ich. Aus dem Funkprotokoll. — Das hier ist nichts Neues, Herr Worag. Das hier ist nur das erste Mal, dass es jemand auf Papier bringt.«",
+        speaker: "BODO",
+        text: "Z.K.S. Den Namen kenne ich. Aus dem Funkprotokoll. — Das hier ist nichts Neues, Herr Worag. Das hier ist nur das erste Mal, dass es jemand auf Papier bringt.",
         next: "bf4",
       },
       bf4: {
@@ -1970,14 +1975,14 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bf5: {
         id: "bf5",
-        speaker: "SYSTEM",
-        text: "Bodo: »Das Trägersignal von 104,6. Stadtwerke-Logbücher, neunzehnhunderteinundneunzig. Seitdem wird der Träger manuell nachgeregelt — von Hand. Ein Mensch, eine Schicht, ein Drehknopf.«",
+        speaker: "BODO",
+        text: "Das Trägersignal von 104,6. Stadtwerke-Logbücher, neunzehnhunderteinundneunzig. Seitdem wird der Träger manuell nachgeregelt — von Hand. Ein Mensch, eine Schicht, ein Drehknopf.",
         next: "bf6",
       },
       bf6: {
         id: "bf6",
-        speaker: "SYSTEM",
-        text: "Bodo: »Wenn der Mensch geht, geht das Signal. Wenn das Signal geht, hört der Sektor sich selbst. Das ist alles, was Sie wissen müssen — und mehr, als ich heute hätte sagen sollen.«",
+        speaker: "BODO",
+        text: "Wenn der Mensch geht, geht das Signal. Wenn das Signal geht, hört der Sektor sich selbst. Das ist alles, was Sie wissen müssen — und mehr, als ich heute hätte sagen sollen.",
         next: "bf7",
       },
       bf7: {
@@ -2005,9 +2010,9 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bc2: {
         id: "bc2",
-        speaker: "SYSTEM",
-        text: "Bodo zieht eine Augenbraue hoch. »Warum fragen Sie das?«",
-        subtext: "Er hat heute morgen schon nachgeschaut. Er weiß die Antwort.",
+        speaker: "BODO",
+        text: "Warum fragen Sie das?",
+        subtext: "Bodo zieht eine Augenbraue hoch. Er hat heute morgen schon nachgeschaut. Er weiß die Antwort.",
         next: "bc3",
       },
       bc3: {
@@ -2024,8 +2029,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bc5: {
         id: "bc5",
-        speaker: "SYSTEM",
-        text: "Bodo: »Zwei Dosen Rind. Fisch ist aus. Lieferung ist erst Freitag.«",
+        speaker: "BODO",
+        text: "Zwei Dosen Rind. Fisch ist aus. Lieferung ist erst Freitag.",
         next: "bc6",
       },
       bc6: {
@@ -2037,8 +2042,9 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bc7: {
         id: "bc7",
-        speaker: "SYSTEM",
-        text: "Bodo seufzt. »Insa. Ja. — Die Vorratskammer ist im Schacht 4, fünfzehn Minuten hin, fünfzehn zurück. Zu lang.«",
+        speaker: "BODO",
+        text: "Insa. Ja. — Die Vorratskammer ist im Schacht 4, fünfzehn Minuten hin, fünfzehn zurück. Zu lang.",
+        subtext: "Bodo seufzt.",
         next: "bc8",
       },
       bc8: {
@@ -2055,8 +2061,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bc10: {
         id: "bc10",
-        speaker: "SYSTEM",
-        text: "Bodo, an der Tür: »Eine Viertelstunde. Höchstens. — Und Worag: am Terminal hängen ein paar Privatsachen. Die gehen Sie nichts an.«",
+        speaker: "BODO",
+        text: "Eine Viertelstunde. Höchstens. — Und Worag: am Terminal hängen ein paar Privatsachen. Die gehen Sie nichts an.",
         subtext: "Er sagt das, ohne sich umzudrehen. Er weiß, was er gerade gesagt hat.",
         next: "bc11",
       },
@@ -2092,14 +2098,15 @@ export const dialogs: Record<string, DialogTree> = {
       },
       br2: {
         id: "br2",
-        speaker: "SYSTEM",
-        text: "Bodo: »Vierzehn Minuten. Mein neuer Rekord.« Er stellt die Dosen ab. Schaut kurz zum Terminal.",
+        speaker: "BODO",
+        text: "Vierzehn Minuten. Mein neuer Rekord.",
+        subtext: "Er stellt die Dosen ab. Schaut kurz zum Terminal.",
         next: "br3",
       },
       br3: {
         id: "br3",
-        speaker: "SYSTEM",
-        text: "Bodo: »Bildschirm steht noch wie ich ihn verlassen hab’. Brav, Worag. Brav.«",
+        speaker: "BODO",
+        text: "Bildschirm steht noch wie ich ihn verlassen hab’. Brav, Worag. Brav.",
         subtext: "Er glaubt es nur halb. Aber heute reicht ihm das.",
         next: "br4",
       },
@@ -2279,8 +2286,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bd3: {
         id: "bd3",
-        speaker: "SYSTEM",
-        text: "Bodo: »Vorgestern. Vielleicht. — Das Leitungswasser hier oben ist… nicht für Katzen.«",
+        speaker: "BODO",
+        text: "Vorgestern. Vielleicht. — Das Leitungswasser hier oben ist… nicht für Katzen.",
         next: "bd4",
       },
       bd4: {
@@ -2298,14 +2305,14 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bd6: {
         id: "bd6",
-        speaker: "SYSTEM",
-        text: "Bodo: »Sie haben heute zweimal Recht, Worag. Das ist mehr als die meisten in einem Jahr.«",
+        speaker: "BODO",
+        text: "Sie haben heute zweimal Recht, Worag. Das ist mehr als die meisten in einem Jahr.",
         next: "bd7",
       },
       bd7: {
         id: "bd7",
-        speaker: "SYSTEM",
-        text: "Bodo, an der Tür: »Eine Viertelstunde. Und das Terminal lasse ich offen — ich glaub’ inzwischen nicht mehr, dass Sie irgendwas tun, was ich nicht selber täte.«",
+        speaker: "BODO",
+        text: "Eine Viertelstunde. Und das Terminal lasse ich offen — ich glaub’ inzwischen nicht mehr, dass Sie irgendwas tun, was ich nicht selber täte.",
         subtext: "Vertrauen klingt bei Bodo wie Resignation. Ist es aber nicht.",
         next: "bd8",
       },
@@ -2341,15 +2348,15 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bz2: {
         id: "bz2",
-        speaker: "SYSTEM",
-        text: "Bodo: »Wartung 4711 storniert. — Ich frage nicht, von wo aus.«",
+        speaker: "BODO",
+        text: "Wartung 4711 storniert. — Ich frage nicht, von wo aus.",
         subtext: "Er fragt es trotzdem, nur leiser.",
         next: "bz3",
       },
       bz3: {
         id: "bz3",
-        speaker: "SYSTEM",
-        text: "Bodo, im Vorbeigehen: »Gehen Sie, wo Sie hin müssen, Worag. Bevor jemand merkt, dass mein Login heute zu viel kann.«",
+        speaker: "BODO",
+        text: "Gehen Sie, wo Sie hin müssen, Worag. Bevor jemand merkt, dass mein Login heute zu viel kann.",
         end: true,
       },
     },
@@ -2381,8 +2388,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bs3: {
         id: "bs3",
-        speaker: "SYSTEM",
-        text: "Bodo: »Worag. Sie hatten zweimal eine halbe Stunde an meinem Rechner. Und Sie haben nichts angerührt.«",
+        speaker: "BODO",
+        text: "Worag. Sie hatten zweimal eine halbe Stunde an meinem Rechner. Und Sie haben nichts angerührt.",
         next: "bs4",
       },
       bs4: {
@@ -2393,8 +2400,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bs5: {
         id: "bs5",
-        speaker: "SYSTEM",
-        text: "Bodo: »Kaputtmachen. Hm. — Da steht draußen ein Aufzug, der seit heute Mittag nichts mehr tut. Wartung 4711. Wegen Ihrer kleinen Resonanz-Geschichte unten.«",
+        speaker: "BODO",
+        text: "Kaputtmachen. Hm. — Da steht draußen ein Aufzug, der seit heute Mittag nichts mehr tut. Wartung 4711. Wegen Ihrer kleinen Resonanz-Geschichte unten.",
         next: "bs6",
       },
       bs6: {
@@ -2406,14 +2413,14 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bs7: {
         id: "bs7",
-        speaker: "SYSTEM",
-        text: "Bodo: »Storniert. — Sie wollten nicht. Also ich. Einmal. Damit Sie da rauskommen, wo Sie hin müssen.«",
+        speaker: "BODO",
+        text: "Storniert. — Sie wollten nicht. Also ich. Einmal. Damit Sie da rauskommen, wo Sie hin müssen.",
         next: "bs8",
       },
       bs8: {
         id: "bs8",
-        speaker: "SYSTEM",
-        text: "Bodo: »Nächstes Mal trauen Sie sich. Oder lassen es ganz. Aber halten Sie mich nicht zweimal mit derselben Geschichte vom Sessel weg.«",
+        speaker: "BODO",
+        text: "Nächstes Mal trauen Sie sich. Oder lassen es ganz. Aber halten Sie mich nicht zweimal mit derselben Geschichte vom Sessel weg.",
         subtext: "Das ist kein Schimpfen. Das ist Bodos Art von Zuneigung.",
         end: true,
       },
@@ -2435,8 +2442,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       e2: {
         id: "e2",
-        speaker: "SYSTEM",
-        text: "Ennis: »Was wollen Sie? Hören heißt Gehören, Bürger. Was machen Sie um diese Zeit im Korridor und nicht auf Schicht?«",
+        speaker: "ENNIS",
+        text: "Was wollen Sie? Hören heißt Gehören, Bürger. Was machen Sie um diese Zeit im Korridor und nicht auf Schicht?",
         next: "e3",
       },
       e3: {
@@ -2447,8 +2454,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       e4: {
         id: "e4",
-        speaker: "SYSTEM",
-        text: "Ennis: »Urlaub. Schön. — Ich hab Nachtschicht in der Logistik. Sektor-Frachten. Ohne mich kommt Ihre B2 nicht in den Schacht. Sie sind also indirekt mein Bürger. Behalten Sie das im Kopf.«",
+        speaker: "ENNIS",
+        text: "Urlaub. Schön. — Ich hab Nachtschicht in der Logistik. Sektor-Frachten. Ohne mich kommt Ihre B2 nicht in den Schacht. Sie sind also indirekt mein Bürger. Behalten Sie das im Kopf.",
         next: "e5",
       },
       e5: {
@@ -2465,8 +2472,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       e7: {
         id: "e7",
-        speaker: "SYSTEM",
-        text: "Ennis: »Den Namen sagen Sie hier nicht. Nicht in meiner Tür. Schönen Urlaub, Worag.«",
+        speaker: "ENNIS",
+        text: "Den Namen sagen Sie hier nicht. Nicht in meiner Tür. Schönen Urlaub, Worag.",
         next: "e8",
       },
       e8: {
@@ -2490,8 +2497,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       es2: {
         id: "es2",
-        speaker: "SYSTEM",
-        text: "Ennis: »Sie sind wieder da. Was wollen Sie diesmal von mir, Worag.«",
+        speaker: "ENNIS",
+        text: "Sie sind wieder da. Was wollen Sie diesmal von mir, Worag.",
         next: "es3",
       },
       es3: {
@@ -2502,8 +2509,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       es4: {
         id: "es4",
-        speaker: "SYSTEM",
-        text: "Ennis: »Wütend ist Bürgersache. Ich bin auf Linie. — Wenn Sie Smalltalk wollen, gehen Sie zu Marschke, die Katze hört zu. Hier hört nur 104,6 zu, und der zählt nicht.«",
+        speaker: "ENNIS",
+        text: "Wütend ist Bürgersache. Ich bin auf Linie. — Wenn Sie Smalltalk wollen, gehen Sie zu Marschke, die Katze hört zu. Hier hört nur 104,6 zu, und der zählt nicht.",
         subtext: "Er meint den Satz nicht so, wie er ihn sagt. Beides gleichzeitig.",
         end: true,
       },
@@ -2531,8 +2538,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       ef3: {
         id: "ef3",
-        speaker: "SYSTEM",
-        text: "Ennis: »Das ist Hochverrat, Worag. Wissen Sie, was passiert mit Leuten, die so was im Korridor tragen? Wissen Sie, was passiert mit ihren Familien?«",
+        speaker: "ENNIS",
+        text: "Das ist Hochverrat, Worag. Wissen Sie, was passiert mit Leuten, die so was im Korridor tragen? Wissen Sie, was passiert mit ihren Familien?",
         next: "ef4",
       },
       ef4: {
@@ -2549,8 +2556,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       ef6: {
         id: "ef6",
-        speaker: "SYSTEM",
-        text: "Ennis, leise: »Mein Vater hatte so ein Blatt. Vor sechs Jahren. Sie haben ihn nach E81 versetzt. Aus E81 kommt niemand zurück. — Ich weiß nicht, warum ich Ihnen das gerade sage.«",
+        speaker: "ENNIS",
+        text: "Mein Vater hatte so ein Blatt. Vor sechs Jahren. Sie haben ihn nach E81 versetzt. Aus E81 kommt niemand zurück. — Ich weiß nicht, warum ich Ihnen das gerade sage.",
         next: "ef7",
       },
       ef7: {
@@ -2561,8 +2568,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       ef8: {
         id: "ef8",
-        speaker: "SYSTEM",
-        text: "Ennis: »Vater. Das hat er geheißen. Ich brauche keinen anderen Namen. — Gehen Sie. Bitte. Wenn jemand fragt: Sie waren nie hier.«",
+        speaker: "ENNIS",
+        text: "Vater. Das hat er geheißen. Ich brauche keinen anderen Namen. — Gehen Sie. Bitte. Wenn jemand fragt: Sie waren nie hier.",
         next: "ef9",
       },
       ef9: {
@@ -2586,14 +2593,14 @@ export const dialogs: Record<string, DialogTree> = {
       },
       ea2: {
         id: "ea2",
-        speaker: "SYSTEM",
-        text: "Ennis: »Wenn Sie noch mal an meinem Rechner sind — Passwort steht in einem Wort, das ich heute zum ersten Mal seit Jahren laut gesagt habe. Sie waren dabei. Mehr sage ich nicht.«",
+        speaker: "ENNIS",
+        text: "Wenn Sie noch mal an meinem Rechner sind — Passwort steht in einem Wort, das ich heute zum ersten Mal seit Jahren laut gesagt habe. Sie waren dabei. Mehr sage ich nicht.",
         next: "ea3",
       },
       ea3: {
         id: "ea3",
-        speaker: "SYSTEM",
-        text: "Ennis: »Und wenn Sie irgendwann nach E81 kommen — und das wünsche ich Ihnen nicht — fragen Sie nach Korr. Vorname egal. Es gibt nur einen.«",
+        speaker: "ENNIS",
+        text: "Und wenn Sie irgendwann nach E81 kommen — und das wünsche ich Ihnen nicht — fragen Sie nach Korr. Vorname egal. Es gibt nur einen.",
         end: true,
       },
     },
