@@ -89,22 +89,25 @@ export function SceneView() {
           <Hotspot key={h.id} hotspot={h} />
         ))}
 
-        {/* CRT-Bildschirm-Overlay (z. B. CentralOS-Versionsanzeige) */}
+        {/* CRT-Bildschirm-Overlay — überdeckt die in den Hintergrund
+            gemalte statische Anzeige mit dem dynamischen Live-Text. */}
         {current.screen && (
           <div
-            className="pointer-events-none absolute z-[5] flex flex-col justify-center overflow-hidden bg-black/55 px-[0.4%] py-[0.3%] font-mono-crt text-phosphor phosphor-glow scanlines crt-flicker"
+            className="pointer-events-none absolute z-[5] flex flex-col items-center justify-center overflow-hidden font-mono-crt text-phosphor phosphor-glow"
             style={{
               left: `${current.screen.x}%`,
               top: `${current.screen.y}%`,
               width: `${current.screen.w}%`,
               height: `${current.screen.h}%`,
-              fontSize: "clamp(6px, 0.95cqw, 11px)",
-              lineHeight: 1.15,
+              backgroundColor: "rgb(20 40 22)",
+              fontSize: "clamp(7px, 1.6cqw, 16px)",
+              lineHeight: 1.1,
               containerType: "inline-size",
+              textAlign: "center",
             }}
           >
             {current.screen.getLines(api).map((line, i) => (
-              <div key={i} className="truncate">
+              <div key={i} className="whitespace-nowrap">
                 {line}
               </div>
             ))}
