@@ -29,7 +29,8 @@ export type KnowledgeFlag =
   | "responsibilityE67"
   | "radioOrigin"
   | "leitstelleListens"
-  | "frequencyControl";
+  | "frequencyControl"
+  | "insaScreened";
 
 export type StoryFlag =
   | "radioTunedTo1046"
