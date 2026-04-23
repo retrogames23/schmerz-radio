@@ -289,6 +289,12 @@ export const dialogs: Record<string, DialogTree> = {
   paramedic: {
     id: "paramedic",
     start: "s1",
+    onEnd: (api) => {
+      // Sobald Layard das Protokoll in der Hand hat, meldet das
+      // Aufzugssystem eine "lokale Übersteuerung" und legt eine
+      // Wartungssperre. Ohne Hausmeister-Account → Sackgasse.
+      api.setFlag("elevatorMaintBlocked");
+    },
     lines: {
       s1: {
         id: "s1",
