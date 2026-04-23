@@ -1201,6 +1201,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 50,
         label: "Junge Frau an der Wand",
+        hiddenWhen: ["tookFlyer"],
         visible: (api) => api.getMiraFloor() === 5,
         onUse: (api) => {
           if (api.hasFlag("tookFlyer")) {
