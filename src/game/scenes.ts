@@ -211,67 +211,13 @@ export const scenes: Record<string, Scene> = {
         },
       },
       {
-        id: "patient",
-        x: 40,
-        y: 35,
-        w: 22,
-        h: 50,
-        label: "Der Mann an der Wand",
-        requires: ["doorBrokenOpen"],
-        hiddenWhen: ["sawCatatonic"],
-        onUse: (api) => {
-          api.setFlag("sawCatatonic");
-          api.showText([
-            "Ein Mann, ausgemergelt. Fahle Haut. Hochgezogene Brauen.",
-            "Er schlägt mit leblosem Gesicht rhythmisch gegen die Wand.",
-            "Layard nimmt seinen Mut zusammen und schaut ihm in die Augen.",
-            "Er erwartet tote, glasige Augen.",
-            "Stattdessen: grüne Augen. Eine seltsame Tiefe. Klarheit.",
-            "Wie ein Portal in ein mystisches Universum.",
-            "Layard wird das Bild nicht mehr loswerden.",
-          ]);
-        },
-      },
-      {
-        id: "paramedicsHotspot",
-        x: 40,
-        y: 35,
-        w: 22,
-        h: 50,
-        label: "Sanitäter",
-        requires: ["sawCatatonic"],
-        hiddenWhen: ["protocolReceived"],
-        onUse: (api) => {
-          api.setFlag("protocolReceived");
-          api.addItem({
-            id: "protocol",
-            name: "Einsatzprotokoll (verschlüsselt)",
-            description:
-              "Eine versiegelte Datenkapsel. Ziel: Sektor E71, Zimmer 1534. Etikett: „Fall-ID 5245@E67@2613“.",
-          });
-          api.setKnowledge("responsibilityE67");
-          api.startDialog("paramedic");
-        },
-      },
-      {
-        id: "goToNeighbor",
-        x: 30,
-        y: 25,
-        w: 30,
-        h: 45,
-        label: "Zur aufgebrochenen Tür (2615)",
-        requires: ["doorBrokenOpen"],
-        hiddenWhen: ["protocolReceived"],
-        onUse: (api) => api.goTo("apt2615"),
-      },
-      {
         id: "exit2613",
         x: 88,
         y: 70,
         w: 11,
         h: 28,
         label: "Zurück in den Korridor",
-        requires: ["protocolReceived"],
+        requires: ["doorBrokenOpen"],
         onUse: (api) => api.goTo("hallway"),
       },
     ],
@@ -366,8 +312,8 @@ export const scenes: Record<string, Scene> = {
         y: 5,
         w: 12,
         h: 35,
-        label: "Zurück nach 2613",
-        onUse: (api) => api.goTo("apt2613"),
+        label: "Zurück in den Korridor",
+        onUse: (api) => api.goTo("hallway"),
       },
     ],
   },
@@ -457,6 +403,28 @@ export const scenes: Record<string, Scene> = {
             "„Quarantäne — Resonanz-Überlastung — bis auf Widerruf“.",
             "Niemand wird hier in absehbarer Zeit einziehen.",
           ]),
+      },
+      {
+        id: "door2613Open",
+        x: 28,
+        y: 35,
+        w: 16,
+        h: 45,
+        label: "Tür 2613 (zurück)",
+        requires: ["doorBrokenOpen"],
+        hiddenWhen: ["protocolReceived"],
+        onUse: (api) => api.goTo("apt2613"),
+      },
+      {
+        id: "door2615Open",
+        x: 46,
+        y: 35,
+        w: 16,
+        h: 45,
+        label: "Tür 2615 (aufgebrochen)",
+        requires: ["doorBrokenOpen"],
+        hiddenWhen: ["protocolReceived"],
+        onUse: (api) => api.goTo("apt2615"),
       },
       {
         id: "toSector",
