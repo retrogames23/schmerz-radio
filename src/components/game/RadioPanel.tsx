@@ -101,7 +101,6 @@ export function RadioPanel() {
           ">> SCHMERZ-RADIO 104,6 — ENGEL-TRAUER",
           "Eine Stimme, die nichts sagt. Nur trauert.",
           "Fragmente: „... Zimmer ... Wand ... nicht aufhören ...“",
-          "",
           "*KLINGEL-KLINGEL*",
           "Jemand ist an Layards Wohnungstür.",
         ]);
