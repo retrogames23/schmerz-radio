@@ -78,6 +78,12 @@ interface PersistedState {
 const GameContext = createContext<GameContextValue | null>(null);
 
 export function GameProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  const userRef = useRef(user);
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
+
   const [scene, setScene] = useState<SceneId>("apartment");
   const [flags, setFlags] = useState<Set<StoryFlag>>(() => new Set());
   const [knowledge, setKnowledge] = useState<Set<KnowledgeFlag>>(
