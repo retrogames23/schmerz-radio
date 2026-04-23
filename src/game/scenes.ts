@@ -439,9 +439,9 @@ export const scenes: Record<string, Scene> = {
   sectorDoor: {
     id: "sectorDoor",
     background: sectorBg,
-    title: "Sektor-Tür E67 / E71",
+    title: "Sektor-Tür — Etage 1, E67",
     intro:
-      "Eine Tür, die Layard seit Jahren nicht passiert hat. Daneben: ein Keypad. Darüber: ein Monitor mit grüner Phosphor-Schrift, der „ERROR 4567“ blinkt.",
+      "Die schwere Schleusentür am Ende der Lobby. Hinter ihr: der Verbindungsgang nach draußen — und Gebäude E71. Daneben: ein Keypad. Darüber: ein Monitor mit grüner Phosphor-Schrift, der „ERROR 4567“ blinkt.",
     hotspots: [
       {
         id: "monitor",
@@ -479,19 +479,19 @@ export const scenes: Record<string, Scene> = {
         },
       },
       {
-        id: "elevator",
+        id: "toPassage",
         x: 82,
         y: 30,
         w: 16,
         h: 60,
-        label: "Aufzug → E71",
+        label: "Sektor-Tür öffnen → Verbindungsgang",
         requires: ["sectorDoorOpen"],
         onUse: (api) => {
           if (!api.hasFlag("feetWontMove")) {
             api.setFlag("feetWontMove");
             api.showText([
               "Layard denkt intensiv daran, einen Schritt zu machen.",
-              "Aus dem Korridor. In den Aufzug. Aus E67 hinaus.",
+              "Aus der Lobby. Durch die Schleuse. Aus E67 hinaus.",
               "Seine Füße bewegen sich nicht.",
               "Im Hinterkopf: das amber-grüne Glühen der Frequenz 104,6.",
               "Sie ist nicht mehr im Radio. Sie ist in ihm.",
@@ -499,8 +499,7 @@ export const scenes: Record<string, Scene> = {
               "Wie eine Tür, deren Scharniere seit Jahren niemand geölt hat.",
             ]);
           } else {
-            api.setFlag("elevatorTaken");
-            api.goTo("e71Lobby");
+            api.goTo("passage");
           }
         },
       },
@@ -510,8 +509,8 @@ export const scenes: Record<string, Scene> = {
         y: 35,
         w: 18,
         h: 60,
-        label: "Zurück in den Korridor",
-        onUse: (api) => api.goTo("hallway"),
+        label: "Zurück in die Lobby",
+        onUse: (api) => api.goTo("floor1Lobby"),
       },
     ],
   },
