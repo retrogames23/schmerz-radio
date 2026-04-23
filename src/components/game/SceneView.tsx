@@ -3,7 +3,7 @@ import { scenes, useGame } from "@/game/GameContext";
 import { Hotspot } from "./Hotspot";
 
 export function SceneView() {
-  const { scene, caption, radioActive, resonance, api, flags } = useGame();
+  const { scene, caption, radioActive, resonance, flags } = useGame();
   const current = scenes[scene];
   const [showIntro, setShowIntro] = useState(true);
 
@@ -12,31 +12,6 @@ export function SceneView() {
     const t = setTimeout(() => setShowIntro(false), 20000);
     return () => clearTimeout(t);
   }, [scene]);
-
-  // Auto trigger 2nd Insa call when player opens keypad after talking to paramedic
-  useEffect(() => {
-    if (
-      scene === "sectorDoor" &&
-      flags.has("protocolReceived") &&
-      !flags.has("calledForCode")
-    ) {
-      // soft hint
-    }
-  }, [scene, flags]);
-
-  // When in hallway with protocol but no code, allow re-calling Insa via Philippe phone
-  // (handled via philippe scene re-entry)
-
-  // Convenience: when player enters Philippe scene after sector door visit, allow second call
-  useEffect(() => {
-    if (
-      scene === "philippe" &&
-      flags.has("protocolReceived") &&
-      !flags.has("calledForCode")
-    ) {
-      // nothing automatic; we add a hotspot via second-call check below
-    }
-  }, [scene, flags]);
 
   return (
     <div
@@ -54,21 +29,6 @@ export function SceneView() {
       {current.hotspots.map((h) => (
         <Hotspot key={h.id} hotspot={h} />
       ))}
-
-      {/* Second-call hotspot in Philippe scene if needed */}
-      {scene === "philippe" &&
-        flags.has("protocolReceived") &&
-        !flags.has("calledForCode") && (
-          <button
-            type="button"
-            onClick={() => {
-              api.setFlag("calledForCode");
-              api.startDialog("insa2");
-            }}
-            className="absolute left-[32%] top-[55%] z-20 h-[16%] w-[16%] cursor-crosshair rounded-sm border-2 border-amber-glow/80 bg-amber-glow/10 hotspot-pulse"
-            aria-label="Insa erneut anrufen"
-          />
-        )}
 
       {/* Amber vignette when radio is active */}
       {radioActive && <div className="amber-vignette" />}
