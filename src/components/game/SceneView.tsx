@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react";
 import { scenes, useGame } from "@/game/GameContext";
+import { sceneVariants } from "@/game/scenes";
 import { Hotspot } from "./Hotspot";
 
 export function SceneView() {
   const { scene, caption, radioActive, resonance, api, flags } = useGame();
   const current = scenes[scene];
   const [showIntro, setShowIntro] = useState(true);
+
+  // Some scenes use an alternate background once a story flag is set.
+  const background =
+    scene === "apt2615" && flags.has("protocolReceived")
+      ? sceneVariants.apt2615Empty
+      : current.background;
 
   useEffect(() => {
     setShowIntro(true);
@@ -45,7 +52,7 @@ export function SceneView() {
       }`}
     >
       <img
-        src={current.background}
+        src={background}
         alt={current.title}
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
       />

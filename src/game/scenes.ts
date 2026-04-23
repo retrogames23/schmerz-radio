@@ -10,6 +10,10 @@ import corridor15Bg from "@/assets/scene-corridor-15.jpg";
 import room1534Bg from "@/assets/scene-room-1534.jpg";
 import type { Scene } from "./types";
 
+export const sceneVariants = {
+  apt2615Empty: apt2615EmptyBg,
+};
+
 export const scenes: Record<string, Scene> = {
   apartment: {
     id: "apartment",
