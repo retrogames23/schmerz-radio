@@ -6,6 +6,7 @@ import {
   playTuningClick,
   startResonanceDrone,
 } from "@/audio/sfx";
+import { CloseButton } from "./CloseButton";
 
 const BANDS = [
   {
@@ -167,22 +168,18 @@ export function RadioPanel() {
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 px-4">
       <div className="fade-in relative w-full max-w-2xl rounded-sm border border-amber-glow/50 bg-background p-6 shadow-[0_0_60px_rgba(0,0,0,0.8)]">
-        <div className="mb-4 flex items-center justify-between">
+        <CloseButton
+          onClick={() => {
+            setRadioActive(false);
+            closeRadio();
+          }}
+          label="Radio schließen"
+          className="absolute right-3 top-3"
+        />
+        <div className="mb-4 flex items-center justify-between pr-10">
           <h2 className="font-display text-xl uppercase tracking-[0.3em] text-amber-glow amber-glow">
             Schmerz-Radio
           </h2>
-          <button
-            type="button"
-            onClick={() => {
-              setRadioActive(false);
-              closeRadio();
-            }}
-            aria-label="Radio schließen"
-            className="flex items-center gap-2 rounded-sm border border-amber-glow/50 bg-background/60 px-2 py-1 text-xs uppercase tracking-widest text-amber-glow transition hover:bg-amber-glow/20 hover:text-foreground"
-          >
-            <span className="flex h-5 w-5 items-center justify-center">✕</span>
-            <span>Loslassen</span>
-          </button>
         </div>
 
         {/* Frequency display */}
