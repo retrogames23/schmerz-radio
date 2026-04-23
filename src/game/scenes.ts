@@ -7,6 +7,12 @@ import sectorBg from "@/assets/scene-sector-door.jpg";
 import e71LobbyBg from "@/assets/scene-e71-lobby.jpg";
 import corridor15Bg from "@/assets/scene-corridor-15.jpg";
 import room1534Bg from "@/assets/scene-room-1534.jpg";
+import elevatorBg from "@/assets/scene-elevator.jpg";
+import floor1LobbyBg from "@/assets/scene-floor1-lobby.jpg";
+import passageBg from "@/assets/scene-passage.jpg";
+import corridor36Bg from "@/assets/scene-corridor-36.jpg";
+import corridor46Bg from "@/assets/scene-corridor-46.jpg";
+import corridor56Bg from "@/assets/scene-corridor-56.jpg";
 import type { Scene } from "./types";
 
 export const scenes: Record<string, Scene> = {
