@@ -45,6 +45,8 @@ export type StoryFlag =
   | "sawCatatonic"
   | "protocolReceived"
   | "calledInsa2"
+  | "reportedExit"
+  | "skippedExitReport"
   | "calledStegmann"
   | "calledForCode"
   | "sectorDoorOpen"
@@ -174,6 +176,10 @@ export interface DialogLine {
   choices?: DialogChoice[];
   /** auto-end dialog */
   end?: boolean;
+  /** Skip this line entirely if any required flag is missing (jumps to `next`). */
+  requires?: StoryFlag[];
+  /** Skip this line entirely if any of these flags is set (jumps to `next`). */
+  hiddenWhen?: StoryFlag[];
 }
 
 export interface DialogTree {

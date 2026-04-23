@@ -57,6 +57,10 @@ export const scenes: Record<string, Scene> = {
             api.setFlag("calledInsa2");
             api.startDialog("insa2a");
           } else if (!api.hasFlag("calledStegmann")) {
+            // Spielerentscheidung merken: ohne report exit gilt als bewusst übersprungen.
+            if (!api.hasFlag("reportedExit")) {
+              api.setFlag("skippedExitReport");
+            }
             api.setFlag("calledStegmann");
             api.startDialog("stegmann");
           } else if (!api.hasFlag("calledForCode")) {

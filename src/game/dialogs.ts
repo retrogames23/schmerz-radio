@@ -398,7 +398,15 @@ export const dialogs: Record<string, DialogTree> = {
       st6: {
         id: "st6",
         speaker: "SYSTEM",
-        text: "Hier ist die technische Unterstützung des Zentralnetzes, Stegmann am Apparat. Ihr Anliegen?",
+        text: "Hier ist die technische Unterstützung des Zentralnetzes, Stegmann am Apparat. Ihre Ausgangsmeldung ist hier eingegangen — naja, der Versuch. Error 4567, ich weiß. Was brauchen Sie?",
+        requires: ["reportedExit"],
+        next: "st6b",
+      },
+      st6b: {
+        id: "st6b",
+        speaker: "SYSTEM",
+        text: "Hier ist die technische Unterstützung des Zentralnetzes, Stegmann am Apparat. — Sie haben den Ausgang nicht gemeldet. Standardprotokoll, Herr Worag. Beim nächsten Mal bitte zuerst melden. Was brauchen Sie?",
+        hiddenWhen: ["reportedExit"],
         next: "st7",
       },
       st7: {

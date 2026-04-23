@@ -173,6 +173,28 @@ export function GameProvider({ children }: { children: ReactNode }) {
       if (!dialogId) return;
       const tree = dialogs[dialogId];
       if (!tree) return;
+      // Resolve a target line, auto-skipping lines whose requires/hiddenWhen
+      // conditions are not met. Jumps along `next` until a visible line is
+      // found or the dialog ends.
+      const resolveVisible = (startId: string | undefined): string | null => {
+        let cursor = startId;
+        const seen = new Set<string>();
+        while (cursor && !seen.has(cursor)) {
+          seen.add(cursor);
+          const candidate = tree.lines[cursor];
+          if (!candidate) return null;
+          const reqOk =
+            !candidate.requires ||
+            candidate.requires.every((f) => flagsRef.current.has(f));
+          const hideOk =
+            !candidate.hiddenWhen ||
+            !candidate.hiddenWhen.some((f) => flagsRef.current.has(f));
+          if (reqOk && hideOk) return cursor;
+          if (candidate.end || !candidate.next) return null;
+          cursor = candidate.next;
+        }
+        return null;
+      };
       if (!nextId) {
         // auto-advance from current
         const current = dialogLineId ? tree.lines[dialogLineId] : null;
@@ -183,17 +205,24 @@ export function GameProvider({ children }: { children: ReactNode }) {
           tree.onEnd?.(api);
           return;
         }
-        setDialogLineId(current.next);
+        const target = resolveVisible(current.next);
+        if (!target) {
+          setDialogId(null);
+          setDialogLineId(null);
+          tree.onEnd?.(api);
+          return;
+        }
+        setDialogLineId(target);
         return;
       }
-      const nextLine = tree.lines[nextId];
-      if (!nextLine) {
+      const target = resolveVisible(nextId);
+      if (!target) {
         setDialogId(null);
         setDialogLineId(null);
         tree.onEnd?.(api);
         return;
       }
-      setDialogLineId(nextId);
+      setDialogLineId(target);
     },
     [dialogId, dialogLineId, api],
   );

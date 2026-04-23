@@ -70,6 +70,7 @@ const COMMANDS = [
   "read",
   "status",
   "unlock",
+  "report",
   "clear",
   "exit",
   "pwd",
@@ -826,6 +827,15 @@ export function Terminal() {
 
     if (cmd === "help") {
       newLines.push(...HELP_LINES);
+      if (flags.has("calledInsa2") && !flags.has("calledStegmann")) {
+        newLines.push(
+          { text: "", kind: "out" },
+          {
+            text: "  report exit  — Ausgangsmeldung an Leitstelle übermitteln",
+            kind: "out",
+          },
+        );
+      }
     } else if (cmd === "adventure" || cmd === "./adventure.bin" || cmd === "adventure.bin") {
       const fresh = newAdventureState();
       setAdvState(fresh);
@@ -851,11 +861,23 @@ export function Terminal() {
         { text: "  GATEWAY E67/E71   [ MANUELLER CODE ERFORDERLICH ]", kind: "out" },
       );
     } else if (cmd === "inbox") {
+      const showExitMail =
+        flags.has("calledInsa2") &&
+        !flags.has("reportedExit") &&
+        !flags.has("calledStegmann");
+      const count =
+        2 + (flags.has("calledForCode") ? 1 : 0) + (showExitMail ? 1 : 0);
       newLines.push(
-        { text: "POSTEINGANG (3):", kind: "system" },
+        { text: `POSTEINGANG (${count}):`, kind: "system" },
         { text: "  [001] Insa Bauerfeind — Wartungsfenster Gateway", kind: "out" },
         { text: "  [002] Stegmann (IT)  — Bitte: Störungsmeldung einreichen", kind: "out" },
       );
+      if (showExitMail) {
+        newLines.push({
+          text: "  [004] Leitstelle E67 — Ausgangsmeldung: Standardprotokoll  ✶NEU",
+          kind: "system",
+        });
+      }
       if (flags.has("calledForCode")) {
         newLines.push({
           text: "  [003] Insa Bauerfeind — Sektor-Tür: Manueller Code  ✶NEU",
@@ -900,6 +922,54 @@ export function Terminal() {
           { text: "I. B.", kind: "out" },
           { text: "── Ende ──────────────────────────────", kind: "system" },
         );
+      }
+    } else if (cmd === "read 004") {
+      if (
+        !flags.has("calledInsa2") ||
+        flags.has("reportedExit") ||
+        flags.has("calledStegmann")
+      ) {
+        newLines.push({ text: "FEHLER: Nachricht existiert nicht.", kind: "out" });
+      } else {
+        newLines.push(
+          { text: "── Nachricht 004 ─────────────────────", kind: "system" },
+          { text: "Von:    Bauerfeind, I. (Leitstelle E67)", kind: "out" },
+          { text: "Betreff: Ausgangsmeldung — Standardprotokoll", kind: "out" },
+          { text: "", kind: "out" },
+          { text: "Bitte melden Sie Ihren Ausgang aus E67 elektronisch:", kind: "out" },
+          { text: "  > report exit", kind: "system" },
+          { text: "Adressat: LEITSTELLE25@ZENTRAL.NETZ.", kind: "out" },
+          { text: "── Ende ──────────────────────────────", kind: "system" },
+        );
+      }
+    } else if (cmd === "report exit" || cmd === "report") {
+      if (cmd === "report") {
+        newLines.push({
+          text: "report: Argument fehlt. Versuchen Sie: report exit",
+          kind: "out",
+        });
+      } else if (!flags.has("calledInsa2")) {
+        newLines.push({
+          text: "report: Keine Ausgangsmeldung erforderlich.",
+          kind: "out",
+        });
+      } else if (flags.has("reportedExit")) {
+        newLines.push(
+          { text: ">> AUSGANGSMELDUNG → LEITSTELLE25@ZENTRAL.NETZ", kind: "system" },
+          { text: ">> ERROR 4567: ZENTRAL.NETZ nicht erreichbar.", kind: "out" },
+          { text: ">> (bereits versucht)", kind: "out" },
+        );
+      } else {
+        playBeep(0.4 * sfxVolume);
+        setTimeout(() => playBeep(0.3 * sfxVolume), 220);
+        newLines.push(
+          { text: ">> AUSGANGSMELDUNG → LEITSTELLE25@ZENTRAL.NETZ", kind: "system" },
+          { text: ">> Verbindung zu ROUTER567.ZENTRAL.NETZ …", kind: "out" },
+          { text: ">> ……………………………………………", kind: "out" },
+          { text: ">> ERROR 4567: ZENTRAL.NETZ nicht erreichbar.", kind: "out" },
+          { text: ">> Meldung NICHT zugestellt.", kind: "out" },
+        );
+        api.setFlag("reportedExit");
       }
     } else if (cmd.startsWith("unlock ")) {
       const code = cmd.slice(7).trim();
