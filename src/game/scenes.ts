@@ -15,6 +15,7 @@ import corridor36Bg from "@/assets/scene-corridor-36.jpg";
 import corridor46Bg from "@/assets/scene-corridor-46.jpg";
 import corridor56Bg from "@/assets/scene-corridor-56.jpg";
 import miraSprite from "@/assets/npc-mira.png";
+import bodoSprite from "@/assets/npc-bodo.png";
 import type { Scene } from "./types";
 
 export const scenes: Record<string, Scene> = {
@@ -101,10 +102,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "window",
-        x: 65,
-        y: 18,
+        // Fenster mit grünem Schein, Bildmitte etwas nach rechts.
+        x: 52,
+        y: 14,
         w: 18,
-        h: 35,
+        h: 38,
         label: "Fenster",
         onUse: (api) =>
           api.showText([
@@ -152,10 +154,11 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "philippeNpc",
-        x: 75,
-        y: 25,
-        w: 22,
-        h: 65,
+        // Philippe steht rechts mit verschränkten Armen.
+        x: 64,
+        y: 18,
+        w: 26,
+        h: 78,
         label: "Philippe",
         requires: ["knockingHeard"],
         hiddenWhen: ["paramedicsArrived"],
@@ -172,10 +175,10 @@ export const scenes: Record<string, Scene> = {
       // Verschiedene Dialoge je nach Stand der Geschichte.
       {
         id: "philippeAfterNpc",
-        x: 55,
-        y: 25,
-        w: 35,
-        h: 65,
+        x: 64,
+        y: 18,
+        w: 26,
+        h: 78,
         label: "Philippe",
         requires: ["paramedicsArrived"],
         onUse: (api) => {
@@ -218,10 +221,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "lampPhilippe",
-        x: 35,
-        y: 40,
+        // Tischlampe rechts neben Philippe auf dem Nachttisch.
+        x: 60,
+        y: 38,
         w: 14,
-        h: 22,
+        h: 24,
         label: "Lampe",
         requires: ["paramedicsArrived"],
         onUse: (api) =>
@@ -232,9 +236,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "wall",
-        x: 30,
+        // Mittlere Betonwand zwischen Telefon und Philippe.
+        x: 22,
         y: 8,
-        w: 36,
+        w: 38,
         h: 50,
         label: "Wand mit Klopfen (zur 2615)",
         hiddenWhen: ["doorBrokenOpen"],
@@ -252,9 +257,9 @@ export const scenes: Record<string, Scene> = {
       // Nach Akt 1: ruhige Wand zur (jetzt versiegelten) 2615.
       {
         id: "wallAfter",
-        x: 30,
+        x: 22,
         y: 8,
-        w: 36,
+        w: 38,
         h: 50,
         label: "Wand zur 2615 (still)",
         requires: ["doorBrokenOpen"],
@@ -267,10 +272,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "phone2613",
-        x: 2,
-        y: 12,
-        w: 18,
-        h: 38,
+        // Beiger Bakelit-Wandapparat ganz links.
+        x: 0,
+        y: 18,
+        w: 22,
+        h: 55,
         label: "Telefon (Wandapparat)",
         requires: ["talkedPhilippe2613"],
         hiddenWhen: ["calledLeitstelle"],
@@ -301,10 +307,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "exit2613",
-        x: 88,
-        y: 70,
-        w: 11,
-        h: 28,
+        // Türrahmen ganz rechts (hinter Philippe).
+        x: 90,
+        y: 18,
+        w: 10,
+        h: 80,
         label: "In den Korridor",
         requires: ["doorBrokenOpen"],
         onUse: (api) => api.goTo("hallway"),
@@ -323,10 +330,11 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "patient2615",
-        x: 64,
-        y: 55,
-        w: 22,
-        h: 35,
+        // Älterer Mann sitzt rechts auf dem Boden, Rücken an der Wand.
+        x: 62,
+        y: 50,
+        w: 26,
+        h: 45,
         label: "Der Mann an der Wand",
         hiddenWhen: ["sawCatatonic"],
         onUse: (api) => {
@@ -351,10 +359,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "paramedicsHotspot2615",
+        // Beide Sanitäter stehen mittig-links.
         x: 22,
-        y: 38,
-        w: 22,
-        h: 50,
+        y: 35,
+        w: 24,
+        h: 55,
         label: "Sanitäter ansprechen",
         requires: ["sawCatatonic"],
         hiddenWhen: ["protocolReceived"],
@@ -372,10 +381,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "wallDetail2615",
+        // Wand hinter dem Patienten (rechte Hälfte, oberhalb der Lampe).
         x: 50,
-        y: 30,
-        w: 30,
-        h: 22,
+        y: 22,
+        w: 38,
+        h: 24,
         label: "Die Wand",
         requires: ["sawCatatonic"],
         onUse: (api) =>
@@ -387,10 +397,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "exitTo2613",
+        // Aufgebrochene Tür ganz links.
         x: 0,
-        y: 25,
-        w: 18,
-        h: 70,
+        y: 18,
+        w: 22,
+        h: 80,
         label: "Zurück in den Korridor",
         onUse: (api) => {
           if (api.hasFlag("protocolReceived")) {
@@ -416,13 +427,26 @@ export const scenes: Record<string, Scene> = {
     title: "Wohnung 2612 — Bodo Marschke",
     intro:
       "Warmes Lampenlicht. Es riecht nach altem Kraut, das jemand „Tee“ nennt. Auf einem Sessel mit grauer Strickdecke: eine getigerte Katze. Sie zuckt einmal, als die Tür sich öffnet, dann schaut sie weg.",
+    npcs: [
+      {
+        id: "bodoSprite",
+        src: bodoSprite,
+        // Bodo steht zwischen Sessel und Terminal, leicht im Vordergrund.
+        x: 30,
+        y: 20,
+        w: 22,
+        h: 78,
+        alt: "Bodo Marschke",
+      },
+    ],
     hotspots: [
       {
         id: "bodoNpc",
-        x: 38,
-        y: 38,
+        // Deckungsgleich mit dem Bodo-Sprite.
+        x: 30,
+        y: 22,
         w: 22,
-        h: 50,
+        h: 74,
         label: "Bodo Marschke",
         onUse: (api) => {
           if (!api.hasFlag("metBodo")) {
@@ -444,10 +468,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "lottiSpot",
-        x: 16,
+        // Sessel + Decke + Katze (eingerollt rechts vorn auf dem Sessel).
+        x: 6,
         y: 55,
-        w: 22,
-        h: 30,
+        w: 28,
+        h: 40,
         label: "Sessel mit Decke",
         onUse: (api) => {
           if (api.hasFlag("knowsLotti")) {
@@ -468,8 +493,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "bodoPhone",
-        x: 60,
-        y: 22,
+        // Schwarzer Bakelit-Wandapparat oberhalb des Terminal-Tisches.
+        x: 51,
+        y: 38,
         w: 12,
         h: 22,
         label: "Wandtelefon",
@@ -482,10 +508,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "bodoTerminal",
-        x: 70,
-        y: 50,
-        w: 18,
-        h: 22,
+        // CRT „HASSENVU 2612“ rechts auf dem Tisch.
+        x: 60,
+        y: 60,
+        w: 20,
+        h: 26,
         label: "Bodos Terminal",
         onUse: (api) => {
           if (api.hasFlag("knowsLotti")) {
@@ -506,10 +533,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "exit2612",
-        x: 88,
-        y: 30,
-        w: 11,
-        h: 60,
+        // Wohnungstür ganz rechts.
+        x: 84,
+        y: 20,
+        w: 16,
+        h: 75,
         label: "Zurück in den Korridor",
         onUse: (api) => api.goTo("hallway"),
       },
