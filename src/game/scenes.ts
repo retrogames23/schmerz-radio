@@ -1,6 +1,5 @@
 import apartmentBg from "@/assets/scene-apartment.jpg";
 import hallwayBg from "@/assets/scene-hallway.jpg";
-import philippeBg from "@/assets/scene-philippe.jpg";
 import apt2613Bg from "@/assets/scene-apt-2613.jpg";
 import apt2615Bg from "@/assets/scene-apt-2615.jpg";
 import apt2612Bg from "@/assets/scene-apt-2612.jpg";
@@ -544,47 +543,6 @@ export const scenes: Record<string, Scene> = {
     ],
   },
 
-  philippe: {
-    id: "philippe",
-    background: philippeBg,
-    title: "Wohnung 2610 — Philippe",
-    intro:
-      "Philippes Wohnung riecht nach echtem Kaffee. Verboten. Er sitzt am Fenster und schaut auf die Wand gegenüber.",
-    hotspots: [
-      {
-        id: "philippeQuiet",
-        x: 55,
-        y: 25,
-        w: 35,
-        h: 65,
-        label: "Philippe",
-        onUse: (api) => api.startDialog("philippeAfter"),
-      },
-      {
-        id: "lamp",
-        x: 35,
-        y: 40,
-        w: 14,
-        h: 22,
-        label: "Lampe",
-        onUse: (api) =>
-          api.showText([
-            "Die einzige warme Lichtquelle im Korridor.",
-            "Philippe muss sie heimlich repariert haben.",
-          ]),
-      },
-      {
-        id: "exitPhilippe",
-        x: 88,
-        y: 70,
-        w: 11,
-        h: 28,
-        label: "Zurück in den Flur",
-        onUse: (api) => api.goTo("hallway"),
-      },
-    ],
-  },
-
   hallway: {
     id: "hallway",
     background: hallwayBg,
@@ -834,13 +792,6 @@ export const scenes: Record<string, Scene> = {
         onUse: (api) => api.goTo("floor1Lobby"),
       },
     ],
-  },
-
-  elevatorEnd: {
-    id: "elevatorEnd",
-    background: sectorBg,
-    title: "Aufzug",
-    hotspots: [],
   },
 
   e71Lobby: {

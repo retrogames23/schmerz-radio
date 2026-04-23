@@ -1,9 +1,7 @@
 export type SceneId =
   | "apartment"
   | "hallway"
-  | "philippe"
   | "sectorDoor"
-  | "elevatorEnd"
   | "e71Lobby"
   | "corridor15"
   | "room1534"
@@ -133,21 +131,8 @@ export interface Scene {
   title: string;
   intro?: string;
   hotspots: Hotspot[];
-  /** Optional pixel-style door number plates rendered as overlays. */
-  doorPlates?: DoorPlate[];
   /** Optional sichtbare Figuren / Sprites, die über dem Hintergrund liegen. */
   npcs?: NpcSprite[];
-}
-
-export interface DoorPlate {
-  id: string;
-  /** % positions on background image (top-center anchor) */
-  x: number;
-  y: number;
-  w: number;
-  label: string;
-  requires?: StoryFlag[];
-  hiddenWhen?: StoryFlag[];
 }
 
 export interface NpcSprite {

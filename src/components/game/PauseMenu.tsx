@@ -13,9 +13,19 @@ interface Props {
 const SCENE_LABEL: Record<string, string> = {
   apartment: "Wohnung 2611",
   hallway: "Korridor 26",
-  philippe: "Wohnung 2610 — Philippe",
+  apt2612: "Wohnung 2612 — Bodo",
+  apt2613: "Wohnung 2613 — Philippe",
+  apt2615: "Wohnung 2615",
   sectorDoor: "Sektor-Tür E67/E71",
-  elevatorEnd: "Aufzug",
+  elevator: "Aufzug — E67",
+  floor1Lobby: "Lobby Etage 1 — E67",
+  passage: "Verbindungsgang E67↔E71",
+  e71Lobby: "Sektor E71 — Empfang",
+  corridor15: "Korridor 15 — E71",
+  room1534: "Zimmer 1534",
+  corridor36: "Korridor 36 — E67",
+  corridor46: "Korridor 46 — E67",
+  corridor56: "Korridor 56 — E67",
 };
 
 function formatDate(iso: string) {
