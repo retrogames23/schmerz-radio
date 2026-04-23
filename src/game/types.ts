@@ -65,7 +65,12 @@ export type StoryFlag =
   | "miraOpenness"
   | "tookFlyer"
   | "hackedPhilippe"
-  | "talkedPhilippeAfter";
+  | "talkedPhilippeAfter"
+  | "philippeNote1"
+  | "philippeNote2"
+  | "philippeNote3"
+  | "philippeNote4"
+  | "philippeNote5";
 
 export interface InventoryItem {
   id: InventoryItemId;
