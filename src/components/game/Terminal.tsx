@@ -438,13 +438,14 @@ export function Terminal() {
     // ── Sub-Modus: aktive Telnet-Sitzung ──────────────────
     if (telnetHost) {
       const host = findHost(telnetHost);
+      const tTokens = raw.split(/\s+/);
       const echo: Line = {
         text: `${host?.host ?? telnetHost}:~$ ${input}`,
         kind: "in",
       };
       const out: Line[] = [];
-      const tHead = argsRaw[0]?.toLowerCase() ?? "";
-      const tArgs = argsRaw.slice(1);
+      const tHead = tTokens[0]?.toLowerCase() ?? "";
+      const tArgs = tTokens.slice(1);
       if (tHead === "exit" || tHead === "logout" || tHead === "quit") {
         out.push({ text: ">> Verbindung geschlossen.", kind: "system" });
         setTelnetHost(null);

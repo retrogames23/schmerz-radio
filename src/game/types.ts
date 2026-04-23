@@ -70,7 +70,8 @@ export type StoryFlag =
   | "rangEmptyOfficeBell"
   | "metMira"
   | "miraOpenness"
-  | "tookFlyer";
+  | "tookFlyer"
+  | "hackedPhilippe";
 
 export interface InventoryItem {
   id: InventoryItemId;
