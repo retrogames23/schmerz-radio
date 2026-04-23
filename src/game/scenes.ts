@@ -2,17 +2,12 @@ import apartmentBg from "@/assets/scene-apartment.jpg";
 import hallwayBg from "@/assets/scene-hallway.jpg";
 import philippeBg from "@/assets/scene-philippe.jpg";
 import apt2613Bg from "@/assets/scene-apt-2613.jpg";
-import apt2615Bg from "@/assets/scene-apt-2615.jpg";
-import apt2615EmptyBg from "@/assets/scene-apt-2615-empty.jpg";
+import apt2615Bg from "@/assets/scene-apt-2615-bg.jpg";
 import sectorBg from "@/assets/scene-sector-door.jpg";
 import e71LobbyBg from "@/assets/scene-e71-lobby.jpg";
 import corridor15Bg from "@/assets/scene-corridor-15.jpg";
 import room1534Bg from "@/assets/scene-room-1534.jpg";
 import type { Scene } from "./types";
-
-export const sceneVariants = {
-  apt2615Empty: apt2615EmptyBg,
-};
 
 export const scenes: Record<string, Scene> = {
   apartment: {
