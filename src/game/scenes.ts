@@ -409,6 +409,113 @@ export const scenes: Record<string, Scene> = {
 
   // Philippe's own apartment is now used only as a small detour after Akt 1
   // is over - it can stay reachable from the hallway as a memory beat.
+  // Bodos Wohnung (2612). Begehbar ab doorBrokenOpen.
+  apt2612: {
+    id: "apt2612",
+    background: apt2612Bg,
+    title: "Wohnung 2612 — Bodo Marschke",
+    intro:
+      "Warmes Lampenlicht. Es riecht nach altem Kraut, das jemand „Tee“ nennt. Auf einem Sessel mit grauer Strickdecke: eine getigerte Katze. Sie zuckt einmal, als die Tür sich öffnet, dann schaut sie weg.",
+    hotspots: [
+      {
+        id: "bodoNpc",
+        x: 38,
+        y: 38,
+        w: 22,
+        h: 50,
+        label: "Bodo Marschke",
+        onUse: (api) => {
+          if (!api.hasFlag("metBodo")) {
+            api.setFlag("metBodo");
+            api.startDialog("bodoIntro");
+          } else if (
+            api.hasFlag("tookFlyer") &&
+            !api.hasFlag("bodoSawFlyer")
+          ) {
+            api.setFlag("bodoSawFlyer");
+            api.startDialog("bodoFlyer");
+          } else if (!api.hasFlag("talkedBodo2")) {
+            api.setFlag("talkedBodo2");
+            api.startDialog("bodoSmalltalk");
+          } else {
+            api.startDialog("bodoSmalltalk");
+          }
+        },
+      },
+      {
+        id: "lottiSpot",
+        x: 16,
+        y: 55,
+        w: 22,
+        h: 30,
+        label: "Sessel mit Decke",
+        onUse: (api) => {
+          if (api.hasFlag("knowsLotti")) {
+            api.showText([
+              "Lotti rollt sich enger ein und blinzelt Layard zu.",
+              "Sie hat 14 Jahre Mensch gesehen. Sie hat eine Meinung.",
+              "Sie behält sie für sich.",
+            ]);
+          } else if (api.hasFlag("metBodo")) {
+            api.startDialog("bodoLotti");
+          } else {
+            api.showText([
+              "Auf dem Sessel: eine grau-getigerte Katze, eingerollt auf einer Strickdecke.",
+              "Sie schaut Layard nicht an. Sie weiß genau, dass er da ist.",
+            ]);
+          }
+        },
+      },
+      {
+        id: "bodoPhone",
+        x: 60,
+        y: 22,
+        w: 12,
+        h: 22,
+        label: "Wandtelefon",
+        onUse: (api) =>
+          api.showText([
+            "Ein schwarzer Bakelit-Apparat. Hörer staubig.",
+            "Bodo, von hinten: „Den hab ich seit zwölf Jahren nicht abgenommen.“",
+            "„Wer was von mir will, klopft. Oder ist die Katze.“",
+          ]),
+      },
+      {
+        id: "bodoTerminal",
+        x: 70,
+        y: 50,
+        w: 18,
+        h: 22,
+        label: "Bodos Terminal",
+        onUse: (api) => {
+          if (api.hasFlag("knowsLotti")) {
+            api.showText([
+              "Bodo nickt knapp: „Wenn Sie das Passwort haben, machen Sie nur.“",
+              "Layard setzt sich an das Terminal. Es ist baugleich mit seinem.",
+              "Tippen Sie: telnet bodo.e67",
+            ]);
+            api.openTerminal();
+          } else {
+            api.showText([
+              "Bodo schüttelt langsam den Kopf.",
+              "„Das ist meiner. Da kommen Sie nur dran, wenn ich Sie ranlasse.“",
+              "„Und ich lass’ Sie nicht ran, solange Sie nicht wissen, mit wem Sie hier eigentlich reden.“",
+            ]);
+          }
+        },
+      },
+      {
+        id: "exit2612",
+        x: 88,
+        y: 30,
+        w: 11,
+        h: 60,
+        label: "Zurück in den Korridor",
+        onUse: (api) => api.goTo("hallway"),
+      },
+    ],
+  },
+
   philippe: {
     id: "philippe",
     background: philippeBg,
