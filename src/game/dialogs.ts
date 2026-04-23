@@ -1096,4 +1096,227 @@ export const dialogs: Record<string, DialogTree> = {
       },
     },
   },
+
+  // ---------------------------------------------------------------
+  // Philippe — Sondierungs-Dialoge nach versiegelter Tür (2615).
+  // Philippe versucht über mehrere Besuche herauszufinden, wer
+  // Layard wirklich ist. Jeder Dialog erzeugt eine neue,
+  // hochspekulative Notiz auf seinem Rechner.
+  // ---------------------------------------------------------------
+  philippeProbe1: {
+    id: "philippeProbe1",
+    start: "pr1",
+    onEnd: (api) => api.setFlag("philippeProbeNote1"),
+    lines: {
+      pr1: {
+        id: "pr1",
+        speaker: "PHILIPPE",
+        text: "Sie sind wieder da. Setzen Sie sich kurz. — Darf ich was fragen? Etwas Persönliches?",
+        subtext: "Er hat sich das die ganze Zeit zurechtgelegt. Es klingt jetzt trotzdem unsicher.",
+        next: "pr2",
+      },
+      pr2: {
+        id: "pr2",
+        speaker: "PHILIPPE",
+        text: "Wo sind Sie geboren? Ich meine — ursprünglich. Vor E67.",
+        next: "pr3",
+      },
+      pr3: {
+        id: "pr3",
+        speaker: "LAYARD",
+        text: "Ich … weiß es nicht mehr genau. Ein anderer Quadrant. Es ist lange her.",
+        subtext: "Er weiß es. Er will es nur nicht sagen.",
+        next: "pr4",
+      },
+      pr4: {
+        id: "pr4",
+        speaker: "PHILIPPE",
+        text: "Verstehe. — Und Geschwister? Eltern? Irgendjemand?",
+        next: "pr5",
+      },
+      pr5: {
+        id: "pr5",
+        speaker: "LAYARD",
+        text: "Niemand mehr, mit dem ich Kontakt habe.",
+        next: "pr6",
+      },
+      pr6: {
+        id: "pr6",
+        speaker: "PHILIPPE",
+        text: "Hm. — Entschuldigen Sie. Ich frage zu viel.",
+        subtext: "Er fragt nicht zu viel. Er fragt zu wenig. Innerlich notiert er bereits.",
+        end: true,
+      },
+    },
+  },
+
+  philippeProbe2: {
+    id: "philippeProbe2",
+    start: "ps1",
+    onEnd: (api) => api.setFlag("philippeProbeNote2"),
+    lines: {
+      ps1: {
+        id: "ps1",
+        speaker: "PHILIPPE",
+        text: "Sie haben vorhin „Schreiben“ gesagt. Was schreiben Sie denn?",
+        subtext: "Er hat sich das Wort gemerkt. Er merkt sich alles.",
+        next: "ps2",
+      },
+      ps2: {
+        id: "ps2",
+        speaker: "LAYARD",
+        text: "Berichte. Manchmal. Früher Geschichten. Das ist lange vorbei.",
+        next: "ps3",
+      },
+      ps3: {
+        id: "ps3",
+        speaker: "PHILIPPE",
+        text: "Geschichten. Worüber denn? — Was hat Sie bewegt, das aufzuschreiben?",
+        next: "ps4",
+      },
+      ps4: {
+        id: "ps4",
+        speaker: "LAYARD",
+        text: "Menschen, die nicht zurückkommen. Räume, die zu lange leer stehen. Solche Dinge.",
+        subtext: "Er hat das jahrelang nicht ausgesprochen.",
+        next: "ps5",
+      },
+      ps5: {
+        id: "ps5",
+        speaker: "PHILIPPE",
+        text: "Aha. — Aha. Interessant. Sehr interessant.",
+        subtext: "Er sagt „interessant“ wie jemand, der gerade ein Puzzleteil dreht.",
+        end: true,
+      },
+    },
+  },
+
+  philippeProbe3: {
+    id: "philippeProbe3",
+    start: "pt1",
+    onEnd: (api) => api.setFlag("philippeProbeNote3"),
+    lines: {
+      pt1: {
+        id: "pt1",
+        speaker: "PHILIPPE",
+        text: "Darf ich? — Wie gehen Sie eigentlich mit dem Schmerz-Radio um? Konkret. Wie viele Stunden am Tag?",
+        subtext: "Es klingt beiläufig. Es ist nicht beiläufig.",
+        next: "pt2",
+      },
+      pt2: {
+        id: "pt2",
+        speaker: "LAYARD",
+        text: "Mehr, als die Leitstelle empfiehlt. Manche Tage fast durchgehend.",
+        next: "pt3",
+      },
+      pt3: {
+        id: "pt3",
+        speaker: "PHILIPPE",
+        text: "Und — wenn Sie es ausschalten? Was passiert dann?",
+        next: "pt4",
+      },
+      pt4: {
+        id: "pt4",
+        speaker: "LAYARD",
+        text: "Dann höre ich mich selbst.",
+        subtext: "Drei Worte. Mehr braucht es nicht.",
+        next: "pt5",
+      },
+      pt5: {
+        id: "pt5",
+        speaker: "PHILIPPE",
+        text: "Ja. Ja, das verstehe ich. — Ich meine, ich glaube, das verstehe ich.",
+        subtext: "Er versteht es nicht. Er wird es heute nacht aufschreiben.",
+        end: true,
+      },
+    },
+  },
+
+  philippeProbe4: {
+    id: "philippeProbe4",
+    start: "pu1",
+    onEnd: (api) => api.setFlag("philippeProbeNote4"),
+    lines: {
+      pu1: {
+        id: "pu1",
+        speaker: "PHILIPPE",
+        text: "Diese Insa. Bauerfeind, oder? — Wie würden Sie Ihr Verhältnis beschreiben?",
+        subtext: "Eine sehr gezielte Frage, als ginge es nur um Smalltalk.",
+        next: "pu2",
+      },
+      pu2: {
+        id: "pu2",
+        speaker: "LAYARD",
+        text: "Es gibt kein Verhältnis. Sie ist die Stimme am Telefon. Heute zum dritten Mal.",
+        next: "pu3",
+      },
+      pu3: {
+        id: "pu3",
+        speaker: "PHILIPPE",
+        text: "Dreimal. An einem Tag. — Sagt sie etwas, das nicht im Protokoll steht?",
+        next: "pu4",
+      },
+      pu4: {
+        id: "pu4",
+        speaker: "LAYARD",
+        text: "… Manchmal. Pausen. Eine Frage, die sie nicht stellen müsste.",
+        subtext: "Das hat er bisher nicht einmal sich selbst eingestanden.",
+        next: "pu5",
+      },
+      pu5: {
+        id: "pu5",
+        speaker: "PHILIPPE",
+        text: "Aha. — Verzeihen Sie. Ich höre einfach gerne zu.",
+        subtext: "Er hört nicht nur zu. Er sortiert.",
+        end: true,
+      },
+    },
+  },
+
+  philippeProbe5: {
+    id: "philippeProbe5",
+    start: "pv1",
+    onEnd: (api) => api.setFlag("philippeProbeNote5"),
+    lines: {
+      pv1: {
+        id: "pv1",
+        speaker: "PHILIPPE",
+        text: "Eine letzte Frage, dann lasse ich Sie. — Wenn Sie heute hier weggehen, kommen Sie wieder?",
+        subtext: "Er hat das schon gefragt. Er fragt es trotzdem noch einmal.",
+        next: "pv2",
+      },
+      pv2: {
+        id: "pv2",
+        speaker: "LAYARD",
+        text: "Ich weiß es nicht.",
+        next: "pv3",
+      },
+      pv3: {
+        id: "pv3",
+        speaker: "PHILIPPE",
+        text: "Das ist die ehrlichste Antwort, die ich heute gehört habe. — Danke.",
+        next: "pv4",
+      },
+      pv4: {
+        id: "pv4",
+        speaker: "PHILIPPE",
+        text: "Eines noch: Glauben Sie, dass der Mann von nebenan … freiwillig geklopft hat? Oder hat ihn etwas geklopft?",
+        subtext: "Er fragt das, als hätte er die Antwort längst formuliert.",
+        next: "pv5",
+      },
+      pv5: {
+        id: "pv5",
+        speaker: "LAYARD",
+        text: "Ich weiß es nicht, Philippe. Ich weiß heute sehr vieles nicht.",
+        next: "pv6",
+      },
+      pv6: {
+        id: "pv6",
+        speaker: "PHILIPPE",
+        text: "Gut. — Das ist gut.",
+        subtext: "Er sagt es zu sich selbst. Schon halb am Schreibtisch.",
+        end: true,
+      },
+    },
+  },
 };
