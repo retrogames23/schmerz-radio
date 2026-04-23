@@ -989,10 +989,6 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 46 — Wohnetage",
     intro:
       "Wie zuhause, nur eine Etage höher. Ein Plakat „RESONANZ-HYGIENE“ blättert ab.",
-    doorPlates: [
-      { id: "p4610", x: 11, y: 30, w: 9, label: "4610" },
-      { id: "p4611", x: 89, y: 30, w: 9, label: "4611" },
-    ],
     hotspots: [
       {
         id: "miraSpot46",
