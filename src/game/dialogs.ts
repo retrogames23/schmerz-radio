@@ -2135,15 +2135,16 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bx3: {
         id: "bx3",
-        speaker: "SYSTEM",
-        text: "Bodo: »v2.3.1.« Pause. »Ich hatte v2.0. Seit sechs Jahren v2.0.«",
+        speaker: "BODO",
+        text: "v2.3.1. — Ich hatte v2.0. Seit sechs Jahren v2.0.",
         subtext: "Er sagt das nicht laut. Er sagt es so, wie man eine Zahl ausspricht, die nicht stimmen kann.",
         next: "bx4",
       },
       bx4: {
         id: "bx4",
-        speaker: "SYSTEM",
-        text: "Bodo, langsam: »Worag. Sie haben an meinem Rechner gesessen. Mit meinem Login. Mit meinem Hostnamen. — Und Sie haben aktualisiert.«",
+        speaker: "BODO",
+        text: "Worag. Sie haben an meinem Rechner gesessen. Mit meinem Login. Mit meinem Hostnamen. — Und Sie haben aktualisiert.",
+        subtext: "Langsam. Jedes Wort einzeln gewogen.",
         next: "bx5",
       },
       bx5: {
@@ -2154,8 +2155,8 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bx6: {
         id: "bx6",
-        speaker: "SYSTEM",
-        text: "Bodo: »Ich weiß, was Sie dachten. Sie dachten gar nichts. Sie haben einfach geklickt.«",
+        speaker: "BODO",
+        text: "Ich weiß, was Sie dachten. Sie dachten gar nichts. Sie haben einfach geklickt.",
         subtext: "Er stellt die Dosen ab. Lauter, als nötig.",
         next: "bx7",
       },
@@ -2167,15 +2168,89 @@ export const dialogs: Record<string, DialogTree> = {
       },
       bx8: {
         id: "bx8",
-        speaker: "SYSTEM",
-        text: "Bodo, leiser: »Ach, Worag. — Ich war auch mal so neugierig wie Sie. Vor langer, langer Zeit.«",
+        speaker: "BODO",
+        text: "Ach, Worag. — Ich war auch mal so neugierig wie Sie. Vor langer, langer Zeit.",
+        subtext: "Leiser jetzt. Etwas weiter weg als der vorige Satz.",
         next: "bx9",
       },
       bx9: {
         id: "bx9",
-        speaker: "SYSTEM",
-        text: "Bodo: »Geht jetzt. Gehen Sie. Bevor ich es mir doch anders überlege.«",
+        speaker: "BODO",
+        text: "Geht jetzt. Gehen Sie. Bevor ich es mir doch anders überlege.",
         subtext: "Er meint es nicht. Aber heute ist heute.",
+        end: true,
+      },
+    },
+  },
+
+  // ── Bodo kommt zurück (Spieler hat NUR die Wartung 4711 storniert,
+  //    NICHT das System aktualisiert). Eigener, kürzerer Pfad ohne den
+  //    v2.3.1-Schock — Bodo merkt etwas anderes: das gelöschte Ticket. ──
+  bodoReturnsCaughtMaint: {
+    id: "bodoReturnsCaughtMaint",
+    start: "bm1",
+    onEnd: (api) => {
+      api.setFlag("bodoBackAfterB3");
+      api.setFlag("bodoNoticedIntrusion");
+    },
+    lines: {
+      bm1: {
+        id: "bm1",
+        speaker: "SYSTEM",
+        text: "[ Bodo schiebt sich durch die Tür. Tasche unter dem Arm, B3 darin. Lotti hebt den Kopf — und Bodo bleibt im Türrahmen stehen. ]",
+        next: "bm2",
+      },
+      bm2: {
+        id: "bm2",
+        speaker: "SYSTEM",
+        text: "Bodo schaut zum Terminal. Bildschirm steht — fast — wie er ihn verlassen hat. Eine Zeile zu viel im Verlauf.",
+        next: "bm3",
+      },
+      bm3: {
+        id: "bm3",
+        speaker: "BODO",
+        text: "Wartung 4711. Storniert. Heute Mittag, von meinem Hostnamen aus. Hm.",
+        subtext: "Keine Frage. Eine Feststellung.",
+        next: "bm4",
+      },
+      bm4: {
+        id: "bm4",
+        speaker: "BODO",
+        text: "Worag. Sie haben an meinem Rechner gesessen. Mit meinem Login. — Und Sie haben in ein Ticket eingegriffen, das Sie nichts angeht.",
+        subtext: "Langsam. Ohne Lautstärke. Das ist schlimmer.",
+        next: "bm5",
+      },
+      bm5: {
+        id: "bm5",
+        speaker: "LAYARD",
+        text: "Der Aufzug stand. Ich konnte sonst nirgendwo hin. Es war keine Wartung — es war ein Riegel.",
+        next: "bm6",
+      },
+      bm6: {
+        id: "bm6",
+        speaker: "BODO",
+        text: "Das wussten Sie. Und Sie haben trotzdem geklickt. — Das ist genau so klug, wie es klingt.",
+        subtext: "Er stellt die Dosen ab. Nicht laut. Sehr bestimmt.",
+        next: "bm7",
+      },
+      bm7: {
+        id: "bm7",
+        speaker: "SYSTEM",
+        text: "[ Stille. Lotti schaut zwischen beiden hin und her. Bodo zieht die Jacke aus. Setzt sich. ]",
+        next: "bm8",
+      },
+      bm8: {
+        id: "bm8",
+        speaker: "BODO",
+        text: "Ach, Worag. — Ich war auch mal so neugierig wie Sie. Vor langer, langer Zeit.",
+        subtext: "Leiser jetzt. Etwas weiter weg als der vorige Satz.",
+        next: "bm9",
+      },
+      bm9: {
+        id: "bm9",
+        speaker: "BODO",
+        text: "Gehen Sie. Bevor ich es mir doch anders überlege. Und nehmen Sie Ihre Idee von Mut gleich mit.",
+        subtext: "Er meint es nicht ganz. Aber heute ist heute.",
         end: true,
       },
     },
