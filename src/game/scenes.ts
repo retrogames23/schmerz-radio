@@ -601,8 +601,20 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 50,
         label: "Tür 2613 (Philippe)",
-        requires: ["doorBrokenOpen"],
-        onUse: (api) => api.goTo("apt2613"),
+        onUse: (api) => {
+          // Vor dem Klingeln (= vor der Resonanz-Überlastung) ist Philippe
+          // unterwegs im Komplex. Er öffnet nicht.
+          if (!api.hasFlag("metPhilippe")) {
+            api.showText([
+              "Layard klopft an 2613.",
+              "Drinnen: nichts. Kein Stuhl, der zurückgeschoben wird.",
+              "Kein „Moment“. Nicht einmal die Lampe brummt.",
+              "Philippe ist nicht zu Hause.",
+            ]);
+            return;
+          }
+          api.goTo("apt2613");
+        },
       },
       // Tür 2615 — der Mann an der Wand. Solange aufgebrochen begehbar,
       // sobald die Sanitäter ihn abtransportiert haben: versiegelt.
@@ -641,7 +653,6 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 50,
         label: "Tür 2610 (Helka Vint)",
-        requires: ["doorBrokenOpen"],
         onUse: (api) => {
           if (!api.hasFlag("metHelka")) {
             api.setFlag("metHelka");
@@ -674,7 +685,6 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 52,
         label: "Tür 2612 (Bodo Marschke)",
-        requires: ["doorBrokenOpen"],
         onUse: (api) => api.goTo("apt2612"),
       },
       // Tür 2614 — Ennis Korr. Nur Türgespräch.
@@ -685,7 +695,6 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 50,
         label: "Tür 2614 (Ennis Korr)",
-        requires: ["doorBrokenOpen"],
         onUse: (api) => {
           if (!api.hasFlag("metEnnis")) {
             api.setFlag("metEnnis");
