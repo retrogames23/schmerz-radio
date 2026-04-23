@@ -35,6 +35,7 @@ export type StoryFlag =
   | "radioTunedTo1046"
   | "doorbellRang"
   | "metPhilippe"
+  | "metPhilippeBefore"
   | "knockingHeard"
   | "talkedPhilippe2613"
   | "calledLeitstelle"

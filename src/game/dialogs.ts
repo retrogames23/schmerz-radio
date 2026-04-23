@@ -6,15 +6,24 @@ export const dialogs: Record<string, DialogTree> = {
   // ---------------------------------------------------------------
   philippeAtDoor: {
     id: "philippeAtDoor",
-    start: "p1",
+    start: "p0",
     onEnd: (api) => {
       api.goTo("apt2613");
     },
     lines: {
+      // Erstkontakt — die beiden kennen sich noch nicht.
+      p0: {
+        id: "p0",
+        speaker: "SYSTEM",
+        text: "[ Layard öffnet die Tür. ]",
+        hiddenWhen: ["metPhilippeBefore"],
+        next: "p1",
+      },
       p1: {
         id: "p1",
         speaker: "SYSTEM",
-        text: "[ Layard öffnet die Tür. Im Korridor steht ein Mann Anfang 40. Scheu. Murmelt verhalten. Sein Gesicht: besorgt. ]",
+        text: "[ Im Korridor steht ein Mann Anfang 40. Scheu. Murmelt verhalten. Sein Gesicht: besorgt. ]",
+        hiddenWhen: ["metPhilippeBefore"],
         next: "p2",
       },
       p2: {
@@ -22,12 +31,38 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "PHILIPPE",
         text: "Hallo. Ich bin Philippe. Ich … habe ein Problem. Ich weiß nicht, was ich tun soll.",
         subtext: "Echte Angst. Er hat das nicht im Schauspielkurs gelernt.",
+        hiddenWhen: ["metPhilippeBefore"],
         next: "p3",
+      },
+      // Wiedersehen — Philippe stand vorher schon Layard im Komplex
+      // gegenüber (Lobby / Korridor 36 / Korridor 46).
+      pR1: {
+        id: "pR1",
+        speaker: "SYSTEM",
+        text: "[ Layard öffnet die Tür. Auf der Schwelle: Philippe. Derselbe beige Cardigan, derselbe scheue Blick — nur jetzt blass. ]",
+        requires: ["metPhilippeBefore"],
+        next: "pR2",
+      },
+      pR2: {
+        id: "pR2",
+        speaker: "PHILIPPE",
+        text: "Worag. — Tut mir leid. Ich weiß, wir haben uns vorhin erst gesehen. Ich wäre nicht gekommen, wenn …",
+        subtext: "Er hat lange im Korridor gestanden, bevor er geklingelt hat.",
+        requires: ["metPhilippeBefore"],
+        next: "pR3",
+      },
+      pR3: {
+        id: "pR3",
+        speaker: "LAYARD",
+        text: "Schon gut, Philippe. Was ist los?",
+        requires: ["metPhilippeBefore"],
+        next: "p4",
       },
       p3: {
         id: "p3",
         speaker: "LAYARD",
         text: "Was für ein Problem?",
+        hiddenWhen: ["metPhilippeBefore"],
         next: "p4",
       },
       p4: {
@@ -662,6 +697,9 @@ export const dialogs: Record<string, DialogTree> = {
   philippeInLobby: {
     id: "philippeInLobby",
     start: "pl1",
+    onEnd: (api) => {
+      api.setFlag("metPhilippeBefore");
+    },
     lines: {
       pl1: {
         id: "pl1",
@@ -701,6 +739,9 @@ export const dialogs: Record<string, DialogTree> = {
   philippeInCorridor36: {
     id: "philippeInCorridor36",
     start: "pc1",
+    onEnd: (api) => {
+      api.setFlag("metPhilippeBefore");
+    },
     lines: {
       pc1: {
         id: "pc1",
@@ -739,6 +780,9 @@ export const dialogs: Record<string, DialogTree> = {
   philippeInCorridor46: {
     id: "philippeInCorridor46",
     start: "pq1",
+    onEnd: (api) => {
+      api.setFlag("metPhilippeBefore");
+    },
     lines: {
       pq1: {
         id: "pq1",
