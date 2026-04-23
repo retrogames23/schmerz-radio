@@ -13,6 +13,7 @@ import passageBg from "@/assets/scene-passage.jpg";
 import corridor36Bg from "@/assets/scene-corridor-36.jpg";
 import corridor46Bg from "@/assets/scene-corridor-46.jpg";
 import corridor56Bg from "@/assets/scene-corridor-56.jpg";
+import miraSprite from "@/assets/npc-mira.png";
 import type { Scene } from "./types";
 
 export const scenes: Record<string, Scene> = {
@@ -1025,6 +1026,19 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 36 — Verwaltung E67",
     intro:
       "Andere Beleuchtung als zuhause. Sterilere Türen. Vor einer davon — 3601 — ein handgeschriebenes Schild.",
+    npcs: [
+      {
+        id: "miraSprite36",
+        src: miraSprite,
+        x: 22,
+        y: 36,
+        w: 14,
+        h: 54,
+        alt: "Junge Frau, an die Wand gelehnt",
+        hiddenWhen: ["tookFlyer"],
+        visible: (api) => api.getMiraFloor() === 3,
+      },
+    ],
     hotspots: [
       {
         id: "officeDoor",
@@ -1089,6 +1103,19 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 46 — Wohnetage",
     intro:
       "Wie zuhause, nur eine Etage höher. Ein Plakat „RESONANZ-HYGIENE“ blättert ab.",
+    npcs: [
+      {
+        id: "miraSprite46",
+        src: miraSprite,
+        x: 22,
+        y: 36,
+        w: 14,
+        h: 54,
+        alt: "Junge Frau, an die Wand gelehnt",
+        hiddenWhen: ["tookFlyer"],
+        visible: (api) => api.getMiraFloor() === 4,
+      },
+    ],
     hotspots: [
       {
         id: "miraSpot46",
@@ -1141,6 +1168,19 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 56 — Dachetage",
     intro:
       "Oben. Am Ende des Korridors: ein vergittertes Fenster auf einen grauen Himmel.",
+    npcs: [
+      {
+        id: "miraSprite56",
+        src: miraSprite,
+        x: 22,
+        y: 36,
+        w: 14,
+        h: 54,
+        alt: "Junge Frau, an die Wand gelehnt",
+        hiddenWhen: ["tookFlyer"],
+        visible: (api) => api.getMiraFloor() === 5,
+      },
+    ],
     hotspots: [
       {
         id: "miraSpot56",

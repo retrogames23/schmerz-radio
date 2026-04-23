@@ -113,6 +113,8 @@ export interface Scene {
   hotspots: Hotspot[];
   /** Optional pixel-style door number plates rendered as overlays. */
   doorPlates?: DoorPlate[];
+  /** Optional sichtbare Figuren / Sprites, die über dem Hintergrund liegen. */
+  npcs?: NpcSprite[];
 }
 
 export interface DoorPlate {
@@ -124,6 +126,23 @@ export interface DoorPlate {
   label: string;
   requires?: StoryFlag[];
   hiddenWhen?: StoryFlag[];
+}
+
+export interface NpcSprite {
+  id: string;
+  src: string;
+  /** % positions on background image (top-left anchor of the sprite box) */
+  x: number;
+  y: number;
+  /** width as % of the scene */
+  w: number;
+  /** height as % of the scene */
+  h: number;
+  alt: string;
+  requires?: StoryFlag[];
+  hiddenWhen?: StoryFlag[];
+  /** custom visibility predicate (e.g. nur auf Miras Etage anzeigen) */
+  visible?: (api: GameApi) => boolean;
 }
 
 export interface DialogChoice {
