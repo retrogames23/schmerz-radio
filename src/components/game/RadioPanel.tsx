@@ -177,9 +177,11 @@ export function RadioPanel() {
               setRadioActive(false);
               closeRadio();
             }}
-            className="text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground"
+            aria-label="Radio schließen"
+            className="flex items-center gap-2 rounded-sm border border-amber-glow/50 bg-background/60 px-2 py-1 text-xs uppercase tracking-widest text-amber-glow transition hover:bg-amber-glow/20 hover:text-foreground"
           >
-            ✕ Loslassen
+            <span className="flex h-5 w-5 items-center justify-center">✕</span>
+            <span>Loslassen</span>
           </button>
         </div>
 
