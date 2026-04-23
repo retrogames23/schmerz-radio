@@ -470,8 +470,8 @@ export const dialogs: Record<string, DialogTree> = {
       x4: {
         id: "x4",
         speaker: "INSA",
-        text: "Den darf ich nicht direkt herausgeben. Aber er steht in der Mail, die ich Ihnen gerade ins Terminal lege. Sie wissen schon — das Datum.",
-        subtext: "Sie hätte ihn sagen können. Sie wollte nicht.",
+        text: "Ich habe den Code extra für Sie geändert. Direkt herausgeben darf ich ihn trotzdem nicht — er steht in der Mail, die ich Ihnen gerade ins Terminal lege. Sie wissen schon: das Datum.",
+        subtext: "Extra für ihn. Sie sagt es so beiläufig, als wäre es Teil des Standardprotokolls. Ist es nicht.",
         next: "x5",
         choices: [
           {
