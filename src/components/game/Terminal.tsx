@@ -1151,18 +1151,18 @@ export function Terminal() {
         2 + (flags.has("calledForCode") ? 1 : 0) + (showExitMail ? 1 : 0);
       newLines.push(
         { text: `POSTEINGANG (${count}):`, kind: "system" },
-        { text: "  [001] Insa Bauerfeind — Wartungsfenster Gateway", kind: "out" },
-        { text: "  [002] Stegmann (IT)  — Bitte: Störungsmeldung einreichen", kind: "out" },
+        { text: "  [001] 06.11.1997  Insa Bauerfeind — Wartungsfenster Gateway", kind: "out" },
+        { text: "  [002] 04.11.1997  Stegmann (IT)    — Bitte: Störungsmeldung einreichen", kind: "out" },
       );
       if (showExitMail) {
         newLines.push({
-          text: "  [004] Leitstelle E67 — Ausgangsmeldung: Standardprotokoll  ✶NEU",
+          text: "  [004] 06.11.1997  Leitstelle E67   — Ausgangsmeldung: Standardprotokoll  ✶NEU",
           kind: "system",
         });
       }
       if (flags.has("calledForCode")) {
         newLines.push({
-          text: "  [003] Insa Bauerfeind — Sektor-Tür: Manueller Code  ✶NEU",
+          text: "  [003] 06.11.1997  Insa Bauerfeind — Sektor-Tür: Manueller Code  ✶NEU",
           kind: "system",
         });
       }
@@ -1184,6 +1184,7 @@ export function Terminal() {
       newLines.push(
         { text: "── Nachricht 002 ─────────────────────", kind: "system" },
         { text: "Von:    Stegmann (Zentral-IT)", kind: "out" },
+        { text: "Datum:  04.11.1997 09:12", kind: "out" },
         { text: "Betreff: Störungsmeldungen", kind: "out" },
         { text: "", kind: "out" },
         { text: "Bitte melden Sie Netzstörungen umgehend.", kind: "out" },
@@ -1197,6 +1198,7 @@ export function Terminal() {
         newLines.push(
           { text: "── Nachricht 003 ─────────────────────", kind: "system" },
           { text: "Von:    Bauerfeind, I.", kind: "out" },
+          { text: "Datum:  06.11.1997 16:48", kind: "out" },
           { text: "Betreff: Sektor-Tür — Manueller Code", kind: "out" },
           { text: "", kind: "out" },
           { text: "Wie besprochen. Sie kennen das Datum.", kind: "out" },
@@ -1216,6 +1218,7 @@ export function Terminal() {
         newLines.push(
           { text: "── Nachricht 004 ─────────────────────", kind: "system" },
           { text: "Von:    Bauerfeind, I. (Leitstelle E67)", kind: "out" },
+          { text: "Datum:  06.11.1997 15:55", kind: "out" },
           { text: "Betreff: Ausgangsmeldung — Standardprotokoll", kind: "out" },
           { text: "", kind: "out" },
           { text: "Bitte melden Sie Ihren Ausgang aus E67 elektronisch:", kind: "out" },
