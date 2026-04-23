@@ -731,8 +731,18 @@ export const scenes: Record<string, Scene> = {
         w: 16,
         h: 30,
         label: "Aufzug",
-        requires: ["protocolReceived"],
-        onUse: (api) => api.goTo("elevator"),
+        onUse: (api) => {
+          if (!api.hasFlag("protocolReceived")) {
+            api.showText([
+              "Der Aufzug. Ein dunkler Spalt zwischen den Türen,",
+              "ein Lichtschacht, der nach unten flackert.",
+              "Layard bleibt stehen. Nicht jetzt — er hat hier oben",
+              "noch etwas zu Ende zu bringen.",
+            ]);
+            return;
+          }
+          api.goTo("elevator");
+        },
       },
     ],
   },
