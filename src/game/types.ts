@@ -50,6 +50,8 @@ export type StoryFlag =
   | "skippedExitReport"
   | "calledStegmann"
   | "calledForCode"
+  | "centralOsUpdated"
+  | "troubleReported"
   | "sectorDoorOpen"
   | "feetWontMove"
   | "elevatorTaken"
