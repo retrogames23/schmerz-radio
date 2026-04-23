@@ -3,6 +3,7 @@ import hallwayBg from "@/assets/scene-hallway.jpg";
 import philippeBg from "@/assets/scene-philippe.jpg";
 import apt2613Bg from "@/assets/scene-apt-2613.jpg";
 import apt2615Bg from "@/assets/scene-apt-2615.jpg";
+import apt2612Bg from "@/assets/scene-apt-2612.jpg";
 import sectorBg from "@/assets/scene-sector-door.jpg";
 import e71LobbyBg from "@/assets/scene-e71-lobby.jpg";
 import corridor15Bg from "@/assets/scene-corridor-15.jpg";
