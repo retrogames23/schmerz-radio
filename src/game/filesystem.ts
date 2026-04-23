@@ -22,8 +22,11 @@ export type FsNode = FsFile | FsDir;
  * Virtual filesystem of CentralOS — accessible from the Terminal via
  * `ls`, `cd`, `cat`, `tree`, `pwd`. Hidden files appear once their
  * `requires` StoryFlag is set in the GameContext.
+ *
+ * Root layout follows a Unix-like convention. The player's home is
+ * `/home/worag` — the Terminal starts there.
  */
-export const FILESYSTEM: FsDir = {
+const HOME_WORAG: FsDir = {
   type: "dir",
   name: "worag",
   desc: "Persönliches Verzeichnis — Worag, L.",
