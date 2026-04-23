@@ -63,6 +63,10 @@ export const dialogs: Record<string, DialogTree> = {
   philippeIn2613: {
     id: "philippeIn2613",
     start: "q1",
+    onEnd: (api) => {
+      // Erste tiefere Begegnung → Philippe macht sich seine erste Notiz.
+      api.setFlag("philippeNote1");
+    },
     lines: {
       q1: {
         id: "q1",
@@ -158,6 +162,13 @@ export const dialogs: Record<string, DialogTree> = {
   philippeSmalltalk: {
     id: "philippeSmalltalk",
     start: "k1",
+    onEnd: (api) => {
+      // Bei jedem weiteren Smalltalk: nächste freie Notiz auf Philippes Rechner.
+      if (!api.hasFlag("philippeNote2")) api.setFlag("philippeNote2");
+      else if (!api.hasFlag("philippeNote3")) api.setFlag("philippeNote3");
+      else if (!api.hasFlag("philippeNote4")) api.setFlag("philippeNote4");
+      else if (!api.hasFlag("philippeNote5")) api.setFlag("philippeNote5");
+    },
     lines: {
       k1: {
         id: "k1",
@@ -501,6 +512,12 @@ export const dialogs: Record<string, DialogTree> = {
   philippeAfter: {
     id: "philippeAfter",
     start: "pa1",
+    onEnd: (api) => {
+      // „Sie gehen also wirklich.“ — eine eigene, finale Beobachtung.
+      if (!api.hasFlag("philippeNote3")) api.setFlag("philippeNote3");
+      else if (!api.hasFlag("philippeNote4")) api.setFlag("philippeNote4");
+      else if (!api.hasFlag("philippeNote5")) api.setFlag("philippeNote5");
+    },
     lines: {
       pa1: {
         id: "pa1",
