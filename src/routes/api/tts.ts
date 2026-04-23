@@ -134,6 +134,31 @@ export const Route = createFileRoute("/api/tts")({
           ? Math.max(0.7, Math.min(1.2, body.speed))
           : 1.0;
 
+        // ── Server-side cache lookup (Lovable Cloud Storage) ────────
+        // Every unique (voiceId, speed, text) is only generated once
+        // and reused across ALL players from then on.
+        const cacheKey = hashKey(voiceId, String(speed), text);
+        const objectPath = `${cacheKey}.mp3`;
+
+        try {
+          const { data: cached } = await supabaseAdmin.storage
+            .from(TTS_BUCKET)
+            .download(objectPath);
+          if (cached) {
+            const buf = await cached.arrayBuffer();
+            return new Response(buf, {
+              status: 200,
+              headers: {
+                "Content-Type": "audio/mpeg",
+                "Cache-Control": "public, max-age=31536000, immutable",
+                "X-TTS-Cache": "hit",
+              },
+            });
+          }
+        } catch {
+          // Miss or transient storage error — fall through to ElevenLabs.
+        }
+
         const elResp = await fetch(
           `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voiceId)}?output_format=mp3_44100_128`,
           {
@@ -173,11 +198,28 @@ export const Route = createFileRoute("/api/tts")({
         }
 
         const audio = await elResp.arrayBuffer();
+
+        // Persist to Cloud Storage so future requests (from ANY player)
+        // skip ElevenLabs. Fire-and-forget; do not block the response.
+        void supabaseAdmin.storage
+          .from(TTS_BUCKET)
+          .upload(objectPath, audio, {
+            contentType: "audio/mpeg",
+            cacheControl: "31536000",
+            upsert: false,
+          })
+          .then(({ error }) => {
+            if (error && !/already exists|duplicate/i.test(error.message)) {
+              console.warn("TTS cache upload failed:", error.message);
+            }
+          });
+
         return new Response(audio, {
           status: 200,
           headers: {
             "Content-Type": "audio/mpeg",
             "Cache-Control": "public, max-age=31536000, immutable",
+            "X-TTS-Cache": "miss",
           },
         });
       },
