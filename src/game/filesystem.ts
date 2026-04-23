@@ -535,6 +535,112 @@ const HOME_WORAG: FsDir = {
 /** Where the terminal starts ("cd ~" returns here). */
 export const HOME_PATH: string[] = ["home", "worag"];
 
+/** Home-Verzeichnis bei Bodo (alternativer Terminal-Modus). */
+export const HOME_PATH_BODO: string[] = ["home", "bodo"];
+
+const HOME_BODO: FsDir = {
+  type: "dir",
+  name: "bodo",
+  desc: "Persönliches Verzeichnis — Marschke, B.",
+  children: [
+    {
+      type: "file",
+      name: "lotti.txt",
+      kind: "text",
+      size: 480,
+      date: "—",
+      content: [
+        "── notiz an mich, weil ich vergesse ─────────",
+        "",
+        "wenn du heute morgen wieder nicht weißt, warum",
+        "du aufgestanden bist:",
+        "",
+        "          LOTTI.",
+        "",
+        "vierzehn jahre, grau-getigert, frisst nur B3.",
+        "schläft auf dem sessel mit der decke.",
+        "wenn der napf leer ist, wird sie laut. das ist",
+        "die einzige stelle in dieser wohnung, an der",
+        "noch jemand laut wird.",
+      ],
+    },
+    {
+      type: "file",
+      name: "b3_bestand.txt",
+      kind: "text",
+      size: 360,
+      date: "06.11.1997",
+      content: [
+        "── B3-vorrat, stand 06.11. ───────────────────",
+        "",
+        "  rind-äquivalent     2 dosen   (knapp)",
+        "  fisch-äquivalent    0 dosen   (aus)",
+        "  trockenfutter       1/4 packung",
+        "",
+        "anmerkung: nächste lieferung erst freitag.",
+        "wenn ich nicht heute noch los, wird sie laut.",
+        "und wenn lotti laut wird, wird der korridor laut.",
+      ],
+    },
+    {
+      type: "file",
+      name: "stadtwerke_alt.txt",
+      kind: "text",
+      size: 540,
+      date: "1991",
+      content: [
+        "── persönlicher auszug, mitgenommen 1991 ─────",
+        "",
+        "trägersignal 104,6 MHz — manuell nachregeln,",
+        "alle 90 sekunden, schicht: 1 person.",
+        "",
+        "ich war diese person, von 1986 bis 1991.",
+        "ich hab nie jemandem davon erzählt.",
+        "vielleicht habe ich gerade jetzt jemandem",
+        "davon erzählt. ich weiß nicht mehr genau,",
+        "wer heute hier war.",
+      ],
+    },
+    {
+      type: "file",
+      name: "todo.txt",
+      kind: "text",
+      size: 220,
+      date: "—",
+      content: [
+        "  [ ] B3 nachholen (rind + fisch)",
+        "  [ ] kratzbaum reparieren",
+        "  [ ] decke waschen — oder nicht. lotti riecht",
+        "      sich selbst gern.",
+        "  [ ] das system irgendwann mal aktualisieren.",
+        "      vielleicht. v2.0 läuft seit jahren stabil.",
+      ],
+    },
+    {
+      type: "file",
+      name: ".alt_brief.txt",
+      kind: "text",
+      size: 420,
+      date: "—",
+      content: [
+        "── nie abgeschickt ───────────────────────────",
+        "",
+        "liebe e.,",
+        "",
+        "es ist jetzt zwölf jahre her. ich glaube,",
+        "ich erkenne deine handschrift nicht mehr,",
+        "wenn sie käme. aber ich erkenne, dass keine",
+        "kommt. das ist auch eine art handschrift.",
+        "",
+        "die katze ist gut. sie schläft viel.",
+        "ich auch.",
+        "",
+        "                                          — b.",
+      ],
+    },
+  ],
+};
+
 const SYSTEM_DIR: FsDir = {
   type: "dir",
   name: "system",
@@ -614,6 +720,7 @@ export const FILESYSTEM: FsDir = {
       desc: "Benutzerverzeichnisse.",
       children: [
         HOME_WORAG,
+        HOME_BODO,
       ],
     },
     {
