@@ -48,10 +48,10 @@ export function Ending() {
       {done && (
         <div className="slow-fade-in mt-12 space-y-3 text-center">
           <div className="font-mono-crt text-sm uppercase tracking-[0.4em] text-amber-glow amber-glow">
-            AKT I — ENDE
+            AKT II — ENDE
           </div>
           <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            Schmerz-Radio auf 104,6
+            Schmerz-Radio auf 104,6 — Fortsetzung folgt
           </div>
           <button
             type="button"
