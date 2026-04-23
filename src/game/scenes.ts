@@ -143,9 +143,11 @@ export const scenes: Record<string, Scene> = {
         w: 22,
         h: 65,
         label: "Philippe",
+        requires: ["knockingHeard"],
         hiddenWhen: ["paramedicsArrived"],
         onUse: (api) => {
           if (!api.hasFlag("calledLeitstelle")) {
+            api.setFlag("talkedPhilippe2613");
             api.startDialog("philippeIn2613");
           } else {
             api.startDialog("philippeSmalltalk");
@@ -178,7 +180,7 @@ export const scenes: Record<string, Scene> = {
         w: 18,
         h: 38,
         label: "Telefon (Wandapparat)",
-        requires: ["knockingHeard"],
+        requires: ["talkedPhilippe2613"],
         hiddenWhen: ["calledLeitstelle"],
         onUse: (api) => {
           api.setFlag("calledLeitstelle");
