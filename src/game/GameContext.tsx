@@ -202,8 +202,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setDialogId(id);
         setDialogLineId(tree.start);
       },
-      openTerminal: () => setTerminalOpen(true),
-      openRadio: () => setRadioOpen(true),
+      openTerminal: () => {
+        setRadioOpen(false);
+        setTerminalOpen(true);
+      },
+      openRadio: () => {
+        setTerminalOpen(false);
+        setRadioOpen(true);
+      },
       openKeypad: () => setKeypadOpen(true),
       isRadioActive: () => radioActiveRef.current,
       setEnding: () => setEnding(true),
