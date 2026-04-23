@@ -731,7 +731,31 @@ export const scenes: Record<string, Scene> = {
         w: 16,
         h: 30,
         label: "Aufzug",
+        hiddenWhen: ["elevatorMaintBlocked"],
         onUse: (api) => api.goTo("elevator"),
+      },
+      // Solange Wartungssperre 4711 auf dem Aufzug liegt: er fährt nicht.
+      // Layard kann an Bodos Terminal `maint cancel 4711` ausführen, sobald
+      // Bodo unterwegs ist (bodoLeftForB3 && !bodoBackAfterB3).
+      {
+        id: "toSectorBlocked",
+        x: 42,
+        y: 42,
+        w: 16,
+        h: 30,
+        label: "Aufzug (gesperrt — Wartung 4711)",
+        requires: ["elevatorMaintBlocked"],
+        hiddenWhen: ["elevatorMaintCleared"],
+        onUse: (api) => {
+          api.setFlag("elevatorMaintSeen");
+          api.showText([
+            "Ein roter LED-Streifen über der Aufzugstür blinkt zweimal.",
+            "Display: „WARTUNGSANFRAGE 4711 — AUFZUG GESPERRT“.",
+            "Darunter, kleiner: „Stornierung über Hausmeister-Konsole.“",
+            "Layards eigenes Terminal kann diese Sperre nur lesen,",
+            "nicht löschen. Sein Account hat dafür keine Rechte.",
+          ]);
+        },
       },
     ],
   },
