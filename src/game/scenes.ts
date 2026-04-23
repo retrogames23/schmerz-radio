@@ -2,7 +2,8 @@ import apartmentBg from "@/assets/scene-apartment.jpg";
 import hallwayBg from "@/assets/scene-hallway.jpg";
 import apt2613Bg from "@/assets/scene-apt-2613.jpg";
 import apt2615Bg from "@/assets/scene-apt-2615.jpg";
-import apt2612Bg from "@/assets/scene-apt-2612.png";
+import apt2612BgEmpty from "@/assets/scene-apt-2612.png";
+import apt2612BgBodo from "@/assets/scene-apt-2612-bodo.png";
 import sectorBg from "@/assets/scene-sector-door.jpg";
 import e71LobbyBg from "@/assets/scene-e71-lobby.jpg";
 import corridor15Bg from "@/assets/scene-corridor-15.jpg";
@@ -15,8 +16,6 @@ import corridor46Bg from "@/assets/scene-corridor-46.jpg";
 import corridor56Bg from "@/assets/scene-corridor-56.jpg";
 import miraSprite from "@/assets/npc-mira.png";
 import philippeSprite from "@/assets/npc-philippe.png";
-import bodoSprite from "@/assets/npc-bodo.png";
-// Bodo ist das einzige Sprite in 2612 — Lotti & Bildschirm sind Teil des Hintergrunds.
 import type { Scene } from "./types";
 
 export const scenes: Record<string, Scene> = {
@@ -421,23 +420,15 @@ export const scenes: Record<string, Scene> = {
   // Bodos Wohnung (2612). Begehbar ab doorBrokenOpen.
   apt2612: {
     id: "apt2612",
-    background: apt2612Bg,
+    // Solange Bodo da ist: Bild mit Bodo. Sobald er für B3 unterwegs ist:
+    // identisches Bild ohne Bodo.
+    background: (api) =>
+      api.hasFlag("bodoLeftForB3") && !api.hasFlag("bodoBackAfterB3")
+        ? apt2612BgEmpty
+        : apt2612BgBodo,
     title: "Wohnung 2612 — Bodo Marschke",
     intro:
       "Warmes Lampenlicht. Es riecht nach altem Kraut, das jemand „Tee“ nennt. Bodo sitzt tief im Sessel, die Katze hat den vorderen Platz auf der Decke längst für sich beansprucht.",
-    npcs: [
-      {
-        id: "bodoSprite",
-        src: bodoSprite,
-        // Sitzt im gelben Sessel links — exakt aus dem Hintergrund ausgeschnitten.
-        x: 14,
-        y: 36,
-        w: 30,
-        h: 60,
-        alt: "Bodo sitzt im Sessel",
-        hiddenWhen: ["bodoLeftForB3"],
-      },
-    ],
     hotspots: [
       {
         id: "bodoNpc",

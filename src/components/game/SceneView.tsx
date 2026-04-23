@@ -5,6 +5,10 @@ import { Hotspot } from "./Hotspot";
 export function SceneView() {
   const { scene, caption, radioActive, resonance, flags, api } = useGame();
   const current = scenes[scene];
+  const backgroundSrc =
+    typeof current.background === "function"
+      ? current.background(api)
+      : current.background;
   const [showIntro, setShowIntro] = useState(true);
   // Wackelt nur für max. 10 Sekunden ab dem Moment, in dem die Überlastung beginnt.
   const [shakeActive, setShakeActive] = useState(false);
@@ -55,7 +59,7 @@ export function SceneView() {
       {/* Inner 4:3 stage — keeps existing percent-based coordinates intact */}
       <div className="relative mx-auto aspect-[4/3] h-full">
         <img
-          src={current.background}
+          src={backgroundSrc}
           alt={current.title}
           className="pointer-events-none absolute inset-0 h-full w-full object-cover"
         />
