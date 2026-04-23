@@ -445,10 +445,10 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "monitor",
-        x: 22,
-        y: 25,
-        w: 22,
-        h: 18,
+        x: 14,
+        y: 30,
+        w: 20,
+        h: 22,
         label: "Status-Monitor",
         onUse: (api) =>
           api.showText([
@@ -460,10 +460,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "keypadCall",
-        x: 60,
-        y: 50,
-        w: 18,
-        h: 30,
+        x: 16,
+        y: 54,
+        w: 16,
+        h: 20,
         label: "Keypad — Code eingeben",
         onUse: (api) => {
           if (!api.hasFlag("calledForCode")) {
@@ -480,9 +480,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "toPassage",
-        x: 82,
-        y: 30,
-        w: 16,
+        x: 48,
+        y: 26,
+        w: 38,
         h: 60,
         label: "Sektor-Tür öffnen → Verbindungsgang",
         requires: ["sectorDoorOpen"],
