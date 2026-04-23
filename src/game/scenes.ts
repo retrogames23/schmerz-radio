@@ -308,9 +308,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "exit2613",
         // Türrahmen ganz rechts (hinter Philippe).
-        x: 90,
+        x: 94,
         y: 18,
-        w: 10,
+        w: 6,
         h: 80,
         label: "In den Korridor",
         requires: ["doorBrokenOpen"],
@@ -432,10 +432,10 @@ export const scenes: Record<string, Scene> = {
         id: "bodoSprite",
         src: bodoSprite,
         // Bodo sitzt im Sessel — Größe an Sessel angepasst.
-        x: 8,
-        y: 18,
-        w: 42,
-        h: 80,
+        x: 10,
+        y: 24,
+        w: 34,
+        h: 66,
         alt: "Bodo Marschke",
       },
     ],
@@ -443,10 +443,10 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bodoNpc",
         // Deckungsgleich mit dem im Sessel sitzenden Bodo-Sprite.
-        x: 10,
-        y: 22,
-        w: 38,
-        h: 75,
+        x: 12,
+        y: 28,
+        w: 30,
+        h: 58,
         label: "Bodo Marschke",
         onUse: (api) => {
           if (!api.hasFlag("metBodo")) {
