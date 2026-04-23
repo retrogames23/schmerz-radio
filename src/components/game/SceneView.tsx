@@ -55,24 +55,6 @@ export function SceneView() {
         <Hotspot key={h.id} hotspot={h} />
       ))}
 
-      {/* Door number plates */}
-      {current.doorPlates?.map((p) => {
-        const reqOk = !p.requires || p.requires.every((f) => flags.has(f));
-        const hideOk = !p.hiddenWhen || !p.hiddenWhen.some((f) => flags.has(f));
-        if (!reqOk || !hideOk) return null;
-        return (
-          <div
-            key={p.id}
-            className="pointer-events-none absolute z-10 -translate-x-1/2 select-none"
-            style={{ left: `${p.x}%`, top: `${p.y}%`, width: `${p.w}%` }}
-          >
-            <div className="rounded-[2px] border border-amber-glow/30 bg-black/85 px-1.5 py-0.5 text-center font-mono-crt text-[clamp(0.65rem,1.4vw,1.05rem)] font-bold tracking-widest text-amber-glow shadow-[0_0_6px_rgba(0,0,0,0.7)]">
-              {p.label}
-            </div>
-          </div>
-        );
-      })}
-
       {/* Second-call hotspot in Philippe scene if needed */}
       {scene === "philippe" &&
         flags.has("protocolReceived") &&
