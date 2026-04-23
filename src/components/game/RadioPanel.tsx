@@ -8,12 +8,54 @@ import {
 } from "@/audio/sfx";
 
 const BANDS = [
-  { from: 100.0, to: 101.9, label: "Angst / Panik", art: "Statisch, zitternd" },
-  { from: 102.0, to: 103.4, label: "Einsamkeit", art: "Dumpf, wogend" },
-  { from: 103.5, to: 104.5, label: "Trauer", art: "Fließend, warm" },
-  { from: 104.6, to: 104.6, label: "Engel-Trauer", art: "Kristallklar, tief" },
-  { from: 105.0, to: 106.5, label: "Sehnsucht", art: "Pulsierend" },
-  { from: 107.0, to: 108.0, label: "Gestörte Signale", art: "Rauschen" },
+  {
+    from: 100.0,
+    to: 101.9,
+    label: "Angst / Panik",
+    art: "Statisch, zitternd",
+    style: "panic" as const,
+    color: "bg-destructive",
+  },
+  {
+    from: 102.0,
+    to: 103.4,
+    label: "Einsamkeit",
+    art: "Dumpf, wogend",
+    style: "lonely" as const,
+    color: "bg-phosphor-dim",
+  },
+  {
+    from: 103.5,
+    to: 104.5,
+    label: "Trauer",
+    art: "Fließend, warm",
+    style: "grief" as const,
+    color: "bg-amber-glow/70",
+  },
+  {
+    from: 104.6,
+    to: 104.6,
+    label: "Engel-Trauer",
+    art: "Kristallklar, tief",
+    style: "angel" as const,
+    color: "bg-amber-glow",
+  },
+  {
+    from: 105.0,
+    to: 106.5,
+    label: "Sehnsucht",
+    art: "Pulsierend",
+    style: "longing" as const,
+    color: "bg-primary",
+  },
+  {
+    from: 107.0,
+    to: 108.0,
+    label: "Gestörte Signale",
+    art: "Rauschen",
+    style: "noise" as const,
+    color: "bg-muted-foreground",
+  },
 ];
 
 function bandFor(freq: number) {
@@ -210,32 +252,68 @@ export function RadioPanel() {
         <div className="mb-4 flex h-16 items-end gap-[2px] rounded-sm border border-border bg-black/70 p-2">
           {Array.from({ length: 60 }).map((_, i) => {
             const phase = tick / 6;
-            let intensity: number;
-            if (onAngel) {
-              // Strong, coherent pulse on the angel signal
-              intensity =
-                0.35 + Math.abs(Math.sin((i + freq * 10) / 4 + phase)) * 0.65;
-            } else if (currentBand) {
-              // Gentle, organic motion within a known band
-              intensity =
-                0.18 +
-                Math.abs(Math.sin(i / 3 + phase * 0.6)) * 0.35 +
-                Math.abs(Math.sin(i / 1.7 - phase * 0.4)) * 0.15;
-            } else {
-              // Off-band: low static rustle that still shifts
-              intensity =
-                0.08 +
-                Math.abs(Math.sin(i * 1.3 + phase * 1.4)) * 0.18 +
-                ((i * 7 + tick) % 11) / 110;
+            const style = currentBand?.style ?? "off";
+            let intensity = 0;
+            switch (style) {
+              case "angel":
+                // Coherent crystalline pulse
+                intensity =
+                  0.35 +
+                  Math.abs(Math.sin((i + freq * 10) / 4 + phase)) * 0.65;
+                break;
+              case "panic": {
+                // Sharp, jittery spikes — fast tremor
+                const jitter = Math.sin(i * 2.7 + phase * 3.1) * 0.5;
+                const spike = (i + Math.floor(tick * 1.3)) % 5 === 0 ? 0.45 : 0;
+                intensity = 0.15 + Math.abs(jitter) * 0.5 + spike;
+                break;
+              }
+              case "lonely":
+                // Slow, dumpfe Welle (long wavelength, low amplitude)
+                intensity =
+                  0.12 +
+                  (Math.sin(i / 9 + phase * 0.25) + 1) * 0.22 +
+                  (Math.sin(i / 14 - phase * 0.18) + 1) * 0.1;
+                break;
+              case "grief":
+                // Warmes Fließen — sanfte überlagerte Sinus
+                intensity =
+                  0.2 +
+                  Math.abs(Math.sin(i / 5 + phase * 0.5)) * 0.3 +
+                  Math.abs(Math.sin(i / 2.3 + phase * 0.35)) * 0.2;
+                break;
+              case "longing": {
+                // Pulsierend — globale Amplituden-Hüllkurve
+                const env = 0.5 + Math.sin(phase * 0.7) * 0.5;
+                intensity =
+                  0.15 +
+                  Math.abs(Math.sin(i / 4 + phase * 1.1)) * 0.55 * env;
+                break;
+              }
+              case "noise": {
+                // Chaotisches Rauschen — pseudo-random, ändert sich schnell
+                const seed = (i * 9301 + tick * 49297) % 233280;
+                const r = (seed / 233280) * 0.8;
+                intensity = 0.05 + r;
+                break;
+              }
+              default: {
+                // Off-band — zwischen den Bändern, leises Knistern
+                intensity =
+                  0.06 +
+                  Math.abs(Math.sin(i * 1.3 + phase * 1.4)) * 0.14 +
+                  ((i * 7 + tick) % 11) / 130;
+              }
             }
+            const colorClass = onAngel
+              ? "bg-amber-glow wave-pulse"
+              : (currentBand?.color ?? "bg-muted-foreground/60");
             return (
               <div
                 key={i}
-                className={`w-[3px] origin-bottom ${
-                  onAngel ? "bg-amber-glow wave-pulse" : "bg-muted-foreground"
-                }`}
+                className={`w-[3px] origin-bottom transition-[height] duration-75 ${colorClass}`}
                 style={{
-                  height: `${intensity * 100 * volume}%`,
+                  height: `${Math.min(100, intensity * 100 * volume)}%`,
                   animationDelay: `${i * 30}ms`,
                 }}
               />
