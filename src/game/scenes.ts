@@ -1026,6 +1026,19 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 36 — Verwaltung E67",
     intro:
       "Andere Beleuchtung als zuhause. Sterilere Türen. Vor einer davon — 3601 — ein handgeschriebenes Schild.",
+    npcs: [
+      {
+        id: "miraSprite36",
+        src: miraSprite,
+        x: 22,
+        y: 36,
+        w: 14,
+        h: 54,
+        alt: "Junge Frau, an die Wand gelehnt",
+        hiddenWhen: ["tookFlyer"],
+        visible: (api) => api.getMiraFloor() === 3,
+      },
+    ],
     hotspots: [
       {
         id: "officeDoor",
