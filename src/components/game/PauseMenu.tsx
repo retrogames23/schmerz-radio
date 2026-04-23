@@ -4,6 +4,7 @@ import { useSettings } from "@/audio/SettingsContext";
 import { stopSpeech } from "@/audio/speech";
 import { useAuth } from "@/auth/AuthContext";
 import { AuthDialog } from "@/auth/AuthDialog";
+import { CloseButton } from "./CloseButton";
 
 interface Props {
   open: boolean;
@@ -80,18 +81,16 @@ export function PauseMenu({ open, onClose }: Props) {
 
   return (
     <div className="absolute inset-0 z-[70] flex items-center justify-center bg-black/85 px-4">
-      <div className="fade-in w-full max-w-2xl rounded-sm border border-amber-glow/50 bg-background p-6 shadow-[0_0_60px_rgba(0,0,0,0.85)]">
-        <div className="mb-5 flex items-center justify-between">
+      <div className="fade-in relative w-full max-w-2xl rounded-sm border border-amber-glow/50 bg-background p-6 shadow-[0_0_60px_rgba(0,0,0,0.85)]">
+        <CloseButton
+          onClick={onClose}
+          label="Fortsetzen"
+          className="absolute right-3 top-3"
+        />
+        <div className="mb-5 flex items-center justify-between pr-10">
           <h2 className="font-display text-xl uppercase tracking-[0.3em] text-amber-glow amber-glow">
             Pause
           </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground"
-          >
-            ✕ Fortsetzen
-          </button>
         </div>
 
         {/* Toggles */}
