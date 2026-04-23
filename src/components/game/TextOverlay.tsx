@@ -9,6 +9,16 @@ export function TextOverlay() {
     setIdx(0);
   }, [textOverlay]);
 
+  useEffect(() => {
+    if (!textOverlay) return;
+    const isLast = idx >= textOverlay.length - 1;
+    const t = setTimeout(() => {
+      if (isLast) closeText();
+      else setIdx((i) => i + 1);
+    }, 10000);
+    return () => clearTimeout(t);
+  }, [textOverlay, idx, closeText]);
+
   if (!textOverlay) return null;
   const current = textOverlay[idx];
   const isLast = idx >= textOverlay.length - 1;
