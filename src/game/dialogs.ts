@@ -418,13 +418,13 @@ export const dialogs: Record<string, DialogTree> = {
       st8: {
         id: "st8",
         speaker: "SYSTEM",
-        text: "Verstanden. Bitte führen Sie zuerst eine Aktualisierung von CentralOS durch — über das lokale E67-Netz. Verwaltung → System → CentralOS → Aktualisieren.",
+        text: "Verstanden. Bitte tippen Sie im Terminal: »sysupdate«. Damit wird CentralOS über das lokale E67-Netz aktualisiert.",
         next: "st9",
       },
       st9: {
         id: "st9",
         speaker: "SYSTEM",
-        text: "Danach: Verwaltung → Technisches Problem melden → Netzwerkproblem an Leitstelle E67. Die automatische Problemermittlung leitet Ihren Fehler an die Gateway-Verantwortlichen weiter.",
+        text: "Danach tippen Sie: »trouble net«. Die automatische Problemermittlung leitet Ihren Fehler an die Gateway-Verantwortlichen weiter. Details schicke ich Ihnen ins Terminal-Postfach.",
         next: "st10",
       },
       st10: {

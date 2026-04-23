@@ -957,6 +957,7 @@ export const FILESYSTEM: FsDir = {
               date: "—",
               content: [
                 "── CentralOS Changelog ────────────────────────",
+                "v2.3.1 11/1997 Outbound report endpoint repariert.",
                 "v2.3  11/1997  Handbuch §14 überarbeitet.",
                 "v2.2  03/1995  Resonanz-Feedback stabilisiert.",
                 "v2.1  06/1994  Leitstelle 001 als Standardroute.",

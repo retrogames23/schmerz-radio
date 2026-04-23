@@ -82,6 +82,8 @@ const COMMANDS = [
   "./adventure.bin",
   "net",
   "telnet",
+  "sysupdate",
+  "trouble",
 ];
 
 /** Longest common string prefix across all candidates. */
@@ -956,6 +958,8 @@ export function Terminal() {
   const [telnetHost, setTelnetHost] = useState<string | null>(null);
   // Telnet wartet auf Passworteingabe für diesen Host.
   const [telnetAwaitPass, setTelnetAwaitPass] = useState<string | null>(null);
+  // True während eine scriptgesteuerte Ausgabesequenz läuft (sysupdate, trouble net).
+  const [scriptedRunning, setScriptedRunning] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastTabRef = useRef<{ input: string; matches: string[] } | null>(null);
@@ -989,8 +993,32 @@ export function Terminal() {
 
   if (!terminalOpen) return null;
 
+  // Spielt eine scriptgesteuerte Sequenz ab: hängt Zeilen mit gestaffelten
+  // Verzögerungen an, deaktiviert die Eingabe und ruft am Ende `done` auf.
+  const runScriptedSequence = (
+    steps: { text: string; delayMs: number; kind?: Line["kind"]; beep?: boolean }[],
+    done?: () => void,
+  ) => {
+    setScriptedRunning(true);
+    let acc = 0;
+    for (const step of steps) {
+      acc += Math.max(0, step.delayMs);
+      setTimeout(() => {
+        if (step.beep) playBeep(0.25 * sfxVolume);
+        setLines((prev) => [...prev, { text: step.text, kind: step.kind ?? "out" }]);
+      }, acc);
+    }
+    setTimeout(() => {
+      setLines((prev) => [...prev, { text: "", kind: "out" }]);
+      setScriptedRunning(false);
+      done?.();
+      setTimeout(() => inputRef.current?.focus(), 30);
+    }, acc + 60);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (scriptedRunning) return;
     const raw = input.trim();
     if (!raw) return;
 
@@ -1118,6 +1146,23 @@ export function Terminal() {
           },
         );
       }
+      if (
+        flags.has("calledStegmann") &&
+        !(flags.has("centralOsUpdated") && flags.has("troubleReported"))
+      ) {
+        newLines.push(
+          { text: "", kind: "out" },
+          { text: "WARTUNG (Anweisung Stegmann):", kind: "system" },
+          {
+            text: `  sysupdate     — CentralOS-Aktualisierung (E67-Netz)        ${flags.has("centralOsUpdated") ? "" : "✶ERFORDERLICH"}`.trimEnd(),
+            kind: "out",
+          },
+          {
+            text: `  trouble net   — Netzwerkproblem an Leitstelle E67 melden  ${flags.has("troubleReported") ? "" : flags.has("centralOsUpdated") ? "✶ERFORDERLICH" : ""}`.trimEnd(),
+            kind: "out",
+          },
+        );
+      }
     } else if (cmd === "adventure" || cmd === "./adventure.bin" || cmd === "adventure.bin") {
       const fresh = newAdventureState();
       setAdvState(fresh);
@@ -1135,9 +1180,13 @@ export function Terminal() {
     } else if (cmd === "status") {
       newLines.push(
         { text: "SYSTEMSTATUS:", kind: "system" },
+        {
+          text: `  CENTRALOS         [ v${flags.has("centralOsUpdated") ? "2.3.1" : "2.3"} ]`,
+          kind: "out",
+        },
         { text: "  E67.NETZ          [ STABIL ]", kind: "out" },
         {
-          text: `  ZENTRAL.NETZ      [ ${flags.has("calledForCode") ? "WARTUNG" : "STÖRUNG: ERROR 4567"} ]`,
+          text: `  ZENTRAL.NETZ      [ ${flags.has("centralOsUpdated") || flags.has("calledForCode") ? "WARTUNG" : "STÖRUNG: ERROR 4567"} ]`,
           kind: "out",
         },
         { text: "  GATEWAY E67/E71   [ MANUELLER CODE ERFORDERLICH ]", kind: "out" },
@@ -1147,8 +1196,14 @@ export function Terminal() {
         flags.has("calledInsa2") &&
         !flags.has("reportedExit") &&
         !flags.has("calledStegmann");
+      const showStegmannMail = flags.has("calledStegmann");
+      const showTicketMail = flags.has("troubleReported");
       const count =
-        2 + (flags.has("calledForCode") ? 1 : 0) + (showExitMail ? 1 : 0);
+        2 +
+        (flags.has("calledForCode") ? 1 : 0) +
+        (showExitMail ? 1 : 0) +
+        (showStegmannMail ? 1 : 0) +
+        (showTicketMail ? 1 : 0);
       newLines.push(
         { text: `POSTEINGANG (${count}):`, kind: "system" },
         { text: "  [001] 06.11.1997  Insa Bauerfeind — Wartungsfenster Gateway", kind: "out" },
@@ -1164,6 +1219,18 @@ export function Terminal() {
         newLines.push({
           text: "  [003] 06.11.1997  Insa Bauerfeind — Sektor-Tür: Manueller Code  ✶NEU",
           kind: "system",
+        });
+      }
+      if (showStegmannMail) {
+        newLines.push({
+          text: `  [005] 06.11.1997  Stegmann (IT)    — Anweisung: sysupdate + trouble net  ${flags.has("centralOsUpdated") && flags.has("troubleReported") ? "" : "✶NEU"}`.trimEnd(),
+          kind: "system",
+        });
+      }
+      if (showTicketMail) {
+        newLines.push({
+          text: "  [006] 06.11.1997  ZENTRAL.NETZ     — Ticket #E67-19971106-0042 angenommen",
+          kind: "out",
         });
       }
     } else if (cmd === "read 001") {
@@ -1238,11 +1305,26 @@ export function Terminal() {
           text: "report: Keine Ausgangsmeldung erforderlich.",
           kind: "out",
         });
+      } else if (
+        flags.has("calledStegmann") &&
+        flags.has("centralOsUpdated") &&
+        flags.has("troubleReported") &&
+        !flags.has("reportedExit")
+      ) {
+        playBeep(0.4 * sfxVolume);
+        setTimeout(() => playUnlock(0.4 * sfxVolume), 360);
+        newLines.push(
+          { text: ">> AUSGANGSMELDUNG → LEITSTELLE25@ZENTRAL.NETZ", kind: "system" },
+          { text: ">> Verbindung zu ROUTER567.ZENTRAL.NETZ … OK", kind: "out" },
+          { text: ">> Übermittle Standardprotokoll …", kind: "out" },
+          { text: ">> Bestätigungs-Token: AUSG-19971106-WORAG-OK", kind: "out" },
+          { text: ">> Meldung zugestellt.", kind: "system" },
+        );
+        api.setFlag("reportedExit");
       } else if (flags.has("reportedExit")) {
         newLines.push(
           { text: ">> AUSGANGSMELDUNG → LEITSTELLE25@ZENTRAL.NETZ", kind: "system" },
-          { text: ">> ERROR 4567: ZENTRAL.NETZ nicht erreichbar.", kind: "out" },
-          { text: ">> (bereits versucht)", kind: "out" },
+          { text: ">> Bereits zugestellt. Bestätigungs-Token: AUSG-19971106-WORAG-OK", kind: "out" },
         );
       } else {
         playBeep(0.4 * sfxVolume);
@@ -1255,6 +1337,137 @@ export function Terminal() {
           { text: ">> Meldung NICHT zugestellt.", kind: "out" },
         );
         api.setFlag("reportedExit");
+      }
+    } else if (cmd === "read 005") {
+      if (!flags.has("calledStegmann")) {
+        newLines.push({ text: "FEHLER: Nachricht existiert nicht.", kind: "out" });
+      } else {
+        newLines.push(
+          { text: "── Nachricht 005 ─────────────────────", kind: "system" },
+          { text: "Von:    Stegmann (Zentral-IT)", kind: "out" },
+          { text: "Datum:  06.11.1997 16:02", kind: "out" },
+          { text: "Betreff: Anweisung — CentralOS aktualisieren & Störung melden", kind: "out" },
+          { text: "", kind: "out" },
+          { text: "Sehr geehrter Bewohner Worag,", kind: "out" },
+          { text: "wie telefonisch besprochen, führen Sie bitte aus:", kind: "out" },
+          { text: "", kind: "out" },
+          { text: "  1.  sysupdate        — CentralOS-Aktualisierung (E67-Netz)", kind: "system" },
+          { text: "  2.  trouble net      — Netzwerkproblem an Leitstelle E67", kind: "system" },
+          { text: "", kind: "out" },
+          { text: "Bitte in dieser Reihenfolge. Erst nach beiden Schritten", kind: "out" },
+          { text: "wird die Ausgangsmeldung (»report exit«) zugestellt.", kind: "out" },
+          { text: "", kind: "out" },
+          { text: "Hinweis (intern): Die Aktualisierung kann mit dem Schalter", kind: "out" },
+          { text: "»--fast« beschleunigt werden, wenn Sie sie wiederholen müssen.", kind: "out" },
+          { text: "Stegmann", kind: "out" },
+          { text: "── Ende ──────────────────────────────", kind: "system" },
+        );
+      }
+    } else if (cmd === "read 006") {
+      if (!flags.has("troubleReported")) {
+        newLines.push({ text: "FEHLER: Nachricht existiert nicht.", kind: "out" });
+      } else {
+        newLines.push(
+          { text: "── Nachricht 006 ─────────────────────", kind: "system" },
+          { text: "Von:    ZENTRAL.NETZ — Ticket-System", kind: "out" },
+          { text: "Datum:  06.11.1997 16:31", kind: "out" },
+          { text: "Betreff: Ticket #E67-19971106-0042 angenommen", kind: "out" },
+          { text: "", kind: "out" },
+          { text: "Ihr Ticket wurde aufgenommen.", kind: "out" },
+          { text: "Klassifizierung: ROUTING (Code 4567).", kind: "out" },
+          { text: "Bearbeitungszeit: unbestimmt.", kind: "out" },
+          { text: "Vielen Dank für Ihre Mitarbeit.", kind: "out" },
+          { text: "── Ende ──────────────────────────────", kind: "system" },
+        );
+      }
+    } else if (head === "sysupdate") {
+      if (!flags.has("calledStegmann")) {
+        newLines.push({
+          text: "sysupdate: Befehl nicht freigeschaltet. Voraussetzung: Anweisung der Zentral-IT.",
+          kind: "out",
+        });
+      } else if (flags.has("centralOsUpdated")) {
+        newLines.push({ text: "sysupdate: Bereits aktuell (CentralOS v2.3.1).", kind: "out" });
+      } else {
+        const fast = args.includes("--fast");
+        const t = (ms: number) => (fast ? Math.max(40, Math.round(ms / 8)) : ms);
+        setLines((prev) => [...prev, ...newLines]);
+        runScriptedSequence(
+          [
+            { text: ">> sysupdate: Verbinde mit update.e67 …", delayMs: t(0), kind: "system", beep: true },
+            { text: ">> Authentifizierung … OK", delayMs: t(420) },
+            { text: ">> Lade Manifest centralos-2.3.1.pkg …", delayMs: t(380) },
+            { text: "   [████░░░░░░] 12%", delayMs: t(280) },
+            { text: "   [██████░░░░] 47%", delayMs: t(360) },
+            { text: "   [██████████] 100%", delayMs: t(400), beep: true },
+            { text: ">> Verifiziere SHA … OK", delayMs: t(320) },
+            { text: ">> Stoppe Dienste:", delayMs: t(260), kind: "system" },
+            { text: "   carrier-daemon …………… OK", delayMs: t(220) },
+            { text: "   inbox-relay …………………… OK", delayMs: t(200) },
+            { text: "   gateway-watch ……………… OK", delayMs: t(220) },
+            { text: ">> Patch /usr/bin/centralos … OK", delayMs: t(380) },
+            { text: ">> Patch /usr/bin/report …… OK", delayMs: t(360) },
+            { text: ">> Migriere /etc/motd ……… OK", delayMs: t(280) },
+            { text: ">> Starte Dienste neu:", delayMs: t(260), kind: "system" },
+            { text: "   carrier-daemon …………… OK", delayMs: t(220) },
+            { text: "   inbox-relay …………………… OK", delayMs: t(200) },
+            { text: "   gateway-watch ……………… OK", delayMs: t(220) },
+            { text: ">> CentralOS v2.3 → v2.3.1   [OK]", delayMs: t(420), kind: "system", beep: true },
+            { text: ">> Bitte führen Sie nun »trouble net« aus.", delayMs: t(320), kind: "system" },
+          ],
+          () => api.setFlag("centralOsUpdated"),
+        );
+        // History pflegen, Eingabe leeren — Ausgabe läuft asynchron weiter.
+        const h = termHistoryRef.current;
+        if (h[h.length - 1] !== raw) h.push(raw);
+        historyCursorRef.current = -1;
+        draftRef.current = "";
+        setInput("");
+        return;
+      }
+    } else if (head === "trouble") {
+      const sub = (args[0] ?? "").toLowerCase();
+      if (!flags.has("calledStegmann")) {
+        newLines.push({
+          text: "trouble: Befehl nicht freigeschaltet. Voraussetzung: Anweisung der Zentral-IT.",
+          kind: "out",
+        });
+      } else if (sub !== "net") {
+        newLines.push({
+          text: "trouble: Argument fehlt oder unbekannt. Versuchen Sie: trouble net",
+          kind: "out",
+        });
+      } else if (!flags.has("centralOsUpdated")) {
+        newLines.push({
+          text: "trouble: Update erforderlich. Bitte zuerst »sysupdate« ausführen.",
+          kind: "out",
+        });
+      } else if (flags.has("troubleReported")) {
+        newLines.push({
+          text: "trouble: Ticket bereits offen (#E67-19971106-0042).",
+          kind: "out",
+        });
+      } else {
+        setLines((prev) => [...prev, ...newLines]);
+        runScriptedSequence(
+          [
+            { text: ">> trouble: Automatische Problemermittlung gestartet …", delayMs: 0, kind: "system", beep: true },
+            { text: ">> Scanne lokales Segment E67 …………………… OK", delayMs: 520 },
+            { text: ">> Scanne Gateway E67/E71 ……………………………… STÖRUNG", delayMs: 620 },
+            { text: ">> Klassifizierung: ROUTING (Code 4567)", delayMs: 380 },
+            { text: ">> Erzeuge Ticket #E67-19971106-0042 …… OK", delayMs: 460, beep: true },
+            { text: ">> Übermittle an LEITSTELLE25@ZENTRAL.NETZ", delayMs: 380 },
+            { text: ">> Ticket angenommen. Bearbeitungszeit: unbestimmt.", delayMs: 420, kind: "system" },
+            { text: ">> Vielen Dank für Ihre Mitarbeit.", delayMs: 320 },
+          ],
+          () => api.setFlag("troubleReported"),
+        );
+        const h = termHistoryRef.current;
+        if (h[h.length - 1] !== raw) h.push(raw);
+        historyCursorRef.current = -1;
+        draftRef.current = "";
+        setInput("");
+        return;
       }
     } else if (cmd.startsWith("unlock ")) {
       const code = cmd.slice(7).trim();
@@ -1536,6 +1749,7 @@ export function Terminal() {
           <input
             ref={inputRef}
             value={input}
+            disabled={scriptedRunning}
             onChange={(e) => {
               if (e.target.value.length > input.length) {
                 playKeypress(0.3 * sfxVolume);
@@ -1631,8 +1845,8 @@ export function Terminal() {
                 playBeep(0.2 * sfxVolume);
               }
             }}
-            className="flex-1 bg-transparent font-mono-crt text-base text-phosphor caret-phosphor outline-none placeholder:text-phosphor-dim/60"
-            placeholder="Befehl eingeben …"
+            className="flex-1 bg-transparent font-mono-crt text-base text-phosphor caret-phosphor outline-none placeholder:text-phosphor-dim/60 disabled:opacity-40"
+            placeholder={scriptedRunning ? "… Ausgabe läuft …" : "Befehl eingeben …"}
             spellCheck={false}
             autoComplete="off"
           />
