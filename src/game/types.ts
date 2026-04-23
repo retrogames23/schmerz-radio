@@ -9,6 +9,7 @@ export type SceneId =
   | "room1534"
   | "apt2613"
   | "apt2615"
+  | "apt2612"
   | "elevator"
   | "floor1Lobby"
   | "passage"
@@ -82,7 +83,24 @@ export type StoryFlag =
   | "philippeProbeNote2"
   | "philippeProbeNote3"
   | "philippeProbeNote4"
-  | "philippeProbeNote5";
+  | "philippeProbeNote5"
+  // Helka Vint (2610) — Türgespräch
+  | "metHelka"
+  | "talkedHelka2"
+  | "talkedHelka3"
+  | "helkaWarned"
+  | "helkaSawFlyer"
+  // Bodo Marschke (2612) — begehbare Wohnung
+  | "metBodo"
+  | "talkedBodo2"
+  | "knowsLotti"
+  | "bodoToldCarrierTruth"
+  | "bodoSawFlyer"
+  // Ennis Korr (2614) — Türgespräch
+  | "metEnnis"
+  | "talkedEnnis2"
+  | "ennisCracked"
+  | "ennisSawFlyer";
 
 export interface InventoryItem {
   id: InventoryItemId;
