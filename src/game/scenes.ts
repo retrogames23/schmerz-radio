@@ -427,44 +427,19 @@ export const scenes: Record<string, Scene> = {
         label: "Tür 2611 (zurück in die Wohnung)",
         onUse: (api) => api.goTo("apartment"),
       },
+      // Tür 2613 — Philippes Wohnung. Bleibt jederzeit begehbar.
       {
-        id: "to2610",
-        x: 0,
-        y: 28,
-        w: 18,
-        h: 60,
-        label: "Tür 2610 (Philippe)",
-        // Only meaningful after E67 is mostly done
-        requires: ["calledForCode"],
-        onUse: (api) => api.goTo("philippe"),
-      },
-      {
-        id: "door2613Sealed",
+        id: "door2613Philippe",
         x: 67,
         y: 36,
         w: 14,
         h: 50,
-        label: "Tür 2613 (versiegelt)",
-        requires: ["protocolReceived"],
-        onUse: (api) =>
-          api.showText([
-            "Ein gelbes Siegelband klebt schräg über dem Türrahmen.",
-            "Darauf, in Maschinenschrift:",
-            "„Quarantäne — Resonanz-Überlastung — bis auf Widerruf“.",
-            "Niemand wird hier in absehbarer Zeit einziehen.",
-          ]),
-      },
-      {
-        id: "door2613Open",
-        x: 67,
-        y: 36,
-        w: 14,
-        h: 50,
-        label: "Tür 2613 (zurück)",
+        label: "Tür 2613 (Philippe)",
         requires: ["doorBrokenOpen"],
-        hiddenWhen: ["protocolReceived"],
         onUse: (api) => api.goTo("apt2613"),
       },
+      // Tür 2615 — der Mann an der Wand. Solange aufgebrochen begehbar,
+      // sobald die Sanitäter ihn abtransportiert haben: versiegelt.
       {
         id: "door2615Open",
         x: 56,
@@ -475,6 +450,22 @@ export const scenes: Record<string, Scene> = {
         requires: ["doorBrokenOpen"],
         hiddenWhen: ["protocolReceived"],
         onUse: (api) => api.goTo("apt2615"),
+      },
+      {
+        id: "door2615Sealed",
+        x: 56,
+        y: 42,
+        w: 12,
+        h: 42,
+        label: "Tür 2615 (versiegelt)",
+        requires: ["protocolReceived"],
+        onUse: (api) =>
+          api.showText([
+            "Ein gelbes Siegelband klebt schräg über dem Türrahmen.",
+            "Darauf, in Maschinenschrift:",
+            "„Quarantäne — Resonanz-Überlastung — bis auf Widerruf“.",
+            "Niemand wird hier in absehbarer Zeit einziehen.",
+          ]),
       },
       {
         id: "toSector",
