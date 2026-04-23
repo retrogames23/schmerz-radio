@@ -619,6 +619,13 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 15 — Sektor E71",
     intro:
       "Spiegelblanker Linoleum. Drei Lichter flackern. Am Ende des Korridors: eine rote Tür. Zimmer 1534.",
+    doorPlates: [
+      { id: "p1534", x: 50, y: 28, w: 10, label: "1534" },
+      { id: "p1530", x: 12, y: 32, w: 7, label: "1530" },
+      { id: "p1532", x: 28, y: 36, w: 6, label: "1532" },
+      { id: "p1536", x: 72, y: 36, w: 6, label: "1536" },
+      { id: "p1538", x: 88, y: 32, w: 7, label: "1538" },
+    ],
     hotspots: [
       {
         id: "gurney",
@@ -648,8 +655,8 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "door1534",
-        x: 44,
-        y: 35,
+        x: 43,
+        y: 32,
         w: 14,
         h: 50,
         label: "Tür 1534 (rot beleuchtet)",
@@ -955,11 +962,12 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 36 — Verwaltung E67",
     intro:
       "Andere Beleuchtung als zuhause. Sterilere Türen. Vor einer davon — 3601 — ein handgeschriebenes Schild.",
+    doorPlates: [{ id: "p3601", x: 25, y: 28, w: 10, label: "3601" }],
     hotspots: [
       {
         id: "officeDoor",
-        x: 42,
-        y: 30,
+        x: 17,
+        y: 32,
         w: 18,
         h: 50,
         label: "Tür 3601 — Abschnittsverantwortlicher E67",
@@ -970,8 +978,8 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "officeBell",
-        x: 60,
-        y: 45,
+        x: 36,
+        y: 47,
         w: 6,
         h: 8,
         label: "Klingelknopf",
@@ -1019,6 +1027,10 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 46 — Wohnetage",
     intro:
       "Wie zuhause, nur eine Etage höher. Ein Plakat „RESONANZ-HYGIENE“ blättert ab.",
+    doorPlates: [
+      { id: "p4610", x: 11, y: 30, w: 9, label: "4610" },
+      { id: "p4611", x: 89, y: 30, w: 9, label: "4611" },
+    ],
     hotspots: [
       {
         id: "miraSpot46",
@@ -1071,6 +1083,10 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 56 — Dachetage",
     intro:
       "Oben. Am Ende des Korridors: ein vergittertes Fenster auf einen grauen Himmel.",
+    doorPlates: [
+      { id: "p5610", x: 12, y: 30, w: 9, label: "5610" },
+      { id: "p5611", x: 88, y: 30, w: 9, label: "5611" },
+    ],
     hotspots: [
       {
         id: "miraSpot56",
