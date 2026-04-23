@@ -509,6 +509,49 @@ export const dialogs: Record<string, DialogTree> = {
   // ---------------------------------------------------------------
   // 9. Detour: Philippe in his own apartment, after E67 is mostly done
   // ---------------------------------------------------------------
+  // Variant A — Layard ist NOCH NICHT beim Abschnittsverantwortlichen gewesen
+  // (also: hat das leere Büro auf Etage 3 noch nicht gesehen). Philippe weiß
+  // nicht, wohin Layard als nächstes will, und fragt einfach nach.
+  philippeAfterEarly: {
+    id: "philippeAfterEarly",
+    start: "pe1",
+    onEnd: (api) => {
+      if (!api.hasFlag("philippeNote3")) api.setFlag("philippeNote3");
+      else if (!api.hasFlag("philippeNote4")) api.setFlag("philippeNote4");
+      else if (!api.hasFlag("philippeNote5")) api.setFlag("philippeNote5");
+    },
+    lines: {
+      pe1: {
+        id: "pe1",
+        speaker: "PHILIPPE",
+        text: "Sie sind wieder da. Hat alles … geklappt? Mit den Sanitätern, meine ich.",
+        subtext: "Er hat heute Kaffee gemacht. Echten. Für sich allein.",
+        next: "pe2",
+      },
+      pe2: {
+        id: "pe2",
+        speaker: "LAYARD",
+        text: "Es geht weiter. Ich habe noch ein Protokoll abzugeben. Hier im Block, irgendwo unten.",
+        next: "pe3",
+      },
+      pe3: {
+        id: "pe3",
+        speaker: "PHILIPPE",
+        text: "Unten. Ich war ewig nicht mehr unten. Wenn Sie zurückkommen, klopfen Sie. Ich höre das. Ich höre alles.",
+        subtext: "Versprechen klingen anders. Das ist eher: ein Ankerpunkt.",
+        next: "pe4",
+      },
+      pe4: {
+        id: "pe4",
+        speaker: "LAYARD",
+        text: "Wenn ich zurückkomme.",
+        end: true,
+      },
+    },
+  },
+
+  // Variant B — Layard war schon beim leeren Büro. Philippe weiß jetzt,
+  // wohin Layard geht (er hat es ihm wahrscheinlich erzählt).
   philippeAfter: {
     id: "philippeAfter",
     start: "pa1",

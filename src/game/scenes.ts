@@ -177,7 +177,13 @@ export const scenes: Record<string, Scene> = {
             api.startDialog("philippeSmalltalk");
           } else if (!api.hasFlag("talkedPhilippeAfter")) {
             api.setFlag("talkedPhilippeAfter");
-            api.startDialog("philippeAfter");
+            // Wenn Layard das leere Büro auf Etage 3 noch nicht gesehen hat,
+            // weiß Philippe nichts vom Abschnittsverantwortlichen.
+            if (api.hasFlag("sawEmptyOffice")) {
+              api.startDialog("philippeAfter");
+            } else {
+              api.startDialog("philippeAfterEarly");
+            }
           } else {
             api.startDialog("philippeSmalltalk");
           }
