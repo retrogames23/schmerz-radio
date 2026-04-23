@@ -1283,11 +1283,26 @@ export function Terminal() {
           text: "report: Keine Ausgangsmeldung erforderlich.",
           kind: "out",
         });
+      } else if (
+        flags.has("calledStegmann") &&
+        flags.has("centralOsUpdated") &&
+        flags.has("troubleReported") &&
+        !flags.has("reportedExit")
+      ) {
+        playBeep(0.4 * sfxVolume);
+        setTimeout(() => playUnlock(0.4 * sfxVolume), 360);
+        newLines.push(
+          { text: ">> AUSGANGSMELDUNG → LEITSTELLE25@ZENTRAL.NETZ", kind: "system" },
+          { text: ">> Verbindung zu ROUTER567.ZENTRAL.NETZ … OK", kind: "out" },
+          { text: ">> Übermittle Standardprotokoll …", kind: "out" },
+          { text: ">> Bestätigungs-Token: AUSG-19971106-WORAG-OK", kind: "out" },
+          { text: ">> Meldung zugestellt.", kind: "system" },
+        );
+        api.setFlag("reportedExit");
       } else if (flags.has("reportedExit")) {
         newLines.push(
           { text: ">> AUSGANGSMELDUNG → LEITSTELLE25@ZENTRAL.NETZ", kind: "system" },
-          { text: ">> ERROR 4567: ZENTRAL.NETZ nicht erreichbar.", kind: "out" },
-          { text: ">> (bereits versucht)", kind: "out" },
+          { text: ">> Bereits zugestellt. Bestätigungs-Token: AUSG-19971106-WORAG-OK", kind: "out" },
         );
       } else {
         playBeep(0.4 * sfxVolume);
