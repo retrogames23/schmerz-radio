@@ -8,7 +8,7 @@ interface Props {
 
 export function TopBar({ onOpenPause }: Props) {
   const game = useGame();
-  const { scene, inventory, radioActive, flags } = game;
+  const { scene, radioActive, flags } = game;
   const inAct2 = flags.has("enteredE71");
 
   // Kurze Einblendung beim Übergang: AKT I → AKT II.
@@ -81,14 +81,6 @@ export function TopBar({ onOpenPause }: Props) {
             <Menu className="h-3.5 w-3.5" strokeWidth={2.25} />
             <span className="font-display">Menü</span>
           </button>
-          <div className="ml-1 flex items-center gap-1.5 rounded-sm border border-border bg-secondary/30 px-2 py-1.5 text-xs">
-            <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              Inv
-            </span>
-            <span className="font-mono-crt text-amber-glow">
-              {inventory.length}
-            </span>
-          </div>
         </div>
       </div>
     </header>
