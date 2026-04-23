@@ -1633,11 +1633,14 @@ export function Terminal() {
       );
     } else if (head === "uname") {
       const showAll = args.includes("-a");
+      const updated = flags.has("centralOsUpdated");
       const parts: Record<string, string> = {
         s: "CentralOS",
         n: "e67-2611",
-        r: "2.3-resonance",
-        v: "#14 Tue Nov 4 11:04:22 1997",
+        r: `${osVersion(updated)}-resonance`,
+        v: updated
+          ? "#15 Thu Nov 6 16:04:22 1997"
+          : "#14 Tue Nov 4 11:04:22 1997",
         m: "syn33",
         o: "CentralOS",
       };
