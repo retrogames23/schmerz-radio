@@ -15,7 +15,22 @@ import corridor46Bg from "@/assets/scene-corridor-46.jpg";
 import corridor56Bg from "@/assets/scene-corridor-56.jpg";
 import miraSprite from "@/assets/npc-mira.png";
 import philippeSprite from "@/assets/npc-philippe.png";
-import type { Scene } from "./types";
+import type { GameApi, Scene } from "./types";
+
+/**
+ * CRT-Anzeige für die physischen Bildschirme im Raum. Bleibt synchron zur
+ * Logik im Terminal: vor `centralOsUpdated` zeigt Layards Maschine v2.3 und
+ * Bodos noch das alte v2.0 — danach beide v2.3.1.
+ */
+function layardScreenLines(api: GameApi): string[] {
+  const v = api.hasFlag("centralOsUpdated") ? "2.3.1" : "2.3";
+  return [`CENTRALOS v${v}`, "Quadrant E67", "▌"];
+}
+
+function bodoScreenLines(api: GameApi): string[] {
+  const v = api.hasFlag("centralOsUpdated") ? "2.3.1" : "2.0";
+  return [`CENTRALOS v${v}`, "Terminal 2612", "▌"];
+}
 
 export const scenes: Record<string, Scene> = {
   apartment: {
