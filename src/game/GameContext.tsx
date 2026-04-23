@@ -99,8 +99,23 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [radioActive, setRadioActive] = useState(false);
   const [resonance, setResonance] = useState(0);
   const [ending, setEnding] = useState(false);
-  // Floor (3, 4 or 5) where Mira appears this run. Lazily picked on first read.
+  // Floor (3, 4 or 5) where Mira appears this run.
+  // Wird einmal beim Mounten **eager** und kryptografisch zufällig gewählt,
+  // damit die Verteilung nicht durch die Reihenfolge der visible()-Checks
+  // (die immer mit Etage 3 beginnen) verzerrt wird.
   const miraFloorRef = useRef<3 | 4 | 5 | null>(null);
+  if (miraFloorRef.current === null) {
+    const pool: Array<3 | 4 | 5> = [3, 4, 5];
+    let idx = 0;
+    if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+      const buf = new Uint32Array(1);
+      crypto.getRandomValues(buf);
+      idx = buf[0] % 3;
+    } else {
+      idx = Math.floor(Math.random() * 3);
+    }
+    miraFloorRef.current = pool[idx];
+  }
 
   // Keep latest values in refs so api callbacks remain stable
   const flagsRef = useRef(flags);
@@ -157,13 +172,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       openRadio: () => setRadioOpen(true),
       isRadioActive: () => radioActiveRef.current,
       setEnding: () => setEnding(true),
-      getMiraFloor: () => {
-        if (miraFloorRef.current === null) {
-          const pool: Array<3 | 4 | 5> = [3, 4, 5];
-          miraFloorRef.current = pool[Math.floor(Math.random() * pool.length)];
-        }
-        return miraFloorRef.current;
-      },
+      getMiraFloor: () => miraFloorRef.current ?? 3,
     }),
     [],
   );
