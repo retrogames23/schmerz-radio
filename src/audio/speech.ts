@@ -3,7 +3,15 @@
  * German voices preferred; falls back to default voice.
  */
 
-type Speaker = "LAYARD" | "INSA" | "PHILIPPE" | "SANITÄTER" | "SYSTEM" | "RADIO";
+type Speaker =
+  | "LAYARD"
+  | "INSA"
+  | "PHILIPPE"
+  | "SANITÄTER"
+  | "SYSTEM"
+  | "RADIO"
+  | "MIKAEL"
+  | "RECEPTION";
 
 interface VoiceProfile {
   pitch: number;
@@ -19,6 +27,8 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
   SANITÄTER: { pitch: 0.95, rate: 1.05, prefer: ["male"] },
   SYSTEM: { pitch: 0.7, rate: 0.95, prefer: ["any"] },
   RADIO: { pitch: 1.15, rate: 0.9, prefer: ["female"] },
+  MIKAEL: { pitch: 0.7, rate: 0.78, prefer: ["male"] },
+  RECEPTION: { pitch: 1.0, rate: 1.15, prefer: ["female"] },
 };
 
 let cachedVoices: SpeechSynthesisVoice[] | null = null;

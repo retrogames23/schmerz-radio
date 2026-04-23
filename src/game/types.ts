@@ -3,12 +3,17 @@ export type SceneId =
   | "hallway"
   | "philippe"
   | "sectorDoor"
-  | "elevatorEnd";
+  | "elevatorEnd"
+  | "e71Lobby"
+  | "corridor15"
+  | "room1534";
 
 export type InventoryItemId =
   | "protocol"
   | "exitCode"
-  | "b3sample";
+  | "b3sample"
+  | "tuningCrystal"
+  | "mikaelLetter";
 
 export type KnowledgeFlag =
   | "freq1046"
@@ -16,7 +21,10 @@ export type KnowledgeFlag =
   | "responsibilityE67"
   | "insaWaiting"
   | "gatewayMaintenance"
-  | "dateHint";
+  | "dateHint"
+  | "radioOrigin"
+  | "leitstelleListens"
+  | "frequencyControl";
 
 export type StoryFlag =
   | "radioTunedTo1046"
@@ -26,6 +34,15 @@ export type StoryFlag =
   | "protocolReceived"
   | "calledForCode"
   | "sectorDoorOpen"
+  | "elevatorTaken"
+  | "enteredE71"
+  | "metReceptionist"
+  | "foundRoom1534"
+  | "metMikael"
+  | "heardMikaelTruth"
+  | "tookCrystal"
+  | "readLetter"
+  | "insa3Called"
   | "ending";
 
 export interface InventoryItem {
@@ -69,7 +86,15 @@ export interface DialogChoice {
 
 export interface DialogLine {
   id: string;
-  speaker: "LAYARD" | "INSA" | "PHILIPPE" | "SANITÄTER" | "SYSTEM" | "RADIO";
+  speaker:
+    | "LAYARD"
+    | "INSA"
+    | "PHILIPPE"
+    | "SANITÄTER"
+    | "SYSTEM"
+    | "RADIO"
+    | "MIKAEL"
+    | "RECEPTION";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;
