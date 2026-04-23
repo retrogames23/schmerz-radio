@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useGame } from "@/game/GameContext";
 import { useInventoryDrag } from "@/game/InventoryDragContext";
 import { combineItem } from "@/game/combine";
@@ -10,6 +11,16 @@ interface Props {
 export function Hotspot({ hotspot }: Props) {
   const { api, setCaption, flags } = useGame();
   const drag = useInventoryDrag();
+  const hoveredRef = useRef(false);
+
+  // Sicherheitsnetz: Falls dieser Hotspot beim Hover entfernt wird
+  // (Szenenwechsel oder Flag-Änderung lässt ihn verschwinden), würde
+  // onMouseLeave nie feuern. Beim Unmount Caption explizit clearen.
+  useEffect(() => {
+    return () => {
+      if (hoveredRef.current) setCaption(null);
+    };
+  }, [setCaption]);
 
   if (hotspot.requires?.some((f) => !flags.has(f))) return null;
   if (hotspot.hiddenWhen?.some((f) => flags.has(f))) return null;
@@ -19,9 +30,15 @@ export function Hotspot({ hotspot }: Props) {
     <button
       type="button"
       onMouseEnter={() => setCaption(hotspot.label)}
-      onMouseLeave={() => setCaption(null)}
+      onMouseLeave={() => {
+        hoveredRef.current = false;
+        setCaption(null);
+      }}
       onFocus={() => setCaption(hotspot.label)}
-      onBlur={() => setCaption(null)}
+      onBlur={() => {
+        hoveredRef.current = false;
+        setCaption(null);
+      }}
       onPointerUp={(e) => {
         if (!drag.dragItem) return;
         // Drop eines Inventar-Items auf diesen Hotspot → Kombinieren
