@@ -34,6 +34,7 @@ export type StoryFlag =
   | "metPhilippe"
   | "enteredApt2613"
   | "knockingHeard"
+  | "talkedPhilippe2613"
   | "calledLeitstelle"
   | "smalltalkPhilippe"
   | "paramedicsArrived"
