@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { scenes, useGame } from "@/game/GameContext";
 import { Hotspot } from "./Hotspot";
-import knockingArm from "@/assets/sprite-arm.png";
 
 export function SceneView() {
   const { scene, caption, radioActive, resonance, api, flags } = useGame();
@@ -50,16 +49,6 @@ export function SceneView() {
         alt={current.title}
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
       />
-
-      {/* Apartment 2615 — animated knocking arm overlay */}
-      {scene === "apt2615" && !flags.has("protocolReceived") && (
-        <img
-          src={knockingArm}
-          alt=""
-          aria-hidden
-          className="knock-arm pointer-events-none absolute left-[55%] top-[44%] z-10 h-[14%] select-none object-contain"
-        />
-      )}
 
       {/* Hotspots */}
       {current.hotspots.map((h) => (
