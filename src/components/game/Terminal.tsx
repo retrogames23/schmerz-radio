@@ -1180,9 +1180,13 @@ export function Terminal() {
     } else if (cmd === "status") {
       newLines.push(
         { text: "SYSTEMSTATUS:", kind: "system" },
+        {
+          text: `  CENTRALOS         [ v${flags.has("centralOsUpdated") ? "2.3.1" : "2.3"} ]`,
+          kind: "out",
+        },
         { text: "  E67.NETZ          [ STABIL ]", kind: "out" },
         {
-          text: `  ZENTRAL.NETZ      [ ${flags.has("calledForCode") ? "WARTUNG" : "STÖRUNG: ERROR 4567"} ]`,
+          text: `  ZENTRAL.NETZ      [ ${flags.has("centralOsUpdated") || flags.has("calledForCode") ? "WARTUNG" : "STÖRUNG: ERROR 4567"} ]`,
           kind: "out",
         },
         { text: "  GATEWAY E67/E71   [ MANUELLER CODE ERFORDERLICH ]", kind: "out" },
