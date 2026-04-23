@@ -70,6 +70,7 @@ interface PersistedState {
   resonance: number;
   ending: boolean;
   savedAt: string;
+  miraFloor?: 3 | 4 | 5 | null;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -229,6 +230,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         resonance: resonanceRef.current,
         ending: endingRef.current,
         savedAt: new Date().toISOString(),
+        miraFloor: miraFloorRef.current,
       };
       try {
         window.localStorage.setItem(SAVE_PREFIX + slot, JSON.stringify(payload));
@@ -254,6 +256,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setInventory(data.inventory);
         setResonance(data.resonance);
         setEnding(data.ending);
+        miraFloorRef.current = data.miraFloor ?? null;
         // Reset transient UI
         setCaption(null);
         setTextOverlay(null);
