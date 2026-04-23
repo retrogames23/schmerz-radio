@@ -1604,10 +1604,11 @@ export function Terminal() {
       } else {
         newLines.push({ text: `Inhalt von ${pathString(cwd)}:`, kind: "system" });
         let kids = visibleChildren(node, showAll, (f) => flags.has(f));
-        // In Bodos Terminal: das Verzeichnis /home zeigt worag nicht — Bodo
-        // sieht (und kennt) sein eigenes Home, nicht das des Nachbarn.
-        if (bodoMode && pathString(cwd) === "/home") {
-          kids = kids.filter((c) => c.name !== "worag");
+        // /home zeigt jeweils nur das eigene Heimatverzeichnis — Sektor-
+        // Privatsphäre. Layard sieht bodo dort nicht, Bodo nicht worag.
+        if (pathString(cwd) === "/home") {
+          const hideName = bodoMode ? "worag" : "bodo";
+          kids = kids.filter((c) => c.name !== hideName);
         }
         newLines.push(...formatLs(kids));
       }
