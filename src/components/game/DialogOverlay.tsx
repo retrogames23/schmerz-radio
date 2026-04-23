@@ -3,6 +3,7 @@ import { useGame } from "@/game/GameContext";
 import { dialogs } from "@/game/dialogs";
 import { useSettings } from "@/audio/SettingsContext";
 import { speak, stopSpeech } from "@/audio/speech";
+import { CloseButton } from "./CloseButton";
 
 export function DialogOverlay() {
   const {
@@ -54,7 +55,15 @@ export function DialogOverlay() {
 
   return (
     <div className="absolute inset-0 z-40 flex items-end justify-center bg-black/55 px-4 pb-6">
-      <div className="fade-in w-full max-w-3xl rounded-sm border border-amber-glow/40 bg-background/95 p-5 shadow-[0_0_40px_rgba(0,0,0,0.7)]">
+      <div className="fade-in relative w-full max-w-3xl rounded-sm border border-amber-glow/40 bg-background/95 p-5 pr-12 shadow-[0_0_40px_rgba(0,0,0,0.7)]">
+        <CloseButton
+          onClick={() => {
+            stopSpeech();
+            closeDialog();
+          }}
+          label="Dialog schließen"
+          className="absolute right-3 top-3"
+        />
         <div className="mb-2 flex items-center justify-between">
           <span
             className={`font-mono-crt text-sm uppercase tracking-[0.3em] ${
@@ -63,17 +72,6 @@ export function DialogOverlay() {
           >
             {line.speaker}
           </span>
-          <button
-            type="button"
-            onClick={() => {
-              stopSpeech();
-              closeDialog();
-            }}
-            aria-label="Dialog schließen"
-            className="flex h-8 w-8 items-center justify-center rounded-sm border border-amber-glow/50 bg-background/60 text-amber-glow transition hover:bg-amber-glow/20 hover:text-foreground"
-          >
-            ✕
-          </button>
         </div>
 
         <p className="font-display text-lg leading-relaxed text-foreground text-shadow-hard">
