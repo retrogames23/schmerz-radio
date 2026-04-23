@@ -430,7 +430,7 @@ export const scenes: Record<string, Scene> = {
         id: "bodoSprite",
         src: bodoSprite,
         // Sitzt im gelben Sessel links — exakt aus dem Hintergrund ausgeschnitten.
-        x: 2,
+        x: 6,
         y: 38,
         w: 30,
         h: 56,
@@ -442,7 +442,7 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bodoNpc",
         // Hotspot deckt das Bodo-Sprite auf dem Sessel.
-        x: 2,
+        x: 6,
         y: 38,
         w: 30,
         h: 56,
