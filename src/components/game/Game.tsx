@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { GameProvider } from "@/game/GameContext";
+import { InventoryDragProvider } from "@/game/InventoryDragContext";
 import { SettingsProvider } from "@/audio/SettingsContext";
 import { MusicPlayer } from "@/audio/MusicPlayer";
 import { unlockAudio } from "@/audio/sfx";
 import { preloadVoices } from "@/audio/speech";
 import { SceneView } from "./SceneView";
 import { TopBar } from "./TopBar";
-import { Inventory } from "./Inventory";
+import { Inventory, DragCursorLayer } from "./Inventory";
 import { TextOverlay } from "./TextOverlay";
 import { DialogOverlay } from "./DialogOverlay";
 import { RadioPanel } from "./RadioPanel";
@@ -44,6 +45,7 @@ export function Game() {
   return (
     <SettingsProvider>
       <GameProvider>
+        <InventoryDragProvider>
         <MusicPlayer />
         <div className="flex h-screen flex-col overflow-hidden bg-bureaucracy">
           <TopBar onOpenPause={() => setPauseOpen(true)} />
@@ -59,7 +61,9 @@ export function Game() {
             </div>
           </main>
           <Inventory />
+          <DragCursorLayer />
         </div>
+        </InventoryDragProvider>
       </GameProvider>
     </SettingsProvider>
   );
