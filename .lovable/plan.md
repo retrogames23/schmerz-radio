@@ -2,76 +2,56 @@
 
 ## Ziel
 
-Der Spieler darf **selbst entscheiden**, ob er die Ausgangsmeldung absetzt oder nicht. Beide Wege führen zu Stegmann, aber das Spiel **merkt sich die Entscheidung** und nutzt sie für spätere Reaktionen (Stegmann-Dialog, evtl. Leitstelle/Ending-Hinweise).
+Das gesamte Spiel auf **16:9** umstellen — sauber, ohne dass Hintergründe beschnitten werden oder Hotspots an den falschen Stellen liegen.
 
-## Designprinzip
+## Ausgangslage
 
-- Spieler erfährt von der Pflicht (Inbox + Telefon-Hinweis), entscheidet aber frei.
-- **Kein Block** am Telefon — Stegmann ist immer anrufbar.
-- **Zwei Flags** für die Entscheidung: `reportedExit` (gemeldet) und `skippedExitReport` (bewusst übersprungen — wird gesetzt, sobald Stegmann angerufen wird, ohne vorher gemeldet zu haben).
-- Konsequenz ist **narrativ, nicht mechanisch**: Stegmann reagiert anders, je nachdem.
+- Die Szene rendert aktuell mit `aspect-[4/3]` in `SceneView.tsx`.
+- **Alle 17 Hintergrundbilder** in `src/assets/` sind im **4:3-Format** generiert.
+- Hotspot-Koordinaten (`x`, `y`, `w`, `h` in `scenes.ts`) und NPC-Sprite-Positionen (z. B. Mira) sind als **Prozentwerte relativ zum 4:3-Bild** definiert.
 
-## Vorgeschlagener Ablauf
+Das heißt: Eine reine Container-Umstellung auf 16:9 reicht nicht — die Bilder würden entweder oben/unten beschnitten (bei `object-cover`) oder verzerrt (bei `object-fill`), und alle Hotspots würden verrutschen.
 
-**1. Inbox-Nachricht [004]** (nach `calledInsa2`, nur solange `reportedExit` und `calledStegmann` nicht gesetzt sind):
+## Vorgeschlagene Lösung — „Letterbox-Ansatz“ (einfach, sicher, nicht-invasiv)
 
+Der **äußere Spielrahmen** wird auf 16:9 umgestellt, aber die **Bühne (Bild + Hotspots)** bleibt intern 4:3 und wird mittig in den 16:9-Rahmen gesetzt — mit thematisch passenden schwarzen Balken links/rechts (Letterbox/Pillarbox, wie bei Retro-Adventures üblich).
+
+### Vorteile
+- **Keine Beschneidung** der Hintergründe — alles bleibt sichtbar.
+- **Hotspots, NPC-Sprites und alle Prozent-Koordinaten bleiben exakt erhalten** — keine Datei in `scenes.ts` muss angefasst werden.
+- **Keine Asset-Neugenerierung** nötig.
+- 16:9-Container nutzt die Breite moderner Bildschirme besser; die schwarzen Seitenstreifen wirken wie ein Kino-/CRT-Rahmen und passen zur Ästhetik (Scanlines, Amber-Glow).
+
+### Änderungen
+
+**1. `src/components/game/SceneView.tsx`**
+- **Äußerer Container**: `aspect-[16/9]` statt `aspect-[4/3]`. Behält `h-full max-h-full w-auto max-w-full`, damit er weiterhin in den verfügbaren Viewport-Platz passt (Höhe-getrieben, Breite folgt aus 16:9).
+- **Innerer „Bühne“-Container**: Neu eingefügtes Element mit `aspect-[4/3] h-full mx-auto relative` — hier hinein kommen Hintergrundbild, NPCs, Hotspots, Caption, Vignette, Scene-Intro. Alle bestehenden Prozent-Koordinaten arbeiten weiterhin gegen diesen 4:3-Bereich.
+- Der äußere 16:9-Container bekommt `bg-black` (sichtbar als seitliche Letterbox-Streifen) und behält `scanlines` + den `resonance-shake`-Effekt.
+
+```text
++--------------------------------------------------+   <- 16:9 Außenrahmen (schwarz, scanlines)
+|        +--------------------------+              |
+|  ░░░   |   4:3 Bühne (Hotspots)   |   ░░░        |
+|        +--------------------------+              |
++--------------------------------------------------+
 ```
-Von:    Bauerfeind, I. (Leitstelle E67)
-Betreff: Ausgangsmeldung — Standardprotokoll
-Bitte melden Sie Ihren Ausgang aus E67 elektronisch:
-  > report exit
-Adressat: LEITSTELLE25@ZENTRAL.NETZ.
-```
 
-**2. Neuer Terminal-Befehl `report exit`** (in `help` aufgeführt nach `calledInsa2`):
+**2. Overlays**
+- `TextOverlay`, `DialogOverlay`, `RadioPanel`, `Terminal`, `Ending`, `PauseMenu` werden absolut auf den **äußeren 16:9-Rahmen** gelegt (statt wie bisher implizit auf den 4:3-Bereich), damit sie die volle Breite des neuen Formats nutzen können. Da diese Overlays in `Game.tsx` als Geschwister von `<SceneView />` im selben relativen Container liegen, ist das automatisch erfüllt — keine Code-Änderung nötig, nur Verifizierung in `Game.tsx`.
 
-- Zeigt:
-  ```
-  >> AUSGANGSMELDUNG → LEITSTELLE25@ZENTRAL.NETZ
-  >> Verbindung zu ROUTER567.ZENTRAL.NETZ …
-  >> ERROR 4567: ZENTRAL.NETZ nicht erreichbar.
-  >> Meldung NICHT zugestellt.
-  ```
-- Setzt Flag `reportedExit` (Spieler hat es **versucht** — das zählt als Meldung).
-- Beim zweiten Aufruf nur Kurzform.
+**3. Keine Änderungen an**:
+- `scenes.ts` (Hotspot-Koordinaten bleiben gültig).
+- Asset-Dateien (Hintergründe bleiben 4:3).
+- `Game.tsx`-Layout, `TopBar`, `Inventory` (skalieren bereits flexibel mit).
 
-**3. Telefon-Hotspot `phoneApt`** bleibt **immer aufrufbar**.
-- Wird Stegmann angerufen, **bevor** `reportedExit` gesetzt ist → Flag `skippedExitReport` wird gesetzt.
-- Wird Stegmann angerufen **nach** `reportedExit` → kein zusätzliches Flag.
+### Effekt
 
-**4. Stegmann-Dialog `stegmann.st1`** verzweigt anhand der Flags:
+- **Laptop (1366×768)**: 16:9-Rahmen ~1080×608, darin mittig 4:3-Bühne ~810×608 mit ~135px Letterbox-Streifen links/rechts.
+- **Desktop (1920×1080)**: Rahmen ~1280×720, Bühne ~960×720, Streifen ~160px.
+- **Schmale Viewports**: Über `max-w-full` greift die Breitenbegrenzung; Höhe folgt aus 16:9.
 
-| Zustand | Stegmanns Eröffnung |
-|---|---|
-| `reportedExit` gesetzt | *„Ihre Ausgangsmeldung ist hier eingegangen — naja, der Versuch. Error 4567, ich weiß. Was brauchen Sie?“* |
-| `skippedExitReport` (kein report) | *„Sie haben den Ausgang nicht gemeldet. Standardprotokoll, Herr Layard. Beim nächsten Mal bitte zuerst melden. — Was brauchen Sie?“* |
+## Optional (später, falls gewünscht)
 
-Beide Pfade münden danach im **identischen** Code-Übergabe-Flow (`st2` …). Keine Sackgasse, kein Lock.
-
-**5. Optionaler späterer Hinweis** (klein, nicht aufdringlich): In `insa3` (Sanitäter-Anruf) oder im Ending kann ein zusätzlicher Halbsatz erscheinen, wenn `skippedExitReport` gesetzt ist — z. B. Bauerfeind erwähnt nebenbei *„Ihre Ausgangsmeldung steht übrigens noch aus.“* Hält die Entscheidung im Gedächtnis des Systems.
-
-## Technische Änderungen
-
-**`src/game/types.ts`**
-- Neue Flags: `reportedExit`, `skippedExitReport`.
-
-**`src/components/game/Terminal.tsx`**
-- Neuer Branch `cmd === "report exit"` → Ausgabe + `setFlag("reportedExit")`.
-- `COMMANDS`/`HELP_LINES`: Eintrag `report exit` (sichtbar nach `calledInsa2`).
-- `inbox`: Eintrag `[004]` (sichtbar wenn `calledInsa2` && nicht `calledStegmann`).
-- `read 004`: Mailtext mit explizitem Befehl-Hinweis.
-
-**`src/game/scenes.ts`** — `phoneApt.onUse` (Stegmann-Zweig):
-- Vor `startDialog("stegmann")`: wenn `!hasFlag("reportedExit")` → `setFlag("skippedExitReport")`.
-- Kein Block, kein Hinweis-Text — Anruf geht immer durch.
-
-**`src/game/dialogs.ts`** — `stegmann.st1`:
-- Text-Variante anhand der Flags wählen (zwei kurze Eröffnungslinien, danach gemeinsamer Pfad).
-- Optional: in `insa3` einen knappen Halbsatz ergänzen, wenn `skippedExitReport`.
-
-## Was unverändert bleibt
-
-- Story-Flow (insa2a → Stegmann → Code → Tür) bleibt identisch.
-- Keine neuen Räume, Hotspots oder Assets.
-- Inbox-Nachrichten 001–003 unverändert.
+Falls du irgendwann **echte 16:9-Bilder ohne Letterbox** willst, müssten wir alle 17 Hintergründe neu generieren **und** sämtliche Hotspot-Koordinaten in `scenes.ts` neu vermessen. Das ist ein deutlich größerer Eingriff — der Letterbox-Ansatz oben ist die pragmatische Lösung und liefert sofort ein 16:9-Spielerlebnis.
 
