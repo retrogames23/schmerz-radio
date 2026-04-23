@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import titleTrack from "@/assets/almost-freedom.mp3";
+import { CrtMatrixBackground } from "./CrtMatrixBackground";
 
 interface Props {
   onStart: () => void;
@@ -68,8 +69,11 @@ export function TitleScreen({ onStart }: Props) {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-bureaucracy px-6 text-center">
-      <div className="scanlines absolute inset-0 opacity-60" />
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-black px-6 text-center">
+      <CrtMatrixBackground />
+      {/* Darken the matrix slightly so the title stays readable. */}
+      <div className="absolute inset-0 bg-black/55" />
+      <div className="scanlines absolute inset-0 opacity-40" />
       <div className="amber-vignette opacity-30" />
 
       <button
