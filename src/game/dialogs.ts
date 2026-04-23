@@ -1214,7 +1214,7 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "LAYARD",
         text: "Ich … wollte mir nur ein paar andere Etagen ansehen.",
         hiddenWhen: ["sawEmptyOffice"],
-        next: "mi4",
+        next: "mi3b",
       },
       mi3b: {
         id: "mi3b",
@@ -1229,6 +1229,7 @@ export const dialogs: Record<string, DialogTree> = {
         text: "Andere Etagen ansehen. — Weißt du, wie selten das jemand macht? Die meisten bleiben in ihrem Quadranten, bis sie transferiert werden. Du nicht.",
         subtext: "Sie hat das schon oft gesagt. Sie wartet darauf, wie er reagiert.",
         hiddenWhen: ["sawEmptyOffice"],
+        next: "mi4b",
         choices: [
           { text: "Was meinst du damit genau?", next: "miraOpen1" },
           { text: "Pass auf, was du sagst. Hier hört jemand zu.", next: "miraClosed1" },
