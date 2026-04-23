@@ -25,10 +25,12 @@ interface Line {
   kind?: "in" | "out" | "system";
 }
 
-/** Aktuelle CentralOS-Versionsbezeichnung, abhängig vom Update-Flag. */
+/** Aktuelle CentralOS-Versionsbezeichnung, abhängig vom Update-Flag.
+ *  Bodos Rechner läuft vor dem Update auf altem v2.0; das sysupdate hebt
+ *  beide Maschinen auf die gleiche Sektor-Version v2.3.1. */
 function osVersion(updated: boolean, bodo = false): string {
-  if (bodo) return updated ? "2.0.1" : "2.0";
-  return updated ? "2.3.1" : "2.3";
+  if (updated) return "2.3.1";
+  return bodo ? "2.0" : "2.3";
 }
 
 /**
@@ -993,7 +995,9 @@ export function Terminal() {
   // läuft immer im normalen Phosphor-Grün-Modus.
   const bodoMode = terminalBodoMode;
   const userName = bodoMode ? "bodo" : "worag";
-  const hostName = bodoMode ? "bodo" : "e67";
+  // Beide Maschinen hängen am Sektor-Netz E67 — der Hostname ist
+  // konsistent „e67“, nur der Benutzer wechselt.
+  const hostName = "e67";
   const homePath = bodoMode ? HOME_PATH_BODO : HOME_PATH;
   const homeLabel = bodoMode ? "/home/bodo" : "/home/worag";
   const inputRef = useRef<HTMLInputElement>(null);
