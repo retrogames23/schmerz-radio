@@ -47,7 +47,7 @@ export const dialogs: Record<string, DialogTree> = {
       p6: {
         id: "p6",
         speaker: "PHILIPPE",
-        text: "Danke. Folgen Sie mir bitte. Es ist die Wohnung neben mir — 2613.",
+        text: "Danke. Folgen Sie mir bitte. Es geht um meine Wohnung, 2613 — das Klopfen kommt aus der Nachbarwand, von 2615.",
         next: "p7",
       },
       p7: {
