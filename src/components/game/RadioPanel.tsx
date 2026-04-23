@@ -209,11 +209,25 @@ export function RadioPanel() {
         {/* Wave visualization */}
         <div className="mb-4 flex h-16 items-end gap-[2px] rounded-sm border border-border bg-black/70 p-2">
           {Array.from({ length: 60 }).map((_, i) => {
-            const intensity = onAngel
-              ? 0.3 + Math.abs(Math.sin((i + freq * 10) / 4)) * 0.7
-              : currentBand
-                ? 0.2 + ((i * 7) % 50) / 100
-                : Math.random() * 0.3;
+            const phase = tick / 6;
+            let intensity: number;
+            if (onAngel) {
+              // Strong, coherent pulse on the angel signal
+              intensity =
+                0.35 + Math.abs(Math.sin((i + freq * 10) / 4 + phase)) * 0.65;
+            } else if (currentBand) {
+              // Gentle, organic motion within a known band
+              intensity =
+                0.18 +
+                Math.abs(Math.sin(i / 3 + phase * 0.6)) * 0.35 +
+                Math.abs(Math.sin(i / 1.7 - phase * 0.4)) * 0.15;
+            } else {
+              // Off-band: low static rustle that still shifts
+              intensity =
+                0.08 +
+                Math.abs(Math.sin(i * 1.3 + phase * 1.4)) * 0.18 +
+                ((i * 7 + tick) % 11) / 110;
+            }
             return (
               <div
                 key={i}
