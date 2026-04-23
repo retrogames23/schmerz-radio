@@ -183,6 +183,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
           n.add(f);
           return n;
         }),
+      clearFlag: (f) =>
+        setFlags((prev) => {
+          if (!prev.has(f)) return prev;
+          const n = new Set(prev);
+          n.delete(f);
+          return n;
+        }),
       hasFlag: (f) => flagsRef.current.has(f),
       setKnowledge: (k) =>
         setKnowledge((prev) => {

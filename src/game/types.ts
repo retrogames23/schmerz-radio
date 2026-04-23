@@ -102,6 +102,12 @@ export type StoryFlag =
   | "bodoLeftForB3"
   | "bodoBackAfterB3"
   | "bodoNoticedIntrusion"
+  // Zweiter Anlauf: Bodo geht ein weiteres Mal los (Lotti-Wasser-Argument).
+  | "bodoLeftForB3Twice"
+  | "bodoBackAfterB3Twice"
+  // Dritter Anlauf existiert nicht: stattdessen storniert Bodo die Sperre
+  // selbst, sobald er bemerkt, dass Layard nichts unternommen hat.
+  | "bodoSelfCanceledMaint"
   // Ennis Korr (2614) — Türgespräch
   | "metEnnis"
   | "talkedEnnis2"
@@ -221,6 +227,7 @@ export interface DialogTree {
 export interface GameApi {
   goTo: (scene: SceneId) => void;
   setFlag: (flag: StoryFlag) => void;
+  clearFlag: (flag: StoryFlag) => void;
   hasFlag: (flag: StoryFlag) => boolean;
   setKnowledge: (k: KnowledgeFlag) => void;
   hasKnowledge: (k: KnowledgeFlag) => boolean;

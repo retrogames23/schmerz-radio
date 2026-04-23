@@ -423,7 +423,9 @@ export const scenes: Record<string, Scene> = {
     // Solange Bodo da ist: Bild mit Bodo. Sobald er für B3 unterwegs ist:
     // identisches Bild ohne Bodo.
     background: (api) =>
-      api.hasFlag("bodoLeftForB3") && !api.hasFlag("bodoBackAfterB3")
+      (api.hasFlag("bodoLeftForB3") && !api.hasFlag("bodoBackAfterB3")) ||
+      (api.hasFlag("bodoLeftForB3Twice") &&
+        !api.hasFlag("bodoBackAfterB3Twice"))
         ? apt2612BgEmpty
         : apt2612BgBodo,
     title: "Wohnung 2612 — Bodo Marschke",
@@ -439,7 +441,14 @@ export const scenes: Record<string, Scene> = {
         h: 60,
         label: "Bodo Marschke",
         // Wenn Bodo gerade unterwegs zum B3 holen ist, ist er nicht da.
-        hiddenWhen: ["bodoLeftForB3"],
+        visible: (api) => {
+          const away1 =
+            api.hasFlag("bodoLeftForB3") && !api.hasFlag("bodoBackAfterB3");
+          const away2 =
+            api.hasFlag("bodoLeftForB3Twice") &&
+            !api.hasFlag("bodoBackAfterB3Twice");
+          return !away1 && !away2;
+        },
         onUse: (api) => {
           if (!api.hasFlag("metBodo")) {
             api.setFlag("metBodo");
@@ -452,11 +461,20 @@ export const scenes: Record<string, Scene> = {
             api.startDialog("bodoFlyer");
           } else if (
             api.hasFlag("knowsLotti") &&
-            !api.hasFlag("bodoLeftForB3")
+            !api.hasFlag("bodoBackAfterB3")
           ) {
             // Layard kann Bodo überzeugen, los zu gehen — sobald er Lotti
             // kennt und damit weiß, warum B3 wichtig ist.
             api.startDialog("bodoConvinceLeave");
+          } else if (
+            // Zweiter Anlauf: Bodo ist zurück, aber die Aufzugssperre
+            // (oder ein anderes Terminal-Anliegen) ist noch offen.
+            api.hasFlag("bodoBackAfterB3") &&
+            !api.hasFlag("bodoBackAfterB3Twice") &&
+            api.hasFlag("elevatorMaintBlocked") &&
+            !api.hasFlag("elevatorMaintCleared")
+          ) {
+            api.startDialog("bodoConvinceLeave2");
           } else if (!api.hasFlag("talkedBodo2")) {
             api.setFlag("talkedBodo2");
             api.startDialog("bodoSmalltalk");
@@ -474,7 +492,12 @@ export const scenes: Record<string, Scene> = {
         h: 50,
         label: "Bodos leerer Sessel",
         requires: ["bodoLeftForB3"],
-        hiddenWhen: ["bodoBackAfterB3"],
+        hiddenWhen: ["bodoBackAfterB3Twice"],
+        visible: (api) =>
+          // Sichtbar während Anlauf 1 ODER während Anlauf 2.
+          (api.hasFlag("bodoLeftForB3") && !api.hasFlag("bodoBackAfterB3")) ||
+          (api.hasFlag("bodoLeftForB3Twice") &&
+            !api.hasFlag("bodoBackAfterB3Twice")),
         onUse: (api) =>
           api.showText([
             "Bodos Sessel ist leer. Die Tasse Tee dampft noch.",
@@ -531,7 +554,12 @@ export const scenes: Record<string, Scene> = {
         h: 32,
         label: "Bodos Terminal",
         onUse: (api) => {
-          if (api.hasFlag("bodoLeftForB3") && !api.hasFlag("bodoBackAfterB3")) {
+          const bodoAway =
+            (api.hasFlag("bodoLeftForB3") &&
+              !api.hasFlag("bodoBackAfterB3")) ||
+            (api.hasFlag("bodoLeftForB3Twice") &&
+              !api.hasFlag("bodoBackAfterB3Twice"));
+          if (bodoAway) {
             // Bodo ist weg → freier Zugang, eingeloggt als bodo.
             api.openTerminal(true);
           } else if (api.hasFlag("metBodo") && !api.hasFlag("knowsLotti")) {
@@ -540,7 +568,7 @@ export const scenes: Record<string, Scene> = {
               "„Das ist meiner. Da kommen Sie nur dran, wenn ich Sie ranlasse.“",
               "„Und ich lass’ Sie nicht ran, solange Sie nicht wissen, mit wem Sie hier eigentlich reden.“",
             ]);
-          } else if (api.hasFlag("knowsLotti") && !api.hasFlag("bodoLeftForB3")) {
+          } else if (api.hasFlag("knowsLotti")) {
             api.showText([
               "Bodo schüttelt den Kopf, ohne aufzuschauen.",
               "„Solange ich hier sitze, sitzen Sie nicht hier. Ende.“",
@@ -566,10 +594,12 @@ export const scenes: Record<string, Scene> = {
         onUse: (api) => {
           // Wenn Bodo gerade unterwegs ist: er kommt zurück, bevor Layard
           // den Raum verlassen kann. Beide treffen sich an der Tür.
-          if (
-            api.hasFlag("bodoLeftForB3") &&
-            !api.hasFlag("bodoBackAfterB3")
-          ) {
+          const firstTrip =
+            api.hasFlag("bodoLeftForB3") && !api.hasFlag("bodoBackAfterB3");
+          const secondTrip =
+            api.hasFlag("bodoLeftForB3Twice") &&
+            !api.hasFlag("bodoBackAfterB3Twice");
+          if (firstTrip) {
             // Bodo merkt es, wenn Layard etwas Sichtbares getan hat —
             // entweder das System aktualisiert oder die Wartungssperre
             // 4711 storniert (beides hinterlässt Spuren im Log).
@@ -580,6 +610,17 @@ export const scenes: Record<string, Scene> = {
               api.startDialog("bodoReturnsCaught");
             } else {
               api.startDialog("bodoReturnsClean");
+            }
+            return;
+          }
+          if (secondTrip) {
+            // Beim zweiten Anlauf zählt nur, ob die Aufzugssperre weg ist.
+            // Hat Layard wieder nichts getan → Bodo storniert sie selbst
+            // (Lösung C: garantiert keine Sackgasse).
+            if (api.hasFlag("elevatorMaintCleared")) {
+              api.startDialog("bodoReturnsCaught2");
+            } else {
+              api.startDialog("bodoReturnsSelfFix");
             }
             return;
           }

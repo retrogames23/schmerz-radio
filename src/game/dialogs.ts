@@ -2181,6 +2181,170 @@ export const dialogs: Record<string, DialogTree> = {
     },
   },
 
+  // ── Zweiter Anlauf: Layard überredet Bodo erneut wegzugehen ─────
+  // Voraussetzung: Bodo war schon einmal weg, ist zurück, und die
+  // Aufzugssperre 4711 liegt immer noch auf der Etage. Anderes Argument:
+  // Lottis Wassernapf braucht frisches Wasser aus der Sektor-Leitung.
+  bodoConvinceLeave2: {
+    id: "bodoConvinceLeave2",
+    start: "bd1",
+    lines: {
+      bd1: {
+        id: "bd1",
+        speaker: "LAYARD",
+        text: "Bodo. Eine Frage noch. — Lottis Wassernapf. Wann haben Sie zuletzt Sektor-Wasser geholt?",
+        next: "bd2",
+      },
+      bd2: {
+        id: "bd2",
+        speaker: "SYSTEM",
+        text: "Bodo schaut auf den Napf. Auf Lotti. Wieder auf Layard.",
+        subtext: "Der Napf ist halb leer und sieht trübe aus.",
+        next: "bd3",
+      },
+      bd3: {
+        id: "bd3",
+        speaker: "SYSTEM",
+        text: "Bodo: »Vorgestern. Vielleicht. — Das Leitungswasser hier oben ist… nicht für Katzen.«",
+        next: "bd4",
+      },
+      bd4: {
+        id: "bd4",
+        speaker: "LAYARD",
+        text: "Im Schacht 4 gibt es einen Filterhahn. Sie wissen das. Ich pass’ wieder auf. Gehen Sie.",
+        subtext: "Layard sagt das ruhiger als beim ersten Mal. Er weiß, was er gerade tut.",
+        next: "bd5",
+      },
+      bd5: {
+        id: "bd5",
+        speaker: "SYSTEM",
+        text: "Bodo seufzt. Diesmal länger.",
+        next: "bd6",
+      },
+      bd6: {
+        id: "bd6",
+        speaker: "SYSTEM",
+        text: "Bodo: »Sie haben heute zweimal Recht, Worag. Das ist mehr als die meisten in einem Jahr.«",
+        next: "bd7",
+      },
+      bd7: {
+        id: "bd7",
+        speaker: "SYSTEM",
+        text: "Bodo, an der Tür: »Eine Viertelstunde. Und das Terminal lasse ich offen — ich glaub’ inzwischen nicht mehr, dass Sie irgendwas tun, was ich nicht selber täte.«",
+        subtext: "Vertrauen klingt bei Bodo wie Resignation. Ist es aber nicht.",
+        next: "bd8",
+      },
+      bd8: {
+        id: "bd8",
+        speaker: "SYSTEM",
+        text: "[ Die Tür fällt ins Schloss. Lotti rollt sich um. Stille. ]",
+        choices: [
+          {
+            text: "[ Allein. Wieder fünfzehn Minuten. ]",
+            action: (api) => {
+              api.setFlag("bodoLeftForB3Twice");
+            },
+          },
+        ],
+      },
+    },
+  },
+
+  // ── Zweiter Anlauf, Bodo kommt zurück und Layard hat es geschafft ─
+  bodoReturnsCaught2: {
+    id: "bodoReturnsCaught2",
+    start: "bz1",
+    onEnd: (api) => {
+      api.setFlag("bodoBackAfterB3Twice");
+    },
+    lines: {
+      bz1: {
+        id: "bz1",
+        speaker: "SYSTEM",
+        text: "[ Bodo kommt zurück, eine Wasserkanne in der Hand. Er schaut zum Aufzug-Display draußen — das rote Blinken ist weg. ]",
+        next: "bz2",
+      },
+      bz2: {
+        id: "bz2",
+        speaker: "SYSTEM",
+        text: "Bodo: »Wartung 4711 storniert. — Ich frage nicht, von wo aus.«",
+        subtext: "Er fragt es trotzdem, nur leiser.",
+        next: "bz3",
+      },
+      bz3: {
+        id: "bz3",
+        speaker: "SYSTEM",
+        text: "Bodo, im Vorbeigehen: »Gehen Sie, wo Sie hin müssen, Worag. Bevor jemand merkt, dass mein Login heute zu viel kann.«",
+        end: true,
+      },
+    },
+  },
+
+  // ── Zweiter Anlauf, Layard hat WIEDER nichts getan → Lösung C ────
+  // Bodo merkt selbst, dass die Sperre dämlich ist, und storniert sie.
+  bodoReturnsSelfFix: {
+    id: "bodoReturnsSelfFix",
+    start: "bs1",
+    onEnd: (api) => {
+      api.setFlag("bodoBackAfterB3Twice");
+      api.setFlag("elevatorMaintCleared");
+      api.setFlag("bodoSelfCanceledMaint");
+    },
+    lines: {
+      bs1: {
+        id: "bs1",
+        speaker: "SYSTEM",
+        text: "[ Bodo kommt zurück, Kanne in der Hand, Lotti reibt sich an seinem Schienbein. Er bleibt im Türrahmen stehen. ]",
+        next: "bs2",
+      },
+      bs2: {
+        id: "bs2",
+        speaker: "SYSTEM",
+        text: "Bodo schaut zum Terminal. Bildschirm dunkel. Tastatur unberührt.",
+        subtext: "Er glaubt es schon eher als beim ersten Mal.",
+        next: "bs3",
+      },
+      bs3: {
+        id: "bs3",
+        speaker: "SYSTEM",
+        text: "Bodo: »Worag. Sie hatten zweimal eine halbe Stunde an meinem Rechner. Und Sie haben nichts angerührt.«",
+        next: "bs4",
+      },
+      bs4: {
+        id: "bs4",
+        speaker: "LAYARD",
+        text: "Ich wollte nichts kaputtmachen.",
+        next: "bs5",
+      },
+      bs5: {
+        id: "bs5",
+        speaker: "SYSTEM",
+        text: "Bodo: »Kaputtmachen. Hm. — Da steht draußen ein Aufzug, der seit heute Mittag nichts mehr tut. Wartung 4711. Wegen Ihrer kleinen Resonanz-Geschichte unten.«",
+        next: "bs6",
+      },
+      bs6: {
+        id: "bs6",
+        speaker: "SYSTEM",
+        text: "Bodo setzt sich ans Terminal. Tippt drei Zeilen, ohne hinzuschauen.",
+        subtext: "Routine. Er hat das hundertmal gemacht. Nur nie für jemanden.",
+        next: "bs7",
+      },
+      bs7: {
+        id: "bs7",
+        speaker: "SYSTEM",
+        text: "Bodo: »Storniert. — Sie wollten nicht. Also ich. Einmal. Damit Sie da rauskommen, wo Sie hin müssen.«",
+        next: "bs8",
+      },
+      bs8: {
+        id: "bs8",
+        speaker: "SYSTEM",
+        text: "Bodo: »Nächstes Mal trauen Sie sich. Oder lassen es ganz. Aber halten Sie mich nicht zweimal mit derselben Geschichte vom Sessel weg.«",
+        subtext: "Das ist kein Schimpfen. Das ist Bodos Art von Zuneigung.",
+        end: true,
+      },
+    },
+  },
+
   // ═════════════════════════════════════════════════════════════
   // ENNIS KORR — Tür 2614 (Türgespräch)
   // ═════════════════════════════════════════════════════════════
