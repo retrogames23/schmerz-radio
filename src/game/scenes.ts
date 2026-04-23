@@ -27,28 +27,28 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "radio",
-        x: 24,
-        y: 46,
-        w: 18,
-        h: 14,
+        x: 0,
+        y: 52,
+        w: 14,
+        h: 20,
         label: "Schmerz-Radio",
         onUse: (api) => api.openRadio(),
       },
       {
         id: "terminal",
-        x: 4,
-        y: 42,
+        x: 12,
+        y: 40,
         w: 22,
-        h: 22,
+        h: 30,
         label: "CentralOS Terminal",
         onUse: (api) => api.openTerminal(),
       },
       {
         id: "phoneApt",
-        x: 82,
-        y: 30,
-        w: 14,
-        h: 25,
+        x: 86,
+        y: 32,
+        w: 12,
+        h: 28,
         label: "Telefon",
         // Only available after Layard saw the empty office on floor 3.
         requires: ["sawEmptyOffice"],
@@ -72,10 +72,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "bed",
-        x: 38,
-        y: 55,
-        w: 38,
-        h: 35,
+        x: 34,
+        y: 50,
+        w: 44,
+        h: 30,
         label: "Bett",
         onUse: (api) =>
           api.showText([
@@ -85,10 +85,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "b2",
-        x: 4,
-        y: 80,
-        w: 16,
-        h: 18,
+        x: 12,
+        y: 76,
+        w: 22,
+        h: 22,
         label: "B2-Ration",
         onUse: (api) =>
           api.showText([
@@ -102,10 +102,10 @@ export const scenes: Record<string, Scene> = {
       {
         id: "window",
         // Fenster mit grünem Schein, Bildmitte etwas nach rechts.
-        x: 52,
-        y: 14,
-        w: 18,
-        h: 38,
+        x: 48,
+        y: 18,
+        w: 24,
+        h: 34,
         label: "Fenster",
         onUse: (api) =>
           api.showText([
