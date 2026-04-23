@@ -27,7 +27,10 @@ interface Line {
 
 /** Aktuelle CentralOS-Versionsbezeichnung, abhängig vom Update-Flag. */
 function osVersion(updated: boolean, bodo = false): string {
-  if (bodo) return updated ? "2.0.1" : "2.0";
+  // Bodo läuft vor dem Update auf der alten v2.0.
+  // Nach dem sysupdate konsolidiert das Paket alles auf die aktuelle v2.3.1
+  // (sechs Jahre an Patches in einem Schritt — siehe Sysupdate-Sequenz).
+  if (bodo) return updated ? "2.3.1" : "2.0";
   return updated ? "2.3.1" : "2.3";
 }
 
@@ -1029,7 +1032,7 @@ export function Terminal() {
               kind: "system",
             },
             {
-              text: "║  Ihr System: CentralOS v2.0  →  v2.0.1         ║",
+              text: "║  Ihr System: CentralOS v2.0  →  v2.3.1         ║",
               kind: "system",
             },
             {
@@ -1482,7 +1485,7 @@ export function Terminal() {
               { text: "   [██████████] 100%", delayMs: t(520), beep: true },
               { text: ">> Patch /usr/bin/centralos … OK", delayMs: t(360) },
               { text: ">> Migriere /etc/motd ……… OK", delayMs: t(280) },
-              { text: ">> CentralOS v2.0 → v2.0.1   [OK]", delayMs: t(420), kind: "system", beep: true },
+              { text: ">> CentralOS v2.0 → v2.3.1   [OK]", delayMs: t(420), kind: "system", beep: true },
               { text: ">> Hinweis: Diese Aktualisierung wurde an die Leitstelle gemeldet.", delayMs: t(320), kind: "system" },
             ],
             () => api.setFlag("centralOsUpdated"),
