@@ -284,17 +284,18 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "patient2615",
-        x: 42,
-        y: 30,
-        w: 18,
-        h: 55,
+        x: 38,
+        y: 45,
+        w: 22,
+        h: 45,
         label: "Der Mann an der Wand",
         hiddenWhen: ["sawCatatonic"],
         onUse: (api) => {
           api.setFlag("sawCatatonic");
           api.showText([
             "Ein Mann, ausgemergelt. Fahle Haut. Hochgezogene Brauen.",
-            "Er schlägt mit leblosem Gesicht rhythmisch gegen die Wand.",
+            "Er sitzt auf dem Boden, den Rücken an der Wand,",
+            "und schlägt mit leblosem Gesicht rhythmisch mit der Faust dagegen.",
             "Layard nimmt seinen Mut zusammen und schaut ihm in die Augen.",
             "Er erwartet tote, glasige Augen.",
             "Stattdessen: grüne Augen. Eine seltsame Tiefe. Klarheit.",
@@ -305,10 +306,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "paramedicsHotspot2615",
-        x: 65,
-        y: 40,
-        w: 22,
-        h: 50,
+        x: 15,
+        y: 35,
+        w: 18,
+        h: 55,
         label: "Sanitäter ansprechen",
         requires: ["sawCatatonic"],
         hiddenWhen: ["protocolReceived"],
@@ -325,11 +326,27 @@ export const scenes: Record<string, Scene> = {
         },
       },
       {
-        id: "wallDetail2615",
-        x: 22,
-        y: 30,
+        id: "philippe2615",
+        x: 70,
+        y: 35,
         w: 18,
-        h: 40,
+        h: 55,
+        label: "Philippe",
+        hiddenWhen: ["sawCatatonic"],
+        onUse: (api) => {
+          api.showText([
+            "Philippe steht an der Tür, die Arme verschränkt.",
+            "„Sehen Sie ihn auch?“ — flüstert er.",
+            "„Ich konnte nicht hinein. Ich konnte einfach nicht.“",
+          ]);
+        },
+      },
+      {
+        id: "wallDetail2615",
+        x: 38,
+        y: 18,
+        w: 24,
+        h: 22,
         label: "Die Wand",
         requires: ["sawCatatonic"],
         onUse: (api) =>
@@ -341,10 +358,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "exitTo2613",
-        x: 5,
-        y: 35,
+        x: 0,
+        y: 5,
         w: 12,
-        h: 50,
+        h: 35,
         label: "Zurück nach 2613",
         onUse: (api) => api.goTo("apt2613"),
       },
