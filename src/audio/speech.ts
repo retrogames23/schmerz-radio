@@ -44,13 +44,63 @@ let currentAudio: HTMLAudioElement | null = null;
 /** AbortController for in-flight TTS fetch — aborted on stop. */
 let currentFetch: AbortController | null = null;
 
-function cleanText(text: string): string {
+const DIGIT_WORDS: Record<string, string> = {
+  "0": "null",
+  "1": "eins",
+  "2": "zwei",
+  "3": "drei",
+  "4": "vier",
+  "5": "fünf",
+  "6": "sechs",
+  "7": "sieben",
+  "8": "acht",
+  "9": "neun",
+};
+
+function speakDigits(value: string): string {
+  return value
+    .split("")
+    .map((char) => DIGIT_WORDS[char] ?? char)
+    .join(" ");
+}
+
+function speakNumericToken(value: string): string {
+  if (value.includes(",") || value.includes(".")) {
+    return value
+      .split(/([,.])/)
+      .filter(Boolean)
+      .map((part) => {
+        if (part === ",") return "Komma";
+        if (part === ".") return "Punkt";
+        return speakDigits(part);
+      })
+      .join(" ");
+  }
+
+  return speakDigits(value);
+}
+
+function normalizeNumbersForSpeech(text: string): string {
   return text
+    .replace(/\b(\d{1,2})\.(\d{1,2})\.(\d{2,4})\b/g, (_match, day, month, year) => {
+      return `${speakDigits(day)} Punkt ${speakDigits(month)} Punkt ${speakDigits(year)}`;
+    })
+    .replace(/\b([A-Za-zÄÖÜäöü])(\d+(?:[.,]\d+)*)\b/g, (_match, prefix, numeric) => {
+      return `${prefix} ${speakNumericToken(numeric)}`;
+    })
+    .replace(/\b\d+(?:[.,]\d+)+\b/g, (match) => speakNumericToken(match))
+    .replace(/\b\d+\b/g, (match) => speakDigits(match));
+}
+
+function cleanText(text: string): string {
+  const normalized = text
     .replace(/\[[^\]]*\]/g, "")
     .replace(/[„"”]/g, "")
     .replace(/—/g, ", ")
     .replace(/…/g, "...")
     .trim();
+
+  return normalizeNumbersForSpeech(normalized);
 }
 
 /** Browser-SpeechSynthesis fallback — only used if ElevenLabs request fails. */
