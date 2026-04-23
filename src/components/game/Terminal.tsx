@@ -213,6 +213,7 @@ export function Terminal() {
 
   useEffect(() => {
     if (terminalOpen) {
+      setCwd([...HOME_PATH]);
       setLines([
         { text: ">> CENTRALOS v2.3 — Terminal Quadrant E67", kind: "system" },
         { text: ">> Benutzer: WORAG, L. (Zimmer 2611)", kind: "system" },
