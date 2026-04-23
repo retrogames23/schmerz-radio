@@ -4,6 +4,12 @@ import { useSettings } from "@/audio/SettingsContext";
 import { playBeep, playKeypress, playUnlock } from "@/audio/sfx";
 import { FILESYSTEM, resolvePath, pathString, type FsNode } from "@/game/filesystem";
 import type { StoryFlag } from "@/game/types";
+import {
+  adventureCommand,
+  adventureStart,
+  newAdventureState,
+  type AdvState,
+} from "@/game/adventureGame";
 
 interface Line {
   text: string;
@@ -70,6 +76,8 @@ const COMMANDS = [
   "cd",
   "cat",
   "tree",
+  "adventure",
+  "./adventure.bin",
 ];
 
 /** Longest common string prefix across all candidates. */
