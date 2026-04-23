@@ -800,7 +800,13 @@ export const scenes: Record<string, Scene> = {
         w: 16,
         h: 30,
         label: "Aufzug",
-        hiddenWhen: ["elevatorMaintBlocked"],
+        // Sichtbar, solange keine aktive Wartungssperre auf dem Aufzug liegt.
+        // Sobald die Sperre per `maint cancel 4711` storniert wurde
+        // (elevatorMaintCleared), wird sie ignoriert und der Aufzug ist
+        // wieder benutzbar.
+        visible: (api) =>
+          !api.hasFlag("elevatorMaintBlocked") ||
+          api.hasFlag("elevatorMaintCleared"),
         onUse: (api) => api.goTo("elevator"),
       },
       // Solange Wartungssperre 4711 auf dem Aufzug liegt: er fährt nicht.
