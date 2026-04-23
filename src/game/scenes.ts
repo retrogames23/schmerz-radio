@@ -383,19 +383,19 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "philippeQuiet",
-        x: 8,
-        y: 30,
-        w: 30,
-        h: 60,
+        x: 55,
+        y: 25,
+        w: 35,
+        h: 65,
         label: "Philippe",
         onUse: (api) => api.startDialog("philippeAfter"),
       },
       {
         id: "lamp",
-        x: 30,
-        y: 30,
+        x: 35,
+        y: 40,
         w: 14,
-        h: 25,
+        h: 22,
         label: "Lampe",
         onUse: (api) =>
           api.showText([
