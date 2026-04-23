@@ -827,6 +827,15 @@ export function Terminal() {
 
     if (cmd === "help") {
       newLines.push(...HELP_LINES);
+      if (flags.has("calledInsa2") && !flags.has("calledStegmann")) {
+        newLines.push(
+          { text: "", kind: "out" },
+          {
+            text: "  report exit  — Ausgangsmeldung an Leitstelle übermitteln",
+            kind: "out",
+          },
+        );
+      }
     } else if (cmd === "adventure" || cmd === "./adventure.bin" || cmd === "adventure.bin") {
       const fresh = newAdventureState();
       setAdvState(fresh);
