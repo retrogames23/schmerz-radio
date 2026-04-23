@@ -14,6 +14,7 @@ import corridor36Bg from "@/assets/scene-corridor-36.jpg";
 import corridor46Bg from "@/assets/scene-corridor-46.jpg";
 import corridor56Bg from "@/assets/scene-corridor-56.jpg";
 import miraSprite from "@/assets/npc-mira.png";
+import philippeSprite from "@/assets/npc-philippe.png";
 import type { Scene } from "./types";
 
 export const scenes: Record<string, Scene> = {
@@ -120,18 +121,15 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 60,
         label: "Wohnungstür",
-        // Only relevant after the doorbell rings
-        requires: ["doorbellRang"],
         onUse: (api) => {
-          if (!api.hasFlag("metPhilippe")) {
+          // Resonanz-Überlastung wurde ausgelöst (Radio @104,6),
+          // Philippe steht beim ersten Heimkommen vor der Tür.
+          if (api.hasFlag("doorbellRang") && !api.hasFlag("metPhilippe")) {
             // First open: meet Philippe at the door, then go with him to 2613
             api.setFlag("metPhilippe");
             api.startDialog("philippeAtDoor");
-          } else if (!api.hasFlag("protocolReceived")) {
-            // Still needs to handle the emergency
-            api.goTo("apt2613");
           } else {
-            // After protocol, going out leads to the hallway
+            // Sonst einfach in den Korridor.
             api.goTo("hallway");
           }
         },
