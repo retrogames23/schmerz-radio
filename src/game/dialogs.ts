@@ -696,28 +696,54 @@ export const dialogs: Record<string, DialogTree> = {
   // ─────────────────────────────────────────────────────────────
   philippeInLobby: {
     id: "philippeInLobby",
-    start: "pl1",
+    start: "pl0",
     onEnd: (api) => {
       api.setFlag("metPhilippeBefore");
     },
     lines: {
+      // Erstkontakt
+      pl0: {
+        id: "pl0",
+        speaker: "SYSTEM",
+        text: "[ Ein Mann Anfang 40 lehnt am Tresen. Beiger Cardigan, müde Augen. Er sieht auf, als Layard näher kommt. ]",
+        hiddenWhen: ["metPhilippeBefore"],
+        next: "pl2",
+      },
       pl1: {
         id: "pl1",
         speaker: "SYSTEM",
-        text: "[ Ein Mann Anfang 40 lehnt am Tresen. Beiger Cardigan, müde Augen. Er sieht auf, als Layard näher kommt. ]",
-        next: "pl2",
+        text: "[ Wieder Philippe. Beiger Cardigan, jetzt am Tresen. Er sieht auf, halbes Lächeln. ]",
+        requires: ["metPhilippeBefore"],
+        next: "plR1",
       },
       pl2: {
         id: "pl2",
         speaker: "PHILIPPE",
         text: "Oh — hallo. Sie wohnen im 26er, nicht? 2611. Ich bin Philippe. 2613.",
         subtext: "Er nuschelt. Er probiert die Begrüßung im Kopf, bevor er sie ausspricht.",
+        hiddenWhen: ["metPhilippeBefore"],
         next: "pl3",
+      },
+      plR1: {
+        id: "plR1",
+        speaker: "PHILIPPE",
+        text: "Worag. Wir laufen uns heute oft über den Weg.",
+        subtext: "Er klingt fast erleichtert, ein bekanntes Gesicht zu sehen.",
+        requires: ["metPhilippeBefore"],
+        next: "plR2",
+      },
+      plR2: {
+        id: "plR2",
+        speaker: "LAYARD",
+        text: "Sieht so aus.",
+        requires: ["metPhilippeBefore"],
+        next: "pl4",
       },
       pl3: {
         id: "pl3",
         speaker: "LAYARD",
         text: "Layard. — Was machen Sie hier unten?",
+        hiddenWhen: ["metPhilippeBefore"],
         next: "pl4",
       },
       pl4: {
@@ -738,21 +764,45 @@ export const dialogs: Record<string, DialogTree> = {
 
   philippeInCorridor36: {
     id: "philippeInCorridor36",
-    start: "pc1",
+    start: "pc0",
     onEnd: (api) => {
       api.setFlag("metPhilippeBefore");
     },
     lines: {
+      pc0: {
+        id: "pc0",
+        speaker: "SYSTEM",
+        text: "[ Philippe steht vor einer geschlossenen Verwaltungstür, beide Hände in den Cardiganstaschen. Er nickt Layard zu. ]",
+        hiddenWhen: ["metPhilippeBefore"],
+        next: "pc2",
+      },
       pc1: {
         id: "pc1",
         speaker: "SYSTEM",
-        text: "[ Philippe steht vor einer geschlossenen Verwaltungstür, beide Hände in den Cardiganstaschen. Er nickt Layard zu. ]",
-        next: "pc2",
+        text: "[ Philippe wieder. Vor derselben verschlossenen Verwaltungstür. Er hebt kurz die Hand. ]",
+        requires: ["metPhilippeBefore"],
+        next: "pcR1",
       },
       pc2: {
         id: "pc2",
         speaker: "PHILIPPE",
         text: "Worag, oder? Aus 2611. Ich bin Philippe — von gegenüber, 2613.",
+        hiddenWhen: ["metPhilippeBefore"],
+        next: "pc3",
+      },
+      pcR1: {
+        id: "pcR1",
+        speaker: "PHILIPPE",
+        text: "Worag. Sie auch nochmal hier oben.",
+        subtext: "Halb Frage, halb Trost. Als hätte er Gesellschaft gesucht.",
+        requires: ["metPhilippeBefore"],
+        next: "pcR2",
+      },
+      pcR2: {
+        id: "pcR2",
+        speaker: "LAYARD",
+        text: "Immer noch niemand drin?",
+        requires: ["metPhilippeBefore"],
         next: "pc3",
       },
       pc3: {
@@ -766,6 +816,7 @@ export const dialogs: Record<string, DialogTree> = {
         id: "pc4",
         speaker: "LAYARD",
         text: "Was wollten Sie melden?",
+        hiddenWhen: ["metPhilippeBefore"],
         next: "pc5",
       },
       pc5: {
@@ -779,21 +830,45 @@ export const dialogs: Record<string, DialogTree> = {
 
   philippeInCorridor46: {
     id: "philippeInCorridor46",
-    start: "pq1",
+    start: "pq0",
     onEnd: (api) => {
       api.setFlag("metPhilippeBefore");
     },
     lines: {
+      pq0: {
+        id: "pq0",
+        speaker: "SYSTEM",
+        text: "[ Philippe steht vor dem abblätternden Plakat, als läse er es zum dritten Mal. Er sieht überrascht auf. ]",
+        hiddenWhen: ["metPhilippeBefore"],
+        next: "pq2",
+      },
       pq1: {
         id: "pq1",
         speaker: "SYSTEM",
-        text: "[ Philippe steht vor dem abblätternden Plakat, als läse er es zum dritten Mal. Er sieht überrascht auf. ]",
-        next: "pq2",
+        text: "[ Philippe vor dem alten Plakat. Er dreht sich nicht überrascht um — er hat Layards Schritte schon gehört. ]",
+        requires: ["metPhilippeBefore"],
+        next: "pqR1",
       },
       pq2: {
         id: "pq2",
         speaker: "PHILIPPE",
         text: "Sie auch hier? — Entschuldigung. Ich bin Philippe, wir wohnen Tür an Tür. 2611, 2613.",
+        hiddenWhen: ["metPhilippeBefore"],
+        next: "pq3",
+      },
+      pqR1: {
+        id: "pqR1",
+        speaker: "PHILIPPE",
+        text: "Schon wieder, Worag. Heute ist so ein Tag.",
+        subtext: "Er meint nicht das Wetter.",
+        requires: ["metPhilippeBefore"],
+        next: "pqR2",
+      },
+      pqR2: {
+        id: "pqR2",
+        speaker: "LAYARD",
+        text: "Sieht so aus.",
+        requires: ["metPhilippeBefore"],
         next: "pq3",
       },
       pq3: {
