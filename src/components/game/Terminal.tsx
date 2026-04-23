@@ -168,6 +168,8 @@ const HELP_LINES: Line[] = [
   { text: "  cat <datei>   — Datei lesen", kind: "out" },
   { text: "  tree          — Baumansicht ab aktuellem Pfad", kind: "out" },
   { text: "", kind: "out" },
+  { text: "TIPP: <Tab> vervollständigt Befehle und Pfade.", kind: "system" },
+  { text: "", kind: "out" },
   { text: "  clear         — Bildschirm leeren", kind: "out" },
   { text: "  exit          — Terminal schließen", kind: "out" },
 ];
