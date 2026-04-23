@@ -327,12 +327,18 @@ export const scenes: Record<string, Scene> = {
         onUse: (api) => {
           api.setFlag("sawCatatonic");
           api.showText([
-            "Ein Mann, ausgemergelt. Fahle Haut. Hochgezogene Brauen.",
+            "Ein älterer Mann, ausgemergelt. Fahle Haut, graues Haar.",
+            "Mitte sechzig, vielleicht älter. Schwer zu sagen.",
             "Er sitzt auf dem Boden, den Rücken an der Wand,",
             "und schlägt mit leblosem Gesicht rhythmisch mit der Faust dagegen.",
+            "Die Sanitäter knien neben ihm. Sprechen ihn an.",
+            "Er reagiert nicht. Er sieht sie nicht an.",
+            "Er starrt apathisch ins Leere, an ihnen vorbei,",
+            "irgendwohin, wo nichts ist.",
             "Layard nimmt seinen Mut zusammen und schaut ihm in die Augen.",
             "Er erwartet tote, glasige Augen.",
-            "Stattdessen: grüne Augen. Eine seltsame Tiefe. Klarheit.",
+            "Stattdessen: grüne Augen. Eine seltsame Tiefe. Klarheit —",
+            "die niemanden hier meint.",
             "Wie ein Portal in ein mystisches Universum.",
             "Layard wird das Bild nicht mehr loswerden.",
           ]);

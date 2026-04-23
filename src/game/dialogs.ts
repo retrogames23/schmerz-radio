@@ -83,7 +83,7 @@ export const dialogs: Record<string, DialogTree> = {
       q3: {
         id: "q3",
         speaker: "PHILIPPE",
-        text: "Hier wohnt ein alleinstehender Mann, Anfang dreißig. Ich weiß nicht, wie er heißt. Ich habe geklingelt. Niemand öffnet.",
+        text: "Hier wohnt ein alleinstehender Mann. Älter, vielleicht Mitte sechzig. Ich weiß nicht, wie er heißt. Ich habe geklingelt. Niemand öffnet.",
         subtext: "Niemand kennt hier den Nachbarn. Das ist Statut, nicht Zufall.",
         next: "q4",
       },
@@ -144,7 +144,6 @@ export const dialogs: Record<string, DialogTree> = {
         id: "i6",
         speaker: "INSA",
         text: "Ich verstehe. Ich schicke ein Technik-Team und den diensthabenden Block-Sanitäter. Er kann weitere Kräfte mobilisieren, falls notwendig.",
-        subtext: "Sie ist froh, dass jemand antwortet. Wirklich froh.",
         next: "i7",
       },
       i7: {
