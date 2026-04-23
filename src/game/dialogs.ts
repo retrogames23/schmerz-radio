@@ -522,7 +522,7 @@ export const dialogs: Record<string, DialogTree> = {
       pa1: {
         id: "pa1",
         speaker: "PHILIPPE",
-        text: "Sie gehen also wirklich. Nach E71. Ich hab niemanden je gehen sehen.",
+        text: "Sie gehen also wirklich. Zum Abschnittsverantwortlichen. Nur ein paar Etagen tiefer — aber ich war auch schon ewig nicht mehr unten.",
         subtext: "Er hat heute Kaffee gemacht. Echten. Für sich allein.",
         next: "pa2",
       },
