@@ -21,7 +21,7 @@ export const scenes: Record<string, Scene> = {
     background: apartmentBg,
     title: "Wohnung 2611 — Quadrant E67",
     intro:
-      "Layard Worag. Ein-Zimmer-Wohnung, Quadrant E67. Auf dem Tisch: das Schmerz-Radio. Heute hat er Urlaub. Heute will er weiter — tiefer. Stell die Frequenz auf 104,6.",
+      "Layard Worag. Ein-Zimmer-Wohnung, Quadrant E67. Auf dem Tisch: das Schmerz-Radio. Heute hat er Urlaub. Heute will er weiter — tiefer. Stell die Frequenz auf 104,6 und dreh die Lautstärke voll auf.",
     hotspots: [
       {
         id: "radio",
