@@ -1870,4 +1870,3 @@ export const dialogs: Record<string, DialogTree> = {
     },
   },
 };
-};
