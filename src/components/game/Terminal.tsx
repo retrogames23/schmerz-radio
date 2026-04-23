@@ -958,6 +958,8 @@ export function Terminal() {
   const [telnetHost, setTelnetHost] = useState<string | null>(null);
   // Telnet wartet auf Passworteingabe für diesen Host.
   const [telnetAwaitPass, setTelnetAwaitPass] = useState<string | null>(null);
+  // True während eine scriptgesteuerte Ausgabesequenz läuft (sysupdate, trouble net).
+  const [scriptedRunning, setScriptedRunning] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastTabRef = useRef<{ input: string; matches: string[] } | null>(null);
