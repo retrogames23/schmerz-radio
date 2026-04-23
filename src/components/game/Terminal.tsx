@@ -244,6 +244,11 @@ export function Terminal() {
       const result = adventureCommand(advState, raw);
       const out: Line[] = result.out.map((t) => ({ text: t, kind: "out" } as Line));
       setLines((prev) => [...prev, echo, ...out, { text: "", kind: "out" }]);
+      // History des Adventures pflegen (keine direkten Duplikate hintereinander).
+      const h = advHistoryRef.current;
+      if (h[h.length - 1] !== raw) h.push(raw);
+      historyCursorRef.current = -1;
+      draftRef.current = "";
       if (result.quit) {
         setAdvState(null);
       } else {
@@ -436,6 +441,11 @@ export function Terminal() {
     }
 
     setLines((prev) => [...prev, ...newLines, { text: "", kind: "out" }]);
+    // History des Hauptterminals pflegen.
+    const h = termHistoryRef.current;
+    if (h[h.length - 1] !== raw) h.push(raw);
+    historyCursorRef.current = -1;
+    draftRef.current = "";
     setInput("");
   };
 
