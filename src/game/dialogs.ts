@@ -509,6 +509,46 @@ export const dialogs: Record<string, DialogTree> = {
   // ---------------------------------------------------------------
   // 9. Detour: Philippe in his own apartment, after E67 is mostly done
   // ---------------------------------------------------------------
+  // Variant A0 — die Sanitäter sind da, aber Layard hat das Protokoll
+  // noch gar nicht erhalten. Kein Hinweis auf E71 oder weitere Wege.
+  philippeAfterBeforeProtocol: {
+    id: "philippeAfterBeforeProtocol",
+    start: "pp1",
+    onEnd: (api) => {
+      if (!api.hasFlag("philippeNote3")) api.setFlag("philippeNote3");
+      else if (!api.hasFlag("philippeNote4")) api.setFlag("philippeNote4");
+      else if (!api.hasFlag("philippeNote5")) api.setFlag("philippeNote5");
+    },
+    lines: {
+      pp1: {
+        id: "pp1",
+        speaker: "PHILIPPE",
+        text: "Und? Wissen die Sanitäter schon, was da drüben los ist?",
+        subtext: "Er versucht ruhig zu klingen. Es gelingt ihm nur halb.",
+        next: "pp2",
+      },
+      pp2: {
+        id: "pp2",
+        speaker: "LAYARD",
+        text: "Noch nicht. Sie sind noch drüben. Ich wollte nur kurz nach Ihnen sehen.",
+        next: "pp3",
+      },
+      pp3: {
+        id: "pp3",
+        speaker: "PHILIPPE",
+        text: "Danke. Wenn Sie wiederkommen, klopfen Sie. Ich höre das. Ich höre heute alles.",
+        subtext: "Versprechen klingen anders. Das hier ist eher eine Bitte, nicht allein gelassen zu werden.",
+        next: "pp4",
+      },
+      pp4: {
+        id: "pp4",
+        speaker: "LAYARD",
+        text: "Ja.",
+        end: true,
+      },
+    },
+  },
+
   // Variant A — Layard ist NOCH NICHT beim Abschnittsverantwortlichen gewesen
   // (also: hat das leere Büro auf Etage 3 noch nicht gesehen). Philippe weiß
   // nicht, wohin Layard als nächstes will, und fragt einfach nach.
