@@ -73,6 +73,7 @@ export function RadioPanel() {
     resetResonance,
     resonance,
     flags,
+    scene,
   } = useGame();
   const { sfxVolume } = useSettings();
 
@@ -147,18 +148,35 @@ export function RadioPanel() {
         setRadioActive(true);
         resetResonance();
         playDoorbell(0.7 * sfxVolume);
-        api.showText([
-          ">> SCHMERZ-RADIO 104,6 — ENGEL-TRAUER",
-          "Eine Stimme, die nichts sagt. Nur trauert.",
-          "Fragmente: „... Zimmer ... Wand ... nicht aufhören ...“",
-          "*KLINGEL-KLINGEL*",
-          "Jemand ist an Layards Wohnungstür.",
-        ]);
         closeRadio();
+        // Wenn Layard gerade in seiner Wohnung ist, klingelt Philippe
+        // direkt — wir starten den Türdialog.
+        if (scene === "apartment") {
+          api.showText([
+            ">> SCHMERZ-RADIO 104,6 — ENGEL-TRAUER",
+            "Eine Stimme, die nichts sagt. Nur trauert.",
+            "Fragmente: „... Zimmer ... Wand ... nicht aufhören ...“",
+            "*KLINGEL-KLINGEL*",
+            "Jemand ist an Layards Wohnungstür.",
+          ]);
+          api.setFlag("metPhilippe");
+          api.startDialog("philippeAtDoor");
+        } else {
+          // Layard ist nicht zu Hause — Philippe wird zu Hause warten,
+          // bis Layard zurück ist. Beim nächsten Öffnen der Wohnungstür
+          // löst der Door-Hotspot den Dialog aus.
+          api.showText([
+            ">> SCHMERZ-RADIO 104,6 — ENGEL-TRAUER",
+            "Eine Stimme, die nichts sagt. Nur trauert.",
+            "Fragmente: „... Zimmer ... Wand ... nicht aufhören ...“",
+            "Irgendwo, weit weg: ein einzelnes *KLINGEL*.",
+            "Vielleicht in 2611. Vielleicht sollte Layard nach Hause.",
+          ]);
+        }
       }, 900);
       return () => clearTimeout(t);
     }
-  }, [freq, volume, flags, api, setRadioActive, resetResonance, closeRadio, sfxVolume]);
+  }, [freq, volume, flags, api, setRadioActive, resetResonance, closeRadio, sfxVolume, scene]);
 
   if (!radioOpen) return null;
 
