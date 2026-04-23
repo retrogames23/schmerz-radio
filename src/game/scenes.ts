@@ -14,7 +14,6 @@ import corridor36Bg from "@/assets/scene-corridor-36.jpg";
 import corridor46Bg from "@/assets/scene-corridor-46.jpg";
 import corridor56Bg from "@/assets/scene-corridor-56.jpg";
 import miraSprite from "@/assets/npc-mira.png";
-import bodoSprite from "@/assets/npc-bodo.png";
 import type { Scene } from "./types";
 
 export const scenes: Record<string, Scene> = {
@@ -425,27 +424,15 @@ export const scenes: Record<string, Scene> = {
     background: apt2612Bg,
     title: "Wohnung 2612 — Bodo Marschke",
     intro:
-      "Warmes Lampenlicht. Es riecht nach altem Kraut, das jemand „Tee“ nennt. Auf einem Sessel mit grauer Strickdecke: eine getigerte Katze. Sie zuckt einmal, als die Tür sich öffnet, dann schaut sie weg.",
-    npcs: [
-      {
-        id: "bodoSprite",
-        src: bodoSprite,
-        // Bodo sitzt im Sessel — Größe an Sessel angepasst.
-        x: 10,
-        y: 24,
-        w: 34,
-        h: 66,
-        alt: "Bodo Marschke",
-      },
-    ],
+      "Warmes Lampenlicht. Es riecht nach altem Kraut, das jemand „Tee“ nennt. Bodo sitzt tief im Sessel, die Katze hat den vorderen Platz auf der Decke längst für sich beansprucht.",
     hotspots: [
       {
         id: "bodoNpc",
-        // Deckungsgleich mit dem im Sessel sitzenden Bodo-Sprite.
+        // Bodo ist jetzt direkt in den Hintergrund integriert.
         x: 12,
-        y: 28,
-        w: 30,
-        h: 58,
+        y: 31,
+        w: 44,
+        h: 40,
         label: "Bodo Marschke",
         onUse: (api) => {
           if (!api.hasFlag("metBodo")) {
@@ -467,11 +454,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "lottiSpot",
-        // Katze sitzt rechts neben Bodo auf der Decke.
-        x: 48,
-        y: 70,
-        w: 18,
-        h: 25,
+        // Katze liegt vorne rechts auf der Decke / Ottomane.
+        x: 64,
+        y: 68,
+        w: 23,
+        h: 19,
         label: "Sessel mit Decke",
         onUse: (api) => {
           if (api.hasFlag("knowsLotti")) {
@@ -493,10 +480,10 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bodoPhone",
         // Schwarzer Bakelit-Wandapparat oberhalb des Terminal-Tisches.
-        x: 51,
-        y: 38,
-        w: 12,
-        h: 22,
+        x: 45,
+        y: 29,
+        w: 11,
+        h: 24,
         label: "Wandtelefon",
         onUse: (api) =>
           api.showText([
@@ -509,9 +496,9 @@ export const scenes: Record<string, Scene> = {
         id: "bodoTerminal",
         // CRT „HASSENVU 2612“ rechts auf dem Tisch.
         x: 60,
-        y: 60,
-        w: 20,
-        h: 26,
+        y: 43,
+        w: 19,
+        h: 24,
         label: "Bodos Terminal",
         onUse: (api) => {
           if (api.hasFlag("knowsLotti")) {
@@ -533,10 +520,10 @@ export const scenes: Record<string, Scene> = {
       {
         id: "exit2612",
         // Wohnungstür ganz rechts.
-        x: 84,
-        y: 20,
-        w: 16,
-        h: 75,
+        x: 81,
+        y: 17,
+        w: 19,
+        h: 78,
         label: "Zurück in den Korridor",
         onUse: (api) => api.goTo("hallway"),
       },
