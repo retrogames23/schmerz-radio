@@ -696,9 +696,9 @@ export const scenes: Record<string, Scene> = {
       // Tür 2614 — Ennis Korr. Nur Türgespräch.
       {
         id: "door2614Ennis",
-        x: 38,
+        x: 30,
         y: 38,
-        w: 12,
+        w: 9,
         h: 50,
         label: "Tür 2614 (Ennis Korr)",
         onUse: (api) => {
