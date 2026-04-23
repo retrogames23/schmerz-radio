@@ -452,11 +452,20 @@ export const scenes: Record<string, Scene> = {
             api.startDialog("bodoFlyer");
           } else if (
             api.hasFlag("knowsLotti") &&
-            !api.hasFlag("bodoLeftForB3")
+            !api.hasFlag("bodoBackAfterB3")
           ) {
             // Layard kann Bodo überzeugen, los zu gehen — sobald er Lotti
             // kennt und damit weiß, warum B3 wichtig ist.
             api.startDialog("bodoConvinceLeave");
+          } else if (
+            // Zweiter Anlauf: Bodo ist zurück, aber die Aufzugssperre
+            // (oder ein anderes Terminal-Anliegen) ist noch offen.
+            api.hasFlag("bodoBackAfterB3") &&
+            !api.hasFlag("bodoBackAfterB3Twice") &&
+            api.hasFlag("elevatorMaintBlocked") &&
+            !api.hasFlag("elevatorMaintCleared")
+          ) {
+            api.startDialog("bodoConvinceLeave2");
           } else if (!api.hasFlag("talkedBodo2")) {
             api.setFlag("talkedBodo2");
             api.startDialog("bodoSmalltalk");
