@@ -158,10 +158,10 @@ export const scenes: Record<string, Scene> = {
         h: 78,
         label: "Philippe",
         requires: ["knockingHeard"],
-        // Nach dem Anruf bei der Leitstelle steht Philippe nur noch
-        // schweigend daneben — kein erneuter Dialog, bis Layard die
-        // Wohnung verlässt und wieder betritt.
-        hiddenWhen: ["paramedicsArrived", "calledLeitstelle"],
+        // Nach dem ersten "Warten"-Klick verschwindet der Dialog-Hotspot.
+        // Er kommt erst wieder, wenn Layard die Wohnung verlässt und neu
+        // betritt (dann werden die Warte-Flags zurückgesetzt).
+        hiddenWhen: ["paramedicsArrived", "wait2613Step1"],
         onUse: (api) => {
           if (!api.hasFlag("calledLeitstelle")) {
             api.setFlag("talkedPhilippe2613");
