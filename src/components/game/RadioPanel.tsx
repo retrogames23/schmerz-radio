@@ -77,21 +77,20 @@ export function RadioPanel() {
     const interval = setInterval(() => {
       const onSignal = freq === 104.6;
       setRadioActive(onSignal);
-      if (onSignal && volume > 0.7) {
-        bumpResonance(6);
-      } else if (onSignal) {
-        bumpResonance(2);
+      // Resonance only builds when the volume is dialed to the max
+      if (onSignal && volume >= 0.99) {
+        bumpResonance(8);
       } else {
-        bumpResonance(-3);
+        bumpResonance(-4);
       }
       lastTickRef.current = Date.now();
     }, 600);
     return () => clearInterval(interval);
   }, [radioOpen, freq, volume, bumpResonance, setRadioActive]);
 
-  // Trigger doorbell when first locking in 104.6 with full volume
+  // Trigger doorbell only when locked on 104.6 at MAXIMUM volume
   useEffect(() => {
-    if (freq === 104.6 && volume >= 0.95 && !flags.has("doorbellRang")) {
+    if (freq === 104.6 && volume >= 0.99 && !flags.has("doorbellRang")) {
       const t = setTimeout(() => {
         api.setFlag("doorbellRang");
         setRadioActive(true);

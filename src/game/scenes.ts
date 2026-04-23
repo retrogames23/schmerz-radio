@@ -231,10 +231,10 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "patient2615",
-        x: 36,
-        y: 30,
-        w: 24,
-        h: 60,
+        x: 64,
+        y: 55,
+        w: 22,
+        h: 35,
         label: "Der Mann an der Wand",
         hiddenWhen: ["sawCatatonic"],
         onUse: (api) => {
@@ -253,10 +253,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "paramedicsHotspot2615",
-        x: 70,
-        y: 35,
-        w: 24,
-        h: 60,
+        x: 22,
+        y: 38,
+        w: 22,
+        h: 50,
         label: "Sanitäter ansprechen",
         requires: ["sawCatatonic"],
         hiddenWhen: ["protocolReceived"],
@@ -274,9 +274,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "wallDetail2615",
-        x: 38,
-        y: 18,
-        w: 24,
+        x: 50,
+        y: 30,
+        w: 30,
         h: 22,
         label: "Die Wand",
         requires: ["sawCatatonic"],
@@ -290,9 +290,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "exitTo2613",
         x: 0,
-        y: 5,
-        w: 12,
-        h: 35,
+        y: 25,
+        w: 18,
+        h: 70,
         label: "Zurück in den Korridor",
         onUse: (api) => {
           if (api.hasFlag("protocolReceived")) {
