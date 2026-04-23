@@ -1714,6 +1714,198 @@ export const dialogs: Record<string, DialogTree> = {
     },
   },
 
+  // ── Layard überzeugt Bodo, schnell B3 für Lotti zu besorgen ─────
+  bodoConvinceLeave: {
+    id: "bodoConvinceLeave",
+    start: "bc1",
+    onEnd: (api) => {
+      if (api.hasFlag("bodoLeftForB3")) return;
+    },
+    lines: {
+      bc1: {
+        id: "bc1",
+        speaker: "LAYARD",
+        text: "Bodo, darf ich was Persönliches fragen? — Wie viele Dosen B3 hat Lotti noch?",
+        next: "bc2",
+      },
+      bc2: {
+        id: "bc2",
+        speaker: "SYSTEM",
+        text: "Bodo zieht eine Augenbraue hoch. »Warum fragen Sie das?«",
+        subtext: "Er hat heute morgen schon nachgeschaut. Er weiß die Antwort.",
+        next: "bc3",
+      },
+      bc3: {
+        id: "bc3",
+        speaker: "LAYARD",
+        text: "Weil sie zuckt, wenn der Napf leer ist. Und Sie haben gerade dreimal in den Sessel geschaut, ohne es zu merken.",
+        next: "bc4",
+      },
+      bc4: {
+        id: "bc4",
+        speaker: "SYSTEM",
+        text: "Bodo schweigt. Schaut zum Sessel. Schaut zurück.",
+        next: "bc5",
+      },
+      bc5: {
+        id: "bc5",
+        speaker: "SYSTEM",
+        text: "Bodo: »Zwei Dosen Rind. Fisch ist aus. Lieferung ist erst Freitag.«",
+        next: "bc6",
+      },
+      bc6: {
+        id: "bc6",
+        speaker: "LAYARD",
+        text: "Wenn Lotti laut wird, wird der ganze Korridor laut. Sie wissen, wer dann anruft.",
+        subtext: "Layard erstaunt sich selbst. Er klingt wie jemand, der einen Plan hat.",
+        next: "bc7",
+      },
+      bc7: {
+        id: "bc7",
+        speaker: "SYSTEM",
+        text: "Bodo seufzt. »Insa. Ja. — Die Vorratskammer ist im Schacht 4, fünfzehn Minuten hin, fünfzehn zurück. Zu lang.«",
+        next: "bc8",
+      },
+      bc8: {
+        id: "bc8",
+        speaker: "LAYARD",
+        text: "Ich pass’ auf Lotti auf. Gehen Sie. Bevor sie aufwacht und merkt, dass nichts da ist.",
+        next: "bc9",
+      },
+      bc9: {
+        id: "bc9",
+        speaker: "SYSTEM",
+        text: "Bodo steht auf. Langsam, aber ohne Zögern. Greift nach der Jacke.",
+        next: "bc10",
+      },
+      bc10: {
+        id: "bc10",
+        speaker: "SYSTEM",
+        text: "Bodo, an der Tür: »Eine Viertelstunde. Höchstens. — Und Worag: am Terminal hängen ein paar Privatsachen. Die gehen Sie nichts an.«",
+        subtext: "Er sagt das, ohne sich umzudrehen. Er weiß, was er gerade gesagt hat.",
+        next: "bc11",
+      },
+      bc11: {
+        id: "bc11",
+        speaker: "SYSTEM",
+        text: "[ Die Tür fällt ins Schloss. Schritte werden leiser. Lotti schnurrt einmal, leise. Sonst: Stille. ]",
+        choices: [
+          {
+            text: "[ Allein. Fünfzehn Minuten. ]",
+            action: (api) => {
+              api.setFlag("bodoLeftForB3");
+            },
+          },
+        ],
+      },
+    },
+  },
+
+  // ── Bodo kommt zurück (Spieler hat NICHT aktualisiert) ──────────
+  bodoReturnsClean: {
+    id: "bodoReturnsClean",
+    start: "br1",
+    onEnd: (api) => {
+      api.setFlag("bodoBackAfterB3");
+    },
+    lines: {
+      br1: {
+        id: "br1",
+        speaker: "SYSTEM",
+        text: "[ Bodo schiebt sich durch die Tür. Eine Tasche unter dem Arm, vier Dosen B3 darin. Lotti hebt den Kopf, das erste Mal seit einer Stunde. ]",
+        next: "br2",
+      },
+      br2: {
+        id: "br2",
+        speaker: "SYSTEM",
+        text: "Bodo: »Vierzehn Minuten. Mein neuer Rekord.« Er stellt die Dosen ab. Schaut kurz zum Terminal.",
+        next: "br3",
+      },
+      br3: {
+        id: "br3",
+        speaker: "SYSTEM",
+        text: "Bodo: »Bildschirm steht noch wie ich ihn verlassen hab’. Brav, Worag. Brav.«",
+        subtext: "Er glaubt es nur halb. Aber heute reicht ihm das.",
+        next: "br4",
+      },
+      br4: {
+        id: "br4",
+        speaker: "SYSTEM",
+        text: "[ Lotti reibt den Kopf an Bodos Schienbein. Bodo lächelt zum ersten Mal mit den Augen. ]",
+        end: true,
+      },
+    },
+  },
+
+  // ── Bodo kommt zurück (Spieler HAT aktualisiert) ────────────────
+  bodoReturnsCaught: {
+    id: "bodoReturnsCaught",
+    start: "bx1",
+    onEnd: (api) => {
+      api.setFlag("bodoBackAfterB3");
+      api.setFlag("bodoNoticedIntrusion");
+    },
+    lines: {
+      bx1: {
+        id: "bx1",
+        speaker: "SYSTEM",
+        text: "[ Bodo schiebt sich durch die Tür. Tasche unter dem Arm, B3 darin. Lotti hebt den Kopf — und Bodo bleibt im Türrahmen stehen. ]",
+        next: "bx2",
+      },
+      bx2: {
+        id: "bx2",
+        speaker: "SYSTEM",
+        text: "Bodo schaut zum Terminal. Schaut wieder zurück. Sein Gesicht wird sehr still.",
+        next: "bx3",
+      },
+      bx3: {
+        id: "bx3",
+        speaker: "SYSTEM",
+        text: "Bodo: »v2.3.1.« Pause. »Ich hatte v2.0. Seit sechs Jahren v2.0.«",
+        subtext: "Er sagt das nicht laut. Er sagt es so, wie man eine Zahl ausspricht, die nicht stimmen kann.",
+        next: "bx4",
+      },
+      bx4: {
+        id: "bx4",
+        speaker: "SYSTEM",
+        text: "Bodo, langsam: »Worag. Sie haben an meinem Rechner gesessen. Mit meinem Login. Mit meinem Hostnamen. — Und Sie haben aktualisiert.«",
+        next: "bx5",
+      },
+      bx5: {
+        id: "bx5",
+        speaker: "LAYARD",
+        text: "Es … es kam ein Fenster. Immer wieder. Ich dachte —",
+        next: "bx6",
+      },
+      bx6: {
+        id: "bx6",
+        speaker: "SYSTEM",
+        text: "Bodo: »Ich weiß, was Sie dachten. Sie dachten gar nichts. Sie haben einfach geklickt.«",
+        subtext: "Er stellt die Dosen ab. Lauter, als nötig.",
+        next: "bx7",
+      },
+      bx7: {
+        id: "bx7",
+        speaker: "SYSTEM",
+        text: "[ Stille. Lotti schaut zwischen beiden hin und her. Bodo zieht die Jacke aus. Setzt sich. ]",
+        next: "bx8",
+      },
+      bx8: {
+        id: "bx8",
+        speaker: "SYSTEM",
+        text: "Bodo, leiser: »Ach, Worag. — Ich war auch mal so neugierig wie Sie. Vor langer, langer Zeit.«",
+        next: "bx9",
+      },
+      bx9: {
+        id: "bx9",
+        speaker: "SYSTEM",
+        text: "Bodo: »Geht jetzt. Gehen Sie. Bevor ich es mir doch anders überlege.«",
+        subtext: "Er meint es nicht. Aber heute ist heute.",
+        end: true,
+      },
+    },
+  },
+
   // ═════════════════════════════════════════════════════════════
   // ENNIS KORR — Tür 2614 (Türgespräch)
   // ═════════════════════════════════════════════════════════════

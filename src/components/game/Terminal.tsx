@@ -2,7 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playBeep, playKeypress, playUnlock } from "@/audio/sfx";
-import { FILESYSTEM, HOME_PATH, resolvePath, pathString, type FsNode } from "@/game/filesystem";
+import {
+  FILESYSTEM,
+  HOME_PATH,
+  HOME_PATH_BODO,
+  resolvePath,
+  pathString,
+  type FsNode,
+} from "@/game/filesystem";
 import type { StoryFlag } from "@/game/types";
 import {
   adventureCommand,
@@ -19,7 +26,8 @@ interface Line {
 }
 
 /** Aktuelle CentralOS-Versionsbezeichnung, abhängig vom Update-Flag. */
-function osVersion(updated: boolean): string {
+function osVersion(updated: boolean, bodo = false): string {
+  if (bodo) return updated ? "2.0.1" : "2.0";
   return updated ? "2.3.1" : "2.3";
 }
 
@@ -977,6 +985,14 @@ export function Terminal() {
   const [telnetAwaitPass, setTelnetAwaitPass] = useState<string | null>(null);
   // True während eine scriptgesteuerte Ausgabesequenz läuft (sysupdate, trouble net).
   const [scriptedRunning, setScriptedRunning] = useState(false);
+  // Wenn Bodo gerade B3 für Lotti holt, sitzen wir an seinem Terminal —
+  // ohne Login, mit seinem Hostnamen, mit altem CentralOS v2.0.
+  const bodoMode =
+    flags.has("bodoLeftForB3") && !flags.has("bodoBackAfterB3");
+  const userName = bodoMode ? "bodo" : "worag";
+  const hostName = bodoMode ? "bodo" : "e67";
+  const homePath = bodoMode ? HOME_PATH_BODO : HOME_PATH;
+  const homeLabel = bodoMode ? "/home/bodo" : "/home/worag";
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastTabRef = useRef<{ input: string; matches: string[] } | null>(null);
@@ -990,19 +1006,66 @@ export function Terminal() {
 
   useEffect(() => {
     if (terminalOpen) {
-      setCwd([...HOME_PATH]);
-      setLines([
-        {
-          text: `>> CENTRALOS v${osVersion(flags.has("centralOsUpdated"))} — Terminal Quadrant E67`,
-          kind: "system",
-        },
-        { text: ">> Benutzer: WORAG, L. (Zimmer 2611)", kind: "system" },
-        { text: ">> Persönliches Verzeichnis bereit (siehe 'help' › DATEISYSTEM)", kind: "system" },
-        { text: ">> Tippe 'help' für Befehle.", kind: "system" },
-        { text: "", kind: "out" },
-      ]);
+      setCwd([...homePath]);
+      if (bodoMode) {
+        const updated = flags.has("centralOsUpdated");
+        const banner: Line[] = [
+          {
+            text: `>> CENTRALOS v${osVersion(updated, true)} — Terminal 2612`,
+            kind: "system",
+          },
+          { text: ">> Benutzer: BODO (eingeloggt — keine Sperre aktiv)", kind: "system" },
+          { text: ">> Letzte Anmeldung: 06.11.1997 09:11", kind: "system" },
+          { text: "", kind: "out" },
+        ];
+        if (!updated) {
+          banner.push(
+            {
+              text: "╔════════════════════════════════════════════════╗",
+              kind: "system",
+            },
+            {
+              text: "║  AKTUALISIERUNG VERFÜGBAR — DRINGEND EMPFOHLEN ║",
+              kind: "system",
+            },
+            {
+              text: "║  Ihr System: CentralOS v2.0  →  v2.0.1         ║",
+              kind: "system",
+            },
+            {
+              text: "║  Tippen Sie:  sysupdate                        ║",
+              kind: "system",
+            },
+            {
+              text: "║  (Sie wurden 1.247 Mal daran erinnert.)        ║",
+              kind: "system",
+            },
+            {
+              text: "╚════════════════════════════════════════════════╝",
+              kind: "system",
+            },
+            { text: "", kind: "out" },
+          );
+        }
+        banner.push({ text: ">> Tippe 'help' für Befehle.", kind: "system" });
+        banner.push({ text: "", kind: "out" });
+        setLines(banner);
+      } else {
+        setLines([
+          {
+            text: `>> CENTRALOS v${osVersion(flags.has("centralOsUpdated"))} — Terminal Quadrant E67`,
+            kind: "system",
+          },
+          { text: ">> Benutzer: WORAG, L. (Zimmer 2611)", kind: "system" },
+          { text: ">> Persönliches Verzeichnis bereit (siehe 'help' › DATEISYSTEM)", kind: "system" },
+          { text: ">> Tippe 'help' für Befehle.", kind: "system" },
+          { text: "", kind: "out" },
+        ]);
+      }
       setTimeout(() => inputRef.current?.focus(), 50);
     }
+    // bodoMode-Wechsel beim Öffnen ist statisch; banner einmal pro Open setzen.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [terminalOpen]);
 
   useEffect(() => {
@@ -1152,8 +1215,10 @@ export function Terminal() {
     const head = argsRaw[0]?.toLowerCase() ?? "";
     const args = argsRaw.slice(1);
     playBeep(0.4 * sfxVolume);
-    const promptPath = pathString(cwd).replace("/home/worag", "~") || "/";
-    const newLines: Line[] = [{ text: `worag@e67:${promptPath}$ ${input}`, kind: "in" }];
+    const promptPath = pathString(cwd).replace(homeLabel, "~") || "/";
+    const newLines: Line[] = [
+      { text: `${userName}@${hostName}:${promptPath}$ ${input}`, kind: "in" },
+    ];
 
     if (cmd === "help") {
       newLines.push(...HELP_LINES);
@@ -1402,7 +1467,34 @@ export function Terminal() {
         );
       }
     } else if (head === "sysupdate") {
-      if (!flags.has("calledStegmann")) {
+      if (bodoMode) {
+        if (flags.has("centralOsUpdated")) {
+          newLines.push({ text: "sysupdate: System ist bereits aktuell.", kind: "out" });
+        } else {
+          const fast = args.includes("--fast");
+          const t = (ms: number) => (fast ? Math.max(40, Math.round(ms / 8)) : ms);
+          setLines((prev) => [...prev, ...newLines]);
+          runScriptedSequence(
+            [
+              { text: ">> sysupdate: Verbinde mit update.e67 …", delayMs: t(0), kind: "system", beep: true },
+              { text: ">> Suche Pakete für CentralOS v2.0 …", delayMs: t(380) },
+              { text: ">> 6 Jahre an Patches gefunden. Konsolidiere …", delayMs: t(420) },
+              { text: "   [██████████] 100%", delayMs: t(520), beep: true },
+              { text: ">> Patch /usr/bin/centralos … OK", delayMs: t(360) },
+              { text: ">> Migriere /etc/motd ……… OK", delayMs: t(280) },
+              { text: ">> CentralOS v2.0 → v2.0.1   [OK]", delayMs: t(420), kind: "system", beep: true },
+              { text: ">> Hinweis: Diese Aktualisierung wurde an die Leitstelle gemeldet.", delayMs: t(320), kind: "system" },
+            ],
+            () => api.setFlag("centralOsUpdated"),
+          );
+          const h = termHistoryRef.current;
+          if (h[h.length - 1] !== raw) h.push(raw);
+          historyCursorRef.current = -1;
+          draftRef.current = "";
+          setInput("");
+          return;
+        }
+      } else if (!flags.has("calledStegmann")) {
         newLines.push({
           text: "sysupdate: Befehl nicht freigeschaltet. Voraussetzung: Anweisung der Zentral-IT.",
           kind: "out",
@@ -1549,7 +1641,7 @@ export function Terminal() {
           newLines.push({ text: `cat: ${target}: Zugriff verweigert.`, kind: "out" });
         } else {
           newLines.push({ text: `── ${node.name} ───────────────────────`, kind: "system" });
-          const updated = flags.has("centralOsUpdated");
+          const updated = flags.has("centralOsUpdated") && !bodoMode;
           newLines.push(
             ...node.content.map(
               (t) => ({ text: applyOsVersion(t, updated), kind: "out" } as Line),
@@ -1696,6 +1788,20 @@ export function Terminal() {
     }
 
     setLines((prev) => [...prev, ...newLines, { text: "", kind: "out" }]);
+    // Bodo-Modus: solange nicht aktualisiert, drängelt das System bei jedem
+    // Befehl mit einer kleinen Warnzeile. Verschwindet nach sysupdate.
+    if (bodoMode && !flags.has("centralOsUpdated") && head !== "sysupdate") {
+      setTimeout(() => {
+        setLines((prev) => [
+          ...prev,
+          {
+            text: ">> Hinweis: Aktualisierung ausstehend. Tippe 'sysupdate'.",
+            kind: "system",
+          },
+          { text: "", kind: "out" },
+        ]);
+      }, 80);
+    }
     // History des Hauptterminals pflegen.
     const h = termHistoryRef.current;
     if (h[h.length - 1] !== raw) h.push(raw);
@@ -1713,7 +1819,8 @@ export function Terminal() {
       <div className="fade-in relative w-full max-w-4xl overflow-hidden rounded-sm border border-phosphor/50 bg-black shadow-[0_0_60px_rgba(0,0,0,0.85)] scanlines">
         <div className="flex items-center justify-between border-b border-phosphor/30 bg-black px-4 py-2">
           <span className="font-mono-crt text-base uppercase tracking-[0.3em] text-phosphor phosphor-glow">
-            CentralOS v{osVersion(flags.has("centralOsUpdated"))}
+            CentralOS v{osVersion(flags.has("centralOsUpdated"), bodoMode)}
+            {bodoMode ? " — 2612" : ""}
           </span>
           <CloseButton
             onClick={closeTerminal}
@@ -1749,7 +1856,7 @@ export function Terminal() {
           <span className="font-mono-crt text-sm text-phosphor phosphor-glow">
             {advState
               ? "adventure>"
-              : `worag@e67:${pathString(cwd).replace("/home/worag", "~")}$`}
+              : `${userName}@${hostName}:${pathString(cwd).replace(homeLabel, "~") || "/"}$`}
           </span>
           <input
             ref={inputRef}
@@ -1836,7 +1943,7 @@ export function Terminal() {
                   const host = findHost(telnetHost);
                   echoPrompt = `${host?.host ?? telnetHost}:~$`;
                 } else {
-                  echoPrompt = `worag@e67:${pathString(cwd).replace("/home/worag", "~")}$`;
+                  echoPrompt = `${userName}@${hostName}:${pathString(cwd).replace(homeLabel, "~") || "/"}$`;
                 }
                 setLines((p) => [
                   ...p,

@@ -434,6 +434,8 @@ export const scenes: Record<string, Scene> = {
         w: 44,
         h: 40,
         label: "Bodo Marschke",
+        // Wenn Bodo gerade unterwegs zum B3 holen ist, ist er nicht da.
+        hiddenWhen: ["bodoLeftForB3"],
         onUse: (api) => {
           if (!api.hasFlag("metBodo")) {
             api.setFlag("metBodo");
@@ -444,6 +446,13 @@ export const scenes: Record<string, Scene> = {
           ) {
             api.setFlag("bodoSawFlyer");
             api.startDialog("bodoFlyer");
+          } else if (
+            api.hasFlag("knowsLotti") &&
+            !api.hasFlag("bodoLeftForB3")
+          ) {
+            // Layard kann Bodo überzeugen, los zu gehen — sobald er Lotti
+            // kennt und damit weiß, warum B3 wichtig ist.
+            api.startDialog("bodoConvinceLeave");
           } else if (!api.hasFlag("talkedBodo2")) {
             api.setFlag("talkedBodo2");
             api.startDialog("bodoSmalltalk");
@@ -451,6 +460,23 @@ export const scenes: Record<string, Scene> = {
             api.startDialog("bodoSmalltalk");
           }
         },
+      },
+      // Während Bodo weg ist: Hinweis statt Person.
+      {
+        id: "bodoEmptyChair",
+        x: 12,
+        y: 31,
+        w: 44,
+        h: 40,
+        label: "Bodos leerer Sessel",
+        requires: ["bodoLeftForB3"],
+        hiddenWhen: ["bodoBackAfterB3"],
+        onUse: (api) =>
+          api.showText([
+            "Bodos Sessel ist leer. Die Tasse Tee dampft noch.",
+            "Lotti schläft tief. Sie weiß, dass er wiederkommt.",
+            "Layard nicht so ganz. Aber er hat eine Viertelstunde.",
+          ]),
       },
       {
         id: "lottiSpot",
@@ -501,18 +527,26 @@ export const scenes: Record<string, Scene> = {
         h: 24,
         label: "Bodos Terminal",
         onUse: (api) => {
-          if (api.hasFlag("knowsLotti")) {
-            api.showText([
-              "Bodo nickt knapp: „Wenn Sie das Passwort haben, machen Sie nur.“",
-              "Layard setzt sich an das Terminal. Es ist baugleich mit seinem.",
-              "Tippen Sie: telnet bodo.e67",
-            ]);
+          if (api.hasFlag("bodoLeftForB3") && !api.hasFlag("bodoBackAfterB3")) {
+            // Bodo ist weg → freier Zugang, eingeloggt als bodo.
             api.openTerminal();
-          } else {
+          } else if (api.hasFlag("metBodo") && !api.hasFlag("knowsLotti")) {
             api.showText([
               "Bodo schüttelt langsam den Kopf.",
               "„Das ist meiner. Da kommen Sie nur dran, wenn ich Sie ranlasse.“",
               "„Und ich lass’ Sie nicht ran, solange Sie nicht wissen, mit wem Sie hier eigentlich reden.“",
+            ]);
+          } else if (api.hasFlag("knowsLotti") && !api.hasFlag("bodoLeftForB3")) {
+            api.showText([
+              "Bodo schüttelt den Kopf, ohne aufzuschauen.",
+              "„Solange ich hier sitze, sitzen Sie nicht hier. Ende.“",
+              "„Wenn ich mal weg bin, dann vielleicht. Aber dafür müssten Sie mich",
+              " erst mal weg kriegen.“",
+            ]);
+          } else {
+            api.showText([
+              "Ein altes CRT-Terminal. Bodo hat einen Blick darauf, der",
+              "deutlich macht: nicht jetzt, Worag.",
             ]);
           }
         },
@@ -525,7 +559,22 @@ export const scenes: Record<string, Scene> = {
         w: 19,
         h: 78,
         label: "Zurück in den Korridor",
-        onUse: (api) => api.goTo("hallway"),
+        onUse: (api) => {
+          // Wenn Bodo gerade unterwegs ist: er kommt zurück, bevor Layard
+          // den Raum verlassen kann. Beide treffen sich an der Tür.
+          if (
+            api.hasFlag("bodoLeftForB3") &&
+            !api.hasFlag("bodoBackAfterB3")
+          ) {
+            if (api.hasFlag("centralOsUpdated")) {
+              api.startDialog("bodoReturnsCaught");
+            } else {
+              api.startDialog("bodoReturnsClean");
+            }
+            return;
+          }
+          api.goTo("hallway");
+        },
       },
     ],
   },

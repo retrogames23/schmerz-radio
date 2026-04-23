@@ -96,6 +96,10 @@ export type StoryFlag =
   | "knowsLotti"
   | "bodoToldCarrierTruth"
   | "bodoSawFlyer"
+  // Bodo verlässt für 15 Min die Wohnung, damit Layard ans Terminal kommt
+  | "bodoLeftForB3"
+  | "bodoBackAfterB3"
+  | "bodoNoticedIntrusion"
   // Ennis Korr (2614) — Türgespräch
   | "metEnnis"
   | "talkedEnnis2"
