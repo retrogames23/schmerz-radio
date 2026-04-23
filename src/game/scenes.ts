@@ -24,12 +24,12 @@ import type { GameApi, Scene } from "./types";
  */
 function layardScreenLines(api: GameApi): string[] {
   const v = api.hasFlag("centralOsUpdated") ? "2.3.1" : "2.3";
-  return [`CENTRALOS v${v}`, "Quadrant E67", "▌"];
+  return ["CentralOS", `v${v}`];
 }
 
 function bodoScreenLines(api: GameApi): string[] {
   const v = api.hasFlag("centralOsUpdated") ? "2.3.1" : "2.0";
-  return [`CENTRALOS v${v}`, "Terminal 2612", "▌"];
+  return ["HASSENVU", "2612", `v${v}`];
 }
 
 export const scenes: Record<string, Scene> = {
@@ -151,10 +151,10 @@ export const scenes: Record<string, Scene> = {
       },
     ],
     screen: {
-      x: 7,
-      y: 45,
-      w: 16,
-      h: 14,
+      x: 6,
+      y: 42,
+      w: 22.5,
+      h: 13.7,
       getLines: layardScreenLines,
     },
   },
@@ -598,10 +598,10 @@ export const scenes: Record<string, Scene> = {
       },
     ],
     screen: {
-      x: 62,
-      y: 46,
-      w: 15,
-      h: 14,
+      x: 58.7,
+      y: 50.5,
+      w: 12.5,
+      h: 11,
       getLines: bodoScreenLines,
     },
   },
