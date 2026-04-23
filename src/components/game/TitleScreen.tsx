@@ -24,8 +24,7 @@ export function TitleScreen({ onStart }: Props) {
         </div>
 
         <p className="mx-auto mt-8 max-w-xl font-display text-base leading-relaxed text-muted-foreground sm:text-lg">
-          Ein 2D Point &amp; Click-Adventure über bürokratische Erstarrung,
-          erzwungene Pflicht und das heimliche Begehren nach echtem Erleben.
+          Ein klassisches Cozypunk-Point-&amp;-Click-Adventure
         </p>
 
         <button
@@ -37,7 +36,7 @@ export function TitleScreen({ onStart }: Props) {
         </button>
 
         <div className="mt-12 space-y-1 font-mono-crt text-xs uppercase tracking-[0.3em] text-muted-foreground">
-          <div>Layard Worag · Zimmer 2611 · B2-Ration</div>
+          <div>Layard Worag · Zimmer 2611</div>
           <div>CentralOS v2.3 · E67.NETZ stabil</div>
         </div>
       </div>
