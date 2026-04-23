@@ -9,7 +9,7 @@ export function TopBar({ onOpenPause }: Props) {
   const { scene, inventory, radioActive } = game;
 
   return (
-    <header className="border-b border-border bg-background/95 px-4 py-2 backdrop-blur">
+    <header className="shrink-0 border-b border-border bg-background/95 px-4 py-2 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
         <div className="flex items-center gap-3 text-xs uppercase tracking-[0.25em] text-muted-foreground">
           <span className="font-mono-crt text-base text-amber-glow">

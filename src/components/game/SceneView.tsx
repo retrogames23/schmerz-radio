@@ -15,7 +15,7 @@ export function SceneView() {
 
   return (
     <div
-      className={`relative mx-auto aspect-[4/3] w-full max-w-6xl overflow-hidden border border-border bg-black scanlines ${
+      className={`relative mx-auto aspect-[4/3] h-full max-h-full w-auto max-w-full overflow-hidden border border-border bg-black scanlines ${
         resonance > 75 ? "resonance-shake" : ""
       }`}
     >

@@ -4,7 +4,7 @@ export function Inventory() {
   const { inventory, api } = useGame();
 
   return (
-    <aside className="border-t border-border bg-background/95 px-4 py-3">
+    <aside className="shrink-0 border-t border-border bg-background/95 px-4 py-2">
       <div className="mx-auto flex max-w-6xl items-start gap-3">
         <div className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
           Inventar
