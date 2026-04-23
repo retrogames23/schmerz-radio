@@ -1683,7 +1683,10 @@ export const dialogs: Record<string, DialogTree> = {
         id: "b7",
         speaker: "SYSTEM",
         text: "Bodo: »Funkanlagen. Trägersignale. Verstärker. Wenn die Stadt knirschte, war meistens eine Spule kalt. — Ich rede nicht gern darüber. Es war ein anderer Beruf, in einer anderen Stadt.«",
-        end: true,
+        choices: [
+          { text: "Da bewegt sich etwas auf dem Sessel.", next: "bodoLottiReveal" },
+          { text: "[ Beenden ]" },
+        ],
       },
       bodoLottiReveal: {
         id: "bodoLottiReveal",
@@ -1771,7 +1774,40 @@ export const dialogs: Record<string, DialogTree> = {
         id: "bk4",
         speaker: "SYSTEM",
         text: "Bodo: »Weiter. Schönes Wort. Steht nicht im Lautsprecher.« Er trinkt einen Schluck. »Wenn Sie weiter wollen — gehen Sie zu Helka, drei Türen weiter. Die hat eine Liste. Da steht ›weiter‹ wahrscheinlich auch drin.«",
-        end: true,
+        choices: [
+          {
+            text: "Da bewegt sich etwas auf dem Sessel.",
+            next: "bodoLottiReveal",
+          },
+          { text: "[ Beenden ]" },
+        ],
+      },
+      // Wiederverwendete Lotti-Reveal-Sequenz, falls der Spieler das Tier
+      // im Smalltalk anspricht (statt im Intro).
+      bodoLottiReveal: {
+        id: "bodoLottiReveal",
+        speaker: "SYSTEM",
+        text: "Bodo schaut auf den Sessel. Etwas in seinem Gesicht öffnet sich, kurz. »Ja. Lotti. Vierzehn Jahre. Frisst nur noch B3, weil sie nichts anderes mehr mag. Deshalb der Aufstand bei Insa, damals.«",
+        next: "bodoLottiReveal2",
+      },
+      bodoLottiReveal2: {
+        id: "bodoLottiReveal2",
+        speaker: "SYSTEM",
+        text: "Bodo: »Tiere sind im Sektor offiziell nicht erlaubt. Ich hab sie über Insa angemeldet. Sie hat es nie protokolliert. Das ist alles, was ich Ihnen heute über Insa sage.«",
+        next: "bodoLottiReveal3",
+      },
+      bodoLottiReveal3: {
+        id: "bodoLottiReveal3",
+        speaker: "SYSTEM",
+        text: "Bodo: »Sie zuckt, wenn das Radio voll aufgedreht ist. Deshalb läuft hier 104,6 leise. Ist auch alles, was sie hört.«",
+        choices: [
+          {
+            text: "[ Verstanden. ]",
+            action: (api) => {
+              api.setFlag("knowsLotti");
+            },
+          },
+        ],
       },
     },
   },
