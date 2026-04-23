@@ -120,9 +120,39 @@ export function PauseMenu({ open, onClose }: Props) {
 
         {/* Save slots */}
         <section className="space-y-2">
-          <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            Spielstände
+          <div className="flex items-center justify-between">
+            <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+              Spielstände
+            </div>
+            {user ? (
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground">
+                <span className="truncate max-w-[180px]">{user.email}</span>
+                <button
+                  type="button"
+                  onClick={() => signOut()}
+                  className="rounded-sm border border-border px-2 py-1 hover:border-destructive hover:text-destructive"
+                >
+                  Abmelden
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setAuthOpen(true)}
+                className="rounded-sm border border-amber-glow/60 px-2 py-1 text-[10px] uppercase tracking-widest text-amber-glow hover:bg-amber-glow/10"
+              >
+                Anmelden
+              </button>
+            )}
           </div>
+
+          {!user && (
+            <p className="rounded-sm border border-amber-glow/30 bg-amber-glow/5 p-3 text-xs italic text-muted-foreground">
+              Zum Speichern und Laden bitte mit E-Mail oder Google anmelden.
+              Spielstände werden sicher in der Cloud gespeichert.
+            </p>
+          )}
+
           {slots.map((slot, i) => (
             <div
               key={i}
@@ -148,22 +178,46 @@ export function PauseMenu({ open, onClose }: Props) {
               <div className="flex shrink-0 gap-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    saveGame(i);
-                    setSlots(listSaves());
-                    flash(`Slot ${i + 1} gespeichert.`);
+                  disabled={!user || busySlot === i}
+                  onClick={async () => {
+                    if (!user) {
+                      setAuthOpen(true);
+                      return;
+                    }
+                    setBusySlot(i);
+                    try {
+                      await saveGame(i);
+                      setSlots(await listSaves());
+                      flash(`Slot ${i + 1} gespeichert.`);
+                    } catch (e) {
+                      flash(
+                        e instanceof Error
+                          ? e.message
+                          : "Speichern fehlgeschlagen.",
+                      );
+                    } finally {
+                      setBusySlot(null);
+                    }
                   }}
-                  className="rounded-sm border border-amber-glow/50 px-3 py-1 text-xs uppercase tracking-widest text-amber-glow transition hover:bg-amber-glow/10"
+                  className="rounded-sm border border-amber-glow/50 px-3 py-1 text-xs uppercase tracking-widest text-amber-glow transition hover:bg-amber-glow/10 disabled:cursor-not-allowed disabled:opacity-30"
                 >
                   Speichern
                 </button>
                 <button
                   type="button"
-                  disabled={!slot}
-                  onClick={() => {
-                    if (loadGame(i)) {
-                      flash(`Slot ${i + 1} geladen.`);
-                      onClose();
+                  disabled={!slot || busySlot === i}
+                  onClick={async () => {
+                    setBusySlot(i);
+                    try {
+                      const ok = await loadGame(i);
+                      if (ok) {
+                        flash(`Slot ${i + 1} geladen.`);
+                        onClose();
+                      } else {
+                        flash("Laden fehlgeschlagen.");
+                      }
+                    } finally {
+                      setBusySlot(null);
                     }
                   }}
                   className="rounded-sm border border-phosphor/50 px-3 py-1 text-xs uppercase tracking-widest text-phosphor transition hover:bg-phosphor/10 disabled:cursor-not-allowed disabled:opacity-30"
@@ -172,11 +226,16 @@ export function PauseMenu({ open, onClose }: Props) {
                 </button>
                 <button
                   type="button"
-                  disabled={!slot}
-                  onClick={() => {
-                    deleteSave(i);
-                    setSlots(listSaves());
-                    flash(`Slot ${i + 1} gelöscht.`);
+                  disabled={!slot || busySlot === i}
+                  onClick={async () => {
+                    setBusySlot(i);
+                    try {
+                      await deleteSave(i);
+                      setSlots(await listSaves());
+                      flash(`Slot ${i + 1} gelöscht.`);
+                    } finally {
+                      setBusySlot(null);
+                    }
                   }}
                   className="rounded-sm border border-border px-2 py-1 text-xs uppercase tracking-widest text-muted-foreground transition hover:border-destructive hover:text-destructive disabled:cursor-not-allowed disabled:opacity-30"
                 >
@@ -197,6 +256,7 @@ export function PauseMenu({ open, onClose }: Props) {
           ESC schließt das Menü.
         </p>
       </div>
+      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
     </div>
   );
 }
