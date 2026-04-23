@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -9,6 +10,8 @@ import {
 } from "react";
 import { dialogs } from "./dialogs";
 import { scenes } from "./scenes";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/auth/AuthContext";
 import type {
   GameApi,
   InventoryItem,
@@ -45,10 +48,10 @@ interface GameContextValue extends GameState {
   setRadioActive: (active: boolean) => void;
   bumpResonance: (delta: number) => void;
   resetResonance: () => void;
-  saveGame: (slot: number) => SaveSummary;
-  loadGame: (slot: number) => boolean;
-  listSaves: () => Array<SaveSummary | null>;
-  deleteSave: (slot: number) => void;
+  saveGame: (slot: number) => Promise<SaveSummary>;
+  loadGame: (slot: number) => Promise<boolean>;
+  listSaves: () => Promise<Array<SaveSummary | null>>;
+  deleteSave: (slot: number) => Promise<void>;
 }
 
 export interface SaveSummary {
@@ -59,7 +62,6 @@ export interface SaveSummary {
   inventoryCount: number;
 }
 
-const SAVE_PREFIX = "schmerz-radio.save.v1.";
 const NUM_SLOTS = 3;
 
 interface PersistedState {
