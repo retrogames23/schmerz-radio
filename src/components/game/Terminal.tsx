@@ -1337,9 +1337,19 @@ export function Terminal() {
               }
               e.preventDefault();
               // Tab-Completion — im Adventure kontextuell, sonst klassisch.
-              const result = advState
-                ? adventureComplete(advState, input)
-                : complete(input, cwd, (f) => flags.has(f));
+              let result: CompleteResult;
+              if (advState) {
+                result = adventureComplete(advState, input);
+              } else if (telnetHost) {
+                const host = findHost(telnetHost);
+                const hostFiles: Record<string, string[]> = {
+                  ...(host?.files ?? {}),
+                  ...(host?.dynamicFiles?.((f) => flags.has(f)) ?? {}),
+                };
+                result = completeTelnet(input, hostFiles);
+              } else {
+                result = complete(input, cwd, (f) => flags.has(f));
+              }
               if (!result.matches.length) {
                 playBeep(0.2 * sfxVolume);
                 return;
