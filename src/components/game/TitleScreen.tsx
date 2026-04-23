@@ -8,16 +8,35 @@ interface Props {
 
 export function TitleScreen({ onStart }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [musicOn, setMusicOn] = useState(false);
+  const [musicOn, setMusicOn] = useState(true);
 
   useEffect(() => {
     const a = new Audio(titleTrack);
     a.loop = true;
     a.volume = 0.45;
     audioRef.current = a;
+
+    // Try to autoplay; if the browser blocks it, start on the first user interaction.
+    const tryPlay = () => {
+      a.play().then(() => setMusicOn(true)).catch(() => setMusicOn(false));
+    };
+    tryPlay();
+
+    const onFirstInteract = () => {
+      if (a.paused) {
+        a.play().then(() => setMusicOn(true)).catch(() => {});
+      }
+      window.removeEventListener("pointerdown", onFirstInteract);
+      window.removeEventListener("keydown", onFirstInteract);
+    };
+    window.addEventListener("pointerdown", onFirstInteract);
+    window.addEventListener("keydown", onFirstInteract);
+
     return () => {
       a.pause();
       audioRef.current = null;
+      window.removeEventListener("pointerdown", onFirstInteract);
+      window.removeEventListener("keydown", onFirstInteract);
     };
   }, []);
 
