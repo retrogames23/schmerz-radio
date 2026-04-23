@@ -73,13 +73,26 @@ export const Route = createFileRoute("/api/tts")({
           );
         }
 
-        // ── Same-origin guard: reject obvious cross-origin abuse ─────
+        // ── Origin guard: nur offensichtliche Cross-Origin-Aufrufe blocken.
+        // Im Lovable Preview/Worker stimmt `host` (interner Worker-Host) nicht
+        // immer mit dem Browser-Origin (z. B. *.lovableproject.com) überein,
+        // ein strikter Vergleich produziert daher false positives. Wir lassen
+        // bekannte Lovable-/lokale Hosts immer zu, ohne Origin-Header (z. B.
+        // server-to-server oder gleicher Origin) ebenfalls. Missbrauchsschutz
+        // läuft über voiceId-Allowlist, Längenlimit und Rate-Limit.
         const origin = request.headers.get("origin");
-        const host = request.headers.get("host");
-        if (origin && host) {
+        if (origin) {
           try {
             const originHost = new URL(origin).host;
-            if (originHost !== host) {
+            const allowed =
+              originHost === request.headers.get("host") ||
+              /\.lovable\.app$/.test(originHost) ||
+              /\.lovableproject\.com$/.test(originHost) ||
+              /\.lovable\.dev$/.test(originHost) ||
+              originHost === "localhost" ||
+              originHost.startsWith("localhost:") ||
+              originHost.startsWith("127.0.0.1");
+            if (!allowed) {
               return new Response(JSON.stringify({ error: "Forbidden" }), {
                 status: 403,
                 headers: { "Content-Type": "application/json" },
