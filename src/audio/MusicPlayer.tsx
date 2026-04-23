@@ -1,44 +1,166 @@
 import { useEffect, useRef } from "react";
 import { useSettings } from "./SettingsContext";
-import musicTrack from "@/assets/sunday-at-the-bunker.mp3";
+import trackSunday from "@/assets/sunday-at-the-bunker.mp3";
+import trackMidnight from "@/assets/midnight-at-the-loading-bay.mp3";
 
 /**
- * Background music loop. Honors musicEnabled / musicVolume from settings.
+ * Background music. Plays a playlist of tracks in sequence and
+ * crossfades between them at the transition. Honors musicEnabled /
+ * musicVolume from settings.
+ *
  * Browsers require a user gesture before audio starts; the title-screen
  * "Spiel beginnen" click satisfies that.
  */
+const PLAYLIST: string[] = [trackSunday, trackMidnight];
+const CROSSFADE_SECONDS = 6;
+const FADE_TICK_MS = 50;
+
 export function MusicPlayer() {
   const { musicEnabled, musicVolume } = useSettings();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
-    const a = new Audio(musicTrack);
-    a.loop = true;
-    a.preload = "auto";
-    audioRef.current = a;
-    return () => {
-      a.pause();
-      audioRef.current = null;
-    };
-  }, []);
+  // Two audio elements so we can crossfade between them.
+  const aRef = useRef<HTMLAudioElement | null>(null);
+  const bRef = useRef<HTMLAudioElement | null>(null);
+  const activeRef = useRef<"a" | "b">("a");
+  const indexRef = useRef(0);
+  const fadeTimerRef = useRef<number | null>(null);
+  const watchTimerRef = useRef<number | null>(null);
+  const enabledRef = useRef(musicEnabled);
+  const volumeRef = useRef(musicVolume);
 
+  // Keep refs in sync so timers always read fresh values.
   useEffect(() => {
-    const a = audioRef.current;
-    if (!a) return;
-    a.volume = Math.max(0, Math.min(1, musicVolume));
+    enabledRef.current = musicEnabled;
+  }, [musicEnabled]);
+  useEffect(() => {
+    volumeRef.current = musicVolume;
   }, [musicVolume]);
 
   useEffect(() => {
-    const a = audioRef.current;
-    if (!a) return;
-    if (musicEnabled) {
-      void a.play().catch(() => {
-        /* autoplay blocked — will start on next user interaction */
-      });
-    } else {
+    const a = new Audio();
+    const b = new Audio();
+    a.preload = "auto";
+    b.preload = "auto";
+    a.loop = false;
+    b.loop = false;
+    a.volume = 0;
+    b.volume = 0;
+    aRef.current = a;
+    bRef.current = b;
+
+    return () => {
+      if (fadeTimerRef.current) window.clearInterval(fadeTimerRef.current);
+      if (watchTimerRef.current) window.clearInterval(watchTimerRef.current);
       a.pause();
+      b.pause();
+      aRef.current = null;
+      bRef.current = null;
+    };
+  }, []);
+
+  // Volume change — apply to whichever element is currently active and audible.
+  useEffect(() => {
+    const active = activeRef.current === "a" ? aRef.current : bRef.current;
+    if (active && !fadeTimerRef.current) {
+      active.volume = clamp(musicVolume);
     }
+  }, [musicVolume]);
+
+  // Start / stop based on enabled flag.
+  useEffect(() => {
+    if (!aRef.current || !bRef.current) return;
+
+    if (musicEnabled) {
+      startPlayback();
+    } else {
+      stopPlayback();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [musicEnabled]);
 
+  function pickTrack(i: number) {
+    return PLAYLIST[i % PLAYLIST.length];
+  }
+
+  function startPlayback() {
+    const active = activeRef.current === "a" ? aRef.current! : bRef.current!;
+    if (!active.src) {
+      active.src = pickTrack(indexRef.current);
+    }
+    active.volume = clamp(volumeRef.current);
+    void active.play().catch(() => {
+      /* autoplay blocked */
+    });
+    ensureWatcher();
+  }
+
+  function stopPlayback() {
+    if (aRef.current) aRef.current.pause();
+    if (bRef.current) bRef.current.pause();
+    if (fadeTimerRef.current) {
+      window.clearInterval(fadeTimerRef.current);
+      fadeTimerRef.current = null;
+    }
+    if (watchTimerRef.current) {
+      window.clearInterval(watchTimerRef.current);
+      watchTimerRef.current = null;
+    }
+  }
+
+  function ensureWatcher() {
+    if (watchTimerRef.current) return;
+    watchTimerRef.current = window.setInterval(() => {
+      if (!enabledRef.current) return;
+      if (fadeTimerRef.current) return; // already crossfading
+      const active = activeRef.current === "a" ? aRef.current : bRef.current;
+      if (!active || !active.duration || isNaN(active.duration)) return;
+      const remaining = active.duration - active.currentTime;
+      if (remaining <= CROSSFADE_SECONDS && !active.paused) {
+        beginCrossfade();
+      }
+    }, 250);
+  }
+
+  function beginCrossfade() {
+    const fromKey = activeRef.current;
+    const toKey = fromKey === "a" ? "b" : "a";
+    const from = fromKey === "a" ? aRef.current! : bRef.current!;
+    const to = toKey === "a" ? aRef.current! : bRef.current!;
+
+    indexRef.current = (indexRef.current + 1) % PLAYLIST.length;
+    to.src = pickTrack(indexRef.current);
+    to.currentTime = 0;
+    to.volume = 0;
+    void to.play().catch(() => {
+      /* autoplay blocked */
+    });
+
+    const startVol = clamp(volumeRef.current);
+    const steps = Math.max(1, Math.floor((CROSSFADE_SECONDS * 1000) / FADE_TICK_MS));
+    let step = 0;
+
+    if (fadeTimerRef.current) window.clearInterval(fadeTimerRef.current);
+    fadeTimerRef.current = window.setInterval(() => {
+      step += 1;
+      const t = Math.min(1, step / steps);
+      const target = clamp(volumeRef.current);
+      from.volume = clamp(startVol * (1 - t));
+      to.volume = clamp(target * t);
+      if (t >= 1) {
+        from.pause();
+        from.currentTime = 0;
+        activeRef.current = toKey;
+        if (fadeTimerRef.current) {
+          window.clearInterval(fadeTimerRef.current);
+          fadeTimerRef.current = null;
+        }
+      }
+    }, FADE_TICK_MS);
+  }
+
   return null;
+}
+
+function clamp(v: number) {
+  return Math.max(0, Math.min(1, v));
 }
