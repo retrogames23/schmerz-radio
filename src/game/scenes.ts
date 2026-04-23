@@ -1041,10 +1041,6 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 56 — Dachetage",
     intro:
       "Oben. Am Ende des Korridors: ein vergittertes Fenster auf einen grauen Himmel.",
-    doorPlates: [
-      { id: "p5610", x: 12, y: 30, w: 9, label: "5610" },
-      { id: "p5611", x: 88, y: 30, w: 9, label: "5611" },
-    ],
     hotspots: [
       {
         id: "miraSpot56",
