@@ -333,6 +333,13 @@ export function combineItem(
       lines = ITEM_PAIRS[pairKey(itemId, otherId)];
     }
   } else {
+    // Spezialfall: Code-Zettel auf das Keypad gezogen → Tür öffnet sich
+    // direkt, ohne Umweg über das Tastenpad-Overlay.
+    if (ctx.targetId === "keypadCall" && itemId === "exitCode") {
+      if (!ctx.api.hasFlag("sectorDoorOpen")) {
+        ctx.api.setFlag("sectorDoorOpen");
+      }
+    }
     const hotspotMap = HOTSPOT_REACTIONS[ctx.targetId];
     const npcMap = NPC_REACTIONS[ctx.targetId];
     lines = hotspotMap?.[itemId] ?? npcMap?.[itemId];

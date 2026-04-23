@@ -705,6 +705,41 @@ export const scenes: Record<string, Scene> = {
         h: 20,
         label: "Keypad — Code eingeben",
         onUse: (api) => {
+          if (api.hasFlag("sectorDoorOpen")) {
+            api.showText([
+              "Das Keypad zeigt eine matte grüne LED.",
+              "Die Tür ist bereits entriegelt.",
+            ]);
+            return;
+          }
+          if (!api.hasFlag("calledInsa2")) {
+            api.showText([
+              "Das Keypad blinkt rot.",
+              "Layard kennt keinen Code. Er hat hier auch nichts zu suchen —",
+              "noch nicht. Er hat keinen Auftrag, der ihn hindurchschickt.",
+              "[ Layard betrachtet die Tür eine Weile. Dann dreht er sich um. ]",
+            ]);
+            return;
+          }
+          if (!api.hasFlag("calledForCode")) {
+            api.showText([
+              "Das Keypad blinkt rot.",
+              "Layard hat noch keinen Code. Es gibt nur einen Weg: 001 anrufen.",
+              "[ Geh zurück in deine Wohnung und benutze dein Telefon. ]",
+            ]);
+            return;
+          }
+          api.openKeypad();
+        },
+      },
+      {
+        id: "keypadCall",
+        x: 16,
+        y: 54,
+        w: 16,
+        h: 20,
+        label: "Keypad — Code eingeben",
+        onUse: (api) => {
           if (!api.hasFlag("calledForCode")) {
             if (!api.hasFlag("calledInsa2")) {
               api.showText([

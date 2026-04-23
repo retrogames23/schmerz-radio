@@ -32,6 +32,7 @@ interface GameState {
   dialogLineId: string | null;
   radioOpen: boolean;
   terminalOpen: boolean;
+  keypadOpen: boolean;
   radioActive: boolean; // tuned to 104.6, providing subtext
   resonance: number; // 0–100
   ending: boolean;
@@ -45,6 +46,7 @@ interface GameContextValue extends GameState {
   closeDialog: () => void;
   closeRadio: () => void;
   closeTerminal: () => void;
+  closeKeypad: () => void;
   setRadioActive: (active: boolean) => void;
   bumpResonance: (delta: number) => void;
   resetResonance: () => void;
@@ -96,6 +98,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [dialogLineId, setDialogLineId] = useState<string | null>(null);
   const [radioOpen, setRadioOpen] = useState(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [keypadOpen, setKeypadOpen] = useState(false);
   const [radioActive, setRadioActive] = useState(false);
   const [resonance, setResonance] = useState(0);
   const [ending, setEnding] = useState(false);
@@ -201,6 +204,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       },
       openTerminal: () => setTerminalOpen(true),
       openRadio: () => setRadioOpen(true),
+      openKeypad: () => setKeypadOpen(true),
       isRadioActive: () => radioActiveRef.current,
       setEnding: () => setEnding(true),
       getMiraFloor: () => miraFloorRef.current ?? 3,
@@ -278,6 +282,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dialogLineId,
     radioOpen,
     terminalOpen,
+    keypadOpen,
     radioActive,
     resonance,
     ending,
@@ -295,6 +300,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     },
     closeRadio: () => setRadioOpen(false),
     closeTerminal: () => setTerminalOpen(false),
+    closeKeypad: () => setKeypadOpen(false),
     setRadioActive,
     bumpResonance: (d) => setResonance((r) => Math.max(0, Math.min(100, r + d))),
     resetResonance: () => setResonance(0),
@@ -362,6 +368,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setDialogLineId(null);
       setRadioOpen(false);
       setTerminalOpen(false);
+      setKeypadOpen(false);
       setRadioActive(false);
       return true;
     },
