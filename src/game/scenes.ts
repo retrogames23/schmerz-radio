@@ -166,7 +166,6 @@ export const scenes: Record<string, Scene> = {
             "Regelmäßig. Aber nicht mechanisch.",
             "Layard legt die Hand an den Beton. Er fühlt es im Handballen,",
             "bevor er es im Ohr hört.",
-            "",
             "„Hallo?! Jemand da?“ — Das Klopfen geht im selben Rhythmus weiter.",
           ]);
         },
@@ -219,13 +218,10 @@ export const scenes: Record<string, Scene> = {
           api.showText([
             "Ein Mann, ausgemergelt. Fahle Haut. Hochgezogene Brauen.",
             "Er schlägt mit leblosem Gesicht rhythmisch gegen die Wand.",
-            "",
             "Layard nimmt seinen Mut zusammen und schaut ihm in die Augen.",
             "Er erwartet tote, glasige Augen.",
-            "",
             "Stattdessen: grüne Augen. Eine seltsame Tiefe. Klarheit.",
             "Wie ein Portal in ein mystisches Universum.",
-            "",
             "Layard wird das Bild nicht mehr loswerden.",
           ]);
         },
@@ -419,12 +415,9 @@ export const scenes: Record<string, Scene> = {
             api.showText([
               "Layard denkt intensiv daran, einen Schritt zu machen.",
               "Aus dem Korridor. In den Aufzug. Aus E67 hinaus.",
-              "",
               "Seine Füße bewegen sich nicht.",
-              "",
               "Im Hinterkopf: das amber-grüne Glühen der Frequenz 104,6.",
               "Sie ist nicht mehr im Radio. Sie ist in ihm.",
-              "",
               "Er zwingt das rechte Bein. Es geht. Schwer. Mechanisch.",
               "Wie eine Tür, deren Scharniere seit Jahren niemand geölt hat.",
             ]);
