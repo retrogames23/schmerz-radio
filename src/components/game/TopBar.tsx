@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useGame } from "@/game/GameContext";
-import { Radio, TerminalSquare, Menu } from "lucide-react";
+import { useMusic } from "@/audio/MusicPlayer";
+import { useSettings } from "@/audio/SettingsContext";
+import { Radio, TerminalSquare, Menu, ChevronLeft, ChevronRight, Music2 } from "lucide-react";
 
 interface Props {
   onOpenPause: () => void;
@@ -10,6 +12,9 @@ export function TopBar({ onOpenPause }: Props) {
   const game = useGame();
   const { scene, radioActive, flags } = game;
   const inAct2 = flags.has("enteredE71");
+  const music = useMusic();
+  const { musicEnabled } = useSettings();
+  const currentTrack = music.tracks[music.currentIndex];
 
   // Kurze Einblendung beim Übergang: AKT I → AKT II.
   const [showActBanner, setShowActBanner] = useState(false);
@@ -41,6 +46,41 @@ export function TopBar({ onOpenPause }: Props) {
         </div>
 
         <div className="flex items-center gap-2">
+          <div
+            className={`group hidden items-center gap-1 rounded-sm border px-1.5 py-1 text-[10px] uppercase tracking-[0.2em] transition-all duration-200 sm:inline-flex ${
+              musicEnabled
+                ? "border-amber-glow/30 bg-gradient-to-b from-amber-glow/10 to-transparent text-amber-glow/80 hover:border-amber-glow/60"
+                : "border-border/60 bg-secondary/30 text-muted-foreground/60"
+            }`}
+            title="Musik-Track wechseln"
+          >
+            <button
+              type="button"
+              onClick={music.prev}
+              className="rounded-sm p-0.5 transition-colors hover:text-amber-glow disabled:opacity-40"
+              disabled={!musicEnabled}
+              aria-label="Vorheriger Track"
+            >
+              <ChevronLeft className="h-3 w-3" strokeWidth={2.25} />
+            </button>
+            <Music2
+              className={`h-3 w-3 ${musicEnabled ? "text-amber-glow/70" : ""}`}
+              strokeWidth={2.25}
+              aria-hidden
+            />
+            <span className="font-mono-crt min-w-[7rem] max-w-[10rem] truncate text-center text-[10px] tracking-[0.1em] normal-case">
+              {currentTrack?.title ?? "—"}
+            </span>
+            <button
+              type="button"
+              onClick={music.next}
+              className="rounded-sm p-0.5 transition-colors hover:text-amber-glow disabled:opacity-40"
+              disabled={!musicEnabled}
+              aria-label="Nächster Track"
+            >
+              <ChevronRight className="h-3 w-3" strokeWidth={2.25} />
+            </button>
+          </div>
           <button
             type="button"
             onClick={() => game.api.openRadio()}
