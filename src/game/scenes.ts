@@ -2,7 +2,7 @@ import apartmentBg from "@/assets/scene-apartment.jpg";
 import hallwayBg from "@/assets/scene-hallway.jpg";
 import apt2613Bg from "@/assets/scene-apt-2613.jpg";
 import apt2615Bg from "@/assets/scene-apt-2615.jpg";
-import apt2612Bg from "@/assets/scene-apt-2612.jpg";
+import apt2612Bg from "@/assets/scene-apt-2612.png";
 import sectorBg from "@/assets/scene-sector-door.jpg";
 import e71LobbyBg from "@/assets/scene-e71-lobby.jpg";
 import corridor15Bg from "@/assets/scene-corridor-15.jpg";
@@ -431,11 +431,11 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bodoSprite",
         src: bodoSprite,
-        // Sitzt im Sessel links — Bild mittig auf den Sessel ausgerichtet.
-        x: 0,
-        y: 32,
-        w: 32,
-        h: 60,
+        // Sitzt im gelben Sessel links — exakt aus dem Hintergrund ausgeschnitten.
+        x: 8,
+        y: 38,
+        w: 30,
+        h: 56,
         alt: "Bodo sitzt im Sessel",
         hiddenWhen: ["bodoLeftForB3"],
       },
@@ -443,20 +443,20 @@ export const scenes: Record<string, Scene> = {
         id: "lottiSprite",
         src: lottiSprite,
         // Katze auf der Ottomane vor dem Sessel.
-        x: 28,
-        y: 64,
-        w: 22,
-        h: 22,
+        x: 33,
+        y: 70,
+        w: 16,
+        h: 14,
         alt: "Lotti, Bodos schwarze Katze",
       },
       {
         // CRT-Bildschirm: vor dem Update CentralOS v2.0.
         id: "screenV20",
         src: screenV20,
-        x: 54,
-        y: 44,
-        w: 14,
-        h: 11,
+        x: 57,
+        y: 45,
+        w: 15,
+        h: 12,
         alt: "Bildschirm: CentralOS v2.0",
         hiddenWhen: ["centralOsUpdated"],
       },
@@ -464,10 +464,10 @@ export const scenes: Record<string, Scene> = {
         // Nach dem Update: CentralOS v2.3.1.
         id: "screenV231",
         src: screenV231,
-        x: 54,
-        y: 44,
-        w: 14,
-        h: 11,
+        x: 57,
+        y: 45,
+        w: 15,
+        h: 12,
         alt: "Bildschirm: CentralOS v2.3.1",
         requires: ["centralOsUpdated"],
       },
@@ -476,8 +476,8 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bodoNpc",
         // Hotspot deckt das Bodo-Sprite auf dem Sessel.
-        x: 2,
-        y: 34,
+        x: 8,
+        y: 38,
         w: 30,
         h: 56,
         label: "Bodo Marschke",
