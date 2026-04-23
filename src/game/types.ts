@@ -137,6 +137,21 @@ export interface Scene {
   hotspots: Hotspot[];
   /** Optional sichtbare Figuren / Sprites, die über dem Hintergrund liegen. */
   npcs?: NpcSprite[];
+  /**
+   * Optionales CRT-Overlay, das auf dem Bildschirm im Raum die aktuell
+   * eingeloggte / installierte CentralOS-Version (oder beliebigen kurzen
+   * Statustext) phosphor-grün einblendet. Position in % wie bei Hotspots.
+   */
+  screen?: SceneScreen;
+}
+
+export interface SceneScreen {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** Liefert die anzuzeigenden Zeilen abhängig vom Spielzustand. */
+  getLines: (api: GameApi) => string[];
 }
 
 export interface NpcSprite {

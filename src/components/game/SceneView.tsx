@@ -89,6 +89,28 @@ export function SceneView() {
           <Hotspot key={h.id} hotspot={h} />
         ))}
 
+        {/* CRT-Bildschirm-Overlay (z. B. CentralOS-Versionsanzeige) */}
+        {current.screen && (
+          <div
+            className="pointer-events-none absolute z-[5] flex flex-col justify-center overflow-hidden bg-black/55 px-[0.4%] py-[0.3%] font-mono-crt text-phosphor phosphor-glow scanlines crt-flicker"
+            style={{
+              left: `${current.screen.x}%`,
+              top: `${current.screen.y}%`,
+              width: `${current.screen.w}%`,
+              height: `${current.screen.h}%`,
+              fontSize: "clamp(6px, 0.95cqw, 11px)",
+              lineHeight: 1.15,
+              containerType: "inline-size",
+            }}
+          >
+            {current.screen.getLines(api).map((line, i) => (
+              <div key={i} className="truncate">
+                {line}
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Amber vignette when radio is active */}
         {radioActive && <div className="amber-vignette" />}
 
