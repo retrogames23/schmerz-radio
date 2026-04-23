@@ -483,7 +483,12 @@ export const scenes: Record<string, Scene> = {
         h: 50,
         label: "Bodos leerer Sessel",
         requires: ["bodoLeftForB3"],
-        hiddenWhen: ["bodoBackAfterB3"],
+        hiddenWhen: ["bodoBackAfterB3Twice"],
+        visible: (api) =>
+          // Sichtbar während Anlauf 1 ODER während Anlauf 2.
+          (api.hasFlag("bodoLeftForB3") && !api.hasFlag("bodoBackAfterB3")) ||
+          (api.hasFlag("bodoLeftForB3Twice") &&
+            !api.hasFlag("bodoBackAfterB3Twice")),
         onUse: (api) =>
           api.showText([
             "Bodos Sessel ist leer. Die Tasse Tee dampft noch.",
