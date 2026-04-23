@@ -206,6 +206,7 @@ const NET_HOSTS: NetHost[] = [
     host: "philippe.e67",
     desc: "Bewohner, Zimmer 2613",
     password: "Passwort123",
+    passwordCaseInsensitive: true,
     motd: [
       "── philippe.e67 — CentralOS v2.1 ─────────────",
       "Letzte Anmeldung: 06.11.1997 04:11 (lokal)",
@@ -233,6 +234,110 @@ const NET_HOSTS: NetHost[] = [
         "als es wieder anging hieß ich wieder philippe",
         "ich glaube das ist gut",
       ],
+    },
+    // Beobachtungen über Layard. Eine pro geführtem Dialog.
+    dynamicFiles: (hasFlag) => {
+      const out: Record<string, string[]> = {};
+      if (hasFlag("philippeNote1")) {
+        out["beobachtung_layard_01.txt"] = [
+          "── notiz, kurz nach er kam ────────────────────",
+          "",
+          "der nachbar aus 2611. layard worag.",
+          "geöffnet hat er erst beim dritten klingeln.",
+          "die augen: wach, aber zu lange nicht benutzt.",
+          "",
+          "er hat nicht gezögert mitzukommen.",
+          "das hat mich mehr überrascht als das klopfen.",
+          "in diesem korridor öffnet niemand für niemanden.",
+          "",
+          "vermutung: er hat sich darauf vorbereitet,",
+          "ohne es selbst zu wissen.",
+          "vermutung: er ist einsamer als ich.",
+          "",
+          "ich werde das im auge behalten.",
+        ];
+      }
+      if (hasFlag("philippeNote2")) {
+        out["beobachtung_layard_02.txt"] = [
+          "── notiz, während wir gewartet haben ──────────",
+          "",
+          "er redet wenig. wenn, dann präzise.",
+          "er sagt »B2« wie andere »ich«. ohne nachzudenken.",
+          "",
+          "als ich von kantine angefangen habe, hat er",
+          "von seinem schreiben gesprochen. unaufgefordert.",
+          "drei sätze, dann hat er sich erschrocken.",
+          "",
+          "diagnose (laienhaft): er hat seit jahren mit",
+          "niemandem ein längeres gespräch geführt.",
+          "er weiß nicht mehr, wie viel er teilen darf.",
+          "",
+          "soziale beziehungen, geschätzt: 0–1.",
+          "die 1 ist möglicherweise insa.",
+          "ich glaube nicht, dass das eine beziehung ist.",
+          "",
+          "ich glaube, ich mag ihn.",
+        ];
+      }
+      if (hasFlag("philippeNote3")) {
+        out["beobachtung_layard_03.txt"] = [
+          "── notiz, nach den sanitätern ────────────────",
+          "",
+          "er ist gegangen. wirklich gegangen.",
+          "vor mir hat das niemand gemacht. nicht einer.",
+          "",
+          "charakter: stiller mut. nicht laut. nicht performt.",
+          "er hat das protokoll geholt, ohne zu fragen warum.",
+          "vielleicht weil ihn das »warum« seit jahren erstickt.",
+          "",
+          "persönlichkeit: ein mensch, der zu lange",
+          "geschwiegen hat und jetzt nicht mehr weiß,",
+          "wie laut seine eigene stimme klingen darf.",
+          "",
+          "soziale beziehungen, korrigiert:",
+          "  insa  — auftraggeberin, nicht freundin",
+          "  philippe — ich. unklarer status.",
+          "  und vielleicht: dieser alte mann in 1534.",
+          "",
+          "ich hoffe, er kommt wieder. ich klopfe dann.",
+        ];
+      }
+      if (hasFlag("philippeNote4")) {
+        out["beobachtung_layard_04.txt"] = [
+          "── notiz, später ─────────────────────────────",
+          "",
+          "wir haben heute über essen geredet.",
+          "er hat gelacht. einmal, kurz.",
+          "ich habe es aufgeschrieben.",
+          "",
+          "er ist nicht beschädigt. er ist konserviert.",
+          "wie etwas, das man eingelegt hat,",
+          "weil man nicht wusste, wann man es brauchen würde.",
+          "",
+          "wenn jemand ihn aus dem glas nimmt:",
+          "ich glaube, er kann noch alles sein.",
+        ];
+      }
+      if (hasFlag("philippeNote5")) {
+        out["beobachtung_layard_05.txt"] = [
+          "── notiz, nach unserem letzten gespräch ──────",
+          "",
+          "ich höre alles, das ist wahr.",
+          "aber ihn höre ich anders.",
+          "",
+          "fazit, vorläufig:",
+          "  charakter        — leise, lehrbarer mut",
+          "  persönlichkeit   — ein autor ohne publikum",
+          "  beziehungen      — bisher: keine. jetzt: zwei.",
+          "                     (insa zählt nicht.)",
+          "",
+          "ich werde dieses dokument nicht löschen,",
+          "auch wenn 104,6 das nahelegt.",
+          "ich glaube, ich sollte es ihm geben.",
+          "ich werde es ihm nicht geben.",
+        ];
+      }
+      return out;
     },
   },
   {
