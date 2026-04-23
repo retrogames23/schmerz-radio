@@ -16,6 +16,7 @@ import corridor56Bg from "@/assets/scene-corridor-56.jpg";
 import miraSprite from "@/assets/npc-mira.png";
 import philippeSprite from "@/assets/npc-philippe.png";
 import bodoSprite from "@/assets/npc-bodo.png";
+// Bodo ist das einzige Sprite in 2612 — Lotti & Bildschirm sind Teil des Hintergrunds.
 import type { Scene } from "./types";
 
 export const scenes: Record<string, Scene> = {
