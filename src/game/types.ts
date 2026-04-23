@@ -207,7 +207,10 @@ export interface DialogLine {
     | "MIKAEL"
     | "RECEPTION"
     | "MIRA"
-    | "BODO";
+    | "BODO"
+    | "HELKA"
+    | "ENNIS"
+    | "STEGMANN";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;
