@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { scenes, useGame } from "@/game/GameContext";
 import { Hotspot } from "./Hotspot";
 
@@ -6,6 +6,10 @@ export function SceneView() {
   const { scene, caption, radioActive, resonance, flags, api } = useGame();
   const current = scenes[scene];
   const [showIntro, setShowIntro] = useState(true);
+  // Wackelt nur für max. 10 Sekunden ab dem Moment, in dem die Überlastung beginnt.
+  const [shakeActive, setShakeActive] = useState(false);
+  const shakeTimeoutRef = useRef<number | null>(null);
+  const shakeStartedRef = useRef(false);
 
   useEffect(() => {
     setShowIntro(true);
@@ -13,10 +17,39 @@ export function SceneView() {
     return () => clearTimeout(t);
   }, [scene]);
 
+  useEffect(() => {
+    if (resonance > 75) {
+      // Beginnt erst zu wackeln, sobald die Schwelle frisch überschritten wird.
+      if (!shakeStartedRef.current) {
+        shakeStartedRef.current = true;
+        setShakeActive(true);
+        if (shakeTimeoutRef.current) window.clearTimeout(shakeTimeoutRef.current);
+        shakeTimeoutRef.current = window.setTimeout(() => {
+          setShakeActive(false);
+        }, 10000);
+      }
+    } else {
+      // Sobald die Resonanz wieder unter die Schwelle fällt: Reset, damit das
+      // 10-Sekunden-Fenster beim nächsten Anstieg neu starten kann.
+      shakeStartedRef.current = false;
+      if (shakeTimeoutRef.current) {
+        window.clearTimeout(shakeTimeoutRef.current);
+        shakeTimeoutRef.current = null;
+      }
+      setShakeActive(false);
+    }
+  }, [resonance]);
+
+  useEffect(() => {
+    return () => {
+      if (shakeTimeoutRef.current) window.clearTimeout(shakeTimeoutRef.current);
+    };
+  }, []);
+
   return (
     <div
       className={`relative mx-auto aspect-[16/9] h-full max-h-full w-auto max-w-full overflow-hidden border border-border bg-black scanlines ${
-        resonance > 75 ? "resonance-shake" : ""
+        shakeActive ? "resonance-shake" : ""
       }`}
     >
       {/* Inner 4:3 stage — keeps existing percent-based coordinates intact */}
