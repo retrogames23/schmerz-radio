@@ -16,6 +16,9 @@ import corridor56Bg from "@/assets/scene-corridor-56.jpg";
 import miraSprite from "@/assets/npc-mira.png";
 import philippeSprite from "@/assets/npc-philippe.png";
 import bodoSprite from "@/assets/npc-bodo.png";
+import lottiSprite from "@/assets/npc-lotti.png";
+import screenV20 from "@/assets/screen-centralos-v20.png";
+import screenV231 from "@/assets/screen-centralos-v231.png";
 import type { Scene } from "./types";
 
 export const scenes: Record<string, Scene> = {
@@ -429,22 +432,54 @@ export const scenes: Record<string, Scene> = {
         id: "bodoSprite",
         src: bodoSprite,
         // Sitzt im Sessel links — Bild mittig auf den Sessel ausgerichtet.
-        x: 4,
-        y: 28,
-        w: 30,
-        h: 65,
+        x: 0,
+        y: 32,
+        w: 32,
+        h: 60,
         alt: "Bodo sitzt im Sessel",
         hiddenWhen: ["bodoLeftForB3"],
+      },
+      {
+        id: "lottiSprite",
+        src: lottiSprite,
+        // Katze auf der Ottomane vor dem Sessel.
+        x: 28,
+        y: 64,
+        w: 22,
+        h: 22,
+        alt: "Lotti, Bodos schwarze Katze",
+      },
+      {
+        // CRT-Bildschirm: vor dem Update CentralOS v2.0.
+        id: "screenV20",
+        src: screenV20,
+        x: 54,
+        y: 44,
+        w: 14,
+        h: 11,
+        alt: "Bildschirm: CentralOS v2.0",
+        hiddenWhen: ["centralOsUpdated"],
+      },
+      {
+        // Nach dem Update: CentralOS v2.3.1.
+        id: "screenV231",
+        src: screenV231,
+        x: 54,
+        y: 44,
+        w: 14,
+        h: 11,
+        alt: "Bildschirm: CentralOS v2.3.1",
+        requires: ["centralOsUpdated"],
       },
     ],
     hotspots: [
       {
         id: "bodoNpc",
-        // Bodo ist jetzt direkt in den Hintergrund integriert.
-        x: 12,
-        y: 31,
-        w: 44,
-        h: 40,
+        // Hotspot deckt das Bodo-Sprite auf dem Sessel.
+        x: 2,
+        y: 34,
+        w: 30,
+        h: 56,
         label: "Bodo Marschke",
         // Wenn Bodo gerade unterwegs zum B3 holen ist, ist er nicht da.
         hiddenWhen: ["bodoLeftForB3"],
@@ -476,10 +511,10 @@ export const scenes: Record<string, Scene> = {
       // Während Bodo weg ist: Hinweis statt Person.
       {
         id: "bodoEmptyChair",
-        x: 12,
-        y: 31,
-        w: 44,
-        h: 40,
+        x: 2,
+        y: 42,
+        w: 30,
+        h: 50,
         label: "Bodos leerer Sessel",
         requires: ["bodoLeftForB3"],
         hiddenWhen: ["bodoBackAfterB3"],
@@ -492,12 +527,12 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "lottiSpot",
-        // Katze liegt vorne rechts auf der Decke / Ottomane.
-        x: 64,
-        y: 68,
-        w: 23,
-        h: 19,
-        label: "Sessel mit Decke",
+        // Katze liegt auf der Ottomane vor dem Sessel.
+        x: 28,
+        y: 64,
+        w: 22,
+        h: 22,
+        label: "Lotti (Katze)",
         onUse: (api) => {
           if (api.hasFlag("knowsLotti")) {
             api.showText([
@@ -517,11 +552,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "bodoPhone",
-        // Schwarzer Bakelit-Wandapparat oberhalb des Terminal-Tisches.
-        x: 45,
-        y: 29,
-        w: 11,
-        h: 24,
+        // Beiges Wandtelefon rechts oberhalb des Terminal-Tisches.
+        x: 70,
+        y: 24,
+        w: 12,
+        h: 22,
         label: "Wandtelefon",
         onUse: (api) =>
           api.showText([
@@ -532,11 +567,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "bodoTerminal",
-        // CRT „HASSENVU 2612“ rechts auf dem Tisch.
-        x: 60,
-        y: 43,
-        w: 19,
-        h: 24,
+        // CRT-Monitor mit Tisch in der Bildmitte rechts.
+        x: 46,
+        y: 38,
+        w: 26,
+        h: 32,
         label: "Bodos Terminal",
         onUse: (api) => {
           if (api.hasFlag("bodoLeftForB3") && !api.hasFlag("bodoBackAfterB3")) {
@@ -566,10 +601,10 @@ export const scenes: Record<string, Scene> = {
       {
         id: "exit2612",
         // Wohnungstür ganz rechts.
-        x: 81,
-        y: 17,
-        w: 19,
-        h: 78,
+        x: 80,
+        y: 14,
+        w: 20,
+        h: 80,
         label: "Zurück in den Korridor",
         onUse: (api) => {
           // Wenn Bodo gerade unterwegs ist: er kommt zurück, bevor Layard
