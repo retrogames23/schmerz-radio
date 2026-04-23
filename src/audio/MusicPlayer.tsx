@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useSettings } from "./SettingsContext";
 import trackSunday from "@/assets/sunday-at-the-bunker.mp3";
 import trackMidnight from "@/assets/midnight-at-the-loading-bay.mp3";
+import trackSunrise from "@/assets/music/Before_the_Sunrise.mp3";
 
 /**
  * Background music. Plays a playlist of tracks in sequence and
@@ -11,7 +12,7 @@ import trackMidnight from "@/assets/midnight-at-the-loading-bay.mp3";
  * Browsers require a user gesture before audio starts; the title-screen
  * "Spiel beginnen" click satisfies that.
  */
-const PLAYLIST: string[] = [trackSunday, trackMidnight];
+const PLAYLIST: string[] = [trackSunday, trackMidnight, trackSunrise];
 const CROSSFADE_SECONDS = 6;
 const FADE_TICK_MS = 50;
 
@@ -22,7 +23,7 @@ export function MusicPlayer() {
   const aRef = useRef<HTMLAudioElement | null>(null);
   const bRef = useRef<HTMLAudioElement | null>(null);
   const activeRef = useRef<"a" | "b">("a");
-  const indexRef = useRef(0);
+  const indexRef = useRef(Math.floor(Math.random() * PLAYLIST.length));
   const fadeTimerRef = useRef<number | null>(null);
   const watchTimerRef = useRef<number | null>(null);
   const enabledRef = useRef(musicEnabled);
