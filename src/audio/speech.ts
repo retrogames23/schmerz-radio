@@ -14,7 +14,10 @@ type Speaker =
   | "MIKAEL"
   | "RECEPTION"
   | "MIRA"
-  | "BODO";
+  | "BODO"
+  | "HELKA"
+  | "ENNIS"
+  | "STEGMANN";
 
 
 interface VoiceProfile {
@@ -39,6 +42,9 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
   RECEPTION: { voiceId: "Xb7hH8MSUJpSbSDYk0k2", speed: 1.1 }, // Alice — klar
   MIRA: { voiceId: "XB0fDUnXU5powFXDhCwa", speed: 1.08 }, // Charlotte — jung, neugierig
   BODO: { voiceId: "JBFqnCBsd6RMkjVDRZzb", speed: 0.88 }, // George — älter, knurrig
+  HELKA: { voiceId: "Xb7hH8MSUJpSbSDYk0k2", speed: 0.95 }, // Alice — wach, präzise (älter klingend durch Tempo)
+  ENNIS: { voiceId: "TX3LPaxmHKxFdv7VOQHJ", speed: 1.0 }, // Liam — junger Mann, leicht nervös
+  STEGMANN: { voiceId: "iP95p4xoKVk53GoZ742B", speed: 1.0 }, // Chris — sachlich, nüchtern
 };
 
 /** Currently playing audio element — cancelled before each new line. */
