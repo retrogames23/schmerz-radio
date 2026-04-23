@@ -8,14 +8,21 @@ export type SceneId =
   | "corridor15"
   | "room1534"
   | "apt2613"
-  | "apt2615";
+  | "apt2615"
+  | "elevator"
+  | "floor1Lobby"
+  | "passage"
+  | "corridor36"
+  | "corridor46"
+  | "corridor56";
 
 export type InventoryItemId =
   | "protocol"
   | "exitCode"
   | "b3sample"
   | "tuningCrystal"
-  | "mikaelLetter";
+  | "mikaelLetter"
+  | "flyer";
 
 export type KnowledgeFlag =
   | "freq1046"
@@ -58,7 +65,12 @@ export type StoryFlag =
   | "tookCrystal"
   | "readLetter"
   | "insa3Called"
-  | "ending";
+  | "ending"
+  | "sawEmptyOffice"
+  | "rangEmptyOfficeBell"
+  | "metMira"
+  | "miraOpenness"
+  | "tookFlyer";
 
 export interface InventoryItem {
   id: InventoryItemId;
@@ -109,7 +121,8 @@ export interface DialogLine {
     | "SYSTEM"
     | "RADIO"
     | "MIKAEL"
-    | "RECEPTION";
+    | "RECEPTION"
+    | "MIRA";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;
@@ -141,4 +154,6 @@ export interface GameApi {
   openRadio: () => void;
   isRadioActive: () => boolean;
   setEnding: () => void;
+  /** Floor (3, 4 or 5) where Mira appears this run; assigned lazily. */
+  getMiraFloor: () => 3 | 4 | 5;
 }
