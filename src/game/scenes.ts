@@ -1173,7 +1173,7 @@ export const scenes: Record<string, Scene> = {
     background: elevatorBg,
     title: "Aufzug — E67",
     intro:
-      "Engel aus Edelstahl, halb so groß wie eine Wohnung. Fünf Knöpfe. Ein Schild: „E67 · 5 ETAGEN · max. 6 Personen“.",
+      "Käfig aus Edelstahl, halb so groß wie eine Wohnung. Fünf Knöpfe. Ein Schild: „E67 · 5 ETAGEN · max. 6 Personen“.",
     hotspots: [
       // Knöpfe von oben (5) nach unten (1) — passend zum Hintergrundbild.
       // Hotspots decken Zahlen UND farbige Knöpfe ab.

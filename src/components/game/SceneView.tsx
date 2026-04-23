@@ -105,23 +105,31 @@ export function SceneView() {
 
         {/* Scene title intro */}
         {showIntro && (
-          <button
-            type="button"
-            onClick={() => setShowIntro(false)}
-            className="absolute inset-x-0 top-6 z-30 flex cursor-pointer flex-col items-center gap-2 px-4 text-center"
-            aria-label="Weiter"
-          >
-            <div className="fade-in inline-block rounded-sm bg-background/85 px-4 py-2">
+          // Outer wrapper is pointer-events-none so the intro never blocks
+          // clicks on hotspots underneath (e.g. elevator buttons). Only the
+          // title/intro panels themselves are clickable to dismiss.
+          <div className="pointer-events-none absolute inset-x-0 top-6 z-30 flex flex-col items-center gap-2 px-4 text-center">
+            <button
+              type="button"
+              onClick={() => setShowIntro(false)}
+              className="fade-in pointer-events-auto inline-block cursor-pointer rounded-sm bg-background/85 px-4 py-2"
+              aria-label="Weiter"
+            >
               <div className="font-display text-2xl text-foreground text-shadow-hard">
                 {current.title}
               </div>
-            </div>
+            </button>
             {current.intro && (
-              <p className="fade-in mx-auto max-w-2xl rounded-sm bg-background/85 px-4 py-2 font-display text-sm leading-relaxed text-muted-foreground sm:text-base">
+              <button
+                type="button"
+                onClick={() => setShowIntro(false)}
+                className="fade-in pointer-events-auto mx-auto max-w-2xl cursor-pointer rounded-sm bg-background/85 px-4 py-2 text-left font-display text-sm leading-relaxed text-muted-foreground sm:text-base"
+                aria-label="Weiter"
+              >
                 {current.intro}
-              </p>
+              </button>
             )}
-          </button>
+          </div>
         )}
       </div>
     </div>
