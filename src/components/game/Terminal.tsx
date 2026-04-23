@@ -11,6 +11,7 @@ import {
   adventureComplete,
   type AdvState,
 } from "@/game/adventureGame";
+import { CloseButton } from "./CloseButton";
 
 interface Line {
   text: string;
@@ -1706,15 +1707,11 @@ export function Terminal() {
           <span className="font-mono-crt text-base uppercase tracking-[0.3em] text-phosphor phosphor-glow">
             CentralOS v2.3
           </span>
-          <button
-            type="button"
+          <CloseButton
             onClick={closeTerminal}
-            aria-label="Terminal schließen"
-            className="flex items-center gap-2 rounded-sm border border-phosphor/50 bg-black/60 px-2 py-1 text-sm uppercase tracking-widest text-phosphor transition hover:bg-phosphor/15 hover:text-phosphor"
-          >
-            <span className="flex h-5 w-5 items-center justify-center">✕</span>
-            <span>Sitzung schließen</span>
-          </button>
+            tone="phosphor"
+            label="Terminal schließen"
+          />
         </div>
 
         <div
