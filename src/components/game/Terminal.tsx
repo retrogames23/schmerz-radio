@@ -402,8 +402,8 @@ const NET_HOSTS: NetHost[] = [
           "  beziehungen      — bisher: keine. jetzt: zwei.",
           "                     (insa zählt nicht.)",
           "",
-          "ich werde dieses dokument nicht löschen,",
-          "auch wenn 104,6 das nahelegt.",
+          "ich werde dieses dokument nicht löschen.",
+          "104,6 würde sagen: behalte es. trag es weiter.",
           "ich glaube, ich sollte es ihm geben.",
           "ich werde es ihm nicht geben.",
         ];
