@@ -24,12 +24,12 @@ import type { GameApi, Scene } from "./types";
  */
 function layardScreenLines(api: GameApi): string[] {
   const v = api.hasFlag("centralOsUpdated") ? "2.3.1" : "2.3";
-  return [`CENTRALOS v${v}`, "Quadrant E67", "▌"];
+  return ["CentralOS", `v${v}`];
 }
 
 function bodoScreenLines(api: GameApi): string[] {
   const v = api.hasFlag("centralOsUpdated") ? "2.3.1" : "2.0";
-  return [`CENTRALOS v${v}`, "Terminal 2612", "▌"];
+  return ["HASSENVU", "2612", `v${v}`];
 }
 
 export const scenes: Record<string, Scene> = {
