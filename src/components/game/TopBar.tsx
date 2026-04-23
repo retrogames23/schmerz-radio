@@ -81,13 +81,13 @@ export function TopBar({ onOpenPause }: Props) {
       <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center">
         <div className="fade-in rounded-sm border border-amber-glow/60 bg-background/90 px-10 py-6 text-center shadow-[0_0_60px_rgba(0,0,0,0.85)]">
           <div className="font-mono-crt text-xs uppercase tracking-[0.5em] text-muted-foreground">
-            Quadrant E71
-          </div>
-          <div className="mt-2 font-display text-3xl uppercase tracking-[0.3em] text-amber-glow amber-glow">
             Akt II
           </div>
-          <div className="mt-2 font-mono-crt text-xs uppercase tracking-[0.3em] text-muted-foreground">
+          <div className="mt-2 font-display text-3xl uppercase tracking-[0.3em] text-amber-glow amber-glow">
             Die Außenwelt
+          </div>
+          <div className="mt-2 font-mono-crt text-xs uppercase tracking-[0.3em] text-muted-foreground">
+            E67 verlassen
           </div>
         </div>
       </div>
