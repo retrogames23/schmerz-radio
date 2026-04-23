@@ -430,10 +430,10 @@ export const scenes: Record<string, Scene> = {
         id: "bodoSprite",
         src: bodoSprite,
         // Sitzt im gelben Sessel links — exakt aus dem Hintergrund ausgeschnitten.
-        x: 9,
-        y: 44,
-        w: 24,
-        h: 50,
+        x: 14,
+        y: 36,
+        w: 30,
+        h: 60,
         alt: "Bodo sitzt im Sessel",
         hiddenWhen: ["bodoLeftForB3"],
       },
@@ -442,10 +442,10 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bodoNpc",
         // Hotspot deckt das Bodo-Sprite auf dem Sessel.
-        x: 9,
-        y: 44,
-        w: 24,
-        h: 50,
+        x: 14,
+        y: 36,
+        w: 30,
+        h: 60,
         label: "Bodo Marschke",
         // Wenn Bodo gerade unterwegs zum B3 holen ist, ist er nicht da.
         hiddenWhen: ["bodoLeftForB3"],
