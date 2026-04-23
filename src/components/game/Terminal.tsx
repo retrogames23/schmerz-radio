@@ -4,6 +4,12 @@ import { useSettings } from "@/audio/SettingsContext";
 import { playBeep, playKeypress, playUnlock } from "@/audio/sfx";
 import { FILESYSTEM, resolvePath, pathString, type FsNode } from "@/game/filesystem";
 import type { StoryFlag } from "@/game/types";
+import {
+  adventureCommand,
+  adventureStart,
+  newAdventureState,
+  type AdvState,
+} from "@/game/adventureGame";
 
 interface Line {
   text: string;
@@ -70,6 +76,8 @@ const COMMANDS = [
   "cd",
   "cat",
   "tree",
+  "adventure",
+  "./adventure.bin",
 ];
 
 /** Longest common string prefix across all candidates. */
@@ -168,6 +176,9 @@ const HELP_LINES: Line[] = [
   { text: "  cat <datei>   — Datei lesen", kind: "out" },
   { text: "  tree          — Baumansicht ab aktuellem Pfad", kind: "out" },
   { text: "", kind: "out" },
+  { text: "PROGRAMME:", kind: "system" },
+  { text: "  adventure     — »Ein Tag draußen« (Worags Textadventure)", kind: "out" },
+  { text: "", kind: "out" },
   { text: "TIPP: <Tab> vervollständigt Befehle und Pfade.", kind: "system" },
   { text: "", kind: "out" },
   { text: "  clear         — Bildschirm leeren", kind: "out" },
@@ -187,6 +198,7 @@ export function Terminal() {
   const [lines, setLines] = useState<Line[]>([]);
   const [input, setInput] = useState("");
   const [cwd, setCwd] = useState<string[]>([]);
+  const [advState, setAdvState] = useState<AdvState | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastTabRef = useRef<{ input: string; matches: string[] } | null>(null);
@@ -216,6 +228,24 @@ export function Terminal() {
     e.preventDefault();
     const raw = input.trim();
     if (!raw) return;
+
+    // ── Sub-Modus: adventure.bin läuft ─────────────────────
+    if (advState) {
+      playBeep(0.3 * sfxVolume);
+      const echo: Line = { text: `> ${input}`, kind: "in" };
+      const result = adventureCommand(advState, raw);
+      const out: Line[] = result.out.map((t) => ({ text: t, kind: "out" } as Line));
+      setLines((prev) => [...prev, echo, ...out, { text: "", kind: "out" }]);
+      if (result.quit) {
+        setAdvState(null);
+      } else {
+        // force re-render after mutation
+        setAdvState({ ...advState });
+      }
+      setInput("");
+      return;
+    }
+
     const cmd = raw.toLowerCase();
     const argsRaw = raw.split(/\s+/);
     const head = argsRaw[0]?.toLowerCase() ?? "";
@@ -226,6 +256,12 @@ export function Terminal() {
 
     if (cmd === "help") {
       newLines.push(...HELP_LINES);
+    } else if (cmd === "adventure" || cmd === "./adventure.bin" || cmd === "adventure.bin") {
+      const fresh = newAdventureState();
+      setAdvState(fresh);
+      newLines.push(
+        ...adventureStart(fresh).map((t) => ({ text: t, kind: "out" } as Line)),
+      );
     } else if (cmd === "clear") {
       setLines([]);
       setInput("");
@@ -440,7 +476,9 @@ export function Terminal() {
           className="flex items-center gap-2 border-t border-phosphor/30 bg-black px-4 py-2"
         >
           <span className="font-mono-crt text-xs text-phosphor phosphor-glow">
-            worag@e67:{pathString(cwd).replace("/home/worag", "~")}$
+            {advState
+              ? "adventure>"
+              : `worag@e67:${pathString(cwd).replace("/home/worag", "~")}$`}
           </span>
           <input
             ref={inputRef}
@@ -457,6 +495,8 @@ export function Terminal() {
                 return;
               }
               e.preventDefault();
+              // No tab-completion inside the adventure sub-mode.
+              if (advState) return;
               const result = complete(input, cwd, (f) => flags.has(f));
               if (!result.matches.length) {
                 playBeep(0.2 * sfxVolume);
