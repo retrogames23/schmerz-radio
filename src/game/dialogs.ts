@@ -400,7 +400,7 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "SYSTEM",
         text: "Hier ist die technische Unterstützung des Zentralnetzes, Stegmann am Apparat. Ihre Ausgangsmeldung ist hier eingegangen — naja, der Versuch. Error 4567, ich weiß. Was brauchen Sie?",
         requires: ["reportedExit"],
-        next: "st7",
+        next: "st6b",
       },
       st6b: {
         id: "st6b",
