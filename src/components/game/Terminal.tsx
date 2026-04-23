@@ -994,7 +994,10 @@ export function Terminal() {
     if (terminalOpen) {
       setCwd([...HOME_PATH]);
       setLines([
-        { text: ">> CENTRALOS v2.3 — Terminal Quadrant E67", kind: "system" },
+        {
+          text: `>> CENTRALOS v${osVersion(flags.has("centralOsUpdated"))} — Terminal Quadrant E67`,
+          kind: "system",
+        },
         { text: ">> Benutzer: WORAG, L. (Zimmer 2611)", kind: "system" },
         { text: ">> Persönliches Verzeichnis bereit (siehe 'help' › DATEISYSTEM)", kind: "system" },
         { text: ">> Tippe 'help' für Befehle.", kind: "system" },
