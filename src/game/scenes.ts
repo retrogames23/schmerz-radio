@@ -570,7 +570,13 @@ export const scenes: Record<string, Scene> = {
             api.hasFlag("bodoLeftForB3") &&
             !api.hasFlag("bodoBackAfterB3")
           ) {
-            if (api.hasFlag("centralOsUpdated")) {
+            // Bodo merkt es, wenn Layard etwas Sichtbares getan hat —
+            // entweder das System aktualisiert oder die Wartungssperre
+            // 4711 storniert (beides hinterlässt Spuren im Log).
+            if (
+              api.hasFlag("centralOsUpdated") ||
+              api.hasFlag("elevatorMaintCleared")
+            ) {
               api.startDialog("bodoReturnsCaught");
             } else {
               api.startDialog("bodoReturnsClean");
