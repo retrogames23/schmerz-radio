@@ -112,6 +112,7 @@ const COMMANDS = [
   "telnet",
   "sysupdate",
   "trouble",
+  "maint",
 ];
 
 /** Longest common string prefix across all candidates. */
@@ -1793,6 +1794,109 @@ export function Terminal() {
         text: `man: kein Handbuch für "${args[0] ?? ""}" — Tippe 'help'.`,
         kind: "out",
       });
+    } else if (head === "maint") {
+      // Hausmeister-Werkzeug. Beide Accounts dürfen `list`, nur Bodo darf
+      // `cancel`. Eingebaut für das Aufzug-Rätsel (Wartung 4711).
+      const sub = (args[0] ?? "").toLowerCase();
+      if (!flags.has("elevatorMaintBlocked")) {
+        newLines.push({
+          text: "maint: keine offenen Wartungsanfragen im Block.",
+          kind: "out",
+        });
+      } else if (sub === "" || sub === "list" || sub === "ls") {
+        newLines.push(
+          { text: "── offene Wartungsanfragen — Block 26 ────", kind: "system" },
+          { text: "  ID    OBJEKT          STATUS    AUSGELÖST", kind: "out" },
+          { text: "  ──    ──────          ──────    ─────────", kind: "out" },
+          {
+            text: "  4711  Aufzug E67/2   GESPERRT  06.11.1997 09:42",
+            kind: "out",
+          },
+          {
+            text: "        Grund: »lokale Resonanz-Übersteuerung« (autom.)",
+            kind: "out",
+          },
+          { text: "", kind: "out" },
+          {
+            text: bodoMode
+              ? "TIPP: 'maint cancel 4711' storniert die Anfrage."
+              : "Stornierung erfordert Hausmeister-Konsole (gid=hausmeister).",
+            kind: "system",
+          },
+        );
+      } else if (sub === "cancel" || sub === "rm") {
+        const id = (args[1] ?? "").trim();
+        if (id !== "4711") {
+          newLines.push({
+            text: `maint: Anfrage »${id || "?"}« nicht gefunden.`,
+            kind: "out",
+          });
+        } else if (!bodoMode) {
+          newLines.push(
+            {
+              text: "maint: cancel: ZUGRIFF VERWEIGERT.",
+              kind: "out",
+            },
+            {
+              text:
+                "       Account 'worag' nicht in Gruppe 'hausmeister'.",
+              kind: "out",
+            },
+            {
+              text:
+                "       Hinweis: Block-Hausmeister: Marschke (2612).",
+              kind: "system",
+            },
+          );
+        } else if (flags.has("elevatorMaintCleared")) {
+          newLines.push({
+            text: "maint: Anfrage 4711 wurde bereits storniert.",
+            kind: "out",
+          });
+        } else {
+          setLines((prev) => [...prev, ...newLines]);
+          runScriptedSequence(
+            [
+              {
+                text: ">> maint: Storniere Anfrage 4711 …",
+                delayMs: 0,
+                kind: "system",
+                beep: true,
+              },
+              {
+                text: ">> Sende Stop-Signal an Aufzugssteuerung E67/2 …",
+                delayMs: 380,
+              },
+              {
+                text: ">> Bestätigung empfangen … OK",
+                delayMs: 460,
+                beep: true,
+              },
+              {
+                text: ">> Aufzug freigegeben.",
+                delayMs: 280,
+                kind: "system",
+              },
+              {
+                text: ">> Vermerk: Bodo Marschke, 06.11.1997 (manuell).",
+                delayMs: 320,
+              },
+            ],
+            () => api.setFlag("elevatorMaintCleared"),
+          );
+          const h = termHistoryRef.current;
+          if (h[h.length - 1] !== raw) h.push(raw);
+          historyCursorRef.current = -1;
+          draftRef.current = "";
+          setInput("");
+          return;
+        }
+      } else {
+        newLines.push({
+          text: `maint: Unbekannter Unterbefehl »${sub}«. Versuchen Sie: maint list  /  maint cancel <id>`,
+          kind: "out",
+        });
+      }
     } else {
       newLines.push({
         text: `Unbekannter Befehl: ${cmd}. Tippe 'help'.`,
