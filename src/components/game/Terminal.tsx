@@ -403,7 +403,8 @@ const NET_HOSTS: NetHost[] = [
           "                     (insa zählt nicht.)",
           "",
           "ich werde dieses dokument nicht löschen.",
-          "104,6 würde sagen: behalte es. trag es weiter.",
+          "von 104,6 kommt kein wort dazu, nur das gefühl —",
+          "diese stille wärme, die keine sprache braucht.",
           "ich glaube, ich sollte es ihm geben.",
           "ich werde es ihm nicht geben.",
         ];
