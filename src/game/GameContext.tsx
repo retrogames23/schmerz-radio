@@ -95,6 +95,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [caption, setCaption] = useState<string | null>(null);
   const [textOverlay, setTextOverlay] = useState<string[] | null>(null);
+  const textOverlayCloseRef = useRef<(() => void) | null>(null);
   const [dialogId, setDialogId] = useState<string | null>(null);
   const [dialogLineId, setDialogLineId] = useState<string | null>(null);
   const [radioOpen, setRadioOpen] = useState(false);
@@ -197,7 +198,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
         ),
       hasItem: (id: InventoryItemId) =>
         inventoryRef.current.some((i) => i.id === id),
-      showText: (lines) => setTextOverlay(lines),
+      showText: (lines, onClose) => {
+        textOverlayCloseRef.current = onClose ?? null;
+        setTextOverlay(lines);
+      },
       startDialog: (id) => {
         const tree = dialogs[id];
         if (!tree) return;
@@ -298,7 +302,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     ending,
     api,
     setCaption,
-    closeText: () => setTextOverlay(null),
+    closeText: () => {
+      const cb = textOverlayCloseRef.current;
+      textOverlayCloseRef.current = null;
+      setTextOverlay(null);
+      if (cb) cb();
+    },
     advanceDialog,
     closeDialog: () => {
       if (dialogId) {
