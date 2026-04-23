@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 /**
  * ElevenLabs Text-to-Speech proxy.
@@ -11,7 +12,25 @@ import { createFileRoute } from "@tanstack/react-router";
  *   - Strict input validation (voiceId allowlist, text length cap)
  *   - In-memory per-IP rate limit
  *   - Long-lived response cache (lines are reused across players)
+ *
+ * Generated audio is additionally persisted to a public Lovable Cloud storage
+ * bucket (`tts-cache`) so every line is only ever paid for ONCE across all
+ * players — subsequent requests for the same voice+text are served from
+ * storage without hitting ElevenLabs.
  */
+
+const TTS_BUCKET = "tts-cache";
+
+/** Stable, short hash for arbitrary strings (FNV-1a 32-bit hex). Mirrors client. */
+function hashKey(...parts: string[]): string {
+  const s = parts.join("\u0001");
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(16).padStart(8, "0");
+}
 
 // Allowlist of voice IDs we actually use (from src/audio/speech.ts).
 const ALLOWED_VOICE_IDS = new Set([
