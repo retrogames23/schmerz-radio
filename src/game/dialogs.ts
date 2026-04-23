@@ -475,15 +475,38 @@ export const dialogs: Record<string, DialogTree> = {
         next: "x5",
         choices: [
           {
+            text: "Verstanden. Auf Wiederhören.",
+            next: "x7",
+          },
+          {
+            text: "Ich verstehe nicht.",
+            next: "x4help1",
+          },
+          {
             text: "Pause … [Schmerz-Radio aktiv lassen]",
             requiresRadio: true,
             next: "x6radio",
           },
-          {
-            text: "Verstanden. Auf Wiederhören.",
-            next: "x7",
-          },
         ],
+      },
+      x4help1: {
+        id: "x4help1",
+        speaker: "INSA",
+        text: "Sie öffnen Ihr Terminal. Im Posteingang liegt eine Nachricht von der Leitstelle. Lesen Sie das Datum darin — und tippen Sie es ohne Punkte ein. Acht Ziffern. Nicht mehr, nicht weniger.",
+        subtext: "Sie spricht langsam. Wie zu jemandem, der lange nichts gelesen hat.",
+        next: "x4help2",
+      },
+      x4help2: {
+        id: "x4help2",
+        speaker: "INSA",
+        text: "Beispiel — wenn da steht „01.01.1990\u201C, dann tippen Sie 01011990. Verstanden, Herr Worag?",
+        next: "x4help3",
+      },
+      x4help3: {
+        id: "x4help3",
+        speaker: "LAYARD",
+        text: "Verstanden. Auf Wiederhören.",
+        next: "x7",
       },
       x6radio: {
         id: "x6radio",

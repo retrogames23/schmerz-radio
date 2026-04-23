@@ -1485,16 +1485,16 @@ export function Terminal() {
 
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/85 px-4">
-      <div className="fade-in relative w-full max-w-3xl overflow-hidden rounded-sm border border-phosphor/50 bg-black shadow-[0_0_60px_rgba(0,0,0,0.85)] scanlines">
+      <div className="fade-in relative w-full max-w-4xl overflow-hidden rounded-sm border border-phosphor/50 bg-black shadow-[0_0_60px_rgba(0,0,0,0.85)] scanlines">
         <div className="flex items-center justify-between border-b border-phosphor/30 bg-black px-4 py-2">
-          <span className="font-mono-crt text-sm uppercase tracking-[0.3em] text-phosphor phosphor-glow">
+          <span className="font-mono-crt text-base uppercase tracking-[0.3em] text-phosphor phosphor-glow">
             CentralOS v2.3
           </span>
           <button
             type="button"
             onClick={closeTerminal}
             aria-label="Terminal schließen"
-            className="flex items-center gap-2 rounded-sm border border-phosphor/50 bg-black/60 px-2 py-1 text-xs uppercase tracking-widest text-phosphor transition hover:bg-phosphor/15 hover:text-phosphor"
+            className="flex items-center gap-2 rounded-sm border border-phosphor/50 bg-black/60 px-2 py-1 text-sm uppercase tracking-widest text-phosphor transition hover:bg-phosphor/15 hover:text-phosphor"
           >
             <span className="flex h-5 w-5 items-center justify-center">✕</span>
             <span>Sitzung schließen</span>
@@ -1503,7 +1503,7 @@ export function Terminal() {
 
         <div
           ref={scrollRef}
-          className="h-[55vh] overflow-y-auto bg-black px-4 py-3 font-mono-crt text-sm leading-relaxed crt-flicker"
+          className="h-[55vh] overflow-y-auto bg-black px-4 py-3 font-mono-crt text-base leading-relaxed crt-flicker"
         >
           {lines.map((l, i) => (
             <div
@@ -1525,7 +1525,7 @@ export function Terminal() {
           onSubmit={handleSubmit}
           className="flex items-center gap-2 border-t border-phosphor/30 bg-black px-4 py-2"
         >
-          <span className="font-mono-crt text-xs text-phosphor phosphor-glow">
+          <span className="font-mono-crt text-sm text-phosphor phosphor-glow">
             {advState
               ? "adventure>"
               : `worag@e67:${pathString(cwd).replace("/home/worag", "~")}$`}
