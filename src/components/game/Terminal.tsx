@@ -10,6 +10,53 @@ interface Line {
   kind?: "in" | "out" | "system";
 }
 
+/** Filter children by visibility (hidden files only with -a, locked files only when flag is set). */
+function visibleChildren(
+  node: FsNode,
+  showAll: boolean,
+  hasFlag: (f: StoryFlag) => boolean,
+): FsNode[] {
+  if (node.type !== "dir") return [];
+  return node.children.filter((c) => {
+    if (c.type === "file" && c.requires && !hasFlag(c.requires as StoryFlag)) return false;
+    if (!showAll && c.name.startsWith(".")) return false;
+    return true;
+  });
+}
+
+function formatLs(children: FsNode[]): Line[] {
+  if (!children.length) return [{ text: "  (leer)", kind: "out" }];
+  return children.map((c) => {
+    if (c.type === "dir") {
+      return { text: `  ${c.name.padEnd(28)} <DIR>`, kind: "system" } as Line;
+    }
+    const size = (c.size ?? 0).toString().padStart(6, " ");
+    const date = (c.date ?? "—").padEnd(12, " ");
+    return { text: `  ${c.name.padEnd(28)} ${size}  ${date}`, kind: "out" } as Line;
+  });
+}
+
+function buildTree(
+  node: FsNode,
+  hasFlag: (f: StoryFlag) => boolean,
+  prefix = "",
+): string[] {
+  const out: string[] = [];
+  if (node.type !== "dir") return [`${prefix}${node.name}`];
+  const kids = visibleChildren(node, false, hasFlag);
+  kids.forEach((child, i) => {
+    const last = i === kids.length - 1;
+    const branch = last ? "└── " : "├── ";
+    const label = child.type === "dir" ? `${child.name}/` : child.name;
+    out.push(`${prefix}${branch}${label}`);
+    if (child.type === "dir") {
+      const nextPrefix = prefix + (last ? "    " : "│   ");
+      out.push(...buildTree(child, hasFlag, nextPrefix));
+    }
+  });
+  return out;
+}
+
 const HELP_LINES: Line[] = [
   { text: "VERFÜGBARE BEFEHLE:", kind: "system" },
   { text: "  help          — Diese Liste anzeigen", kind: "out" },
