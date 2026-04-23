@@ -153,10 +153,11 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "philippeNpc",
-        x: 75,
-        y: 25,
-        w: 22,
-        h: 65,
+        // Philippe steht rechts mit verschränkten Armen.
+        x: 64,
+        y: 18,
+        w: 26,
+        h: 78,
         label: "Philippe",
         requires: ["knockingHeard"],
         hiddenWhen: ["paramedicsArrived"],
@@ -173,10 +174,10 @@ export const scenes: Record<string, Scene> = {
       // Verschiedene Dialoge je nach Stand der Geschichte.
       {
         id: "philippeAfterNpc",
-        x: 55,
-        y: 25,
-        w: 35,
-        h: 65,
+        x: 64,
+        y: 18,
+        w: 26,
+        h: 78,
         label: "Philippe",
         requires: ["paramedicsArrived"],
         onUse: (api) => {
@@ -219,10 +220,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "lampPhilippe",
-        x: 35,
-        y: 40,
+        // Tischlampe rechts neben Philippe auf dem Nachttisch.
+        x: 60,
+        y: 38,
         w: 14,
-        h: 22,
+        h: 24,
         label: "Lampe",
         requires: ["paramedicsArrived"],
         onUse: (api) =>
@@ -233,9 +235,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "wall",
-        x: 30,
+        // Mittlere Betonwand zwischen Telefon und Philippe.
+        x: 22,
         y: 8,
-        w: 36,
+        w: 38,
         h: 50,
         label: "Wand mit Klopfen (zur 2615)",
         hiddenWhen: ["doorBrokenOpen"],
@@ -253,9 +256,9 @@ export const scenes: Record<string, Scene> = {
       // Nach Akt 1: ruhige Wand zur (jetzt versiegelten) 2615.
       {
         id: "wallAfter",
-        x: 30,
+        x: 22,
         y: 8,
-        w: 36,
+        w: 38,
         h: 50,
         label: "Wand zur 2615 (still)",
         requires: ["doorBrokenOpen"],
@@ -268,10 +271,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "phone2613",
-        x: 2,
-        y: 12,
-        w: 18,
-        h: 38,
+        // Beiger Bakelit-Wandapparat ganz links.
+        x: 0,
+        y: 18,
+        w: 22,
+        h: 55,
         label: "Telefon (Wandapparat)",
         requires: ["talkedPhilippe2613"],
         hiddenWhen: ["calledLeitstelle"],
@@ -302,10 +306,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "exit2613",
-        x: 88,
-        y: 70,
-        w: 11,
-        h: 28,
+        // Türrahmen ganz rechts (hinter Philippe).
+        x: 90,
+        y: 18,
+        w: 10,
+        h: 80,
         label: "In den Korridor",
         requires: ["doorBrokenOpen"],
         onUse: (api) => api.goTo("hallway"),
