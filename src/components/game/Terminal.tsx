@@ -41,6 +41,7 @@ export function Terminal() {
   const { sfxVolume } = useSettings();
   const [lines, setLines] = useState<Line[]>([]);
   const [input, setInput] = useState("");
+  const [cwd, setCwd] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -49,6 +50,7 @@ export function Terminal() {
       setLines([
         { text: ">> CENTRALOS v2.3 — Terminal Quadrant E67", kind: "system" },
         { text: ">> Benutzer: WORAG, L. (Zimmer 2611)", kind: "system" },
+        { text: ">> Persönliches Verzeichnis bereit (siehe 'help' › DATEISYSTEM)", kind: "system" },
         { text: ">> Tippe 'help' für Befehle.", kind: "system" },
         { text: "", kind: "out" },
       ]);
