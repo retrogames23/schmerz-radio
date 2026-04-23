@@ -1279,8 +1279,16 @@ export const dialogs: Record<string, DialogTree> = {
         text: "[ Sie zieht ein gefaltetes Blatt aus der Innentasche und drückt es Layard in die Hand. Schnell. Geübt. ]",
         next: "miraOpen6",
         choices: [
-          { text: "[ Annehmen ]", next: "miraOpen7" },
-          { text: "[ Ablehnen ]", next: "miraRefuse" },
+          {
+            text: "[ Annehmen ]",
+            next: "miraOpen7",
+            action: (api) => api.setFlag("miraOfferedFlyer"),
+          },
+          {
+            text: "[ Ablehnen ]",
+            next: "miraRefuse",
+            action: (api) => api.setFlag("miraOfferedFlyer"),
+          },
         ],
       },
       miraOpen7: {
