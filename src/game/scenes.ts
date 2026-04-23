@@ -893,34 +893,6 @@ export const scenes: Record<string, Scene> = {
         },
       },
       {
-        id: "keypadCall",
-        x: 16,
-        y: 54,
-        w: 16,
-        h: 20,
-        label: "Keypad — Code eingeben",
-        onUse: (api) => {
-          if (!api.hasFlag("calledForCode")) {
-            if (!api.hasFlag("calledInsa2")) {
-              api.showText([
-                "Das Keypad blinkt rot.",
-                "Layard kennt keinen Code. Er hat hier auch nichts zu suchen —",
-                "noch nicht. Er hat keinen Auftrag, der ihn hindurchschickt.",
-                "[ Layard betrachtet die Tür eine Weile. Dann dreht er sich um. ]",
-              ]);
-            } else {
-              api.showText([
-                "Das Keypad blinkt rot.",
-                "Layard hat noch keinen Code. Es gibt nur einen Weg: 001 anrufen.",
-                "[ Geh zurück in deine Wohnung und benutze dein Telefon. ]",
-              ]);
-            }
-          } else {
-            api.openTerminal();
-          }
-        },
-      },
-      {
         id: "toPassage",
         x: 48,
         y: 26,
