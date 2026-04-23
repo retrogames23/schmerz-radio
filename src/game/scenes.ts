@@ -14,6 +14,7 @@ import corridor36Bg from "@/assets/scene-corridor-36.jpg";
 import corridor46Bg from "@/assets/scene-corridor-46.jpg";
 import corridor56Bg from "@/assets/scene-corridor-56.jpg";
 import miraSprite from "@/assets/npc-mira.png";
+import philippeSprite from "@/assets/npc-philippe.png";
 import type { Scene } from "./types";
 
 export const scenes: Record<string, Scene> = {
@@ -120,18 +121,15 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 60,
         label: "Wohnungstür",
-        // Only relevant after the doorbell rings
-        requires: ["doorbellRang"],
         onUse: (api) => {
-          if (!api.hasFlag("metPhilippe")) {
+          // Resonanz-Überlastung wurde ausgelöst (Radio @104,6),
+          // Philippe steht beim ersten Heimkommen vor der Tür.
+          if (api.hasFlag("doorbellRang") && !api.hasFlag("metPhilippe")) {
             // First open: meet Philippe at the door, then go with him to 2613
             api.setFlag("metPhilippe");
             api.startDialog("philippeAtDoor");
-          } else if (!api.hasFlag("protocolReceived")) {
-            // Still needs to handle the emergency
-            api.goTo("apt2613");
           } else {
-            // After protocol, going out leads to the hallway
+            // Sonst einfach in den Korridor.
             api.goTo("hallway");
           }
         },
@@ -603,8 +601,20 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 50,
         label: "Tür 2613 (Philippe)",
-        requires: ["doorBrokenOpen"],
-        onUse: (api) => api.goTo("apt2613"),
+        onUse: (api) => {
+          // Vor dem Klingeln (= vor der Resonanz-Überlastung) ist Philippe
+          // unterwegs im Komplex. Er öffnet nicht.
+          if (!api.hasFlag("metPhilippe")) {
+            api.showText([
+              "Layard klopft an 2613.",
+              "Drinnen: nichts. Kein Stuhl, der zurückgeschoben wird.",
+              "Kein „Moment“. Nicht einmal die Lampe brummt.",
+              "Philippe ist nicht zu Hause.",
+            ]);
+            return;
+          }
+          api.goTo("apt2613");
+        },
       },
       // Tür 2615 — der Mann an der Wand. Solange aufgebrochen begehbar,
       // sobald die Sanitäter ihn abtransportiert haben: versiegelt.
@@ -643,7 +653,6 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 50,
         label: "Tür 2610 (Helka Vint)",
-        requires: ["doorBrokenOpen"],
         onUse: (api) => {
           if (!api.hasFlag("metHelka")) {
             api.setFlag("metHelka");
@@ -676,7 +685,6 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 52,
         label: "Tür 2612 (Bodo Marschke)",
-        requires: ["doorBrokenOpen"],
         onUse: (api) => api.goTo("apt2612"),
       },
       // Tür 2614 — Ennis Korr. Nur Türgespräch.
@@ -687,7 +695,6 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 50,
         label: "Tür 2614 (Ennis Korr)",
-        requires: ["doorBrokenOpen"],
         onUse: (api) => {
           if (!api.hasFlag("metEnnis")) {
             api.setFlag("metEnnis");
@@ -1164,7 +1171,29 @@ export const scenes: Record<string, Scene> = {
     title: "Lobby — Etage 1, E67",
     intro:
       "Ein leerer Empfangstresen. Eine Anzeigetafel. Hinten links: der Aufzug. Rechts: die schwere Sektor-Tür.",
+    npcs: [
+      {
+        id: "philippeLobby",
+        src: philippeSprite,
+        x: 32,
+        y: 36,
+        w: 14,
+        h: 56,
+        alt: "Philippe wartet vor dem Tresen",
+        hiddenWhen: ["doorbellRang"],
+      },
+    ],
     hotspots: [
+      {
+        id: "philippeLobbySpot",
+        x: 32,
+        y: 38,
+        w: 14,
+        h: 54,
+        label: "Philippe (Nachbar)",
+        hiddenWhen: ["doorbellRang"],
+        onUse: (api) => api.startDialog("philippeInLobby"),
+      },
       {
         id: "lobbyDesk",
         x: 8,
@@ -1282,8 +1311,28 @@ export const scenes: Record<string, Scene> = {
         hiddenWhen: ["tookFlyer"],
         visible: (api) => api.getMiraFloor() === 3,
       },
+      {
+        id: "philippeSprite36",
+        src: philippeSprite,
+        x: 70,
+        y: 36,
+        w: 14,
+        h: 54,
+        alt: "Philippe, etwas verloren im Korridor",
+        hiddenWhen: ["doorbellRang"],
+      },
     ],
     hotspots: [
+      {
+        id: "philippeSpot36",
+        x: 70,
+        y: 38,
+        w: 14,
+        h: 54,
+        label: "Philippe (Nachbar)",
+        hiddenWhen: ["doorbellRang"],
+        onUse: (api) => api.startDialog("philippeInCorridor36"),
+      },
       {
         id: "officeDoor",
         x: 17,
@@ -1360,8 +1409,28 @@ export const scenes: Record<string, Scene> = {
         hiddenWhen: ["tookFlyer"],
         visible: (api) => api.getMiraFloor() === 4,
       },
+      {
+        id: "philippeSprite46",
+        src: philippeSprite,
+        x: 62,
+        y: 36,
+        w: 14,
+        h: 54,
+        alt: "Philippe vor dem Plakat",
+        hiddenWhen: ["doorbellRang"],
+      },
     ],
     hotspots: [
+      {
+        id: "philippeSpot46",
+        x: 62,
+        y: 38,
+        w: 14,
+        h: 54,
+        label: "Philippe (Nachbar)",
+        hiddenWhen: ["doorbellRang"],
+        onUse: (api) => api.startDialog("philippeInCorridor46"),
+      },
       {
         id: "miraSpot46",
         x: 22,
