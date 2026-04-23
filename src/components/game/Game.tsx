@@ -45,28 +45,29 @@ export function Game() {
 
   return (
     <SettingsProvider>
-      <GameProvider>
-        <InventoryDragProvider>
-        <MusicPlayer />
-        <div className="flex h-screen flex-col overflow-hidden bg-bureaucracy">
-          <TopBar onOpenPause={() => setPauseOpen(true)} />
-          <main className="relative flex min-h-0 flex-1 items-center justify-center px-2 py-2 sm:px-4">
-            <div className="relative flex h-full w-full items-center justify-center">
-              <SceneView />
-              <TextOverlay />
-              <DialogOverlay />
-              <RadioPanel />
-              <Terminal />
-              <Keypad />
-              <Ending />
-              <PauseMenu open={pauseOpen} onClose={() => setPauseOpen(false)} />
+      <MusicPlayer>
+        <GameProvider>
+          <InventoryDragProvider>
+            <div className="flex h-screen flex-col overflow-hidden bg-bureaucracy">
+              <TopBar onOpenPause={() => setPauseOpen(true)} />
+              <main className="relative flex min-h-0 flex-1 items-center justify-center px-2 py-2 sm:px-4">
+                <div className="relative flex h-full w-full items-center justify-center">
+                  <SceneView />
+                  <TextOverlay />
+                  <DialogOverlay />
+                  <RadioPanel />
+                  <Terminal />
+                  <Keypad />
+                  <Ending />
+                  <PauseMenu open={pauseOpen} onClose={() => setPauseOpen(false)} />
+                </div>
+              </main>
+              <Inventory />
+              <DragCursorLayer />
             </div>
-          </main>
-          <Inventory />
-          <DragCursorLayer />
-        </div>
-        </InventoryDragProvider>
-      </GameProvider>
+          </InventoryDragProvider>
+        </GameProvider>
+      </MusicPlayer>
     </SettingsProvider>
   );
 }
