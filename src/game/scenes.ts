@@ -219,7 +219,7 @@ export const scenes: Record<string, Scene> = {
         y: 70,
         w: 11,
         h: 28,
-        label: "Zurück in den Korridor",
+        label: "In den Korridor (Tür 2615 wurde aufgebrochen)",
         requires: ["doorBrokenOpen"],
         onUse: (api) => api.goTo("hallway"),
       },
