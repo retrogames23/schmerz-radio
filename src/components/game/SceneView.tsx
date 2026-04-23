@@ -3,7 +3,7 @@ import { scenes, useGame } from "@/game/GameContext";
 import { Hotspot } from "./Hotspot";
 
 export function SceneView() {
-  const { scene, caption, radioActive, resonance, flags, api } = useGame();
+  const { scene, caption, setCaption, radioActive, resonance, flags, api } = useGame();
   const current = scenes[scene];
   const backgroundSrc =
     typeof current.background === "function"
@@ -20,6 +20,14 @@ export function SceneView() {
     const t = setTimeout(() => setShowIntro(false), 20000);
     return () => clearTimeout(t);
   }, [scene]);
+
+  // Sicherheitsnetz: Captions beim Szenenwechsel immer zurücksetzen, falls
+  // ein onMouseLeave nicht gefeuert hat (z. B. weil der Hotspot beim Klick
+  // zur Szenen-Transition geführt hat und das DOM-Element direkt unmountet
+  // wurde, bevor der Maus-Verlassen-Event ausgelöst werden konnte).
+  useEffect(() => {
+    setCaption(null);
+  }, [scene, setCaption]);
 
   useEffect(() => {
     if (resonance > 75) {
