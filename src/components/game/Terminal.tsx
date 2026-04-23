@@ -27,7 +27,10 @@ interface Line {
 
 /** Aktuelle CentralOS-Versionsbezeichnung, abhängig vom Update-Flag. */
 function osVersion(updated: boolean, bodo = false): string {
-  if (bodo) return updated ? "2.0.1" : "2.0";
+  // Bodo läuft vor dem Update auf der alten v2.0.
+  // Nach dem sysupdate konsolidiert das Paket alles auf die aktuelle v2.3.1
+  // (sechs Jahre an Patches in einem Schritt — siehe Sysupdate-Sequenz).
+  if (bodo) return updated ? "2.3.1" : "2.0";
   return updated ? "2.3.1" : "2.3";
 }
 
