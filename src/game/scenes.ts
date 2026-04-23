@@ -371,23 +371,7 @@ export const scenes: Record<string, Scene> = {
       { id: "p2614", x: 38, y: 36, w: 6, label: "2614" },
       // Odd numbers — RIGHT wall (front → back)
       { id: "p2611", x: 89, y: 22, w: 8, label: "2611" },
-      // 2613 — normal label before, ⚠ after the protocol is sealed
-      {
-        id: "p2613",
-        x: 73,
-        y: 30,
-        w: 7,
-        label: "2613",
-        hiddenWhen: ["protocolReceived"],
-      },
-      {
-        id: "p2613s",
-        x: 73,
-        y: 30,
-        w: 7,
-        label: "2613 ⚠",
-        requires: ["protocolReceived"],
-      },
+      { id: "p2613", x: 73, y: 30, w: 7, label: "2613" },
       { id: "p2615", x: 62, y: 36, w: 6, label: "2615" },
     ],
     hotspots: [
