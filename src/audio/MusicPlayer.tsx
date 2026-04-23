@@ -3,6 +3,7 @@ import { useSettings } from "./SettingsContext";
 import trackSunday from "@/assets/sunday-at-the-bunker.mp3";
 import trackMidnight from "@/assets/midnight-at-the-loading-bay.mp3";
 import trackSunrise from "@/assets/music/Before_the_Sunrise.mp3";
+import trackSteelRain from "@/assets/music/Steel_Rain_at_Midnight.mp3";
 
 /**
  * Background music. Plays a playlist of tracks in sequence and
@@ -12,7 +13,7 @@ import trackSunrise from "@/assets/music/Before_the_Sunrise.mp3";
  * Browsers require a user gesture before audio starts; the title-screen
  * "Spiel beginnen" click satisfies that.
  */
-const PLAYLIST: string[] = [trackSunday, trackMidnight, trackSunrise];
+const PLAYLIST: string[] = [trackSunday, trackMidnight, trackSunrise, trackSteelRain];
 const CROSSFADE_SECONDS = 6;
 const FADE_TICK_MS = 50;
 
