@@ -256,7 +256,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
             {
               user_id: u.id,
               slot: slot + 1,
-              payload: payload as unknown as Record<string, unknown>,
+              payload: payload as unknown as never,
               scene: payload.scene,
               inventory_count: payload.inventory.length,
               flag_count: payload.flags.length,
