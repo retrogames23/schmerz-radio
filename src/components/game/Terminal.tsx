@@ -8,6 +8,7 @@ import {
   adventureCommand,
   adventureStart,
   newAdventureState,
+  adventureComplete,
   type AdvState,
 } from "@/game/adventureGame";
 
@@ -202,6 +203,13 @@ export function Terminal() {
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastTabRef = useRef<{ input: string; matches: string[] } | null>(null);
+  // Befehlsverlauf — getrennt für Hauptterminal und Adventure.
+  const termHistoryRef = useRef<string[]>([]);
+  const advHistoryRef = useRef<string[]>([]);
+  // Aktueller Verlaufs-Cursor (-1 = nicht im Verlauf, sonst Index von hinten).
+  const historyCursorRef = useRef<number>(-1);
+  // Eingabe, die der Nutzer gerade getippt hat, bevor er in den Verlauf gesprungen ist.
+  const draftRef = useRef<string>("");
 
   useEffect(() => {
     if (terminalOpen) {
@@ -236,6 +244,11 @@ export function Terminal() {
       const result = adventureCommand(advState, raw);
       const out: Line[] = result.out.map((t) => ({ text: t, kind: "out" } as Line));
       setLines((prev) => [...prev, echo, ...out, { text: "", kind: "out" }]);
+      // History des Adventures pflegen (keine direkten Duplikate hintereinander).
+      const h = advHistoryRef.current;
+      if (h[h.length - 1] !== raw) h.push(raw);
+      historyCursorRef.current = -1;
+      draftRef.current = "";
       if (result.quit) {
         setAdvState(null);
       } else {
@@ -428,6 +441,11 @@ export function Terminal() {
     }
 
     setLines((prev) => [...prev, ...newLines, { text: "", kind: "out" }]);
+    // History des Hauptterminals pflegen.
+    const h = termHistoryRef.current;
+    if (h[h.length - 1] !== raw) h.push(raw);
+    historyCursorRef.current = -1;
+    draftRef.current = "";
     setInput("");
   };
 
@@ -490,14 +508,49 @@ export function Terminal() {
               setInput(e.target.value);
             }}
             onKeyDown={(e) => {
+              // ── Verlaufs-Navigation mit ↑/↓ ───────────────────
+              if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault();
+                const history = advState
+                  ? advHistoryRef.current
+                  : termHistoryRef.current;
+                if (!history.length) return;
+                let cursor = historyCursorRef.current;
+                if (e.key === "ArrowUp") {
+                  if (cursor === -1) {
+                    // Aktuelle Eingabe als Entwurf merken.
+                    draftRef.current = input;
+                    cursor = history.length - 1;
+                  } else if (cursor > 0) {
+                    cursor -= 1;
+                  }
+                } else {
+                  // ArrowDown
+                  if (cursor === -1) return;
+                  if (cursor < history.length - 1) {
+                    cursor += 1;
+                  } else {
+                    // Zurück zum gespeicherten Entwurf.
+                    historyCursorRef.current = -1;
+                    setInput(draftRef.current);
+                    return;
+                  }
+                }
+                historyCursorRef.current = cursor;
+                setInput(history[cursor]);
+                lastTabRef.current = null;
+                return;
+              }
+
               if (e.key !== "Tab") {
                 lastTabRef.current = null;
                 return;
               }
               e.preventDefault();
-              // No tab-completion inside the adventure sub-mode.
-              if (advState) return;
-              const result = complete(input, cwd, (f) => flags.has(f));
+              // Tab-Completion — im Adventure kontextuell, sonst klassisch.
+              const result = advState
+                ? adventureComplete(advState, input)
+                : complete(input, cwd, (f) => flags.has(f));
               if (!result.matches.length) {
                 playBeep(0.2 * sfxVolume);
                 return;
@@ -512,10 +565,12 @@ export function Terminal() {
               // No expansion possible. On second consecutive Tab, list candidates.
               const prev = lastTabRef.current;
               if (prev && prev.input === input && result.matches.length > 1) {
-                const promptPath = pathString(cwd).replace("/home/worag", "~");
+                const echoPrompt = advState
+                  ? "adventure>"
+                  : `worag@e67:${pathString(cwd).replace("/home/worag", "~")}$`;
                 setLines((p) => [
                   ...p,
-                  { text: `worag@e67:${promptPath}$ ${input}`, kind: "in" },
+                  { text: `${echoPrompt} ${input}`, kind: "in" },
                   { text: result.matches.join("   "), kind: "out" },
                   { text: "", kind: "out" },
                 ]);

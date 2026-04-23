@@ -410,3 +410,94 @@ function findItemInScope(state: AdvState, query: string): AdvItem | null {
 export function adventureStart(state: AdvState): string[] {
   return [...ADV_INTRO, ...describeRoom(state)];
 }
+
+// ─────────────────────────────────────────────────────────────
+// Tab-Completion für das Adventure-Sub-Terminal.
+// ─────────────────────────────────────────────────────────────
+
+const ADV_COMMANDS = [
+  "schau",
+  "geh",
+  "nimm",
+  "inventar",
+  "benutze",
+  "hilfe",
+  "beenden",
+] as const;
+
+const ADV_DIRECTIONS = ["nord", "süd", "ost", "west", "oben", "unten"] as const;
+
+function advCommonPrefix(strs: string[]): string {
+  if (!strs.length) return "";
+  let prefix = strs[0];
+  for (let i = 1; i < strs.length; i++) {
+    while (strs[i].indexOf(prefix) !== 0) {
+      prefix = prefix.slice(0, -1);
+      if (!prefix) return "";
+    }
+  }
+  return prefix;
+}
+
+/** Erste Wörter eines Item-Namens, klein, für Completion. */
+function itemWords(id: string): string[] {
+  const name = ADV_ITEMS[id]?.name ?? id;
+  return name.toLowerCase().split(/[\s-]+/).filter(Boolean);
+}
+
+export interface AdvCompleteResult {
+  newInput: string;
+  matches: string[];
+}
+
+/**
+ * Tab-Completion innerhalb des Adventures.
+ * - Erstes Token → Befehle.
+ * - geh → Richtungen (nur die im Raum verfügbaren).
+ * - nimm → Dinge im Raum (noch nicht aufgehoben).
+ * - schau / benutze → Dinge im Raum + Inventar.
+ */
+export function adventureComplete(
+  state: AdvState,
+  input: string,
+): AdvCompleteResult {
+  const tokens = input.split(/\s+/);
+  const lastToken = (tokens[tokens.length - 1] ?? "").toLowerCase();
+
+  // Erstes Token → Befehl
+  if (tokens.length <= 1) {
+    const matches = ADV_COMMANDS.filter((c) => c.startsWith(lastToken));
+    if (!matches.length) return { newInput: input, matches: [] };
+    const completed = advCommonPrefix(matches);
+    const newLast = matches.length === 1 ? matches[0] + " " : completed;
+    return { newInput: newLast, matches: [...matches] };
+  }
+
+  const head = tokens[0].toLowerCase();
+  let pool: string[] = [];
+
+  if (head === "geh" || head === "go") {
+    const room = ROOMS[state.room];
+    pool = Object.keys(room.exits);
+  } else if (head === "nimm" || head === "take") {
+    const room = ROOMS[state.room];
+    const items = (room.items ?? []).filter((id) => !state.flags.has(`taken:${id}`));
+    pool = Array.from(new Set(items.flatMap(itemWords)));
+  } else if (head === "schau" || head === "look" || head === "l") {
+    const room = ROOMS[state.room];
+    const inRoom = (room.items ?? []).filter((id) => !state.flags.has(`taken:${id}`));
+    const ids = [...inRoom, ...state.inventory];
+    pool = Array.from(new Set(ids.flatMap(itemWords)));
+  } else if (head === "benutze" || head === "use") {
+    pool = Array.from(new Set([...state.inventory].flatMap(itemWords)));
+  } else {
+    return { newInput: input, matches: [] };
+  }
+
+  const matches = pool.filter((c) => c.startsWith(lastToken));
+  if (!matches.length) return { newInput: input, matches: [] };
+  const completed = advCommonPrefix(matches);
+  const newLast = matches.length === 1 ? matches[0] + " " : completed;
+  const newInput = [...tokens.slice(0, -1), newLast].join(" ");
+  return { newInput, matches };
+}
