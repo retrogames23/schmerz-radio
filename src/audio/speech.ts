@@ -16,19 +16,19 @@ type Speaker =
 interface VoiceProfile {
   pitch: number;
   rate: number;
-  /** Preference order for voice selection */
-  prefer: Array<"male" | "female" | "any">;
+  /** Required gender — voice MUST match this. "any" allows fallback. */
+  gender: "male" | "female" | "any";
 }
 
 const PROFILES: Record<Speaker, VoiceProfile> = {
-  LAYARD: { pitch: 0.85, rate: 0.92, prefer: ["male"] },
-  INSA: { pitch: 1.05, rate: 1.0, prefer: ["female"] },
-  PHILIPPE: { pitch: 1.1, rate: 1.08, prefer: ["male"] },
-  SANITÄTER: { pitch: 0.95, rate: 1.05, prefer: ["male"] },
-  SYSTEM: { pitch: 0.7, rate: 0.95, prefer: ["any"] },
-  RADIO: { pitch: 1.15, rate: 0.9, prefer: ["female"] },
-  MIKAEL: { pitch: 0.7, rate: 0.78, prefer: ["male"] },
-  RECEPTION: { pitch: 1.0, rate: 1.15, prefer: ["female"] },
+  LAYARD: { pitch: 0.85, rate: 0.92, gender: "male" },
+  INSA: { pitch: 1.05, rate: 1.0, gender: "female" },
+  PHILIPPE: { pitch: 1.1, rate: 1.08, gender: "male" },
+  SANITÄTER: { pitch: 0.95, rate: 1.05, gender: "male" },
+  SYSTEM: { pitch: 0.7, rate: 0.95, gender: "any" },
+  RADIO: { pitch: 1.15, rate: 0.9, gender: "female" },
+  MIKAEL: { pitch: 0.7, rate: 0.78, gender: "male" },
+  RECEPTION: { pitch: 1.0, rate: 1.15, gender: "female" },
 };
 
 let cachedVoices: SpeechSynthesisVoice[] | null = null;
