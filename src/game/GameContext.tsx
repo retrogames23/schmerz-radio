@@ -32,6 +32,7 @@ interface GameState {
   dialogLineId: string | null;
   radioOpen: boolean;
   terminalOpen: boolean;
+  terminalBodoMode: boolean;
   keypadOpen: boolean;
   radioActive: boolean; // tuned to 104.6, providing subtext
   resonance: number; // 0–100
@@ -290,6 +291,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dialogLineId,
     radioOpen,
     terminalOpen,
+    terminalBodoMode,
     keypadOpen,
     radioActive,
     resonance,
