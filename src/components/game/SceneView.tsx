@@ -9,7 +9,7 @@ export function SceneView() {
 
   useEffect(() => {
     setShowIntro(true);
-    const t = setTimeout(() => setShowIntro(false), 3800);
+    const t = setTimeout(() => setShowIntro(false), 20000);
     return () => clearTimeout(t);
   }, [scene]);
 
@@ -100,7 +100,12 @@ export function SceneView() {
 
       {/* Scene title intro */}
       {showIntro && (
-        <div className="pointer-events-none absolute inset-x-0 top-6 z-30 flex flex-col items-center gap-2 text-center">
+        <button
+          type="button"
+          onClick={() => setShowIntro(false)}
+          className="absolute inset-x-0 top-6 z-30 flex cursor-pointer flex-col items-center gap-2 px-4 text-center"
+          aria-label="Weiter"
+        >
           <div className="fade-in inline-block rounded-sm bg-background/85 px-4 py-2">
             <div className="font-display text-2xl text-foreground text-shadow-hard">
               {current.title}
@@ -111,7 +116,7 @@ export function SceneView() {
               {current.intro}
             </p>
           )}
-        </div>
+        </button>
       )}
     </div>
   );
