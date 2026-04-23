@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useGame } from "@/game/GameContext";
+import { CloseButton } from "./CloseButton";
 
 export function TextOverlay() {
   const { textOverlay, closeText } = useGame();
@@ -27,14 +28,11 @@ export function TextOverlay() {
     <div
       className="absolute inset-0 z-40 flex items-end justify-center bg-black/60 px-6 pb-24 text-left"
     >
-      <button
-        type="button"
+      <CloseButton
         onClick={closeText}
-        aria-label="Schließen"
-        className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-sm border border-amber-glow/60 bg-background/80 text-base text-amber-glow transition hover:bg-amber-glow/20 hover:text-foreground"
-      >
-        ✕
-      </button>
+        label="Schließen"
+        className="absolute right-4 top-4 z-10"
+      />
       <button
         type="button"
         onClick={() => {
