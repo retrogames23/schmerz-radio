@@ -256,13 +256,6 @@ export function RadioPanel() {
             </p>
           )}
         </div>
-
-        {/* Hint */}
-        {!flags.has("doorbellRang") && (
-          <p className="mt-4 text-center text-xs italic text-muted-foreground">
-            Hinweis: Stelle 104,6 ein und drehe die Lautstärke ganz auf.
-          </p>
-        )}
       </div>
     </div>
   );
