@@ -431,22 +431,22 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bodoSprite",
         src: bodoSprite,
-        // Bodo steht zwischen Sessel und Terminal, leicht im Vordergrund.
-        x: 30,
-        y: 20,
-        w: 22,
-        h: 78,
+        // Bodo sitzt im Sessel — Größe an Sessel angepasst.
+        x: 8,
+        y: 18,
+        w: 42,
+        h: 80,
         alt: "Bodo Marschke",
       },
     ],
     hotspots: [
       {
         id: "bodoNpc",
-        // Deckungsgleich mit dem Bodo-Sprite.
-        x: 30,
+        // Deckungsgleich mit dem im Sessel sitzenden Bodo-Sprite.
+        x: 10,
         y: 22,
-        w: 22,
-        h: 74,
+        w: 38,
+        h: 75,
         label: "Bodo Marschke",
         onUse: (api) => {
           if (!api.hasFlag("metBodo")) {
@@ -468,11 +468,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "lottiSpot",
-        // Sessel + Decke + Katze (eingerollt rechts vorn auf dem Sessel).
-        x: 6,
-        y: 55,
-        w: 28,
-        h: 40,
+        // Katze sitzt rechts neben Bodo auf der Decke.
+        x: 48,
+        y: 70,
+        w: 18,
+        h: 25,
         label: "Sessel mit Decke",
         onUse: (api) => {
           if (api.hasFlag("knowsLotti")) {
