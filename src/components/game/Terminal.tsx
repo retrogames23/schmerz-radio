@@ -1734,7 +1734,7 @@ export function Terminal() {
       <div className="fade-in relative w-full max-w-4xl overflow-hidden rounded-sm border border-phosphor/50 bg-black shadow-[0_0_60px_rgba(0,0,0,0.85)] scanlines">
         <div className="flex items-center justify-between border-b border-phosphor/30 bg-black px-4 py-2">
           <span className="font-mono-crt text-base uppercase tracking-[0.3em] text-phosphor phosphor-glow">
-            CentralOS v2.3
+            CentralOS v{osVersion(flags.has("centralOsUpdated"))}
           </span>
           <CloseButton
             onClick={closeTerminal}
