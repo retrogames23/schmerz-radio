@@ -32,6 +32,127 @@ function hashKey(...parts: string[]): string {
   return (h >>> 0).toString(16).padStart(8, "0");
 }
 
+// ── Deutsche Zahlen-Normalisierung für TTS ────────────────────────
+// ElevenLabs spricht „E67“, „104,6“, „2613“ oder „B-3a“ in der Regel
+// englisch oder ziffernweise aus („ee six seven“). Wir schreiben die
+// häufigsten Muster im Spiel vor der TTS-Anfrage so um, dass deutsche
+// Aussprache zuverlässig getroffen wird. Kommt eine Variante hier nicht
+// vor, fällt der Text unverändert durch.
+
+const ONES = [
+  "null", "eins", "zwei", "drei", "vier", "fünf",
+  "sechs", "sieben", "acht", "neun",
+] as const;
+const TEENS = [
+  "zehn", "elf", "zwölf", "dreizehn", "vierzehn", "fünfzehn",
+  "sechzehn", "siebzehn", "achtzehn", "neunzehn",
+] as const;
+const TENS = [
+  "", "", "zwanzig", "dreißig", "vierzig", "fünfzig",
+  "sechzig", "siebzig", "achtzig", "neunzig",
+] as const;
+
+/** 0–99 als deutsches Wort. */
+function germanUnder100(n: number): string {
+  if (n < 10) return ONES[n];
+  if (n < 20) return TEENS[n - 10];
+  const t = Math.floor(n / 10);
+  const o = n % 10;
+  if (o === 0) return TENS[t];
+  // „einundzwanzig“ — Eins wird hier zu „ein“.
+  const onesWord = o === 1 ? "ein" : ONES[o];
+  return `${onesWord}und${TENS[t]}`;
+}
+
+/** 0–999 als deutsches Wort (ohne Million etc. — reicht für Sektorennamen). */
+function germanUnder1000(n: number): string {
+  if (n < 100) return germanUnder100(n);
+  const h = Math.floor(n / 100);
+  const rest = n % 100;
+  const hundredPart = h === 1 ? "einhundert" : `${ONES[h]}hundert`;
+  return rest === 0 ? hundredPart : `${hundredPart}${germanUnder100(rest)}`;
+}
+
+/**
+ * 4-stellige „Wohnungs-Nummer“ wie 2613 wird im Spiel als „sechsundzwanzig
+ * dreizehn“ gelesen — nicht „zweitausend…“. Wir splitten in zwei 2-stellige
+ * Blöcke, was für 4-stellige Codes natürlich klingt.
+ */
+function germanFourDigitCode(n: number): string {
+  const a = Math.floor(n / 100);
+  const b = n % 100;
+  if (b === 0) return `${germanUnder100(a)}hundert`;
+  return `${germanUnder100(a)} ${germanUnder100(b)}`;
+}
+
+/** Buchstabe → ausgeschriebenes deutsches Buchstabieralphabet (für „E71“ etc.). */
+function germanLetter(ch: string): string {
+  const map: Record<string, string> = {
+    A: "A", B: "B", C: "C", D: "D", E: "E", F: "F", G: "G", H: "H",
+    I: "I", J: "Jot", K: "Ka", L: "L", M: "M", N: "N", O: "O", P: "P",
+    Q: "Ku", R: "R", S: "S", T: "T", U: "U", V: "Vau", W: "W",
+    X: "X", Y: "Ypsilon", Z: "Z",
+  };
+  return map[ch.toUpperCase()] ?? ch;
+}
+
+/**
+ * Schreibt Codes/Zahlen im Eingabetext für deutsche TTS um.
+ * - „E67“ / „E71-Süd“      → „E siebenundsechzig“ / „E einundsiebzig-Süd“
+ * - „2613“, „2615“ etc.    → „sechsundzwanzig dreizehn“
+ * - „104,6“                → „hundertvier Komma sechs“
+ * - „B-3a“                 → „B drei a“
+ * - „Korridor 15“          → „Korridor fünfzehn“
+ * Alles andere bleibt unangetastet.
+ */
+export function normalizeForGermanTTS(input: string): string {
+  let out = input;
+
+  // 1) Sektorcodes: ein einzelner Großbuchstabe + Zahl, z. B. E67, B12.
+  //    Wir behandeln nur 1–3-stellige Folgen, damit 4-stellige Wohnungs-
+  //    nummern (2613) unten von der eigenen Regel erfasst werden.
+  out = out.replace(/\b([A-ZÄÖÜ])(\d{1,3})\b/g, (_, letter: string, digits: string) => {
+    return `${germanLetter(letter)} ${germanUnder1000(parseInt(digits, 10))}`;
+  });
+
+  // 2) Code mit Bindestrich: „B-3a“, „B-3“, „B-12c“.
+  out = out.replace(
+    /\b([A-ZÄÖÜ])-(\d{1,3})([a-zäöü])?\b/g,
+    (_, letter: string, digits: string, suffix?: string) => {
+      const head = `${germanLetter(letter)} ${germanUnder1000(parseInt(digits, 10))}`;
+      return suffix ? `${head} ${suffix}` : head;
+    },
+  );
+
+  // 3) Dezimalzahl mit Komma: „104,6“ → „hundertvier Komma sechs“.
+  //    Der Nachkomma-Anteil wird ziffernweise vorgelesen, was bei
+  //    Frequenzangaben (wie 104,6) genau dem üblichen Sprachgebrauch
+  //    entspricht.
+  out = out.replace(/\b(\d{1,4}),(\d{1,3})\b/g, (_, intPart: string, frac: string) => {
+    const intWord = germanUnder1000(parseInt(intPart, 10));
+    const fracWord = frac
+      .split("")
+      .map((d) => ONES[parseInt(d, 10)])
+      .join(" ");
+    return `${intWord} Komma ${fracWord}`;
+  });
+
+  // 4) 4-stellige Wohnungs-/Türnummern (2611, 2613, 2615 …): in zwei
+  //    Blöcken sprechen.
+  out = out.replace(/\b(\d{4})\b/g, (_, num: string) => {
+    return germanFourDigitCode(parseInt(num, 10));
+  });
+
+  // 5) Übrige 1–3-stellige Zahlen ausschreiben (Korridor 15, 36, …).
+  //    Erst nach den vorigen Regeln, damit z. B. „67“ in „E67“ schon
+  //    konsumiert wurde.
+  out = out.replace(/\b(\d{1,3})\b/g, (_, num: string) => {
+    return germanUnder1000(parseInt(num, 10));
+  });
+
+  return out;
+}
+
 // Allowlist of voice IDs we actually use (from src/audio/speech.ts).
 const ALLOWED_VOICE_IDS = new Set([
   "onwK4e9ZLuTAKqWW03F9",
