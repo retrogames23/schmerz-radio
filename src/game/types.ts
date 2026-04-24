@@ -172,6 +172,24 @@ export interface Scene {
   hotspots: Hotspot[];
   /** Optional sichtbare Figuren / Sprites, die über dem Hintergrund liegen. */
   npcs?: NpcSprite[];
+  /**
+   * Optional sichtbare „Aufkleber" auf dem Hintergrund (z.B. ein Wandgerät,
+   * für das es kein eigenes Hintergrundbild gibt). Werden unter den Hotspots
+   * gerendert und sind selbst nicht klickbar — der zugehörige Hotspot liegt
+   * darüber.
+   */
+  decals?: SceneDecal[];
+}
+
+export interface SceneDecal {
+  id: string;
+  kind: "television";
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  requires?: StoryFlag[];
+  hiddenWhen?: StoryFlag[];
 }
 
 export interface NpcSprite {
