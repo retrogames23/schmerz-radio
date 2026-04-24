@@ -1082,7 +1082,14 @@ export function Terminal() {
 
   useEffect(() => {
     if (terminalOpen) {
-      setCwd([...homePath]);
+      // Beim Öffnen immer im lokalen Heimatverzeichnis starten — eine
+      // evtl. noch hängende Remote-Sitzung wird hart zurückgesetzt.
+      setRemoteMode(null);
+      savedCwdRef.current = null;
+      const startHome = localBodoMode ? HOME_PATH_BODO : HOME_PATH_WORAG;
+      setCwd([...startHome]);
+      setTelnetHost(null);
+      setTelnetAwaitPass(null);
       if (bodoMode) {
         const updated = flags.has("centralOsUpdatedBodo");
         const banner: Line[] = [
