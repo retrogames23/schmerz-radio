@@ -521,20 +521,23 @@ export const dialogs: Record<string, DialogTree> = {
       idCode1: {
         id: "idCode1",
         speaker: "INSA",
-        text: "Den Code. — Eine Sekunde, Herr Worag. Hier steht, dass Sie Ihren Ausgang noch nicht elektronisch gemeldet haben. Standardprotokoll: zuerst die Meldung, dann der Code.",
-        subtext: "Kein Vorwurf. Sie liest nur ab, was auf ihrem Schirm steht.",
+        text: "Den Code. — Eine Sekunde, Herr Worag. Bevor ich den heute rausgebe, brauche ich noch etwas von Ihnen. Es gibt da eine Sache.",
+        subtext: "Kein Skript. Sie zögert kurz, bevor sie weiterspricht.",
+        hiddenWhen: ["tappedNode5610"],
         next: "idCode2",
       },
       idCode2: {
         id: "idCode2",
         speaker: "INSA",
-        text: "Die Meldung läuft über das ZENTRAL.NETZ. Wenn Sie wollen, verbinde ich Sie mit dem Verantwortlichen für das Netz — er sagt Ihnen, was am Terminal zu tun ist. Sonst …",
+        text: "Wenn Sie ohnehin am Netz vorbeigeschaut haben — den Verantwortlichen fürs Zentrale Netz kann ich Ihnen geben, falls noch etwas hängt. Sonst …",
+        hiddenWhen: ["tappedNode5610"],
         next: "idCode3",
       },
       idCode3: {
         id: "idCode3",
         speaker: "LAYARD",
         text: "…",
+        hiddenWhen: ["tappedNode5610"],
         choices: [
           {
             text: "Verbinden Sie mich. Ich versuche es noch.",
@@ -553,6 +556,7 @@ export const dialogs: Record<string, DialogTree> = {
         id: "idPflichtCheck",
         speaker: "SYSTEM",
         text: "[ Insa zögert einen Moment, klickt durch ihre Maske. ]",
+        hiddenWhen: ["tappedNode5610"],
         next: "idPflicht1",
       },
       // Pflicht-Pfad — nur wenn Layard noch nicht 'tap' am Knoten 5610 gemacht hat.
@@ -584,6 +588,7 @@ export const dialogs: Record<string, DialogTree> = {
         text: "Falls die Tür nicht aufgeht: Wartungsmuster ist 7-0-Pause-3-2. Aber das wissen Sie nicht von mir.",
         subtext: "Sie sagt es so leise, als würde sie selbst nicht zuhören.",
         hiddenWhen: ["tappedNode5610"],
+        next: "idCode4",
         choices: [
           {
             text: "Verstanden. Auf Wiederhören.",
