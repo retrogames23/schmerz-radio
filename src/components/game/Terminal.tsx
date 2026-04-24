@@ -1094,6 +1094,8 @@ export function Terminal() {
       setCwd([...startHome]);
       setTelnetHost(null);
       setTelnetAwaitPass(null);
+      // Cheat-Status gilt nur innerhalb einer Sitzung.
+      setSuperuser(false);
       // Banner explizit vom lokalen Modus aus aufbauen — eine zuvor
       // aktive Remote-Sitzung wurde gerade zurückgesetzt, der nächste
       // Render hat aber noch das alte (effektive) bodoMode-Flag.
