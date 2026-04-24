@@ -483,10 +483,14 @@ export const scenes: Record<string, Scene> = {
             api.startDialog("bodoFlyer");
           } else if (
             api.hasFlag("knowsLotti") &&
+            api.hasFlag("elevatorMaintSeen") &&
             !api.hasFlag("bodoBackAfterB3")
           ) {
-            // Layard kann Bodo überzeugen, los zu gehen — sobald er Lotti
-            // kennt und damit weiß, warum B3 wichtig ist.
+            // Layard kann Bodo überzeugen, los zu gehen — aber erst, wenn
+            // er einen konkreten Grund hat, ungestört an Bodos Terminal zu
+            // wollen. Voraussetzung: Aufzug-Sperre (Wartung 4711) selbst
+            // gesehen haben. Vorher kennt Layard zwar Lotti, hat aber kein
+            // Motiv, Bodo loszuschicken.
             api.startDialog("bodoConvinceLeave");
           } else if (
             // Zweiter Anlauf: Bodo ist zurück, aber die Aufzugssperre
