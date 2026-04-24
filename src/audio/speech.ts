@@ -25,6 +25,13 @@ interface VoiceProfile {
   voiceId: string;
   /** Speech speed (0.7–1.2). */
   speed: number;
+  /** Optional per-character voice settings override (sent to server). */
+  settings?: {
+    stability?: number;
+    similarity_boost?: number;
+    style?: number;
+    use_speaker_boost?: boolean;
+  };
 }
 
 /**
@@ -33,7 +40,19 @@ interface VoiceProfile {
  */
 const PROFILES: Record<Speaker, VoiceProfile> = {
   LAYARD: { voiceId: "onwK4e9ZLuTAKqWW03F9", speed: 0.92 }, // Daniel — tief, kontemplativ
-  INSA: { voiceId: "FGY2WhTYpPnrIDTdsKH5", speed: 0.98 }, // Laura — warm, deutsch-stabil
+  INSA: {
+    voiceId: "FGY2WhTYpPnrIDTdsKH5", // Laura
+    speed: 0.96,
+    // Hohe stability + style 0 zwingt Laura in eine ruhige, neutrale
+    // Aussprache. Mit den Default-Settings (style 0.35) verfällt sie
+    // bei kurzen deutschen Sätzen häufig in englische Phonetik.
+    settings: {
+      stability: 0.85,
+      similarity_boost: 0.85,
+      style: 0,
+      use_speaker_boost: false,
+    },
+  },
   MIKAEL: { voiceId: "nPczCjzI2devNBz1zQrb", speed: 0.85 }, // Brian — autoritär, ruhig
   PHILIPPE: { voiceId: "IKne3meq5aSn9XLyUdCD", speed: 1.05 }, // Charlie — jünger, freundlich
   SANITÄTER: { voiceId: "bIHbv24MWmeRgasZH58o", speed: 1.05 }, // Will — sachlich
