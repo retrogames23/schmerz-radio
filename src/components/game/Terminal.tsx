@@ -14,6 +14,8 @@ import {
   HOME_PATH_BODO,
   resolveBodo,
   pathStringBodo,
+  FREIHEIT_TXT,
+  LAYARD_TXT,
 } from "@/game/filesystemBodo";
 import type { StoryFlag } from "@/game/types";
 import {
@@ -685,6 +687,7 @@ const NET_HOSTS: NetHost[] = [
         "abschlussvermerk: niemand hat das je dokumentiert.",
         "ich auch nicht. ich hab nur das hier mitgenommen.",
       ],
+      ".freiheit.txt": FREIHEIT_TXT,
     },
     dynamicFiles: (hasFlag) => {
       const out: Record<string, string[]> = {};
@@ -702,6 +705,9 @@ const NET_HOSTS: NetHost[] = [
           "",
           "vielleicht das nächste mal. wenn lotti dabei ist.",
         ];
+      }
+      if (hasFlag("bodoLeftForB3")) {
+        out[".layard.txt"] = LAYARD_TXT;
       }
       return out;
     },
