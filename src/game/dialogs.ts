@@ -567,30 +567,32 @@ export const dialogs: Record<string, DialogTree> = {
       idPflicht1: {
         id: "idPflicht1",
         speaker: "INSA",
-        text: "Herr Worag — ich kann Ihnen den Code heute geben. Aber nicht, bevor Sie etwas für mich tun.",
-        subtext: "Das ist kein Skript. Das ist sie selbst.",
+        text: "Herr Worag — bevor ich Ihnen den Code gebe, brauche ich etwas von Ihnen. Es ist nicht ganz Standardprotokoll. Aber Sie waren heute selbst in 1534. Sie wissen, dass der Abschnittsverantwortliche E67 nicht da ist.",
+        subtext: "Sie sagt das nicht als Vorwurf. Eher: als geteilte Beobachtung.",
         hiddenWhen: ["tappedNode5610"],
         next: "idPflicht2",
       },
       idPflicht2: {
         id: "idPflicht2",
         speaker: "INSA",
-        text: "In Korridor 56, Etage E67, gibt es eine Wartungstür. Schild „5610 · Technik“. Dahinter steht ein Knoten, von dem ich nicht weiß, wer ihn betreibt. Ich brauche eine Probe.",
+        text: "Seit Wochen läuft im Knoten 5610 — Korridor 56, Wartungstür hinter der „Technik“-Plakette — etwas, das in keinem Wartungsplan steht. Mehr Datenverkehr, als E67 erzeugen kann. Falsche Quell-Routen. Ich vermute eine Installation, die nicht genehmigt ist.",
+        subtext: "Sie hat das schon oft formuliert. Nur nie laut.",
         hiddenWhen: ["tappedNode5610"],
         next: "idPflicht3",
       },
       idPflicht3: {
         id: "idPflicht3",
         speaker: "INSA",
-        text: "Sie kommen rein — die Tür kennt Sie schon. Am Terminal tippen Sie »tap« und hören kurz mit. Dann rufen Sie mich an. Erst dann gebe ich den Code raus.",
+        text: "Ich habe einen Antrag auf Inspektion gestellt. Er liegt seit elf Tagen beim Sektorbeauftragten E67. Heute hätte er ihn unterschreiben sollen. Er ist nicht da. Und morgen ist er auch nicht da.",
+        subtext: "Sie hat bis 18:00 gewartet, bevor sie das eingestanden hat.",
         hiddenWhen: ["tappedNode5610"],
         next: "idPflicht4",
       },
       idPflicht4: {
         id: "idPflicht4",
         speaker: "INSA",
-        text: "Falls die Tür nicht aufgeht: Wartungsmuster ist 7-0-Pause-3-2. Aber das wissen Sie nicht von mir.",
-        subtext: "Sie sagt es so leise, als würde sie selbst nicht zuhören.",
+        text: "Sie sind ohnehin in E67 unterwegs. Gehen Sie zur Wartungstür 5610. Am Terminal tippen Sie »tap« — Read-only-Mitschnitt, nichts, was auffällt. Danach rufen Sie mich an. Erst dann kann ich Ihnen den Code geben — als Gegenleistung sozusagen. Falls die Tür nicht aufgeht: Ich gebe von hier den Wartungs-Override frei. Aber das wissen Sie nicht von mir.",
+        subtext: "Sie sagt »Gegenleistung«, als würde sie das Wort selbst zum ersten Mal verwenden.",
         hiddenWhen: ["tappedNode5610"],
         // Wenn getappt: hidden → Engine folgt next nach idCode4.
         // Wenn nicht getappt: sichtbar mit Choice „Auf Wiederhören"
@@ -602,14 +604,9 @@ export const dialogs: Record<string, DialogTree> = {
             action: (api) => {
               api.setFlag("insaSentTo5610");
               api.setFlag("skippedExitReport");
-              if (!api.hasItem("wartungsnotiz5610")) {
-                api.addItem({
-                  id: "wartungsnotiz5610",
-                  name: "Notiz: Wartungsmuster 5610",
-                  description:
-                    "Insa: 7-0-Pause-3-2. Wartungstür im Korridor 56, Dachetage E67.",
-                });
-              }
+              // Insa schaltet den Wartungs-Override scharf — die Tür
+              // 5610 öffnet beim nächsten Versuch ohne Karte/Code.
+              api.setFlag("serverRoom5610OverrideArmed");
             },
           },
         ],
@@ -708,7 +705,7 @@ export const dialogs: Record<string, DialogTree> = {
       x4pflicht1: {
         id: "x4pflicht1",
         speaker: "INSA",
-        text: "Worag — bevor ich Ihnen den Code gebe: Ich brauche eine Probe vom Knoten in 5610. Korridor 56, E67. Tippen Sie dort »tap« und rufen Sie mich danach noch einmal an.",
+        text: "Worag — bevor ich Ihnen den Code gebe: Ich brauche die Probe aus 5610. Sie wissen, warum — der Abschnittsverantwortliche, der mein Inspektionsformular unterschreiben müsste, ist heute nicht im Dienst. Korridor 56, Wartungstür. »tap« am Terminal, danach rufen Sie mich noch einmal an.",
         subtext: "Sie spricht leiser als sonst. Das ist kein Standardprotokoll.",
         hiddenWhen: ["tappedNode5610"],
         next: "x4pflicht2",
@@ -716,7 +713,7 @@ export const dialogs: Record<string, DialogTree> = {
       x4pflicht2: {
         id: "x4pflicht2",
         speaker: "INSA",
-        text: "Die Tür kennt Sie schon — falls nicht: Wartungsmuster 7-0-Pause-3-2. Aber das wissen Sie nicht von mir.",
+        text: "Die Tür kennt Sie schon — und falls nicht, gebe ich von hier aus den Wartungs-Override frei. Geben Sie mir zwanzig Sekunden, dann sind die Riegel offen. Aber das wissen Sie nicht von mir.",
         hiddenWhen: ["tappedNode5610"],
         next: "x4",
         choices: [
@@ -724,14 +721,9 @@ export const dialogs: Record<string, DialogTree> = {
             text: "Verstanden. Auf Wiederhören.",
             action: (api) => {
               api.setFlag("insaSentTo5610");
-              if (!api.hasItem("wartungsnotiz5610")) {
-                api.addItem({
-                  id: "wartungsnotiz5610",
-                  name: "Notiz: Wartungsmuster 5610",
-                  description:
-                    "Insa: 7-0-Pause-3-2. Wartungstür im Korridor 56, Dachetage E67.",
-                });
-              }
+              // Insa schaltet den Wartungs-Override scharf — die Tür
+              // 5610 öffnet beim nächsten Versuch ohne Karte/Code.
+              api.setFlag("serverRoom5610OverrideArmed");
             },
           },
         ],
