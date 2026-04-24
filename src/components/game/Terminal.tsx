@@ -1389,7 +1389,7 @@ export function Terminal() {
       newLines.push(
         { text: "SYSTEMSTATUS:", kind: "system" },
         {
-          text: `  CENTRALOS         [ v${osVersion(flags.has("centralOsUpdated"))} ]`,
+          text: `  CENTRALOS         [ v${osVersion(flags.has(bodoMode ? "centralOsUpdatedBodo" : "centralOsUpdated"), bodoMode)} ]`,
           kind: "out",
         },
         { text: "  E67.NETZ          [ STABIL ]", kind: "out" },
