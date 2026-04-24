@@ -2,6 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playBeep, playKeypress, playUnlock } from "@/audio/sfx";
+import {
+  SECTOR_CHATTER,
+  chatterDelayMs,
+  chatterTimestamp,
+} from "@/game/sectorChatter";
 import { CloseButton } from "./CloseButton";
 
 interface Line {
