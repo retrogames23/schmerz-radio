@@ -1,4 +1,26 @@
-import type { DialogTree } from "./types";
+import type { DialogTree, GameApi } from "./types";
+
+/**
+ * Weg C zum Serverraum 5610: Sobald drei Philippe-Sondierungs-Notizen
+ * gesetzt sind, rekonstruiert Layard sich das Wartungsmuster der Tür.
+ * Wird aus den onEnd-Callbacks aller fünf Sonden aufgerufen.
+ */
+function maybeGiveWartungsnotiz5610(api: GameApi) {
+  const probes =
+    (api.hasFlag("philippeProbeNote1") ? 1 : 0) +
+    (api.hasFlag("philippeProbeNote2") ? 1 : 0) +
+    (api.hasFlag("philippeProbeNote3") ? 1 : 0) +
+    (api.hasFlag("philippeProbeNote4") ? 1 : 0) +
+    (api.hasFlag("philippeProbeNote5") ? 1 : 0);
+  if (probes >= 3 && !api.hasItem("wartungsnotiz5610")) {
+    api.addItem({
+      id: "wartungsnotiz5610",
+      name: "Notiz: Wartungsmuster 5610",
+      description:
+        "Aus Philippes Andeutungen rekonstruiert: 7-0-Pause-3-2. Wartungstür im Korridor 56, Dachetage E67. „Lokaler Spiegel.“",
+    });
+  }
+}
 
 export const dialogs: Record<string, DialogTree> = {
   // ---------------------------------------------------------------
