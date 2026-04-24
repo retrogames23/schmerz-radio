@@ -946,42 +946,62 @@ function findHost(query: string): NetHost | null {
   );
 }
 
-const HELP_LINES: Line[] = [
-  { text: "VERFÜGBARE BEFEHLE:", kind: "system" },
-  { text: "  help          — Diese Liste anzeigen", kind: "out" },
-  { text: "  inbox         — Posteingang anzeigen", kind: "out" },
-  { text: "  read <id>     — Nachricht öffnen", kind: "out" },
-  { text: "  status        — Systemstatus", kind: "out" },
-  { text: "", kind: "out" },
-  { text: "DATEISYSTEM:", kind: "system" },
-  { text: "  pwd           — Aktuelles Verzeichnis", kind: "out" },
-  { text: "  ls [-a]       — Inhalt auflisten (-a: versteckte Dateien)", kind: "out" },
-  { text: "  cd <pfad>     — Verzeichnis wechseln (.. = aufwärts, / = root)", kind: "out" },
-  { text: "  cat <datei>   — Datei lesen", kind: "out" },
-  { text: "  tree          — Baumansicht ab aktuellem Pfad", kind: "out" },
-  { text: "", kind: "out" },
-  { text: "NETZWERK:", kind: "system" },
-  { text: "  net           — Bekannte Hosts im Sektornetz auflisten", kind: "out" },
-  { text: "  telnet <host> — Verbindungsversuch zu einem Host", kind: "out" },
-  { text: "", kind: "out" },
-  { text: "PROGRAMME:", kind: "system" },
-  { text: "  adventure     — »Ein Tag draußen« (Worags Textadventure, nur 2611)", kind: "out" },
-  { text: "  lotti         — Bodos Begleitprogramm (nur 2612)", kind: "out" },
-  { text: "", kind: "out" },
-  { text: "WARTUNG (nur Hausmeister):", kind: "system" },
-  { text: "  maint list                — offene Wartungsanfragen anzeigen", kind: "out" },
-  { text: "  maint cancel <id>         — Anfrage stornieren (Bodo-Konsole)", kind: "out" },
-  { text: "", kind: "out" },
-  { text: "TAB-VERVOLLSTÄNDIGUNG:", kind: "system" },
-  { text: "  <Tab>         — Aktuelles Wort vervollständigen", kind: "out" },
-  { text: "                  (Befehle, Verzeichnisse, Dateinamen)", kind: "out" },
-  { text: "  <Tab><Tab>    — Bei mehreren Treffern: Liste anzeigen", kind: "out" },
-  { text: "  Funktioniert auch im Adventure und in Telnet-Sitzungen.", kind: "out" },
-  { text: "  ↑ / ↓         — Im Befehlsverlauf navigieren", kind: "out" },
-  { text: "", kind: "out" },
-  { text: "  clear         — Bildschirm leeren", kind: "out" },
-  { text: "  exit          — Terminal schließen", kind: "out" },
-];
+/**
+ * Hilfetext, kontextabhängig.
+ * Layards Terminal (Worag-Modus) erwähnt Bodos Maschine an keiner Stelle —
+ * weder das Lotti-Programm noch die Hausmeister-Wartungsbefehle, noch
+ * Hinweise wie „nur 2611". Auf Bodos Konsole bleibt alles sichtbar.
+ */
+function buildHelpLines(bodoMode: boolean): Line[] {
+  const lines: Line[] = [
+    { text: "VERFÜGBARE BEFEHLE:", kind: "system" },
+    { text: "  help          — Diese Liste anzeigen", kind: "out" },
+    { text: "  inbox         — Posteingang anzeigen", kind: "out" },
+    { text: "  read <id>     — Nachricht öffnen", kind: "out" },
+    { text: "  status        — Systemstatus", kind: "out" },
+    { text: "", kind: "out" },
+    { text: "DATEISYSTEM:", kind: "system" },
+    { text: "  pwd           — Aktuelles Verzeichnis", kind: "out" },
+    { text: "  ls [-a]       — Inhalt auflisten (-a: versteckte Dateien)", kind: "out" },
+    { text: "  cd <pfad>     — Verzeichnis wechseln (.. = aufwärts, / = root)", kind: "out" },
+    { text: "  cat <datei>   — Datei lesen", kind: "out" },
+    { text: "  tree          — Baumansicht ab aktuellem Pfad", kind: "out" },
+    { text: "", kind: "out" },
+    { text: "NETZWERK:", kind: "system" },
+    { text: "  net           — Bekannte Hosts im Sektornetz auflisten", kind: "out" },
+    { text: "  telnet <host> — Verbindungsversuch zu einem Host", kind: "out" },
+    { text: "", kind: "out" },
+    { text: "PROGRAMME:", kind: "system" },
+  ];
+  if (bodoMode) {
+    lines.push(
+      { text: "  adventure     — »Ein Tag draußen« (Worags Textadventure, nur 2611)", kind: "out" },
+      { text: "  lotti         — Begleitprogramm (Eigenbau)", kind: "out" },
+      { text: "", kind: "out" },
+      { text: "WARTUNG (nur Hausmeister):", kind: "system" },
+      { text: "  maint list                — offene Wartungsanfragen anzeigen", kind: "out" },
+      { text: "  maint cancel <id>         — Anfrage stornieren", kind: "out" },
+      { text: "", kind: "out" },
+    );
+  } else {
+    lines.push(
+      { text: "  adventure     — »Ein Tag draußen« (Textadventure)", kind: "out" },
+      { text: "", kind: "out" },
+    );
+  }
+  lines.push(
+    { text: "TAB-VERVOLLSTÄNDIGUNG:", kind: "system" },
+    { text: "  <Tab>         — Aktuelles Wort vervollständigen", kind: "out" },
+    { text: "                  (Befehle, Verzeichnisse, Dateinamen)", kind: "out" },
+    { text: "  <Tab><Tab>    — Bei mehreren Treffern: Liste anzeigen", kind: "out" },
+    { text: "  Funktioniert auch im Adventure und in Telnet-Sitzungen.", kind: "out" },
+    { text: "  ↑ / ↓         — Im Befehlsverlauf navigieren", kind: "out" },
+    { text: "", kind: "out" },
+    { text: "  clear         — Bildschirm leeren", kind: "out" },
+    { text: "  exit          — Terminal schließen", kind: "out" },
+  );
+  return lines;
+}
 
 export function Terminal() {
   const {
