@@ -2205,7 +2205,7 @@ export function Terminal() {
                 };
                 result = completeTelnet(input, hostFiles);
               } else {
-                result = complete(input, cwd, (f) => flags.has(f));
+                result = complete(input, cwd, (f) => flags.has(f), bodoMode);
               }
               if (!result.matches.length) {
                 playBeep(0.2 * sfxVolume);
