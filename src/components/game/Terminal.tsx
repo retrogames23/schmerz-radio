@@ -1292,11 +1292,41 @@ export function Terminal() {
         );
       }
     } else if (cmd === "adventure" || cmd === "./adventure.bin" || cmd === "adventure.bin") {
-      const fresh = newAdventureState();
-      setAdvState(fresh);
-      newLines.push(
-        ...adventureStart(fresh).map((t) => ({ text: t, kind: "out" } as Line)),
-      );
+      if (bodoMode) {
+        // Worags Textadventure liegt in /home/worag — nicht auf Bodos Maschine.
+        newLines.push(
+          {
+            text: "bash: adventure: Befehl nicht gefunden.",
+            kind: "out",
+          },
+          {
+            text: "(»adventure.bin« liegt im /home/worag — andere Maschine.)",
+            kind: "out",
+          },
+        );
+      } else {
+        const fresh = newAdventureState();
+        setAdvState(fresh);
+        newLines.push(
+          ...adventureStart(fresh).map((t) => ({ text: t, kind: "out" } as Line)),
+        );
+      }
+    } else if (cmd === "lotti" || cmd === "./lotti" || cmd === "lotti.bin") {
+      if (!bodoMode) {
+        newLines.push(
+          { text: "bash: lotti: Befehl nicht gefunden.", kind: "out" },
+          {
+            text: "(»lotti« ist Bodos Eigenbau und liegt nur auf 2612.)",
+            kind: "out",
+          },
+        );
+      } else {
+        const fresh = newLottiState();
+        setLottiState(fresh);
+        newLines.push(
+          ...lottiStart(fresh).map((t) => ({ text: t, kind: "out" } as Line)),
+        );
+      }
     } else if (cmd === "clear") {
       setLines([]);
       setInput("");
