@@ -96,6 +96,36 @@ export function SceneView() {
         );
         })}
 
+        {/* Decals — sichtbare Wandgeräte etc., unter den Hotspots */}
+        {current.decals?.map((d) => {
+          if (d.requires?.some((f) => !flags.has(f))) return null;
+          if (d.hiddenWhen?.some((f) => flags.has(f))) return null;
+          if (d.kind !== "television") return null;
+          return (
+            <div
+              key={d.id}
+              className="pointer-events-none absolute z-10 select-none"
+              style={{
+                left: `${d.x}%`,
+                top: `${d.y}%`,
+                width: `${d.w}%`,
+                height: `${d.h}%`,
+              }}
+              aria-hidden
+            >
+              <div className="relative h-full w-full rounded-sm border-2 border-zinc-800 bg-zinc-900 shadow-[0_4px_10px_rgba(0,0,0,0.6)]">
+                {/* Bildschirm */}
+                <div className="absolute inset-[10%] overflow-hidden rounded-[1px] border border-black/60 bg-black">
+                  <div className="tv-decal-screen h-full w-full" />
+                  <div className="pointer-events-none absolute inset-0 tv-decal-scan" />
+                </div>
+                {/* Standby-LED */}
+                <div className="absolute bottom-[3%] right-[6%] h-[8%] w-[5%] rounded-full bg-red-500/80 shadow-[0_0_4px_rgba(255,0,0,0.8)]" />
+              </div>
+            </div>
+          );
+        })}
+
         {/* Hotspots */}
         {current.hotspots.map((h) => (
           <Hotspot key={h.id} hotspot={h} />

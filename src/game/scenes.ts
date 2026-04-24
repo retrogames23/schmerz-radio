@@ -960,6 +960,17 @@ export const scenes: Record<string, Scene> = {
     title: "Sektor E71 — Empfang",
     intro:
       "Der Aufzug schließt hinter Layard. Andere Luft. Kühler. Sauberer. Eine Frau hinter einem Tresen sieht auf.",
+    decals: [
+      {
+        id: "tvE71",
+        kind: "television",
+        // Linke Seitenwand, deutlich über dem schwarzen Brett.
+        x: 6,
+        y: 6,
+        w: 11,
+        h: 18,
+      },
+    ],
     hotspots: [
       {
         id: "receptionist",
@@ -997,11 +1008,12 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "television",
-        // Wandgerät an der Empfangswand, links neben dem Hinweisschild.
-        x: 53,
-        y: 8,
-        w: 14,
-        h: 18,
+        // Sichtbares Wandgerät an der linken Seitenwand, über dem
+        // schwarzen Verzeichnis-Brett. Klick-Box deckt das Decal.
+        x: 5,
+        y: 5,
+        w: 13,
+        h: 20,
         label: "Teleempfänger",
         onUse: (api) => api.openTelevision(),
       },
@@ -1266,6 +1278,17 @@ export const scenes: Record<string, Scene> = {
     title: "Lobby — Etage 1, E67",
     intro:
       "Ein leerer Empfangstresen. Eine Anzeigetafel. Hinten links: der Aufzug. Rechts: die schwere Sektor-Tür.",
+    decals: [
+      {
+        id: "tvE67",
+        kind: "television",
+        // Wand über dem Empfangstresen, gut sichtbar von der Mitte aus.
+        x: 18,
+        y: 18,
+        w: 11,
+        h: 17,
+      },
+    ],
     npcs: [
       {
         id: "philippeLobby",
@@ -1301,6 +1324,16 @@ export const scenes: Record<string, Scene> = {
             "Niemand hinter dem Tresen. Eine Kaffeetasse, halb voll, kalt.",
             "Auf einem Klemmbrett: Schichtplan. Heutige Schicht: durchgestrichen.",
           ]),
+      },
+      {
+        id: "televisionE67",
+        // Wand-Teleempfänger über dem Tresen.
+        x: 17,
+        y: 17,
+        w: 13,
+        h: 19,
+        label: "Teleempfänger",
+        onUse: (api) => api.openTelevision(),
       },
       {
         id: "lobbyBoard",

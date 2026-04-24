@@ -331,3 +331,33 @@
   0%   { transform: translateX(0); }
   100% { transform: translateX(-100%); }
 }
+
+/* Wand-Teleempfänger als sichtbarer Aufkleber in den Lobbies */
+.tv-decal-screen {
+  background:
+    repeating-linear-gradient(
+      180deg,
+      oklch(0.32 0.04 150) 0px,
+      oklch(0.22 0.03 150) 2px,
+      oklch(0.32 0.04 150) 4px
+    );
+  animation: tv-decal-flicker 2.6s steps(8, end) infinite;
+  opacity: 0.85;
+}
+@keyframes tv-decal-flicker {
+  0%, 100% { filter: brightness(1); }
+  47%      { filter: brightness(1.15); }
+  48%      { filter: brightness(0.6); }
+  49%      { filter: brightness(1.1); }
+  50%      { filter: brightness(1); }
+}
+.tv-decal-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.35) 3px,
+    rgba(0, 0, 0, 0) 4px
+  );
+  mix-blend-mode: multiply;
+}
