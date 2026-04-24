@@ -213,7 +213,7 @@ function complete(
   return { newInput, matches: display };
 }
 
-const TELNET_COMMANDS = ["ls", "cat", "whoami", "help", "exit", "logout", "quit"];
+const TELNET_COMMANDS = ["ls", "cat", "pwd", "whoami", "help", "exit", "logout", "quit"];
 
 /**
  * Tab-completion innerhalb einer aktiven Telnet-Sitzung.
@@ -1034,6 +1034,15 @@ export function Terminal() {
   const [telnetHost, setTelnetHost] = useState<string | null>(null);
   // Telnet wartet auf Passworteingabe für diesen Host.
   const [telnetAwaitPass, setTelnetAwaitPass] = useState<string | null>(null);
+  // Wenn die Telnet-Sitzung auf bodo.e67 oder worag.e67 läuft, schalten
+  // wir bis `exit` in den vollen Terminalmodus des Zielhosts um — gleiche
+  // Befehle (`ls -a`, `cd`, `cat`, `tree`, …) wie am eigenen Rechner,
+  // aber mit dem fremden Filesystem. `null` = keine vollwertige Remote-
+  // Sitzung aktiv (Mini-Modus für alle anderen Hosts).
+  const [remoteMode, setRemoteMode] = useState<"worag" | "bodo" | null>(null);
+  // Cwd-Stack: pro Remote-Sitzung sichern wir den lokalen cwd, damit
+  // `exit` ihn wiederherstellen kann.
+  const savedCwdRef = useRef<string[] | null>(null);
   // True während eine scriptgesteuerte Ausgabesequenz läuft (sysupdate, trouble net).
   const [scriptedRunning, setScriptedRunning] = useState(false);
   // Wenn Bodo gerade B3 für Lotti holt, sitzen wir an seinem Terminal —
@@ -1041,11 +1050,16 @@ export function Terminal() {
   // Wird explizit über openTerminal(true) am Hotspot in Bodos Wohnung gesetzt.
   // Layards eigenes Terminal (TopBar, Wohnung 2611, Sektor-Türen-Terminal)
   // läuft immer im normalen Phosphor-Grün-Modus.
-  const bodoMode = terminalBodoMode;
+  // „Lokaler" Modus = an welchem physischen Terminal sitzt man tatsächlich.
+  const localBodoMode = terminalBodoMode;
+  // „Effektiver" Modus = welche Maschine wir gerade bedienen. Während
+  // einer vollwertigen Telnet-Sitzung kann das ein anderer Host sein.
+  const bodoMode = remoteMode ? remoteMode === "bodo" : localBodoMode;
   const userName = bodoMode ? "bodo" : "worag";
   // Beide Maschinen hängen am Sektor-Netz E67 — der Hostname ist
-  // konsistent „e67“, nur der Benutzer wechselt.
-  const hostName = "e67";
+  // konsistent „e67“, nur der Benutzer wechselt. In einer Remote-Sitzung
+  // zeigt der Prompt zusätzlich den Zielhost (z. B. `worag@bodo:~$`).
+  const hostName = remoteMode ? (remoteMode === "bodo" ? "bodo" : "worag") : "e67";
   const homePath = bodoMode ? HOME_PATH_BODO : HOME_PATH_WORAG;
   const homeLabel = bodoMode ? "/home/bodo" : "/home/worag";
   // ── Filesystem-Adapter: leiten je nach Modus auf den jeweiligen Baum.
@@ -1068,8 +1082,18 @@ export function Terminal() {
 
   useEffect(() => {
     if (terminalOpen) {
-      setCwd([...homePath]);
-      if (bodoMode) {
+      // Beim Öffnen immer im lokalen Heimatverzeichnis starten — eine
+      // evtl. noch hängende Remote-Sitzung wird hart zurückgesetzt.
+      setRemoteMode(null);
+      savedCwdRef.current = null;
+      const startHome = localBodoMode ? HOME_PATH_BODO : HOME_PATH_WORAG;
+      setCwd([...startHome]);
+      setTelnetHost(null);
+      setTelnetAwaitPass(null);
+      // Banner explizit vom lokalen Modus aus aufbauen — eine zuvor
+      // aktive Remote-Sitzung wurde gerade zurückgesetzt, der nächste
+      // Render hat aber noch das alte (effektive) bodoMode-Flag.
+      if (localBodoMode) {
         const updated = flags.has("centralOsUpdatedBodo");
         const banner: Line[] = [
           {
@@ -1383,7 +1407,26 @@ export function Terminal() {
         if (host.motd) {
           out.push(...host.motd.map((t) => ({ text: t, kind: "out" } as Line)));
         }
-        setTelnetHost(telnetAwaitPass);
+        // bodo.e67 / worag.e67 sind keine flachen Mini-Hosts, sondern
+        // vollständige Maschinen mit eigenem Filesystem. Hier wechseln wir
+        // bis `exit` in den vollwertigen Terminalmodus des Zielhosts.
+        const targetUser =
+          host.host === "bodo.e67"
+            ? "bodo"
+            : host.host === "worag.e67"
+              ? "worag"
+              : null;
+        const sameAsLocal =
+          (targetUser === "bodo" && localBodoMode) ||
+          (targetUser === "worag" && !localBodoMode);
+        if (targetUser && !sameAsLocal) {
+          savedCwdRef.current = cwd;
+          setRemoteMode(targetUser);
+          // Im Remote-Modus starten wir im Home des Zielhosts.
+          setCwd(targetUser === "bodo" ? [...HOME_PATH_BODO] : [...HOME_PATH_WORAG]);
+        } else {
+          setTelnetHost(telnetAwaitPass);
+        }
         setTelnetAwaitPass(null);
         // Easter-Egg: Philippe-Login als Flag merken (für späteren Story-Hook).
         if (host.host === "philippe.e67") {
@@ -1436,9 +1479,17 @@ export function Terminal() {
         }
       } else if (tHead === "whoami") {
         out.push({ text: host?.host.split(".")[0] ?? "guest", kind: "out" });
+      } else if (tHead === "pwd") {
+        const user = host?.host.split(".")[0] ?? "guest";
+        out.push({ text: `/home/${user}`, kind: "out" });
       } else if (tHead === "help" || tHead === "?") {
         out.push(
-          { text: "Verfügbar: ls, cat <datei>, whoami, exit", kind: "out" },
+          { text: "Verfügbar in dieser Sitzung:", kind: "system" },
+          { text: "  ls [-a]        — Verzeichnis anzeigen", kind: "out" },
+          { text: "  cat <datei>    — Datei ausgeben", kind: "out" },
+          { text: "  pwd            — aktuelles Verzeichnis", kind: "out" },
+          { text: "  whoami         — eingeloggter Benutzer", kind: "out" },
+          { text: "  exit           — Verbindung schließen", kind: "out" },
         );
       } else {
         out.push({ text: `${tHead}: Befehl in Sitzung nicht verfügbar.`, kind: "out" });
@@ -1461,6 +1512,32 @@ export function Terminal() {
     const newLines: Line[] = [
       { text: `${userName}@${hostName}:${promptPath}$ ${input}`, kind: "in" },
     ];
+
+    // ── Remote-Sitzung: nur dateisystem- und info-bezogene Befehle.
+    // Story-Werkzeuge (Inbox, Wartung, sysupdate, Adventure, …) gehören
+    // zur eigenen Maschine und sind hier gesperrt — analog zu echtem
+    // Telnet, wo Sub-Programme der Quellmaschine nicht durchgreifen.
+    if (remoteMode) {
+      const REMOTE_ALLOWED = new Set([
+        "help", "?", "clear", "exit", "logout", "quit",
+        "pwd", "ls", "dir", "cd", "cat", "more", "type",
+        "tree", "whoami", "id", "date", "uptime", "history",
+        "echo", "man", "uname", "ps",
+      ]);
+      if (!REMOTE_ALLOWED.has(head)) {
+        newLines.push({
+          text: `${head}: Befehl in Sitzung nicht verfügbar.`,
+          kind: "out",
+        });
+        setLines((prev) => [...prev, ...newLines, { text: "", kind: "out" }]);
+        const h = termHistoryRef.current;
+        if (h[h.length - 1] !== raw) h.push(raw);
+        historyCursorRef.current = -1;
+        draftRef.current = "";
+        setInput("");
+        return;
+      }
+    }
 
     if (cmd === "help") {
       newLines.push(...buildHelpLines(bodoMode));
@@ -1528,6 +1605,24 @@ export function Terminal() {
       setInput("");
       return;
     } else if (cmd === "exit") {
+      if (remoteMode) {
+        // Remote-Sitzung beenden: zurück an die eigene Maschine.
+        const target = remoteMode === "bodo" ? "bodo.e67" : "worag.e67";
+        setLines((prev) => [
+          ...prev,
+          {
+            text: `${userName}@${hostName}:${pathString(cwd).replace(homeLabel, "~") || "/"}$ ${input}`,
+            kind: "in",
+          },
+          { text: `>> Verbindung zu ${target} geschlossen.`, kind: "system" },
+          { text: "", kind: "out" },
+        ]);
+        setRemoteMode(null);
+        setCwd(savedCwdRef.current ?? [...(localBodoMode ? HOME_PATH_BODO : HOME_PATH_WORAG)]);
+        savedCwdRef.current = null;
+        setInput("");
+        return;
+      }
       closeTerminal();
       setInput("");
       return;
