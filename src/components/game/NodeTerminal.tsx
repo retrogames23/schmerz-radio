@@ -2,6 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playBeep, playKeypress, playUnlock } from "@/audio/sfx";
+import {
+  SECTOR_CHATTER,
+  chatterDelayMs,
+  chatterTimestamp,
+} from "@/game/sectorChatter";
 import { CloseButton } from "./CloseButton";
 
 interface Line {
@@ -20,6 +25,9 @@ export function NodeTerminal() {
   const [lines, setLines] = useState<Line[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [listening, setListening] = useState(false);
+  const listenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const listenIndexRef = useRef<number>(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -46,6 +54,10 @@ export function NodeTerminal() {
         kind: tapped ? "out" : "out",
       },
       {
+        text: "  listen   — Live-Mitschnitt des Sektor-Verkehrs",
+        kind: "out",
+      },
+      {
         text: "  reroute  — Knoten in Echo-Schleife legen",
         kind: "out",
       },
@@ -68,6 +80,61 @@ export function NodeTerminal() {
   if (!nodeOpen) return null;
 
   const append = (more: Line[]) => setLines((p) => [...p, ...more]);
+
+  const stopListening = (silent = false) => {
+    if (listenTimerRef.current) {
+      clearTimeout(listenTimerRef.current);
+      listenTimerRef.current = null;
+    }
+    setListening(false);
+    if (!silent) {
+      append([
+        { text: ">> listen: Mitschnitt beendet.", kind: "system" },
+        { text: "", kind: "out" },
+      ]);
+    }
+  };
+
+  /** Mischt die Chatter-Liste neu durch (Fisher–Yates auf einer Kopie). */
+  const shuffledChatter = () => {
+    const arr = SECTOR_CHATTER.map((m) => m);
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
+  const startListening = () => {
+    setListening(true);
+    const stream = shuffledChatter();
+    listenIndexRef.current = 0;
+    const tick = () => {
+      const idx = listenIndexRef.current;
+      const msg = stream[idx % stream.length];
+      const ts = chatterTimestamp();
+      // Einrückungen so wählen, dass von/an unterschiedlich gut lesbar bleiben.
+      const header = `[${ts}]  ${msg.from}  →  ${msg.to}`;
+      const body = `         » ${msg.text}«`;
+      // Leiser Beep für Eingang.
+      playBeep(0.18 * sfxVolume);
+      setLines((prev) => [
+        ...prev,
+        { text: header, kind: "system" },
+        { text: body, kind: "out" },
+      ]);
+      listenIndexRef.current = idx + 1;
+      listenTimerRef.current = setTimeout(tick, chatterDelayMs());
+    };
+    // Erstes Paket nach kurzer Anlaufzeit (1–2 s), damit der Banner sichtbar bleibt.
+    listenTimerRef.current = setTimeout(tick, 1200);
+  };
+
+  // Beim Schließen aufräumen.
+  if (!nodeOpen && listenTimerRef.current) {
+    clearTimeout(listenTimerRef.current);
+    listenTimerRef.current = null;
+  }
 
   const runScripted = (
     steps: { text: string; delayMs: number; kind?: Line["kind"]; beep?: boolean }[],
@@ -93,6 +160,14 @@ export function NodeTerminal() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (busy) return;
+    // Während gelauscht wird beendet jede Eingabe (auch leer) den Mitschnitt.
+    if (listening) {
+      const echo: Line = { text: `node-5610# ${input || ""}`, kind: "in" };
+      setInput("");
+      append([echo]);
+      stopListening();
+      return;
+    }
     const raw = input.trim().toLowerCase();
     if (!raw) return;
     playBeep(0.4 * sfxVolume);
@@ -108,9 +183,32 @@ export function NodeTerminal() {
     if (raw === "help" || raw === "?") {
       append([
         echo,
-        { text: "Befehle: tap | reroute | burn | exit", kind: "out" },
+        { text: "Befehle: tap | listen | reroute | burn | exit", kind: "out" },
         { text: "", kind: "out" },
       ]);
+      return;
+    }
+
+    if (raw === "listen") {
+      if (flags.has("burnedNode5610")) {
+        append([
+          echo,
+          { text: "listen: Knoten ist offline (burn).", kind: "warn" },
+          { text: "", kind: "out" },
+        ]);
+        return;
+      }
+      append([
+        echo,
+        { text: ">> Öffne passiven Listen-Port am Sektor-Bus …", kind: "system" },
+        {
+          text: ">> [Enter drücken, um den Mitschnitt zu beenden]",
+          kind: "system",
+        },
+        { text: "", kind: "out" },
+      ]);
+      playBeep(0.3 * sfxVolume);
+      startListening();
       return;
     }
 
@@ -296,7 +394,13 @@ export function NodeTerminal() {
               setInput(e.target.value);
             }}
             className="flex-1 bg-transparent font-mono-crt text-base text-amber-glow caret-amber-glow outline-none disabled:opacity-40 placeholder:text-amber-glow/40"
-            placeholder={busy ? "… Ausgabe läuft …" : "tap | reroute | burn | exit"}
+            placeholder={
+              busy
+                ? "… Ausgabe läuft …"
+                : listening
+                  ? "… Mitschnitt läuft. Enter beendet."
+                  : "listen | tap | reroute | burn | exit"
+            }
             spellCheck={false}
             autoComplete="off"
           />

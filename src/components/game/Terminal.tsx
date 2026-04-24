@@ -18,6 +18,13 @@ import {
   adventureComplete,
   type AdvState,
 } from "@/game/adventureGame";
+import {
+  lottiCommand,
+  lottiStart,
+  newLottiState,
+  lottiComplete,
+  type LottiState,
+} from "@/game/lottiProgram";
 import { CloseButton } from "./CloseButton";
 
 interface Line {
@@ -108,6 +115,8 @@ const COMMANDS = [
   "tree",
   "adventure",
   "./adventure.bin",
+  "lotti",
+  "./lotti",
   "net",
   "telnet",
   "sysupdate",
@@ -956,7 +965,8 @@ const HELP_LINES: Line[] = [
   { text: "  telnet <host> — Verbindungsversuch zu einem Host", kind: "out" },
   { text: "", kind: "out" },
   { text: "PROGRAMME:", kind: "system" },
-  { text: "  adventure     — »Ein Tag draußen« (Worags Textadventure)", kind: "out" },
+  { text: "  adventure     — »Ein Tag draußen« (Worags Textadventure, nur 2611)", kind: "out" },
+  { text: "  lotti         — Bodos Begleitprogramm (nur 2612)", kind: "out" },
   { text: "", kind: "out" },
   { text: "WARTUNG (nur Hausmeister):", kind: "system" },
   { text: "  maint list                — offene Wartungsanfragen anzeigen", kind: "out" },
@@ -988,6 +998,7 @@ export function Terminal() {
   const [input, setInput] = useState("");
   const [cwd, setCwd] = useState<string[]>([...HOME_PATH]);
   const [advState, setAdvState] = useState<AdvState | null>(null);
+  const [lottiState, setLottiState] = useState<LottiState | null>(null);
   // Aktive Telnet-Sitzung (null = keine).
   const [telnetHost, setTelnetHost] = useState<string | null>(null);
   // Telnet wartet auf Passworteingabe für diesen Host.
@@ -1140,6 +1151,26 @@ export function Terminal() {
       return;
     }
 
+    // ── Sub-Modus: lotti läuft (Bodos Programm) ────────────
+    if (lottiState) {
+      playBeep(0.3 * sfxVolume);
+      const echo: Line = { text: `lotti> ${input}`, kind: "in" };
+      const result = lottiCommand(lottiState, raw);
+      const out: Line[] = result.out.map((t) => ({ text: t, kind: "out" } as Line));
+      setLines((prev) => [...prev, echo, ...out, { text: "", kind: "out" }]);
+      const h = advHistoryRef.current;
+      if (h[h.length - 1] !== raw) h.push(raw);
+      historyCursorRef.current = -1;
+      draftRef.current = "";
+      if (result.quit) {
+        setLottiState(null);
+      } else {
+        setLottiState({ ...lottiState });
+      }
+      setInput("");
+      return;
+    }
+
     // ── Sub-Modus: Telnet wartet auf Passwort ─────────────
     if (telnetAwaitPass) {
       const host = findHost(telnetAwaitPass);
@@ -1262,11 +1293,41 @@ export function Terminal() {
         );
       }
     } else if (cmd === "adventure" || cmd === "./adventure.bin" || cmd === "adventure.bin") {
-      const fresh = newAdventureState();
-      setAdvState(fresh);
-      newLines.push(
-        ...adventureStart(fresh).map((t) => ({ text: t, kind: "out" } as Line)),
-      );
+      if (bodoMode) {
+        // Worags Textadventure liegt in /home/worag — nicht auf Bodos Maschine.
+        newLines.push(
+          {
+            text: "bash: adventure: Befehl nicht gefunden.",
+            kind: "out",
+          },
+          {
+            text: "(»adventure.bin« liegt im /home/worag — andere Maschine.)",
+            kind: "out",
+          },
+        );
+      } else {
+        const fresh = newAdventureState();
+        setAdvState(fresh);
+        newLines.push(
+          ...adventureStart(fresh).map((t) => ({ text: t, kind: "out" } as Line)),
+        );
+      }
+    } else if (cmd === "lotti" || cmd === "./lotti" || cmd === "lotti.bin") {
+      if (!bodoMode) {
+        newLines.push(
+          { text: "bash: lotti: Befehl nicht gefunden.", kind: "out" },
+          {
+            text: "(»lotti« ist Bodos Eigenbau und liegt nur auf 2612.)",
+            kind: "out",
+          },
+        );
+      } else {
+        const fresh = newLottiState();
+        setLottiState(fresh);
+        newLines.push(
+          ...lottiStart(fresh).map((t) => ({ text: t, kind: "out" } as Line)),
+        );
+      }
     } else if (cmd === "clear") {
       setLines([]);
       setInput("");
@@ -2027,7 +2088,9 @@ export function Terminal() {
           >
             {advState
               ? "adventure>"
-              : `${userName}@${hostName}:${pathString(cwd).replace(homeLabel, "~") || "/"}$`}
+              : lottiState
+                ? "lotti>"
+                : `${userName}@${hostName}:${pathString(cwd).replace(homeLabel, "~") || "/"}$`}
           </span>
           <input
             ref={inputRef}
@@ -2043,9 +2106,10 @@ export function Terminal() {
               // ── Verlaufs-Navigation mit ↑/↓ ───────────────────
               if (e.key === "ArrowUp" || e.key === "ArrowDown") {
                 e.preventDefault();
-                const history = advState
-                  ? advHistoryRef.current
-                  : termHistoryRef.current;
+                const history =
+                  advState || lottiState
+                    ? advHistoryRef.current
+                    : termHistoryRef.current;
                 if (!history.length) return;
                 let cursor = historyCursorRef.current;
                 if (e.key === "ArrowUp") {
@@ -2083,6 +2147,8 @@ export function Terminal() {
               let result: CompleteResult;
               if (advState) {
                 result = adventureComplete(advState, input);
+              } else if (lottiState) {
+                result = lottiComplete(input);
               } else if (telnetHost) {
                 const host = findHost(telnetHost);
                 const hostFiles: Record<string, string[]> = {
@@ -2110,6 +2176,8 @@ export function Terminal() {
                 let echoPrompt: string;
                 if (advState) {
                   echoPrompt = "adventure>";
+                } else if (lottiState) {
+                  echoPrompt = "lotti>";
                 } else if (telnetHost) {
                   const host = findHost(telnetHost);
                   echoPrompt = `${host?.host ?? telnetHost}:~$`;
