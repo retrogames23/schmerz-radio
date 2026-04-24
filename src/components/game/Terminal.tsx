@@ -975,8 +975,7 @@ function buildHelpLines(bodoMode: boolean): Line[] {
   ];
   if (bodoMode) {
     lines.push(
-      { text: "  adventure     — »Ein Tag draußen« (Worags Textadventure, nur 2611)", kind: "out" },
-      { text: "  lotti         — Begleitprogramm (Eigenbau)", kind: "out" },
+      { text: "  lotti         — Fütterungskalender (Eigenbau, für Lotti)", kind: "out" },
       { text: "", kind: "out" },
       { text: "WARTUNG (nur Hausmeister):", kind: "system" },
       { text: "  maint list                — offene Wartungsanfragen anzeigen", kind: "out" },

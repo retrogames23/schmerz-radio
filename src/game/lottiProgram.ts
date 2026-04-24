@@ -1,288 +1,420 @@
 /**
- * "lotti" — Bodos winziges Begleitprogramm für seine Katze Lotti.
- * Geschrieben hat er es vor Jahren auf einem stillen Sonntag, als
- * Lotti nicht wach werden wollte und er sich nicht traute,
- * sie anzufassen. Seitdem startet er es jeden Morgen.
+ * "lotti" — Bodos Fütterungskalender für seine Katze.
  *
- * Das Programm ist absichtlich anspruchslos. Bodo wollte
- * keine Sensation. Er wollte nur jemanden, mit dem er
- * sich kurz austauscht, bevor der Korridor anfängt.
+ * Bodo vergisst. Lotti darf das nicht. Also hat er sich vor Jahren
+ * dieses Programm geschrieben: ein winziger Kalender, der für jeden
+ * Tag festhält, welche Dose er aufgemacht hat, welche Sorte, und
+ * was er sich dazu notiert hat. Kein Spiel, keine Animation —
+ * eine Liste.
+ *
+ * Das Programm zählt auch den Vorrat und merkt sich, wann die
+ * nächste B3-Lieferung kommt. Wenn Bodo morgens das Terminal
+ * öffnet, ist das Erste, was er tippt: »lotti«. Dann »heute«.
+ * Dann weiß er wieder, wer er ist.
  */
 
+// ── Datenmodell ───────────────────────────────────────────
+export type FutterSorte = "rind" | "fisch" | "trocken";
+
+export interface FutterEintrag {
+  /** Uhrzeit "HH:MM". */
+  zeit: string;
+  sorte: FutterSorte;
+  /** Optional: Notiz, die Bodo dazu geschrieben hat. */
+  notiz?: string;
+}
+
+export interface KalenderTag {
+  /** "06.11." */
+  datum: string;
+  /** Wochentag, kurz: "Mo", "Di" … */
+  wt: string;
+  eintraege: FutterEintrag[];
+  /** Tagesnotiz, frei. */
+  notiz?: string;
+  /** Nur für anzeige: Bodo war an diesem tag „nicht ganz da". */
+  vergessen?: boolean;
+}
+
 export interface LottiState {
-  /** 0–10. Voll = 10. Sinkt nicht in Echtzeit (das wäre grausam). */
-  satt: number;
-  /** 0–10. */
-  zufrieden: number;
-  /** 0–10. Schlaf. */
-  müde: number;
-  /** Was Lotti gerade tut, frei formulierter Text. */
-  status: string;
+  /** Tageshistorie, neuester zuerst. Index 0 = heute. */
+  tage: KalenderTag[];
+  /** Vorrat in Dosen / Beuteln. */
+  vorrat: Record<FutterSorte, number>;
+  /** Datum der nächsten erwarteten Lieferung. */
+  liefertermin: string;
   /** Beendet? */
   finished: boolean;
 }
 
+// ── Anfangszustand ────────────────────────────────────────
+/**
+ * Sieben Tage Historie, plus der heutige Tag (06.11.1997).
+ * Manche Tage haben Lücken — Bodo hat das selber so eingetragen,
+ * weil ehrlicher Kalender wichtiger ist als vollständiger Kalender.
+ */
 export function newLottiState(): LottiState {
+  const tage: KalenderTag[] = [
+    {
+      datum: "06.11.",
+      wt: "Do",
+      eintraege: [
+        { zeit: "06:40", sorte: "trocken", notiz: "anfütterung. sie wollte nicht warten." },
+      ],
+      notiz: "B3 wird knapp. heute mittag noch eine rind-dose, dann ist rind alle.",
+    },
+    {
+      datum: "05.11.",
+      wt: "Mi",
+      eintraege: [
+        { zeit: "07:10", sorte: "rind" },
+        { zeit: "13:25", sorte: "trocken" },
+        { zeit: "19:50", sorte: "rind", notiz: "doppelt gefressen. gut." },
+      ],
+    },
+    {
+      datum: "04.11.",
+      wt: "Di",
+      eintraege: [
+        { zeit: "07:00", sorte: "fisch" },
+        { zeit: "13:30", sorte: "rind" },
+        { zeit: "20:05", sorte: "fisch", notiz: "letzte fisch-dose." },
+      ],
+      notiz: "fisch ist seit heute abend alle. lieferung erst freitag.",
+    },
+    {
+      datum: "03.11.",
+      wt: "Mo",
+      eintraege: [
+        { zeit: "06:55", sorte: "fisch" },
+        { zeit: "13:10", sorte: "rind" },
+        { zeit: "20:00", sorte: "rind" },
+      ],
+    },
+    {
+      datum: "02.11.",
+      wt: "So",
+      eintraege: [
+        { zeit: "08:20", sorte: "rind", notiz: "länger geschlafen. sie war geduldig." },
+        { zeit: "14:00", sorte: "fisch" },
+      ],
+      notiz: "abendmahlzeit vergessen?",
+      vergessen: true,
+    },
+    {
+      datum: "01.11.",
+      wt: "Sa",
+      eintraege: [
+        { zeit: "07:05", sorte: "rind" },
+        { zeit: "12:45", sorte: "trocken" },
+        { zeit: "19:30", sorte: "fisch" },
+      ],
+    },
+    {
+      datum: "31.10.",
+      wt: "Fr",
+      eintraege: [
+        { zeit: "07:00", sorte: "fisch" },
+        { zeit: "13:00", sorte: "rind" },
+        { zeit: "19:55", sorte: "rind" },
+      ],
+      notiz: "lieferung gekommen: 8x rind, 6x fisch, 2 beutel trocken.",
+    },
+    {
+      datum: "30.10.",
+      wt: "Do",
+      eintraege: [
+        { zeit: "07:15", sorte: "rind" },
+      ],
+      notiz: "den ganzen tag im flur 26 unterwegs. weiß nicht mehr, ob ich sie noch gefüttert habe.",
+      vergessen: true,
+    },
+  ];
   return {
-    satt: 6,
-    zufrieden: 7,
-    müde: 4,
-    status: "schläft auf der decke. atmet langsam.",
+    tage,
+    vorrat: { rind: 2, fisch: 0, trocken: 1 },
+    liefertermin: "07.11. (Fr)",
     finished: false,
   };
 }
 
+// ── Anzeige-Helfer ────────────────────────────────────────
+const SORTE_LABEL: Record<FutterSorte, string> = {
+  rind: "rind   ",
+  fisch: "fisch  ",
+  trocken: "trocken",
+};
+
+const SORTE_KURZ: Record<FutterSorte, string> = {
+  rind: "R",
+  fisch: "F",
+  trocken: "T",
+};
+
+function pad(s: string, n: number): string {
+  if (s.length >= n) return s.slice(0, n);
+  return s + " ".repeat(n - s.length);
+}
+
+function nowHHMM(): string {
+  const d = new Date();
+  return `${d.getHours().toString().padStart(2, "0")}:${d
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}`;
+}
+
 const LOTTI_BANNER: string[] = [
-  "── lotti v0.3 ────────────────────────────────",
-  "── eigenbau, b. marschke, sonntag 12.10.1992 ──",
+  "── lotti · fütterungskalender v1.4 ───────────────",
+  "── eigenbau, b. marschke, seit 12.10.1992 ────────",
   "",
-  "lotti ist ein programm und eine katze.",
-  "wenn die katze nicht da ist, ist das programm da.",
+  "»weil ich mich nicht erinnere und sie nichts sagt.«",
   "",
-  "befehle: status, füttern, streicheln, rufen,",
-  "         schlafen, foto, geschichte, hilfe, exit",
+  "befehle:  heute · woche · geben <sorte> · notiz <text>",
+  "          vorrat · liefer · hilfe · exit",
   "",
 ];
 
 export function lottiStart(state: LottiState): string[] {
-  return [...LOTTI_BANNER, ...lottiStatus(state)];
+  return [...LOTTI_BANNER, ...renderHeute(state)];
 }
 
-function bar(value: number): string {
-  const v = Math.max(0, Math.min(10, Math.round(value)));
-  return "█".repeat(v) + "░".repeat(10 - v);
-}
-
-function lottiStatus(s: LottiState): string[] {
-  return [
-    "── lotti, jetzt ──────────────────────────────",
-    `  satt        [${bar(s.satt)}]  ${s.satt}/10`,
-    `  zufrieden   [${bar(s.zufrieden)}]  ${s.zufrieden}/10`,
-    `  müde        [${bar(s.müde)}]  ${s.müde}/10`,
+function renderHeute(s: LottiState): string[] {
+  const heute = s.tage[0];
+  const out: string[] = [
+    `── heute · ${heute.wt} ${heute.datum}1997 ─────────────────────`,
     "",
-    `  → ${s.status}`,
+  ];
+  if (heute.eintraege.length === 0) {
+    out.push("  (noch keine fütterung eingetragen.)");
+  } else {
+    for (const e of heute.eintraege) {
+      const z = `  ${e.zeit}   ${SORTE_LABEL[e.sorte]}`;
+      out.push(e.notiz ? `${z}   — ${e.notiz}` : z);
+    }
+  }
+  if (heute.notiz) {
+    out.push("");
+    out.push(`  notiz:  ${heute.notiz}`);
+  }
+  out.push("");
+  out.push(
+    `  vorrat:  rind ${s.vorrat.rind} · fisch ${s.vorrat.fisch} · trocken ${s.vorrat.trocken}`,
+  );
+  out.push(`  nächste lieferung:  ${s.liefertermin}`);
+  out.push("");
+  return out;
+}
+
+function renderWoche(s: LottiState): string[] {
+  const out: string[] = [
+    "── die letzten tage ──────────────────────────────",
+    "",
+    "  tag           mahlzeiten            notiz",
+    "  ─────────────────────────────────────────────",
+  ];
+  for (const t of s.tage) {
+    const slots = t.eintraege.map((e) => SORTE_KURZ[e.sorte]).join(" ");
+    const slotsCol = pad(slots || "—", 22);
+    const tagCol = pad(`${t.wt} ${t.datum}`, 13);
+    let notiz = t.notiz ?? "";
+    if (t.vergessen) notiz = (notiz ? notiz + "  " : "") + "[vergessen?]";
+    if (notiz.length > 38) notiz = notiz.slice(0, 35) + "…";
+    out.push(`  ${tagCol} ${slotsCol} ${notiz}`);
+  }
+  out.push("");
+  out.push("  legende:  R = rind   F = fisch   T = trocken");
+  out.push("");
+  return out;
+}
+
+function renderVorrat(s: LottiState): string[] {
+  const lines: string[] = [
+    "── vorrat ────────────────────────────────────────",
+    "",
+    `  rind          ${s.vorrat.rind} dose${s.vorrat.rind === 1 ? "" : "n"}`,
+    `  fisch         ${s.vorrat.fisch} dose${s.vorrat.fisch === 1 ? "" : "n"}`,
+    `  trocken       ${s.vorrat.trocken} beutel`,
+    "",
+    `  nächste lieferung:  ${s.liefertermin}`,
+    "",
+  ];
+  if (s.vorrat.rind + s.vorrat.fisch <= 2) {
+    lines.push("  ⚠  knapp. vor freitag sparsam einteilen.");
+    lines.push("");
+  }
+  return lines;
+}
+
+function renderLiefer(s: LottiState): string[] {
+  return [
+    "── lieferung ─────────────────────────────────────",
+    "",
+    `  nächste B3-lieferung:    ${s.liefertermin}`,
+    "  ansprechpartner:         ZENTRAL.NETZ / Beschaffung",
+    "  letzte lieferung:        31.10. (Fr)  · 8x rind · 6x fisch · 2 beutel trocken",
+    "",
+    "  hinweis (eigenbau): wenn lieferung 2 tage überfällig:",
+    "         lobby anrufen, NICHT die zentrale.",
+    "         (lobby ist langsamer, aber sie kommen.)",
     "",
   ];
 }
 
-const FÜTTER_TEXTE = [
-  "lotti hebt den kopf. langsam. dann steht sie auf,",
-  "schlurft zum napf, schaut hinein, schaut hoch,",
-  "schaut wieder hinein. frisst.",
-  "(rind-äquivalent. das mag sie.)",
-];
-
-const FÜTTER_LEER = [
-  "der napf ist leer und du hast keine dose mehr.",
-  "lotti weiß das. sie schaut dich an, als wäre",
-  "es deine schuld. (es ist deine schuld.)",
-];
-
-const STREICHEL_TEXTE = [
-  "du legst die hand auf ihren rücken. sie wird kurz",
-  "steif, dann weich. unter den fingern fängt etwas",
-  "an zu summen. das ist die einzige stelle in",
-  "dieser wohnung, an der etwas summt, das kein",
-  "computer ist.",
-];
-
-const RUF_TEXTE = [
-  "»lotti.« — sie reagiert nicht.",
-  "»lotti?« — ein ohr dreht sich. mehr nicht.",
-  "»lotti, komm.« — sie steht auf, geht in die",
-  "andere richtung. das ist die antwort.",
-];
-
-const SCHLAF_TEXTE = [
-  "du löschst das licht. lotti rollt sich enger",
-  "auf der decke zusammen. du auch, in deinem",
-  "stuhl, in deinem korridor, in deinem dienstgrad.",
-  "morgen ist auch noch ein tag. dafür gibt es",
-  "keinen beweis, aber lotti glaubt es, und das",
-  "reicht meistens.",
-];
-
-const FOTO_TEXTE = [
-  "── ascii-foto, mai 1993 ─────────────────────",
-  "        /\\_/\\  ",
-  "       ( o.o )  ",
-  "        > ^ <  ",
-  "    ___________",
-  "(handgemalt. lotti hat das original zerkratzt.)",
-];
-
-const GESCHICHTEN = [
-  [
-    "── die geschichte, wie lotti hier eingezogen ist ──",
-    "",
-    "1983, korridor 26, etage 6. eine katze sitzt",
-    "vor tür 2612 und schaut die wand an, als ob",
-    "die wand etwas schuldete. ich öffne. sie geht",
-    "rein. sie geht nicht wieder.",
-    "",
-    "die leitstelle hat sie nie eingetragen.",
-    "ich auch nicht.",
-  ],
-  [
-    "── die geschichte, wie lotti die nachtschicht überlebt ──",
-    "",
-    "während der träger 1991 noch manuell nachgeregelt",
-    "wurde, saß sie auf dem oszilloskop. wenn die",
-    "kurve unsauber wurde, schlug sie mit dem schwanz",
-    "auf den schirm. ich habe es nie überprüft, aber",
-    "ich glaube, sie konnte 104,6 hören, bevor das",
-    "gerät es konnte.",
-  ],
-  [
-    "── die geschichte, wie lotti einmal verschwunden war ──",
-    "",
-    "drei tage. ich habe nichts gegessen. dann saß",
-    "sie wieder auf der decke, als wäre sie nie weg.",
-    "ich habe sie nicht gefragt. ich habe nur",
-    "rind-äquivalent geöffnet und mich neben sie",
-    "gesetzt. sie hat gefressen, dann hat sie",
-    "geschnurrt. ich glaube, das war eine entschuldigung.",
-  ],
-];
-
-/**
- * Bodos Programm hat einen kleinen Geheim-Befehl: »lotti, sag was«.
- * Wenn er nicht mehr weiterweiß, tippt er das. Das Programm
- * antwortet mit einem zufälligen Satz aus seinen eigenen Notizen,
- * die er beim Schreiben hineingelegt hat. Manche Sätze hat er
- * vergessen, dass er sie geschrieben hat.
- */
-const SAG_WAS_TEXTE = [
-  "»du bist nicht alleine, b. ich bin auch nur",
-  "  ein programm, aber ich bin hier.«",
-  "»der korridor ist nicht das ganze haus.«",
-  "»wenn du heute morgen nicht weißt, wofür:",
-  "  für mich.«",
-  "»nicht jede stille muss aufgefüllt werden.«",
-  "»du hast 1991 niemandem davon erzählt. das",
-  "  ist ok. ich weiß es trotzdem.«",
-];
-
-let geschichteIdx = 0;
-
+// ── Kommandos ─────────────────────────────────────────────
 export interface LottiResult {
   out: string[];
   quit?: boolean;
 }
 
-export function lottiCommand(state: LottiState, input: string): LottiResult {
-  const raw = input.trim().toLowerCase();
-  const tokens = raw.split(/\s+/);
-  const head = tokens[0] ?? "";
+const HILFE: string[] = [
+  "befehle:",
+  "  heute                — heutige fütterungen anzeigen",
+  "  woche                — die letzten tage als tabelle",
+  "  geben <sorte>        — fütterung eintragen",
+  "                         (sorten: rind, fisch, trocken)",
+  "  notiz <text>         — eine zeile an heute anhängen",
+  "  vorrat               — aktueller bestand",
+  "  liefer               — nächste lieferung",
+  "  hilfe                — diese liste",
+  "  exit                 — programm beenden",
+  "",
+];
 
+export function lottiCommand(state: LottiState, input: string): LottiResult {
+  const raw = input.trim();
   if (!raw) return { out: [] };
+  const lower = raw.toLowerCase();
+  const tokens = raw.split(/\s+/);
+  const head = (tokens[0] ?? "").toLowerCase();
+  const argLower = (tokens[1] ?? "").toLowerCase();
+  const restRaw = tokens.slice(1).join(" ");
 
   if (head === "exit" || head === "quit" || head === "logout" || head === "ende") {
     return {
-      out: [
-        "lotti dreht sich noch einmal um. dann schließt",
-        "das programm sich selbst. (so hat er es geschrieben.)",
-      ],
+      out: ["kalender geschlossen. lotti weiß bescheid."],
       quit: true,
     };
   }
 
   if (head === "hilfe" || head === "help" || head === "?") {
-    return {
-      out: [
-        "befehle:",
-        "  status         — wie geht es ihr",
-        "  füttern        — eine dose B3 öffnen",
-        "  streicheln     — kurz die hand auflegen",
-        "  rufen          — sie beim namen rufen",
-        "  schlafen       — licht aus, programm ruht",
-        "  foto           — ascii-bild von 1993",
-        "  geschichte     — eine erinnerung erzählen",
-        "  exit           — programm beenden",
-        "",
-        "  (geheim: »sag was«)",
-      ],
-    };
+    return { out: HILFE };
   }
 
-  if (head === "status") {
-    return { out: lottiStatus(state) };
+  if (head === "heute" || lower === "today") {
+    return { out: renderHeute(state) };
   }
 
-  if (head === "füttern" || head === "fuettern" || head === "feed") {
-    if (state.satt >= 10) {
+  if (head === "woche" || head === "week") {
+    return { out: renderWoche(state) };
+  }
+
+  if (head === "vorrat" || head === "stock") {
+    return { out: renderVorrat(state) };
+  }
+
+  if (head === "liefer" || head === "lieferung" || head === "delivery") {
+    return { out: renderLiefer(state) };
+  }
+
+  if (head === "geben" || head === "feed") {
+    if (!argLower) {
       return {
         out: [
-          "lotti schaut den napf an, dann dich, dann den napf,",
-          "dann wieder dich. wenn katzen sätze hätten, wäre das:",
-          "»nicht jetzt.« sie geht zurück zur decke.",
+          "geben: sorte fehlt. bitte: »geben rind« · »geben fisch« · »geben trocken«",
           "",
         ],
       };
     }
-    state.satt = Math.min(10, state.satt + 3);
-    state.zufrieden = Math.min(10, state.zufrieden + 1);
-    state.status = "frisst, sehr konzentriert. ohren nach hinten.";
-    return { out: [...FÜTTER_TEXTE, "", ...lottiStatus(state)] };
+    let sorte: FutterSorte | null = null;
+    if (argLower.startsWith("r")) sorte = "rind";
+    else if (argLower.startsWith("f")) sorte = "fisch";
+    else if (argLower.startsWith("t")) sorte = "trocken";
+    if (!sorte) {
+      return {
+        out: [
+          `geben: »${tokens[1]}« kenne ich nicht. (sorten: rind, fisch, trocken)`,
+          "",
+        ],
+      };
+    }
+    if (state.vorrat[sorte] <= 0) {
+      return {
+        out: [
+          `geben: kein ${sorte} mehr im vorrat.`,
+          `       nächste lieferung: ${state.liefertermin}`,
+          "       lotti schaut den napf an, dann dich. bekannt.",
+          "",
+        ],
+      };
+    }
+    state.vorrat[sorte] -= 1;
+    const heute = state.tage[0];
+    heute.eintraege.push({ zeit: nowHHMM(), sorte });
+    return {
+      out: [
+        `eingetragen: ${nowHHMM()}  ${SORTE_LABEL[sorte].trim()}`,
+        `vorrat ${sorte}: jetzt ${state.vorrat[sorte]} dose${state.vorrat[sorte] === 1 ? "" : "n"}.`,
+        "",
+        ...renderHeute(state),
+      ],
+    };
   }
 
-  if (head === "streicheln" || head === "pet") {
-    state.zufrieden = Math.min(10, state.zufrieden + 2);
-    state.status = "schnurrt. das geräusch ist tiefer als 104,6.";
-    return { out: [...STREICHEL_TEXTE, "", ...lottiStatus(state)] };
+  if (head === "notiz" || head === "note") {
+    const text = restRaw.trim();
+    if (!text) {
+      return {
+        out: [
+          "notiz: text fehlt. bitte: »notiz <was du dir merken willst>«",
+          "",
+        ],
+      };
+    }
+    const heute = state.tage[0];
+    heute.notiz = heute.notiz ? `${heute.notiz}  /  ${text}` : text;
+    return {
+      out: [
+        "notiert.",
+        "",
+        ...renderHeute(state),
+      ],
+    };
   }
 
-  if (head === "rufen" || head === "call") {
-    state.zufrieden = Math.max(0, state.zufrieden - 1);
-    state.status = "geht in die küche. nicht wegen dir.";
-    return { out: [...RUF_TEXTE, "", ...lottiStatus(state)] };
-  }
-
-  if (head === "schlafen" || head === "sleep") {
-    state.müde = Math.min(10, state.müde + 4);
-    state.zufrieden = Math.min(10, state.zufrieden + 1);
-    state.status = "schläft. wirklich diesmal. atmet sehr leise.";
-    return { out: [...SCHLAF_TEXTE, "", ...lottiStatus(state)] };
-  }
-
-  if (head === "foto" || head === "photo") {
-    return { out: [...FOTO_TEXTE, ""] };
-  }
-
-  if (head === "geschichte" || head === "story") {
-    const g = GESCHICHTEN[geschichteIdx % GESCHICHTEN.length];
-    geschichteIdx++;
-    return { out: [...g, ""] };
-  }
-
-  if (raw === "sag was" || raw === "lotti, sag was" || raw === "sag etwas") {
-    const t = SAG_WAS_TEXTE[Math.floor(Math.random() * (SAG_WAS_TEXTE.length / 2)) * 2];
-    // Ein zwei-Zeilen-Spruch ausgeben.
-    const i = SAG_WAS_TEXTE.indexOf(t);
-    const out = [SAG_WAS_TEXTE[i], SAG_WAS_TEXTE[i + 1] ?? "", ""];
-    return { out };
+  // Kleines Eigenbau-Easteregg: wenn man "lotti" tippt, antwortet das
+  // Programm mit einem leisen Satz, weil Bodo das so wollte.
+  if (head === "lotti") {
+    return {
+      out: [
+        "lotti ist nicht im programm. lotti ist im sessel.",
+        "(das programm weiß den unterschied.)",
+        "",
+      ],
+    };
   }
 
   return {
     out: [
-      `lotti versteht »${input.trim()}« nicht.`,
-      "(bodo hat nicht jeden befehl programmiert. tippe »hilfe«.)",
+      `unbekannter befehl: »${raw}«. tippe »hilfe«.`,
       "",
     ],
   };
 }
 
+// ── Tab-Completion ────────────────────────────────────────
 const LOTTI_COMMANDS = [
-  "status",
-  "füttern",
-  "streicheln",
-  "rufen",
-  "schlafen",
-  "foto",
-  "geschichte",
+  "heute",
+  "woche",
+  "geben",
+  "notiz",
+  "vorrat",
+  "liefer",
   "hilfe",
   "exit",
 ];
+
+const GEBEN_SORTEN = ["rind", "fisch", "trocken"];
 
 function lcp(strs: string[]): string {
   if (!strs.length) return "";
@@ -303,11 +435,27 @@ export interface LottiCompleteResult {
 
 export function lottiComplete(input: string): LottiCompleteResult {
   const tokens = input.split(/\s+/);
-  if (tokens.length > 1) return { newInput: input, matches: [] };
-  const last = (tokens[0] ?? "").toLowerCase();
-  const matches = LOTTI_COMMANDS.filter((c) => c.startsWith(last));
-  if (!matches.length) return { newInput: input, matches: [] };
-  const completed = lcp(matches);
-  const newLast = matches.length === 1 ? matches[0] + " " : completed;
-  return { newInput: newLast, matches };
+  const last = (tokens[tokens.length - 1] ?? "").toLowerCase();
+
+  // Erstes Token: Befehl
+  if (tokens.length <= 1) {
+    const matches = LOTTI_COMMANDS.filter((c) => c.startsWith(last));
+    if (!matches.length) return { newInput: input, matches: [] };
+    const completed = lcp(matches);
+    const newLast = matches.length === 1 ? matches[0] + " " : completed;
+    return { newInput: newLast, matches };
+  }
+
+  // Zweites Token: bei `geben` die Sorten
+  const head = tokens[0].toLowerCase();
+  if (head === "geben" && tokens.length === 2) {
+    const matches = GEBEN_SORTEN.filter((s) => s.startsWith(last));
+    if (!matches.length) return { newInput: input, matches: [] };
+    const completed = lcp(matches);
+    const newLast = matches.length === 1 ? matches[0] + " " : completed;
+    const newInput = [tokens[0], newLast].join(" ");
+    return { newInput, matches };
+  }
+
+  return { newInput: input, matches: [] };
 }
