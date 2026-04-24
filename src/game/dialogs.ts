@@ -542,13 +542,16 @@ export const dialogs: Record<string, DialogTree> = {
           },
           {
             text: "Lassen wir das. Geben Sie mir bitte direkt den Code.",
-            next: "idPflichtCheck",
+            next: "idPflichtSkip",
           },
         ],
       },
       // Verzweigung: Hat Layard die Quelle der Sendung (radioOrigin) bereits
       // verstanden? Dann gibt Insa den Code wie gehabt heraus. Wenn nicht,
       // schickt sie ihn vorher zwingend zum Knoten 5610.
+      // Wenn Layard noch NICHT getappt hat: idPflichtSkip ist hidden
+      // (weil requires: tappedNode5610 nicht erfüllt) und die Engine
+      // läuft den `next`-Pointer entlang nach idPflicht1.
       idPflichtCheck: {
         id: "idPflichtCheck",
         speaker: "SYSTEM",
