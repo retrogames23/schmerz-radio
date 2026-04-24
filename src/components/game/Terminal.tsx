@@ -1043,6 +1043,10 @@ export function Terminal() {
   // Cwd-Stack: pro Remote-Sitzung sichern wir den lokalen cwd, damit
   // `exit` ihn wiederherstellen kann.
   const savedCwdRef = useRef<string[] | null>(null);
+  // Undokumentierter Cheat „cheat superuser" in Layards Terminal: solange
+  // aktiv, überspringt `telnet` jede Passwortabfrage. Wird beim Schließen
+  // des Terminals zurückgesetzt — kein dauerhafter Story-Flag.
+  const [superuser, setSuperuser] = useState(false);
   // True während eine scriptgesteuerte Ausgabesequenz läuft (sysupdate, trouble net).
   const [scriptedRunning, setScriptedRunning] = useState(false);
   // Wenn Bodo gerade B3 für Lotti holt, sitzen wir an seinem Terminal —
