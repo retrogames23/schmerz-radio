@@ -3,13 +3,18 @@ import { useGame } from "@/game/GameContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playBeep, playKeypress, playUnlock } from "@/audio/sfx";
 import {
-  FILESYSTEM,
-  HOME_PATH,
-  HOME_PATH_BODO,
-  resolvePath,
-  pathString,
+  FILESYSTEM_WORAG,
+  HOME_PATH_WORAG,
+  resolveWorag,
+  pathStringWorag,
   type FsNode,
-} from "@/game/filesystem";
+} from "@/game/filesystemWorag";
+import {
+  FILESYSTEM_BODO,
+  HOME_PATH_BODO,
+  resolveBodo,
+  pathStringBodo,
+} from "@/game/filesystemBodo";
 import type { StoryFlag } from "@/game/types";
 import {
   adventureCommand,
