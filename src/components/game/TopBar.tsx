@@ -10,7 +10,7 @@ interface Props {
 
 export function TopBar({ onOpenPause }: Props) {
   const game = useGame();
-  const { scene, radioActive, flags } = game;
+  const { scene, radioActive, flags, ending } = game;
   const inAct2 = flags.has("enteredE71");
   const music = useMusic();
   const { musicEnabled } = useSettings();
@@ -46,7 +46,7 @@ export function TopBar({ onOpenPause }: Props) {
         </div>
 
         <div className="flex items-center gap-2">
-          <div
+          {!ending && <div
             className={`group hidden items-center gap-1 rounded-sm border px-1.5 py-1 text-[10px] uppercase tracking-[0.2em] transition-all duration-200 sm:inline-flex ${
               musicEnabled
                 ? "border-amber-glow/30 bg-gradient-to-b from-amber-glow/10 to-transparent text-amber-glow/80 hover:border-amber-glow/60"
@@ -80,7 +80,7 @@ export function TopBar({ onOpenPause }: Props) {
             >
               <ChevronRight className="h-3 w-3" strokeWidth={2.25} />
             </button>
-          </div>
+          </div>}
           <button
             type="button"
             onClick={() => game.api.openRadio()}
