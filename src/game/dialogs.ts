@@ -822,6 +822,46 @@ export const dialogs: Record<string, DialogTree> = {
   },
 
   // ---------------------------------------------------------------
+  // 8b. Insa — Kurz-Reminder, wenn der Auftrag schon läuft
+  // ---------------------------------------------------------------
+  // Layard hat Insa schon gesprochen, sie hat ihn zu Knoten 5610 geschickt
+  // (insaSentTo5610), aber er hat dort noch nicht »tap« ausgeführt
+  // (tappedNode5610 fehlt). Wenn er sie jetzt erneut anruft, wiederholt
+  // sie nicht das ganze Briefing — sie fasst nur kurz zusammen, was sie
+  // braucht, und legt auf.
+  insaReminder5610: {
+    id: "insaReminder5610",
+    start: "r1",
+    lines: {
+      r1: {
+        id: "r1",
+        speaker: "SYSTEM",
+        text: "[ Vermittlung. Insa hebt nach dem zweiten Klingeln ab. ]",
+        next: "r2",
+      },
+      r2: {
+        id: "r2",
+        speaker: "INSA",
+        text: "Worag. Sie haben noch nichts für mich. Ich höre es an Ihrer Stimme.",
+        subtext: "Kein Vorwurf. Eine Feststellung.",
+        next: "r3",
+      },
+      r3: {
+        id: "r3",
+        speaker: "INSA",
+        text: "Korridor 56, Wartungstür 5610. Am Terminal »tap«. Read-only. Danach rufen Sie mich noch einmal an, dann bekommen Sie Ihren Code. Den Override habe ich Ihnen schon scharfgeschaltet.",
+        next: "r4",
+      },
+      r4: {
+        id: "r4",
+        speaker: "INSA",
+        text: "Auf Wiederhören.",
+        end: true,
+      },
+    },
+  },
+
+  // ---------------------------------------------------------------
   // 9. Detour: Philippe in his own apartment, after E67 is mostly done
   // ---------------------------------------------------------------
   // Variant A0 — die Sanitäter sind da, aber Layard hat das Protokoll
