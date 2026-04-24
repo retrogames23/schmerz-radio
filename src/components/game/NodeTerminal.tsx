@@ -81,6 +81,61 @@ export function NodeTerminal() {
 
   const append = (more: Line[]) => setLines((p) => [...p, ...more]);
 
+  const stopListening = (silent = false) => {
+    if (listenTimerRef.current) {
+      clearTimeout(listenTimerRef.current);
+      listenTimerRef.current = null;
+    }
+    setListening(false);
+    if (!silent) {
+      append([
+        { text: ">> listen: Mitschnitt beendet.", kind: "system" },
+        { text: "", kind: "out" },
+      ]);
+    }
+  };
+
+  /** Mischt die Chatter-Liste neu durch (Fisher–Yates auf einer Kopie). */
+  const shuffledChatter = () => {
+    const arr = SECTOR_CHATTER.map((m) => m);
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
+  const startListening = () => {
+    setListening(true);
+    const stream = shuffledChatter();
+    listenIndexRef.current = 0;
+    const tick = () => {
+      const idx = listenIndexRef.current;
+      const msg = stream[idx % stream.length];
+      const ts = chatterTimestamp();
+      // Einrückungen so wählen, dass von/an unterschiedlich gut lesbar bleiben.
+      const header = `[${ts}]  ${msg.from}  →  ${msg.to}`;
+      const body = `         » ${msg.text}«`;
+      // Leiser Beep für Eingang.
+      playBeep(0.18 * sfxVolume);
+      setLines((prev) => [
+        ...prev,
+        { text: header, kind: "system" },
+        { text: body, kind: "out" },
+      ]);
+      listenIndexRef.current = idx + 1;
+      listenTimerRef.current = setTimeout(tick, chatterDelayMs());
+    };
+    // Erstes Paket nach kurzer Anlaufzeit (1–2 s), damit der Banner sichtbar bleibt.
+    listenTimerRef.current = setTimeout(tick, 1200);
+  };
+
+  // Beim Schließen aufräumen.
+  if (!nodeOpen && listenTimerRef.current) {
+    clearTimeout(listenTimerRef.current);
+    listenTimerRef.current = null;
+  }
+
   const runScripted = (
     steps: { text: string; delayMs: number; kind?: Line["kind"]; beep?: boolean }[],
     done?: () => void,
