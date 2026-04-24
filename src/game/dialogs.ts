@@ -559,7 +559,7 @@ export const dialogs: Record<string, DialogTree> = {
       idCode6: {
         id: "idCode6",
         speaker: "INSA",
-        text: "Beispiel — wenn da steht 01.01.1990, dann tippen Sie 01011990. Verstanden, Herr Worag?",
+        text: "Beispiel — wenn da steht 14.03.1985, dann tippen Sie 14031985. Verstanden, Herr Worag?",
         next: "idCode7",
       },
       idCode7: {
@@ -628,7 +628,7 @@ export const dialogs: Record<string, DialogTree> = {
       x4help2: {
         id: "x4help2",
         speaker: "INSA",
-        text: "Beispiel — wenn da steht 01.01.1990, dann tippen Sie 01011990. Verstanden, Herr Worag?",
+        text: "Beispiel — wenn da steht 14.03.1985, dann tippen Sie 14031985. Verstanden, Herr Worag?",
         next: "x4help3",
       },
       x4help3: {
