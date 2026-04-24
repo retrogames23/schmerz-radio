@@ -289,7 +289,7 @@ export function NodeTerminal() {
       append([
         echo,
         { text: ">> WARNUNG: Hardware-Reset zerstört den Knoten irreversibel.", kind: "warn" },
-        { text: ">> 104,6 wird in E67 und Umgebung (E71 inklusive) dauerhaft stumm.", kind: "warn" },
+        { text: ">> 104,6 wird in E67 und Umgebung dauerhaft stumm.", kind: "warn" },
         { text: ">> 412 Empfänger im Sektor verlieren das Schmerz-Radio.", kind: "warn" },
         { text: ">> Tippe 'burn confirm' zum Ausführen.", kind: "out" },
         { text: ">> Tippe 'exit' zum Abbrechen.", kind: "out" },
