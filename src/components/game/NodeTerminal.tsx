@@ -120,7 +120,7 @@ export function NodeTerminal() {
     if (raw === "help" || raw === "?") {
       append([
         echo,
-        { text: "Befehle: tap | reroute | burn | exit", kind: "out" },
+        { text: "Befehle: tap | listen | reroute | burn | exit", kind: "out" },
         { text: "", kind: "out" },
       ]);
       return;
