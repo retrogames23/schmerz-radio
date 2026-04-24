@@ -57,6 +57,7 @@ export type StoryFlag =
   | "calledStegmann"
   | "calledForCode"
   | "centralOsUpdated"
+  | "centralOsUpdatedBodo"
   | "troubleReported"
   | "sectorDoorOpen"
   | "feetWontMove"

@@ -1064,7 +1064,7 @@ export function Terminal() {
     if (terminalOpen) {
       setCwd([...homePath]);
       if (bodoMode) {
-        const updated = flags.has("centralOsUpdated");
+        const updated = flags.has("centralOsUpdatedBodo");
         const banner: Line[] = [
           {
             text: `>> CENTRALOS v${osVersion(updated, true)} — Terminal 2612`,
@@ -1389,7 +1389,7 @@ export function Terminal() {
       newLines.push(
         { text: "SYSTEMSTATUS:", kind: "system" },
         {
-          text: `  CENTRALOS         [ v${osVersion(flags.has("centralOsUpdated"))} ]`,
+          text: `  CENTRALOS         [ v${osVersion(flags.has(bodoMode ? "centralOsUpdatedBodo" : "centralOsUpdated"), bodoMode)} ]`,
           kind: "out",
         },
         { text: "  E67.NETZ          [ STABIL ]", kind: "out" },
@@ -1591,7 +1591,7 @@ export function Terminal() {
       }
     } else if (head === "sysupdate") {
       if (bodoMode) {
-        if (flags.has("centralOsUpdated")) {
+        if (flags.has("centralOsUpdatedBodo")) {
           newLines.push({ text: "sysupdate: System ist bereits aktuell.", kind: "out" });
         } else {
           const fast = args.includes("--fast");
@@ -1608,7 +1608,7 @@ export function Terminal() {
               { text: ">> CentralOS v2.0 → v2.3.1   [OK]", delayMs: t(420), kind: "system", beep: true },
               { text: ">> Hinweis: Diese Aktualisierung wurde an die Leitstelle gemeldet.", delayMs: t(320), kind: "system" },
             ],
-            () => api.setFlag("centralOsUpdated"),
+            () => api.setFlag("centralOsUpdatedBodo"),
           );
           const h = termHistoryRef.current;
           if (h[h.length - 1] !== raw) h.push(raw);
@@ -1780,7 +1780,9 @@ export function Terminal() {
           newLines.push({ text: `cat: ${target}: Zugriff verweigert.`, kind: "out" });
         } else {
           newLines.push({ text: `── ${node.name} ───────────────────────`, kind: "system" });
-          const updated = flags.has("centralOsUpdated") && !bodoMode;
+          const updated = bodoMode
+            ? flags.has("centralOsUpdatedBodo")
+            : flags.has("centralOsUpdated");
           newLines.push(
             ...node.content.map(
               (t) => ({ text: applyOsVersion(t, updated), kind: "out" } as Line),
@@ -1848,11 +1850,13 @@ export function Terminal() {
       );
     } else if (head === "uname") {
       const showAll = args.includes("-a");
-      const updated = flags.has("centralOsUpdated");
+      const updated = flags.has(
+        bodoMode ? "centralOsUpdatedBodo" : "centralOsUpdated",
+      );
       const parts: Record<string, string> = {
         s: "CentralOS",
-        n: "e67-2611",
-        r: `${osVersion(updated)}-resonance`,
+        n: bodoMode ? "e67-2612" : "e67-2611",
+        r: `${osVersion(updated, bodoMode)}-resonance`,
         v: updated
           ? "#15 Thu Nov 6 16:04:22 1997"
           : "#14 Tue Nov 4 11:04:22 1997",
@@ -2066,7 +2070,7 @@ export function Terminal() {
     setLines((prev) => [...prev, ...newLines, { text: "", kind: "out" }]);
     // Bodo-Modus: solange nicht aktualisiert, drängelt das System bei jedem
     // Befehl mit einer kleinen Warnzeile. Verschwindet nach sysupdate.
-    if (bodoMode && !flags.has("centralOsUpdated") && head !== "sysupdate") {
+    if (bodoMode && !flags.has("centralOsUpdatedBodo") && head !== "sysupdate") {
       setTimeout(() => {
         setLines((prev) => [
           ...prev,
@@ -2107,7 +2111,11 @@ export function Terminal() {
               bodoMode ? "text-sepia sepia-glow" : "text-phosphor phosphor-glow"
             }`}
           >
-            CentralOS v{osVersion(flags.has("centralOsUpdated"), bodoMode)}
+            CentralOS v
+            {osVersion(
+              flags.has(bodoMode ? "centralOsUpdatedBodo" : "centralOsUpdated"),
+              bodoMode,
+            )}
             {bodoMode ? " — 2612" : ""}
           </span>
           <CloseButton

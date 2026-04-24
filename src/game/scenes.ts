@@ -629,7 +629,7 @@ export const scenes: Record<string, Scene> = {
             // Bodo merkt es, wenn Layard etwas Sichtbares getan hat —
             // entweder das System aktualisiert oder die Wartungssperre
             // 4711 storniert (beides hinterlässt Spuren im Log).
-            if (api.hasFlag("centralOsUpdated")) {
+            if (api.hasFlag("centralOsUpdatedBodo")) {
               // v2.3.1-Schock — der eigentliche „Caught"-Dialog dreht
               // sich um die OS-Aktualisierung.
               api.startDialog("bodoReturnsCaught");
