@@ -1232,7 +1232,7 @@ export function Terminal() {
         { text: `worag@centralos:~$ ${raw}`, kind: "in" },
         { text: ">> [DEBUG] Akt-1-Sprungpunkt geladen.", kind: "system" },
         { text: ">> Flags gesetzt: Protokoll erhalten, Aufzug 4711 storniert,", kind: "out" },
-        { text: ">> Büro 3601 (Abschnittsverantwortlicher) als leer markiert.", kont: "out" } as Line,
+        { text: ">> Büro 3601 (Abschnittsverantwortlicher) als leer markiert.", kind: "out" },
         { text: ">> Rückkehr in Wohnung 2611.", kind: "system" },
         { text: "", kind: "out" },
       ]);
