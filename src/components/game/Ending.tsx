@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { useSettings } from "@/audio/SettingsContext";
+import { useMusic } from "@/audio/MusicPlayer";
 import endingTrack from "@/assets/music/rain-against-the-pane.mp3";
 
 /** Spelt-out German numbers for small counts in the closing text. */
@@ -72,6 +73,7 @@ const FRAMES_FLYER_EXTRA: string[][] = [
 export function Ending() {
   const { ending, api } = useGame();
   const { musicVolume } = useSettings();
+  const { setDuck } = useMusic();
   const [idx, setIdx] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -102,11 +104,13 @@ export function Ending() {
     ? [...FRAMES_BASE, ...FRAMES_FLYER_EXTRA]
     : FRAMES_BASE;
 
-  // Abspann-Musik: läuft NUR während des Endings, on top der bestehenden
-  // Spielmusik (die wir bewusst nicht anfassen). Eigenes Audio-Element,
-  // damit der MusicPlayer nicht unterbrochen wird.
+  // Abspann-Musik: läuft NUR während des Endings. Die normale Spielmusik
+  // wird über setDuck(0) hart stumm geschaltet, damit nicht zwei Tracks
+  // übereinander laufen. Beim Verlassen des Endings setzen wir das Ducking
+  // wieder zurück auf 1 (volle Lautstärke).
   useEffect(() => {
     if (!ending) return;
+    setDuck(0);
     const a = new Audio(endingTrack);
     a.loop = true;
     a.volume = 0;
@@ -129,6 +133,7 @@ export function Ending() {
       a.pause();
       a.src = "";
       audioRef.current = null;
+      setDuck(1);
     };
     // musicVolume bewusst nicht in deps: wir setzen das Ziel beim Start,
     // spätere Lautstärke-Änderungen sollen den Fade nicht resetten.
