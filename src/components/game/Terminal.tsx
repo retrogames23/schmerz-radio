@@ -1090,7 +1090,10 @@ export function Terminal() {
       setCwd([...startHome]);
       setTelnetHost(null);
       setTelnetAwaitPass(null);
-      if (bodoMode) {
+      // Banner explizit vom lokalen Modus aus aufbauen — eine zuvor
+      // aktive Remote-Sitzung wurde gerade zurückgesetzt, der nächste
+      // Render hat aber noch das alte (effektive) bodoMode-Flag.
+      if (localBodoMode) {
         const updated = flags.has("centralOsUpdatedBodo");
         const banner: Line[] = [
           {
