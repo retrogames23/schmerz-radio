@@ -1479,9 +1479,17 @@ export function Terminal() {
         }
       } else if (tHead === "whoami") {
         out.push({ text: host?.host.split(".")[0] ?? "guest", kind: "out" });
+      } else if (tHead === "pwd") {
+        const user = host?.host.split(".")[0] ?? "guest";
+        out.push({ text: `/home/${user}`, kind: "out" });
       } else if (tHead === "help" || tHead === "?") {
         out.push(
-          { text: "Verfügbar: ls, cat <datei>, whoami, exit", kind: "out" },
+          { text: "Verfügbar in dieser Sitzung:", kind: "system" },
+          { text: "  ls [-a]        — Verzeichnis anzeigen", kind: "out" },
+          { text: "  cat <datei>    — Datei ausgeben", kind: "out" },
+          { text: "  pwd            — aktuelles Verzeichnis", kind: "out" },
+          { text: "  whoami         — eingeloggter Benutzer", kind: "out" },
+          { text: "  exit           — Verbindung schließen", kind: "out" },
         );
       } else {
         out.push({ text: `${tHead}: Befehl in Sitzung nicht verfügbar.`, kind: "out" });
