@@ -1064,7 +1064,7 @@ export function Terminal() {
     if (terminalOpen) {
       setCwd([...homePath]);
       if (bodoMode) {
-        const updated = flags.has("centralOsUpdated");
+        const updated = flags.has("centralOsUpdatedBodo");
         const banner: Line[] = [
           {
             text: `>> CENTRALOS v${osVersion(updated, true)} — Terminal 2612`,
