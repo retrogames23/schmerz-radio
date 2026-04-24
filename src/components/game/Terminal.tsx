@@ -1711,6 +1711,12 @@ export function Terminal() {
           ...lottiStart(fresh).map((t) => ({ text: t, kind: "out" } as Line)),
         );
       }
+    } else if (cmd === "news" || cmd === "./news" || cmd === "news.bin") {
+      const fresh = newNewsState();
+      setNewsState(fresh);
+      newLines.push(
+        ...newsStart(fresh).map((t) => ({ text: t, kind: "out" } as Line)),
+      );
     } else if (cmd === "clear") {
       setLines([]);
       setInput("");
