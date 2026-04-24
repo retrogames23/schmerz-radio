@@ -681,7 +681,7 @@ export const dialogs: Record<string, DialogTree> = {
         id: "x3",
         speaker: "LAYARD",
         text: "Ich brauche jetzt einen Code für die Sektor-Tür.",
-        next: "x4",
+        next: "x4pflicht1",
       },
       // Pflicht-Variante: solange Layard nicht 'tap' am Knoten 5610 ausgeführt
       // hat, schickt Insa ihn dorthin. Sobald getappt, läuft x4 wie gehabt.
