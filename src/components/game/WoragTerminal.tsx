@@ -3,13 +3,12 @@ import { useGame } from "@/game/GameContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playBeep, playKeypress, playUnlock } from "@/audio/sfx";
 import {
-  FILESYSTEM,
-  HOME_PATH,
-  HOME_PATH_BODO,
-  resolvePath,
-  pathString,
+  FILESYSTEM_WORAG as FILESYSTEM,
+  HOME_PATH_WORAG as HOME_PATH,
+  resolveWorag as resolvePath,
+  pathStringWorag as pathString,
   type FsNode,
-} from "@/game/filesystem";
+} from "@/game/filesystemWorag";
 import type { StoryFlag } from "@/game/types";
 import {
   adventureCommand,
@@ -18,13 +17,6 @@ import {
   adventureComplete,
   type AdvState,
 } from "@/game/adventureGame";
-import {
-  lottiCommand,
-  lottiStart,
-  newLottiState,
-  lottiComplete,
-  type LottiState,
-} from "@/game/lottiProgram";
 import { CloseButton } from "./CloseButton";
 
 interface Line {
