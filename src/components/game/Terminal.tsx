@@ -998,6 +998,7 @@ function buildHelpLines(bodoMode: boolean): Line[] {
   if (bodoMode) {
     lines.push(
       { text: "  lotti         — Fütterungskalender (Eigenbau, für Lotti)", kind: "out" },
+      { text: "  news          — Quadranten-Bote (Textbrowser, ZENTRAL.NETZ)", kind: "out" },
       { text: "", kind: "out" },
       { text: "WARTUNG (nur Hausmeister):", kind: "system" },
       { text: "  maint list                — offene Wartungsanfragen anzeigen", kind: "out" },
@@ -1007,6 +1008,7 @@ function buildHelpLines(bodoMode: boolean): Line[] {
   } else {
     lines.push(
       { text: "  adventure     — »Ein Tag draußen« (Textadventure)", kind: "out" },
+      { text: "  news          — Quadranten-Bote (Textbrowser, ZENTRAL.NETZ)", kind: "out" },
       { text: "", kind: "out" },
     );
   }
