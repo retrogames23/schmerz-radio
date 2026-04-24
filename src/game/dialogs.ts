@@ -618,12 +618,15 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "SYSTEM",
         text: "[ Insa wirft einen Blick auf etwas, das Layard nicht sieht — und nickt knapp. ]",
         requires: ["tappedNode5610"],
-        // Bei getappt: SYSTEM-Beat, dann Code-Mail-Pfad.
-        // Bei nicht getappt: hidden → Engine folgt next zu idPflichtCheck
-        //   und arbeitet idPflicht1..4 ab.
-        // (Wichtig: idPflichtSkip steht im Lines-Objekt VOR idPflichtCheck —
-        //  die Engine schaut nicht nach Reihenfolge, sondern folgt next.)
-        next: "idCode4",
+        // Engine-Strategie:
+        //  - Getappt → idPflichtSkip ist sichtbar → SYSTEM-Beat,
+        //    danach läuft die Engine via next durch idPflichtCheck
+        //    (hidden bei getappt) und idPflicht1..4 (alle hidden bei
+        //    getappt) bis zu idCode4 (sichtbar) — Code wird ausgegeben.
+        //  - Nicht getappt → idPflichtSkip ist hidden, Engine springt
+        //    weiter zu idPflichtCheck (sichtbar) → idPflicht1..4 zeigen
+        //    die Pflicht-Anweisungen, Choice beendet den Dialog.
+        next: "idPflichtCheck",
       },
       idCode4: {
         id: "idCode4",
