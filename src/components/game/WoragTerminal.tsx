@@ -25,11 +25,9 @@ interface Line {
 }
 
 /** Aktuelle CentralOS-Versionsbezeichnung, abhängig vom Update-Flag.
- *  Bodos Rechner läuft vor dem Update auf altem v2.0; das sysupdate hebt
- *  beide Maschinen auf die gleiche Sektor-Version v2.3.1. */
-function osVersion(updated: boolean, bodo = false): string {
-  if (updated) return "2.3.1";
-  return bodo ? "2.0" : "2.3";
+ *  Worags Maschine läuft auf v2.3 bzw. v2.3.1 nach Update. */
+function osVersion(updated: boolean): string {
+  return updated ? "2.3.1" : "2.3";
 }
 
 /**
