@@ -2070,7 +2070,7 @@ export function Terminal() {
     setLines((prev) => [...prev, ...newLines, { text: "", kind: "out" }]);
     // Bodo-Modus: solange nicht aktualisiert, drängelt das System bei jedem
     // Befehl mit einer kleinen Warnzeile. Verschwindet nach sysupdate.
-    if (bodoMode && !flags.has("centralOsUpdated") && head !== "sysupdate") {
+    if (bodoMode && !flags.has("centralOsUpdatedBodo") && head !== "sysupdate") {
       setTimeout(() => {
         setLines((prev) => [
           ...prev,
