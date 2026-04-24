@@ -132,9 +132,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "door",
         x: 86,
-        y: 35,
+        y: 62,
         w: 12,
-        h: 60,
+        h: 33,
         label: "Wohnungstür",
         onUse: (api) => {
           // Resonanz-Überlastung wurde ausgelöst (Radio @104,6),
