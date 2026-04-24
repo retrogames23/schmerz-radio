@@ -1591,7 +1591,7 @@ export function Terminal() {
       }
     } else if (head === "sysupdate") {
       if (bodoMode) {
-        if (flags.has("centralOsUpdated")) {
+        if (flags.has("centralOsUpdatedBodo")) {
           newLines.push({ text: "sysupdate: System ist bereits aktuell.", kind: "out" });
         } else {
           const fast = args.includes("--fast");
@@ -1608,7 +1608,7 @@ export function Terminal() {
               { text: ">> CentralOS v2.0 → v2.3.1   [OK]", delayMs: t(420), kind: "system", beep: true },
               { text: ">> Hinweis: Diese Aktualisierung wurde an die Leitstelle gemeldet.", delayMs: t(320), kind: "system" },
             ],
-            () => api.setFlag("centralOsUpdated"),
+            () => api.setFlag("centralOsUpdatedBodo"),
           );
           const h = termHistoryRef.current;
           if (h[h.length - 1] !== raw) h.push(raw);
