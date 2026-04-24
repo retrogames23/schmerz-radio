@@ -2439,13 +2439,13 @@ export const dialogs: Record<string, DialogTree> = {
       b5: {
         id: "b5",
         speaker: "BODO",
-        text: "Allein ist relativ. — Fernmeldetechniker, Stadtwerke, sechsundzwanzig Jahre. Vorruhestand seit der Sektor-Reform. Und seitdem … ja. Hier.",
+        text: "Allein ist relativ. — Fernmeldetechniker, Stadtwerke, sechsundzwanzig Jahre. Vorruhestand seit der Sektor-Reform. Seitdem mache ich hier den Hausmeister. Halbtags, auf dem Papier. Praktisch immer, wenn irgendwo was knirscht.",
         next: "b6",
       },
       b6: {
         id: "b6",
         speaker: "SYSTEM",
-        text: "[ Auf dem Sessel mit der Decke bewegt sich etwas. Eine Pfote streckt sich langsam aus den Falten. ]",
+        text: "[ Auf dem Sessel mit der Decke bewegt sich etwas. Eine Pfote streckt sich langsam aus den Falten. An der Garderobe hängt ein schwerer Schlüsselbund mit einem Holzanhänger: »HM 2/E67«. ]",
         choices: [
           { text: "Sie haben ein Tier?", next: "bodoLottiReveal" },
           { text: "Stadtwerke. Erzählen Sie.", next: "b7" },
