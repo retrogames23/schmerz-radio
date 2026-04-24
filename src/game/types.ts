@@ -280,8 +280,10 @@ export interface GameApi {
   startDialog: (id: string) => void;
   openTerminal: (asBodo?: boolean) => void;
   openRadio: () => void;
-  openKeypad: () => void;
+  openKeypad: (target?: KeypadTarget) => void;
   openTelevision: () => void;
+  /** Wartungsterminal hinter Tür 5610 (eigenes UI, kein CentralOS). */
+  openNode5610: () => void;
   isRadioActive: () => boolean;
   setEnding: () => void;
   /**
@@ -298,3 +300,10 @@ export interface GameApi {
    */
   getPhilippeFloor: () => 3 | 4 | 5;
 }
+
+/**
+ * Welches Schloss steckt hinter dem aktuellen Keypad-Aufruf.
+ * - "sectorDoor" — bestehende E67/E71-Tür, 8-stellig.
+ * - "door5610"   — Wartungstür im Korridor 56, 4-stellig + Frequenz-Slot.
+ */
+export type KeypadTarget = "sectorDoor" | "door5610";
