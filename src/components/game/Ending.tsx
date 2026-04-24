@@ -2,28 +2,32 @@ import { useEffect, useState } from "react";
 import { useGame } from "@/game/GameContext";
 
 const FRAMES_BASE = [
-  "Layard betritt den Aufzug. Er drückt E67.",
-  "Im Innenfutter seines Mantels: ein Kristall, ein Brief.",
-  "Er denkt an Insas Stimme. „Bitte.“",
-  "Er denkt an Mikaels Stimme. „Schalten Sie das Radio aus, wenn Sie den Aufzug betreten.“",
+  "Layard legt den Hörer zurück.",
+  "Auf dem Tisch: die Datenkapsel. Unverändert. Unzustellbar.",
+  "Daneben: das Telefon. Schwarzer Bakelit. Warm vom Hörer.",
   "",
-  "Layard greift in die Tasche. Sein Daumen findet den Drehregler.",
-  "Zum ersten Mal seit elf Jahren —",
-  "— dreht er ihn auf Null.",
+  "In seinem Kopf, langsam: Insas Stimme.",
+  "„Bringen Sie es mir vorbei. Persönlich.“",
+  "Und davor, leiser: „Das überrascht mich nicht.“",
   "",
-  "Stille. Nicht die Stille des Quadranten. Eine andere.",
-  "Er hört seinen eigenen Atem. Er erkennt ihn nicht.",
-  "Die Aufzugstür öffnet sich.",
+  "Layard tritt ans Fenster. Innenhof. Solaranlage. 48 Stunden Notstrom.",
+  "Er hat heute mit drei Menschen geredet, die er gestern nicht kannte.",
+  "Mit zwei davon werden andere reden, sobald er das Zimmer verlässt.",
+  "",
+  "Auf 104,6 — heute zum ersten Mal — kein Klopfen.",
+  "Nur ein Rauschen. Vielleicht trägt es etwas. Vielleicht nicht.",
+  "Layard nimmt die Datenkapsel in die Hand.",
+  "Sie ist leichter, als sie heute Morgen war.",
 ];
 
 const FRAMES_FLYER_EXTRA = [
   "",
-  "Im selben Mantelinnenfutter: ein gefaltetes Blatt.",
+  "Neben der Kapsel liegt ein gefaltetes Blatt.",
   "Ein Mädchen auf einer Etage, deren Nummer er sich nicht gemerkt hat.",
   "„Wer hält das andere Ende?“ — Z.K.S.",
   "",
   "Er zerreißt das Blatt nicht. Er faltet es kleiner.",
-  "Es passt jetzt zwischen Kristall und Brief.",
+  "Es passt jetzt unter die Kapsel.",
 ];
 
 export function Ending() {
