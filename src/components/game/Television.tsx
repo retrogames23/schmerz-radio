@@ -298,7 +298,7 @@ export function Television() {
         <div className="relative flex flex-1 flex-col overflow-hidden bg-[oklch(0.16_0.02_120)] scanlines">
           <div className="flex items-start justify-between px-5 pt-5">
             <div>
-              <div className="font-mono-crt text-2xl text-amber-glow amber-glow">
+              <div className={`font-mono-crt text-2xl amber-glow ${channel.accentClass}`}>
                 {channel.name}
               </div>
               <div className="mt-1 font-display text-xs uppercase tracking-widest text-muted-foreground">
@@ -313,13 +313,28 @@ export function Television() {
             </div>
           </div>
 
-          <div className="flex flex-1 items-center justify-center px-8 py-6">
-            <p
+          <div className="relative flex flex-1 items-center justify-center overflow-hidden px-5 py-4">
+            <video
+              key={channel.id}
+              src={channel.videoUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="h-full w-auto max-w-full object-contain"
+            />
+            {/* Bauchbinde mit Bulletin-Text */}
+            <div
               key={`${channelIdx}-${bulletinIdx}`}
-              className="fade-in max-w-2xl text-center font-display text-base leading-relaxed text-foreground text-shadow-hard sm:text-lg"
+              className="fade-in pointer-events-none absolute inset-x-4 bottom-3 rounded-sm border border-amber-glow/30 bg-black/80 px-4 py-2 backdrop-blur-sm"
             >
-              {bulletin}
-            </p>
+              <div className={`font-mono-crt text-[10px] uppercase tracking-widest ${channel.accentClass}`}>
+                {channel.name}
+              </div>
+              <p className="mt-0.5 font-display text-xs leading-snug text-foreground sm:text-sm">
+                {bulletin}
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center justify-between border-t border-amber-glow/20 px-5 py-2 font-mono-crt text-[11px] uppercase tracking-widest text-muted-foreground">
