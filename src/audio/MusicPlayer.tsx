@@ -43,6 +43,12 @@ interface MusicCtx {
   next: () => void;
   prev: () => void;
   playIndex: (i: number) => void;
+  /**
+   * Multipliziert die effektive Lautstärke mit `factor` (0..1).
+   * Wird vom Teleempfänger genutzt, um die Musik zu „ducken", solange
+   * eine Sprecher-Meldung läuft. 1 = volle Lautstärke (Standard).
+   */
+  setDuck: (factor: number) => void;
 }
 
 const MusicContext = createContext<MusicCtx | null>(null);
