@@ -218,17 +218,22 @@ export function GameProvider({ children }: { children: ReactNode }) {
         const seen = new Set<string>();
         while (cursor && !seen.has(cursor)) {
           seen.add(cursor);
-          const candidate = tree.lines[cursor];
+          const candidate: (typeof tree.lines)[string] | undefined =
+            tree.lines[cursor];
           if (!candidate) {
             cursor = undefined;
             break;
           }
           const reqOk =
             !candidate.requires ||
-            candidate.requires.every((f) => flagsRef.current.has(f));
+            candidate.requires.every((f: StoryFlag) =>
+              flagsRef.current.has(f),
+            );
           const hideOk =
             !candidate.hiddenWhen ||
-            !candidate.hiddenWhen.some((f) => flagsRef.current.has(f));
+            !candidate.hiddenWhen.some((f: StoryFlag) =>
+              flagsRef.current.has(f),
+            );
           if (reqOk && hideOk) break;
           if (candidate.end || !candidate.next) {
             cursor = undefined;
