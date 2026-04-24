@@ -198,7 +198,7 @@ export function NodeTerminal() {
     if (raw === "help" || raw === "?") {
       append([
         echo,
-        { text: "Befehle: tap | listen | reroute | burn | exit", kind: "out" },
+        { text: "Befehle: tap | listen | burn | exit", kind: "out" },
         { text: "", kind: "out" },
       ]);
       return;
@@ -260,46 +260,16 @@ export function NodeTerminal() {
           { text: "   ─── Quell-Signatur ───", delayMs: 380, kind: "system" },
           { text: "   1 Sender dominiert den Mix zu 38 %.", delayMs: 500, kind: "warn" },
           { text: "   Signatur-Hash: 0x4E67·LAYARD·WORAG", delayMs: 600, kind: "warn" },
+          { text: "   ─── Sender-Topologie ───", delayMs: 380, kind: "system" },
+          { text: "   Quelle:        Knoten 5610 (lokal aggregiert, gefiltert)", delayMs: 320 },
+          { text: "   Träger-Mod.:   Antennenarray Dach-E67 → Streuung E67/E71", delayMs: 320 },
+          { text: "   Reichweite:    E67 voll · E71 Beistrahlung · Randabfall E68/E66", delayMs: 320 },
           { text: ">> ─── EINGANG: DAS BIST DU. GEFILTERT. ──", delayMs: 800, kind: "system" },
           { text: ">> Tap geschlossen.", delayMs: 500, kind: "system", beep: true },
         ],
         () => {
           api.setFlag("tappedNode5610");
           api.setKnowledge("radioOrigin");
-        },
-      );
-      return;
-    }
-
-    if (raw === "reroute") {
-      if (flags.has("burnedNode5610")) {
-        append([echo, { text: "reroute: Knoten ist offline (burn).", kind: "warn" }, { text: "", kind: "out" }]);
-        return;
-      }
-      if (flags.has("reroutedNode5610")) {
-        append([
-          echo,
-          { text: "reroute: Loopback ist bereits aktiv.", kind: "out" },
-          { text: "", kind: "out" },
-        ]);
-        return;
-      }
-      append([echo]);
-      runScripted(
-        [
-          { text: ">> Lade Routing-Tabelle …", delayMs: 0, kind: "system", beep: true },
-          { text: ">> Setze Ziel-IP: 127.0.0.1 (loopback) …", delayMs: 400 },
-          { text: ">> Schreibe Konfiguration …", delayMs: 380 },
-          { text: ">> Sende SIGHUP an carrier-daemon …", delayMs: 380, beep: true },
-          { text: ">> Knoten 5610 sendet jetzt nur noch sein eigenes Echo.", delayMs: 600, kind: "system" },
-          { text: ">> Niemand wird das in den nächsten Stunden bemerken.", delayMs: 500, kind: "system" },
-          { text: ">> Sektor E67 — still, von oben nach unten.", delayMs: 500, kind: "system" },
-        ],
-        () => {
-          playUnlock(0.5 * sfxVolume);
-          api.setFlag("reroutedNode5610");
-          api.setFlag("crossLinkSevered");
-          api.playBurnSequence("reroute");
         },
       );
       return;
@@ -314,14 +284,25 @@ export function NodeTerminal() {
         ]);
         return;
       }
-      if (flags.has("reroutedNode5610")) {
+      // Erste Eingabe = nur Warnung. Ausgeführt wird burn erst nach
+      // 'burn confirm'. So passiert es nicht aus Versehen.
+      append([
+        echo,
+        { text: ">> WARNUNG: Hardware-Reset zerstört den Knoten irreversibel.", kind: "warn" },
+        { text: ">> 104,6 wird in E67 und Umgebung (E71 inklusive) dauerhaft stumm.", kind: "warn" },
+        { text: ">> 412 Empfänger im Sektor verlieren das Schmerz-Radio.", kind: "warn" },
+        { text: ">> Tippe 'burn confirm' zum Ausführen.", kind: "out" },
+        { text: ">> Tippe 'exit' zum Abbrechen.", kind: "out" },
+        { text: "", kind: "out" },
+      ]);
+      return;
+    }
+
+    if (raw === "burn confirm") {
+      if (flags.has("burnedNode5610")) {
         append([
           echo,
-          {
-            text: "burn: Knoten läuft im Loopback. Reset würde den Loop durchbrechen.",
-            kind: "warn",
-          },
-          { text: "Trotzdem ausführen? Tippe 'burn confirm'.", kind: "out" },
+          { text: "burn: bereits durchgeführt. Der Knoten ist tot.", kind: "warn" },
           { text: "", kind: "out" },
         ]);
         return;
@@ -338,27 +319,21 @@ export function NodeTerminal() {
           { text: ">> Querkopplung E67↔E71: GETRENNT.", delayMs: 500, kind: "warn", beep: true },
         ],
         () => {
+          // Edge-Case-Schutz: Wenn der Spieler über cheat 0002 hier landet,
+          // bevor das Klopf-Event mit Philippe getriggert wurde, würde
+          // burn die Eröffnung der Story unerreichbar machen (104,6 ist
+          // danach für immer stumm). Letzte Welle des sterbenden Knotens
+          // reicht in dem Fall noch bis zur Wohnungstür durch.
+          const needsPhilippeRecovery = !flags.has("doorbellRang");
           api.setFlag("burnedNode5610");
           api.setFlag("crossLinkSevered");
-          api.playBurnSequence("burn");
-        },
-      );
-      return;
-    }
-
-    if (raw === "burn confirm") {
-      append([echo]);
-      runScripted(
-        [
-          { text: ">> Loopback wird mit dem Knoten zerstört …", delayMs: 0, kind: "warn", beep: true },
-          { text: ">> Vollständiger Hardware-Reset …", delayMs: 500, kind: "warn" },
-          { text: ">> 104,6 — KEIN TRÄGER.", delayMs: 600, kind: "system" },
-          { text: ">> Querkopplung E67↔E71: GETRENNT.", delayMs: 500, kind: "warn", beep: true },
-        ],
-        () => {
-          api.setFlag("burnedNode5610");
-          api.setFlag("crossLinkSevered");
-          api.playBurnSequence("burn");
+          api.playBurnSequence();
+          if (needsPhilippeRecovery) {
+            api.setFlag("doorbellRang");
+            api.setFlag("metPhilippe");
+            // Klopf-Dialog reiht sich nach der BurnSequence ein.
+            api.startDialog("philippeAtDoor");
+          }
         },
       );
       return;
@@ -426,7 +401,7 @@ export function NodeTerminal() {
                 ? "… Ausgabe läuft …"
                 : listening
                   ? "… Mitschnitt läuft. Enter beendet."
-                  : "listen | tap | reroute | burn | exit"
+                  : "listen | tap | burn | exit"
             }
             spellCheck={false}
             autoComplete="off"
