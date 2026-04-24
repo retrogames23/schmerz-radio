@@ -69,6 +69,15 @@ export const scenes: Record<string, Scene> = {
             api.setFlag("calledInsa2");
             api.startDialog("insa2a");
           } else if (
+            api.hasFlag("tappedNode5610") &&
+            !api.hasFlag("calledForCode")
+          ) {
+            // Layard war im Serverraum 5610 und hat »tap« ausgeführt.
+            // Jetzt ruft er Insa zurück → sie hält ihr Versprechen und
+            // legt ihm die Code-Mail (Datum 06.11.1997) ins Postfach.
+            api.setFlag("calledForCode");
+            api.startDialog("insa2");
+          } else if (
             api.hasFlag("calledStegmann") &&
             api.hasFlag("centralOsUpdated") &&
             api.hasFlag("troubleReported") &&

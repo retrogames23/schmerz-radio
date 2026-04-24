@@ -542,7 +542,11 @@ export const dialogs: Record<string, DialogTree> = {
           },
           {
             text: "Lassen wir das. Geben Sie mir bitte direkt den Code.",
-            next: "idPflichtCheck",
+            // Engine resolved nach Sichtbarkeit:
+            //  - Getappt → idPflichtSkip (sichtbar, requires erfüllt) → idCode4
+            //  - Nicht getappt → idPflichtSkip hidden, Engine folgt
+            //    next-Pointer zu idPflichtCheck → idPflicht1..4.
+            next: "idPflichtSkip",
           },
         ],
       },
@@ -553,6 +557,7 @@ export const dialogs: Record<string, DialogTree> = {
         id: "idPflichtCheck",
         speaker: "SYSTEM",
         text: "[ Insa zögert einen Moment, klickt durch ihre Maske. ]",
+        hiddenWhen: ["tappedNode5610"],
         next: "idPflicht1",
       },
       // Pflicht-Pfad — nur wenn Layard noch nicht 'tap' am Knoten 5610 gemacht hat.
@@ -584,6 +589,9 @@ export const dialogs: Record<string, DialogTree> = {
         text: "Falls die Tür nicht aufgeht: Wartungsmuster ist 7-0-Pause-3-2. Aber das wissen Sie nicht von mir.",
         subtext: "Sie sagt es so leise, als würde sie selbst nicht zuhören.",
         hiddenWhen: ["tappedNode5610"],
+        // Wenn getappt: hidden → Engine folgt next nach idCode4.
+        // Wenn nicht getappt: sichtbar mit Choice „Auf Wiederhören"
+        //   die den Dialog beendet (kein next auf der Choice).
         next: "idCode4",
         choices: [
           {
@@ -610,7 +618,15 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "SYSTEM",
         text: "[ Insa wirft einen Blick auf etwas, das Layard nicht sieht — und nickt knapp. ]",
         requires: ["tappedNode5610"],
-        next: "idCode4",
+        // Engine-Strategie:
+        //  - Getappt → idPflichtSkip ist sichtbar → SYSTEM-Beat,
+        //    danach läuft die Engine via next durch idPflichtCheck
+        //    (hidden bei getappt) und idPflicht1..4 (alle hidden bei
+        //    getappt) bis zu idCode4 (sichtbar) — Code wird ausgegeben.
+        //  - Nicht getappt → idPflichtSkip ist hidden, Engine springt
+        //    weiter zu idPflichtCheck (sichtbar) → idPflicht1..4 zeigen
+        //    die Pflicht-Anweisungen, Choice beendet den Dialog.
+        next: "idPflichtCheck",
       },
       idCode4: {
         id: "idCode4",
