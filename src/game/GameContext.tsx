@@ -42,8 +42,8 @@ interface GameState {
   radioActive: boolean; // tuned to 104.6, providing subtext
   resonance: number; // 0–100
   ending: boolean;
-  /** Aktive Burn-/Reroute-Sequenz nach Knoten-5610-Aktion. */
-  burnSequence: "burn" | "reroute" | null;
+  /** Aktive Burn-Sequenz nach Knoten-5610-Aktion. */
+  burnSequence: boolean;
 }
 
 interface GameContextValue extends GameState {
@@ -125,9 +125,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [tvOpen, setTvOpen] = useState(false);
   const [resonance, setResonance] = useState(0);
   const [ending, setEnding] = useState(false);
-  const [burnSequence, setBurnSequence] = useState<"burn" | "reroute" | null>(
-    null,
-  );
+  const [burnSequence, setBurnSequence] = useState<boolean>(false);
   // Mira darf NICHT auf Etage 3 erscheinen — dort liegt das Büro des
   // Abschnittsverantwortlichen (E67). Würde sie dort die Tür blockieren und
   // Layard ginge nicht auf sie ein, gäbe es ein Dead End: er erfährt dann
@@ -299,10 +297,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setNodeOpen(true);
       },
       setEnding: () => setEnding(true),
-      playBurnSequence: (kind) => {
+      playBurnSequence: () => {
         // Node-Terminal schließen, Sequenz übernimmt den Bildschirm.
         setNodeOpen(false);
-        setBurnSequence(kind);
+        setBurnSequence(true);
       },
       getMiraFloors: () => miraFloorsRef.current ?? [4],
       getPhilippeFloor: () => philippeFloorRef.current ?? 5,
