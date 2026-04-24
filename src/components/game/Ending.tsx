@@ -180,7 +180,7 @@ export function Ending() {
 
       {done && (
         <>
-          <ChatterAtmosphere />
+          <ChatterAtmosphere burned={api.hasFlag("burnedNode5610")} />
           <div className="slow-fade-in relative z-10 mt-12 space-y-3 text-center">
             <div className="font-mono-crt text-sm uppercase tracking-[0.4em] text-amber-glow amber-glow">
               AKT II — ENDE
@@ -219,7 +219,7 @@ interface FloatingMsg {
   body: string;
 }
 
-function ChatterAtmosphere() {
+function ChatterAtmosphere({ burned }: { burned: boolean }) {
   const [msgs, setMsgs] = useState<FloatingMsg[]>([]);
 
   useEffect(() => {
@@ -227,7 +227,9 @@ function ChatterAtmosphere() {
     const order = [...SECTOR_CHATTER].sort(() => Math.random() - 0.5);
     let i = 0;
     const FADE_LIFE = 9000; // wie lange eine Nachricht sichtbar bleibt
-    const SPAWN_EVERY = 2200; // Abstand zwischen Spawns
+    // Nach burn ist 104,6 in E67 still — der Chatter-Strom dünnt aus.
+    // Spawn-Takt halbiert und ~30 % der Nachrichten erscheinen zerhackt.
+    const SPAWN_EVERY = burned ? 4400 : 2200;
 
     const spawn = () => {
       const m = order[i % order.length];
@@ -244,8 +246,9 @@ function ChatterAtmosphere() {
             ? 60 + Math.random() * 8
             : 25 + Math.random() * 15;
       const id = nextId++;
+      const garbled = burned && Math.random() < 0.3;
       const header = `[${chatterTimestamp()}]  ${m.from}  →  ${m.to}`;
-      const body = `» ${m.text} «`;
+      const body = garbled ? "» … «" : `» ${m.text} «`;
       setMsgs((prev) => [...prev, { id, top, left, align, header, body }]);
       window.setTimeout(() => {
         setMsgs((prev) => prev.filter((x) => x.id !== id));
@@ -256,7 +259,7 @@ function ChatterAtmosphere() {
     spawn();
     const t = window.setInterval(spawn, SPAWN_EVERY);
     return () => window.clearInterval(t);
-  }, []);
+  }, [burned]);
 
   return (
     <div
