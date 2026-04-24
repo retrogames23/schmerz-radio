@@ -115,6 +115,8 @@ const COMMANDS = [
   "tree",
   "adventure",
   "./adventure.bin",
+  "lotti",
+  "./lotti",
   "net",
   "telnet",
   "sysupdate",
