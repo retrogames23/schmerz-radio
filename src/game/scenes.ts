@@ -1437,7 +1437,7 @@ export const scenes: Record<string, Scene> = {
         h: 54,
         alt: "Junge Frau, an die Wand gelehnt",
         hiddenWhen: ["tookFlyer"],
-        visible: (api) => api.getMiraFloor() === 3,
+        visible: (api) => api.getMiraFloors().includes(3),
       },
       {
         id: "philippeSprite36",
@@ -1448,6 +1448,7 @@ export const scenes: Record<string, Scene> = {
         h: 54,
         alt: "Philippe, etwas verloren im Korridor",
         hiddenWhen: ["doorbellRang"],
+        visible: (api) => api.getPhilippeFloor() === 3,
       },
     ],
     hotspots: [

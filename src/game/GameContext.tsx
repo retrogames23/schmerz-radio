@@ -392,7 +392,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         resonance: resonanceRef.current,
         ending: endingRef.current,
         savedAt: new Date().toISOString(),
-        miraFloor: miraFloorRef.current,
+        miraFloors: miraFloorsRef.current,
+        philippeFloor: philippeFloorRef.current,
       };
       const summary: SaveSummary = {
         slot,
@@ -437,7 +438,27 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setInventory(persisted.inventory);
       setResonance(persisted.resonance);
       setEnding(persisted.ending);
-      miraFloorRef.current = persisted.miraFloor ?? null;
+      // Wiederherstellung mit Rückwärtskompatibilität: alte Saves (vor der
+      // 2-Etagen-Verteilung) hatten nur miraFloor — wir spreizen das auf
+      // {miraFloor + eine zufällige zweite} und Philippe bekommt die Reste.
+      const pool: Array<3 | 4 | 5> = [3, 4, 5];
+      if (persisted.miraFloors && persisted.miraFloors.length > 0) {
+        miraFloorsRef.current = persisted.miraFloors;
+        philippeFloorRef.current =
+          persisted.philippeFloor ??
+          (pool.find((f) => !persisted.miraFloors!.includes(f)) ?? 5);
+      } else if (persisted.miraFloor) {
+        const others = pool.filter((f) => f !== persisted.miraFloor);
+        const second = others[Math.floor(Math.random() * others.length)];
+        miraFloorsRef.current = [persisted.miraFloor, second].sort() as Array<
+          3 | 4 | 5
+        >;
+        philippeFloorRef.current =
+          pool.find((f) => !miraFloorsRef.current!.includes(f)) ?? 5;
+      } else {
+        miraFloorsRef.current = null;
+        philippeFloorRef.current = null;
+      }
       // Reset transient UI
       setCaption(null);
       setTextOverlay(null);
