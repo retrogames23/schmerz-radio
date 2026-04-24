@@ -14,6 +14,7 @@ import passageBg from "@/assets/scene-passage.jpg";
 import corridor36Bg from "@/assets/scene-corridor-36.jpg";
 import corridor46Bg from "@/assets/scene-corridor-46.jpg";
 import corridor56Bg from "@/assets/scene-corridor-56.jpg";
+import serverRoom5610Bg from "@/assets/scene-server-room-5610.jpg";
 import miraSprite from "@/assets/npc-mira.png";
 import philippeSprite from "@/assets/npc-philippe.png";
 import type { Scene } from "./types";

@@ -14,6 +14,7 @@ import { RadioPanel } from "./RadioPanel";
 import { Terminal } from "./Terminal";
 import { Keypad } from "./Keypad";
 import { Television } from "./Television";
+import { NodeTerminal } from "./NodeTerminal";
 import { Ending } from "./Ending";
 import { TitleScreen } from "./TitleScreen";
 import { PauseMenu } from "./PauseMenu";
@@ -60,6 +61,7 @@ export function Game() {
                   <Terminal />
                   <Keypad />
                   <Television />
+                  <NodeTerminal />
                   <Ending />
                   <PauseMenu open={pauseOpen} onClose={() => setPauseOpen(false)} />
                 </div>
