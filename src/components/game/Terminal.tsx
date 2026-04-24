@@ -1412,7 +1412,10 @@ export function Terminal() {
         out.push({ text: ">> Verbindung geschlossen.", kind: "system" });
         setTelnetHost(null);
       } else if (tHead === "ls" || tHead === "dir") {
-        const names = Object.keys(hostFiles).sort();
+        const showAll = tArgs.includes("-a") || tArgs.includes("-la") || tArgs.includes("-al");
+        const names = Object.keys(hostFiles)
+          .filter((n) => showAll || !n.startsWith("."))
+          .sort();
         if (!names.length) out.push({ text: "  (leer)", kind: "out" });
         else out.push(...names.map((n) => ({ text: `  ${n}`, kind: "out" } as Line)));
       } else if (tHead === "cat" || tHead === "more" || tHead === "type") {
