@@ -401,6 +401,177 @@ export const dialogs: Record<string, DialogTree> = {
   // ---------------------------------------------------------------
   // 7. Stegmann (Zentral-IT) — reached after the first failed network attempt
   // ---------------------------------------------------------------
+  // Disposition zwischen 1. Anruf (insa2a) und Code-Freigabe (insa2):
+  // Insa fragt, was Layard braucht. Er kann sich entscheiden, den
+  // Standardweg über Stegmann zu gehen — oder direkt nach dem Code zu
+  // fragen. In letzterem Fall mahnt sie ihn, dass die Ausgangsmeldung
+  // noch aussteht, und überlässt ihm die Wahl.
+  insaDispatch: {
+    id: "insaDispatch",
+    start: "id1",
+    lines: {
+      id1: {
+        id: "id1",
+        speaker: "SYSTEM",
+        text: "[ Layard hebt den Hörer. Wählt 001. Vermittlung. Insa, schon wieder. ]",
+        next: "id2",
+      },
+      id2: {
+        id: "id2",
+        speaker: "INSA",
+        text: "Bauerfeind. — Worag, schon wieder. Was brauchen Sie?",
+        subtext: "Keine Genervtheit. Eher: Aufmerksamkeit.",
+        next: "id3",
+      },
+      id3: {
+        id: "id3",
+        speaker: "LAYARD",
+        text: "…",
+        choices: [
+          {
+            text: "Ich komme nicht durchs Netz. Error 4567.",
+            next: "idNet1",
+          },
+          {
+            text: "Ich brauche einen Code für die Sektor-Tür.",
+            next: "idCode1",
+          },
+        ],
+      },
+      // ── Pfad A: Layard meldet die Störung → Stegmann (Standardweg).
+      idNet1: {
+        id: "idNet1",
+        speaker: "INSA",
+        text: "Ich verstehe. Ich stelle Sie durch zum Verantwortlichen für das Zentralnetz.",
+        subtext: "Sie merkt nicht an, dass das ungewöhnlich ist. Es ist es nicht.",
+        next: "idNet2",
+      },
+      idNet2: {
+        id: "idNet2",
+        speaker: "SYSTEM",
+        text: "[ Wartetonschleife. Acht Sekunden. Ein Knacken. Eine Männerstimme. ]",
+        next: "idNet3",
+        action: undefined,
+      },
+      idNet3: {
+        id: "idNet3",
+        speaker: "STEGMANN",
+        text: "Hier ist die technische Unterstützung des Zentralen Netzes, Stegmann am Apparat. — Sie haben den Ausgang nicht gemeldet. Standardprotokoll, Herr Worag. Beim nächsten Mal bitte zuerst melden. Was brauchen Sie?",
+        next: "idNet4",
+      },
+      idNet4: {
+        id: "idNet4",
+        speaker: "LAYARD",
+        text: "Ich muss mich mit dem Zentralen Netz verbinden, um einen Ausgang zu melden. Verbindung gestört. Error 4567.",
+        next: "idNet5",
+      },
+      idNet5: {
+        id: "idNet5",
+        speaker: "STEGMANN",
+        text: "Verstanden. Bitte tippen Sie im Terminal: »sysupdate«. Damit wird CentralOS über das lokale E67-Netz aktualisiert.",
+        next: "idNet6",
+      },
+      idNet6: {
+        id: "idNet6",
+        speaker: "STEGMANN",
+        text: "Danach tippen Sie: »trouble net«. Die automatische Problemermittlung leitet Ihren Fehler an die Gateway-Verantwortlichen weiter. Details schicke ich Ihnen ins Terminal-Postfach.",
+        next: "idNet7",
+      },
+      idNet7: {
+        id: "idNet7",
+        speaker: "LAYARD",
+        text: "Verstanden.",
+        next: "idNet8",
+      },
+      idNet8: {
+        id: "idNet8",
+        speaker: "SYSTEM",
+        text: "[ Hörer eingehängt. Stegmann hatte denselben monotonen Tonfall wie die automatischen Ansagen der B2-Kantine. ]",
+        choices: [
+          {
+            text: "▣ Beenden",
+            action: (api) => {
+              api.setFlag("calledStegmann");
+            },
+          },
+        ],
+      },
+      // ── Pfad B: Layard fragt direkt nach dem Code.
+      idCode1: {
+        id: "idCode1",
+        speaker: "INSA",
+        text: "Den Code. — Eine Sekunde, Herr Worag. Hier steht, dass Sie Ihren Ausgang noch nicht elektronisch gemeldet haben. Standardprotokoll: zuerst die Meldung, dann der Code.",
+        subtext: "Kein Vorwurf. Sie liest nur ab, was auf ihrem Schirm steht.",
+        next: "idCode2",
+      },
+      idCode2: {
+        id: "idCode2",
+        speaker: "INSA",
+        text: "Die Meldung läuft über das ZENTRAL.NETZ. Wenn Sie wollen, verbinde ich Sie mit dem Verantwortlichen für das Netz — er sagt Ihnen, was am Terminal zu tun ist. Sonst …",
+        next: "idCode3",
+      },
+      idCode3: {
+        id: "idCode3",
+        speaker: "LAYARD",
+        text: "…",
+        choices: [
+          {
+            text: "Verbinden Sie mich. Ich versuche es noch.",
+            next: "idNet1",
+          },
+          {
+            text: "Lassen wir das. Geben Sie mir bitte direkt den Code.",
+            next: "idCode4",
+          },
+        ],
+      },
+      idCode4: {
+        id: "idCode4",
+        speaker: "INSA",
+        text: "[ … ] Gut. Ich vermerke es als „nicht gemeldet“. Den Code lege ich Ihnen trotzdem ins Terminal — Sie wissen schon: das Datum.",
+        subtext: "Sie zögert kurz. Dann tippt sie. Sie tut es trotzdem.",
+        next: "idCode5",
+        choices: [
+          {
+            text: "Verstanden. Auf Wiederhören.",
+            next: "idCode7",
+            action: (api) => {
+              api.setFlag("skippedExitReport");
+              api.setFlag("calledForCode");
+            },
+          },
+          {
+            text: "Ich verstehe das mit dem Datum nicht.",
+            next: "idCode5",
+            action: (api) => {
+              api.setFlag("skippedExitReport");
+              api.setFlag("calledForCode");
+            },
+          },
+        ],
+      },
+      idCode5: {
+        id: "idCode5",
+        speaker: "INSA",
+        text: "Sie öffnen Ihr Terminal. Im Posteingang liegt eine Nachricht von der Leitstelle. Lesen Sie das Datum darin — und tippen Sie es ohne Punkte ein. Acht Ziffern. Nicht mehr, nicht weniger.",
+        subtext: "Sie spricht langsam. Wie zu jemandem, der lange nichts gelesen hat.",
+        next: "idCode6",
+      },
+      idCode6: {
+        id: "idCode6",
+        speaker: "INSA",
+        text: "Beispiel — wenn da steht 01.01.1990, dann tippen Sie 01011990. Verstanden, Herr Worag?",
+        next: "idCode7",
+      },
+      idCode7: {
+        id: "idCode7",
+        speaker: "SYSTEM",
+        text: "[ Im Terminal liegt jetzt eine Nachricht. Datum: 06.11.1997. Code-Format: ohne Punkte. Acht Ziffern. ]",
+        end: true,
+      },
+    },
+  },
+
   stegmann: {
     id: "stegmann",
     start: "st1",
