@@ -126,11 +126,14 @@ export function RadioPanel() {
   // Resonance build-up while on 104.6 with high volume
   useEffect(() => {
     if (!radioOpen) return;
+    // Nach burn: 104,6 ist auf E67-Reichweite tot. Keine Resonanz, kein
+    // radioActive-Lock — die Frequenz rauscht nur noch.
+    const burned = flags.has("burnedNode5610");
     const interval = setInterval(() => {
       const onSignal = freq === 104.6;
-      setRadioActive(onSignal);
+      setRadioActive(onSignal && !burned);
       // Resonance only builds when the volume is dialed to the max
-      if (onSignal && volume >= 0.99) {
+      if (onSignal && !burned && volume >= 0.99) {
         bumpResonance(8);
       } else {
         bumpResonance(-4);
@@ -138,10 +141,14 @@ export function RadioPanel() {
       lastTickRef.current = Date.now();
     }, 600);
     return () => clearInterval(interval);
-  }, [radioOpen, freq, volume, bumpResonance, setRadioActive]);
+  }, [radioOpen, freq, volume, bumpResonance, setRadioActive, flags]);
 
   // Trigger doorbell only when locked on 104.6 at MAXIMUM volume
   useEffect(() => {
+    // Nach burn ist das Klopf-Event entweder längst geschehen oder
+    // wurde durch den burn-Recovery-Pfad im NodeTerminal gefeuert.
+    // 104,6 darf hier nichts mehr triggern.
+    if (flags.has("burnedNode5610")) return;
     if (freq === 104.6 && volume >= 0.99 && !flags.has("doorbellRang")) {
       const t = setTimeout(() => {
         api.setFlag("doorbellRang");
@@ -194,6 +201,9 @@ export function RadioPanel() {
     if (!radioOpen) return;
     if (!inE71) return;
     if (freq !== 104.6) return;
+    // Nach burn ist 104,6 in E71 nur noch Rauschen — niemand kommt mehr,
+    // weil nichts mehr zu hören ist.
+    if (flags.has("burnedNode5610")) return;
     const t = setTimeout(() => {
       setRadioActive(false);
       resetResonance();
@@ -214,12 +224,26 @@ export function RadioPanel() {
       );
     }, 600);
     return () => clearTimeout(t);
-  }, [radioOpen, inE71, freq, api, setRadioActive, resetResonance, closeRadio]);
+  }, [radioOpen, inE71, freq, api, setRadioActive, resetResonance, closeRadio, flags]);
 
   if (!radioOpen) return null;
 
-  const currentBand = bandFor(freq);
-  const onAngel = freq === 104.6;
+  const burned = flags.has("burnedNode5610");
+  // Nach burn ist 104,6 in E67-Reichweite stumm — Layard hört nur noch
+  // Rauschen. Statt der „Engel-Trauer“-Beschreibung zeigen wir das
+  // Stille-Band an. Die Animation läuft als „noise“-Style.
+  const currentBand =
+    burned && freq === 104.6
+      ? {
+          from: 104.6,
+          to: 104.6,
+          label: "— Rauschen —",
+          art: "Träger ausgefallen",
+          style: "noise" as const,
+          color: "bg-muted-foreground",
+        }
+      : bandFor(freq);
+  const onAngel = freq === 104.6 && !burned;
 
   return (
     <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/80 px-4">

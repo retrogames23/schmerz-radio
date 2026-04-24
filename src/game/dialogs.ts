@@ -566,6 +566,14 @@ export const dialogs: Record<string, DialogTree> = {
         text: "Seit Wochen läuft im Knoten 5610 — Korridor 56, Wartungstür hinter der „Technik“-Plakette — etwas, das in keinem Wartungsplan steht. Mehr Datenverkehr, als E67 erzeugen kann. Falsche Quell-Routen. Ich vermute eine Installation, die nicht genehmigt ist.",
         subtext: "Sie hat das schon oft formuliert. Nur nie laut.",
         hiddenWhen: ["tappedNode5610"],
+        next: "idPflicht2b",
+      },
+      idPflicht2b: {
+        id: "idPflicht2b",
+        speaker: "INSA",
+        text: "Was Sie auf 104,6 hören, kommt von dort. Aus 5610. Die Antenne auf dem Dach E67 streut es bis nach E71 hinüber — deshalb hören es die Patienten dort auch, obwohl sie es offiziell gar nicht dürfen. Es gibt keine zweite Quelle. Wenn der Knoten still ist, ist 104,6 still.",
+        subtext: "Sie sagt das so präzise, als hätte sie es schon einmal in einen Bericht geschrieben, der nie gelesen wurde.",
+        hiddenWhen: ["tappedNode5610"],
         next: "idPflicht3",
       },
       idPflicht3: {
@@ -1352,6 +1360,25 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "MIKAEL",
         text: "E67. — Ja. Ich vertrete dort heute formal mit. Frau Bauerfeind hat es vermutlich erwähnt.",
         subtext: "Er nickt langsam. Wie jemand, der eine Auskunft bestätigt, die er selbst nicht gegeben hat.",
+        next: "mr4burnA",
+      },
+      // Reaktion auf den abgeschalteten Knoten — nur, wenn Layard burn
+      // ausgeführt hat. Owned/Dodged bekommt Mikael unterschiedlich
+      // gespiegelt. Beide Linien führen wieder in den Standard-Verlauf.
+      mr4burnA: {
+        id: "mr4burnA",
+        speaker: "MIKAEL",
+        text: "Sie haben den Knoten weggeschossen. Das war nicht klug — aber es war ehrlicher als alles, was ich heute hier gemacht habe.",
+        subtext: "Er sagt das nicht zu Layard. Eher: zu sich selbst.",
+        requires: ["burnedAndOwned"],
+        next: "mr4burnB",
+      },
+      mr4burnB: {
+        id: "mr4burnB",
+        speaker: "MIKAEL",
+        text: "Sie haben ihn weggeschossen — und wissen nicht warum. Das ist das Schlimmste daran.",
+        subtext: "Es ist kein Vorwurf. Eher eine Diagnose.",
+        requires: ["burnedAndDodged"],
         next: "mr5",
       },
       mr5: {
@@ -1503,6 +1530,27 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "INSA",
         text: "Es ist die häufigste. Sie ist im Standardprotokoll auf Seite vier. Niemand liest Seite vier.",
         subtext: "Ein Hauch von etwas, das fast wie ein Lachen klingt. Aber nur fast.",
+        next: "ar10burnA",
+      },
+      // Wenn Layard heute den Knoten 5610 zerstört hat, kommt Insa hier
+      // einmal kurz darauf zurück. Sie weiß es längst — der Sektor ist
+      // still. Der Tonfall hängt davon ab, wie Layard es vorhin am
+      // Telefon benannt hat (Owned/Dodged). Ohne burn entfallen beide
+      // Beats, Engine läuft direkt zu ar11.
+      ar10burnA: {
+        id: "ar10burnA",
+        speaker: "INSA",
+        text: "Übrigens — der Sektor ist still. Das ist, was Sie wollten. Und es ist trotzdem nicht weniger schwer.",
+        subtext: "Sie sagt es ohne Vorwurf. Eher: als Befund.",
+        requires: ["burnedAndOwned"],
+        next: "ar10burnB",
+      },
+      ar10burnB: {
+        id: "ar10burnB",
+        speaker: "INSA",
+        text: "Übrigens — der Sektor ist still. Niemand weiß, warum es Ihnen leichter geworden ist. Sie auch nicht.",
+        subtext: "Sie sagt es so leise, dass Layard nicht sicher ist, ob er es richtig gehört hat.",
+        requires: ["burnedAndDodged"],
         next: "ar11",
       },
       ar11: {
@@ -3355,8 +3403,20 @@ export const dialogs: Record<string, DialogTree> = {
         text: "Worag. — Hier ist gerade ein Träger ausgefallen. Komplett. Wir haben das auf dem Pult als Alarm 4-7-7. Sagt Ihnen das was?",
         subtext: "Sie weiß die Antwort. Sie fragt trotzdem.",
         choices: [
-          { text: "Ich war es. Tut mir leid.", next: "ic4a" },
-          { text: "Sagt mir nichts.", next: "ic4b" },
+          {
+            text: "Ich habe es ausgeschaltet, weil es uns kaputtgemacht hat.",
+            next: "ic4a",
+            action: (api) => {
+              api.setFlag("burnedAndOwned");
+            },
+          },
+          {
+            text: "Ich weiß es nicht. Ich war wütend.",
+            next: "ic4b",
+            action: (api) => {
+              api.setFlag("burnedAndDodged");
+            },
+          },
         ],
       },
       ic4a: {
