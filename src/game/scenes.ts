@@ -53,9 +53,18 @@ export const scenes: Record<string, Scene> = {
         label: "Telefon",
         // Only available after Layard saw the empty office on floor 3.
         requires: ["sawEmptyOffice"],
-        hiddenWhen: ["calledForCode"],
+        hiddenWhen: ["calledInsaAfterE71"],
         onUse: (api) => {
-          if (!api.hasFlag("calledInsa2")) {
+          // Höchste Priorität: Layard ist aus E71 zurück und hat das
+          // abgelehnte Protokoll noch in der Tasche → Insa anrufen.
+          if (
+            api.hasFlag("mikaelRejectedProtocol") &&
+            !api.hasFlag("calledInsaAfterE71")
+          ) {
+            api.setFlag("calledInsaAfterE71");
+            api.setFlag("insaInvitedToDispatch");
+            api.startDialog("insaAct2Return");
+          } else if (!api.hasFlag("calledInsa2")) {
             api.setFlag("calledInsa2");
             api.startDialog("insa2a");
           } else if (
@@ -987,11 +996,9 @@ export const scenes: Record<string, Scene> = {
         w: 22,
         h: 65,
         label: "Aufzug zurück nach E67",
-        requires: ["heardMikaelTruth"],
-        onUse: (api) => {
-          api.setFlag("ending");
-          api.setEnding();
-        },
+        // Sobald Layard mit Mikael gesprochen hat, ist der Rückweg offen.
+        requires: ["mikaelRejectedProtocol"],
+        onUse: (api) => api.goTo("apartment"),
       },
       {
         id: "toCorridor15",
@@ -1011,24 +1018,27 @@ export const scenes: Record<string, Scene> = {
     background: corridor15Bg,
     title: "Korridor 15 — Sektor E71",
     intro:
-      "Spiegelblanker Linoleum. Drei Lichter flackern. Am Ende des Korridors: eine rote Tür. Zimmer 1534.",
+      "Spiegelblanker Linoleum. Eine Neonröhre flackert. Auf halbem Weg, rechts: eine Tür mit gelbem Siegelband. Am Ende, weiter rechts: eine Tür mit rotem Status-Licht. Zimmer 1534.",
     hotspots: [
       {
-        id: "gurney",
-        x: 6,
-        y: 55,
-        w: 22,
-        h: 25,
-        label: "Verlassene Trage",
+        id: "sealedDoor1531",
+        // Versiegelte Tür mit gelbem X auf der rechten Bildhälfte (Mitte-rechts).
+        x: 70,
+        y: 28,
+        w: 14,
+        h: 60,
+        label: "Tür 1531 (versiegelt)",
         onUse: (api) =>
           api.showText([
-            "Eine zurückgelassene Trage. Auf dem Laken: ein hellbrauner Fleck.",
-            "Daneben: ein Klemmbrett. Name unleserlich. Datum: heute.",
+            "Ein gelbes Siegelband klebt schräg über dem Türrahmen.",
+            "Darauf, in Maschinenschrift:",
+            "„Quarantäne — Resonanz-Überlastung — bis auf Widerruf“.",
+            "Layard hat denselben Zettel heute schon einmal gesehen. Vor seiner eigenen Wand.",
           ]),
       },
       {
         id: "doors",
-        x: 28,
+        x: 24,
         y: 30,
         w: 38,
         h: 50,
@@ -1036,15 +1046,16 @@ export const scenes: Record<string, Scene> = {
         onUse: (api) =>
           api.showText([
             "1530, 1532, 1536, 1538 — alle grün. Alle leer.",
-            "Nur 1534 zeigt ein gelbes Licht. Aktiv. Bewohnt.",
+            "1531 — gelbes Band. Versiegelt.",
+            "Nur 1534 zeigt ein rotes Licht. Aktiv. Besetzt.",
           ]),
       },
       {
         id: "door1534",
-        x: 43,
-        y: 32,
+        x: 86,
+        y: 18,
         w: 14,
-        h: 50,
+        h: 80,
         label: "Tür 1534 (rot beleuchtet)",
         onUse: (api) => {
           api.setFlag("foundRoom1534");
@@ -1053,7 +1064,7 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "backLobby",
-        x: 84,
+        x: 0,
         y: 70,
         w: 14,
         h: 28,
@@ -1066,96 +1077,84 @@ export const scenes: Record<string, Scene> = {
   room1534: {
     id: "room1534",
     background: room1534Bg,
-    title: "Zimmer 1534 — Mikael Bauerfeind",
+    title: "Zimmer 1534 — Mikael Stegmann",
     intro:
-      "Warmes Licht. Echtes Holz. Ein alter Mann unter einer dünnen Decke. Neben ihm ein kleiner Empfänger, der amber glüht — auf einer Frequenz, die nicht im Verzeichnis steht.",
+      "Ein enges Büro. Beton, eine Glühbirne unter Schirm, ein vergittertes Fenster. Hinter einem Schreibtisch, der unter Aktenstapeln verschwindet: ein müder Mann Ende fünfzig. Er sieht auf, als Layard hereinkommt — ohne Erleichterung, ohne Ablehnung.",
     hotspots: [
       {
         id: "mikaelNpc",
-        x: 18,
-        y: 50,
-        w: 40,
-        h: 35,
+        // Mikael sitzt mittig hinter dem Schreibtisch, halbe Bildhöhe.
+        x: 36,
+        y: 28,
+        w: 30,
+        h: 60,
         label: "Alter Mann",
         hiddenWhen: ["metMikael"],
         onUse: (api) => {
           api.setFlag("metMikael");
-          api.setKnowledge("radioOrigin");
-          api.setKnowledge("leitstelleListens");
-          api.setKnowledge("frequencyControl");
-          api.startDialog("mikael");
+          api.setFlag("mikaelRejectedProtocol");
+          api.startDialog("mikaelReject");
         },
       },
       {
-        id: "nightstand",
-        x: 0,
-        y: 55,
-        w: 18,
-        h: 38,
-        label: "Nachttisch / Schubladen",
+        id: "mikaelNpcAfter",
+        x: 36,
+        y: 28,
+        w: 30,
+        h: 60,
+        label: "Mikael Stegmann",
         requires: ["metMikael"],
-        hiddenWhen: ["tookCrystal"],
         onUse: (api) => {
-          api.setFlag("tookCrystal");
-          api.setFlag("readLetter");
-          api.addItem({
-            id: "tuningCrystal",
-            name: "Bernstein-Kristall",
-            description:
-              "Ein handgeschliffener Quarz. Stimmt das Schmerz-Radio jenseits des offiziellen Bands.",
-          });
-          api.addItem({
-            id: "mikaelLetter",
-            name: "Brief an Insa",
-            description:
-              "Ein versiegelter, handbeschriebener Umschlag. Nicht über das Terminal zu öffnen.",
-          });
-          api.setFlag("heardMikaelTruth");
-          api.startDialog("mikaelLast");
+          api.showText([
+            "Mikael sieht kurz auf. Schüttelt langsam den Kopf.",
+            "„Ich kann nichts annehmen, Herr Worag. Wirklich nicht.“",
+            "Er deutet auf die Stapel. Es ist keine Geste. Es ist eine Erklärung.",
+          ]);
         },
       },
       {
-        id: "monitor",
-        x: 0,
-        y: 60,
-        w: 14,
-        h: 18,
-        label: "Medizinmonitor",
-        requires: ["heardMikaelTruth"],
+        id: "deskStacks",
+        // Linke Aktenstapel-Säule auf dem Schreibtisch.
+        x: 8,
+        y: 30,
+        w: 26,
+        h: 60,
+        label: "Aktenstapel",
+        requires: ["metMikael"],
         onUse: (api) =>
           api.showText([
-            "Eine flache Linie. Kein Alarm.",
-            "Niemand hat ihn aktiviert. Niemand wird kommen.",
+            "Manila-Mappen, Aktendeckel, Rohrpost-Hülsen. Manche von 1994.",
+            "Jede einzelne mit einem roten Aufkleber: „PRIORITÄT — 24H“.",
+            "Layard rechnet kurz. Er hört auf zu rechnen.",
           ]),
       },
       {
-        id: "photo",
-        x: 38,
-        y: 32,
-        w: 12,
-        h: 18,
-        label: "Foto an der Wand",
+        id: "filingCabinets",
+        // Aktenschränke rechts.
+        x: 70,
+        y: 30,
+        w: 26,
+        h: 60,
+        label: "Aktenschränke",
+        requires: ["metMikael"],
         onUse: (api) =>
           api.showText([
-            "Ein junges Mädchen, vielleicht zehn Jahre alt.",
-            "Auf der Rückseite, in derselben Handschrift wie der Brief: „Insa, 1986“.",
+            "Sechs Stahlschränke, jeder mit halb offenen Schubladen.",
+            "Aus den Schubladen quellen Mappen — keine geschlossen, keine sortiert.",
+            "Ein einziger Etikettenstreifen ist lesbar: „E67 — Resonanz — 1996–“.",
+            "Der Strich am Ende ist offen. Er ist nie weitergeschrieben worden.",
           ]),
       },
       {
         id: "leaveRoom",
-        x: 86,
-        y: 60,
-        w: 12,
-        h: 35,
+        // Türrahmen am rechten Bildrand, sehr schmal.
+        x: 94,
+        y: 8,
+        w: 6,
+        h: 90,
         label: "Zurück in den Korridor",
-        requires: ["heardMikaelTruth"],
-        onUse: (api) => {
-          if (!api.hasFlag("insa3Called")) {
-            api.setFlag("insa3Called");
-            api.startDialog("insa3");
-          }
-          api.goTo("corridor15");
-        },
+        requires: ["mikaelRejectedProtocol"],
+        onUse: (api) => api.goTo("corridor15"),
       },
     ],
   },

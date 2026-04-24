@@ -999,20 +999,20 @@ export const dialogs: Record<string, DialogTree> = {
       r2: {
         id: "r2",
         speaker: "LAYARD",
-        text: "Ich bringe das Einsatzprotokoll. Zimmer 1534.",
+        text: "Ich bringe ein Einsatzprotokoll für Herrn Stegmann. Zimmer 1534.",
         next: "r3",
       },
       r3: {
         id: "r3",
         speaker: "RECEPTION",
-        text: "Korridor 15. Erste Tür rechts, dann den langen Gang bis zum Ende. Die rote Tür.",
+        text: "Korridor 15. Den langen Gang entlang. Die letzte Tür auf der rechten Seite, mit dem roten Licht.",
         next: "r4",
       },
       r4: {
         id: "r4",
         speaker: "RECEPTION",
-        text: "Eine Bitte: Bleiben Sie nicht zu lange. Frequenz 104,6 ist in diesem Sektor … unstabil.",
-        subtext: "Sie weiß, dass er sie kennt. Sie sagt es trotzdem.",
+        text: "Herr Stegmann hat heute viel auf dem Tisch. Halten Sie es bitte kurz.",
+        subtext: "Sie sagt das, ohne aufzuschauen. Es ist Standard.",
         next: "r5",
       },
       r5: {
@@ -1025,190 +1025,219 @@ export const dialogs: Record<string, DialogTree> = {
   },
 
   // ---------------------------------------------------------------
-  // 11. Mikael — first contact
+  // 11. Mikael Stegmann — lehnt das Protokoll ab
   // ---------------------------------------------------------------
-  mikael: {
-    id: "mikael",
-    start: "m1",
+  mikaelReject: {
+    id: "mikaelReject",
+    start: "mr1",
     lines: {
-      m1: {
-        id: "m1",
+      mr1: {
+        id: "mr1",
         speaker: "SYSTEM",
-        text: "[ Der alte Mann öffnet die Augen, langsam. Er wirkt überrascht, dass jemand kommt. ]",
-        next: "m2",
+        text: "[ Der Mann hinter dem Schreibtisch sieht auf. Drahtgestell-Brille, grauer Bart, ein hellgraues Diensthemd, das schon zu lange getragen wird. ]",
+        next: "mr2",
       },
-      m2: {
-        id: "m2",
+      mr2: {
+        id: "mr2",
         speaker: "MIKAEL",
-        text: "Sie sind … nicht in Uniform. Gut. Ich habe genug von Uniformen.",
-        subtext: "Erleichterung. Und etwas, das wie Wiedererkennen aussieht.",
-        next: "m3",
+        text: "Stegmann. Bitte schließen Sie die Tür. Es zieht.",
+        subtext: "Keine Härte. Routine. Er sagt das vermutlich zwanzigmal am Tag.",
+        next: "mr3",
       },
-      m3: {
-        id: "m3",
+      mr3: {
+        id: "mr3",
         speaker: "LAYARD",
-        text: "Mein Name ist Worag. Ich bringe ein Protokoll.",
-        next: "m4",
+        text: "Worag. E67, Quadrant 26. Ich bringe ein Einsatzprotokoll. Fall-ID 5245, Wohnung 2615. Die Leitstelle hat mich zu Ihnen geschickt.",
+        next: "mr4",
       },
-      m4: {
-        id: "m4",
+      mr4: {
+        id: "mr4",
         speaker: "MIKAEL",
-        text: "Worag. Sie sind der Hörer aus E67. Ich höre Sie seit Jahren auf 102,3.",
-        subtext: "Hörer. Nicht „Bewohner“. Ein anderes Wort.",
-        next: "m5",
+        text: "E67. — Ja. Ich vertrete dort heute formal mit. Frau Bauerfeind hat es vermutlich erwähnt.",
+        subtext: "Er nickt langsam. Wie jemand, der eine Auskunft bestätigt, die er selbst nicht gegeben hat.",
+        next: "mr5",
       },
-      m5: {
-        id: "m5",
+      mr5: {
+        id: "mr5",
         speaker: "LAYARD",
-        text: "Sie hören … mich?",
-        next: "m6",
+        text: "Ja. Es ist eine versiegelte Datenkapsel. Soll ich sie hier ablegen?",
+        next: "mr6",
       },
-      m6: {
-        id: "m6",
+      mr6: {
+        id: "mr6",
         speaker: "MIKAEL",
-        text: "Das Schmerz-Radio sendet nicht nur. Es ist eine Schleife. Wer empfängt, sendet auch. 102,3. Einsamkeit. Sehr klar bei Ihnen.",
-        subtext: "Schuld? Nein. Mitgefühl. Lange geübt.",
-        next: "m7",
+        text: "Nein. — Bitte nicht.",
+        subtext: "Es kommt zu schnell. Er hört es selbst und sieht kurz zur Seite.",
+        next: "mr7",
       },
-      m7: {
-        id: "m7",
-        speaker: "LAYARD",
-        text: "Das wurde uns nie gesagt.",
-        next: "m8",
-      },
-      m8: {
-        id: "m8",
+      mr7: {
+        id: "mr7",
         speaker: "MIKAEL",
-        text: "Nein. Sonst würde niemand zuhören. Die Leitstelle hört. Sie wissen, wer sich auf 104,6 verstimmt. Sie wissen, wann jemand … abweicht.",
-        subtext: "Er meint Sie. Er meint heute. Er meint Insa.",
-        next: "m9",
+        text: "Herr Worag. Ich bin … ich komme nicht hinterher. Sehen Sie das hier?",
+        next: "mr8",
       },
-      m9: {
-        id: "m9",
-        speaker: "MIKAEL",
-        text: "Ich habe die ersten Geräte mitgebaut. Damals war es noch ein Empfänger. Erst dann kam der Sender. Erst dann kamen die Quadranten.",
-        next: "m10",
-      },
-      m10: {
-        id: "m10",
-        speaker: "LAYARD",
-        text: "Warum erzählen Sie mir das?",
-        next: "m11",
-      },
-      m11: {
-        id: "m11",
-        speaker: "MIKAEL",
-        text: "Weil heute jemand kommt, der zuhören kann. Und weil die Schubladen-Reihe an meinem Bett nicht aus Holz ist. Da liegt etwas. Für Sie.",
-        next: "m12",
-      },
-      m12: {
-        id: "m12",
+      mr8: {
+        id: "mr8",
         speaker: "SYSTEM",
-        text: "[ Mikaels Hand zittert. Er deutet auf den Nachttisch und auf den kleinen amber-glühenden Empfänger neben sich. ]",
+        text: "[ Mikael deutet mit beiden Händen auf den Schreibtisch. Auf die Stapel. Auf die Aktenschränke. Auf die offenen Schubladen. Es ist keine Geste — es ist ein Beweis. ]",
+        next: "mr9",
+      },
+      mr9: {
+        id: "mr9",
+        speaker: "MIKAEL",
+        text: "Jeder dieser Vorgänge hat Vorrang. Jeder. Wenn ich Ihre Kapsel jetzt annehme, liegt sie in zwei Wochen unter den anderen — und dann sind wir beide schuld, dass sie nicht bearbeitet wurde.",
+        next: "mr10",
+      },
+      mr10: {
+        id: "mr10",
+        speaker: "MIKAEL",
+        text: "Nehmen Sie sie bitte wieder mit. Geben Sie sie Frau Bauerfeind zurück. Sie soll das richtig zuweisen.",
+        next: "mr11",
+      },
+      mr11: {
+        id: "mr11",
+        speaker: "LAYARD",
+        text: "Sie hat mich heute Morgen explizit hierher geschickt.",
+        subtext: "Das ist das Erste seit Stunden, das er ganz allein sagt.",
+        next: "mr12",
+      },
+      mr12: {
+        id: "mr12",
+        speaker: "MIKAEL",
+        text: "Ja. Das tut sie manchmal.",
+        subtext: "Kein Vorwurf. Er hat sich daran gewöhnt. Sie sich auch.",
+        next: "mr13",
+      },
+      mr13: {
+        id: "mr13",
+        speaker: "MIKAEL",
+        text: "Sagen Sie ihr, ich habe es nicht angenommen. Sagen Sie ihr — bitte —, dass es nicht persönlich ist. Sie weiß das.",
+        next: "mr14",
+      },
+      mr14: {
+        id: "mr14",
+        speaker: "LAYARD",
+        text: "In Ordnung.",
+        subtext: "Warum hat er gerade ja gesagt? Er hätte nein sagen können.",
+        next: "mr15",
+      },
+      mr15: {
+        id: "mr15",
+        speaker: "SYSTEM",
+        text: "[ Mikael nickt nur noch. Sein Blick ist schon wieder auf dem nächsten Stapel. Layard tritt einen Schritt zurück. Die Datenkapsel liegt unverändert in seiner Hand. ]",
         end: true,
       },
     },
   },
 
-  mikaelLast: {
-    id: "mikaelLast",
-    start: "ml1",
-    lines: {
-      ml1: {
-        id: "ml1",
-        speaker: "MIKAEL",
-        text: "Der Kristall stimmt das Radio jenseits von 104,6. Auf Frequenzen, die die Leitstelle … nicht eingetragen hat.",
-        subtext: "Stolz. Sehr alter Stolz.",
-        next: "ml2",
-      },
-      ml2: {
-        id: "ml2",
-        speaker: "MIKAEL",
-        text: "Der Brief ist für Insa Bauerfeind. Wenn Sie heute zurückgehen, geben Sie ihn ihr. Persönlich. Nicht über das Terminal.",
-        next: "ml3",
-      },
-      ml3: {
-        id: "ml3",
-        speaker: "LAYARD",
-        text: "Sie kennen sie?",
-        next: "ml4",
-      },
-      ml4: {
-        id: "ml4",
-        speaker: "MIKAEL",
-        text: "Sie ist meine Tochter. Sie hat seit elf Jahren keinen Sektorwechsel beantragt. Sie wartet. Auf jemanden wie Sie. Heute zum Beispiel.",
-        subtext: "Es kostet ihn etwas, das auszusprechen. Er tut es trotzdem.",
-        next: "ml5",
-      },
-      ml5: {
-        id: "ml5",
-        speaker: "MIKAEL",
-        text: "Gehen Sie. Bevor die Sanitäter aus E67 hier oben sind. Und Worag — schalten Sie das Radio aus, wenn Sie den Aufzug betreten. Nur einmal. Probieren Sie es.",
-        next: "ml6",
-      },
-      ml6: {
-        id: "ml6",
-        speaker: "SYSTEM",
-        text: "[ Der Monitor neben dem Bett zeigt eine flache Linie. Der amber Empfänger erlischt. ]",
-        end: true,
-      },
+  // ---------------------------------------------------------------
+  // 11b. Akt-II-Übergang: Layard ruft aus 2611 die Leitstelle an.
+  //      Insa öffnet sich zum ersten Mal — und lädt ihn ein.
+  // ---------------------------------------------------------------
+  insaAct2Return: {
+    id: "insaAct2Return",
+    start: "ar1",
+    onEnd: (api) => {
+      // Akt II ist hiermit zu Ende. Übergang zum Akt-II-Endbildschirm.
+      api.setFlag("ending");
+      api.setEnding();
     },
-  },
-
-  insa3: {
-    id: "insa3",
-    start: "n1",
     lines: {
-      n1: {
-        id: "n1",
+      ar1: {
+        id: "ar1",
+        speaker: "SYSTEM",
+        text: "[ Layard hebt den Hörer. Wählt 001. Vermittlung. Knacken. Insa. ]",
+        next: "ar2",
+      },
+      ar2: {
+        id: "ar2",
         speaker: "INSA",
-        text: "Bauerfeind. — Worag, sind Sie das? Sie sind in E71.",
-        subtext: "Sie hat Ihren Standort auf dem Schirm. Schon eine Weile.",
-        next: "n2",
+        text: "Bauerfeind. — Worag. Schon zurück aus E71?",
+        subtext: "Sie klingt nicht erstaunt. Sie hat den Aufzug-Log auf dem Schirm.",
+        next: "ar3",
       },
-      n2: {
-        id: "n2",
+      ar3: {
+        id: "ar3",
         speaker: "LAYARD",
-        text: "Ich war in Zimmer 1534.",
-        next: "n3",
+        text: "Stegmann nimmt das Protokoll nicht. Er hat … es ist alles voll bei ihm. Er sagt, ich soll es zurückbringen. Sie sollen es richtig zuweisen.",
+        next: "ar4",
       },
-      n3: {
-        id: "n3",
+      ar4: {
+        id: "ar4",
         speaker: "INSA",
         text: "[ … ]",
-        subtext: "Sie atmet aus. Lautlos. Sie wusste es.",
-        next: "n4",
+        subtext: "Zwei Sekunden Stille. Drei. Dann ein Atemzug.",
+        next: "ar5",
       },
-      n4: {
-        id: "n4",
+      ar5: {
+        id: "ar5",
         speaker: "INSA",
-        text: "Hören Sie zu. In genau elf Minuten gibt die Leitstelle 001 eine Sektor-Sperre für E67/E71 aus. Wartungsfenster. Standardprotokoll bei „Hörer-Drift“.",
-        next: "n5",
+        text: "Das überrascht mich nicht.",
+        subtext: "Zum ersten Mal heute kein Dienstton. Nur eine Stimme.",
+        next: "ar6",
       },
-      n5: {
-        id: "n5",
-        speaker: "INSA",
-        text: "Wenn Sie in E67 sein wollen, müssen Sie jetzt in den Aufzug. Wenn Sie in E71 bleiben wollen — auch.",
-        subtext: "Sie zwingt Sie zu wählen. Zum ersten Mal seit Jahren.",
-        next: "n6",
-      },
-      n6: {
-        id: "n6",
+      ar6: {
+        id: "ar6",
         speaker: "LAYARD",
-        text: "Ich habe etwas für Sie. Von ihm.",
-        next: "n7",
+        text: "Wem soll ich es dann geben?",
+        next: "ar7",
       },
-      n7: {
-        id: "n7",
+      ar7: {
+        id: "ar7",
         speaker: "INSA",
-        text: "Dann kommen Sie zurück. Bitte. — Auf Wiederhören, Herr Worag.",
-        subtext: "Bitte. Sie hat „bitte“ gesagt.",
-        next: "n8",
+        text: "Heute — niemandem. Morgen vielleicht jemandem, den ich noch nicht kenne. — Herr Worag …",
+        next: "ar8",
       },
-      n8: {
-        id: "n8",
+      ar8: {
+        id: "ar8",
+        speaker: "INSA",
+        text: "Ich vermittle seit elf Monaten Protokolle, die niemand annimmt. Sie sind heute der erste, der eines zurückbringt, statt es als „verloren“ zu melden.",
+        subtext: "Sie sagt es leise. Wie etwas, das sie noch nie laut gesagt hat.",
+        next: "ar9",
+      },
+      ar9: {
+        id: "ar9",
+        speaker: "LAYARD",
+        text: "Ich wusste nicht, dass das eine Option ist. „Verloren melden“.",
+        next: "ar10",
+      },
+      ar10: {
+        id: "ar10",
+        speaker: "INSA",
+        text: "Es ist die häufigste. Sie ist im Standardprotokoll auf Seite vier. Niemand liest Seite vier.",
+        subtext: "Ein Hauch von etwas, das fast wie ein Lachen klingt. Aber nur fast.",
+        next: "ar11",
+      },
+      ar11: {
+        id: "ar11",
+        speaker: "INSA",
+        text: "Hören Sie. — Bringen Sie es mir vorbei. Persönlich. Ich bin in der Leitstelle E67, Etage 3, Tür 3601. Heute. Morgen. Wann Sie wollen.",
+        next: "ar12",
+      },
+      ar12: {
+        id: "ar12",
+        speaker: "INSA",
+        text: "Es ist nichts Dienstliches. Ich möchte einfach jemanden treffen, der eine Kapsel zwei Sektoren weit getragen hat, ohne sie unterwegs „zu verlieren“.",
+        subtext: "Bitte. Sie hat noch nicht „bitte“ gesagt. Aber es ist einer.",
+        next: "ar13",
+      },
+      ar13: {
+        id: "ar13",
+        speaker: "LAYARD",
+        text: "Ich überlege es mir.",
+        subtext: "Er hat es sich schon überlegt. Er weiß es nur noch nicht.",
+        next: "ar14",
+      },
+      ar14: {
+        id: "ar14",
+        speaker: "INSA",
+        text: "Gut. — Auf Wiederhören, Herr Worag.",
+        next: "ar15",
+      },
+      ar15: {
+        id: "ar15",
         speaker: "SYSTEM",
-        text: "[ Verbindung getrennt. Der Aufzug am Ende des Korridors öffnet sich. ]",
+        text: "[ Klick. Stille. Layard legt den Hörer zurück und hält die Hand einen Moment darauf. Die Datenkapsel liegt neben dem Telefon. Sie ist immer noch warm. ]",
         end: true,
       },
     },
