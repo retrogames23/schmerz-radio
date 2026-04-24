@@ -1,125 +1,144 @@
 ## Ziel
 
-Der Serverraum 5610 wird zur **Pflichtstation** für den Übergang in Akt II. `burn` und `reroute` beenden das Spiel **nicht mehr**, sondern lösen eine dramatische, zustandsverändernde Sequenz aus — danach geht das Spiel weiter. Alle Dialoge werden auf die neue Schmerz-Radio-Lore (freiwillig, „wer empfängt sendet auch", keine Regierungseinrichtung; 5610 = illegale Cross-Sektor-Antenne E67↔E71) konsistent geprüft.
+Jedes Terminal im Spiel — Layards (Worag), Bodos und das Wartungsterminal im Serverraum (Node 5610) — wird zu einem **eigenständigen Modul**. Änderungen an einem Terminal haben **keine Auswirkung** auf die anderen. Auch zukünftige Terminals folgen demselben Muster.
+
+Cross-Access auf Home-Verzeichnisse anderer Terminals geht **nur über `telnet` mit Passwort**.
 
 ---
 
-## Story-Logik (kurz)
-
-- **Schmerz-Radio**: freiwilliges Konsumgerät. Menschen hören es, um verlorene Gefühle zu spüren. Wer empfängt, sendet (unbewusst) auch. Es ist **keine staatliche Einrichtung**.
-- **Knoten 5610**: illegale Hochleistungs-Antenne, die den Sektor E67 mit E71 verkoppelt. Jemand betreibt sie — wir wissen zunächst nicht, wer. Erst durch `tap` versteht Layard: „Das Eingangssignal **bist du** — gefiltert."
-- **Pflicht-Pfad**: Insa gibt den Sektor-Code **nicht** mehr direkt heraus. Sie verlangt erst einen „Sicherheits-Vermerk" aus 5610. Layard muss `tap` ausführen → Erkenntnis `radioOrigin` → Insa rückt den Code raus.
-- **`burn` / `reroute`**: optionale Sabotage-Aktionen, narrativ wirksam, **kein Game Over** in Akt I/II. Stattdessen: visuelle Burn-Sequenz + persistente Korridor-Atmosphäre + späterer Insa-Rückruf.
-
----
-
-## Pflicht-Pfad zum Code (Variante 1, hart)
+## Neue Datei-/Modulstruktur
 
 ```text
-Insa-Anruf #2 (insa2)
-  └─ Layard fragt nach Code
-      ├─ ohne radioOrigin  →  „Erst Sicherheits-Vermerk aus Knoten 5610.
-      │                         Korridor 56, Wartungstür. Tippen Sie 'tap'.
-      │                         Rufen Sie mich danach an." 
-      │                         [setzt Flag insaSentTo5610]
-      │                         → Dialog endet ohne Code-Mail
-      │
-      └─ mit radioOrigin   →  bisheriger Pfad (Code-Mail im Terminal)
+src/components/game/terminal/
+  shared.tsx           — UI-Primitives (Line-Renderer, CRT-Frame, CloseButton-Wrapper)
+                          + reine Helfer (commonPrefix, formatLs, buildTree, applyOsVersion,
+                          completeTelnet, NetHost-Typ)
+  telnet.ts            — Pure NET_HOSTS-Definitionen + getHost(name|ip)
+WoragTerminal.tsx      — Layards Terminal (TopBar, Wohnung 2611, Sektor-Türen)
+BodoTerminal.tsx       — Bodos Wartungsterminal (Hotspot in Bodos Wohnung)
+NodeTerminal.tsx       — bleibt unverändert in Funktion, nutzt aber jetzt shared.tsx
+
+src/game/
+  filesystemWorag.ts   — Layards komplette Datei-Hierarchie
+                          (Root: /, /home/worag, /etc, /var, /sektor, …)
+  filesystemBodo.ts    — Bodos komplette Datei-Hierarchie
+                          (Root: /, /home/bodo, /etc, /var, …)
+  filesystem.ts        — DEPRECATED, nach Migration entfernen
 ```
 
-Konsequenzen:
-- Tür 5610 wird in Korridor 56 sichtbar, sobald `insaSentTo5610` ODER bestehende Bedingungen (Mira/Philippe-Sonden) erfüllt sind. Mira bleibt der „weiche" Erstkontakt, Insa ist der harte Pflicht-Trigger.
-- Das Wartungsmuster `wartungsnotiz5610` (7-0-Pause-3-2) wird Layard zusätzlich von Insa „nebenbei" durchgegeben, falls er die 3-Sonden-Schwelle bei Philippe nicht erreicht hat — sonst wäre der Pflicht-Pfad blockierbar. Alternativ: Insa diktiert ihm den Code direkt am Telefon.
+Wichtig: jedes Filesystem ist ein **separater Baum**. `/home/bodo` existiert nicht in Worags Baum, `/home/worag` nicht in Bodos. Es gibt **keinen Shared Root**.
 
 ---
 
-## `burn` und `reroute` — kein Ende mehr
+## Trennung der Befehle
 
-Beide Aktionen lösen eine **fullscreen Burn-Sequenz** aus (neues Component `BurnSequence.tsx`), aber **rufen `api.setEnding()` nicht mehr auf**. Stattdessen:
+| Befehl | Worag | Bodo | Node 5610 |
+|---|---|---|---|
+| `help`, `clear`, `exit`, `pwd`, `ls`, `cd`, `cat`, `tree` | ✓ | ✓ | – |
+| `inbox`, `read`, `status`, `report` | ✓ | ✓ (Bodos eigene Inbox) | – |
+| `net`, `telnet` | ✓ | ✓ | – |
+| `sysupdate`, `trouble` | ✓ | ✓ | – |
+| `adventure`, `./adventure.bin` | **✓** | **✗ entfernt** | – |
+| `lotti`, `./lotti` | **✗ entfernt** | **✓** | – |
+| `maint` (WARTUNG nur Hausmeister) | **✗ entfernt** | **✓** | – |
+| `tap`, `listen`, `reroute`, `burn` | – | – | ✓ |
 
-| Aktion | Visuelle Sequenz | Persistente Folge |
-|---|---|---|
-| `reroute` | Kurze technische Kaskade, blasses Amber, Stille danach | Flag `crossLinkSevered`. Korridor 56 wirkt unverändert. `listen` zeigt nur noch Eigen-Echo. |
-| `burn` | Rotes Flackern, Alarm-Pieps, Schrift „104,6 — KEIN TRÄGER", harter Cut, dann Stille | Flags `burnedNode5610` + `crossLinkSevered`. Korridor 56 bekommt CSS-Klasse `corridor-emergency-power` (gedimmt, leichter Rotstich). Insa ruft beim nächsten Korridor-Betreten zurück (siehe unten). |
-
-Die Flags `endingSilent` und `endingSabotage` werden **entfernt** (aus `types.ts` und `Ending.tsx`). Die `Ending`-Komponente nutzt nur noch `FRAMES_BASE` (+ optional `FRAMES_FLYER_EXTRA`). Das Akt-II-Ende bleibt unverändert über `insaAct2Return.onEnd`.
-
-### Insa-Rückruf nach `burn`/`reroute`
-
-Neuer Dialog `insaCallbackAfterBurn` (oder zwei Varianten):
-- Wird beim nächsten Eintritt in `corridor56` oder `apartment` getriggert, sobald `burnedNode5610` gesetzt und `insaCallbackBurnDone` nicht.
-- Insa fragt knapp und kontrolliert nach. Sie weiß, dass etwas passiert ist. Sie sagt **nicht**, dass das Spiel vorbei ist. Sie sagt: „Kommen Sie trotzdem. Der Code steht in der Mail."
-- Setzt `insaCallbackBurnDone`. Spiel läuft normal weiter.
+Die Tab-Completion-Liste `COMMANDS` wird pro Terminal eigenständig definiert — `WORAG_COMMANDS`, `BODO_COMMANDS`. Wer in WoragTerminal `lotti` tippt, bekommt „Unbekannter Befehl". Wer in BodoTerminal `adventure` tippt, ebenso.
 
 ---
 
-## Dialog-Audit: Konsistenz mit der neuen Lore
+## Filesystem-Trennung im Detail
 
-Geprüft und ggf. angepasst — jeweils mit kurzer Begründung. Vollständige Stellen werden während der Umsetzung 1:1 verifiziert.
+**`filesystemWorag.ts`** exportiert:
+- `WORAG_ROOT: FsDir` — vollständiger Baum mit `/home/worag`, Worag-spezifischem `/etc/motd`, `/var/mail/worag`, `/sektor/...` (alles aus dem aktuellen Baum, das Worag sieht).
+- `WORAG_HOME: string[] = ["home", "worag"]`
+- `resolveWorag(parts)` und `pathStringWorag(parts)`.
 
-| Stelle | Aktueller Stand | Anpassung |
-|---|---|---|
-| `dialogs.miraOpen1` (Z. 1513) | „warum 104,6 deinen Schmerz lindert" | OK — passt: lindern statt heilen, freiwilliger Konsum. |
-| `dialogs.ma3` (Z. 1772) | „Da läuft **euer** Schmerz-Radio durch […] die wird **euch geschickt**" | **Anpassen**: „die wird euch geschickt" klingt nach zentraler Sender-Instanz. Neu: „Da läuft **dein eigenes** Schmerz-Radio durch — bevor es **zu jemand anderem geht**. 104,6 hörst du nicht selbst — du **bist** sie, gefiltert." |
-| `dialogs.ma4` | „du hörst, woher die Sendung wirklich kommt" | **Leicht anpassen**: „… woher die Sendung wirklich kommt — und wohin sie geht." (E71-Hinweis, ohne ihn auszubuchstabieren) |
-| `dialogs.bf5` (Bodo, Carrier-Wahrheit, Z. 2438) | „Trägersignal von 104,6 … seit 1991 manuell nachgeregelt" | OK, aber **eine Zeile ergänzen**: „Wer den Träger dreht, ist nicht die Stadt. Das war sie nie." → entkoppelt von „Regierung". |
-| `dialogs.b7` (Bodo, Z. 2270) | „Funkanlagen. Trägersignale. Verstärker." | OK. |
-| `dialogs.philippeTalk pt1` (Z. 1923) | „Wie gehen Sie mit dem Schmerz-Radio um? Konkret. Wie viele Stunden am Tag?" | OK — passt zu „freiwilliges Konsumgerät". |
-| Insa `x6c` (Z. 675) | „Heute könnten Sie." | OK. |
-| `tap`-Output (`NodeTerminal`, Z. 239) | „EINGANG: DAS BIST DU. GEFILTERT." | OK — Kernsatz der Lore, bleibt. |
-| `tap`-Snippets (Z. 234–238) | Fünf Pseudo-Empfangsfetzen | OK — sie sollen wie Layards eigene innere Stimme klingen; bleiben unverändert. |
-| Akt-II-Ending-Texte (`Ending.tsx`) | Sabotage/Silent-Varianten | **Entfernen** (s. o.). Nur Base-Variante bleibt. |
-| Korridor-56-Decals nach `burn` | nicht vorhanden | **Neu**: CSS-Klasse `corridor-emergency-power` auf der Szene. Leichter Rotstich + Dimmen. |
+**`filesystemBodo.ts`** exportiert:
+- `BODO_ROOT: FsDir` — eigenständiger Baum mit `/home/bodo`, `/etc/motd` (Hausmeister-Variante: alte v2.0), `/var/mail/bodo`, `/wartung/...` (neuer Bereich für `maint`).
+- `BODO_HOME: string[] = ["home", "bodo"]`
+- `resolveBodo(parts)`, `pathStringBodo(parts)`.
 
-Keine Anpassung notwendig:
-- Sektor-Chatter (E71-Beimischung wurde im vorigen Schritt bereits eingebaut).
-- Helka/Ennis-Türgespräche (kein Schmerz-Radio-Erklärtext).
+`/home/worag` ist in Bodos Baum **nicht vorhanden**. `cd /home/worag` an Bodos Terminal liefert „Verzeichnis existiert nicht" (saubererer Schein als „Zugriff verweigert" — Layards Daten liegen schlicht nicht lokal).
+
+Inhaltlich werden die heute schon vorhandenen Daten 1:1 in die jeweiligen Bäume übernommen. Doppelt vorhandene Dateien (z. B. `/etc/motd`) sind ab dann **echt unabhängig** — eine Änderung am Banner in `filesystemWorag.ts` betrifft Bodo nicht.
 
 ---
 
-## Technische Änderungen (für Implementierung)
+## `maint` (nur Bodo)
 
-**`src/game/types.ts`**
-- Entfernen: `endingSilent`, `endingSabotage`.
-- Hinzufügen: `insaSentTo5610`, `crossLinkSevered`, `insaCallbackBurnDone`.
+Neuer Befehl für `BodoTerminal.tsx`. Stellt Hausmeister-spezifische Wartungsaktionen bereit. Erste Ausbaustufe:
 
-**`src/game/dialogs.ts`**
-- `insa2` (~Z. 599): neuer Verzweigungspfad bei „Lassen wir das. Geben Sie mir bitte direkt den Code.": prüft `hasKnowledge("radioOrigin")`. Ohne → neue Lines `x5pflicht1..3` (Insa erklärt Knoten 5610, setzt `insaSentTo5610`, beendet Dialog **ohne** `x7`-Mail). Mit → bisheriger Pfad bleibt erhalten.
-- Analog in `insa1`-Zweig `idCode4` (~Z. 549): gleiche Verzweigung, damit auch der erste Code-Versuch konsistent ist.
-- `dialogs.miraOpen` Lines `ma3`/`ma4`: Texte wie oben angepasst.
-- Neuer Dialog `insaCallbackAfterBurn` mit kurzem Triggertext + Code-Mail-Auslieferung.
-- `insaAct2Return.onEnd` bleibt — nur dieser Pfad triggert weiterhin `setEnding()`.
+- `maint status` — kurze Liste: Aufzug 1 OK, Aufzug 2 Notabschaltung, Lüftung Sektor 5 grenzwertig, Knoten 5610 „nicht autorisiert".
+- `maint log` — letzte 10 Wartungseinträge (statisch, atmosphärisch).
+- `maint help` — Subcommands.
 
-**`src/components/game/NodeTerminal.tsx`**
-- `reroute`-Handler: ersetzt `api.setFlag("endingSilent")` durch `api.setFlag("crossLinkSevered")` und `triggerBurnSequence("reroute")`.
-- `burn`-Handler (beide Pfade): ersetzt `api.setFlag("endingSabotage")` durch `api.setFlag("crossLinkSevered")` und `triggerBurnSequence("burn")`.
-- Kein `setEnding()`-Aufruf mehr.
+`maint` wird in Worags `COMMANDS`-Liste **nicht** registriert und in `WoragTerminal.handleCommand` nicht behandelt — Layard sieht nicht einmal die Hilfe.
 
-**`src/components/game/BurnSequence.tsx`** (neu)
-- Fullscreen-Overlay, ~3–5 s, zwei Varianten (`burn` rot/laut, `reroute` amber/leise).
-- Steuert sich über neuen GameContext-State `burnSequence: "burn" | "reroute" | null`.
+---
 
-**`src/game/GameContext.tsx`**
-- Neuer State `burnSequence` + Setter, in `GameApi` als `playBurnSequence(kind)` exponiert.
-- Trigger-Hook: nach Szenenwechsel zu `corridor56`/`apartment` mit `burnedNode5610 && !insaCallbackBurnDone` → `startDialog("insaCallbackAfterBurn")`.
+## NodeTerminal bleibt eigenständig
 
-**`src/components/game/Ending.tsx`**
-- `silent`/`sabotage`-Verzweigung und ihre Frames-Arrays entfernen. Nur noch Base + optional Flyer.
+`NodeTerminal.tsx` ist heute schon ein separater Komponentenbaum. Wir lassen Funktion und Layout unverändert und nur:
 
-**`src/styles.css`**
-- Neue Klasse `.corridor-emergency-power` (gedimmter Rotstich, leichtes Flackern).
+- Importiert künftig `playBeep`/`playKeypress`/`playUnlock` und den `CloseButton`-Wrapper aus `terminal/shared.tsx` (kosmetische Konsolidierung — keine Verhaltensänderung).
+- Greift **nicht** auf `filesystemWorag.ts` oder `filesystemBodo.ts` zu. Hat keinen `ls`/`cd`/`cat`. Bleibt rein befehlsorientiert.
 
-**`src/game/scenes.ts`**
-- `corridor56`: Klasse `corridor-emergency-power` aktiv, wenn `burnedNode5610`. Tür 5610 zusätzlich sichtbar bei `insaSentTo5610`.
+---
 
-**`src/game/sectorChatter.ts`**
-- Nach `crossLinkSevered`: `listen` zeigt nur noch E67-internen Verkehr (E71-Anteile filtern). Optional in einem späteren Schritt.
+## Telnet bleibt der einzige Cross-Access
+
+`terminal/telnet.ts` definiert `NET_HOSTS` als gemeinsame Hostliste (IP, Hostname, Telnet-Passwort, MOTD, Files, dynamicFiles). Beide Terminals nutzen dieselbe Liste, weil das Sektor-Netz für beide gleich aussieht — aber die **Datei-Inhalte hinter Telnet sind unabhängig** vom lokalen Filesystem des einloggenden Terminals.
+
+Konfiguration je Host:
+- `worag.e67` — Telnet aktiv, Passwort-geschützt (Default: kein Passwort bekannt → Bodo kommt nicht rein, außer er findet eines im Spiel).
+- `bodo.e67` — Telnet aktiv, Passwort `Lotti` (case-insensitive). Wie heute.
+- Andere Hosts (`philippe.e67`, `gateway.e67`, …) bleiben wie heute.
+
+Damit ist die Spielregel sauber: lokal sieht jedes Terminal nur sein eigenes Home; auf das andere kommt man nur über `telnet` + Passwort.
+
+---
+
+## API-Anpassung
+
+`GameApi.openTerminal` wird typisiert:
+
+```ts
+type TerminalTarget = "worag" | "bodo";
+openTerminal: (target?: TerminalTarget) => void; // default "worag"
+```
+
+`GameContext` führt statt `terminalBodoMode: boolean` ein Feld `terminalTarget: TerminalTarget | null`. `terminalOpen` bleibt als abgeleitete Bedingung (`terminalTarget !== null`).
+
+In `Game.tsx` werden statt einem `<Terminal />` jetzt zwei Komponenten gerendert (jede prüft selbst, ob sie dran ist):
+
+```tsx
+<WoragTerminal />
+<BodoTerminal />
+<NodeTerminal />
+```
+
+`scenes.ts` ruft weiterhin `api.openTerminal()` (Worag) bzw. `api.openTerminal("bodo")` (Bodos Hotspot bei `bodoAway`) auf — Aufrufseite ändert sich minimal.
+
+---
+
+## Migrationsschritte (Reihenfolge)
+
+1. `terminal/shared.tsx` und `terminal/telnet.ts` anlegen, gemeinsame Helfer extrahieren.
+2. `filesystemWorag.ts` und `filesystemBodo.ts` anlegen, Inhalte aus heutigem `filesystem.ts` aufteilen.
+3. `WoragTerminal.tsx` aus heutigem `Terminal.tsx` forken — `lotti`/`maint`-Pfade entfernen, nur `WORAG_ROOT` benutzen.
+4. `BodoTerminal.tsx` als zweiter Fork — `adventure`-Pfad entfernen, `maint` ergänzen, nur `BODO_ROOT`.
+5. `NodeTerminal.tsx` auf `terminal/shared.tsx` umstellen (Imports), Verhalten unverändert.
+6. `GameContext` + `types.ts`: `terminalTarget` einführen, `openTerminal(target?)` typisieren.
+7. `Game.tsx`: beide Terminal-Komponenten einbinden.
+8. `scenes.ts`: Aufrufstellen anpassen (`openTerminal("bodo")`).
+9. `Terminal.tsx` und `filesystem.ts` löschen, sobald nichts mehr darauf zeigt.
 
 ---
 
 ## Was bewusst **nicht** geändert wird
 
-- Akt-II-Ending-Logik in `insaAct2Return` — bleibt einziger Endpunkt.
-- Das visuelle Layout des `NodeTerminal` selbst.
-- Speicherformat (neue Flags sind einfach zusätzliche StoryFlags).
-- Bestehende Sichtbarkeitsregeln für Tür 5610 (Mira-/Philippe-Pfade bleiben als „weiche" Vor-Trigger erhalten — der Insa-Pfad ist additiv).
+- Optik/CRT-Look ist für beide Terminals identisch (Phosphor-Grün). Nur der Banner unterscheidet sie.
+- NodeTerminal-Optik bleibt amber.
+- `NET_HOSTS` ist geteilt — das ist das gemeinsame Netzwerk, nicht ein gemeinsames Filesystem.
+- Bestehende Spielzustände (Flags, Inbox-Mails) bleiben unberührt.
