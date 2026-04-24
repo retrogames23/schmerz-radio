@@ -58,16 +58,21 @@ export const scenes: Record<string, Scene> = {
           if (!api.hasFlag("calledInsa2")) {
             api.setFlag("calledInsa2");
             api.startDialog("insa2a");
-          } else if (!api.hasFlag("calledStegmann")) {
-            // Spielerentscheidung merken: ohne report exit gilt als bewusst übersprungen.
-            if (!api.hasFlag("reportedExit")) {
-              api.setFlag("skippedExitReport");
-            }
-            api.setFlag("calledStegmann");
-            api.startDialog("stegmann");
-          } else if (!api.hasFlag("calledForCode")) {
+          } else if (
+            api.hasFlag("calledStegmann") &&
+            api.hasFlag("centralOsUpdated") &&
+            api.hasFlag("troubleReported") &&
+            api.hasFlag("reportedExit") &&
+            !api.hasFlag("calledForCode")
+          ) {
+            // Standardweg: Layard hat brav gemeldet → direkt zum Code.
             api.setFlag("calledForCode");
             api.startDialog("insa2");
+          } else {
+            // Alle anderen Fälle laufen über die Vermittlung Insa,
+            // die je nach Anliegen weiterverbindet bzw. den Ausgang
+            // anmahnt, bevor sie den Code freigibt.
+            api.startDialog("insaDispatch");
           }
         },
       },
