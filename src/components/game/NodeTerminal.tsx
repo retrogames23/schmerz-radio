@@ -54,6 +54,10 @@ export function NodeTerminal() {
         kind: tapped ? "out" : "out",
       },
       {
+        text: "  listen   — Live-Mitschnitt des Sektor-Verkehrs",
+        kind: "out",
+      },
+      {
         text: "  reroute  — Knoten in Echo-Schleife legen",
         kind: "out",
       },
