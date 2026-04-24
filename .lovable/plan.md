@@ -1,51 +1,68 @@
-# Plan: Telnet-Sessions als „echtes“ Remote-Terminal
-
 ## Ziel
 
-Sobald `telnet <host>` mit korrektem Passwort erfolgreich war, soll sich das Terminal **bis `exit`** so verhalten, als säße man tatsächlich am Zielrechner: gleiches Filesystem, gleicher Prompt, gleiche Befehle (`ls -a`, `cd`, `cat <pfad>`, `tree`, Tab-Complete, Verlauf, …) — kein Mini-Befehlssatz mehr.
+Neuer undokumentierter Cheat **`cheat superuser`** in Layards Terminal (`worag@centralos`). Nach Eingabe kann `telnet <host>` zu jedem Bewohner-Rechner im Sektornetz ohne Passwortabfrage verbunden werden — die Auth-Stufe wird komplett übersprungen.
 
-## Kernidee (einfach umsetzbar)
+## Verhalten
 
-Bodo und Worag haben heute schon **jeweils einen vollständigen Terminal-Modus** mit eigenem Filesystem (`FILESYSTEM_BODO` / `FILESYSTEM_WORAG`), umgeschaltet über das einzelne Flag `bodoMode` (`terminalBodoMode` aus `GameContext`).
+- Eingabe `cheat superuser` (case-insensitive) im normalen Terminal:
+  - Kurzer Beep + Bestätigungs-Output (Stil wie bei den anderen Debug-Cheats), z. B.:
+    ```
+    >> [DEBUG] superuser-mode aktiviert.
+    >> telnet umgeht ab jetzt jede Authentifizierung.
+    ```
+  - Setzt einen neuen React-State `superuser: boolean` auf `true`.
+- Nur in Layards Terminal verfügbar: Wenn `localBodoMode === true` (Bodos Terminal) oder wenn man bereits in einer Remote-Session ist (`remoteMode !== null`), wird der Cheat ignoriert / als unbekannter Befehl behandelt — sonst wäre er von Bodo aus ebenfalls nutzbar, was nicht gewünscht ist.
+- Nur für Bewohner-Hosts: Hosts ohne `password` (z. B. reine Listening-Hosts wie der `carrier-daemon`-Knoten) bleiben mit `>> Verbindung verweigert: kein telnet-daemon auf Port 23.` — der Cheat erzeugt keine Verbindung wo es technisch keinen Daemon gibt.
+- Sonderfall `bodo.e67` / `worag.e67`: Diese sind vollwertige Maschinen. `superuser` führt direkt in den Remote-Modus (gleicher Codepfad wie heute nach erfolgreichem Passwort) — also vollständige Filesystem-Session bis `exit`.
+- Sonderfall `philippe.e67`: Wie heute wird das Flag `hackedPhilippe` gesetzt (Story-Hook bleibt erhalten).
+- Persistenz: Der Superuser-Status gilt für die gesamte Terminal-Sitzung. Beim Schließen des Terminals (`closeTerminal`) wird der Status zurückgesetzt — analog zu `remoteMode`. So ist es ein bewusster Cheat, kein dauerhafter Story-Flag.
 
-Das nutzen wir aus: eine Telnet-Sitzung ist ab jetzt einfach **„temporär in den Modus des Zielhosts wechseln“**, mit `exit` zurück zum eigenen Host. Damit erbt Telnet kostenlos alle Features des Hauptterminals.
+## Technische Umsetzung
 
-## Welche Hosts profitieren
+Eine Datei betroffen: `src/components/game/Terminal.tsx`.
 
-- **`telnet bodo.e67`** (von Worag aus) und **`telnet worag.e67`** (von Bodo aus): vollwertiger Wechsel ins jeweils andere Filesystem — `cd`, `ls -a`, `cat home/bodo/.freiheit.txt`, `tree`, Tab-Complete, alles.
-- **Andere Hosts** (`philippe.e67`, `kamenev.e67`, `helka.e67`, `ennis.e67`, `mira.zks`, `drucker46.e67`, `kantine.e67`): bleiben bei ihrer bestehenden flachen `files`-Map, bekommen aber im selben Aufwasch die gleichen Komfort-Befehle wie der Hauptterminal-Modus, nur ohne Verzeichnisse. Konkret:
-  - `ls` / `ls -a` (versteckte Dateien mit Punkt-Präfix)
-  - `cat <datei>` mit „Datei nicht gefunden“ statt der heutigen Sonderausgabe
-  - `pwd` zeigt `/home/<user>`
-  - `help` mit identischem Layout wie auf dem Hauptterminal (reduziert auf das hier Mögliche)
-  - **Tab-Complete** und **Pfeil-hoch/runter Verlauf** funktionieren auch in der Session
-  - Prompt-Format `user@host:~$` bleibt, damit visuell klar bleibt, dass man remote ist.
+1. **Neuer State** neben den bestehenden Sub-Modus-States:
+   ```tsx
+   const [superuser, setSuperuser] = useState(false);
+   ```
 
-## Was sich technisch ändert (Details, optional zu lesen)
+2. **Cheat-Handler** im Block ab Zeile ~1194 (wo schon `cheat 2611`, `cheat 0001`, `cheat 0002` stehen), eingefügt nach `cheat 2611` und vor `cheat 0001`:
+   ```tsx
+   if (raw.toLowerCase() === "cheat superuser") {
+     // Nur in Layards eigenem Terminal, nicht in Bodos und nicht in einer Remote-Session.
+     if (!localBodoMode && !remoteMode) {
+       playBeep(0.5 * sfxVolume);
+       setSuperuser(true);
+       setLines((prev) => [
+         ...prev,
+         { text: `worag@centralos:~$ ${raw}`, kind: "in" },
+         { text: ">> [DEBUG] superuser-mode aktiviert.", kind: "system" },
+         { text: ">> telnet umgeht ab jetzt jede Authentifizierung.", kind: "out" },
+         { text: "", kind: "out" },
+       ]);
+       setInput("");
+       return;
+     }
+     // sonst: durchfallen, wird unten als unbekannter Befehl behandelt.
+   }
+   ```
 
-Datei: `src/components/game/Terminal.tsx`
+3. **Telnet-Befehlszweig** (Zeile ~2059) erweitern: Wenn `superuser && host.password`, statt `setTelnetAwaitPass(host.host)` direkt den „Auth-OK"-Pfad ausführen, der heute in Zeile ~1404 ff. nach erfolgreicher Passworteingabe läuft. Refactor-leicht: gemeinsame Hilfsfunktion `enterAuthenticatedSession(host)` einführen, die den heute duplizierten Code (MOTD, Remote-Modus für bodo/worag, sonst `setTelnetHost`, Philippe-Flag) kapselt. Beide Stellen rufen sie auf.
 
-1. **Neues State-Feld** `remoteMode: "worag" | "bodo" | null` (oder Wiederverwendung von `telnetHost`). Wird gesetzt, sobald Telnet auf `worag.e67` bzw. `bodo.e67` erfolgreich authentifiziert.
-2. **Effektiver Modus** = `remoteMode ?? (terminalBodoMode ? "bodo" : "worag")`. Daraus wird live abgeleitet:
-   - `userName`, `homePath`, `homeLabel`
-   - `resolvePath`, `pathString`, `FILESYSTEM` (bereits vorhanden)
-   - Prompt
-3. Der **bestehende Hauptbefehls-Block** (`ls`, `cd`, `cat`, `tree`, `pwd`, `help`, Tab-Complete, History) wird unverändert verwendet. Lediglich:
-   - `exit` / `logout` / `quit` schließen die Remote-Session, statt das Terminal zu schließen, wenn `remoteMode !== null`.
-   - Sub-Programme, die nicht remote-fähig sind (`adventure`, `lotti`, `sysupdate`, `trouble net`, `report exit`, `radio`, `call …`), sind während Remote-Modus deaktiviert und antworten mit `Befehl in Sitzung nicht verfügbar.` — analog zum heutigen Telnet-Verhalten.
-4. **„Privatsphäre“-Filter umkehren**: heute blendet `/home` jeweils das fremde Heimatverzeichnis aus (`hideHomeName`). In Remote-Sessions wird stattdessen das **eigene** Heimatverzeichnis ausgeblendet, denn man ist ja drüben.
-5. Für die **anderen Telnet-Hosts** (Philippe, Kamenev, …) bleibt der bestehende Mini-Modus, wird aber um `ls -a`, Tab-Complete und Pfeil-Verlauf ergänzt — gleicher Code, einmal aufgeräumt in eine kleine Hilfsfunktion gezogen.
-6. Der **Banner / motd** des Zielhosts wird beim Connect einmalig ausgegeben; Tab-Complete-Quellen schalten beim Sessionwechsel automatisch um, weil sie aus den abgeleiteten `FILESYSTEM` und `cwd` kommen.
-7. **Cheat / Hot-Keys**: `cheat 2611` und „Terminal schließen“-Button bleiben global aktiv und brechen ggf. die Telnet-Session sauber ab.
+   Für `superuser`-Fall zusätzlich eine Output-Zeile:
+   ```
+   >> [superuser] Authentifizierung übersprungen.
+   ```
 
-## Warum das einfach ist
+4. **Reset**: In `closeTerminal` (oder dem entsprechenden Effekt, der bereits `remoteMode = null` setzt) zusätzlich `setSuperuser(false)`. Damit ist der Cheat nicht über Sitzungen hinweg aktiv.
 
-- Kein neuer Filesystem-Code: beide kompletten Bäume existieren längst.
-- Keine neuen Befehle: der vorhandene Hauptbefehls-Block wird einfach im Remote-Modus ausgeführt.
-- Die Mehrarbeit beschränkt sich auf: einen State-Schalter, ein paar abgeleitete Werte umstellen, `exit`-Sonderfall, ein invertierter Privatsphäre-Filter, Sperrliste für nicht-remotefähige Sub-Programme.
+5. **Keine** Änderungen an `NET_HOSTS`, Filesystem-Dateien, Story-Flags oder Help-Text — der Cheat bleibt undokumentiert wie die anderen `cheat`-Eingaben.
 
-## Was bewusst nicht im Scope ist
+## Akzeptanzkriterien
 
-- Keine Änderung der Hosts ohne vollen Filesystem-Baum (Philippe & Co.) zu vollwertigen Mini-VMs — sie bleiben flach, gewinnen nur Komfort.
-- Keine Änderung an `GameContext`/`terminalBodoMode`-Verkabelung außerhalb der Komponente.
-- Keine neuen Story-Flags.
+- In Layards Terminal: `cheat superuser` → Bestätigungstext erscheint.
+- Danach: `telnet philippe.e67` → keine Passwortabfrage, direkt in Mini-Telnet-Session, `hackedPhilippe`-Flag wird gesetzt.
+- `telnet bodo.e67` → direkt in vollwertige Remote-Session auf Bodos Maschine (Filesystem, Prompt `bodo@bodo:~$`).
+- `telnet <host-ohne-passwort>` → unverändert „Verbindung verweigert".
+- In Bodos Terminal: `cheat superuser` → wird als unbekannter Befehl behandelt (keine Aktivierung).
+- Nach Schließen des Terminals und erneutem Öffnen: Superuser-Status ist wieder aus.

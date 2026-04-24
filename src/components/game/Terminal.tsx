@@ -1043,6 +1043,10 @@ export function Terminal() {
   // Cwd-Stack: pro Remote-Sitzung sichern wir den lokalen cwd, damit
   // `exit` ihn wiederherstellen kann.
   const savedCwdRef = useRef<string[] | null>(null);
+  // Undokumentierter Cheat „cheat superuser" in Layards Terminal: solange
+  // aktiv, überspringt `telnet` jede Passwortabfrage. Wird beim Schließen
+  // des Terminals zurückgesetzt — kein dauerhafter Story-Flag.
+  const [superuser, setSuperuser] = useState(false);
   // True während eine scriptgesteuerte Ausgabesequenz läuft (sysupdate, trouble net).
   const [scriptedRunning, setScriptedRunning] = useState(false);
   // Wenn Bodo gerade B3 für Lotti holt, sitzen wir an seinem Terminal —
@@ -1090,6 +1094,8 @@ export function Terminal() {
       setCwd([...startHome]);
       setTelnetHost(null);
       setTelnetAwaitPass(null);
+      // Cheat-Status gilt nur innerhalb einer Sitzung.
+      setSuperuser(false);
       // Banner explizit vom lokalen Modus aus aufbauen — eine zuvor
       // aktive Remote-Sitzung wurde gerade zurückgesetzt, der nächste
       // Render hat aber noch das alte (effektive) bodoMode-Flag.
@@ -1209,6 +1215,27 @@ export function Terminal() {
       // ergibt sich von selbst: der Knoten schließt mit exit.
       api.openNode5610();
       return;
+    }
+
+    // ── Undokumentierter Cheat »cheat superuser« ──────────
+    // Nur in Layards eigenem Terminal (nicht an Bodos Maschine, nicht in
+    // einer aktiven Remote-Sitzung). Aktiviert einen Modus, in dem
+    // `telnet <host>` jede Passwortabfrage überspringt.
+    if (raw.toLowerCase() === "cheat superuser") {
+      if (!localBodoMode && !remoteMode) {
+        playBeep(0.5 * sfxVolume);
+        setSuperuser(true);
+        setLines((prev) => [
+          ...prev,
+          { text: `worag@centralos:~$ ${raw}`, kind: "in" },
+          { text: ">> [DEBUG] superuser-mode aktiviert.", kind: "system" },
+          { text: ">> telnet umgeht ab jetzt jede Authentifizierung.", kind: "out" },
+          { text: "", kind: "out" },
+        ]);
+        setInput("");
+        return;
+      }
+      // Sonst durchfallen lassen — wird unten als unbekannter Befehl behandelt.
     }
 
     // ── Debug-Cheat »cheat 0001« ──────────────────────────
@@ -2069,6 +2096,41 @@ export function Terminal() {
             { text: `Versuche ${host.host} (${host.ip})…`, kind: "out" },
             { text: `>> Verbindung verweigert: kein telnet-daemon auf Port 23.`, kind: "out" },
           );
+        } else if (superuser) {
+          // Cheat aktiv: Auth-Schritt komplett überspringen, direkt in
+          // die authentifizierte Sitzung wechseln.
+          playUnlock(0.5 * sfxVolume);
+          newLines.push(
+            { text: `Versuche ${host.host} (${host.ip})…`, kind: "out" },
+            { text: ">> Verbunden.", kind: "system" },
+            { text: ">> [superuser] Authentifizierung übersprungen.", kind: "system" },
+          );
+          if (host.motd) {
+            newLines.push(
+              ...host.motd.map((t) => ({ text: t, kind: "out" } as Line)),
+            );
+          }
+          const targetUser =
+            host.host === "bodo.e67"
+              ? "bodo"
+              : host.host === "worag.e67"
+                ? "worag"
+                : null;
+          const sameAsLocal =
+            (targetUser === "bodo" && localBodoMode) ||
+            (targetUser === "worag" && !localBodoMode);
+          if (targetUser && !sameAsLocal) {
+            savedCwdRef.current = cwd;
+            setRemoteMode(targetUser);
+            setCwd(
+              targetUser === "bodo" ? [...HOME_PATH_BODO] : [...HOME_PATH_WORAG],
+            );
+          } else {
+            setTelnetHost(host.host);
+          }
+          if (host.host === "philippe.e67") {
+            api.setFlag("hackedPhilippe");
+          }
         } else {
           newLines.push(
             { text: `Versuche ${host.host} (${host.ip})…`, kind: "out" },
