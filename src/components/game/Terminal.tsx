@@ -1780,7 +1780,9 @@ export function Terminal() {
           newLines.push({ text: `cat: ${target}: Zugriff verweigert.`, kind: "out" });
         } else {
           newLines.push({ text: `── ${node.name} ───────────────────────`, kind: "system" });
-          const updated = flags.has("centralOsUpdated") && !bodoMode;
+          const updated = bodoMode
+            ? flags.has("centralOsUpdatedBodo")
+            : flags.has("centralOsUpdated");
           newLines.push(
             ...node.content.map(
               (t) => ({ text: applyOsVersion(t, updated), kind: "out" } as Line),
