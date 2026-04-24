@@ -701,6 +701,20 @@ export const dialogs: Record<string, DialogTree> = {
         id: "x2",
         speaker: "INSA",
         text: "Worag. Sie haben den Gateway-Fehler gemeldet. Sehr korrekt. Die meisten ignorieren so etwas.",
+        // Diese Variante nur, wenn Layard tatsächlich „trouble net" abgeschickt
+        // hat. Sonst überspringt die Engine die Zeile und nimmt x2alt.
+        requires: ["troubleReported"],
+        next: "x3",
+      },
+      // Alternative Eröffnung: Layard ist über den Tap-Pfad zurück und hat
+      // nie eine Gateway-Meldung gemacht. Insa registriert nur, dass er
+      // die Probe geliefert hat.
+      x2alt: {
+        id: "x2alt",
+        speaker: "INSA",
+        text: "Worag. Die Probe ist durch. Sie haben sauber gearbeitet — keine Spuren im Wartungsprotokoll. Danke.",
+        subtext: "Sie sagt »danke«, als würde sie das Wort selbst sortieren müssen.",
+        hiddenWhen: ["troubleReported"],
         next: "x3",
       },
       x3: {
