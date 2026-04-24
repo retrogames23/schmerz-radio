@@ -1495,6 +1495,32 @@ export function Terminal() {
       { text: `${userName}@${hostName}:${promptPath}$ ${input}`, kind: "in" },
     ];
 
+    // ── Remote-Sitzung: nur dateisystem- und info-bezogene Befehle.
+    // Story-Werkzeuge (Inbox, Wartung, sysupdate, Adventure, …) gehören
+    // zur eigenen Maschine und sind hier gesperrt — analog zu echtem
+    // Telnet, wo Sub-Programme der Quellmaschine nicht durchgreifen.
+    if (remoteMode) {
+      const REMOTE_ALLOWED = new Set([
+        "help", "?", "clear", "exit", "logout", "quit",
+        "pwd", "ls", "dir", "cd", "cat", "more", "type",
+        "tree", "whoami", "id", "date", "uptime", "history",
+        "echo", "man", "uname", "ps",
+      ]);
+      if (!REMOTE_ALLOWED.has(head)) {
+        newLines.push({
+          text: `${head}: Befehl in Sitzung nicht verfügbar.`,
+          kind: "out",
+        });
+        setLines((prev) => [...prev, ...newLines, { text: "", kind: "out" }]);
+        const h = termHistoryRef.current;
+        if (h[h.length - 1] !== raw) h.push(raw);
+        historyCursorRef.current = -1;
+        draftRef.current = "";
+        setInput("");
+        return;
+      }
+    }
+
     if (cmd === "help") {
       newLines.push(...buildHelpLines(bodoMode));
       if (!bodoMode && flags.has("calledInsa2") && !flags.has("calledStegmann")) {
