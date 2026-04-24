@@ -997,6 +997,7 @@ export function Terminal() {
   const [input, setInput] = useState("");
   const [cwd, setCwd] = useState<string[]>([...HOME_PATH]);
   const [advState, setAdvState] = useState<AdvState | null>(null);
+  const [lottiState, setLottiState] = useState<LottiState | null>(null);
   // Aktive Telnet-Sitzung (null = keine).
   const [telnetHost, setTelnetHost] = useState<string | null>(null);
   // Telnet wartet auf Passworteingabe für diesen Host.
