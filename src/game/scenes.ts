@@ -87,6 +87,13 @@ export const scenes: Record<string, Scene> = {
             // Standardweg: Layard hat brav gemeldet → direkt zum Code.
             api.setFlag("calledForCode");
             api.startDialog("insa2");
+          } else if (
+            api.hasFlag("insaSentTo5610") &&
+            !api.hasFlag("tappedNode5610")
+          ) {
+            // Insa hat den Auftrag schon erteilt, aber Layard war noch
+            // nicht am Knoten. Kurzer Reminder statt voller Vermittlung.
+            api.startDialog("insaReminder5610");
           } else {
             // Alle anderen Fälle laufen über die Vermittlung Insa,
             // die je nach Anliegen weiterverbindet bzw. den Ausgang

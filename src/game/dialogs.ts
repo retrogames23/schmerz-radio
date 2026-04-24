@@ -701,6 +701,20 @@ export const dialogs: Record<string, DialogTree> = {
         id: "x2",
         speaker: "INSA",
         text: "Worag. Sie haben den Gateway-Fehler gemeldet. Sehr korrekt. Die meisten ignorieren so etwas.",
+        // Diese Variante nur, wenn Layard tatsächlich „trouble net" abgeschickt
+        // hat. Sonst überspringt die Engine die Zeile und nimmt x2alt.
+        requires: ["troubleReported"],
+        next: "x2alt",
+      },
+      // Alternative Eröffnung: Layard ist über den Tap-Pfad zurück und hat
+      // nie eine Gateway-Meldung gemacht. Insa registriert nur, dass er
+      // die Probe geliefert hat.
+      x2alt: {
+        id: "x2alt",
+        speaker: "INSA",
+        text: "Worag. Die Probe ist durch. Sie haben sauber gearbeitet — keine Spuren im Wartungsprotokoll. Danke.",
+        subtext: "Sie sagt »danke«, als würde sie das Wort selbst sortieren müssen.",
+        hiddenWhen: ["troubleReported"],
         next: "x3",
       },
       x3: {
@@ -802,6 +816,46 @@ export const dialogs: Record<string, DialogTree> = {
         id: "x7",
         speaker: "SYSTEM",
         text: "[ Im Terminal liegt jetzt eine Nachricht. Datum: 06.11.1997. Code-Format: ohne Punkte. Acht Ziffern. ]",
+        end: true,
+      },
+    },
+  },
+
+  // ---------------------------------------------------------------
+  // 8b. Insa — Kurz-Reminder, wenn der Auftrag schon läuft
+  // ---------------------------------------------------------------
+  // Layard hat Insa schon gesprochen, sie hat ihn zu Knoten 5610 geschickt
+  // (insaSentTo5610), aber er hat dort noch nicht »tap« ausgeführt
+  // (tappedNode5610 fehlt). Wenn er sie jetzt erneut anruft, wiederholt
+  // sie nicht das ganze Briefing — sie fasst nur kurz zusammen, was sie
+  // braucht, und legt auf.
+  insaReminder5610: {
+    id: "insaReminder5610",
+    start: "r1",
+    lines: {
+      r1: {
+        id: "r1",
+        speaker: "SYSTEM",
+        text: "[ Vermittlung. Insa hebt nach dem zweiten Klingeln ab. ]",
+        next: "r2",
+      },
+      r2: {
+        id: "r2",
+        speaker: "INSA",
+        text: "Worag. Sie haben noch nichts für mich. Ich höre es an Ihrer Stimme.",
+        subtext: "Kein Vorwurf. Eine Feststellung.",
+        next: "r3",
+      },
+      r3: {
+        id: "r3",
+        speaker: "INSA",
+        text: "Korridor 56, Wartungstür 5610. Am Terminal »tap«. Read-only. Danach rufen Sie mich noch einmal an, dann bekommen Sie Ihren Code. Den Override habe ich Ihnen schon scharfgeschaltet.",
+        next: "r4",
+      },
+      r4: {
+        id: "r4",
+        speaker: "INSA",
+        text: "Auf Wiederhören.",
         end: true,
       },
     },
