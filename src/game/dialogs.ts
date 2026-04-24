@@ -446,12 +446,6 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "INSA",
         text: "Bauerfeind. — Worag, schon wieder. Was brauchen Sie?",
         subtext: "Keine Genervtheit. Eher: Aufmerksamkeit.",
-        next: "id3",
-      },
-      id3: {
-        id: "id3",
-        speaker: "LAYARD",
-        text: "…",
         choices: [
           {
             text: "Ich komme nicht durchs Netz. Error 4567.",
@@ -532,12 +526,6 @@ export const dialogs: Record<string, DialogTree> = {
         id: "idCode2",
         speaker: "INSA",
         text: "Den Verantwortlichen fürs Zentrale Netz kann ich Ihnen geben, falls noch etwas hängt. Sonst …",
-        next: "idCode3",
-      },
-      idCode3: {
-        id: "idCode3",
-        speaker: "LAYARD",
-        text: "…",
         choices: [
           {
             text: "Verbinden Sie mich. Ich versuche es noch.",
