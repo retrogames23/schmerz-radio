@@ -1530,6 +1530,27 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "INSA",
         text: "Es ist die häufigste. Sie ist im Standardprotokoll auf Seite vier. Niemand liest Seite vier.",
         subtext: "Ein Hauch von etwas, das fast wie ein Lachen klingt. Aber nur fast.",
+        next: "ar10burnA",
+      },
+      // Wenn Layard heute den Knoten 5610 zerstört hat, kommt Insa hier
+      // einmal kurz darauf zurück. Sie weiß es längst — der Sektor ist
+      // still. Der Tonfall hängt davon ab, wie Layard es vorhin am
+      // Telefon benannt hat (Owned/Dodged). Ohne burn entfallen beide
+      // Beats, Engine läuft direkt zu ar11.
+      ar10burnA: {
+        id: "ar10burnA",
+        speaker: "INSA",
+        text: "Übrigens — der Sektor ist still. Das ist, was Sie wollten. Und es ist trotzdem nicht weniger schwer.",
+        subtext: "Sie sagt es ohne Vorwurf. Eher: als Befund.",
+        requires: ["burnedAndOwned"],
+        next: "ar10burnB",
+      },
+      ar10burnB: {
+        id: "ar10burnB",
+        speaker: "INSA",
+        text: "Übrigens — der Sektor ist still. Niemand weiß, warum es Ihnen leichter geworden ist. Sie auch nicht.",
+        subtext: "Sie sagt es so leise, dass Layard nicht sicher ist, ob er es richtig gehört hat.",
+        requires: ["burnedAndDodged"],
         next: "ar11",
       },
       ar11: {
