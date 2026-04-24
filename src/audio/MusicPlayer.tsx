@@ -13,6 +13,7 @@ import trackSunday from "@/assets/sunday-at-the-bunker.mp3";
 import trackMidnight from "@/assets/midnight-at-the-loading-bay.mp3";
 import trackSunrise from "@/assets/music/Before_the_Sunrise.mp3";
 import trackSteelRain from "@/assets/music/Steel_Rain_at_Midnight.mp3";
+import trackRain from "@/assets/music/rain-against-the-pane.mp3";
 
 /**
  * Background music. Plays a playlist of tracks in sequence and
@@ -32,6 +33,7 @@ const PLAYLIST: MusicTrack[] = [
   { title: "Midnight at the Loading Bay", src: trackMidnight },
   { title: "Before the Sunrise", src: trackSunrise },
   { title: "Steel Rain at Midnight", src: trackSteelRain },
+  { title: "Rain Against the Pane", src: trackRain },
 ];
 const CROSSFADE_SECONDS = 6;
 const FADE_TICK_MS = 50;
