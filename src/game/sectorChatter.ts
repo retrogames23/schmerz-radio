@@ -73,7 +73,7 @@ export const SECTOR_CHATTER: ChatterMessage[] = [
   { from: "anonym.????", to: "all.e67", text: "es ist nicht normal." },
   { from: "lobby.001", to: "anonym.????", text: "absender unbekannt. paket verworfen." },
   { from: "anonym.????", to: "all.e67", text: "es ist immer noch nicht normal." },
-  { from: "bodo.2612", to: "lobby.001", text: "notiz, falls jemand mitliest: B3 nachholen. wieder. lotti hat seit gestern nur trockenfutter und schaut mich an, als hätte ich ihr persönlich den fischtag gestrichen. das habe ich nicht. das war die belieferung. ich bitte um einen verbindlichen ersatztermin und nicht wieder »demnächst«." },
+  { from: "bodo.2612", to: "lobby.001", text: "notiz, falls jemand mitliest: B3 nachholen. wieder. lotti hat seit gestern nur trockenfutter und schaut mich an, als haette ich ihr persoenlich den fischtag gestrichen. das habe ich nicht. das war die belieferung. ich bitte um einen verbindlichen ersatztermin und nicht wieder 'demnaechst'." },
   { from: "lobby.001", to: "bodo.2612", text: "ersatztermin: morgen 14:00. demnächst." },
   { from: "uschi.6601", to: "harald.6602", text: "kommst du noch zum schach?" },
   { from: "harald.6602", to: "uschi.6601", text: "die figuren hat letzte woche jemand entfernt." },
