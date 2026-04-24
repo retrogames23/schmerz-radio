@@ -1714,10 +1714,10 @@ export const scenes: Record<string, Scene> = {
       // ─────────────────────────────────────────────────────────
       {
         id: "door5610",
-        x: 24,
-        y: 32,
-        w: 14,
-        h: 50,
+        x: 8,
+        y: 16,
+        w: 16,
+        h: 74,
         label: "Tür 5610 · Technik",
         visible: (api) => {
           if (api.hasFlag("serverRoom5610Open")) return true;
