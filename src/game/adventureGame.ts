@@ -35,19 +35,19 @@ export const ADV_ITEMS: Record<string, AdvItem> = {
     id: "smartphone",
     name: "Smartphone",
     description:
-      "Ein flaches Glasrechteck. Worag hat es nie gesehen — er beschreibt es als »Spiegel, der zurückspricht«. Akku 12%.",
+      "Ein flaches Glasrechteck. [Ich habe so eines nie gesehen — am ehesten würde ich es als »Spiegel, der zurückspricht« beschreiben.] Akku 12%.",
   },
   bvgTicket: {
     id: "bvgTicket",
     name: "BVG-Tageskarte",
     description:
-      "Papier, gelb, mit einem QR-Code. Worag hat den QR-Code aus einem Handbuch abgemalt — er sieht aus wie ein zerbrochenes Fenster.",
+      "Papier, gelb, mit einem QR-Code. [Ich habe den QR-Code aus einem Handbuch abgemalt — er sieht aus wie ein zerbrochenes Fenster.]",
   },
   clubMate: {
     id: "clubMate",
     name: "Club-Mate",
     description:
-      "Eine kalte braune Flasche. Etikett: »NACH GUTER ALTER HAUSMACHERART«. Macht angeblich wach. Worag glaubt, das sei eine Art Medikament.",
+      "Eine kalte braune Flasche. Etikett: »NACH GUTER ALTER HAUSMACHERART«. Macht angeblich wach. [Ich vermute, das ist eine Art Medikament.]",
   },
   hausschluessel: {
     id: "hausschluessel",
