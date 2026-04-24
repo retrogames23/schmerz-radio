@@ -2603,7 +2603,7 @@ export function Terminal() {
               if (e.key === "ArrowUp" || e.key === "ArrowDown") {
                 e.preventDefault();
                 const history =
-                  advState || lottiState
+                  advState || lottiState || newsState
                     ? advHistoryRef.current
                     : termHistoryRef.current;
                 if (!history.length) return;
@@ -2645,6 +2645,8 @@ export function Terminal() {
                 result = adventureComplete(advState, input);
               } else if (lottiState) {
                 result = lottiComplete(input);
+              } else if (newsState) {
+                result = newsComplete(input);
               } else if (telnetHost) {
                 const host = findHost(telnetHost);
                 const hostFiles: Record<string, string[]> = {
@@ -2674,6 +2676,8 @@ export function Terminal() {
                   echoPrompt = "adventure>";
                 } else if (lottiState) {
                   echoPrompt = "lotti>";
+                } else if (newsState) {
+                  echoPrompt = "news>";
                 } else if (telnetHost) {
                   const host = findHost(telnetHost);
                   echoPrompt = `${host?.host ?? telnetHost}:~$`;
