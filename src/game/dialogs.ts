@@ -561,21 +561,21 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "INSA",
         text: "Herr Worag — ich kann Ihnen den Code heute geben. Aber nicht, bevor Sie etwas für mich tun.",
         subtext: "Das ist kein Skript. Das ist sie selbst.",
-        hiddenWhen: ["radioOrigin"],
+        hiddenWhen: ["tappedNode5610"],
         next: "idPflicht2",
       },
       idPflicht2: {
         id: "idPflicht2",
         speaker: "INSA",
         text: "In Korridor 56, Etage E67, gibt es eine Wartungstür. Schild „5610 · Technik“. Dahinter steht ein Knoten, von dem ich nicht weiß, wer ihn betreibt. Ich brauche eine Probe.",
-        hiddenWhen: ["radioOrigin"],
+        hiddenWhen: ["tappedNode5610"],
         next: "idPflicht3",
       },
       idPflicht3: {
         id: "idPflicht3",
         speaker: "INSA",
         text: "Sie kommen rein — die Tür kennt Sie schon. Am Terminal tippen Sie »tap« und hören kurz mit. Dann rufen Sie mich an. Erst dann gebe ich den Code raus.",
-        hiddenWhen: ["radioOrigin"],
+        hiddenWhen: ["tappedNode5610"],
         next: "idPflicht4",
       },
       idPflicht4: {
@@ -583,7 +583,7 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "INSA",
         text: "Falls die Tür nicht aufgeht: Wartungsmuster ist 7-0-Pause-3-2. Aber das wissen Sie nicht von mir.",
         subtext: "Sie sagt es so leise, als würde sie selbst nicht zuhören.",
-        hiddenWhen: ["radioOrigin"],
+        hiddenWhen: ["tappedNode5610"],
         choices: [
           {
             text: "Verstanden. Auf Wiederhören.",
@@ -608,7 +608,7 @@ export const dialogs: Record<string, DialogTree> = {
         id: "idPflichtSkip",
         speaker: "SYSTEM",
         text: "[ Insa wirft einen Blick auf etwas, das Layard nicht sieht — und nickt knapp. ]",
-        requires: ["radioOrigin"],
+        requires: ["tappedNode5610"],
         next: "idCode4",
       },
       idCode4: {
