@@ -3363,8 +3363,20 @@ export const dialogs: Record<string, DialogTree> = {
         text: "Worag. — Hier ist gerade ein Träger ausgefallen. Komplett. Wir haben das auf dem Pult als Alarm 4-7-7. Sagt Ihnen das was?",
         subtext: "Sie weiß die Antwort. Sie fragt trotzdem.",
         choices: [
-          { text: "Ich war es. Tut mir leid.", next: "ic4a" },
-          { text: "Sagt mir nichts.", next: "ic4b" },
+          {
+            text: "Ich habe es ausgeschaltet, weil es uns kaputtgemacht hat.",
+            next: "ic4a",
+            action: (api) => {
+              api.setFlag("burnedAndOwned");
+            },
+          },
+          {
+            text: "Ich weiß es nicht. Ich war wütend.",
+            next: "ic4b",
+            action: (api) => {
+              api.setFlag("burnedAndDodged");
+            },
+          },
         ],
       },
       ic4a: {
