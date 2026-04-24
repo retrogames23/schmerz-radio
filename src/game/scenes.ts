@@ -689,8 +689,6 @@ export const scenes: Record<string, Scene> = {
           if (!api.hasFlag("metPhilippe")) {
             api.showText([
               "Layard klopft an 2613.",
-              "Drinnen: nichts. Kein Stuhl, der zurückgeschoben wird.",
-              "Kein „Moment“. Nicht einmal die Lampe brummt.",
               "Philippe ist nicht zu Hause.",
             ]);
             return;
