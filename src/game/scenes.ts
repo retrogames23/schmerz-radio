@@ -53,9 +53,18 @@ export const scenes: Record<string, Scene> = {
         label: "Telefon",
         // Only available after Layard saw the empty office on floor 3.
         requires: ["sawEmptyOffice"],
-        hiddenWhen: ["calledForCode"],
+        hiddenWhen: ["calledInsaAfterE71"],
         onUse: (api) => {
-          if (!api.hasFlag("calledInsa2")) {
+          // Höchste Priorität: Layard ist aus E71 zurück und hat das
+          // abgelehnte Protokoll noch in der Tasche → Insa anrufen.
+          if (
+            api.hasFlag("mikaelRejectedProtocol") &&
+            !api.hasFlag("calledInsaAfterE71")
+          ) {
+            api.setFlag("calledInsaAfterE71");
+            api.setFlag("insaInvitedToDispatch");
+            api.startDialog("insaAct2Return");
+          } else if (!api.hasFlag("calledInsa2")) {
             api.setFlag("calledInsa2");
             api.startDialog("insa2a");
           } else if (
