@@ -146,10 +146,15 @@ export type StoryFlag =
   // ohne Karte/Code (Pflicht-Pfad).
   | "serverRoom5610OverrideArmed"
   | "tappedNode5610"
-  | "reroutedNode5610"
   | "burnedNode5610"
-  // Folgen aus burn/reroute. Beendet das Spiel NICHT — wirkt nur narrativ.
+  // Folgen aus burn. Beendet das Spiel NICHT — wirkt nur narrativ.
   | "crossLinkSevered"
+  // Nach dem Burn-Anruf bei Insa: Layard hat die Tat als bewusste
+  // Entscheidung benannt („… weil es uns kaputtgemacht hat.")
+  | "burnedAndOwned"
+  // Nach dem Burn-Anruf bei Insa: Layard konnte/wollte sich keine Haltung
+  // dazu geben („Ich weiß es nicht. Ich war wütend.")
+  | "burnedAndDodged"
   // Insa hat Layard zwingend zu Knoten 5610 geschickt (Pflicht-Pfad
   // für den Sektor-Code).
   | "insaSentTo5610"
@@ -296,10 +301,10 @@ export interface GameApi {
   isRadioActive: () => boolean;
   setEnding: () => void;
   /**
-   * Spielt eine Fullscreen-Sequenz nach burn/reroute.
+   * Spielt eine Fullscreen-Sequenz nach burn.
    * Beendet das Spiel NICHT.
    */
-  playBurnSequence: (kind: "burn" | "reroute") => void;
+  playBurnSequence: () => void;
   /**
    * Floors (subset of {3,4,5}) where Mira appears this run. Currently 2
    * of 3 floors are picked at random so the player is more likely to
