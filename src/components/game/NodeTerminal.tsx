@@ -97,17 +97,12 @@ export function NodeTerminal() {
   }, [nodeOpen]);
 
   // Sobald das Ending startet, brechen wir einen laufenden Listen-Loop
-  // und das Wartungsterminal komplett ab — sonst rieseln die Sektor-
-  // Chatter weiter unter dem Abspann durch (mit den begleitenden Beeps).
+  // halten wir die Beeps stumm — die Chatter-Zeilen sollen aber als
+  // stille Atmosphäre weiterlaufen (visuell, ohne Ton).
+  const endingRef = useRef(false);
   useEffect(() => {
-    if (!ending) return;
-    if (listenTimerRef.current) {
-      clearTimeout(listenTimerRef.current);
-      listenTimerRef.current = null;
-    }
-    setListening(false);
-    if (nodeOpen) closeNode();
-  }, [ending, nodeOpen, closeNode]);
+    endingRef.current = ending;
+  }, [ending]);
 
   if (!nodeOpen) return null;
 
@@ -148,8 +143,9 @@ export function NodeTerminal() {
       // Einrückungen so wählen, dass von/an unterschiedlich gut lesbar bleiben.
       const header = `[${ts}]  ${msg.from}  →  ${msg.to}`;
       const body = `         » ${msg.text}«`;
-      // Leiser Beep für Eingang.
-      playBeep(0.18 * sfxVolume);
+      // Leiser Beep für Eingang — im Abspann stumm, damit nur die
+      // Zeilen als Atmosphäre durchscrollen.
+      if (!endingRef.current) playBeep(0.18 * sfxVolume);
       setLines((prev) => [
         ...prev,
         { text: header, kind: "system" },
