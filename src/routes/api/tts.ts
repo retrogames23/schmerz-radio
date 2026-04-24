@@ -271,10 +271,17 @@ export const Route = createFileRoute("/api/tts")({
           ? Math.max(0.7, Math.min(1.2, body.speed))
           : 1.0;
 
+        // Vor dem Senden: deutschen Aussprache-Fix anwenden. Sektorcodes,
+        // Wohnungsnummern, Frequenzen werden zu deutschen Wörtern, damit
+        // ElevenLabs sie korrekt liest.
+        const ttsText = normalizeForGermanTTS(text);
+
         // ── Server-side cache lookup (Lovable Cloud Storage) ────────
         // Every unique (voiceId, speed, text) is only generated once
         // and reused across ALL players from then on.
-        const cacheKey = hashKey(voiceId, String(speed), text);
+        // Cache-Key auf dem normalisierten Text — sonst würde ein alter
+        // (falsch ausgesprochener) Cache-Eintrag den neuen Fix maskieren.
+        const cacheKey = hashKey(voiceId, String(speed), "v2", ttsText);
         const objectPath = `${cacheKey}.mp3`;
 
         try {
@@ -305,7 +312,7 @@ export const Route = createFileRoute("/api/tts")({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              text,
+              text: ttsText,
               model_id: "eleven_multilingual_v2",
               voice_settings: {
                 stability: 0.55,
