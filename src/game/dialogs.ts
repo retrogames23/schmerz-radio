@@ -542,19 +542,17 @@ export const dialogs: Record<string, DialogTree> = {
           },
           {
             text: "Lassen wir das. Geben Sie mir bitte direkt den Code.",
-            // Engine-Trick: idPflichtSkip ist nur sichtbar, wenn getappt
-            // (→ leitet weiter zu idCode4). Sonst greift idPflichtCheck
-            // → idPflicht1..4 (Pflicht-Pfad).
-            next: "idPflichtCheck",
+            // Engine resolved nach Sichtbarkeit:
+            //  - Getappt → idPflichtSkip (sichtbar, requires erfüllt) → idCode4
+            //  - Nicht getappt → idPflichtSkip hidden, Engine folgt
+            //    next-Pointer zu idPflichtCheck → idPflicht1..4.
+            next: "idPflichtSkip",
           },
         ],
       },
       // Verzweigung: Hat Layard die Quelle der Sendung (radioOrigin) bereits
       // verstanden? Dann gibt Insa den Code wie gehabt heraus. Wenn nicht,
       // schickt sie ihn vorher zwingend zum Knoten 5610.
-      // Wenn Layard noch NICHT getappt hat: idPflichtSkip ist hidden
-      // (weil requires: tappedNode5610 nicht erfüllt) und die Engine
-      // läuft den `next`-Pointer entlang nach idPflicht1.
       idPflichtCheck: {
         id: "idPflichtCheck",
         speaker: "SYSTEM",
@@ -615,6 +613,11 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "SYSTEM",
         text: "[ Insa wirft einen Blick auf etwas, das Layard nicht sieht — und nickt knapp. ]",
         requires: ["tappedNode5610"],
+        // Bei getappt: SYSTEM-Beat, dann Code-Mail-Pfad.
+        // Bei nicht getappt: hidden → Engine folgt next zu idPflichtCheck
+        //   und arbeitet idPflicht1..4 ab.
+        // (Wichtig: idPflichtSkip steht im Lines-Objekt VOR idPflichtCheck —
+        //  die Engine schaut nicht nach Reihenfolge, sondern folgt next.)
         next: "idCode4",
       },
       idCode4: {
