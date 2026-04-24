@@ -1285,7 +1285,7 @@ export function Terminal() {
     ];
 
     if (cmd === "help") {
-      newLines.push(...HELP_LINES);
+      newLines.push(...buildHelpLines(bodoMode));
       if (flags.has("calledInsa2") && !flags.has("calledStegmann")) {
         newLines.push(
           { text: "", kind: "out" },
