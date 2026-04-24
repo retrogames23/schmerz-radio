@@ -633,6 +633,12 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "INSA",
         text: "[ … ] Gut. Ich vermerke es als „nicht gemeldet“. Den Code lege ich Ihnen trotzdem ins Terminal — Sie wissen schon: das Datum.",
         subtext: "Sie zögert kurz. Dann tippt sie. Sie tut es trotzdem.",
+        // Code-Mail darf NUR ausgeliefert werden, wenn Layard tatsächlich
+        // am Knoten 5610 getappt hat. Sonst beendet die Engine den Dialog
+        // hier (resolveVisible findet keinen sichtbaren Folge-Schritt),
+        // und Insa hängt an genau der Stelle auf, an der sie eigentlich
+        // die Probe abwartet.
+        requires: ["tappedNode5610"],
         next: "idCode5",
         choices: [
           {
@@ -658,18 +664,21 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "INSA",
         text: "Sie öffnen Ihr Terminal. Im Posteingang liegt eine Nachricht von der Leitstelle. Lesen Sie das Datum darin — und tippen Sie es ohne Punkte ein. Acht Ziffern. Nicht mehr, nicht weniger.",
         subtext: "Sie spricht langsam. Wie zu jemandem, der lange nichts gelesen hat.",
+        requires: ["tappedNode5610"],
         next: "idCode6",
       },
       idCode6: {
         id: "idCode6",
         speaker: "INSA",
         text: "Beispiel — wenn da steht 14.03.1985, dann tippen Sie 14031985. Verstanden, Herr Worag?",
+        requires: ["tappedNode5610"],
         next: "idCode7",
       },
       idCode7: {
         id: "idCode7",
         speaker: "SYSTEM",
         text: "[ Im Terminal liegt jetzt eine Nachricht. Datum: 06.11.1997. Code-Format: ohne Punkte. Acht Ziffern. ]",
+        requires: ["tappedNode5610"],
         end: true,
       },
     },
