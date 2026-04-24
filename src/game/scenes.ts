@@ -1278,6 +1278,17 @@ export const scenes: Record<string, Scene> = {
     title: "Lobby — Etage 1, E67",
     intro:
       "Ein leerer Empfangstresen. Eine Anzeigetafel. Hinten links: der Aufzug. Rechts: die schwere Sektor-Tür.",
+    decals: [
+      {
+        id: "tvE67",
+        kind: "television",
+        // Wand über dem Empfangstresen, gut sichtbar von der Mitte aus.
+        x: 18,
+        y: 18,
+        w: 11,
+        h: 17,
+      },
+    ],
     npcs: [
       {
         id: "philippeLobby",
@@ -1313,6 +1324,16 @@ export const scenes: Record<string, Scene> = {
             "Niemand hinter dem Tresen. Eine Kaffeetasse, halb voll, kalt.",
             "Auf einem Klemmbrett: Schichtplan. Heutige Schicht: durchgestrichen.",
           ]),
+      },
+      {
+        id: "televisionE67",
+        // Wand-Teleempfänger über dem Tresen.
+        x: 17,
+        y: 17,
+        w: 13,
+        h: 19,
+        label: "Teleempfänger",
+        onUse: (api) => api.openTelevision(),
       },
       {
         id: "lobbyBoard",
