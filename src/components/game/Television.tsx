@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { CloseButton } from "./CloseButton";
+import { useMusic } from "@/audio/MusicPlayer";
+import { useSettings } from "@/audio/SettingsContext";
+import anchorZdsAsset from "@/assets/tv/anchor-zds.mp4.asset.json";
+import anchorBvAsset from "@/assets/tv/anchor-bv.mp4.asset.json";
+import anchorWetterAsset from "@/assets/tv/anchor-wetter.mp4.asset.json";
 
 /**
  * Teleempfänger — drei Kanäle in zermürbender Bürokraten-Sprache.
@@ -15,8 +20,18 @@ interface Channel {
   tag: string;
   ticker: string;
   bulletins: string[];
-  /** Sekunden pro Meldung */
+  /**
+   * Fallback-Wartezeit pro Meldung in Sekunden, falls TTS nicht verfügbar
+   * ist (Stummschaltung, Netzfehler). Wenn Audio läuft, bestimmt die
+   * tatsächliche Sprechdauer den Wechsel.
+   */
   hold: number;
+  /** Wand-Loop des/der Sprecher/in (10s, läuft endlos). */
+  videoUrl: string;
+  /** ElevenLabs voiceId für die Sprecher/in dieses Senders. */
+  voiceId: string;
+  /** Akzentfarbe für UI-Akzente und Bauchbinde. */
+  accentClass: string;
 }
 
 const CHANNELS: Channel[] = [
