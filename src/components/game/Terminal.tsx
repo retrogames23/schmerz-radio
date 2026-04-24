@@ -1833,6 +1833,21 @@ export function Terminal() {
           },
           { text: "", kind: "out" },
           {
+            text: "  ── Tech-Wartung Etage 5 (Routine) ──",
+            kind: "system",
+          },
+          {
+            text: "  5610  Tech-Knoten 5/6 OFFEN     letzte: 02.11.1997",
+            kind: "out",
+          },
+          {
+            text: bodoMode
+              ? "        Code: 7032 · Letzte Wartung: B. Marschke"
+              : "        Code: ████ · Letzte Wartung: ████████████",
+            kind: bodoMode ? "out" : "out",
+          },
+          { text: "", kind: "out" },
+          {
             text: bodoMode
               ? "TIPP: 'maint cancel 4711' storniert die Anfrage."
               : "Stornierung erfordert Hausmeister-Konsole (gid=hausmeister).",

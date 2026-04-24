@@ -1767,4 +1767,49 @@ export const scenes: Record<string, Scene> = {
       },
     ],
   },
+
+  // ───────────────────────────────────────────────────────────
+  // Serverraum hinter Tür 5610 — lokaler Resonanz-Knoten von E67.
+  // ───────────────────────────────────────────────────────────
+  serverRoom5610: {
+    id: "serverRoom5610",
+    background: serverRoom5610Bg,
+    title: "Serverraum 5610 — Knoten E67",
+    intro:
+      "Drei Racks, blinkende LEDs, der Geruch von heißem Lötzinn. In der Ecke: ein einzelnes Wartungsterminal. Hier laufen die Resonanz-Pakete von E67 zusammen, bevor sie an die Leitstelle gehen.",
+    hotspots: [
+      {
+        id: "nodeTerminal5610",
+        x: 70,
+        y: 45,
+        w: 26,
+        h: 40,
+        label: "Wartungsterminal",
+        onUse: (api) => api.openNode5610(),
+      },
+      {
+        id: "racks5610",
+        x: 18,
+        y: 25,
+        w: 38,
+        h: 60,
+        label: "Racks (warm)",
+        onUse: (api) =>
+          api.showText([
+            "Drei Racks, dicht an dicht. Die LEDs flackern im Takt von 104,6.",
+            "Layard hält die Hand kurz an das Gehäuse — es ist warm.",
+            "Wärme von etwas, das ohne Pause arbeitet.",
+          ]),
+      },
+      {
+        id: "exit5610",
+        x: 0,
+        y: 50,
+        w: 14,
+        h: 50,
+        label: "Zurück in den Korridor",
+        onUse: (api) => api.goTo("corridor56"),
+      },
+    ],
+  },
 };

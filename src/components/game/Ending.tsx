@@ -41,12 +41,48 @@ const FRAMES_FLYER_EXTRA: string[][] = [
 ];
 
 export function Ending() {
-  const { ending, api } = useGame();
+  const { ending, api, flags } = useGame();
   const [idx, setIdx] = useState(0);
 
-  const frames = api.hasItem("flyer")
-    ? [...FRAMES_BASE, ...FRAMES_FLYER_EXTRA]
-    : FRAMES_BASE;
+  const silent = flags.has("endingSilent");
+  const sabotage = flags.has("endingSabotage");
+
+  const FRAMES_SILENT: string[][] = [
+    [
+      "Der Knoten singt sich selbst zu, in einer Schleife.",
+      "Auf 104,6 — kein neuer Schmerz mehr. Nur Echo.",
+      "In E67 wird heute Nacht jemand etwas träumen, das er nicht kennt.",
+    ],
+    [
+      "Layard tritt ans Fenster. Solaranlage. 48 Stunden Notstrom.",
+      "Das reicht, hat er heute gelernt, für sehr viel.",
+      "Auf dem Tisch: die Datenkapsel. Daneben, leichter geworden, das Telefon.",
+    ],
+  ];
+
+  const FRAMES_SABOTAGE: string[][] = [
+    [
+      "In der Lobby klingelt das Pult. Insa wird abheben.",
+      "Sie wird ein leeres Rauschen hören, dann einen Alarm, dann nichts.",
+      "Die Sektor-Tür E67/E71 hat sich geschlossen. Heute öffnet sie keiner mehr.",
+    ],
+    [
+      "Layard sitzt im Dunkeln. Auf 104,6: nichts.",
+      "Zum ersten Mal seit Jahren — wirklich nichts.",
+      "Er weiß nicht, ob das Stille ist oder ein Anfang.",
+    ],
+  ];
+
+  let frames: string[][];
+  if (sabotage) {
+    frames = [...FRAMES_BASE.slice(0, 2), ...FRAMES_SABOTAGE];
+  } else if (silent) {
+    frames = [...FRAMES_BASE.slice(0, 3), ...FRAMES_SILENT];
+  } else {
+    frames = api.hasItem("flyer")
+      ? [...FRAMES_BASE, ...FRAMES_FLYER_EXTRA]
+      : FRAMES_BASE;
+  }
 
   useEffect(() => {
     if (!ending) return;
@@ -81,10 +117,18 @@ export function Ending() {
       {done && (
         <div className="slow-fade-in mt-12 space-y-3 text-center">
           <div className="font-mono-crt text-sm uppercase tracking-[0.4em] text-amber-glow amber-glow">
-            AKT II — ENDE
+            {sabotage
+              ? "AKT II — ENDE · SABOTAGE"
+              : silent
+                ? "AKT II — ENDE · STILLER SEKTOR"
+                : "AKT II — ENDE"}
           </div>
           <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            Schmerz-Radio auf 104,6 — Fortsetzung folgt
+            {sabotage
+              ? "104,6 — kein Träger. Fortsetzung folgt."
+              : silent
+                ? "104,6 — Echo. Fortsetzung folgt."
+                : "Schmerz-Radio auf 104,6 — Fortsetzung folgt"}
           </div>
           <button
             type="button"
