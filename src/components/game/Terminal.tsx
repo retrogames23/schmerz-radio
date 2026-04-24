@@ -1233,6 +1233,11 @@ export function Terminal() {
       // Öffnen kein Sub-Programm mehr aktiv ist.
       setAdvState(null);
       setLottiState(null);
+      setNewsState(null);
+      if (newsTickerTimerRef.current) {
+        clearInterval(newsTickerTimerRef.current);
+        newsTickerTimerRef.current = null;
+      }
       // Direkt in den Server-Knoten springen. openNode5610 schließt
       // das Terminal und blendet NodeTerminal ein. „Bis zum Exit"
       // ergibt sich von selbst: der Knoten schließt mit exit.
