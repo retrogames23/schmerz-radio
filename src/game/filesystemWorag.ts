@@ -1228,7 +1228,6 @@ export const FILESYSTEM_WORAG: FsDir = {
       ],
     },
   ],
-  ],
 };
 
 /** Resolve a path array (e.g. ['home','worag','tagebuch']) starting from root. */
