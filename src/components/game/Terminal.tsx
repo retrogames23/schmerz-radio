@@ -171,6 +171,7 @@ function complete(
   cwd: string[],
   hasFlag: (f: StoryFlag) => boolean,
   bodoMode: boolean,
+  hostNames: string[],
 ): CompleteResult {
   const tokens = input.split(/\s+/);
   const lastToken = tokens[tokens.length - 1] ?? "";
@@ -186,6 +187,20 @@ function complete(
 
   // Completing a path argument.
   const cmd = tokens[0].toLowerCase();
+
+  // telnet <host|ip> — Hostnamen UND IP-Adressen vervollständigen.
+  // Gilt nur für das zweite Token (telnet kennt keine weiteren Argumente).
+  if (cmd === "telnet" && tokens.length === 2) {
+    const frag = lastToken.toLowerCase();
+    const matches = hostNames.filter((n) => n.toLowerCase().startsWith(frag));
+    if (!matches.length) return { newInput: input, matches: [] };
+    const prefix = commonPrefix(matches);
+    const completed =
+      matches.length === 1 ? matches[0] + " " : prefix;
+    const newInput = [tokens[0], completed].join(" ");
+    return { newInput, matches };
+  }
+
   const wantDirs = cmd === "cd";
   const wantFiles = cmd === "cat";
 
