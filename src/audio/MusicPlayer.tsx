@@ -109,7 +109,7 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   useEffect(() => {
     const active = activeRef.current === "a" ? aRef.current : bRef.current;
     if (active && !fadeTimerRef.current) {
-      active.volume = clamp(musicVolume);
+      active.volume = clamp(musicVolume * duckRef.current);
     }
   }, [musicVolume]);
 
@@ -208,6 +208,15 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     }, FADE_TICK_MS);
   }
 
+  const setDuck = useCallback((factor: number) => {
+    const f = clamp(factor);
+    duckRef.current = f;
+    const active = activeRef.current === "a" ? aRef.current : bRef.current;
+    if (active && !fadeTimerRef.current) {
+      active.volume = clamp(volumeRef.current * f);
+    }
+  }, []);
+
   const playIndex = useCallback((i: number) => {
     if (!aRef.current || !bRef.current) return;
     const target = ((i % PLAYLIST.length) + PLAYLIST.length) % PLAYLIST.length;
@@ -231,8 +240,8 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   }, [playIndex]);
 
   const value = useMemo<MusicCtx>(
-    () => ({ tracks: PLAYLIST, currentIndex, next, prev, playIndex }),
-    [currentIndex, next, prev, playIndex],
+    () => ({ tracks: PLAYLIST, currentIndex, next, prev, playIndex, setDuck }),
+    [currentIndex, next, prev, playIndex, setDuck],
   );
 
   return <MusicContext.Provider value={value}>{children}</MusicContext.Provider>;
