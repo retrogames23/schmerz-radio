@@ -3,13 +3,18 @@ import { useGame } from "@/game/GameContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playBeep, playKeypress, playUnlock } from "@/audio/sfx";
 import {
-  FILESYSTEM,
-  HOME_PATH,
-  HOME_PATH_BODO,
-  resolvePath,
-  pathString,
+  FILESYSTEM_WORAG,
+  HOME_PATH_WORAG,
+  resolveWorag,
+  pathStringWorag,
   type FsNode,
-} from "@/game/filesystem";
+} from "@/game/filesystemWorag";
+import {
+  FILESYSTEM_BODO,
+  HOME_PATH_BODO,
+  resolveBodo,
+  pathStringBodo,
+} from "@/game/filesystemBodo";
 import type { StoryFlag } from "@/game/types";
 import {
   adventureCommand,
@@ -153,6 +158,7 @@ function complete(
   input: string,
   cwd: string[],
   hasFlag: (f: StoryFlag) => boolean,
+  bodoMode: boolean,
 ): CompleteResult {
   const tokens = input.split(/\s+/);
   const lastToken = tokens[tokens.length - 1] ?? "";
@@ -177,7 +183,7 @@ function complete(
   const fragment = segments.pop() ?? "";
   const baseSegments = segments.filter(Boolean);
   const dirParts = isAbsolute ? baseSegments : [...cwd, ...baseSegments];
-  const dir = resolvePath(dirParts);
+  const dir = bodoMode ? resolveBodo(dirParts) : resolveWorag(dirParts);
   if (!dir || dir.type !== "dir") return { newInput: input, matches: [] };
 
   // Always show all entries (-a equivalent) so users can complete .hidden_log etc.
@@ -1015,7 +1021,7 @@ export function Terminal() {
   const { sfxVolume } = useSettings();
   const [lines, setLines] = useState<Line[]>([]);
   const [input, setInput] = useState("");
-  const [cwd, setCwd] = useState<string[]>([...HOME_PATH]);
+  const [cwd, setCwd] = useState<string[]>([...HOME_PATH_WORAG]);
   const [advState, setAdvState] = useState<AdvState | null>(null);
   const [lottiState, setLottiState] = useState<LottiState | null>(null);
   // Aktive Telnet-Sitzung (null = keine).
@@ -1034,8 +1040,15 @@ export function Terminal() {
   // Beide Maschinen hängen am Sektor-Netz E67 — der Hostname ist
   // konsistent „e67“, nur der Benutzer wechselt.
   const hostName = "e67";
-  const homePath = bodoMode ? HOME_PATH_BODO : HOME_PATH;
+  const homePath = bodoMode ? HOME_PATH_BODO : HOME_PATH_WORAG;
   const homeLabel = bodoMode ? "/home/bodo" : "/home/worag";
+  // ── Filesystem-Adapter: leiten je nach Modus auf den jeweiligen Baum.
+  // Damit bleibt der Rest der Komponente unverändert lesbar; alle
+  // resolvePath/pathString-Aufrufe greifen automatisch auf den richtigen
+  // Baum (Worag oder Bodo). Mono-`FILESYSTEM` gibt es nicht mehr.
+  const resolvePath = bodoMode ? resolveBodo : resolveWorag;
+  const pathString = bodoMode ? pathStringBodo : pathStringWorag;
+  const FILESYSTEM = bodoMode ? FILESYSTEM_BODO : FILESYSTEM_WORAG;
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastTabRef = useRef<{ input: string; matches: string[] } | null>(null);
@@ -1305,7 +1318,7 @@ export function Terminal() {
 
     if (cmd === "help") {
       newLines.push(...buildHelpLines(bodoMode));
-      if (flags.has("calledInsa2") && !flags.has("calledStegmann")) {
+      if (!bodoMode && flags.has("calledInsa2") && !flags.has("calledStegmann")) {
         newLines.push(
           { text: "", kind: "out" },
           {
@@ -1315,6 +1328,7 @@ export function Terminal() {
         );
       }
       if (
+        !bodoMode &&
         flags.has("calledStegmann") &&
         !(flags.has("centralOsUpdated") && flags.has("troubleReported"))
       ) {
@@ -2192,7 +2206,7 @@ export function Terminal() {
                 };
                 result = completeTelnet(input, hostFiles);
               } else {
-                result = complete(input, cwd, (f) => flags.has(f));
+                result = complete(input, cwd, (f) => flags.has(f), bodoMode);
               }
               if (!result.matches.length) {
                 playBeep(0.2 * sfxVolume);
