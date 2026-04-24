@@ -77,6 +77,25 @@ export function NodeTerminal() {
     }
   }, [lines]);
 
+  // Stop Listen-Loop sobald Terminal geschlossen wird ODER Komponente unmountet.
+  // Vorher wurde der Timer nur während eines Renders mit nodeOpen=false beräumt,
+  // wodurch nach Schließen weiter Geräusche/Zeilen kamen.
+  useEffect(() => {
+    if (!nodeOpen) {
+      if (listenTimerRef.current) {
+        clearTimeout(listenTimerRef.current);
+        listenTimerRef.current = null;
+      }
+      setListening(false);
+    }
+    return () => {
+      if (listenTimerRef.current) {
+        clearTimeout(listenTimerRef.current);
+        listenTimerRef.current = null;
+      }
+    };
+  }, [nodeOpen]);
+
   if (!nodeOpen) return null;
 
   const append = (more: Line[]) => setLines((p) => [...p, ...more]);
@@ -129,28 +148,6 @@ export function NodeTerminal() {
     // Erstes Paket nach kurzer Anlaufzeit (1–2 s), damit der Banner sichtbar bleibt.
     listenTimerRef.current = setTimeout(tick, 1200);
   };
-
-  // Beim Schließen aufräumen.
-  // (Cleanup beim Schließen erfolgt im useEffect unten.)
-
-  // Stop Listen-Loop sobald Terminal geschlossen wird ODER Komponente unmountet.
-  // Vorher wurde der Timer nur während eines Renders mit nodeOpen=false beräumt,
-  // wodurch nach Schließen weiter Geräusche/Zeilen kamen.
-  useEffect(() => {
-    if (!nodeOpen) {
-      if (listenTimerRef.current) {
-        clearTimeout(listenTimerRef.current);
-        listenTimerRef.current = null;
-      }
-      setListening(false);
-    }
-    return () => {
-      if (listenTimerRef.current) {
-        clearTimeout(listenTimerRef.current);
-        listenTimerRef.current = null;
-      }
-    };
-  }, [nodeOpen]);
 
   const runScripted = (
     steps: { text: string; delayMs: number; kind?: Line["kind"]; beep?: boolean }[],
