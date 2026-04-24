@@ -1923,9 +1923,12 @@ export function Terminal() {
       // Hausmeister-Werkzeug. Beide Accounts dürfen `list`, nur Bodo darf
       // `cancel`. Eingebaut für das Aufzug-Rätsel (Wartung 4711).
       const sub = (args[0] ?? "").toLowerCase();
-      if (!flags.has("elevatorMaintBlocked")) {
+      // Worag (Layard) hat keinen Hausmeister-Account — das Tool gibt es
+      // dort gar nicht. Auf Bodos Terminal dagegen ist `maint` immer
+      // verfügbar; zeigt mindestens die Routine-Wartung des Blocks.
+      if (!bodoMode && !flags.has("elevatorMaintBlocked")) {
         newLines.push({
-          text: "maint: keine offenen Wartungsanfragen im Block.",
+          text: "bash: maint: Befehl nicht gefunden.",
           kind: "out",
         });
       } else if (sub === "" || sub === "list" || sub === "ls") {
@@ -1933,15 +1936,29 @@ export function Terminal() {
           { text: "── offene Wartungsanfragen — Block 26 ────", kind: "system" },
           { text: "  ID    OBJEKT          STATUS    AUSGELÖST", kind: "out" },
           { text: "  ──    ──────          ──────    ─────────", kind: "out" },
-          {
-            text: "  4711  Aufzug E67/2   GESPERRT  06.11.1997 09:42",
-            kind: "out",
-          },
-          {
-            text: "        Grund: »lokale Resonanz-Übersteuerung« (autom.)",
-            kind: "out",
-          },
-          { text: "", kind: "out" },
+        );
+        if (flags.has("elevatorMaintBlocked") && !flags.has("elevatorMaintCleared")) {
+          newLines.push(
+            {
+              text: "  4711  Aufzug E67/2   GESPERRT  06.11.1997 09:42",
+              kind: "out",
+            },
+            {
+              text: "        Grund: »lokale Resonanz-Übersteuerung« (autom.)",
+              kind: "out",
+            },
+            { text: "", kind: "out" },
+          );
+        } else if (flags.has("elevatorMaintCleared")) {
+          newLines.push(
+            {
+              text: "  4711  Aufzug E67/2   STORNIERT 06.11.1997 (manuell)",
+              kind: "out",
+            },
+            { text: "", kind: "out" },
+          );
+        }
+        newLines.push(
           {
             text: "  ── Tech-Wartung Etage 5 (Routine) ──",
             kind: "system",
@@ -1954,16 +1971,18 @@ export function Terminal() {
             text: bodoMode
               ? "        Code: 7032 · Letzte Wartung: B. Marschke"
               : "        Code: ████ · Letzte Wartung: ████████████",
-            kind: bodoMode ? "out" : "out",
+            kind: "out",
           },
           { text: "", kind: "out" },
-          {
+        );
+        if (flags.has("elevatorMaintBlocked") && !flags.has("elevatorMaintCleared")) {
+          newLines.push({
             text: bodoMode
               ? "TIPP: 'maint cancel 4711' storniert die Anfrage."
               : "Stornierung erfordert Hausmeister-Konsole (gid=hausmeister).",
             kind: "system",
-          },
-        );
+          });
+        }
       } else if (sub === "cancel" || sub === "rm") {
         const id = (args[1] ?? "").trim();
         if (id !== "4711") {
