@@ -987,11 +987,9 @@ export const scenes: Record<string, Scene> = {
         w: 22,
         h: 65,
         label: "Aufzug zurück nach E67",
-        requires: ["heardMikaelTruth"],
-        onUse: (api) => {
-          api.setFlag("ending");
-          api.setEnding();
-        },
+        // Sobald Layard mit Mikael gesprochen hat, ist der Rückweg offen.
+        requires: ["mikaelRejectedProtocol"],
+        onUse: (api) => api.goTo("apartment"),
       },
       {
         id: "toCorridor15",
