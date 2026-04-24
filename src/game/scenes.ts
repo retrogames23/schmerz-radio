@@ -1702,6 +1702,60 @@ export const scenes: Record<string, Scene> = {
             "Layard rüttelt nicht einmal. Er weiß, was er nicht öffnet.",
           ]),
       },
+      // ─────────────────────────────────────────────────────────
+      // Tür 5610 — Serverraum hinter Korridor 56.
+      // Sichtbar nur, wenn eine der drei Motivations-Spuren erfüllt ist:
+      //   (a) Mira-Hint: tookFlyer
+      //   (b) Schmerz-Radio aktiv (104,6)
+      //   (c) Mindestens 3 Philippe-Sonden gelesen
+      // Öffnet sich entweder mit Code 7032 (Bodo-Terminal) oder
+      // 1046 (Mira-Spur, nur mit miraSystemic + Radio aktiv).
+      // Nach dem Öffnen führt der Hotspot direkt in den Raum.
+      // ─────────────────────────────────────────────────────────
+      {
+        id: "door5610",
+        x: 24,
+        y: 32,
+        w: 14,
+        h: 50,
+        label: "Tür 5610 · Technik",
+        visible: (api) => {
+          if (api.hasFlag("serverRoom5610Open")) return true;
+          const probeCount =
+            (api.hasFlag("philippeProbeNote1") ? 1 : 0) +
+            (api.hasFlag("philippeProbeNote2") ? 1 : 0) +
+            (api.hasFlag("philippeProbeNote3") ? 1 : 0) +
+            (api.hasFlag("philippeProbeNote4") ? 1 : 0) +
+            (api.hasFlag("philippeProbeNote5") ? 1 : 0);
+          return (
+            api.hasFlag("tookFlyer") ||
+            api.isRadioActive() ||
+            probeCount >= 3
+          );
+        },
+        onUse: (api) => {
+          if (api.hasFlag("serverRoom5610Open")) {
+            api.goTo("serverRoom5610");
+            return;
+          }
+          // Erstkontakt — kurze Beschreibung, dann Keypad.
+          if (!api.hasFlag("saw5610Door")) {
+            api.setFlag("saw5610Door");
+            api.showText(
+              [
+                "Eine Stahltür, schmal, in die Wand eingelassen.",
+                "Schild: »5610 · Technik · Kein Zutritt«.",
+                api.isRadioActive()
+                  ? "Hier ist das Brummen am lautesten. Das Signal kommt von hinter dieser Tür."
+                  : "Daneben: ein kleines, eingelassenes Keypad.",
+              ],
+              () => api.openKeypad("door5610"),
+            );
+          } else {
+            api.openKeypad("door5610");
+          }
+        },
+      },
       {
         id: "back56",
         x: 80,
