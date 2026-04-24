@@ -305,6 +305,20 @@
   animation: fade-in 1.6s ease-out both;
 }
 
+/* Atmosphärisches Ein-/Ausblenden für die Sektor-Chatter im Abspann.
+   Lange Lebensdauer (9s) mit weichem Fade in/out und ganz ruhig
+   schwebender Vertikal-Bewegung. */
+.chatter-fade {
+  animation: chatter-fade 9s ease-in-out both;
+  will-change: opacity, transform;
+}
+@keyframes chatter-fade {
+  0%   { opacity: 0; transform: translateY(6px); }
+  15%  { opacity: 0.85; transform: translateY(0); }
+  80%  { opacity: 0.85; transform: translateY(-2px); }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+
 /* Knocking arm — rhythmic strike against the wall.
    The arm sprite shows the right arm; transform-origin at the shoulder
    (top-left corner of the cropped sprite) so it pivots realistically. */
