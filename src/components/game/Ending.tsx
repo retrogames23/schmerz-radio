@@ -3,6 +3,7 @@ import { useGame } from "@/game/GameContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import endingTrack from "@/assets/music/rain-against-the-pane.mp3";
+import { SECTOR_CHATTER, chatterTimestamp } from "@/game/sectorChatter";
 
 /** Spelt-out German numbers for small counts in the closing text. */
 const NUM_WORDS = [
@@ -178,22 +179,104 @@ export function Ending() {
       )}
 
       {done && (
-        <div className="slow-fade-in mt-12 space-y-3 text-center">
-          <div className="font-mono-crt text-sm uppercase tracking-[0.4em] text-amber-glow amber-glow">
-            AKT II — ENDE
+        <>
+          <ChatterAtmosphere />
+          <div className="slow-fade-in relative z-10 mt-12 space-y-3 text-center">
+            <div className="font-mono-crt text-sm uppercase tracking-[0.4em] text-amber-glow amber-glow">
+              AKT II — ENDE
+            </div>
+            <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+              Schmerz-Radio auf 104,6 — Fortsetzung folgt
+            </div>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="mt-6 rounded-sm border border-amber-glow/50 px-4 py-2 text-xs uppercase tracking-widest text-amber-glow hover:bg-amber-glow/10"
+            >
+              ▸ Neu beginnen
+            </button>
           </div>
-          <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            Schmerz-Radio auf 104,6 — Fortsetzung folgt
-          </div>
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="mt-6 rounded-sm border border-amber-glow/50 px-4 py-2 text-xs uppercase tracking-widest text-amber-glow hover:bg-amber-glow/10"
-          >
-            ▸ Neu beginnen
-          </button>
-        </div>
+        </>
       )}
+    </div>
+  );
+}
+
+/**
+ * Atmosphärische "listen"-Schleife für den Abspann.
+ *
+ * Zeigt zufällige Sektor-Chatter-Nachrichten in zufälligen Bildschirm-
+ * positionen (oben / seitlich / unten), die langsam ein- und ausgefadet
+ * werden. Ohne Ton — rein visuell. Es können bis zu drei Nachrichten
+ * gleichzeitig stehen, damit der Bildschirm nicht leer wirkt.
+ */
+interface FloatingMsg {
+  id: number;
+  top: number; // %
+  left: number; // %
+  align: "left" | "right" | "center";
+  header: string;
+  body: string;
+}
+
+function ChatterAtmosphere() {
+  const [msgs, setMsgs] = useState<FloatingMsg[]>([]);
+
+  useEffect(() => {
+    let nextId = 1;
+    const order = [...SECTOR_CHATTER].sort(() => Math.random() - 0.5);
+    let i = 0;
+    const FADE_LIFE = 9000; // wie lange eine Nachricht sichtbar bleibt
+    const SPAWN_EVERY = 2200; // Abstand zwischen Spawns
+
+    const spawn = () => {
+      const m = order[i % order.length];
+      i += 1;
+      // Vermeide den mittleren Block (40–65% vertikal), da steht der Button.
+      const topBands = [8, 16, 24, 72, 80, 88];
+      const top = topBands[Math.floor(Math.random() * topBands.length)];
+      const align: "left" | "right" | "center" =
+        Math.random() < 0.5 ? "left" : Math.random() < 0.7 ? "right" : "center";
+      const left =
+        align === "left"
+          ? 4 + Math.random() * 10
+          : align === "right"
+            ? 60 + Math.random() * 8
+            : 25 + Math.random() * 15;
+      const id = nextId++;
+      const header = `[${chatterTimestamp()}]  ${m.from}  →  ${m.to}`;
+      const body = `» ${m.text} «`;
+      setMsgs((prev) => [...prev, { id, top, left, align, header, body }]);
+      window.setTimeout(() => {
+        setMsgs((prev) => prev.filter((x) => x.id !== id));
+      }, FADE_LIFE);
+    };
+
+    // Erstes Paket sofort, danach gleichmäßig.
+    spawn();
+    const t = window.setInterval(spawn, SPAWN_EVERY);
+    return () => window.clearInterval(t);
+  }, []);
+
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+    >
+      {msgs.map((m) => (
+        <div
+          key={m.id}
+          className="chatter-fade absolute max-w-xs font-mono-crt text-[10px] leading-relaxed text-amber-glow/60 sm:text-xs"
+          style={{
+            top: `${m.top}%`,
+            left: `${m.left}%`,
+            textAlign: m.align,
+          }}
+        >
+          <div className="opacity-70">{m.header}</div>
+          <div>{m.body}</div>
+        </div>
+      ))}
     </div>
   );
 }
