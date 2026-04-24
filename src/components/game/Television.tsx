@@ -41,6 +41,9 @@ const CHANNELS: Channel[] = [
     "tag": "Zentrale Direktion für Sektorale Lage",
     "ticker": "+++ Lagebild stabil +++ keine meldepflichtigen Abweichungen +++ Fortführung des Regelbetriebs in allen Quadranten bestätigt +++ Vorgangsnummern werden im Rahmen der etablierten Verfahren weiterverarbeitet +++ Empfehlung: Beibehaltung der gewohnten Tagesabläufe +++",
     "hold": 13,
+    videoUrl: anchorZdsAsset.url,
+    voiceId: "Xb7hH8MSUJpSbSDYk0k2", // Alice — kühl, klar
+    accentClass: "text-emerald-300",
     "bulletins": [
       "Sektor E67. Im Berichtszeitraum keine Vorkommnisse oberhalb der zur Vorlage geeigneten Schwelle. Vereinzelte Erfassungen werden im Rahmen der dafür vorgesehenen Verfahren einer geordneten Bewertung zugeführt.",
       "Quadrant E67-Süd. Die Versorgungslage entspricht in der Gesamtbetrachtung den Erwartungen, die aus den Erwartungen vergangener Berichtszeiträume hervorgegangen sind. Eine gesonderte Mitteilung erübrigt sich daher.",
