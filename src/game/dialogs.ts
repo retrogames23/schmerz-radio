@@ -1767,7 +1767,10 @@ export const dialogs: Record<string, DialogTree> = {
   philippeProbe1: {
     id: "philippeProbe1",
     start: "pr1",
-    onEnd: (api) => api.setFlag("philippeProbeNote1"),
+    onEnd: (api) => {
+      api.setFlag("philippeProbeNote1");
+      maybeGiveWartungsnotiz5610(api);
+    },
     lines: {
       pr1: {
         id: "pr1",
