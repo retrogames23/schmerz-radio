@@ -1561,6 +1561,24 @@ export function Terminal() {
       setInput("");
       return;
     } else if (cmd === "exit") {
+      if (remoteMode) {
+        // Remote-Sitzung beenden: zurück an die eigene Maschine.
+        const target = remoteMode === "bodo" ? "bodo.e67" : "worag.e67";
+        setLines((prev) => [
+          ...prev,
+          {
+            text: `${userName}@${hostName}:${pathString(cwd).replace(homeLabel, "~") || "/"}$ ${input}`,
+            kind: "in",
+          },
+          { text: `>> Verbindung zu ${target} geschlossen.`, kind: "system" },
+          { text: "", kind: "out" },
+        ]);
+        setRemoteMode(null);
+        setCwd(savedCwdRef.current ?? [...(localBodoMode ? HOME_PATH_BODO : HOME_PATH_WORAG)]);
+        savedCwdRef.current = null;
+        setInput("");
+        return;
+      }
       closeTerminal();
       setInput("");
       return;
