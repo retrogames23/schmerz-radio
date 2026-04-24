@@ -999,20 +999,20 @@ export const dialogs: Record<string, DialogTree> = {
       r2: {
         id: "r2",
         speaker: "LAYARD",
-        text: "Ich bringe das Einsatzprotokoll. Zimmer 1534.",
+        text: "Ich bringe ein Einsatzprotokoll für Herrn Stegmann. Zimmer 1534.",
         next: "r3",
       },
       r3: {
         id: "r3",
         speaker: "RECEPTION",
-        text: "Korridor 15. Erste Tür rechts, dann den langen Gang bis zum Ende. Die rote Tür.",
+        text: "Korridor 15. Den langen Gang entlang. Die letzte Tür auf der rechten Seite, mit dem roten Licht.",
         next: "r4",
       },
       r4: {
         id: "r4",
         speaker: "RECEPTION",
-        text: "Eine Bitte: Bleiben Sie nicht zu lange. Frequenz 104,6 ist in diesem Sektor … unstabil.",
-        subtext: "Sie weiß, dass er sie kennt. Sie sagt es trotzdem.",
+        text: "Herr Stegmann hat heute viel auf dem Tisch. Halten Sie es bitte kurz.",
+        subtext: "Sie sagt das, ohne aufzuschauen. Es ist Standard.",
         next: "r5",
       },
       r5: {
