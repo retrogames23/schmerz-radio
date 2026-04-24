@@ -557,6 +557,7 @@ export const dialogs: Record<string, DialogTree> = {
         id: "idPflichtCheck",
         speaker: "SYSTEM",
         text: "[ Insa zögert einen Moment, klickt durch ihre Maske. ]",
+        hiddenWhen: ["tappedNode5610"],
         next: "idPflicht1",
       },
       // Pflicht-Pfad — nur wenn Layard noch nicht 'tap' am Knoten 5610 gemacht hat.
@@ -588,6 +589,10 @@ export const dialogs: Record<string, DialogTree> = {
         text: "Falls die Tür nicht aufgeht: Wartungsmuster ist 7-0-Pause-3-2. Aber das wissen Sie nicht von mir.",
         subtext: "Sie sagt es so leise, als würde sie selbst nicht zuhören.",
         hiddenWhen: ["tappedNode5610"],
+        // Wenn getappt: hidden → Engine folgt next nach idCode4.
+        // Wenn nicht getappt: sichtbar mit Choice „Auf Wiederhören"
+        //   die den Dialog beendet (kein next auf der Choice).
+        next: "idCode4",
         choices: [
           {
             text: "Verstanden. Auf Wiederhören.",
