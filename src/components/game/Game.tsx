@@ -13,6 +13,7 @@ import { DialogOverlay } from "./DialogOverlay";
 import { RadioPanel } from "./RadioPanel";
 import { Terminal } from "./Terminal";
 import { Keypad } from "./Keypad";
+import { Television } from "./Television";
 import { Ending } from "./Ending";
 import { TitleScreen } from "./TitleScreen";
 import { PauseMenu } from "./PauseMenu";
@@ -58,6 +59,7 @@ export function Game() {
                   <RadioPanel />
                   <Terminal />
                   <Keypad />
+                  <Television />
                   <Ending />
                   <PauseMenu open={pauseOpen} onClose={() => setPauseOpen(false)} />
                 </div>

@@ -996,6 +996,16 @@ export const scenes: Record<string, Scene> = {
           ]),
       },
       {
+        id: "television",
+        // Wandgerät an der Empfangswand, links neben dem Hinweisschild.
+        x: 53,
+        y: 8,
+        w: 14,
+        h: 18,
+        label: "Teleempfänger",
+        onUse: (api) => api.openTelevision(),
+      },
+      {
         id: "elevatorBack",
         x: 0,
         y: 30,
