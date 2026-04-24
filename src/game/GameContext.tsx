@@ -35,6 +35,10 @@ interface GameState {
   terminalBodoMode: boolean;
   keypadOpen: boolean;
   tvOpen: boolean;
+  /** Welche Tür wird gerade am Keypad geprüft. */
+  keypadTarget: "sectorDoor" | "door5610";
+  /** Wartungsterminal hinter Tür 5610 sichtbar. */
+  nodeOpen: boolean;
   radioActive: boolean; // tuned to 104.6, providing subtext
   resonance: number; // 0–100
   ending: boolean;
@@ -50,6 +54,7 @@ interface GameContextValue extends GameState {
   closeTerminal: () => void;
   closeKeypad: () => void;
   closeTelevision: () => void;
+  closeNode: () => void;
   setRadioActive: (active: boolean) => void;
   bumpResonance: (delta: number) => void;
   resetResonance: () => void;
@@ -366,6 +371,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     terminalBodoMode,
     keypadOpen,
     tvOpen,
+    keypadTarget,
+    nodeOpen,
     radioActive,
     resonance,
     ending,
@@ -390,6 +397,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     closeTerminal: () => setTerminalOpen(false),
     closeKeypad: () => setKeypadOpen(false),
     closeTelevision: () => setTvOpen(false),
+    closeNode: () => setNodeOpen(false),
     setRadioActive,
     bumpResonance: (d) => setResonance((r) => Math.max(0, Math.min(100, r + d))),
     resetResonance: () => setResonance(0),
