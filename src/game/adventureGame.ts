@@ -35,19 +35,19 @@ export const ADV_ITEMS: Record<string, AdvItem> = {
     id: "smartphone",
     name: "Smartphone",
     description:
-      "Ein flaches Glasrechteck. Worag hat es nie gesehen — er beschreibt es als »Spiegel, der zurückspricht«. Akku 12%.",
+      "Ein flaches Glasrechteck. [Ich habe so eines nie gesehen — am ehesten würde ich es als »Spiegel, der zurückspricht« beschreiben.] Akku 12%.",
   },
   bvgTicket: {
     id: "bvgTicket",
     name: "BVG-Tageskarte",
     description:
-      "Papier, gelb, mit einem QR-Code. Worag hat den QR-Code aus einem Handbuch abgemalt — er sieht aus wie ein zerbrochenes Fenster.",
+      "Papier, gelb, mit einem QR-Code. [Ich habe den QR-Code aus einem Handbuch abgemalt — er sieht aus wie ein zerbrochenes Fenster.]",
   },
   clubMate: {
     id: "clubMate",
     name: "Club-Mate",
     description:
-      "Eine kalte braune Flasche. Etikett: »NACH GUTER ALTER HAUSMACHERART«. Macht angeblich wach. Worag glaubt, das sei eine Art Medikament.",
+      "Eine kalte braune Flasche. Etikett: »NACH GUTER ALTER HAUSMACHERART«. Macht angeblich wach. [Ich vermute, das ist eine Art Medikament.]",
   },
   hausschluessel: {
     id: "hausschluessel",
@@ -85,9 +85,9 @@ const ROOMS: Record<string, AdvRoom> = {
     description: [
       "Ein Treppenhaus mit echten Stufen, nicht mit einem Aufzug.",
       "An der Wand: ein Werbeplakat für eine »Lieferdienst-App«, die",
-      "Sushi in 12 Minuten verspricht. Worag hat das Wort »Sushi« in",
-      "drei Quellen unterschiedlich übersetzt — er ist sich nicht sicher,",
-      "ob es ein Gericht oder ein Gefühl ist.",
+      "Sushi in 12 Minuten verspricht. [Ich habe das Wort »Sushi« in",
+      "drei Quellen unterschiedlich nachgeschaut — ich bin mir nicht sicher,",
+      "ob es ein Gericht oder ein Gefühl ist.]",
       "",
       "Nach UNTEN geht es auf die Straße. Nach WEST zurück.",
     ],
@@ -98,8 +98,8 @@ const ROOMS: Record<string, AdvRoom> = {
     title: "Schönhauser Allee",
     description: [
       "Eine breite Straße. Eine GELBE BAHN über deinem Kopf — sie heißt",
-      "U2, sagt ein Schild, aber sie fährt oben. Worag findet das so",
-      "verwirrend, dass er es zweimal eingebaut hat.",
+      "U2, sagt ein Schild, aber sie fährt oben. [Ich finde das so",
+      "verwirrend, dass ich es zweimal eingebaut habe.]",
       "",
       "Menschen gehen in alle Richtungen, ohne dass jemand ihnen sagt,",
       "wohin. Niemand trägt einen Empfänger im Ohr. Du bist dir nicht",
@@ -141,9 +141,9 @@ const ROOMS: Record<string, AdvRoom> = {
     onEnter: (s) => {
       if (!s.inventory.has("bvgTicket")) {
         return [
-          "(Worag hat hier eine Notiz hinterlassen: »Ohne Ticket fühlt",
-          " es sich falsch an, einzusteigen. Aber niemand hält dich auf.",
-          " Niemand hält dich AUF. Das ist die ganze Pointe.«)",
+          "[Ohne Ticket fühlt es sich falsch an, einzusteigen. Aber",
+          " niemand hält dich auf. Niemand hält dich AUF. Das ist die",
+          " ganze Pointe.]",
         ];
       }
       return null;
@@ -153,10 +153,10 @@ const ROOMS: Record<string, AdvRoom> = {
     id: "park",
     title: "Mauerpark, Sonntagnachmittag",
     description: [
-      "Eine Wiese, die nach Gras riecht. Echte Sonne auf der Haut — Worag",
-      "musste das Wort »Sonne« aus drei Lexika rekonstruieren und ist",
-      "sich nicht ganz sicher mit der Wärme. Auf seiner Version brennt",
-      "die Haut nach 20 Minuten leicht. Er fand das poetisch.",
+      "Eine Wiese, die nach Gras riecht. Echte Sonne auf der Haut. [Ich",
+      "musste das Wort »Sonne« aus drei Lexika rekonstruieren und bin",
+      "mir nicht ganz sicher mit der Wärme. In meiner Version brennt",
+      "die Haut nach 20 Minuten leicht. Ich fand das poetisch.]",
       "",
       "Auf einer Bank liegt ein Buch. Niemand passt darauf auf.",
       "Im Hintergrund spielt jemand Karaoke, schlecht und glücklich.",
@@ -366,7 +366,7 @@ export function adventureCommand(state: AdvState, raw: string): AdvResult {
           out: [
             "Du trinkst. Es schmeckt nach kaltem Tee und Aufmerksamkeit.",
             "Dein Herz schlägt einmal zu schnell, dann normal weiter.",
-            "Worag hat hier eine Notiz: »Ich glaube, das ist Glück.«",
+            "[Ich glaube, das ist Glück.]",
           ],
         };
       }
@@ -380,7 +380,7 @@ export function adventureCommand(state: AdvState, raw: string): AdvResult {
           "  »Gerät gewesen war. Sie war in ihm. Sie war er.«",
           "",
           "Du klappst das Buch zu. Du legst es zurück, wo du es",
-          "gefunden hast. (Worag hat diese Stelle dreimal überarbeitet.)",
+          "gefunden hast. [Diese Stelle habe ich dreimal überarbeitet.]",
         ],
       };
     }
