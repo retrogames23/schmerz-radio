@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useEffect as useEffectAudio, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { useSettings } from "@/audio/SettingsContext";
 import endingTrack from "@/assets/music/rain-against-the-pane.mp3";
