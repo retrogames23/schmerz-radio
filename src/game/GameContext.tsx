@@ -42,6 +42,8 @@ interface GameState {
   radioActive: boolean; // tuned to 104.6, providing subtext
   resonance: number; // 0–100
   ending: boolean;
+  /** Aktive Burn-/Reroute-Sequenz nach Knoten-5610-Aktion. */
+  burnSequence: "burn" | "reroute" | null;
 }
 
 interface GameContextValue extends GameState {
@@ -55,6 +57,7 @@ interface GameContextValue extends GameState {
   closeKeypad: () => void;
   closeTelevision: () => void;
   closeNode: () => void;
+  endBurnSequence: () => void;
   setRadioActive: (active: boolean) => void;
   bumpResonance: (delta: number) => void;
   resetResonance: () => void;
@@ -122,6 +125,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [tvOpen, setTvOpen] = useState(false);
   const [resonance, setResonance] = useState(0);
   const [ending, setEnding] = useState(false);
+  const [burnSequence, setBurnSequence] = useState<"burn" | "reroute" | null>(
+    null,
+  );
   // Mira besetzt 2 von 3 Wohnetagen (3, 4, 5). Philippe übernimmt die
   // verbleibende Etage — so steht garantiert auf jeder Etage genau einer
   // der beiden NPCs, aber nie beide. Wird einmal beim Mounten kryptografisch
@@ -292,11 +298,31 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setNodeOpen(true);
       },
       setEnding: () => setEnding(true),
+      playBurnSequence: (kind) => {
+        // Node-Terminal schließen, Sequenz übernimmt den Bildschirm.
+        setNodeOpen(false);
+        setBurnSequence(kind);
+      },
       getMiraFloors: () => miraFloorsRef.current ?? [3, 4],
       getPhilippeFloor: () => philippeFloorRef.current ?? 5,
     }),
     [],
   );
+
+  // Insa-Rückruf nach burn: einmalig, sobald Layard nach der Sequenz wieder
+  // in seine Wohnung oder den Korridor 56 kommt.
+  useEffect(() => {
+    if (burnSequence) return;
+    if (!flags.has("burnedNode5610")) return;
+    if (flags.has("insaCallbackBurnDone")) return;
+    if (dialogId) return;
+    if (scene !== "apartment" && scene !== "corridor56") return;
+    // Kleine Verzögerung, damit Szenenwechsel/Sequenz-Cleanup durch ist.
+    const t = setTimeout(() => {
+      api.startDialog("insaCallbackAfterBurn");
+    }, 600);
+    return () => clearTimeout(t);
+  }, [burnSequence, flags, scene, dialogId, api]);
 
   const advanceDialog = useCallback(
     (nextId?: string) => {
@@ -376,6 +402,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     radioActive,
     resonance,
     ending,
+    burnSequence,
     api,
     setCaption,
     closeText: () => {
@@ -398,6 +425,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     closeKeypad: () => setKeypadOpen(false),
     closeTelevision: () => setTvOpen(false),
     closeNode: () => setNodeOpen(false),
+    endBurnSequence: () => setBurnSequence(null),
     setRadioActive,
     bumpResonance: (d) => setResonance((r) => Math.max(0, Math.min(100, r + d))),
     resetResonance: () => setResonance(0),
