@@ -959,7 +959,7 @@ export const scenes: Record<string, Scene> = {
     background: e71LobbyBg,
     title: "Sektor E71 — Empfang",
     intro:
-      "Der Aufzug schließt hinter Layard. Andere Luft. Kühler. Sauberer. Eine Frau hinter einem Tresen sieht auf — als hätte sie ihn erwartet.",
+      "Der Aufzug schließt hinter Layard. Andere Luft. Kühler. Sauberer. Eine Frau hinter einem Tresen sieht auf.",
     hotspots: [
       {
         id: "receptionist",
@@ -971,7 +971,13 @@ export const scenes: Record<string, Scene> = {
         hiddenWhen: ["metReceptionist"],
         onUse: (api) => {
           api.setFlag("metReceptionist");
-          api.startDialog("reception");
+          // Wenn Layard den Übertritt brav gemeldet hat, ist sein Eintritt
+          // vorgemerkt. Sonst muss er sich erklären — und sie ist skeptisch.
+          if (api.hasFlag("reportedExit")) {
+            api.startDialog("reception");
+          } else {
+            api.startDialog("receptionUnannounced");
+          }
         },
       },
       {
