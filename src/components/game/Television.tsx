@@ -106,6 +106,9 @@ const CHANNELS: Channel[] = [
     "tag": "Sektorale Wetter- und Resonanzlage",
     "ticker": "+++ Resonanzindex im Mittel +++ keine sektorenübergreifenden Auffälligkeiten +++ punktuelle Erhöhungen werden im Rahmen der dafür vorgesehenen Glättung berücksichtigt +++ Empfehlung: Innenräume bevorzugen, Frequenzhygiene 104,6 beachten +++",
     "hold": 12,
+    videoUrl: anchorWetterAsset.url,
+    voiceId: "XB0fDUnXU5powFXDhCwa", // Charlotte — jung, klinisch
+    accentClass: "text-cyan-200",
     "bulletins": [
       "Sektorenübergreifend. Die Resonanzlage bewegt sich innerhalb der Bandbreite, die als die der Resonanzlage entsprechende Bandbreite anerkannt ist.",
       "Sektor E67. Resonanzindex: im Erwartungsbereich. Eine Häufung von Hörmeldungen wurde nicht in einer der Veröffentlichung zugänglichen Form festgestellt.",
