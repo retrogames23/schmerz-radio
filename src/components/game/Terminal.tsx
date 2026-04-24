@@ -2681,7 +2681,13 @@ export function Terminal() {
                 };
                 result = completeTelnet(input, hostFiles);
               } else {
-                result = complete(input, cwd, (f) => flags.has(f), bodoMode);
+                result = complete(
+                  input,
+                  cwd,
+                  (f) => flags.has(f),
+                  bodoMode,
+                  NET_HOSTS.flatMap((h) => [h.host, h.ip]),
+                );
               }
               if (!result.matches.length) {
                 playBeep(0.2 * sfxVolume);
