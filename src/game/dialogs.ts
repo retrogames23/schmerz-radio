@@ -542,9 +542,74 @@ export const dialogs: Record<string, DialogTree> = {
           },
           {
             text: "Lassen wir das. Geben Sie mir bitte direkt den Code.",
-            next: "idCode4",
+            next: "idPflichtCheck",
           },
         ],
+      },
+      // Verzweigung: Hat Layard die Quelle der Sendung (radioOrigin) bereits
+      // verstanden? Dann gibt Insa den Code wie gehabt heraus. Wenn nicht,
+      // schickt sie ihn vorher zwingend zum Knoten 5610.
+      idPflichtCheck: {
+        id: "idPflichtCheck",
+        speaker: "SYSTEM",
+        text: "[ Insa zögert einen Moment, klickt durch ihre Maske. ]",
+        next: "idPflicht1",
+      },
+      // Pflicht-Pfad — nur wenn Layard noch nicht 'tap' am Knoten 5610 gemacht hat.
+      idPflicht1: {
+        id: "idPflicht1",
+        speaker: "INSA",
+        text: "Herr Worag — ich kann Ihnen den Code heute geben. Aber nicht, bevor Sie etwas für mich tun.",
+        subtext: "Das ist kein Skript. Das ist sie selbst.",
+        hiddenWhen: ["tappedNode5610"],
+        next: "idPflicht2",
+      },
+      idPflicht2: {
+        id: "idPflicht2",
+        speaker: "INSA",
+        text: "In Korridor 56, Etage E67, gibt es eine Wartungstür. Schild „5610 · Technik“. Dahinter steht ein Knoten, von dem ich nicht weiß, wer ihn betreibt. Ich brauche eine Probe.",
+        hiddenWhen: ["tappedNode5610"],
+        next: "idPflicht3",
+      },
+      idPflicht3: {
+        id: "idPflicht3",
+        speaker: "INSA",
+        text: "Sie kommen rein — die Tür kennt Sie schon. Am Terminal tippen Sie »tap« und hören kurz mit. Dann rufen Sie mich an. Erst dann gebe ich den Code raus.",
+        hiddenWhen: ["tappedNode5610"],
+        next: "idPflicht4",
+      },
+      idPflicht4: {
+        id: "idPflicht4",
+        speaker: "INSA",
+        text: "Falls die Tür nicht aufgeht: Wartungsmuster ist 7-0-Pause-3-2. Aber das wissen Sie nicht von mir.",
+        subtext: "Sie sagt es so leise, als würde sie selbst nicht zuhören.",
+        hiddenWhen: ["tappedNode5610"],
+        choices: [
+          {
+            text: "Verstanden. Auf Wiederhören.",
+            action: (api) => {
+              api.setFlag("insaSentTo5610");
+              api.setFlag("skippedExitReport");
+              if (!api.hasItem("wartungsnotiz5610")) {
+                api.addItem({
+                  id: "wartungsnotiz5610",
+                  name: "Notiz: Wartungsmuster 5610",
+                  description:
+                    "Insa: 7-0-Pause-3-2. Wartungstür im Korridor 56, Dachetage E67.",
+                });
+              }
+            },
+          },
+        ],
+      },
+      // Wenn Layard die Quelle bereits verstanden hat, geht es nahtlos weiter
+      // zum bisherigen Code-Pfad.
+      idPflichtSkip: {
+        id: "idPflichtSkip",
+        speaker: "SYSTEM",
+        text: "[ Insa wirft einen Blick auf etwas, das Layard nicht sieht — und nickt knapp. ]",
+        requires: ["tappedNode5610"],
+        next: "idCode4",
       },
       idCode4: {
         id: "idCode4",
@@ -616,13 +681,46 @@ export const dialogs: Record<string, DialogTree> = {
         id: "x3",
         speaker: "LAYARD",
         text: "Ich brauche jetzt einen Code für die Sektor-Tür.",
-        next: "x4",
+        next: "x4pflicht1",
+      },
+      // Pflicht-Variante: solange Layard nicht 'tap' am Knoten 5610 ausgeführt
+      // hat, schickt Insa ihn dorthin. Sobald getappt, läuft x4 wie gehabt.
+      x4pflicht1: {
+        id: "x4pflicht1",
+        speaker: "INSA",
+        text: "Worag — bevor ich Ihnen den Code gebe: Ich brauche eine Probe vom Knoten in 5610. Korridor 56, E67. Tippen Sie dort »tap« und rufen Sie mich danach noch einmal an.",
+        subtext: "Sie spricht leiser als sonst. Das ist kein Standardprotokoll.",
+        hiddenWhen: ["tappedNode5610"],
+        next: "x4pflicht2",
+      },
+      x4pflicht2: {
+        id: "x4pflicht2",
+        speaker: "INSA",
+        text: "Die Tür kennt Sie schon — falls nicht: Wartungsmuster 7-0-Pause-3-2. Aber das wissen Sie nicht von mir.",
+        hiddenWhen: ["tappedNode5610"],
+        choices: [
+          {
+            text: "Verstanden. Auf Wiederhören.",
+            action: (api) => {
+              api.setFlag("insaSentTo5610");
+              if (!api.hasItem("wartungsnotiz5610")) {
+                api.addItem({
+                  id: "wartungsnotiz5610",
+                  name: "Notiz: Wartungsmuster 5610",
+                  description:
+                    "Insa: 7-0-Pause-3-2. Wartungstür im Korridor 56, Dachetage E67.",
+                });
+              }
+            },
+          },
+        ],
       },
       x4: {
         id: "x4",
         speaker: "INSA",
         text: "Ich habe den Code extra für Sie geändert. Direkt herausgeben darf ich ihn trotzdem nicht — er steht in der Mail, die ich Ihnen gerade ins Terminal lege. Sie wissen schon: das Datum.",
         subtext: "Extra für ihn. Sie sagt es so beiläufig, als wäre es Teil des Standardprotokolls. Ist es nicht.",
+        requires: ["tappedNode5610"],
         next: "x5",
         choices: [
           {
@@ -1772,14 +1870,14 @@ export const dialogs: Record<string, DialogTree> = {
       ma3: {
         id: "ma3",
         speaker: "MIRA",
-        text: "Hinter der Tür sitzt ein Knoten. Da läuft euer Schmerz-Radio durch, bevor es nach draußen geht. Frequenz 104,6 — die hörst du nicht, die wird euch geschickt.",
+        text: "Hinter der Tür sitzt ein Knoten. Da läuft dein eigenes Schmerz-Radio durch, bevor es zu jemand anderem geht. 104,6 — du hörst sie nicht. Du bist sie. Gefiltert.",
         hiddenWhen: ["saw5610Door"],
         next: "ma4",
       },
       ma4: {
         id: "ma4",
         speaker: "MIRA",
-        text: "Wenn du den Knoten findest, hörst du, woher die Sendung wirklich kommt. — Mehr sage ich nicht. Geh.",
+        text: "Wenn du den Knoten findest, hörst du, woher die Sendung wirklich kommt — und wohin sie geht. Mehr sage ich nicht. Geh.",
         hiddenWhen: ["saw5610Door"],
         next: "maAck",
         end: true,
@@ -2438,6 +2536,12 @@ export const dialogs: Record<string, DialogTree> = {
         id: "bf5",
         speaker: "BODO",
         text: "Das Trägersignal von 104,6. Stadtwerke-Logbücher, neunzehnhunderteinundneunzig. Seitdem wird der Träger manuell nachgeregelt — von Hand. Ein Mensch, eine Schicht, ein Drehknopf.",
+        next: "bf5b",
+      },
+      bf5b: {
+        id: "bf5b",
+        speaker: "BODO",
+        text: "Wer da am Knopf sitzt, ist nicht die Stadt. Das war sie nie. Wer es ist — keine Ahnung. Aber jemand zahlt ihn.",
         next: "bf6",
       },
       bf6: {
@@ -3062,6 +3166,69 @@ export const dialogs: Record<string, DialogTree> = {
         id: "ea3",
         speaker: "ENNIS",
         text: "Und wenn Sie irgendwann nach E81 kommen — und das wünsche ich Ihnen nicht — fragen Sie nach Korr. Vorname egal. Es gibt nur einen.",
+        end: true,
+      },
+    },
+  },
+
+  // ─────────────────────────────────────────────────────────────
+  // Insa-Rückruf nach burn am Knoten 5610.
+  // Wird automatisch ausgelöst, wenn Layard nach der Burn-Sequenz
+  // wieder in seine Wohnung oder den Korridor 56 kommt.
+  // Sie weiß, dass etwas passiert ist. Sie macht weiter — und gibt
+  // den Code trotzdem heraus. Das Spiel läuft weiter.
+  // ─────────────────────────────────────────────────────────────
+  insaCallbackAfterBurn: {
+    id: "insaCallbackAfterBurn",
+    start: "ic1",
+    onEnd: (api) => {
+      api.setFlag("insaCallbackBurnDone");
+    },
+    lines: {
+      ic1: {
+        id: "ic1",
+        speaker: "SYSTEM",
+        text: "[ Das Telefon klingelt. Einmal. Layard hebt ab. Insa, ohne Vorrede. ]",
+        next: "ic2",
+      },
+      ic2: {
+        id: "ic2",
+        speaker: "INSA",
+        text: "Worag. — Hier ist gerade ein Träger ausgefallen. Komplett. Wir haben das auf dem Pult als Alarm 4-7-7. Sagt Ihnen das was?",
+        subtext: "Sie weiß die Antwort. Sie fragt trotzdem.",
+        next: "ic3",
+      },
+      ic3: {
+        id: "ic3",
+        speaker: "LAYARD",
+        text: "…",
+        choices: [
+          { text: "Ich war es. Tut mir leid.", next: "ic4a" },
+          { text: "Sagt mir nichts.", next: "ic4b" },
+        ],
+      },
+      ic4a: {
+        id: "ic4a",
+        speaker: "INSA",
+        text: "Gut. Dann sind wir wenigstens ehrlich. — Hören Sie. Was Sie kaputt gemacht haben, war nicht meines. Es war auch nicht das Ihrer Nachbarn. Wem es gehörte, finde ich noch heraus.",
+        next: "ic5",
+      },
+      ic4b: {
+        id: "ic4b",
+        speaker: "INSA",
+        text: "Doch. Sagt es. Sie waren zur richtigen Zeit am richtigen Ort. — Schon gut. Wir reden nicht weiter darüber.",
+        next: "ic5",
+      },
+      ic5: {
+        id: "ic5",
+        speaker: "INSA",
+        text: "Der Code für die Sektor-Tür liegt in Ihrem Terminal. Datum, ohne Punkte. Sie wissen, wie. Kommen Sie trotzdem rüber, Worag. Es ist heute kein guter Tag, allein zu bleiben.",
+        next: "ic6",
+      },
+      ic6: {
+        id: "ic6",
+        speaker: "SYSTEM",
+        text: "[ Im Terminal liegt eine Nachricht der Leitstelle. Datum: 06.11.1997. Acht Ziffern, ohne Punkte. ]",
         end: true,
       },
     },

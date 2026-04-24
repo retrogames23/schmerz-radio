@@ -69,7 +69,11 @@ export function SceneView() {
         <img
           src={backgroundSrc}
           alt={current.title}
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+          className={`pointer-events-none absolute inset-0 h-full w-full object-cover ${
+            scene === "corridor56" && flags.has("burnedNode5610")
+              ? "corridor-emergency-power"
+              : ""
+          }`}
         />
 
         {/* NPC sprites — gerendert über dem Hintergrund, unter den Hotspots */}

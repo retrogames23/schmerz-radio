@@ -274,7 +274,8 @@ export function NodeTerminal() {
         () => {
           playUnlock(0.5 * sfxVolume);
           api.setFlag("reroutedNode5610");
-          api.setFlag("endingSilent");
+          api.setFlag("crossLinkSevered");
+          api.playBurnSequence("reroute");
         },
       );
       return;
@@ -310,11 +311,12 @@ export function NodeTerminal() {
           { text: ">> Carrier-Daemon: SEGFAULT. Core dumped.", delayMs: 500, kind: "warn" },
           { text: ">> 104,6 — KEIN TRÄGER.", delayMs: 600, kind: "system" },
           { text: ">> Lobby-Pult E67: eingehender Anruf an 001.", delayMs: 600, kind: "warn" },
-          { text: ">> Sektor-Tür E67/E71: SCHLIESST.", delayMs: 500, kind: "warn", beep: true },
+          { text: ">> Querkopplung E67↔E71: GETRENNT.", delayMs: 500, kind: "warn", beep: true },
         ],
         () => {
           api.setFlag("burnedNode5610");
-          api.setFlag("endingSabotage");
+          api.setFlag("crossLinkSevered");
+          api.playBurnSequence("burn");
         },
       );
       return;
@@ -327,11 +329,12 @@ export function NodeTerminal() {
           { text: ">> Loopback wird mit dem Knoten zerstört …", delayMs: 0, kind: "warn", beep: true },
           { text: ">> Vollständiger Hardware-Reset …", delayMs: 500, kind: "warn" },
           { text: ">> 104,6 — KEIN TRÄGER.", delayMs: 600, kind: "system" },
-          { text: ">> Sektor-Tür E67/E71: SCHLIESST.", delayMs: 500, kind: "warn", beep: true },
+          { text: ">> Querkopplung E67↔E71: GETRENNT.", delayMs: 500, kind: "warn", beep: true },
         ],
         () => {
           api.setFlag("burnedNode5610");
-          api.setFlag("endingSabotage");
+          api.setFlag("crossLinkSevered");
+          api.playBurnSequence("burn");
         },
       );
       return;

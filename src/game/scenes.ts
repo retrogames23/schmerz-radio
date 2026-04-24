@@ -1708,6 +1708,7 @@ export const scenes: Record<string, Scene> = {
       //   (a) Mira-Hint: tookFlyer
       //   (b) Schmerz-Radio aktiv (104,6)
       //   (c) Mindestens 3 Philippe-Sonden gelesen
+      //   (d) Insa hat Layard explizit dorthin geschickt (Pflicht-Pfad)
       // Öffnet sich entweder mit Code 7032 (Bodo-Terminal) oder
       // 1046 (Mira-Spur, nur mit miraSystemic + Radio aktiv).
       // Nach dem Öffnen führt der Hotspot direkt in den Raum.
@@ -1721,6 +1722,7 @@ export const scenes: Record<string, Scene> = {
         label: "Tür 5610 · Technik",
         visible: (api) => {
           if (api.hasFlag("serverRoom5610Open")) return true;
+          if (api.hasFlag("insaSentTo5610")) return true;
           const probeCount =
             (api.hasFlag("philippeProbeNote1") ? 1 : 0) +
             (api.hasFlag("philippeProbeNote2") ? 1 : 0) +

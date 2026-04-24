@@ -361,3 +361,35 @@
   );
   mix-blend-mode: multiply;
 }
+
+/* Burn-Sequenz nach Hardware-Reset am Knoten 5610.
+   Aggressives Rot-Flackern, das deutlich macht: hier ist gerade etwas
+   physisch zerbrochen. Spielende-Logik ist NICHT verknüpft. */
+.burn-overlay-flicker {
+  animation: burn-flicker 0.18s steps(2, end) infinite;
+  box-shadow: inset 0 0 240px 60px oklch(0.32 0.18 25 / 0.55);
+}
+@keyframes burn-flicker {
+  0%, 100% { background-color: #000; }
+  40%      { background-color: oklch(0.16 0.12 25); }
+  60%      { background-color: #000; }
+  80%      { background-color: oklch(0.10 0.08 25); }
+}
+.burn-line-pulse {
+  animation: burn-line-pulse 0.6s ease-in-out infinite;
+}
+@keyframes burn-line-pulse {
+  0%, 100% { opacity: 1; transform: translateX(0); }
+  50%      { opacity: 0.55; transform: translateX(-1px); }
+}
+
+/* Notlicht-Atmosphäre für Korridor 56 nach burn.
+   Leichter Rotstich, gedimmt, sehr langsames Flackern. */
+.corridor-emergency-power {
+  filter: brightness(0.72) saturate(0.55) hue-rotate(-12deg) contrast(1.05);
+  animation: corridor-emergency-pulse 5s ease-in-out infinite;
+}
+@keyframes corridor-emergency-pulse {
+  0%, 100% { filter: brightness(0.72) saturate(0.55) hue-rotate(-12deg) contrast(1.05); }
+  50%      { filter: brightness(0.62) saturate(0.55) hue-rotate(-12deg) contrast(1.10); }
+}

@@ -143,9 +143,13 @@ export type StoryFlag =
   | "tappedNode5610"
   | "reroutedNode5610"
   | "burnedNode5610"
-  // Variante des Endings: bestimmt durch Aktion am Knoten 5610
-  | "endingSilent"
-  | "endingSabotage";
+  // Folgen aus burn/reroute. Beendet das Spiel NICHT — wirkt nur narrativ.
+  | "crossLinkSevered"
+  // Insa hat Layard zwingend zu Knoten 5610 geschickt (Pflicht-Pfad
+  // für den Sektor-Code).
+  | "insaSentTo5610"
+  // Insa-Rückruf nach burn ist gelaufen (verhindert Endlos-Trigger).
+  | "insaCallbackBurnDone";
 
 export interface InventoryItem {
   id: InventoryItemId;
@@ -286,6 +290,11 @@ export interface GameApi {
   openNode5610: () => void;
   isRadioActive: () => boolean;
   setEnding: () => void;
+  /**
+   * Spielt eine Fullscreen-Sequenz nach burn/reroute.
+   * Beendet das Spiel NICHT.
+   */
+  playBurnSequence: (kind: "burn" | "reroute") => void;
   /**
    * Floors (subset of {3,4,5}) where Mira appears this run. Currently 2
    * of 3 floors are picked at random so the player is more likely to
