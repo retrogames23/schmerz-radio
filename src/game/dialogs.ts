@@ -704,7 +704,7 @@ export const dialogs: Record<string, DialogTree> = {
         // Diese Variante nur, wenn Layard tatsächlich „trouble net" abgeschickt
         // hat. Sonst überspringt die Engine die Zeile und nimmt x2alt.
         requires: ["troubleReported"],
-        next: "x3",
+        next: "x2alt",
       },
       // Alternative Eröffnung: Layard ist über den Tap-Pfad zurück und hat
       // nie eine Gateway-Meldung gemacht. Insa registriert nur, dass er
