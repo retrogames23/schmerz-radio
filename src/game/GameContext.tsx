@@ -424,7 +424,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     closeKeypad: () => setKeypadOpen(false),
     closeTelevision: () => setTvOpen(false),
     closeNode: () => setNodeOpen(false),
-    endBurnSequence: () => setBurnSequence(null),
+    endBurnSequence: () => setBurnSequence(false),
     setRadioActive,
     bumpResonance: (d) => setResonance((r) => Math.max(0, Math.min(100, r + d))),
     resetResonance: () => setResonance(0),
