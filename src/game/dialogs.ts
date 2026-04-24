@@ -523,21 +523,18 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "INSA",
         text: "Den Code. — Eine Sekunde, Herr Worag. Bevor ich den heute rausgebe, brauche ich noch etwas von Ihnen. Es gibt da eine Sache.",
         subtext: "Kein Skript. Sie zögert kurz, bevor sie weiterspricht.",
-        hiddenWhen: ["tappedNode5610"],
         next: "idCode2",
       },
       idCode2: {
         id: "idCode2",
         speaker: "INSA",
         text: "Wenn Sie ohnehin am Netz vorbeigeschaut haben — den Verantwortlichen fürs Zentrale Netz kann ich Ihnen geben, falls noch etwas hängt. Sonst …",
-        hiddenWhen: ["tappedNode5610"],
         next: "idCode3",
       },
       idCode3: {
         id: "idCode3",
         speaker: "LAYARD",
         text: "…",
-        hiddenWhen: ["tappedNode5610"],
         choices: [
           {
             text: "Verbinden Sie mich. Ich versuche es noch.",
@@ -556,7 +553,6 @@ export const dialogs: Record<string, DialogTree> = {
         id: "idPflichtCheck",
         speaker: "SYSTEM",
         text: "[ Insa zögert einen Moment, klickt durch ihre Maske. ]",
-        hiddenWhen: ["tappedNode5610"],
         next: "idPflicht1",
       },
       // Pflicht-Pfad — nur wenn Layard noch nicht 'tap' am Knoten 5610 gemacht hat.
@@ -703,6 +699,7 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "INSA",
         text: "Die Tür kennt Sie schon — falls nicht: Wartungsmuster 7-0-Pause-3-2. Aber das wissen Sie nicht von mir.",
         hiddenWhen: ["tappedNode5610"],
+        next: "x4",
         choices: [
           {
             text: "Verstanden. Auf Wiederhören.",
