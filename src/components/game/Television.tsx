@@ -137,33 +137,143 @@ const CHANNELS: Channel[] = [
 
 export function Television() {
   const { tvOpen, closeTelevision } = useGame();
+  const { setDuck } = useMusic();
+  const { sfxEnabled } = useSettings();
   const [channelIdx, setChannelIdx] = useState(0);
   // Cursor pro Kanal — bleibt erhalten, wenn der Spieler umschaltet.
   const cursorsRef = useRef<number[]>(CHANNELS.map(() => 0));
   const [tick, setTick] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const fetchAbortRef = useRef<AbortController | null>(null);
+  const fallbackTimerRef = useRef<number | null>(null);
+  const advanceLockRef = useRef(false);
 
   useEffect(() => {
     if (!tvOpen) {
       cursorsRef.current = CHANNELS.map(() => 0);
       setChannelIdx(0);
       setTick(0);
+      stopBulletinAudio();
+      setDuck(1);
     }
+    return () => {
+      // Beim Unmount/Schließen: Audio stoppen, Musik wieder voll.
+      stopBulletinAudio();
+      setDuck(1);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tvOpen]);
 
   const channel = CHANNELS[channelIdx];
-
-  useEffect(() => {
-    if (!tvOpen) return;
-    const id = window.setInterval(() => {
-      cursorsRef.current[channelIdx] =
-        (cursorsRef.current[channelIdx] + 1) % channel.bulletins.length;
-      setTick((t) => t + 1);
-    }, channel.hold * 1000);
-    return () => window.clearInterval(id);
-  }, [tvOpen, channelIdx, channel.bulletins.length, channel.hold]);
-
   const bulletinIdx = cursorsRef.current[channelIdx];
   const bulletin = channel.bulletins[bulletinIdx];
+
+  function stopBulletinAudio() {
+    if (fetchAbortRef.current) {
+      fetchAbortRef.current.abort();
+      fetchAbortRef.current = null;
+    }
+    if (audioRef.current) {
+      audioRef.current.onended = null;
+      audioRef.current.onerror = null;
+      audioRef.current.pause();
+      audioRef.current.src = "";
+      audioRef.current = null;
+    }
+    if (fallbackTimerRef.current) {
+      window.clearTimeout(fallbackTimerRef.current);
+      fallbackTimerRef.current = null;
+    }
+  }
+
+  function advanceBulletin() {
+    if (advanceLockRef.current) return;
+    advanceLockRef.current = true;
+    cursorsRef.current[channelIdx] =
+      (cursorsRef.current[channelIdx] + 1) % channel.bulletins.length;
+    setTick((t) => t + 1);
+    // Lock kurz halten, damit doppelte ended-Events nicht zwei Schritte machen.
+    window.setTimeout(() => {
+      advanceLockRef.current = false;
+    }, 50);
+  }
+
+  // TTS-gesteuerter Bulletin-Loop. Pro neuem (Kanal, Bulletin) wird die
+  // Sprecher-Audiospur geladen und abgespielt; nach `ended` schaltet der
+  // Loop automatisch weiter. Bei deaktiviertem SFX oder Netzfehler greift
+  // der hold-basierte Fallback-Timer.
+  useEffect(() => {
+    if (!tvOpen) return;
+    stopBulletinAudio();
+    setDuck(1);
+
+    if (!sfxEnabled) {
+      // Kein Audio: rein zeitgesteuert weiterschalten.
+      fallbackTimerRef.current = window.setTimeout(() => {
+        advanceBulletin();
+      }, channel.hold * 1000);
+      return;
+    }
+
+    const ac = new AbortController();
+    fetchAbortRef.current = ac;
+
+    fetch("/api/tts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        voiceId: channel.voiceId,
+        text: bulletin,
+        speed: 0.95,
+      }),
+      signal: ac.signal,
+    })
+      .then(async (resp) => {
+        if (ac.signal.aborted) return;
+        if (!resp.ok) throw new Error(`TTS ${resp.status}`);
+        const blob = await resp.blob();
+        if (ac.signal.aborted) return;
+        const url = URL.createObjectURL(blob);
+        const a = new Audio(url);
+        a.volume = 1;
+        a.onended = () => {
+          URL.revokeObjectURL(url);
+          setDuck(1);
+          advanceBulletin();
+        };
+        a.onerror = () => {
+          URL.revokeObjectURL(url);
+          setDuck(1);
+          // Bei Fehler: nicht endlos hängenbleiben, einfach weiter.
+          fallbackTimerRef.current = window.setTimeout(() => {
+            advanceBulletin();
+          }, 1500);
+        };
+        audioRef.current = a;
+        setDuck(0.18);
+        void a.play().catch(() => {
+          // Autoplay blockiert o. ä. — Musik wieder hoch und timer-basiert weiter.
+          setDuck(1);
+          fallbackTimerRef.current = window.setTimeout(() => {
+            advanceBulletin();
+          }, channel.hold * 1000);
+        });
+      })
+      .catch((err) => {
+        if ((err as Error).name === "AbortError") return;
+        // Netzfehler/Server kaputt → still bleiben, Bulletin nach hold-Zeit weiter.
+        setDuck(1);
+        fallbackTimerRef.current = window.setTimeout(() => {
+          advanceBulletin();
+        }, channel.hold * 1000);
+      });
+
+    return () => {
+      stopBulletinAudio();
+      setDuck(1);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tvOpen, channelIdx, bulletinIdx, sfxEnabled]);
 
   const time = useMemo(() => {
     const d = new Date();
