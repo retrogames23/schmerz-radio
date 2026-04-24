@@ -1437,7 +1437,7 @@ export const scenes: Record<string, Scene> = {
         h: 54,
         alt: "Junge Frau, an die Wand gelehnt",
         hiddenWhen: ["tookFlyer"],
-        visible: (api) => api.getMiraFloor() === 3,
+        visible: (api) => api.getMiraFloors().includes(3),
       },
       {
         id: "philippeSprite36",
@@ -1448,6 +1448,7 @@ export const scenes: Record<string, Scene> = {
         h: 54,
         alt: "Philippe, etwas verloren im Korridor",
         hiddenWhen: ["doorbellRang"],
+        visible: (api) => api.getPhilippeFloor() === 3,
       },
     ],
     hotspots: [
@@ -1495,7 +1496,7 @@ export const scenes: Record<string, Scene> = {
         h: 50,
         label: "Junge Frau an der Wand",
         hiddenWhen: ["tookFlyer"],
-        visible: (api) => api.getMiraFloor() === 3,
+        visible: (api) => api.getMiraFloors().includes(3),
         onUse: (api) => {
           if (api.hasFlag("tookFlyer")) {
             api.startDialog("miraAfter");
@@ -1537,7 +1538,7 @@ export const scenes: Record<string, Scene> = {
         h: 54,
         alt: "Junge Frau, an die Wand gelehnt",
         hiddenWhen: ["tookFlyer"],
-        visible: (api) => api.getMiraFloor() === 4,
+        visible: (api) => api.getMiraFloors().includes(4),
       },
       {
         id: "philippeSprite46",
@@ -1548,6 +1549,7 @@ export const scenes: Record<string, Scene> = {
         h: 54,
         alt: "Philippe vor dem Plakat",
         hiddenWhen: ["doorbellRang"],
+        visible: (api) => api.getPhilippeFloor() === 4,
       },
     ],
     hotspots: [
@@ -1569,7 +1571,7 @@ export const scenes: Record<string, Scene> = {
         h: 50,
         label: "Junge Frau an der Wand",
         hiddenWhen: ["tookFlyer"],
-        visible: (api) => api.getMiraFloor() === 4,
+        visible: (api) => api.getMiraFloors().includes(4),
         onUse: (api) => {
           if (api.hasFlag("tookFlyer")) {
             api.startDialog("miraAfter");
@@ -1625,10 +1627,32 @@ export const scenes: Record<string, Scene> = {
         h: 54,
         alt: "Junge Frau, an die Wand gelehnt",
         hiddenWhen: ["tookFlyer"],
-        visible: (api) => api.getMiraFloor() === 5,
+        visible: (api) => api.getMiraFloors().includes(5),
+      },
+      {
+        id: "philippeSprite56",
+        src: philippeSprite,
+        x: 66,
+        y: 34,
+        w: 14,
+        h: 54,
+        alt: "Philippe am Ende des Korridors",
+        hiddenWhen: ["doorbellRang"],
+        visible: (api) => api.getPhilippeFloor() === 5,
       },
     ],
     hotspots: [
+      {
+        id: "philippeSpot56",
+        x: 66,
+        y: 36,
+        w: 14,
+        h: 54,
+        label: "Philippe (Nachbar)",
+        hiddenWhen: ["doorbellRang"],
+        visible: (api) => api.getPhilippeFloor() === 5,
+        onUse: (api) => api.startDialog("philippeInCorridor56"),
+      },
       {
         id: "miraSpot56",
         x: 22,
@@ -1637,7 +1661,7 @@ export const scenes: Record<string, Scene> = {
         h: 50,
         label: "Junge Frau an der Wand",
         hiddenWhen: ["tookFlyer"],
-        visible: (api) => api.getMiraFloor() === 5,
+        visible: (api) => api.getMiraFloors().includes(5),
         onUse: (api) => {
           if (api.hasFlag("tookFlyer")) {
             api.startDialog("miraAfter");

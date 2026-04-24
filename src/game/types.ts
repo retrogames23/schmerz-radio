@@ -273,6 +273,17 @@ export interface GameApi {
   openTelevision: () => void;
   isRadioActive: () => boolean;
   setEnding: () => void;
-  /** Floor (3, 4 or 5) where Mira appears this run; assigned lazily. */
-  getMiraFloor: () => 3 | 4 | 5;
+  /**
+   * Floors (subset of {3,4,5}) where Mira appears this run. Currently 2
+   * of 3 floors are picked at random so the player is more likely to
+   * encounter her without making her omnipresent.
+   */
+  getMiraFloors: () => ReadonlyArray<3 | 4 | 5>;
+  /**
+   * The single floor (3, 4 or 5) where Philippe appears in the corridor
+   * this run. Always picked from the floor that Mira does NOT occupy,
+   * so the two NPCs never crowd the same etage. Philippe is also
+   * always present in the lobby (handled separately).
+   */
+  getPhilippeFloor: () => 3 | 4 | 5;
 }

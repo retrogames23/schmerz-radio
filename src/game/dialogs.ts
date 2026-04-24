@@ -981,6 +981,58 @@ export const dialogs: Record<string, DialogTree> = {
     },
   },
 
+  philippeInCorridor56: {
+    id: "philippeInCorridor56",
+    start: "pd0",
+    onEnd: (api) => {
+      api.setFlag("metPhilippeBefore");
+    },
+    lines: {
+      pd0: {
+        id: "pd0",
+        speaker: "SYSTEM",
+        text: "[ Am Ende des Korridors, dicht am vergitterten Fenster: Philippe. Er sieht hinaus, ohne wirklich hinzusehen. ]",
+        hiddenWhen: ["metPhilippeBefore"],
+        next: "pd2",
+      },
+      pd1: {
+        id: "pd1",
+        speaker: "SYSTEM",
+        text: "[ Philippe steht wieder am Fenster. Diesmal dreht er sich nicht um. ]",
+        requires: ["metPhilippeBefore"],
+        next: "pdR1",
+      },
+      pd2: {
+        id: "pd2",
+        speaker: "PHILIPPE",
+        text: "Oh — Worag. Aus 2611, oder? Ich bin Philippe, von gegenüber. Ich komme hier manchmal hoch. Wegen der Aussicht.",
+        hiddenWhen: ["metPhilippeBefore"],
+        next: "pd3",
+      },
+      pdR1: {
+        id: "pdR1",
+        speaker: "PHILIPPE",
+        text: "Hier oben hört man es nicht so. Das Klopfen, meine ich.",
+        subtext: "Er sagt es leise. Als wollte er es selbst nicht hören.",
+        requires: ["metPhilippeBefore"],
+        next: "pd3",
+      },
+      pd3: {
+        id: "pd3",
+        speaker: "PHILIPPE",
+        text: "Man sieht von hier oben die Antennen. Möwen. Manchmal eine. Reicht mir.",
+        subtext: "Er meint nicht, dass es ihm gefällt. Er meint, dass es genug ist.",
+        next: "pd4",
+      },
+      pd4: {
+        id: "pd4",
+        speaker: "PHILIPPE",
+        text: "Ich gehe gleich wieder runter. Vermutlich. Schönen Tag, Herr Worag.",
+        end: true,
+      },
+    },
+  },
+
 
   // ---------------------------------------------------------------
   // 10. E71 — reception
