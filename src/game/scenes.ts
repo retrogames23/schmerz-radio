@@ -378,11 +378,12 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "paramedicsHotspot2615",
-        // Beide Sanitäter stehen mittig-links.
-        x: 22,
-        y: 35,
-        w: 24,
-        h: 55,
+        // Beide Sanitäter stehen mittig-links. Etwas großzügiger gefasst,
+        // damit der Hotspot auf kleineren Viewports nicht „verschwindet“.
+        x: 14,
+        y: 28,
+        w: 34,
+        h: 62,
         label: "Sanitäter ansprechen",
         requires: ["sawCatatonic"],
         hiddenWhen: ["protocolReceived"],
@@ -423,6 +424,21 @@ export const scenes: Record<string, Scene> = {
         h: 80,
         label: "Zurück in den Korridor",
         onUse: (api) => {
+          // Softlock-Schutz: Falls der Spieler den Mann gesehen hat, aber
+          // den Sanitäter-Hotspot verpasst hat, hält ihn einer der beiden
+          // noch an der Tür auf und übergibt das Protokoll trotzdem.
+          if (api.hasFlag("sawCatatonic") && !api.hasFlag("protocolReceived")) {
+            api.setFlag("protocolReceived");
+            api.addItem({
+              id: "protocol",
+              name: "Einsatzprotokoll (verschlüsselt)",
+              description:
+                "Eine versiegelte Datenkapsel. Ziel: Sektor E71, Zimmer 1534. Etikett: „Fall-ID 5245@E67@2613“.",
+            });
+            api.setKnowledge("responsibilityE67");
+            api.startDialog("paramedic");
+            return;
+          }
           if (api.hasFlag("protocolReceived")) {
             api.showText([
               "Layard tritt zurück auf den Korridor.",
