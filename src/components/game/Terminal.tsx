@@ -2146,6 +2146,8 @@ export function Terminal() {
               let result: CompleteResult;
               if (advState) {
                 result = adventureComplete(advState, input);
+              } else if (lottiState) {
+                result = lottiComplete(input);
               } else if (telnetHost) {
                 const host = findHost(telnetHost);
                 const hostFiles: Record<string, string[]> = {
