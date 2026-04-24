@@ -1024,15 +1024,15 @@ export const scenes: Record<string, Scene> = {
     background: corridor15Bg,
     title: "Korridor 15 — Sektor E71",
     intro:
-      "Spiegelblanker Linoleum. Eine Neonröhre flackert. Auf halbem Weg, rechts: eine Tür mit gelbem Siegelband. Am Ende, weiter rechts: eine Tür mit rotem Status-Licht. Zimmer 1534.",
+      "Spiegelblanker Linoleum. Eine Neonröhre flackert. Rechts an der Wand: eine Tür, schräg überklebt mit gelbem Siegelband. Am Ende des Korridors, in der Fluchtachse: eine Tür mit einem matten roten Status-Licht. Zimmer 1534.",
     hotspots: [
       {
         id: "sealedDoor1531",
-        // Versiegelte Tür mit gelbem X auf der rechten Bildhälfte (Mitte-rechts).
-        x: 70,
-        y: 28,
-        w: 14,
-        h: 60,
+        // Versiegelte Tür ganz rechts, mit gelbem X über dem Türrahmen.
+        x: 82,
+        y: 18,
+        w: 17,
+        h: 76,
         label: "Tür 1531 (versiegelt)",
         onUse: (api) =>
           api.showText([
@@ -1040,13 +1040,19 @@ export const scenes: Record<string, Scene> = {
             "Darauf, in Maschinenschrift:",
             "„Quarantäne — Resonanz-Überlastung — bis auf Widerruf“.",
             "Layard hat denselben Zettel heute schon einmal gesehen. Vor seiner eigenen Wand.",
+            "",
+            "Wie viele Türen hier wohl so aussehen. Wie viele in E67. Wie viele in den anderen Quadranten.",
+            "Resonanz-Überlastung. Das ist der höfliche Name dafür, dass jemand das Schmerz-Radio zu lange aufgedreht hat. Dass jemand etwas zu deutlich gehört hat.",
+            "Layard kennt niemanden, der quarantänisiert wurde. Er kennt aber auch keinen, der es nicht wäre, wenn man genau hinsähe.",
+            "Vielleicht ist das hier kein Einzelfall. Vielleicht laufen Hunderte von diesen Türen still durch das System — gemeldet, abgehakt, versiegelt, vergessen. Eine Epidemie, die niemand so nennt, weil niemand sie zählt.",
+            "Oder weil das Zählen selbst schon meldepflichtig wäre.",
           ]),
       },
       {
         id: "doors",
-        x: 24,
-        y: 30,
-        w: 38,
+        x: 8,
+        y: 32,
+        w: 36,
         h: 50,
         label: "Türen 1530–1540",
         onUse: (api) =>
@@ -1058,10 +1064,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "door1534",
-        x: 86,
-        y: 18,
-        w: 14,
-        h: 80,
+        // Tür ganz hinten in der Fluchtachse, mit rotem Status-Licht darüber.
+        x: 46,
+        y: 38,
+        w: 11,
+        h: 38,
         label: "Tür 1534 (rot beleuchtet)",
         onUse: (api) => {
           api.setFlag("foundRoom1534");
@@ -1071,9 +1078,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "backLobby",
         x: 0,
-        y: 70,
+        y: 80,
         w: 14,
-        h: 28,
+        h: 18,
         label: "Zurück zum Empfang",
         onUse: (api) => api.goTo("e71Lobby"),
       },
