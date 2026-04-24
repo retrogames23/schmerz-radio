@@ -1113,6 +1113,12 @@ export function Terminal() {
       setTelnetAwaitPass(null);
       // Cheat-Status gilt nur innerhalb einer Sitzung.
       setSuperuser(false);
+      // News-Programm (samt eventuell laufendem Ticker) zurücksetzen.
+      setNewsState(null);
+      if (newsTickerTimerRef.current) {
+        clearInterval(newsTickerTimerRef.current);
+        newsTickerTimerRef.current = null;
+      }
       // Banner explizit vom lokalen Modus aus aufbauen — eine zuvor
       // aktive Remote-Sitzung wurde gerade zurückgesetzt, der nächste
       // Render hat aber noch das alte (effektive) bodoMode-Flag.
