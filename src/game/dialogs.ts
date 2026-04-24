@@ -1839,7 +1839,10 @@ export const dialogs: Record<string, DialogTree> = {
   philippeProbe2: {
     id: "philippeProbe2",
     start: "ps1",
-    onEnd: (api) => api.setFlag("philippeProbeNote2"),
+    onEnd: (api) => {
+      api.setFlag("philippeProbeNote2");
+      maybeGiveWartungsnotiz5610(api);
+    },
     lines: {
       ps1: {
         id: "ps1",
@@ -1882,23 +1885,7 @@ export const dialogs: Record<string, DialogTree> = {
     start: "pt1",
     onEnd: (api) => {
       api.setFlag("philippeProbeNote3");
-      // Sobald drei Sondierungs-Notizen gesetzt sind, schreibt Layard
-      // sich das Wartungsmuster für Tür 5610 zusammen — Weg C zum
-      // Serverraum (Detektiv-Pfad).
-      const probes =
-        (api.hasFlag("philippeProbeNote1") ? 1 : 0) +
-        (api.hasFlag("philippeProbeNote2") ? 1 : 0) +
-        (api.hasFlag("philippeProbeNote3") ? 1 : 0) +
-        (api.hasFlag("philippeProbeNote4") ? 1 : 0) +
-        (api.hasFlag("philippeProbeNote5") ? 1 : 0);
-      if (probes >= 3 && !api.hasItem("wartungsnotiz5610")) {
-        api.addItem({
-          id: "wartungsnotiz5610",
-          name: "Notiz: Wartungsmuster 5610",
-          description:
-            "Aus Philippes Andeutungen rekonstruiert: 7-0-Pause-3-2. Wartungstür im Korridor 56, Dachetage E67. „Lokaler Spiegel.“",
-        });
-      }
+      maybeGiveWartungsnotiz5610(api);
     },
     lines: {
       pt1: {
@@ -1940,7 +1927,10 @@ export const dialogs: Record<string, DialogTree> = {
   philippeProbe4: {
     id: "philippeProbe4",
     start: "pu1",
-    onEnd: (api) => api.setFlag("philippeProbeNote4"),
+    onEnd: (api) => {
+      api.setFlag("philippeProbeNote4");
+      maybeGiveWartungsnotiz5610(api);
+    },
     lines: {
       pu1: {
         id: "pu1",
@@ -1981,7 +1971,10 @@ export const dialogs: Record<string, DialogTree> = {
   philippeProbe5: {
     id: "philippeProbe5",
     start: "pv1",
-    onEnd: (api) => api.setFlag("philippeProbeNote5"),
+    onEnd: (api) => {
+      api.setFlag("philippeProbeNote5");
+      maybeGiveWartungsnotiz5610(api);
+    },
     lines: {
       pv1: {
         id: "pv1",
