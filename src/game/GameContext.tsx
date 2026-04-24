@@ -36,7 +36,7 @@ interface GameState {
   keypadOpen: boolean;
   tvOpen: boolean;
   /** Welche Tür wird gerade am Keypad geprüft. */
-  keypadTarget: "sectorDoor" | "door5610";
+  keypadTarget: "sectorDoor";
   /** Wartungsterminal hinter Tür 5610 sichtbar. */
   nodeOpen: boolean;
   radioActive: boolean; // tuned to 104.6, providing subtext
@@ -117,9 +117,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [terminalBodoMode, setTerminalBodoMode] = useState(false);
   const [keypadOpen, setKeypadOpen] = useState(false);
-  const [keypadTarget, setKeypadTarget] = useState<"sectorDoor" | "door5610">(
-    "sectorDoor",
-  );
+  // Aktuell nur eine Sorte Keypad (Sektor-Tür). Tür 5610 öffnet über
+  // Wartungs-Override / Wartungskarte ohne Keypad.
+  const keypadTarget = "sectorDoor" as const;
   const [nodeOpen, setNodeOpen] = useState(false);
   const [radioActive, setRadioActive] = useState(false);
   const [tvOpen, setTvOpen] = useState(false);
@@ -282,8 +282,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setTerminalOpen(false);
         setRadioOpen(true);
       },
-      openKeypad: (target) => {
-        setKeypadTarget(target ?? "sectorDoor");
+      openKeypad: () => {
         setKeypadOpen(true);
       },
       isRadioActive: () => radioActiveRef.current,

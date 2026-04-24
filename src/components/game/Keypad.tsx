@@ -22,53 +22,26 @@ interface LockConfig {
 }
 
 export function Keypad() {
-  const { keypadOpen, closeKeypad, api, flags, keypadTarget, radioActive } =
-    useGame();
+  const { keypadOpen, closeKeypad, api, flags } = useGame();
   const { sfxVolume } = useSettings();
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<Status>("idle");
 
-  // Frequenz-Slot: nur für door5610 + nur, wenn Mira-Hint + Radio aktiv.
-  // Vier zusätzliche Tasten 1-0-4-6, ein Klick → Code wird gesetzt.
-  const showFreqSlot =
-    keypadTarget === "door5610" &&
-    flags.has("miraSystemic") &&
-    radioActive;
-
-  const config: LockConfig =
-    keypadTarget === "door5610"
-      ? {
-          label: "Wartungstür · 5610",
-          length: 4,
-          // 7032 = Bodo-Wartungscode, 1046 = Frequenz-Schlüssel (Mira-Spur).
-          codes: ["7032", "1046"],
-          openFlag: "serverRoom5610Open",
-          onUnlock: (a) => {
-            a.setFlag("serverRoom5610Open");
-            a.showText([
-              "Klacken im Schloss. Die Magnetriegel geben nach.",
-              "Warme Luft schlägt ihm entgegen — sie riecht nach Lötzinn,",
-              "altem Staub und etwas, das Layard noch nie gerochen hat.",
-              "",
-              "Hinter der Tür: kein Korridor. Ein Raum.",
-            ]);
-          },
-        }
-      : {
-          label: "Sektor-Tür · E67/E71",
-          length: 8,
-          codes: ["06111997"],
-          openFlag: "sectorDoorOpen",
-          onUnlock: (a) => {
-            a.setFlag("sectorDoorOpen");
-            a.addItem({
-              id: "exitCode",
-              name: "Ausgangscode 06111997",
-              description:
-                "Acht Ziffern, ein Datum. Der Code, der die Tür zwischen E67 und E71 öffnet.",
-            });
-          },
-        };
+  const config: LockConfig = {
+    label: "Sektor-Tür · E67/E71",
+    length: 8,
+    codes: ["06111997"],
+    openFlag: "sectorDoorOpen",
+    onUnlock: (a) => {
+      a.setFlag("sectorDoorOpen");
+      a.addItem({
+        id: "exitCode",
+        name: "Ausgangscode 06111997",
+        description:
+          "Acht Ziffern, ein Datum. Der Code, der die Tür zwischen E67 und E71 öffnet.",
+      });
+    },
+  };
 
   const MAX_LEN = config.length;
   const alreadyOpen = flags.has(config.openFlag);
