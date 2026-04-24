@@ -2037,12 +2037,37 @@ export function Terminal() {
           },
           {
             text: bodoMode
-              ? "        Code: 7032 · Letzte Wartung: B. Marschke"
-              : "        Code: ████ · Letzte Wartung: ████████████",
+              ? "        Zugang: Wartungskarte · Letzte Wartung: B. Marschke"
+              : "        Zugang: ████████████ · Letzte Wartung: ████████████",
             kind: "out",
           },
           { text: "", kind: "out" },
         );
+        // Im Bodo-Modus: Wartungskarte für Tür 5610 abgreifen,
+        // sobald `maint list` ausgeführt wurde.
+        if (bodoMode && !api.hasItem("wartungsnotiz5610")) {
+          api.addItem({
+            id: "wartungsnotiz5610",
+            name: "Wartungskarte (E67 · Korridor 56)",
+            description:
+              "Eine abgegriffene blaue Plastikkarte aus Bodos zweiter Schublade. Auf der Rückseite mit Bleistift: »5610 · nur Bodo«. Öffnet den Kartenleser an der Wartungstür im Korridor 56.",
+          });
+          newLines.push(
+            {
+              text: ">> Bodo zieht eine abgegriffene blaue Karte aus der Schublade.",
+              kind: "system",
+            },
+            {
+              text: ">> »Falls Sie da mal hinmüssen, Worag — die hier öffnet 5610.«",
+              kind: "system",
+            },
+            {
+              text: ">> [ Wartungskarte (E67 · Korridor 56) ins Inventar ]",
+              kind: "system",
+            },
+            { text: "", kind: "out" },
+          );
+        }
         if (flags.has("elevatorMaintBlocked") && !flags.has("elevatorMaintCleared")) {
           newLines.push({
             text: bodoMode
