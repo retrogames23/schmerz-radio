@@ -184,6 +184,38 @@ export function RadioPanel() {
     }
   }, [freq, volume, flags, api, setRadioActive, resetResonance, closeRadio, sfxVolume, scene]);
 
+  // E71 — Frequenzsperre. Sobald Layard das Schmerz-Radio in einer Szene
+  // des Sektors E71 auf 104,6 stellt (Lautstärke egal), wird er — höflich,
+  // aber bestimmt — aus dem Gebäude geleitet. Er landet wieder im
+  // Verbindungsgang und kann von dort erneut hinein.
+  const inE71 =
+    scene === "e71Lobby" || scene === "corridor15" || scene === "room1534";
+  useEffect(() => {
+    if (!radioOpen) return;
+    if (!inE71) return;
+    if (freq !== 104.6) return;
+    const t = setTimeout(() => {
+      setRadioActive(false);
+      resetResonance();
+      closeRadio();
+      api.showText(
+        [
+          ">> SEKTOR E71 — FREQUENZSPERRE 104,6 AKTIV",
+          "Eine Hand auf Layards Schulter. Ein junger Pfleger, sehr ruhig.",
+          "„Herr Worag. Bitte schalten Sie das ab. In E71 ist 104,6 nicht zugelassen.“",
+          "Niemand hebt die Stimme. Niemand fragt, was er hier wollte.",
+          "Zwei weitere Pflegerinnen begleiten ihn höflich zurück Richtung Empfang.",
+          "Die Empfangsdame sieht kurz auf. Sagt nichts.",
+          "Die Aufzugtür schließt. Außenluft.",
+        ],
+        () => {
+          api.goTo("passage");
+        },
+      );
+    }, 600);
+    return () => clearTimeout(t);
+  }, [radioOpen, inE71, freq, api, setRadioActive, resetResonance, closeRadio]);
+
   if (!radioOpen) return null;
 
   const currentBand = bandFor(freq);
