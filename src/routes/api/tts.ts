@@ -157,6 +157,7 @@ export function normalizeForGermanTTS(input: string): string {
 const ALLOWED_VOICE_IDS = new Set([
   "onwK4e9ZLuTAKqWW03F9",
   "EXAVITQu4vr4xnSDxMaL",
+  "FGY2WhTYpPnrIDTdsKH5", // Laura — Insa
   "nPczCjzI2devNBz1zQrb",
   "IKne3meq5aSn9XLyUdCD",
   "bIHbv24MWmeRgasZH58o",
@@ -164,6 +165,8 @@ const ALLOWED_VOICE_IDS = new Set([
   "CwhRBWXzGAHq8TQ4Fs17",
   "Xb7hH8MSUJpSbSDYk0k2",
   "XB0fDUnXU5powFXDhCwa",
+  "TX3LPaxmHKxFdv7VOQHJ", // Liam — Ennis
+  "iP95p4xoKVk53GoZ742B", // Chris — Stegmann
   // TV-Sender-Sprecher (Teleempfänger)
   "JBFqnCBsd6RMkjVDRZzb", // George — BV-Aktuell, älter & paternalistisch
   "pFZP5JQG7iQjIQuC4Bku", // Lily — Reserve / Wetter-Alternative

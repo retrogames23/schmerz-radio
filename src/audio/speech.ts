@@ -33,7 +33,7 @@ interface VoiceProfile {
  */
 const PROFILES: Record<Speaker, VoiceProfile> = {
   LAYARD: { voiceId: "onwK4e9ZLuTAKqWW03F9", speed: 0.92 }, // Daniel — tief, kontemplativ
-  INSA: { voiceId: "EXAVITQu4vr4xnSDxMaL", speed: 1.0 }, // Sarah — warm, professionell
+  INSA: { voiceId: "FGY2WhTYpPnrIDTdsKH5", speed: 0.98 }, // Laura — warm, deutsch-stabil
   MIKAEL: { voiceId: "nPczCjzI2devNBz1zQrb", speed: 0.85 }, // Brian — autoritär, ruhig
   PHILIPPE: { voiceId: "IKne3meq5aSn9XLyUdCD", speed: 1.05 }, // Charlie — jünger, freundlich
   SANITÄTER: { voiceId: "bIHbv24MWmeRgasZH58o", speed: 1.05 }, // Will — sachlich
