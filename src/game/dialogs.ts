@@ -1005,7 +1005,7 @@ export const dialogs: Record<string, DialogTree> = {
       r3: {
         id: "r3",
         speaker: "RECEPTION",
-        text: "Korridor 15. Den langen Gang entlang. Die letzte Tür auf der rechten Seite, mit dem roten Licht.",
+        text: "Korridor 15. Den langen Gang ganz nach hinten. Die Tür am Ende, mit dem roten Licht.",
         next: "r4",
       },
       r4: {
