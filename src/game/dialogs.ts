@@ -531,7 +531,7 @@ export const dialogs: Record<string, DialogTree> = {
       idCode2: {
         id: "idCode2",
         speaker: "INSA",
-        text: "Wenn Sie ohnehin am Netz vorbeigeschaut haben — den Verantwortlichen fürs Zentrale Netz kann ich Ihnen geben, falls noch etwas hängt. Sonst …",
+        text: "Den Verantwortlichen fürs Zentrale Netz kann ich Ihnen geben, falls noch etwas hängt. Sonst …",
         next: "idCode3",
       },
       idCode3: {
