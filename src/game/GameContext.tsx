@@ -212,8 +212,33 @@ export function GameProvider({ children }: { children: ReactNode }) {
       startDialog: (id) => {
         const tree = dialogs[id];
         if (!tree) return;
+        // Resolve to the first visible line — auto-skip start lines whose
+        // requires/hiddenWhen do not match current flags.
+        let cursor: string | undefined = tree.start;
+        const seen = new Set<string>();
+        while (cursor && !seen.has(cursor)) {
+          seen.add(cursor);
+          const candidate = tree.lines[cursor];
+          if (!candidate) {
+            cursor = undefined;
+            break;
+          }
+          const reqOk =
+            !candidate.requires ||
+            candidate.requires.every((f) => flagsRef.current.has(f));
+          const hideOk =
+            !candidate.hiddenWhen ||
+            !candidate.hiddenWhen.some((f) => flagsRef.current.has(f));
+          if (reqOk && hideOk) break;
+          if (candidate.end || !candidate.next) {
+            cursor = undefined;
+            break;
+          }
+          cursor = candidate.next;
+        }
+        if (!cursor) return;
         setDialogId(id);
-        setDialogLineId(tree.start);
+        setDialogLineId(cursor);
       },
       openTerminal: (asBodo?: boolean) => {
         setRadioOpen(false);
