@@ -1530,7 +1530,7 @@ export const dialogs: Record<string, DialogTree> = {
       ok3e: {
         id: "ok3e",
         speaker: "OKWU",
-        text: "Es gibt Witze, Herr Worag. Wirklich gute, alte Witze. „Wie viele E67er braucht es, um eine Glühbirne zu wechseln?" — Antwort: Keiner weiß es, es war noch nie jemand drin, der's berichten konnte.",
+        text: "Es gibt Witze, Herr Worag. Wirklich gute, alte Witze. „Wie viele E67er braucht es, um eine Glühbirne zu wechseln?“ — Antwort: Keiner weiß es, es war noch nie jemand drin, der's berichten konnte.",
         next: "ok3f",
       },
       ok3f: {
