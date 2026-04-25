@@ -72,10 +72,10 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
   },
   RADIO: { voiceId: "XrExE9yKIg1WjnnlVkGX", speed: 0.92 }, // Matilda — mystisch, weich
   SYSTEM: {
-    voiceId: "CwhRBWXzGAHq8TQ4Fs17", // Roger — nüchtern, aber für Deutsch stark stabilisiert
-    speed: 0.88,
+    voiceId: "N2lVS1w4EtoT3dr4eOWO", // Callum — ruhiger Erzähler, weniger amerikanische Deutschfärbung
+    speed: 0.86,
     settings: {
-      stability: 0.9,
+      stability: 0.92,
       similarity_boost: 0.85,
       style: 0,
       use_speaker_boost: false,
