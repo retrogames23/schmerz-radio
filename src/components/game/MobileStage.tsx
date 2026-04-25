@@ -18,7 +18,7 @@ export function MobileStage({ children }: { children: ReactNode }) {
   const [scale, setScale] = useState(1);
   const [vw, setVw] = useState(0);
   const [vh, setVh] = useState(0);
-  const [dismissedRotateHint, setDismissedRotateHint] = useState(false);
+  const [rotate, setRotate] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -30,7 +30,15 @@ export function MobileStage({ children }: { children: ReactNode }) {
       const isMobile = w < MOBILE_BREAKPOINT;
       setEnabled(isMobile);
       if (isMobile) {
-        setScale(Math.min(w / STAGE_W, h / STAGE_H));
+        const isPortrait = h > w;
+        if (isPortrait) {
+          // Bühne um 90° drehen → Höhe wird zur "Breite" für die Skalierung.
+          setRotate(true);
+          setScale(Math.min(h / STAGE_W, w / STAGE_H));
+        } else {
+          setRotate(false);
+          setScale(Math.min(w / STAGE_W, h / STAGE_H));
+        }
       }
     };
     compute();
@@ -47,9 +55,6 @@ export function MobileStage({ children }: { children: ReactNode }) {
     return <>{children}</>;
   }
 
-  const isPortrait = vh > vw;
-  const showRotateHint = isPortrait && !dismissedRotateHint;
-
   return (
     <div
       className="fixed inset-0 overflow-hidden bg-black"
@@ -63,42 +68,12 @@ export function MobileStage({ children }: { children: ReactNode }) {
           top: "50%",
           width: STAGE_W,
           height: STAGE_H,
-          transform: `translate(-50%, -50%) scale(${scale})`,
+          transform: `translate(-50%, -50%) rotate(${rotate ? -90 : 0}deg) scale(${scale})`,
           transformOrigin: "center center",
         }}
       >
         {children}
       </div>
-
-      {showRotateHint && (
-        <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/85 px-6 text-center">
-          <div className="max-w-xs rounded-sm border border-amber-glow/60 bg-background/95 p-6 shadow-[0_0_60px_rgba(0,0,0,0.85)]">
-            <div
-              aria-hidden
-              className="mx-auto mb-3 flex h-12 w-20 items-center justify-center rounded-md border-2 border-amber-glow/70 text-amber-glow"
-              style={{ transform: "rotate(90deg)" }}
-            >
-              <span className="font-mono-crt text-[10px] tracking-widest">
-                ↻
-              </span>
-            </div>
-            <div className="font-display text-sm uppercase tracking-[0.25em] text-amber-glow">
-              Bitte Gerät drehen
-            </div>
-            <p className="mt-2 font-mono-crt text-[11px] leading-relaxed text-muted-foreground">
-              Schmerz-Radio ist für Querformat optimiert. Halte dein Gerät
-              quer für die beste Erfahrung.
-            </p>
-            <button
-              type="button"
-              onClick={() => setDismissedRotateHint(true)}
-              className="mt-4 rounded-sm border border-amber-glow/40 bg-background/60 px-4 py-2 font-mono-crt text-[10px] uppercase tracking-[0.25em] text-amber-glow/85 hover:border-amber-glow hover:text-amber-glow"
-            >
-              Trotzdem spielen
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
