@@ -441,7 +441,10 @@ export function ParamedicsCutscene() {
   const ty = beat.pan[1] + (beat.pan[3] - beat.pan[1]) * progress;
 
   return (
-    <div className="absolute inset-0 z-[75] flex flex-col bg-black">
+    // Fullscreen-Overlay: liegt über TopBar, Inventar und allen anderen
+    // UI-Elementen. So erscheint die Cutscene wie ein eigener Filmmodus
+    // ohne sichtbare Bedienleiste.
+    <div className="fixed inset-0 z-[200] flex flex-col bg-black">
       {/* Bild-Layer mit Ken-Burns + Crossfade */}
       <div className="relative flex-1 overflow-hidden">
         <img
