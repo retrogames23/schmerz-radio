@@ -311,6 +311,12 @@ export interface GameApi {
    */
   playBurnSequence: () => void;
   /**
+   * Spielt eine narrative Cutscene als Fullscreen-Sequenz.
+   * Beendet das Spiel NICHT — die Szene bleibt erhalten und wird beim
+   * Schließen wieder sichtbar. Aktuell unterstützt: "paramedics".
+   */
+  startCutscene: (id: CutsceneId) => void;
+  /**
    * Floors (subset of {3,4,5}) where Mira appears this run. Currently 2
    * of 3 floors are picked at random so the player is more likely to
    * encounter her without making her omnipresent.
