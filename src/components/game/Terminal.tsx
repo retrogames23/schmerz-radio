@@ -1434,6 +1434,83 @@ export function Terminal() {
       return;
     }
 
+    // ── Debug-Cheat »cheat 0003« ──────────────────────────
+    // Springt an die Stelle, an der Layard zum ersten Mal im
+    // Außenbereich steht: in den Verbindungsgang E67 ↔ E71.
+    // Akt 1 ist abgeschlossen (Protokoll erhalten, Aufzug frei,
+    // leeres Büro 3601 gesehen), Insa hat den Sektor-Code
+    // freigegeben, die Sektor-Tür ist offen, und Layard hat den
+    // schweren ersten Schritt durch die Schleuse bereits gemacht.
+    if (raw.toLowerCase() === "cheat 0003") {
+      playBeep(0.5 * sfxVolume);
+      setInput("");
+      setAdvState(null);
+      setLottiState(null);
+      setNewsState(null);
+      if (newsTickerTimerRef.current) {
+        clearInterval(newsTickerTimerRef.current);
+        newsTickerTimerRef.current = null;
+      }
+
+      const flagsToSet: StoryFlag[] = [
+        // Akt 1 (identisch zu cheat 0001)
+        "metPhilippeBefore",
+        "knockingHeard",
+        "talkedPhilippe2613",
+        "calledLeitstelle",
+        "paramedicsArrived",
+        "doorBrokenOpen",
+        "sawCatatonic",
+        "protocolReceived",
+        "elevatorMaintBlocked",
+        "elevatorMaintCleared",
+        "sawEmptyOffice",
+        // Insa-Telefonkette: 001 angerufen, durchverbunden,
+        // CentralOS aktualisiert, Schwierigkeiten gemeldet,
+        // Übertritt nach E71 vorgemerkt, Sektor-Code erhalten.
+        "calledInsa2",
+        "calledStegmann",
+        "centralOsUpdated",
+        "troubleReported",
+        "reportedExit",
+        "calledForCode",
+        // Sektor-Tür entriegelt, schwerer erster Schritt geschafft.
+        "sectorDoorOpen",
+        "feetWontMove",
+        // Aufzug bereits einmal in Richtung Etage 1 genommen.
+        "elevatorTaken",
+      ];
+      for (const f of flagsToSet) api.setFlag(f);
+
+      // Wissens-Flags, die der Sanitäter und Insa normalerweise vergeben.
+      api.setKnowledge("responsibilityE67");
+
+      // Inventar: Einsatzprotokoll (verschlüsselt).
+      if (!api.hasItem("protocol")) {
+        api.addItem({
+          id: "protocol",
+          name: "Einsatzprotokoll (verschlüsselt)",
+          description:
+            "Eine versiegelte Datenkapsel. Ziel: Sektor E71, Zimmer 1534. Etikett: „Fall-ID 5245@E67@2613“.",
+        });
+      }
+
+      setLines((prev) => [
+        ...prev,
+        { text: `worag@centralos:~$ ${raw}`, kind: "in" },
+        { text: ">> [DEBUG] Außenbereichs-Sprungpunkt geladen.", kind: "system" },
+        { text: ">> Akt 1 erledigt, Sektor-Code erhalten, Sektor-Tür entriegelt.", kind: "out" },
+        { text: ">> Layard im Verbindungsgang E67 ↔ E71 — erstmals im Außenbereich.", kind: "system" },
+        { text: "", kind: "out" },
+      ]);
+
+      setTimeout(() => {
+        closeTerminal();
+        api.goTo("passage");
+      }, 250);
+      return;
+    }
+
     // ── Sub-Modus: adventure.bin läuft ─────────────────────
     if (advState) {
       playBeep(0.3 * sfxVolume);
