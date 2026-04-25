@@ -1,7 +1,6 @@
 import apartmentBg from "@/assets/scene-apartment.jpg";
 import hallwayBg from "@/assets/scene-hallway.jpg";
 import apt2613Bg from "@/assets/scene-apt-2613.jpg";
-import apt2615Bg from "@/assets/scene-apt-2615.jpg";
 import apt2612BgEmpty from "@/assets/scene-apt-2612.jpg";
 import apt2612BgBodo from "@/assets/scene-apt-2612-bodo.jpg";
 import sectorBg from "@/assets/scene-sector-door.jpg";
@@ -376,113 +375,6 @@ export const scenes: Record<string, Scene> = {
     ],
   },
 
-  // The neighbor's apartment, broken open by the paramedics.
-  // The catatonic man stands inside, knocking against the wall.
-  apt2615: {
-    id: "apt2615",
-    background: apt2615Bg,
-    title: "Wohnung 2615 — Aufgebrochen",
-    intro:
-      "Die Tür hängt schief in den Angeln. Splitter auf dem Beton. Drinnen: gleicher Grundriss, kahler. Eine Lampe flackert. Und in der Mitte: er.",
-    hotspots: [
-      {
-        id: "patient2615",
-        // Älterer Mann sitzt rechts auf dem Boden, Rücken an der Wand.
-        x: 62,
-        y: 50,
-        w: 26,
-        h: 45,
-        label: "Der Mann an der Wand",
-        hiddenWhen: ["sawCatatonic"],
-        onUse: (api) => {
-          api.setFlag("sawCatatonic");
-          api.showText([
-            "Ein älterer Mann, ausgemergelt. Fahle Haut, graues Haar. Mitte sechzig, vielleicht älter. Schwer zu sagen.",
-            "Er sitzt auf dem Boden, den Rücken an der Wand, und schlägt mit leblosem Gesicht rhythmisch mit der Faust dagegen.",
-            "Die Sanitäter knien neben ihm. Sprechen ihn an. Er reagiert nicht. Er sieht sie nicht an.",
-            "Er starrt apathisch ins Leere, an ihnen vorbei, irgendwohin, wo nichts ist.",
-            "Layard nimmt seinen Mut zusammen und schaut ihm in die Augen. Er erwartet tote, glasige Augen.",
-            "Stattdessen: grüne Augen. Eine seltsame Tiefe. Klarheit — die niemanden hier meint. Wie ein Portal in ein mystisches Universum. Layard wird das Bild nicht mehr loswerden.",
-          ]);
-        },
-      },
-      {
-        id: "paramedicsHotspot2615",
-        // Beide Sanitäter stehen mittig-links. Etwas großzügiger gefasst,
-        // damit der Hotspot auf kleineren Viewports nicht „verschwindet“.
-        x: 14,
-        y: 28,
-        w: 34,
-        h: 62,
-        label: "Sanitäter ansprechen",
-        requires: ["sawCatatonic"],
-        hiddenWhen: ["protocolReceived"],
-        onUse: (api) => {
-          api.setFlag("protocolReceived");
-          api.addItem({
-            id: "protocol",
-            name: "Einsatzprotokoll (verschlüsselt)",
-            description:
-              "Eine versiegelte Datenkapsel. Ziel: Sektor E71, Zimmer 1534. Etikett: „Fall-ID 5245@E67@2613“.",
-          });
-          api.setKnowledge("responsibilityE67");
-          api.startDialog("paramedic");
-        },
-      },
-      {
-        id: "wallDetail2615",
-        // Wand hinter dem Patienten (rechte Hälfte, oberhalb der Lampe).
-        x: 50,
-        y: 22,
-        w: 38,
-        h: 24,
-        label: "Die Wand",
-        requires: ["sawCatatonic"],
-        onUse: (api) =>
-          api.showText([
-            "Beton. Nichts dahinter, das man hören könnte.",
-            "Trotzdem schlägt er weiter. Der Rhythmus ist exakt.",
-            "Genau der Rhythmus von 104,6.",
-          ]),
-      },
-      {
-        id: "exitTo2613",
-        // Aufgebrochene Tür ganz links.
-        x: 0,
-        y: 18,
-        w: 22,
-        h: 80,
-        label: "Zurück in den Korridor",
-        onUse: (api) => {
-          // Softlock-Schutz: Falls der Spieler den Mann gesehen hat, aber
-          // den Sanitäter-Hotspot verpasst hat, hält ihn einer der beiden
-          // noch an der Tür auf und übergibt das Protokoll trotzdem.
-          if (api.hasFlag("sawCatatonic") && !api.hasFlag("protocolReceived")) {
-            api.setFlag("protocolReceived");
-            api.addItem({
-              id: "protocol",
-              name: "Einsatzprotokoll (verschlüsselt)",
-              description:
-                "Eine versiegelte Datenkapsel. Ziel: Sektor E71, Zimmer 1534. Etikett: „Fall-ID 5245@E67@2613“.",
-            });
-            api.setKnowledge("responsibilityE67");
-            api.startDialog("paramedic");
-            return;
-          }
-          if (api.hasFlag("protocolReceived")) {
-            api.showText([
-              "Layard tritt zurück auf den Korridor.",
-              "Hinter ihm versiegeln die Sanitäter die Tür mit gelbem Band:",
-              "„Quarantäne — Resonanz-Überlastung — bis auf Widerruf“.",
-              "Niemand wird hier in absehbarer Zeit einziehen.",
-            ]);
-          }
-          api.goTo("hallway");
-        },
-      },
-    ],
-  },
-
   // Philippe's own apartment is now used only as a small detour after Akt 1
   // is over - it can stay reachable from the hallway as a memory beat.
   // Bodos Wohnung (2612). Begehbar ab doorBrokenOpen.
@@ -746,19 +638,10 @@ export const scenes: Record<string, Scene> = {
           api.goTo("apt2613");
         },
       },
-      // Tür 2615 — der Mann an der Wand. Solange aufgebrochen begehbar,
-      // sobald die Sanitäter ihn abtransportiert haben: versiegelt.
-      {
-        id: "door2615Open",
-        x: 56,
-        y: 42,
-        w: 12,
-        h: 42,
-        label: "Tür 2615 (aufgebrochen)",
-        requires: ["doorBrokenOpen"],
-        hiddenWhen: ["protocolReceived"],
-        onUse: (api) => api.goTo("apt2615"),
-      },
+      // Tür 2615 — wird in der Sanitäter-Cutscene aufgebrochen und
+      // direkt im Anschluss mit gelbem Siegelband versiegelt. Der
+      // Innenraum existiert als Szene nicht mehr — die Cutscene zeigt
+      // alles, was es zu sehen gibt.
       {
         id: "door2615Sealed",
         x: 56,
@@ -766,7 +649,7 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 42,
         label: "Tür 2615 (versiegelt)",
-        requires: ["protocolReceived"],
+        requires: ["paramedicsCutsceneSeen"],
         onUse: (api) =>
           api.showText([
             "Ein gelbes Siegelband klebt schräg über dem Türrahmen.",

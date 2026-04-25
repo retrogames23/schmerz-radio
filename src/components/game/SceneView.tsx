@@ -10,7 +10,6 @@ const SCENE_TO_FLOOR: Partial<Record<SceneId, number>> = {
   hallway: 2,
   apartment: 2,
   apt2612: 2,
-  apt2615: 2,
   corridor36: 3,
   corridor46: 4,
   corridor56: 5,
