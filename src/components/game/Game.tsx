@@ -75,9 +75,9 @@ export function Game() {
                 </div>
               </main>
               <Inventory />
-              <DragCursorLayer />
             </div>
             </MobileStage>
+            <DragCursorLayer />
           </InventoryDragProvider>
         </GameProvider>
       </MusicPlayer>
