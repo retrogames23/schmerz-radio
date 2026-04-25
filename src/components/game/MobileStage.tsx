@@ -29,6 +29,7 @@ export function MobileStage({
   const [enabled, setEnabled] = useState(false);
   const [scale, setScale] = useState(1);
   const [rotate, setRotate] = useState(false);
+  const [passthrough, setPassthrough] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -42,14 +43,19 @@ export function MobileStage({
         if (isPortrait && !uprightOnPortrait) {
           // Bühne um 90° drehen → Höhe wird zur "Breite" für die Skalierung.
           setRotate(true);
+          setPassthrough(false);
           setScale(Math.min(h / STAGE_W, w / STAGE_H));
         } else if (isPortrait && uprightOnPortrait) {
-          // Aufrecht im Hochformat: Breite ist limitierend, oben anschlagen
-          // (nicht zentrieren), damit die System-Tastatur unten Platz hat.
+          // Aufrecht im Hochformat (Konsole offen): Pass-Through-Modus.
+          // Wir verzichten auf die fixe 1024×640-Bühne und lassen die
+          // Konsolen-Overlays den echten Viewport voll ausfüllen
+          // (mehr Platz für Text + Tastatur, größere Schrift mobil).
           setRotate(false);
-          setScale(Math.min(w / STAGE_W, h / STAGE_H));
+          setPassthrough(true);
+          setScale(1);
         } else {
           setRotate(false);
+          setPassthrough(false);
           setScale(Math.min(w / STAGE_W, h / STAGE_H));
         }
       }
@@ -66,6 +72,22 @@ export function MobileStage({
   if (!enabled) {
     // Desktop-Pfad: unverändert, kein Wrapper-Effekt.
     return <>{children}</>;
+  }
+
+  if (passthrough) {
+    // Konsolen-Modus: kein Skalieren, kein Rotieren. Children erhalten den
+    // vollen mobilen Viewport — die offenen Konsolen-Overlays (Terminal,
+    // NodeTerminal) liegen ohnehin als `fixed`/`absolute inset-0`-Layer
+    // darüber und nutzen den Platz dann komplett aus.
+    return (
+      <div
+        data-mobile-passthrough="true"
+        className="fixed inset-0 overflow-hidden bg-black"
+        style={{ touchAction: "manipulation" }}
+      >
+        {children}
+      </div>
+    );
   }
 
   return (

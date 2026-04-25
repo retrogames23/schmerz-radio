@@ -2654,9 +2654,9 @@ export function Terminal() {
   void knowledge;
 
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/85 px-4">
+    <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-black/85 sm:items-center sm:px-4">
       <div
-        className={`fade-in relative w-full max-w-4xl overflow-hidden rounded-sm border bg-black shadow-[0_0_60px_rgba(0,0,0,0.85)] scanlines ${
+        className={`fade-in relative flex h-full w-full flex-col overflow-hidden rounded-none border-0 bg-black shadow-[0_0_60px_rgba(0,0,0,0.85)] scanlines sm:h-auto sm:max-w-4xl sm:rounded-sm sm:border ${
           bodoMode ? "border-sepia/50" : "border-phosphor/50"
         }`}
       >
@@ -2686,7 +2686,7 @@ export function Terminal() {
 
         <div
           ref={scrollRef}
-          className="h-[55vh] overflow-y-auto bg-black px-4 py-3 font-mono-crt text-base leading-relaxed crt-flicker"
+          className="min-h-0 flex-1 overflow-y-auto bg-black px-4 py-3 font-mono-crt text-[15px] leading-relaxed crt-flicker sm:h-[55vh] sm:flex-none sm:text-base"
         >
           {lines.map((l, i) => (
             <div
@@ -2717,7 +2717,7 @@ export function Terminal() {
           }`}
         >
           <span
-            className={`font-mono-crt text-sm ${
+            className={`font-mono-crt text-[15px] sm:text-sm ${
               bodoMode ? "text-sepia sepia-glow" : "text-phosphor phosphor-glow"
             }`}
           >
