@@ -27,13 +27,9 @@ export type InventoryItemId =
   | "wartungsnotiz5610";
 
 export type KnowledgeFlag =
-  | "freq1046"
-  | "resonanceTerm"
   | "responsibilityE67"
   | "radioOrigin"
-  | "leitstelleListens"
-  | "frequencyControl"
-  | "insaScreened";
+  | "frequencyControl";
 
 export type StoryFlag =
   | "radioTunedTo1046"
