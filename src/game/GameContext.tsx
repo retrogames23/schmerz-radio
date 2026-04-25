@@ -132,6 +132,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [resonance, setResonance] = useState(0);
   const [ending, setEnding] = useState(false);
   const [burnSequence, setBurnSequence] = useState<boolean>(false);
+  const [cutscene, setCutscene] = useState<CutsceneId | null>(null);
   // Mira darf NICHT auf Etage 3 erscheinen — dort liegt das Büro des
   // Abschnittsverantwortlichen (E67). Würde sie dort die Tür blockieren und
   // Layard ginge nicht auf sie ein, gäbe es ein Dead End: er erfährt dann
