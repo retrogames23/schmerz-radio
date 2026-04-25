@@ -56,7 +56,20 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
   },
   MIKAEL: { voiceId: "nPczCjzI2devNBz1zQrb", speed: 0.85 }, // Brian — autoritär, ruhig
   PHILIPPE: { voiceId: "IKne3meq5aSn9XLyUdCD", speed: 1.05 }, // Charlie — jünger, freundlich
-  SANITÄTER: { voiceId: "bIHbv24MWmeRgasZH58o", speed: 1.05 }, // Will — sachlich
+  SANITÄTER: {
+    // Callum — etwas tiefer, sachlich, weniger stark amerikanisch
+    // gefärbt als „Will". Mit hoher stability + style 0 wird er
+    // zuverlässig in deutsche Phonetik gezwungen (analog zu Insa),
+    // sonst rutschten kurze deutsche Sätze in englischen Akzent.
+    voiceId: "N2lVS1w4EtoT3dr4eOWO",
+    speed: 1.0,
+    settings: {
+      stability: 0.85,
+      similarity_boost: 0.85,
+      style: 0,
+      use_speaker_boost: false,
+    },
+  },
   RADIO: { voiceId: "XrExE9yKIg1WjnnlVkGX", speed: 0.92 }, // Matilda — mystisch, weich
   SYSTEM: { voiceId: "CwhRBWXzGAHq8TQ4Fs17", speed: 0.95 }, // Roger — nüchtern
   RECEPTION: { voiceId: "Xb7hH8MSUJpSbSDYk0k2", speed: 1.1 }, // Alice — klar
