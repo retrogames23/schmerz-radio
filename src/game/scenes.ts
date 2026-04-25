@@ -1071,7 +1071,6 @@ export const scenes: Record<string, Scene> = {
         w: 20,
         h: 50,
         label: "Tür → Korridor 15",
-        requires: ["metReceptionist"],
         onUse: (api) => api.goTo("corridor15"),
       },
     ],
