@@ -457,7 +457,7 @@ function bannerLines(): string[] {
   ];
 }
 
-export function newsStart(state: NewsState): string[] {
+export function newsStart(_state: NewsState): string[] {
   return [...bannerLines(), ...renderHome()];
 }
 
