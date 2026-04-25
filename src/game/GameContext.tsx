@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/auth/AuthContext";
 import type {
   GameApi,
+  CutsceneId,
   InventoryItem,
   InventoryItemId,
   KnowledgeFlag,
@@ -44,6 +45,8 @@ interface GameState {
   ending: boolean;
   /** Aktive Burn-Sequenz nach Knoten-5610-Aktion. */
   burnSequence: boolean;
+  /** Aktive narrative Cutscene (z. B. Sanitäter-Bergung). */
+  cutscene: CutsceneId | null;
 }
 
 interface GameContextValue extends GameState {
@@ -59,6 +62,7 @@ interface GameContextValue extends GameState {
   closeTelevision: () => void;
   closeNode: () => void;
   endBurnSequence: () => void;
+  endCutscene: () => void;
   setRadioActive: (active: boolean) => void;
   bumpResonance: (delta: number) => void;
   resetResonance: () => void;
