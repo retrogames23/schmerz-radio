@@ -41,6 +41,8 @@ export type StoryFlag =
   | "calledLeitstelle"
   | "smalltalkPhilippe"
   | "paramedicsArrived"
+  /** Cutscene "Sanitäter brechen 2615 auf" wurde abgespielt. */
+  | "paramedicsCutsceneSeen"
   // Pro Besuch in Wohnung 2613 nach dem Anruf: zwei Warte-Klicks.
   // Werden beim Betreten von 2613 zurückgesetzt.
   | "wait2613Step1"
