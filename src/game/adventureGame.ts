@@ -194,8 +194,6 @@ const ROOMS: Record<string, AdvRoom> = {
   },
 };
 
-const DIRS = ["nord", "süd", "sued", "ost", "west", "oben", "unten"] as const;
-
 function normDir(d: string): keyof AdvRoom["exits"] | null {
   const x = d.toLowerCase();
   if (x === "n" || x === "nord") return "nord";
@@ -424,8 +422,6 @@ const ADV_COMMANDS = [
   "hilfe",
   "beenden",
 ] as const;
-
-const ADV_DIRECTIONS = ["nord", "süd", "ost", "west", "oben", "unten"] as const;
 
 function advCommonPrefix(strs: string[]): string {
   if (!strs.length) return "";
