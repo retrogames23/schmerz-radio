@@ -5,6 +5,7 @@ export type SceneId =
   | "e71Lobby"
   | "corridor15"
   | "room1534"
+  | "room1532"
   | "apt2613"
   | "apt2615"
   | "apt2612"
