@@ -187,7 +187,7 @@ const CROSSFADE_MS = 600;
 
 export function ParamedicsCutscene() {
   const { cutscene, endCutscene, api } = useGame();
-  const { voiceVolume } = useSettings();
+  const { sfxVolume } = useSettings();
   const beats = useMemo(buildBeats, []);
   const [beatIdx, setBeatIdx] = useState(0);
   const [lineIdx, setLineIdx] = useState(-1); // -1 = leadIn
@@ -255,7 +255,7 @@ export function ParamedicsCutscene() {
           setTimeout(() => {
             if (cancelledRef.current) return;
             setLineIdx(li);
-            void speak(ln.speaker, ln.speech ?? ln.text, voiceVolume);
+            void speak(ln.speaker, ln.speech ?? ln.text, sfxVolume);
           }, cursor),
         );
         cursor += ln.hold;
