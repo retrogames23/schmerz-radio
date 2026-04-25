@@ -343,9 +343,14 @@ export const scenes: Record<string, Scene> = {
               "Im Korridor: Schritte. Gleichmäßig. Schwer.",
             ]);
           } else {
-            // Sanitäter treffen ein.
+            // Sanitäter sind eingetroffen — die eigentliche Bergung
+            // wird beim Verlassen der Wohnung als Cutscene gespielt.
             api.setFlag("paramedicsArrived");
-            api.startDialog("paramedicsArrive");
+            api.showText([
+              "Es klopft an Philippes Tür. Schwere, kontrollierte Schläge.",
+              "Eine Stimme: „Sanitätsdienst Block 26. Wir sind wegen 2615 da.“",
+              "Philippe nickt Layard zu. „Gehen Sie raus. Sie haben sie gerufen.“",
+            ]);
           }
         },
       },
@@ -357,8 +362,16 @@ export const scenes: Record<string, Scene> = {
         w: 6,
         h: 80,
         label: "In den Korridor",
-        requires: ["doorBrokenOpen"],
-        onUse: (api) => api.goTo("hallway"),
+        // Sobald die Sanitäter da sind, kann Layard hinaus. Beim ersten
+        // Verlassen läuft die Bergungs-Cutscene; danach normales Navigieren.
+        requires: ["paramedicsArrived"],
+        onUse: (api) => {
+          if (!api.hasFlag("paramedicsCutsceneSeen")) {
+            api.startCutscene("paramedics");
+          } else {
+            api.goTo("hallway");
+          }
+        },
       },
     ],
   },

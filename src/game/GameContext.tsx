@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/auth/AuthContext";
 import type {
   GameApi,
+  CutsceneId,
   InventoryItem,
   InventoryItemId,
   KnowledgeFlag,
@@ -44,6 +45,8 @@ interface GameState {
   ending: boolean;
   /** Aktive Burn-Sequenz nach Knoten-5610-Aktion. */
   burnSequence: boolean;
+  /** Aktive narrative Cutscene (z. B. Sanitäter-Bergung). */
+  cutscene: CutsceneId | null;
 }
 
 interface GameContextValue extends GameState {
@@ -59,6 +62,7 @@ interface GameContextValue extends GameState {
   closeTelevision: () => void;
   closeNode: () => void;
   endBurnSequence: () => void;
+  endCutscene: () => void;
   setRadioActive: (active: boolean) => void;
   bumpResonance: (delta: number) => void;
   resetResonance: () => void;
@@ -128,6 +132,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [resonance, setResonance] = useState(0);
   const [ending, setEnding] = useState(false);
   const [burnSequence, setBurnSequence] = useState<boolean>(false);
+  const [cutscene, setCutscene] = useState<CutsceneId | null>(null);
   // Mira darf NICHT auf Etage 3 erscheinen — dort liegt das Büro des
   // Abschnittsverantwortlichen (E67). Würde sie dort die Tür blockieren und
   // Layard ginge nicht auf sie ein, gäbe es ein Dead End: er erfährt dann
@@ -305,6 +310,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setNodeOpen(false);
         setBurnSequence(true);
       },
+      startCutscene: (id) => {
+        // Alles Overlay-haftige zumachen, damit die Cutscene allein den
+        // Bildschirm bekommt.
+        setRadioOpen(false);
+        setTerminalOpen(false);
+        setNodeOpen(false);
+        setKeypadOpen(false);
+        setTvOpen(false);
+        setTextOverlay(null);
+        setDialogId(null);
+        setDialogLineId(null);
+        setCutscene(id);
+      },
       getMiraFloors: () => miraFloorsRef.current ?? [4],
       getPhilippeFloor: () => philippeFloorRef.current ?? 5,
     }),
@@ -406,6 +424,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     resonance,
     ending,
     burnSequence,
+    cutscene,
     api,
     setCaption,
     closeText: () => {
@@ -429,6 +448,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     closeTelevision: () => setTvOpen(false),
     closeNode: () => setNodeOpen(false),
     endBurnSequence: () => setBurnSequence(false),
+    endCutscene: () => setCutscene(null),
     setRadioActive,
     bumpResonance: (d) => setResonance((r) => Math.max(0, Math.min(100, r + d))),
     resetResonance: () => setResonance(0),

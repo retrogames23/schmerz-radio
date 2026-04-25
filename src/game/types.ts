@@ -31,6 +31,9 @@ export type KnowledgeFlag =
   | "radioOrigin"
   | "frequencyControl";
 
+/** Identifier einer narrativen Cutscene. */
+export type CutsceneId = "paramedics";
+
 export type StoryFlag =
   | "radioTunedTo1046"
   | "doorbellRang"
@@ -41,6 +44,8 @@ export type StoryFlag =
   | "calledLeitstelle"
   | "smalltalkPhilippe"
   | "paramedicsArrived"
+  /** Cutscene "Sanitäter brechen 2615 auf" wurde abgespielt. */
+  | "paramedicsCutsceneSeen"
   // Pro Besuch in Wohnung 2613 nach dem Anruf: zwei Warte-Klicks.
   // Werden beim Betreten von 2613 zurückgesetzt.
   | "wait2613Step1"
@@ -308,6 +313,12 @@ export interface GameApi {
    * Beendet das Spiel NICHT.
    */
   playBurnSequence: () => void;
+  /**
+   * Spielt eine narrative Cutscene als Fullscreen-Sequenz.
+   * Beendet das Spiel NICHT — die Szene bleibt erhalten und wird beim
+   * Schließen wieder sichtbar. Aktuell unterstützt: "paramedics".
+   */
+  startCutscene: (id: CutsceneId) => void;
   /**
    * Floors (subset of {3,4,5}) where Mira appears this run. Currently 2
    * of 3 floors are picked at random so the player is more likely to

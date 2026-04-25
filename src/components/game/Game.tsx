@@ -16,6 +16,7 @@ import { Keypad } from "./Keypad";
 import { Television } from "./Television";
 import { NodeTerminal } from "./NodeTerminal";
 import { BurnSequence } from "./BurnSequence";
+import { ParamedicsCutscene } from "./ParamedicsCutscene";
 import { Ending } from "./Ending";
 import { TitleScreen } from "./TitleScreen";
 import { PauseMenu } from "./PauseMenu";
@@ -64,6 +65,7 @@ export function Game() {
                   <Television />
                   <NodeTerminal />
                   <BurnSequence />
+                  <ParamedicsCutscene />
                   <Ending />
                   <PauseMenu open={pauseOpen} onClose={() => setPauseOpen(false)} />
                 </div>
