@@ -57,11 +57,11 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
   MIKAEL: { voiceId: "nPczCjzI2devNBz1zQrb", speed: 0.85 }, // Brian — autoritär, ruhig
   PHILIPPE: { voiceId: "IKne3meq5aSn9XLyUdCD", speed: 1.05 }, // Charlie — jünger, freundlich
   SANITÄTER: {
-    // Callum — etwas tiefer, sachlich, weniger stark amerikanisch
-    // gefärbt als „Will". Mit hoher stability + style 0 wird er
-    // zuverlässig in deutsche Phonetik gezwungen (analog zu Insa),
-    // sonst rutschten kurze deutsche Sätze in englischen Akzent.
-    voiceId: "N2lVS1w4EtoT3dr4eOWO",
+    // Eric — sachlicher, mittlerer Männerton. Klar abgegrenzt vom
+    // Erzähler (Callum), damit Sanitäter und Narration nicht wie
+    // dieselbe Stimme klingen. Hohe stability + style 0 zwingt das
+    // Modell in eine ruhige deutsche Aussprache.
+    voiceId: "cjVigY5qzO86Huf0OWal",
     speed: 1.0,
     settings: {
       stability: 0.85,
