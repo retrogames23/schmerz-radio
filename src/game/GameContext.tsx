@@ -48,6 +48,7 @@ interface GameState {
 
 interface GameContextValue extends GameState {
   api: GameApi;
+  previousScene: SceneId | null;
   setCaption: (s: string | null) => void;
   closeText: () => void;
   advanceDialog: (nextId?: string) => void;
