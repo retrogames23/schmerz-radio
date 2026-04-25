@@ -293,12 +293,27 @@ export function ParamedicsCutscene() {
       for (const t of timersRef.current) clearTimeout(t);
       timersRef.current = null;
     }
-    // Folgen wie bisher im paramedicsArrive-Dialog: Tür ist offen.
+    // Folgen, die früher die Dialoge `paramedicsArrive` und `paramedic`
+    // gesetzt haben — die Cutscene ersetzt beide Räume und Dialoge.
     api.setFlag("doorBrokenOpen");
     api.setFlag("paramedicsCutsceneSeen");
+    if (!api.hasFlag("protocolReceived")) {
+      api.setFlag("protocolReceived");
+      api.addItem({
+        id: "protocol",
+        name: "Einsatzprotokoll (verschlüsselt)",
+        description:
+          "Eine versiegelte Datenkapsel. Ziel: Sektor E71, Zimmer 1534. Etikett: „Fall-ID 5245@E67@2613“.",
+      });
+      api.setKnowledge("responsibilityE67");
+      // Aufzugssystem meldet danach eine „lokale Übersteuerung“ und
+      // legt eine Wartungssperre — wie zuvor im `paramedic`-Dialog.
+      api.setFlag("elevatorMaintBlocked");
+    }
     endCutscene();
     // Spieler wechselt direkt in den Korridor — die Cutscene hat die
-    // Türöffnung bereits gezeigt.
+    // Türöffnung und die Protokoll-Übergabe bereits gezeigt; die 2615
+    // ist im Korridor jetzt mit gelbem Band versiegelt.
     api.goTo("hallway");
   };
 
