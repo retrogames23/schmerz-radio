@@ -310,6 +310,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setNodeOpen(false);
         setBurnSequence(true);
       },
+      startCutscene: (id) => {
+        // Alles Overlay-haftige zumachen, damit die Cutscene allein den
+        // Bildschirm bekommt.
+        setRadioOpen(false);
+        setTerminalOpen(false);
+        setNodeOpen(false);
+        setKeypadOpen(false);
+        setTvOpen(false);
+        setTextOverlay(null);
+        setDialogId(null);
+        setDialogLineId(null);
+        setCutscene(id);
+      },
       getMiraFloors: () => miraFloorsRef.current ?? [4],
       getPhilippeFloor: () => philippeFloorRef.current ?? 5,
     }),
