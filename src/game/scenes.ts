@@ -638,19 +638,10 @@ export const scenes: Record<string, Scene> = {
           api.goTo("apt2613");
         },
       },
-      // Tür 2615 — der Mann an der Wand. Solange aufgebrochen begehbar,
-      // sobald die Sanitäter ihn abtransportiert haben: versiegelt.
-      {
-        id: "door2615Open",
-        x: 56,
-        y: 42,
-        w: 12,
-        h: 42,
-        label: "Tür 2615 (aufgebrochen)",
-        requires: ["doorBrokenOpen"],
-        hiddenWhen: ["protocolReceived"],
-        onUse: (api) => api.goTo("apt2615"),
-      },
+      // Tür 2615 — wird in der Sanitäter-Cutscene aufgebrochen und
+      // direkt im Anschluss mit gelbem Siegelband versiegelt. Der
+      // Innenraum existiert als Szene nicht mehr — die Cutscene zeigt
+      // alles, was es zu sehen gibt.
       {
         id: "door2615Sealed",
         x: 56,
@@ -658,7 +649,7 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 42,
         label: "Tür 2615 (versiegelt)",
-        requires: ["protocolReceived"],
+        requires: ["paramedicsCutsceneSeen"],
         onUse: (api) =>
           api.showText([
             "Ein gelbes Siegelband klebt schräg über dem Türrahmen.",
