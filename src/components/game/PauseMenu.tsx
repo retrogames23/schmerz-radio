@@ -16,7 +16,6 @@ const SCENE_LABEL: Record<string, string> = {
   hallway: "Korridor 26",
   apt2612: "Wohnung 2612 — Bodo",
   apt2613: "Wohnung 2613 — Philippe",
-  apt2615: "Wohnung 2615",
   sectorDoor: "Sektor-Tür E67/E71",
   elevator: "Aufzug — E67",
   floor1Lobby: "Lobby Etage 1 — E67",
