@@ -17,7 +17,8 @@ type Speaker =
   | "BODO"
   | "HELKA"
   | "ENNIS"
-  | "STEGMANN";
+  | "STEGMANN"
+  | "OKWU";
 
 
 interface VoiceProfile {
@@ -64,6 +65,7 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
   HELKA: { voiceId: "pFZP5JQG7iQjIQuC4Bku", speed: 0.92 }, // Lily — ruhig, älter klingend
   ENNIS: { voiceId: "TX3LPaxmHKxFdv7VOQHJ", speed: 1.0 }, // Liam — junger Mann, leicht nervös
   STEGMANN: { voiceId: "iP95p4xoKVk53GoZ742B", speed: 1.0 }, // Chris — sachlich, nüchtern
+  OKWU: { voiceId: "EXAVITQu4vr4xnSDxMaL", speed: 1.0 }, // Sarah — warm, mittlere Frauenstimme, Anfang 50
 };
 
 /** Currently playing audio element — cancelled before each new line. */

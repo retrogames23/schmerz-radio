@@ -17,6 +17,7 @@ import corridor56Bg from "@/assets/scene-corridor-56.jpg";
 import serverRoom5610Bg from "@/assets/scene-server-room-5610.jpg";
 import miraSprite from "@/assets/npc-mira.png";
 import philippeSprite from "@/assets/npc-philippe.png";
+import okwuSprite from "@/assets/npc-okwu.png";
 import type { Scene } from "./types";
 
 export const scenes: Record<string, Scene> = {
@@ -1082,7 +1083,46 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 15 — Sektor E71",
     intro:
       "Spiegelblanker Linoleum. Eine Neonröhre flackert. Rechts an der Wand: eine Tür, schräg überklebt mit gelbem Siegelband. Am Ende des Korridors, in der Fluchtachse: eine Tür mit einem matten roten Status-Licht. Zimmer 1534.",
+    npcs: [
+      {
+        id: "okwuCorridor15",
+        src: okwuSprite,
+        // Halb-mittig im Korridor, leicht aus der Fluchtachse, damit
+        // sie nicht die Tür 1534 verdeckt.
+        x: 18,
+        y: 32,
+        w: 16,
+        h: 60,
+        alt: "Dr. Okwu macht eine Visiten-Pause im Korridor",
+        // Verschwindet, sobald Layard in Zimmer 1534 war (sie ist auf Visite gegangen).
+        hiddenWhen: ["foundRoom1534"],
+      },
+    ],
     hotspots: [
+      {
+        id: "okwuTalk",
+        x: 18,
+        y: 32,
+        w: 16,
+        h: 60,
+        label: "Dr. Okwu",
+        hiddenWhen: ["foundRoom1534"],
+        onUse: (api) => {
+          // Progressive Schichten: jeder erneute Klick öffnet die nächste Ebene.
+          if (!api.hasFlag("metOkwu")) {
+            api.setFlag("metOkwu");
+            api.startDialog("okwu1");
+          } else if (!api.hasFlag("okwuLayer2")) {
+            api.startDialog("okwu1");
+          } else if (!api.hasFlag("okwuLayer3")) {
+            api.startDialog("okwu2");
+          } else if (!api.hasFlag("okwuLayer4")) {
+            api.startDialog("okwu3");
+          } else {
+            api.startDialog("okwu4");
+          }
+        },
+      },
       {
         id: "sealedDoor1531",
         // Versiegelte Tür ganz rechts, mit gelbem X über dem Türrahmen.
