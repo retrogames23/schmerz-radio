@@ -318,7 +318,10 @@ export const Route = createFileRoute("/api/tts")({
         // Settings sind Teil des Keys: Insa mit style:0 darf nicht den
         // alten style:0.35-Cache treffen.
         const settingsKey = JSON.stringify(voiceSettings);
-        const cacheKey = hashKey(voiceId, String(speed), settingsKey, "v3", ttsText);
+        // Cache-Version: bump erzwingt Neugenerierung aller Lines wenn sich
+        // Modell oder Aussprache-Pipeline ändert. "v3-elv3" = Wechsel auf
+        // ElevenLabs eleven_v3 (bessere deutsche Prosodie).
+        const cacheKey = hashKey(voiceId, String(speed), settingsKey, "v3-elv3", ttsText);
         const objectPath = `${cacheKey}.mp3`;
 
         try {
@@ -350,7 +353,11 @@ export const Route = createFileRoute("/api/tts")({
             },
             body: JSON.stringify({
               text: ttsText,
-              model_id: "eleven_multilingual_v2",
+              // eleven_v3 (Alpha) liefert deutlich natürlichere deutsche
+              // Prosodie/Betonung als multilingual_v2. Insbesondere
+              // Hervorhebungen ("JA gesagt") und kurze Sätze klingen
+              // weniger roboterhaft.
+              model_id: "eleven_v3",
               voice_settings: voiceSettings,
             }),
           },

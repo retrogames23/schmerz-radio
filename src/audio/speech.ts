@@ -40,58 +40,89 @@ interface VoiceProfile {
  * Picked for warm/cinematic narrative tone.
  */
 const PROFILES: Record<Speaker, VoiceProfile> = {
-  LAYARD: { voiceId: "onwK4e9ZLuTAKqWW03F9", speed: 0.92 }, // Daniel — tief, kontemplativ
+  // ── ElevenLabs eleven_v3 Voice-Settings ───────────────────────────
+  // v3 nutzt drei "Stability-Modi":
+  //   stability 0.0 = Creative (sehr expressiv, kann driften)
+  //   stability 0.5 = Natural   (ausgewogen — Default)
+  //   stability 1.0 = Robust    (sehr konsistent, weniger Emotion)
+  // Für deutsche Erzähltexte funktioniert "Natural" am besten.
+  // similarity_boost und style sind in v3 weniger entscheidend, wir
+  // setzen sie aber konservativ, damit die Stimmen nicht abdriften.
+  LAYARD: {
+    voiceId: "onwK4e9ZLuTAKqWW03F9", // Daniel — tief, kontemplativ
+    speed: 0.92,
+    settings: { stability: 0.5, similarity_boost: 0.8, style: 0.2, use_speaker_boost: true },
+  },
   INSA: {
     voiceId: "FGY2WhTYpPnrIDTdsKH5", // Laura
     speed: 0.96,
-    // Hohe stability + style 0 zwingt Laura in eine ruhige, neutrale
-    // Aussprache. Mit den Default-Settings (style 0.35) verfällt sie
-    // bei kurzen deutschen Sätzen häufig in englische Phonetik.
-    settings: {
-      stability: 0.85,
-      similarity_boost: 0.85,
-      style: 0,
-      use_speaker_boost: false,
-    },
+    // v3 hält Laura auch bei "Natural"-Stability im Deutschen — der
+    // alte v2-Trick mit stability 0.85 war ein Workaround für v2.
+    settings: { stability: 0.5, similarity_boost: 0.85, style: 0.15, use_speaker_boost: true },
   },
-  MIKAEL: { voiceId: "nPczCjzI2devNBz1zQrb", speed: 0.85 }, // Brian — autoritär, ruhig
-  PHILIPPE: { voiceId: "IKne3meq5aSn9XLyUdCD", speed: 1.05 }, // Charlie — jünger, freundlich
+  MIKAEL: {
+    voiceId: "nPczCjzI2devNBz1zQrb", // Brian — autoritär, ruhig
+    speed: 0.85,
+    settings: { stability: 0.5, similarity_boost: 0.8, style: 0.2, use_speaker_boost: true },
+  },
+  PHILIPPE: {
+    voiceId: "IKne3meq5aSn9XLyUdCD", // Charlie — jünger, freundlich
+    speed: 1.05,
+    settings: { stability: 0.5, similarity_boost: 0.8, style: 0.25, use_speaker_boost: true },
+  },
   SANITÄTER: {
     // Eric — sachlicher, mittlerer Männerton. Klar abgegrenzt vom
-    // Erzähler (Callum), damit Sanitäter und Narration nicht wie
-    // dieselbe Stimme klingen. Moderate stability + ein Hauch style
-    // halten die Aussprache natürlich; zu hohe stability ließ kurze
-    // Sätze roboterhaft klingen.
+    // Erzähler (Callum). v3 "Natural" + leichter Stil.
     voiceId: "cjVigY5qzO86Huf0OWal",
     speed: 1.0,
-    settings: {
-      stability: 0.55,
-      similarity_boost: 0.8,
-      style: 0.15,
-      use_speaker_boost: true,
-    },
+    settings: { stability: 0.5, similarity_boost: 0.8, style: 0.2, use_speaker_boost: true },
   },
-  RADIO: { voiceId: "XrExE9yKIg1WjnnlVkGX", speed: 0.92 }, // Matilda — mystisch, weich
+  RADIO: {
+    voiceId: "XrExE9yKIg1WjnnlVkGX", // Matilda — mystisch, weich
+    speed: 0.92,
+    settings: { stability: 0.5, similarity_boost: 0.85, style: 0.3, use_speaker_boost: true },
+  },
   SYSTEM: {
     voiceId: "N2lVS1w4EtoT3dr4eOWO", // Callum — ruhiger Erzähler, weniger amerikanische Deutschfärbung
     speed: 0.86,
-    settings: {
-      // Mittlere stability + leichter style halten den Erzähler
-      // lebendig. stability > 0.8 erzeugte monotone, roboterhafte
-      // Lesung, vor allem bei kurzen Sätzen.
-      stability: 0.5,
-      similarity_boost: 0.85,
-      style: 0.2,
-      use_speaker_boost: true,
-    },
+    // v3 "Natural" mit etwas mehr Stil für lebendige Narration.
+    settings: { stability: 0.5, similarity_boost: 0.85, style: 0.25, use_speaker_boost: true },
   },
-  RECEPTION: { voiceId: "Xb7hH8MSUJpSbSDYk0k2", speed: 1.1 }, // Alice — klar
-  MIRA: { voiceId: "XB0fDUnXU5powFXDhCwa", speed: 1.08 }, // Charlotte — jung, neugierig
-  BODO: { voiceId: "JBFqnCBsd6RMkjVDRZzb", speed: 0.88 }, // George — älter, knurrig
-  HELKA: { voiceId: "pFZP5JQG7iQjIQuC4Bku", speed: 0.92 }, // Lily — ruhig, älter klingend
-  ENNIS: { voiceId: "TX3LPaxmHKxFdv7VOQHJ", speed: 1.0 }, // Liam — junger Mann, leicht nervös
-  STEGMANN: { voiceId: "iP95p4xoKVk53GoZ742B", speed: 1.0 }, // Chris — sachlich, nüchtern
-  OKWU: { voiceId: "EXAVITQu4vr4xnSDxMaL", speed: 1.0 }, // Sarah — warm, mittlere Frauenstimme, Anfang 50
+  RECEPTION: {
+    voiceId: "Xb7hH8MSUJpSbSDYk0k2", // Alice — klar
+    speed: 1.1,
+    settings: { stability: 0.5, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true },
+  },
+  MIRA: {
+    voiceId: "XB0fDUnXU5powFXDhCwa", // Charlotte — jung, neugierig
+    speed: 1.08,
+    settings: { stability: 0.5, similarity_boost: 0.8, style: 0.25, use_speaker_boost: true },
+  },
+  BODO: {
+    voiceId: "JBFqnCBsd6RMkjVDRZzb", // George — älter, knurrig
+    speed: 0.88,
+    settings: { stability: 0.5, similarity_boost: 0.8, style: 0.2, use_speaker_boost: true },
+  },
+  HELKA: {
+    voiceId: "pFZP5JQG7iQjIQuC4Bku", // Lily — ruhig, älter klingend
+    speed: 0.92,
+    settings: { stability: 0.5, similarity_boost: 0.8, style: 0.2, use_speaker_boost: true },
+  },
+  ENNIS: {
+    voiceId: "TX3LPaxmHKxFdv7VOQHJ", // Liam — junger Mann, leicht nervös
+    speed: 1.0,
+    settings: { stability: 0.4, similarity_boost: 0.8, style: 0.3, use_speaker_boost: true },
+  },
+  STEGMANN: {
+    voiceId: "iP95p4xoKVk53GoZ742B", // Chris — sachlich, nüchtern
+    speed: 1.0,
+    settings: { stability: 0.55, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true },
+  },
+  OKWU: {
+    voiceId: "EXAVITQu4vr4xnSDxMaL", // Sarah — warm, mittlere Frauenstimme, Anfang 50
+    speed: 1.0,
+    settings: { stability: 0.5, similarity_boost: 0.85, style: 0.2, use_speaker_boost: true },
+  },
 };
 
 /** Currently playing audio element — cancelled before each new line. */
