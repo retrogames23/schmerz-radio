@@ -21,6 +21,7 @@ import { Ending } from "./Ending";
 import { TitleScreen } from "./TitleScreen";
 import { PauseMenu } from "./PauseMenu";
 import { MobileStage } from "./MobileStage";
+import { useGame } from "@/game/GameContext";
 
 export function Game() {
   const [started, setStarted] = useState(false);
@@ -55,32 +56,51 @@ export function Game() {
       <MusicPlayer>
         <GameProvider>
           <InventoryDragProvider>
-            <MobileStage>
-            <div className="flex h-screen flex-col overflow-hidden bg-bureaucracy mobile-stage-host">
-              <TopBar onOpenPause={() => setPauseOpen(true)} />
-              <main className="relative flex min-h-0 flex-1 items-center justify-center px-2 py-2 sm:px-4">
-                <div className="relative flex h-full w-full items-center justify-center">
-                  <SceneView />
-                  <TextOverlay />
-                  <DialogOverlay />
-                  <RadioPanel />
-                  <Terminal />
-                  <Keypad />
-                  <Television />
-                  <NodeTerminal />
-                  <BurnSequence />
-                  <ParamedicsCutscene />
-                  <Ending />
-                  <PauseMenu open={pauseOpen} onClose={() => setPauseOpen(false)} />
-                </div>
-              </main>
-              <Inventory />
-            </div>
-            </MobileStage>
+            <GameStage pauseOpen={pauseOpen} setPauseOpen={setPauseOpen} />
             <DragCursorLayer />
           </InventoryDragProvider>
         </GameProvider>
       </MusicPlayer>
     </SettingsProvider>
+  );
+}
+
+/**
+ * Innerer Wrapper, der innerhalb des GameProvider lebt — so können wir
+ * `terminalOpen`/`nodeOpen` lesen und der MobileStage signalisieren,
+ * dass sie im Hochformat NICHT rotieren soll (Tastatur-freundlich).
+ */
+function GameStage({
+  pauseOpen,
+  setPauseOpen,
+}: {
+  pauseOpen: boolean;
+  setPauseOpen: (v: boolean) => void;
+}) {
+  const { terminalOpen, nodeOpen } = useGame();
+  const consoleOpen = terminalOpen || nodeOpen;
+  return (
+    <MobileStage uprightOnPortrait={consoleOpen}>
+      <div className="flex h-screen flex-col overflow-hidden bg-bureaucracy mobile-stage-host">
+        <TopBar onOpenPause={() => setPauseOpen(true)} />
+        <main className="relative flex min-h-0 flex-1 items-center justify-center px-2 py-2 sm:px-4">
+          <div className="relative flex h-full w-full items-center justify-center">
+            <SceneView />
+            <TextOverlay />
+            <DialogOverlay />
+            <RadioPanel />
+            <Terminal />
+            <Keypad />
+            <Television />
+            <NodeTerminal />
+            <BurnSequence />
+            <ParamedicsCutscene />
+            <Ending />
+            <PauseMenu open={pauseOpen} onClose={() => setPauseOpen(false)} />
+          </div>
+        </main>
+        <Inventory />
+      </div>
+    </MobileStage>
   );
 }

@@ -13,7 +13,19 @@ const STAGE_W = 1024;
 const STAGE_H = 640;
 const MOBILE_BREAKPOINT = 768;
 
-export function MobileStage({ children }: { children: ReactNode }) {
+/**
+ * `uprightOnPortrait`: Wenn true, wird im Hochformat NICHT gedreht — die
+ * Bühne bleibt aufrecht und wird passend skaliert. Wird für offene
+ * Text-Konsolen (Terminal, NodeTerminal) gesetzt, weil dort die
+ * System-Tastatur aufpoppt und mit einer 90°-Rotation kollidiert.
+ */
+export function MobileStage({
+  children,
+  uprightOnPortrait = false,
+}: {
+  children: ReactNode;
+  uprightOnPortrait?: boolean;
+}) {
   const [enabled, setEnabled] = useState(false);
   const [scale, setScale] = useState(1);
   const [rotate, setRotate] = useState(false);
@@ -27,10 +39,15 @@ export function MobileStage({ children }: { children: ReactNode }) {
       setEnabled(isMobile);
       if (isMobile) {
         const isPortrait = h > w;
-        if (isPortrait) {
+        if (isPortrait && !uprightOnPortrait) {
           // Bühne um 90° drehen → Höhe wird zur "Breite" für die Skalierung.
           setRotate(true);
           setScale(Math.min(h / STAGE_W, w / STAGE_H));
+        } else if (isPortrait && uprightOnPortrait) {
+          // Aufrecht im Hochformat: Breite ist limitierend, oben anschlagen
+          // (nicht zentrieren), damit die System-Tastatur unten Platz hat.
+          setRotate(false);
+          setScale(Math.min(w / STAGE_W, h / STAGE_H));
         } else {
           setRotate(false);
           setScale(Math.min(w / STAGE_W, h / STAGE_H));
@@ -44,7 +61,7 @@ export function MobileStage({ children }: { children: ReactNode }) {
       window.removeEventListener("resize", compute);
       window.removeEventListener("orientationchange", compute);
     };
-  }, []);
+  }, [uprightOnPortrait]);
 
   if (!enabled) {
     // Desktop-Pfad: unverändert, kein Wrapper-Effekt.
