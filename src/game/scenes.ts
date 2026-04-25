@@ -1,5 +1,6 @@
 import apartmentBg from "@/assets/scene-apartment.jpg";
 import hallwayBg from "@/assets/scene-hallway.jpg";
+import hallway2615SealedBg from "@/assets/scene-hallway-2615-sealed.jpg";
 import apt2613Bg from "@/assets/scene-apt-2613.jpg";
 import apt2612BgEmpty from "@/assets/scene-apt-2612.jpg";
 import apt2612BgBodo from "@/assets/scene-apt-2612-bodo.jpg";
@@ -599,7 +600,10 @@ export const scenes: Record<string, Scene> = {
 
   hallway: {
     id: "hallway",
-    background: hallwayBg,
+    // Nach der Sanitäter-Cutscene zeigt der Korridor die mit gelbem
+    // Siegelband versperrte Tür 2615. Vorher der unberührte Korridor.
+    background: (api) =>
+      api.hasFlag("paramedicsCutsceneSeen") ? hallway2615SealedBg : hallwayBg,
     title: "Korridor 26 — Quadrant E67",
     intro:
       "Der Korridor. Wie jeden Morgen. Nur dass Layard ihn jeden Morgen nicht betritt.",
