@@ -6,9 +6,12 @@ import type { Hotspot as HotspotType } from "@/game/types";
 
 interface Props {
   hotspot: HotspotType;
+  /** Wenn true, wird der Hotspot mit Rahmen und Label sichtbar dargestellt
+   *  (z. B. wenn der Spieler die Leertaste gedrückt hält). */
+  reveal?: boolean;
 }
 
-export function Hotspot({ hotspot }: Props) {
+export function Hotspot({ hotspot, reveal = false }: Props) {
   const { api, setCaption, flags } = useGame();
   const drag = useInventoryDrag();
   const hoveredRef = useRef(false);
@@ -71,7 +74,9 @@ export function Hotspot({ hotspot }: Props) {
       className={`absolute z-20 rounded-sm border transition-colors duration-200 focus:outline-none ${
         drag.dragItem
           ? "cursor-copy border-amber-glow/40 bg-amber-glow/5 hover:border-amber-glow hover:bg-amber-glow/20"
-          : "cursor-crosshair border-amber-glow/0 hover:border-amber-glow/80 hover:bg-amber-glow/10 focus:border-amber-glow/80 focus:bg-amber-glow/10"
+          : reveal
+            ? "cursor-crosshair border-amber-glow/80 bg-amber-glow/15 hover:border-amber-glow hover:bg-amber-glow/25 focus:border-amber-glow/80 focus:bg-amber-glow/10"
+            : "cursor-crosshair border-amber-glow/0 hover:border-amber-glow/80 hover:bg-amber-glow/10 focus:border-amber-glow/80 focus:bg-amber-glow/10"
       }`}
       style={{
         left: `${hotspot.x}%`,
@@ -79,6 +84,14 @@ export function Hotspot({ hotspot }: Props) {
         width: `${hotspot.w}%`,
         height: `${hotspot.h}%`,
       }}
-    />
+    >
+      {reveal && (
+        <span
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-sm border border-amber-glow/60 bg-background/85 px-1.5 py-0.5 font-mono-crt text-[10px] leading-none text-amber-glow amber-glow"
+        >
+          {hotspot.label}
+        </span>
+      )}
+    </button>
   );
 }
