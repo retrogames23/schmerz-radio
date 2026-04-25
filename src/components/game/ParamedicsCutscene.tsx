@@ -342,6 +342,76 @@ export function ParamedicsCutscene() {
     api.goTo("hallway");
   };
 
+  // ── Cutscene-Musik (separater Audio-Layer neben der Playlist) ──────
+  function musicTargetVolume(): number {
+    if (!musicEnabled) return 0;
+    // Etwas leiser als die Hauptmusik, damit Dialog/TTS klar oben sitzt.
+    return clamp01(musicVolume * 0.55);
+  }
+
+  function startCutsceneMusic() {
+    if (musicAudioRef.current) return;
+    const a = new Audio(cutsceneMusic);
+    a.loop = true;
+    a.volume = 0;
+    musicAudioRef.current = a;
+    void a.play().catch(() => {
+      /* autoplay kann blockiert sein — leise scheitern. */
+    });
+    // Sanftes Einblenden über ~1.2 s.
+    const target = musicTargetVolume();
+    const startedAt = performance.now();
+    const duration = 1200;
+    if (musicFadeTimerRef.current) window.clearInterval(musicFadeTimerRef.current);
+    musicFadeTimerRef.current = window.setInterval(() => {
+      if (!musicAudioRef.current) {
+        if (musicFadeTimerRef.current) window.clearInterval(musicFadeTimerRef.current);
+        musicFadeTimerRef.current = null;
+        return;
+      }
+      const t = Math.min(1, (performance.now() - startedAt) / duration);
+      musicAudioRef.current.volume = clamp01(target * t);
+      if (t >= 1) {
+        if (musicFadeTimerRef.current) window.clearInterval(musicFadeTimerRef.current);
+        musicFadeTimerRef.current = null;
+      }
+    }, 50);
+  }
+
+  function fadeOutAndStopCutsceneMusic() {
+    const audio = musicAudioRef.current;
+    if (!audio) return;
+    const startVol = audio.volume;
+    const startedAt = performance.now();
+    const duration = 700;
+    if (musicFadeTimerRef.current) window.clearInterval(musicFadeTimerRef.current);
+    musicFadeTimerRef.current = window.setInterval(() => {
+      if (!musicAudioRef.current) {
+        if (musicFadeTimerRef.current) window.clearInterval(musicFadeTimerRef.current);
+        musicFadeTimerRef.current = null;
+        return;
+      }
+      const t = Math.min(1, (performance.now() - startedAt) / duration);
+      musicAudioRef.current.volume = clamp01(startVol * (1 - t));
+      if (t >= 1) {
+        stopCutsceneMusic();
+      }
+    }, 50);
+  }
+
+  function stopCutsceneMusic() {
+    if (musicFadeTimerRef.current) {
+      window.clearInterval(musicFadeTimerRef.current);
+      musicFadeTimerRef.current = null;
+    }
+    const audio = musicAudioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.src = "";
+      musicAudioRef.current = null;
+    }
+  }
+
   // Esc / Klick "Überspringen" -> direkt finishen.
   useEffect(() => {
     if (!active) return;
