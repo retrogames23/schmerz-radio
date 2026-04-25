@@ -31,6 +31,9 @@ export type KnowledgeFlag =
   | "radioOrigin"
   | "frequencyControl";
 
+/** Identifier einer narrativen Cutscene. */
+export type CutsceneId = "paramedics";
+
 export type StoryFlag =
   | "radioTunedTo1046"
   | "doorbellRang"
