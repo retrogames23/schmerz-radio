@@ -2717,7 +2717,7 @@ export function Terminal() {
           }`}
         >
           <span
-            className={`font-mono-crt text-sm ${
+            className={`font-mono-crt text-[15px] sm:text-sm ${
               bodoMode ? "text-sepia sepia-glow" : "text-phosphor phosphor-glow"
             }`}
           >
