@@ -59,15 +59,16 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
   SANITÄTER: {
     // Eric — sachlicher, mittlerer Männerton. Klar abgegrenzt vom
     // Erzähler (Callum), damit Sanitäter und Narration nicht wie
-    // dieselbe Stimme klingen. Hohe stability + style 0 zwingt das
-    // Modell in eine ruhige deutsche Aussprache.
+    // dieselbe Stimme klingen. Moderate stability + ein Hauch style
+    // halten die Aussprache natürlich; zu hohe stability ließ kurze
+    // Sätze roboterhaft klingen.
     voiceId: "cjVigY5qzO86Huf0OWal",
     speed: 1.0,
     settings: {
-      stability: 0.85,
-      similarity_boost: 0.85,
-      style: 0,
-      use_speaker_boost: false,
+      stability: 0.55,
+      similarity_boost: 0.8,
+      style: 0.15,
+      use_speaker_boost: true,
     },
   },
   RADIO: { voiceId: "XrExE9yKIg1WjnnlVkGX", speed: 0.92 }, // Matilda — mystisch, weich
@@ -75,10 +76,13 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
     voiceId: "N2lVS1w4EtoT3dr4eOWO", // Callum — ruhiger Erzähler, weniger amerikanische Deutschfärbung
     speed: 0.86,
     settings: {
-      stability: 0.92,
+      // Mittlere stability + leichter style halten den Erzähler
+      // lebendig. stability > 0.8 erzeugte monotone, roboterhafte
+      // Lesung, vor allem bei kurzen Sätzen.
+      stability: 0.5,
       similarity_boost: 0.85,
-      style: 0,
-      use_speaker_boost: false,
+      style: 0.2,
+      use_speaker_boost: true,
     },
   },
   RECEPTION: { voiceId: "Xb7hH8MSUJpSbSDYk0k2", speed: 1.1 }, // Alice — klar
