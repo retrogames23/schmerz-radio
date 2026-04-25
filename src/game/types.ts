@@ -159,7 +159,12 @@ export type StoryFlag =
   // für den Sektor-Code).
   | "insaSentTo5610"
   // Insa-Rückruf nach burn ist gelaufen (verhindert Endlos-Trigger).
-  | "insaCallbackBurnDone";
+  | "insaCallbackBurnDone"
+  // Dr. Adaeze Okwu (E71, Korridor 15) — progressive Dialog-Schichten
+  | "metOkwu"
+  | "okwuLayer2"
+  | "okwuLayer3"
+  | "okwuLayer4";
 
 export interface InventoryItem {
   id: InventoryItemId;
@@ -259,7 +264,8 @@ export interface DialogLine {
     | "BODO"
     | "HELKA"
     | "ENNIS"
-    | "STEGMANN";
+    | "STEGMANN"
+    | "OKWU";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;
