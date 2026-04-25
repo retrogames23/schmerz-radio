@@ -238,22 +238,35 @@ export async function speak(speaker: Speaker, text: string, volume = 1) {
     const blob = await fetchAndCache(speaker, cleaned, ac.signal);
     if (ac.signal.aborted) return;
     if (!blob) {
-      browserFallback(cleaned, volume);
+      await browserFallback(cleaned, volume);
       return;
     }
     const url = URL.createObjectURL(blob);
     const audio = new Audio(url);
     audio.volume = Math.max(0, Math.min(1, volume));
-    audio.onended = () => URL.revokeObjectURL(url);
-    audio.onerror = () => URL.revokeObjectURL(url);
     currentAudio = audio;
-    void audio.play().catch((err) => {
-      console.warn("Audio playback failed:", err);
+    await new Promise<void>((resolve) => {
+      let settled = false;
+      const finalize = () => {
+        if (settled) return;
+        settled = true;
+        URL.revokeObjectURL(url);
+        if (currentAudio === audio) currentAudio = null;
+        if (currentSpeechFinalizer === finalize) currentSpeechFinalizer = null;
+        resolve();
+      };
+      currentSpeechFinalizer = finalize;
+      audio.onended = finalize;
+      audio.onerror = finalize;
+      void audio.play().catch((err) => {
+        console.warn("Audio playback failed:", err);
+        finalize();
+      });
     });
   } catch (err) {
     if ((err as Error).name === "AbortError") return;
     console.warn("speak() failed, using browser fallback:", err);
-    browserFallback(cleaned, volume);
+    await browserFallback(cleaned, volume);
   } finally {
     if (currentFetch === ac) currentFetch = null;
   }
@@ -271,6 +284,11 @@ export function stopSpeech() {
   }
   if (typeof window !== "undefined" && "speechSynthesis" in window) {
     window.speechSynthesis.cancel();
+  }
+  if (currentSpeechFinalizer) {
+    const finalize = currentSpeechFinalizer;
+    currentSpeechFinalizer = null;
+    finalize();
   }
 }
 
