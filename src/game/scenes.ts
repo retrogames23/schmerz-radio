@@ -15,6 +15,7 @@ import corridor36Bg from "@/assets/scene-corridor-36.jpg";
 import corridor46Bg from "@/assets/scene-corridor-46.jpg";
 import corridor56Bg from "@/assets/scene-corridor-56.jpg";
 import serverRoom5610Bg from "@/assets/scene-server-room-5610.jpg";
+import room1532Bg from "@/assets/scene-room-1532.jpg";
 import miraSprite from "@/assets/npc-mira.png";
 import philippeSprite from "@/assets/npc-philippe.png";
 import type { Scene } from "./types";
@@ -1113,10 +1114,22 @@ export const scenes: Record<string, Scene> = {
         label: "Türen 1530–1540",
         onUse: (api) =>
           api.showText([
-            "1530, 1532, 1536, 1538 — alle grün. Alle leer.",
+            "1530, 1536, 1538 — alle grün. Alle leer.",
+            "1532 — grünes Licht, ein kleines Schild: „Dr. A. Okwu — Allgemeinmedizin“.",
             "1531 — gelbes Band. Versiegelt.",
             "Nur 1534 zeigt ein rotes Licht. Aktiv. Besetzt.",
           ]),
+      },
+      {
+        id: "door1532",
+        // Tür 1532 — Praxis Dr. Okwu. Links neben den anderen Türen,
+        // außerhalb der Fluchtachse, damit sie 1534 nicht verdeckt.
+        x: 30,
+        y: 38,
+        w: 11,
+        h: 38,
+        label: "Tür 1532 — Praxis Dr. Okwu",
+        onUse: (api) => api.goTo("room1532"),
       },
       {
         id: "door1534",
