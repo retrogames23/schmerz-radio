@@ -149,6 +149,41 @@ export function SceneView() {
           <Hotspot key={h.id} hotspot={h} />
         ))}
 
+        {/* Aufzug: dynamische Etagen-Anzeige über dem Indikator.
+            Überdeckt die statisch ins Hintergrundbild gemalte Ziffer mit
+            einem schwarzen Display-Streifen und rendert die aktuelle Etage. */}
+        {scene === "elevator" && (() => {
+          const floor = previousScene ? SCENE_TO_FLOOR[previousScene] : undefined;
+          return (
+            <div
+              className="pointer-events-none absolute z-20 flex items-center justify-center overflow-hidden rounded-[2px]"
+              style={{
+                left: "15.5%",
+                top: "7.6%",
+                width: "13%",
+                height: "4.4%",
+                background: "#0a0705",
+                boxShadow: "inset 0 0 4px rgba(0,0,0,0.9)",
+              }}
+              aria-hidden
+            >
+              <span
+                className="font-mono-crt"
+                style={{
+                  fontSize: "min(2.4vw, 22px)",
+                  lineHeight: 1,
+                  color: "#ffb347",
+                  textShadow:
+                    "0 0 4px rgba(255,170,60,0.9), 0 0 10px rgba(255,140,40,0.6)",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                {floor ?? "–"}
+              </span>
+            </div>
+          );
+        })()}
+
         {/* Amber vignette when radio is active */}
         {radioActive && <div className="amber-vignette" />}
 
