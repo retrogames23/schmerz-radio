@@ -157,6 +157,10 @@ function buildBeats(): Beat[] {
         {
           speaker: "SYSTEM",
           text: "Warum hat er ja gesagt? Er hätte nein sagen können.",
+          // ElevenLabs setzt sonst den Akzent auf das letzte Inhaltswort
+          // („gesagt"). Mit ALL CAPS + Kommas zwingen wir die Betonung
+          // explizit auf das Kontrast-Paar „JA"/„NEIN".
+          speech: "Warum hat er, JA, gesagt? Er hätte auch NEIN sagen können.",
           hold: holdFor("Warum hat er ja gesagt? Er hätte nein sagen können.") + 400,
         },
       ],
