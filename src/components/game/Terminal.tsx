@@ -1511,6 +1511,44 @@ export function Terminal() {
       return;
     }
 
+    // ── Debug-Cheat »cheat 0004« ──────────────────────────
+    // Springt direkt in die Sanitäter-Cutscene. Setzt nur die
+    // minimal nötigen Vorbedingungen (Notruf abgesetzt) und
+    // startet die Cutscene sofort, ohne den Spieler erst in
+    // eine Szene zu schicken.
+    if (raw.toLowerCase() === "cheat 0004") {
+      playBeep(0.5 * sfxVolume);
+      setInput("");
+      setAdvState(null);
+      setLottiState(null);
+      setNewsState(null);
+      if (newsTickerTimerRef.current) {
+        clearInterval(newsTickerTimerRef.current);
+        newsTickerTimerRef.current = null;
+      }
+
+      const flagsToSet: StoryFlag[] = [
+        "metPhilippeBefore",
+        "knockingHeard",
+        "talkedPhilippe2613",
+        "calledLeitstelle",
+      ];
+      for (const f of flagsToSet) api.setFlag(f);
+
+      setLines((prev) => [
+        ...prev,
+        { text: `worag@centralos:~$ ${raw}`, kind: "in" },
+        { text: ">> [DEBUG] Sanitäter-Cutscene wird gestartet.", kind: "system" },
+        { text: "", kind: "out" },
+      ]);
+
+      setTimeout(() => {
+        closeTerminal();
+        api.startCutscene("paramedics");
+      }, 250);
+      return;
+    }
+
     // ── Sub-Modus: adventure.bin läuft ─────────────────────
     if (advState) {
       playBeep(0.3 * sfxVolume);
