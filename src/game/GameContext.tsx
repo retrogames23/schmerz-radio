@@ -104,6 +104,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   const [scene, setScene] = useState<SceneId>("apartment");
+  const [previousScene, setPreviousScene] = useState<SceneId | null>(null);
   const [flags, setFlags] = useState<Set<StoryFlag>>(() => new Set());
   const [knowledge, setKnowledge] = useState<Set<KnowledgeFlag>>(
     () => new Set(),
@@ -202,6 +203,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const api = useMemo<GameApi>(
     () => ({
       goTo: (s) => {
+        setPreviousScene(sceneRef.current);
         setScene(s);
         setCaption(null);
       },
@@ -385,6 +387,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const value: GameContextValue = {
     scene,
+    previousScene,
     flags,
     knowledge,
     inventory,
