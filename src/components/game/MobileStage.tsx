@@ -16,8 +16,6 @@ const MOBILE_BREAKPOINT = 768;
 export function MobileStage({ children }: { children: ReactNode }) {
   const [enabled, setEnabled] = useState(false);
   const [scale, setScale] = useState(1);
-  const [vw, setVw] = useState(0);
-  const [vh, setVh] = useState(0);
   const [rotate, setRotate] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
@@ -25,8 +23,6 @@ export function MobileStage({ children }: { children: ReactNode }) {
     const compute = () => {
       const w = window.innerWidth;
       const h = window.innerHeight;
-      setVw(w);
-      setVh(h);
       const isMobile = w < MOBILE_BREAKPOINT;
       setEnabled(isMobile);
       if (isMobile) {
