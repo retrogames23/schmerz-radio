@@ -1242,6 +1242,101 @@ export const scenes: Record<string, Scene> = {
   },
 
   // ───────────────────────────────────────────────────────────
+  // Zimmer 1532 — Praxis Dr. Adaeze Okwu (Allgemeinmedizin, E71).
+  // Optionaler Side-Quest-Raum für World-Building rund um E71 und
+  // die anderen Quadranten E68–E70. Dauerhaft erreichbar, sobald
+  // Layard im Korridor 15 ist.
+  // ───────────────────────────────────────────────────────────
+  room1532: {
+    id: "room1532",
+    background: room1532Bg,
+    title: "Zimmer 1532 — Praxis Dr. Okwu",
+    intro:
+      "Ein wohnliches Sprechzimmer. Bücherregale voller Aktenordner mit Quadrantenetiketten, ein bernsteinfarbener Terminalbildschirm, eine Lederliege mit einem zusammengelegten Kissen. Hinter dem Schreibtisch sitzt eine schwarze Ärztin Anfang fünfzig in weißem Kittel, eine dampfende Tasse Tee in der Hand. Sie blickt auf, lächelt freundlich.",
+    hotspots: [
+      {
+        id: "okwuTalk",
+        // Dr. Okwu sitzt mittig hinter dem Schreibtisch.
+        x: 30,
+        y: 18,
+        w: 28,
+        h: 76,
+        label: "Dr. Adaeze Okwu",
+        onUse: (api) => {
+          // Progressive Schichten: jeder erneute Klick öffnet die nächste
+          // Ebene. Ab dem zweiten Klick werden die Folge-Dialoge freigeschaltet.
+          if (!api.hasFlag("metOkwu")) {
+            api.setFlag("metOkwu");
+            api.startDialog("okwu1");
+          } else if (!api.hasFlag("okwuLayer2")) {
+            api.startDialog("okwu1");
+          } else if (!api.hasFlag("okwuLayer3")) {
+            api.startDialog("okwu2");
+          } else if (!api.hasFlag("okwuLayer4")) {
+            api.startDialog("okwu3");
+          } else {
+            api.startDialog("okwu4");
+          }
+        },
+      },
+      {
+        id: "okwuTerminal",
+        // Bernsteinfarbenes CRT-Terminal links auf dem Schreibtisch.
+        x: 14,
+        y: 42,
+        w: 16,
+        h: 26,
+        label: "Patient:innen-Terminal",
+        onUse: (api) =>
+          api.showText([
+            "Ein bernsteinfarbenes Terminal. Auf dem Schirm laufen ruhig Datenzeilen — Wartezimmer leer, drei Termine heute, alle bestätigt.",
+            "Daneben, säuberlich daneben gelegt, ein Stapel Papierformulare. Beides nebeneinander, ohne Hierarchie.",
+            "„Papier ist geduldig, Terminal-Daten sind die Ruhe selbst.“ — sagt jemand hier offenbar oft.",
+          ]),
+      },
+      {
+        id: "okwuShelves",
+        // Aktenordner-Regal hinter Dr. Okwu, oben rechts.
+        x: 56,
+        y: 4,
+        w: 38,
+        h: 32,
+        label: "Aktenordner",
+        onUse: (api) =>
+          api.showText([
+            "Reihen von Aktenordnern, sauber nach Quadranten beschriftet:",
+            "E68 — Logistik. E69 — Wohnen. E70 — Verwaltung. E71 — Medizin.",
+            "Auf einem oberen Brett, etwas verstaubt, ein einzelner Ordner: E67. Dünn. Sehr dünn.",
+          ]),
+      },
+      {
+        id: "okwuCouch",
+        // Lederliege rechts.
+        x: 60,
+        y: 50,
+        w: 36,
+        h: 42,
+        label: "Untersuchungsliege",
+        onUse: (api) =>
+          api.showText([
+            "Eine alte Lederliege, weich vom Gebrauch. Ein zusammengelegtes Kissen darauf.",
+            "Layard merkt erst beim Hinsehen, wie müde er eigentlich ist.",
+          ]),
+      },
+      {
+        id: "leaveRoom1532",
+        // Türrahmen ganz links.
+        x: 0,
+        y: 4,
+        w: 14,
+        h: 94,
+        label: "Zurück in den Korridor",
+        onUse: (api) => api.goTo("corridor15"),
+      },
+    ],
+  },
+
+  // ───────────────────────────────────────────────────────────
   // E67 — Aufzug. Erreicht den Heim-Korridor (Etage 2) und drei
   // andere Etagen des Gebäudes. E71 ist NICHT per Aufzug zu
   // erreichen — dafür muss man Etage 1 → Sektor-Tür → Passage.
