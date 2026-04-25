@@ -1114,8 +1114,9 @@ export const scenes: Record<string, Scene> = {
         label: "Türen 1530–1540",
         onUse: (api) =>
           api.showText([
-            "1530, 1536, 1538 — alle grün. Alle leer.",
+            "1530, 1536 — grün. Leer.",
             "1532 — grünes Licht, ein kleines Schild: „Dr. A. Okwu — Allgemeinmedizin“.",
+            "1538 — gelbes Wartelicht. Drinnen sitzt jemand, hörbar nervös.",
             "1531 — gelbes Band. Versiegelt.",
             "Nur 1534 zeigt ein rotes Licht. Aktiv. Besetzt.",
           ]),

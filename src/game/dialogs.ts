@@ -1841,7 +1841,7 @@ export const dialogs: Record<string, DialogTree> = {
       ar11: {
         id: "ar11",
         speaker: "INSA",
-        text: "Hören Sie. — Bringen Sie es mir vorbei. Persönlich. Ich bin in der Leitstelle E67, Etage 3, Tür 3601. Heute. Morgen. Wann Sie wollen.",
+        text: "Hören Sie. — Bringen Sie es mir vorbei. Persönlich. Sektor-Leitstelle E67, Eingang an der Sektorgrenze. Fragen Sie nach Bauerfeind. Heute. Morgen. Wann Sie wollen.",
         next: "ar12",
       },
       ar12: {
