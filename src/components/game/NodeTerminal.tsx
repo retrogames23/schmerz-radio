@@ -347,8 +347,8 @@ export function NodeTerminal() {
   };
 
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/85 px-4">
-      <div className="fade-in relative w-full max-w-3xl overflow-hidden rounded-sm border border-amber-glow/40 bg-black shadow-[0_0_60px_rgba(0,0,0,0.85)] scanlines">
+    <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-black/85 sm:items-center sm:px-4">
+      <div className="fade-in relative flex h-full w-full flex-col overflow-hidden rounded-none border-0 border-amber-glow/40 bg-black shadow-[0_0_60px_rgba(0,0,0,0.85)] scanlines sm:h-auto sm:max-w-3xl sm:rounded-sm sm:border">
         <div className="flex items-center justify-between border-b border-amber-glow/30 bg-black px-4 py-2">
           <span className="font-mono-crt text-base uppercase tracking-[0.3em] text-amber-glow amber-glow">
             NODE-MAINT 5610
@@ -358,7 +358,7 @@ export function NodeTerminal() {
 
         <div
           ref={scrollRef}
-          className="h-[55vh] overflow-y-auto bg-black px-4 py-3 font-mono-crt text-base leading-relaxed crt-flicker"
+          className="min-h-0 flex-1 overflow-y-auto bg-black px-4 py-3 font-mono-crt text-[15px] leading-relaxed crt-flicker sm:h-[55vh] sm:flex-none sm:text-base"
         >
           {lines.map((l, i) => (
             <div
@@ -382,7 +382,7 @@ export function NodeTerminal() {
           onSubmit={handleSubmit}
           className="flex items-center gap-2 border-t border-amber-glow/30 bg-black px-4 py-2"
         >
-          <span className="font-mono-crt text-sm text-amber-glow amber-glow">
+          <span className="font-mono-crt text-[15px] text-amber-glow amber-glow sm:text-sm">
             node-5610#
           </span>
           <input
@@ -395,7 +395,7 @@ export function NodeTerminal() {
               }
               setInput(e.target.value);
             }}
-            className="flex-1 bg-transparent font-mono-crt text-base text-amber-glow caret-amber-glow outline-none disabled:opacity-40 placeholder:text-amber-glow/40"
+            className="flex-1 bg-transparent font-mono-crt text-[15px] text-amber-glow caret-amber-glow outline-none disabled:opacity-40 placeholder:text-amber-glow/40 sm:text-base"
             placeholder={
               busy
                 ? "… Ausgabe läuft …"
