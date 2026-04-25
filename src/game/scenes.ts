@@ -782,9 +782,6 @@ export const scenes: Record<string, Scene> = {
           api.showText([
             "Rotes Klebeband versperrt den Aufzug.",
             "Display: „WARTUNGSANFRAGE 4711 — AUFZUG GESPERRT“.",
-            "Darunter, kleiner: „Stornierung über Hausmeister-Konsole.“",
-            "Layards eigenes Terminal kann diese Sperre nur lesen,",
-            "nicht löschen. Sein Account hat dafür keine Rechte.",
           ]);
         },
       },
