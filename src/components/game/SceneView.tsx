@@ -28,6 +28,46 @@ export function SceneView() {
   const [shakeActive, setShakeActive] = useState(false);
   const shakeTimeoutRef = useRef<number | null>(null);
   const shakeStartedRef = useRef(false);
+  // Space gedrückt halten → alle Hotspots der aktuellen Szene werden mit
+  // Rahmen und Label eingeblendet. Beim Loslassen wieder ausgeblendet.
+  // Tastatureingaben in Eingabefeldern (Terminal etc.) werden ignoriert.
+  const [revealHotspots, setRevealHotspots] = useState(false);
+  useEffect(() => {
+    const isTypingTarget = (t: EventTarget | null) => {
+      if (!(t instanceof HTMLElement)) return false;
+      const tag = t.tagName;
+      return (
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
+        t.isContentEditable
+      );
+    };
+    const onDown = (e: KeyboardEvent) => {
+      if (e.code !== "Space" && e.key !== " ") return;
+      if (e.repeat) {
+        // Verhindert ungewolltes Scrollen, wenn die Taste gehalten wird.
+        e.preventDefault();
+        return;
+      }
+      if (isTypingTarget(e.target)) return;
+      e.preventDefault();
+      setRevealHotspots(true);
+    };
+    const onUp = (e: KeyboardEvent) => {
+      if (e.code !== "Space" && e.key !== " ") return;
+      setRevealHotspots(false);
+    };
+    const onBlur = () => setRevealHotspots(false);
+    window.addEventListener("keydown", onDown);
+    window.addEventListener("keyup", onUp);
+    window.addEventListener("blur", onBlur);
+    return () => {
+      window.removeEventListener("keydown", onDown);
+      window.removeEventListener("keyup", onUp);
+      window.removeEventListener("blur", onBlur);
+    };
+  }, []);
 
   useEffect(() => {
     setShowIntro(true);
@@ -146,7 +186,7 @@ export function SceneView() {
 
         {/* Hotspots */}
         {current.hotspots.map((h) => (
-          <Hotspot key={h.id} hotspot={h} />
+          <Hotspot key={h.id} hotspot={h} reveal={revealHotspots} />
         ))}
 
         {/* Aufzug: dynamische Etagen-Anzeige über dem Indikator.
