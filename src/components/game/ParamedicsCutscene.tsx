@@ -187,6 +187,10 @@ function buildBeats(): Beat[] {
 
 const CROSSFADE_MS = 600;
 
+function clamp01(v: number): number {
+  return Math.max(0, Math.min(1, v));
+}
+
 export function ParamedicsCutscene() {
   const { cutscene, endCutscene, api } = useGame();
   const { sfxVolume, musicVolume, musicEnabled } = useSettings();
