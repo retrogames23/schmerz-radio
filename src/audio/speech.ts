@@ -199,8 +199,69 @@ function cleanText(text: string): string {
   return normalizeNumbersForSpeech(normalized);
 }
 
+/**
+ * Bevorzugte deutsche Browser-Stimmen für den Erzähler (SYSTEM), wenn
+ * der ElevenLabs-Fallback greift. Wir nehmen bewusst weibliche, möglichst
+ * "natural"/"neural" Stimmen, weil die deutlich weniger roboterhaft
+ * klingen als die männlichen Default-Stimmen vieler OS.
+ *
+ * Reihenfolge = Priorität. Der erste Treffer (case-insensitive Substring)
+ * gewinnt. Fallback ist die System-Default-Stimme für `de-DE`.
+ */
+const NARRATOR_FALLBACK_VOICE_HINTS = [
+  // macOS / iOS — Premium/Enhanced sind die "natural"-Varianten
+  "Anna (Premium)",
+  "Anna (Enhanced)",
+  "Petra (Premium)",
+  "Petra (Enhanced)",
+  "Helena (Premium)",
+  "Helena (Enhanced)",
+  // Windows / Edge "Online (Natural)"-Stimmen
+  "Katja Online (Natural)",
+  "Hedda Online (Natural)",
+  "Amala Online (Natural)",
+  // Google Chrome
+  "Google Deutsch",
+  // Plain-Varianten als letzter Ausweg
+  "Anna",
+  "Petra",
+  "Helena",
+  "Katja",
+  "Hedda",
+] as const;
+
+function pickNarratorVoice(): SpeechSynthesisVoice | null {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+    return null;
+  }
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return null;
+
+  const german = voices.filter((v) => /^de(-|_)/i.test(v.lang));
+  if (!german.length) return null;
+
+  for (const hint of NARRATOR_FALLBACK_VOICE_HINTS) {
+    const match = german.find((v) =>
+      v.name.toLowerCase().includes(hint.toLowerCase()),
+    );
+    if (match) return match;
+  }
+  // Falls nichts auf der Wunschliste passt: erste deutsche Stimme nehmen,
+  // die nach weiblichem Namen klingt — sonst irgendeine deutsche Stimme.
+  const female = german.find((v) =>
+    /(anna|petra|helena|katja|hedda|amala|marlene|vicki|claudia|sabine|stefanie)/i.test(
+      v.name,
+    ),
+  );
+  return female ?? german[0] ?? null;
+}
+
 /** Browser-SpeechSynthesis fallback — only used if ElevenLabs request fails. */
-function browserFallback(text: string, volume: number): Promise<void> {
+function browserFallback(
+  text: string,
+  volume: number,
+  speaker?: Speaker,
+): Promise<void> {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) {
     return Promise.resolve();
   }
@@ -209,6 +270,21 @@ function browserFallback(text: string, volume: number): Promise<void> {
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "de-DE";
   u.volume = volume;
+
+  // Für den Erzähler eine möglichst natürliche deutsche Stimme wählen.
+  // Andere Sprecher behalten die System-Default — die TTS-Stimmen sind
+  // ohnehin der Normalfall, der Browser-Fallback nur ein Notnagel.
+  if (speaker === "SYSTEM") {
+    const voice = pickNarratorVoice();
+    if (voice) {
+      u.voice = voice;
+      // Etwas langsamer + etwas tiefer, damit die Stimme erzählerischer
+      // wirkt und weniger nach Navi-Ansage klingt.
+      u.rate = 0.92;
+      u.pitch = 0.95;
+    }
+  }
+
   return new Promise((resolve) => {
     let settled = false;
     const finalize = () => {
@@ -276,7 +352,7 @@ export async function speak(speaker: Speaker, text: string, volume = 1) {
     const blob = await fetchAndCache(speaker, cleaned, ac.signal);
     if (ac.signal.aborted) return;
     if (!blob) {
-      await browserFallback(cleaned, volume);
+      await browserFallback(cleaned, volume, speaker);
       return;
     }
     const url = URL.createObjectURL(blob);
@@ -304,7 +380,7 @@ export async function speak(speaker: Speaker, text: string, volume = 1) {
   } catch (err) {
     if ((err as Error).name === "AbortError") return;
     console.warn("speak() failed, using browser fallback:", err);
-    await browserFallback(cleaned, volume);
+    await browserFallback(cleaned, volume, speaker);
   } finally {
     if (currentFetch === ac) currentFetch = null;
   }
@@ -330,7 +406,20 @@ export function stopSpeech() {
   }
 }
 
-/** No-op kept for backwards-compatibility (used to warm up browser voices). */
+/**
+ * Vorab die Browser-Stimmenliste initialisieren. Auf Chrome/Edge wird
+ * `getVoices()` erst nach dem `voiceschanged`-Event befüllt; ohne Warm-up
+ * würde der allererste Fallback noch keine deutsche Stimme finden und
+ * auf den globalen Default zurückfallen (oft eine englische Roboter-
+ * Stimme).
+ */
 export function preloadVoices() {
-  /* no longer needed — ElevenLabs voices are server-side */
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  // Initial-Aufruf triggert das Laden auf Chrome/Edge.
+  window.speechSynthesis.getVoices();
+  // Manche Browser feuern `voiceschanged` einmalig nach dem ersten
+  // Aufruf; ein No-op-Listener reicht, um die Liste warmzuhalten.
+  window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices();
+  };
 }
