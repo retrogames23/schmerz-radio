@@ -126,7 +126,7 @@ export function DsaAdventureScene() {
     setPhase({
       kind: "outcome",
       option: { ...opt, attrCheck: undefined },
-      check: { rolls: [0, 0, 0], total: 0, target: 0, success: true },
+      check: null,
     });
   }
 
