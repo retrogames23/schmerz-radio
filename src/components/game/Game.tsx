@@ -32,12 +32,16 @@ import { useGame } from "@/game/GameContext";
  * danach die normale Playlist wieder her.
  */
 function DsaMusicBridge() {
-  const { scene, dsaAdventureOpen } = useGame();
+  const { scene, dsaAdventureOpen, dsaBeat } = useGame();
   const { setOverride } = useMusic();
   useEffect(() => {
+    // Tavernen-Track NUR während Akt 2 (Wirtshaus „Zum durstigen Drachen“,
+    // Beat-IDs beginnen mit „s2"). Im Gemeinschaftsraum E67 und in allen
+    // anderen Abenteuer-Szenen läuft die ruhigere Tafelrunden-Musik.
+    const inTavern = dsaAdventureOpen && !!dsaBeat && dsaBeat.startsWith("s2");
     const inDsa = scene === "commonRoomE67" || dsaAdventureOpen;
-    setOverride(inDsa ? "dsaTavern" : null);
-  }, [scene, dsaAdventureOpen, setOverride]);
+    setOverride(inTavern ? "dsaTavern" : inDsa ? "dsaTable" : null);
+  }, [scene, dsaAdventureOpen, dsaBeat, setOverride]);
   return null;
 }
 
