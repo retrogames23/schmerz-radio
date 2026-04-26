@@ -14,6 +14,15 @@ import {
   type DsaClassId,
 } from "@/game/dsa/classes";
 import { ATTR_LABEL, type Attr } from "@/game/dsa/dice";
+import {
+  ENEMY_STATS,
+  foeCombatantFromStat,
+  heroCombatantFromCharacter,
+  resolveCombat,
+  type Combatant,
+  type CombatResult,
+} from "@/game/dsa/combat";
+import { DsaCombatScene } from "./DsaCombatScene";
 
 /**
  * Vollbild-Overlay, das die DSA-Tafelrunde simuliert. Zeigt
@@ -24,6 +33,13 @@ import { ATTR_LABEL, type Attr } from "@/game/dsa/dice";
 
 type Phase =
   | { kind: "narration" }
+  | {
+      kind: "combat";
+      option: DsaOption;
+      hero: Combatant;
+      foes: Combatant[];
+      result: CombatResult;
+    }
   | { kind: "outcome"; option: DsaOption; check: AttrCheckResult | null };
 
 export function DsaAdventureScene() {
@@ -56,12 +72,57 @@ export function DsaAdventureScene() {
   const isMagic = !!cls?.magic;
 
   function handleChoose(option: DsaOption) {
+    // Automatischer Kampf hat Vorrang vor einfacher Probe.
+    if (option.combat && dsaCharacter) {
+      const hero = heroCombatantFromCharacter(dsaCharacter);
+      const foes = option.combat.enemyIds.map((id, i) => {
+        const stat = ENEMY_STATS[id];
+        if (!stat) {
+          throw new Error(`Unknown enemy id ${id} in option ${option.id}`);
+        }
+        return foeCombatantFromStat(stat, i);
+      });
+      // Wir kopieren die Combatants, damit resolveCombat sie mutieren darf,
+      // ohne die UI-Referenzen zu zerstören. Snapshots im Result reichen.
+      const heroForFight = { ...hero };
+      const foesForFight = foes.map((f) => ({ ...f }));
+      const result = resolveCombat(heroForFight, foesForFight);
+      setPhase({ kind: "combat", option, hero, foes, result });
+      return;
+    }
     let result: AttrCheckResult | null = null;
     if (option.attrCheck) {
       const attrVal = dsaCharacter!.attrs[option.attrCheck.attr] ?? 10;
       result = rollAttrCheck(attrVal, option.attrCheck.modifier ?? 0);
     }
     setPhase({ kind: "outcome", option, check: result });
+  }
+
+  function handleCombatDone(victory: boolean) {
+    if (phase.kind !== "combat") return;
+    // Synthetisches Probe-Resultat, damit OutcomeView den richtigen Text wählt.
+    const synthetic: AttrCheckResult = {
+      rolls: [0, 0, 0],
+      total: 0,
+      target: 0,
+      success: victory,
+    };
+    // Ohne attrCheck zeigt OutcomeView keine Würfelzeile — gut, der Kampf
+    // hatte schon seine eigene. Wir setzen daher check=null bei Kampf.
+    void synthetic;
+    const opt = phase.option;
+    setPhase({
+      kind: "outcome",
+      option: { ...opt, attrCheck: undefined },
+      check: { rolls: [0, 0, 0], total: 0, target: 0, success: victory },
+    });
+    // Aktualisiere LE des Charakters, falls Schaden genommen.
+    if (dsaCharacter && phase.result.heroLeFinal !== dsaCharacter.le) {
+      api.setDsaCharacter({
+        ...dsaCharacter,
+        le: Math.max(1, phase.result.heroLeFinal),
+      });
+    }
   }
 
   function handleAdvance() {
@@ -128,6 +189,14 @@ export function DsaAdventureScene() {
               onChoose={handleChoose}
               characterName={dsaCharacter.name}
               isMagic={isMagic}
+            />
+          ) : phase.kind === "combat" ? (
+            <DsaCombatScene
+              hero={phase.hero}
+              foes={phase.foes}
+              result={phase.result}
+              illustration={beat.illustration}
+              onDone={handleCombatDone}
             />
           ) : (
             <OutcomeView
