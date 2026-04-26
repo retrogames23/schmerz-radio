@@ -712,6 +712,26 @@ export function DsaCharacterCreator() {
                     </span>
                   )}
                 </div>
+
+                {/* Shortcut: vorgefertigter Charakter ohne Würfeln */}
+                <div className="mt-3 pt-3 border-t border-dashed border-[rgba(30,18,8,0.45)]">
+                  <p className="dsa-typed text-xs dsa-ink-faded italic mb-2">
+                    Keinen Nerv mehr? Gib mir einfach einen fertigen …
+                  </p>
+                  <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-4">
+                    {DSA_CLASSES.map((c) => (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => handlePickPremade(c.id)}
+                        title={c.blurb}
+                        className="dsa-typed text-xs px-2 py-1.5 text-left transition border border-[rgba(30,18,8,0.6)] dsa-ink hover:bg-[rgba(255,250,230,0.5)] cursor-pointer"
+                      >
+                        … {c.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </>
             )}
           </div>
