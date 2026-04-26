@@ -291,6 +291,8 @@ export function DsaCharacterCreator() {
     api.setFlag("dsaSeatedAtTable");
     if (rollCount > 1) api.setFlag("dsaCharacterRerolled");
     closeDsaCreator();
+    // Abenteuer sofort starten, sobald der Bogen unterschrieben ist.
+    api.openDsaAdventure();
   }
 
   function handleCancel() {
