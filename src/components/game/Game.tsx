@@ -22,7 +22,24 @@ import { TitleScreen } from "./TitleScreen";
 import { PauseMenu } from "./PauseMenu";
 import { MobileStage } from "./MobileStage";
 import { DsaCharacterCreator } from "./DsaCharacterCreator";
+import { DsaAdventureScene } from "./DsaAdventureScene";
+import { useMusic } from "@/audio/MusicPlayer";
 import { useGame } from "@/game/GameContext";
+
+/**
+ * Schaltet beim Betreten des DSA-Gemeinschaftsraums (oder solange das
+ * Abenteuer-Overlay offen ist) auf den Tavernen-Track um und stellt
+ * danach die normale Playlist wieder her.
+ */
+function DsaMusicBridge() {
+  const { scene, dsaAdventureOpen } = useGame();
+  const { setOverride } = useMusic();
+  useEffect(() => {
+    const inDsa = scene === "commonRoomE67" || dsaAdventureOpen;
+    setOverride(inDsa ? "dsaTavern" : null);
+  }, [scene, dsaAdventureOpen, setOverride]);
+  return null;
+}
 
 export function Game() {
   const [started, setStarted] = useState(false);
@@ -97,6 +114,8 @@ function GameStage({
             <BurnSequence />
             <ParamedicsCutscene />
             <DsaCharacterCreator />
+            <DsaAdventureScene />
+            <DsaMusicBridge />
             <Ending />
             <PauseMenu open={pauseOpen} onClose={() => setPauseOpen(false)} />
           </div>
