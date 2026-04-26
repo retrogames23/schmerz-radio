@@ -3638,4 +3638,130 @@ export const dialogs: Record<string, DialogTree> = {
       },
     },
   },
+
+  // ---------------------------------------------------------------
+  // Tjark — Smalltalk im Gemeinschaftsraum E67 (DSA-Tafelrunde)
+  // ---------------------------------------------------------------
+  tjarkSmalltalk: {
+    id: "tjarkSmalltalk",
+    start: "t0",
+    onEnd: (api) => {
+      api.setFlag("tjarkSmalltalkDone");
+    },
+    lines: {
+      // Erstkontakt — vor der Charaktererschaffung
+      t0: {
+        id: "t0",
+        speaker: "TJARK",
+        text: "Du musst Worag sein. Setz dich. Ich bin Tjark — ich leite das hier.",
+        hiddenWhen: ["dsaCharacterRolled"],
+        next: "t1",
+      },
+      t1: {
+        id: "t1",
+        speaker: "TJARK",
+        text: "Das hier ist meine kleine Runde. Yelva spielt eine Elfe, Brem einen Streuner. Wir brauchen wirklich noch einen Vierten — am liebsten einen Krieger, ehrlich gesagt. Aber bring her, was du willst.",
+        hiddenWhen: ["dsaCharacterRolled"],
+        next: "tHub",
+      },
+      // Wiedereintritt — Charakter steht schon
+      tBack: {
+        id: "tBack",
+        speaker: "TJARK",
+        text: "Schön, dass du wieder da bist, Worag. Wir warten nur noch auf dich. Soll ich nochmal was erklären, oder sollen wir loslegen?",
+        requires: ["dsaCharacterRolled"],
+        next: "tHub",
+      },
+      // Hub mit allen Smalltalk-Optionen
+      tHub: {
+        id: "tHub",
+        speaker: "TJARK",
+        text: "Was willst du wissen?",
+        choices: [
+          { text: "Was ist das hier eigentlich?", next: "tWhat", hiddenWhen: ["askedTjarkAboutDsa"] },
+          { text: "Wer seid ihr drei?", next: "tWho", hiddenWhen: ["askedTjarkAboutGroup"] },
+          { text: "Wie funktioniert das?", next: "tRules", hiddenWhen: ["askedTjarkAboutRules"] },
+          { text: "Was ist der Plan heute?", next: "tPlan", hiddenWhen: ["askedTjarkAboutPlan"] },
+          { text: "Lass uns spielen.", next: "tPlay" },
+        ],
+      },
+      tWhat: {
+        id: "tWhat",
+        speaker: "TJARK",
+        text: "„Das Schwarze Auge“. Zweite Edition. Schmidt-Spiele, vor zwei Jahren rausgekommen. Wir spielen in Aventurien — das ist ein Kontinent, kein Wohnkomplex. Götter, Magie, ein Haufen Würfel.",
+        next: "tWhat2",
+      },
+      tWhat2: {
+        id: "tWhat2",
+        speaker: "TJARK",
+        text: "Ich erzähle, ihr handelt. Wenn etwas schiefgehen kann, würfelt ihr. Wenn etwas klappt, war es entweder gut geplant oder ihr hattet Glück. Mehr ist es eigentlich nicht.",
+        choices: [
+          { text: "Verstanden.", next: "tHub", action: (api) => api.setFlag("askedTjarkAboutDsa") },
+        ],
+      },
+      tWho: {
+        id: "tWho",
+        speaker: "TJARK",
+        text: "Yelva, links von dir, spielt seit ich das hier mache. Genau, präzise, manchmal eine Spur zu nüchtern. Ihre Elfe heißt Niamhuin und schießt besser als jeder Mensch, den ich kenne.",
+        next: "tWho2",
+      },
+      tWho2: {
+        id: "tWho2",
+        speaker: "TJARK",
+        text: "Brem ist neu. Drei Sitzungen jetzt. Spielt einen Streuner, weil er „mal jemanden ohne Regeln“ wollte. Ich versuche ihm beizubringen, dass auch Streuner Regeln haben.",
+        next: "tWho3",
+      },
+      tWho3: {
+        id: "tWho3",
+        speaker: "TJARK",
+        text: "Und ich bin der Spielleiter. Ich werfe Steine, Räuber und gelegentlich einen Drachen. Mein Job ist, dass ihr eine gute Geschichte erlebt. Nicht, dass ihr alle überlebt.",
+        choices: [
+          { text: "Beruhigend.", next: "tHub", action: (api) => api.setFlag("askedTjarkAboutGroup") },
+        ],
+      },
+      tRules: {
+        id: "tRules",
+        speaker: "TJARK",
+        text: "Sieben Eigenschaften: Mut, Klugheit, Charisma, Fingerfertigkeit, Gewandtheit, Intuition, Körperkraft. Du würfelst pro Eigenschaft 1W6 plus 7. Macht Werte zwischen acht und dreizehn.",
+        next: "tRules2",
+      },
+      tRules2: {
+        id: "tRules2",
+        speaker: "TJARK",
+        text: "Danach suchst du dir eine Klasse, deren Mindestwerte du erreichst. Krieger, Streuner, Magier, Elf, Zwerg, Gaukler, Thorwaler, Druide. Wenn nichts passt, wirfst du nochmal. Aber nur einmal.",
+        choices: [
+          { text: "Klingt machbar.", next: "tHub", action: (api) => api.setFlag("askedTjarkAboutRules") },
+        ],
+      },
+      tPlan: {
+        id: "tPlan",
+        speaker: "TJARK",
+        text: "Heute: Anreise nach Phexcaer durch den Reichsforst. Unterwegs Übernachtung in einem Wirtshaus — ein Magister sucht dort Leute. Und dann eine alte Tempelruine. Hesindes Auge.",
+        next: "tPlan2",
+      },
+      tPlan2: {
+        id: "tPlan2",
+        speaker: "TJARK",
+        text: "Drei Akte, ein Abend. Wenn ihr euch nicht zu blöd anstellt, sind wir gegen Mitternacht durch. Wenn doch, eben morgen weiter.",
+        choices: [
+          { text: "Gut.", next: "tHub", action: (api) => api.setFlag("askedTjarkAboutPlan") },
+        ],
+      },
+      tPlay: {
+        id: "tPlay",
+        speaker: "TJARK",
+        text: "Dann wirf erstmal deine Eigenschaften. Setz dich auf den Stuhl, dann legen wir los.",
+        requires: [],
+        hiddenWhen: ["dsaCharacterRolled"],
+        end: true,
+      },
+      tPlayGo: {
+        id: "tPlayGo",
+        speaker: "TJARK",
+        text: "Gut. Dann: Vorhang auf.",
+        requires: ["dsaCharacterRolled"],
+        end: true,
+      },
+    },
+  },
 };

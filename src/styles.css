@@ -528,3 +528,45 @@
 .dsa-value-in {
   animation: dsa-stamp-in 0.35s ease-out;
 }
+
+/* ── DSA-Abenteuer-Overlay ───────────────────────────────────────── */
+.dsa-adventure-shell {
+  background-color: #f1e6c8;
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(120, 80, 30, 0.10), transparent 55%),
+    radial-gradient(ellipse at 80% 90%, rgba(120, 80, 30, 0.10), transparent 55%);
+  color: #2a1f10;
+  border: 2px solid #3a2c1a;
+}
+.dsa-adventure-header {
+  background: linear-gradient(180deg, rgba(58, 44, 26, 0.10), transparent);
+  font-family: "Special Elite", "Courier New", monospace;
+}
+.dsa-adventure-body {
+  font-family: "Special Elite", "Courier New", monospace;
+}
+.dsa-adventure-footer {
+  background: rgba(58, 44, 26, 0.08);
+  border-top: 1px solid rgba(58, 44, 26, 0.3);
+  font-family: "Special Elite", "Courier New", monospace;
+}
+.dsa-adventure-vignette {
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+.dsa-choice {
+  border: 1px solid rgba(58, 44, 26, 0.5);
+  background: rgba(255, 250, 230, 0.45);
+  color: #2a1f10;
+  transition: background 0.15s ease, transform 0.15s ease;
+  font-family: "Special Elite", "Courier New", monospace;
+}
+.dsa-choice:hover {
+  background: rgba(255, 230, 170, 0.75);
+  transform: translateX(2px);
+}
+.dsa-table-aside {
+  border-left: 3px solid #6b1a0e;
+  background: rgba(107, 26, 14, 0.06);
+  padding: 0.5rem 0.75rem;
+  color: #4a1a10;
+}

@@ -176,7 +176,12 @@ export type StoryFlag =
   | "dsaAdventureScene1Done"
   | "dsaAdventureScene2Done"
   | "dsaAdventureScene3Done"
-  | "dsaCampaignFinished";
+  | "dsaCampaignFinished"
+  | "tjarkSmalltalkDone"
+  | "askedTjarkAboutDsa"
+  | "askedTjarkAboutGroup"
+  | "askedTjarkAboutRules"
+  | "askedTjarkAboutPlan";
 
 export interface InventoryItem {
   id: InventoryItemId;
@@ -358,6 +363,16 @@ export interface GameApi {
   getDsaCharacter: () => DsaCharacterSummary | null;
   /** Verwirft den aktuellen DSA-Charakter (nur intern für Reset gebraucht). */
   clearDsaCharacter: () => void;
+  /**
+   * Öffnet das DSA-Abenteuer-Overlay. Ohne `beatId` springt es zum
+   * gespeicherten Beat oder — wenn keiner existiert — an den Anfang
+   * des ersten Akts.
+   */
+  openDsaAdventure: (beatId?: string) => void;
+  /** Aktueller Beat im Abenteuer, oder `null`. */
+  getDsaBeat: () => string | null;
+  /** Speichert den aktuellen Beat (z. B. nach einer Wahl). */
+  setDsaBeat: (beatId: string | null) => void;
 }
 
 /**

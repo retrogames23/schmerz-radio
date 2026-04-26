@@ -13,6 +13,7 @@ import trackSunday from "@/assets/sunday-at-the-bunker.mp3";
 import trackMidnight from "@/assets/midnight-at-the-loading-bay.mp3";
 import trackSunrise from "@/assets/music/Before_the_Sunrise.mp3";
 import trackSteelRain from "@/assets/music/Steel_Rain_at_Midnight.mp3";
+import trackDsaTavern from "@/assets/music/dsa-tavern.mp3";
 
 /**
  * Background music. Plays a playlist of tracks in sequence and
@@ -33,6 +34,17 @@ const PLAYLIST: MusicTrack[] = [
   { title: "Before the Sunrise", src: trackSunrise },
   { title: "Steel Rain at Midnight", src: trackSteelRain },
 ];
+
+/**
+ * Szenen-spezifische Override-Tracks. Solange ein Override aktiv ist,
+ * läuft dieser Track in Schleife und der normale Watcher springt nicht
+ * weiter zur nächsten Playlist-Track. Aktuell genutzt für die
+ * DSA-Tafelrunde im Gemeinschaftsraum.
+ */
+export const MUSIC_OVERRIDES = {
+  dsaTavern: { title: "Tavernen-Stube (DSA)", src: trackDsaTavern } as MusicTrack,
+};
+export type MusicOverrideId = keyof typeof MUSIC_OVERRIDES;
 const CROSSFADE_SECONDS = 6;
 const FADE_TICK_MS = 50;
 const MANUAL_FADE_SECONDS = 1.2;
@@ -53,6 +65,12 @@ interface MusicCtx {
   pause: () => void;
   /** Setzt die zuvor angehaltene Wiedergabe fort. */
   resume: () => void;
+  /**
+   * Aktiviert einen Override-Track (z. B. Tavernen-Musik). Wird
+   * crossfaded und in Schleife abgespielt, bis `clearOverride()`
+   * aufgerufen wird. Wirkt nur, wenn Musik aktiviert ist.
+   */
+  setOverride: (id: MusicOverrideId | null) => void;
 }
 
 const MusicContext = createContext<MusicCtx | null>(null);
@@ -79,6 +97,8 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   const volumeRef = useRef(musicVolume);
   const duckRef = useRef(1);
   const externallyPausedRef = useRef(false);
+  const overrideRef = useRef<MusicOverrideId | null>(null);
+  const savedIndexRef = useRef<number | null>(null);
 
   // Keep refs in sync so timers always read fresh values.
   useEffect(() => {
@@ -168,6 +188,12 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
       if (!active || !active.duration || isNaN(active.duration)) return;
       const remaining = active.duration - active.currentTime;
       if (remaining <= CROSSFADE_SECONDS && !active.paused) {
+        // Override-Track: nahtlos zurück an den Anfang loopen statt
+        // zur nächsten Playlist-Position zu springen.
+        if (overrideRef.current) {
+          active.currentTime = 0;
+          return;
+        }
         beginCrossfade();
       }
     }, 250);
@@ -259,6 +285,61 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     beginCrossfade(MANUAL_FADE_SECONDS, advance === 0 ? 1 : advance);
   }, []);
 
+  function crossfadeToSrc(src: string, durationSeconds = MANUAL_FADE_SECONDS) {
+    if (!aRef.current || !bRef.current) return;
+    const fromKey = activeRef.current;
+    const toKey = fromKey === "a" ? "b" : "a";
+    const from = fromKey === "a" ? aRef.current : bRef.current;
+    const to = toKey === "a" ? aRef.current : bRef.current;
+    to.src = src;
+    to.currentTime = 0;
+    to.volume = 0;
+    void to.play().catch(() => {});
+    const startVol = clamp(volumeRef.current);
+    const steps = Math.max(1, Math.floor((durationSeconds * 1000) / FADE_TICK_MS));
+    let step = 0;
+    if (fadeTimerRef.current) window.clearInterval(fadeTimerRef.current);
+    fadeTimerRef.current = window.setInterval(() => {
+      step += 1;
+      const t = Math.min(1, step / steps);
+      const target = clamp(volumeRef.current);
+      from.volume = clamp(startVol * (1 - t));
+      to.volume = clamp(target * t);
+      if (t >= 1) {
+        from.pause();
+        from.currentTime = 0;
+        activeRef.current = toKey;
+        if (fadeTimerRef.current) {
+          window.clearInterval(fadeTimerRef.current);
+          fadeTimerRef.current = null;
+        }
+      }
+    }, FADE_TICK_MS);
+  }
+
+  const setOverride = useCallback((id: MusicOverrideId | null) => {
+    if (overrideRef.current === id) return;
+    if (id) {
+      // Wechsel auf Override: Playlist-Position merken.
+      if (overrideRef.current === null) {
+        savedIndexRef.current = indexRef.current;
+      }
+      overrideRef.current = id;
+      if (!enabledRef.current) return; // Musik aus → erst beim Aktivieren übernehmen
+      crossfadeToSrc(MUSIC_OVERRIDES[id].src);
+      ensureWatcher();
+    } else {
+      // Zurück auf reguläre Playlist.
+      overrideRef.current = null;
+      if (!enabledRef.current) return;
+      const restoreIndex = savedIndexRef.current ?? indexRef.current;
+      indexRef.current = restoreIndex;
+      setCurrentIndex(restoreIndex);
+      crossfadeToSrc(pickTrack(restoreIndex));
+      ensureWatcher();
+    }
+  }, []);
+
   const next = useCallback(() => {
     playIndex(indexRef.current + 1);
   }, [playIndex]);
@@ -268,8 +349,8 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   }, [playIndex]);
 
   const value = useMemo<MusicCtx>(
-    () => ({ tracks: PLAYLIST, currentIndex, next, prev, playIndex, setDuck, pause, resume }),
-    [currentIndex, next, prev, playIndex, setDuck, pause, resume],
+    () => ({ tracks: PLAYLIST, currentIndex, next, prev, playIndex, setDuck, pause, resume, setOverride }),
+    [currentIndex, next, prev, playIndex, setDuck, pause, resume, setOverride],
   );
 
   return <MusicContext.Provider value={value}>{children}</MusicContext.Provider>;

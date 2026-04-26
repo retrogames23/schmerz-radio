@@ -1945,12 +1945,14 @@ export const scenes: Record<string, Scene> = {
           api.setFlag("metRpgGroup");
           if (!api.getDsaCharacter()) {
             api.openDsaCreator();
-          } else {
+          } else if (api.hasFlag("dsaCampaignFinished")) {
             api.showText([
-              `Du setzt dich wieder zu ${api.getDsaCharacter()?.name ?? "deiner Heldin"}, ${api.getDsaCharacter()?.className ?? ""}.`,
-              "Tjark schiebt dir einen Tee zu. „Wo waren wir?“",
-              "[ Das Gruppenabenteuer ist in Arbeit — die nächste Szene kommt bald. ]",
+              "Tjark klappt das Buch zu. „Das war's für heute. Gute Runde.“",
+              "Brem reckt sich, Yelva sammelt die Würfel ein.",
+              "Ein anderes Mal vielleicht weiter.",
             ]);
+          } else {
+            api.openDsaAdventure();
           }
         },
       },
@@ -1962,11 +1964,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 36,
         label: "Tjark (Meister)",
-        onUse: (api) =>
-          api.showText([
-            "Tjark schaut kurz hoch.",
-            "„Setz dich. Wir brauchen wirklich einen Vierten — am liebsten einen Krieger.“",
-          ]),
+        onUse: (api) => api.startDialog("tjarkSmalltalk"),
       },
       {
         id: "yelvaSpot",

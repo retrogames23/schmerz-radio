@@ -70,6 +70,11 @@ interface GameContextValue extends GameState {
   endCutscene: () => void;
   closeDsaCreator: () => void;
   setDsaCharacter: (c: DsaCharacterSummary | null) => void;
+  /** DSA-Abenteuer-Overlay sichtbar (nach Charaktererstellung). */
+  dsaAdventureOpen: boolean;
+  /** Aktueller Beat im Abenteuer, oder null. */
+  dsaBeat: string | null;
+  closeDsaAdventure: () => void;
   setRadioActive: (active: boolean) => void;
   bumpResonance: (delta: number) => void;
   resetResonance: () => void;
@@ -147,6 +152,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     useState<DsaCharacterSummary | null>(null);
   const dsaCharacterRef = useRef<DsaCharacterSummary | null>(null);
   dsaCharacterRef.current = dsaCharacter;
+  const [dsaAdventureOpen, setDsaAdventureOpen] = useState(false);
+  const [dsaBeat, setDsaBeatState] = useState<string | null>(null);
+  const dsaBeatRef = useRef<string | null>(null);
+  dsaBeatRef.current = dsaBeat;
   // Mira darf NICHT auf Etage 3 erscheinen — dort liegt das Büro des
   // Abschnittsverantwortlichen (E67). Würde sie dort die Tür blockieren und
   // Layard ginge nicht auf sie ein, gäbe es ein Dead End: er erfährt dann
@@ -355,6 +364,30 @@ export function GameProvider({ children }: { children: ReactNode }) {
         dsaCharacterRef.current = null;
         setDsaCharacterState(null);
       },
+      openDsaAdventure: (beatId?: string) => {
+        setRadioOpen(false);
+        setTerminalOpen(false);
+        setNodeOpen(false);
+        setKeypadOpen(false);
+        setTvOpen(false);
+        setTextOverlay(null);
+        setDialogId(null);
+        setDialogLineId(null);
+        setDsaCreatorOpen(false);
+        if (beatId) {
+          dsaBeatRef.current = beatId;
+          setDsaBeatState(beatId);
+        } else if (!dsaBeatRef.current) {
+          dsaBeatRef.current = "s1b1";
+          setDsaBeatState("s1b1");
+        }
+        setDsaAdventureOpen(true);
+      },
+      getDsaBeat: () => dsaBeatRef.current,
+      setDsaBeat: (beatId: string | null) => {
+        dsaBeatRef.current = beatId;
+        setDsaBeatState(beatId);
+      },
     }),
     [],
   );
@@ -457,6 +490,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     cutscene,
     dsaCreatorOpen,
     dsaCharacter,
+    dsaAdventureOpen,
+    dsaBeat,
+    closeDsaAdventure: () => setDsaAdventureOpen(false),
     api,
     setCaption,
     closeText: () => {
