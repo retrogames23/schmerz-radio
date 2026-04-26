@@ -181,6 +181,7 @@ export function DsaCharacterCreator() {
   const [chosenName, setChosenName] = useState<string>("");
   const [chosenGender, setChosenGender] = useState<Geschlecht>("männlich");
   const [nameTouched, setNameTouched] = useState<boolean>(false);
+  const [signingOpen, setSigningOpen] = useState<boolean>(false);
   const cancelRef = useRef(false);
 
   useEffect(() => {
@@ -196,6 +197,7 @@ export function DsaCharacterCreator() {
     setChosenName("");
     setChosenGender("männlich");
     setNameTouched(false);
+    setSigningOpen(false);
   }, [dsaCreatorOpen, flags]);
 
   const fullAttrs: Attrs | null = useMemo(() => {
@@ -295,6 +297,16 @@ export function DsaCharacterCreator() {
     closeDsaCreator();
     // Abenteuer sofort starten, sobald der Bogen unterschrieben ist.
     api.openDsaAdventure();
+  }
+
+  function handleOpenSigning() {
+    if (!chosenClassId) return;
+    // Falls noch kein Name vorgeschlagen wurde, einen pre-fillen.
+    if (!chosenName.trim()) {
+      const cid = chosenClass?.id ?? "krieger";
+      setChosenName(pickRandomName(cid, chosenGender));
+    }
+    setSigningOpen(true);
   }
 
   function handleCancel() {
