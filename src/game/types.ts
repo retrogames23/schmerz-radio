@@ -14,7 +14,8 @@ export type SceneId =
   | "corridor36"
   | "corridor46"
   | "corridor56"
-  | "serverRoom5610";
+  | "serverRoom5610"
+  | "commonRoomE67";
 
 export type InventoryItemId =
   | "protocol"
@@ -165,7 +166,17 @@ export type StoryFlag =
   | "metOkwu"
   | "okwuLayer2"
   | "okwuLayer3"
-  | "okwuLayer4";
+  | "okwuLayer4"
+  // ── DSA-Runde im Gemeinschaftsraum (Erdgeschoss-Lobby) ──
+  | "enteredCommonRoom"
+  | "metRpgGroup"
+  | "dsaCharacterRolled"
+  | "dsaCharacterRerolled"
+  | "dsaSeatedAtTable"
+  | "dsaAdventureScene1Done"
+  | "dsaAdventureScene2Done"
+  | "dsaAdventureScene3Done"
+  | "dsaCampaignFinished";
 
 export interface InventoryItem {
   id: InventoryItemId;
@@ -266,7 +277,10 @@ export interface DialogLine {
     | "HELKA"
     | "ENNIS"
     | "STEGMANN"
-    | "OKWU";
+    | "OKWU"
+    | "TJARK"
+    | "BREM"
+    | "YELVA";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;
@@ -331,6 +345,19 @@ export interface GameApi {
    * always present in the lobby (handled separately).
    */
   getPhilippeFloor: () => 3 | 4 | 5;
+  /**
+   * Öffnet die DSA-Charaktererschaffung (Eigenschaften auswürfeln,
+   * Klasse wählen). Schließt sich selbst, wenn Layard fertig ist oder
+   * abbricht.
+   */
+  openDsaCreator: () => void;
+  /**
+   * Aktueller DSA-Charakter, mit dem Layard am Tisch sitzt — `null`,
+   * wenn er noch keinen erwürfelt hat.
+   */
+  getDsaCharacter: () => DsaCharacterSummary | null;
+  /** Verwirft den aktuellen DSA-Charakter (nur intern für Reset gebraucht). */
+  clearDsaCharacter: () => void;
 }
 
 /**
@@ -339,3 +366,14 @@ export interface GameApi {
  * über Wartungs-Override bzw. Wartungskarte ohne Keypad.
  */
 export type KeypadTarget = "sectorDoor";
+
+/** Snapshot des im Gemeinschaftsraum gespielten DSA-Helden. */
+export interface DsaCharacterSummary {
+  className: string;
+  classId: string;
+  name: string;
+  attrs: Record<string, number>;
+  le: number;
+  ae: number | null;
+  rerolled: boolean;
+}
