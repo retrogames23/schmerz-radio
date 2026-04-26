@@ -278,6 +278,12 @@ export interface CombatResult {
   heroLeFinal: number;
   /** LE-Status aller Helden am Ende (Held + Gefährten). */
   heroesFinal: { id: string; le: number }[];
+  /**
+   * Wer ist gefallen? Sobald irgendein Held (Layard, Yelva, Brem) auf 0 LE
+   * geht, gilt der Kampf als verloren — auch wenn die anderen noch stünden.
+   * Liste in Sterbe-Reihenfolge.
+   */
+  fallenHeroes: { id: string; name: string }[];
 }
 
 function snapshot(all: Combatant[]): { id: string; le: number }[] {
@@ -327,10 +333,21 @@ export function resolveCombat(
     }
   }
 
-  const heroesAllDead = () => heroes.every((h) => !alive(h));
+  // Niederlagebedingung: Sobald *irgendein* Held fällt, ist der Kampf vorbei.
+  // Das spiegelt die Spieltisch-Stimmung wider („zu zweit macht es keinen
+  // Spaß"). Wir merken uns die Reihenfolge der Toten, damit der Dialog
+  // weiß, wer gefallen ist.
+  const fallenHeroes: { id: string; name: string }[] = [];
+  const markIfFallen = (c: Combatant) => {
+    if (c.side !== "hero") return;
+    if (c.le > 0) return;
+    if (fallenHeroes.some((f) => f.id === c.id)) return;
+    fallenHeroes.push({ id: c.id, name: c.name });
+  };
+  const anyHeroDown = () => fallenHeroes.length > 0;
 
   for (let round = 1; round <= maxRounds; round++) {
-    if (heroesAllDead()) break;
+    if (anyHeroDown()) break;
     if (foes.every((f) => !alive(f))) break;
 
     // Initiative pro Runde — höchste zuerst.
@@ -357,7 +374,7 @@ export function resolveCombat(
 
     for (const { c: actor } of order) {
       if (!alive(actor)) continue;
-      if (heroesAllDead()) break;
+      if (anyHeroDown()) break;
       if (foes.every((f) => !alive(f))) break;
 
       const target =
@@ -434,6 +451,7 @@ export function resolveCombat(
       });
 
       if (!alive(target)) {
+        markIfFallen(target);
         events.push({
           kind: "downed",
           text:
@@ -448,7 +466,7 @@ export function resolveCombat(
     }
   }
 
-  const victory = !heroesAllDead() && foes.every((f) => !alive(f));
+  const victory = !anyHeroDown() && foes.every((f) => !alive(f));
   events.push({
     kind: victory ? "end-victory" : "end-defeat",
     text: victory
@@ -462,5 +480,6 @@ export function resolveCombat(
     events,
     heroLeFinal: hero.le,
     heroesFinal: heroes.map((h) => ({ id: h.id, le: h.le })),
+    fallenHeroes,
   };
 }

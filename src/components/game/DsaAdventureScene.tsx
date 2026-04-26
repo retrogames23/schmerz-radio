@@ -43,7 +43,7 @@ type Phase =
       result: CombatResult;
     }
   | { kind: "outcome"; option: DsaOption; check: AttrCheckResult | null }
-  | { kind: "defeat" };
+  | { kind: "defeat"; fallen: { id: string; name: string }[] };
 
 export function DsaAdventureScene() {
   const {
@@ -112,7 +112,10 @@ export function DsaAdventureScene() {
     // die Story einfach weiter und es kommt zum Absturz, wenn der Held
     // bei LE 0 steht und der nächste Beat ihn lebend voraussetzt).
     if (!victory) {
-      setPhase({ kind: "defeat" });
+      setPhase({
+        kind: "defeat",
+        fallen: phase.result.fallenHeroes,
+      });
       return;
     }
     // Sieg: LE übernehmen (mind. 1, damit der Held „angeschlagen" weitergeht).
@@ -248,6 +251,7 @@ export function DsaAdventureScene() {
             />
           ) : phase.kind === "defeat" ? (
             <DefeatView
+              fallen={phase.fallen}
               wasKrieger={wasKrieger}
               onRetry={handleDefeatRetry}
               onGiveUp={handleDefeatGiveUp}
@@ -447,26 +451,73 @@ function DiceRow({
 }
 
 function DefeatView({
+  fallen,
   wasKrieger,
   onRetry,
   onGiveUp,
 }: {
+  fallen: { id: string; name: string }[];
   wasKrieger: boolean;
   onRetry: () => void;
   onGiveUp: () => void;
 }) {
+  // Wer ist gefallen?  Daraus leitet sich die Tjark-Reaktion ab.
+  const heroFell = fallen.some((f) => f.id === "hero");
+  const yelvaFell = fallen.some((f) => f.id === "yelva");
+  const bremFell = fallen.some((f) => f.id === "brem");
+  const allDown = heroFell && yelvaFell && bremFell;
+
+  // Erzähl-Zeile, wer wie zu Boden ging.
+  let downedLine = "";
+  if (allDown) {
+    downedLine = "Alle drei liegen am Boden — der Kampf ist vorbei.";
+  } else if (fallen.length === 2) {
+    downedLine = `${fallen[0].name} und ${fallen[1].name} sinken zu Boden.`;
+  } else if (fallen.length === 1) {
+    downedLine = `${fallen[0].name} sinkt zu Boden.`;
+  }
+
+  // Tjarks Schluss-Satz.
+  let tjarkLine = "Tja Leute, leider alle tot.";
+  if (!allDown && fallen.length > 0) {
+    tjarkLine = "Zu zweit macht es keinen Spaß. Wollen wir es noch mit neuen Charakteren probieren?";
+  } else {
+    tjarkLine = "Tja Leute, leider alle tot. Wollt ihr es mit neuen Charakteren noch mal probieren?";
+  }
+
+  // Tisch-Reaktion (Yelva/Brem) — wer noch lebt, kommentiert.
+  const yelvaAlive = !yelvaFell;
+  const bremAlive = !bremFell;
+
   return (
     <div className="space-y-5">
       <div className="space-y-3 font-serif text-base sm:text-lg leading-relaxed dsa-ink">
+        {downedLine && <p>{downedLine}</p>}
         <p className="font-semibold">
           Tjark legt das Regelbuch zur Seite, schaut in die Runde und seufzt:
         </p>
-        <p className="dsa-table-aside italic text-base">
-          „Tja Leute, leider alle tot."
-        </p>
-        <p>
-          Yelva schiebt die Brille hoch, Brem sammelt grummelnd die Würfel ein.
-        </p>
+        <p className="dsa-table-aside italic text-base">„{tjarkLine}"</p>
+        {!allDown && heroFell && (yelvaAlive || bremAlive) && (
+          <p>
+            {yelvaAlive && bremAlive
+              ? "Yelva schiebt die Brille hoch, Brem klopft auf den Tisch — ohne ihren Anführer macht es ihnen keinen Spaß mehr."
+              : yelvaAlive
+              ? "Yelva schiebt die Brille hoch und legt ihren Würfel beiseite. „Allein hat das keinen Sinn."
+              : "Brem klopft auf den Tisch und schiebt seinen Charakterbogen weg. „Allein? Vergiss es."}
+          </p>
+        )}
+        {!allDown && !heroFell && (yelvaFell || bremFell) && (
+          <p>
+            {yelvaFell && bremFell
+              ? "Yelva und Brem sammeln grummelnd ihre Würfel ein."
+              : yelvaFell
+              ? "Yelva schiebt ihre Brille hoch und schaut auf den Boden. Brem legt mitfühlend die Hand auf ihre Schulter."
+              : "Brem grinst schief und sammelt seine Würfel ein. „War schön mit euch."}
+          </p>
+        )}
+        {allDown && (
+          <p>Yelva schiebt die Brille hoch, Brem sammelt grummelnd die Würfel ein.</p>
+        )}
         <p className="font-semibold">Wollt ihr es mit neuen Charakteren noch mal probieren?</p>
         {!wasKrieger && (
           <p className="dsa-table-aside italic text-base">
