@@ -157,7 +157,13 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
             id: "s1b2-fight",
             text: "(Krieger / Thorwaler) Du ziehst das Schwert. „Den Zoll zahle ich in Eisen.“",
             requires: ["krieger", "thorwaler"],
-            attrCheck: { attr: "MU" },
+            combat: {
+              enemyIds: [
+                "wegelagerer_anfuehrer",
+                "wegelagerer_armbrust",
+                "wegelagerer_stab",
+              ],
+            },
             outcome: {
               success: [
                 "Du gehst breitbeinig zwei Schritte vor. Die Klinge zischt aus der Scheide.",
@@ -346,7 +352,7 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
             id: "s2b2-fight",
             text: "(Krieger / Thorwaler) Wir mischen mit. Eine gute Schlägerei wärmt das Blut.",
             requires: ["krieger", "thorwaler"],
-            attrCheck: { attr: "KK" },
+            combat: { enemyIds: ["glatzkopf"] },
             outcome: {
               success: [
                 "Du landest dem Glatzkopf einen sauberen Schwinger ans Kinn. Er geht um wie ein gefällter Baum.",
@@ -557,7 +563,7 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
           {
             id: "s3b2-fight",
             text: "Wir kämpfen. Das Buch nehmen wir mit.",
-            attrCheck: { attr: "MU", modifier: -1 },
+            combat: { enemyIds: ["spiegelhueter"] },
             outcome: {
               success: [
                 "Es wird hässlich. Yelva singt eine Formel, die das Spiegelwesen für einen Atemzug zögern lässt.",
