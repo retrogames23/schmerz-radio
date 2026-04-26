@@ -557,3 +557,36 @@ function DefeatView({
     </div>
   );
 }
+
+function OutroView({ onLeave }: { onLeave: () => void }) {
+  return (
+    <div className="space-y-5">
+      <div className="space-y-3 font-serif text-base sm:text-lg leading-relaxed dsa-ink">
+        <p>
+          Tjark schließt sein Notizbuch, schiebt die Würfel zur Mitte des
+          Tisches und lehnt sich zurück.
+        </p>
+        <p className="dsa-table-aside italic text-base">
+          „Das war's für heute, Leute. Schöne Runde."
+        </p>
+        <p>
+          Yelva nimmt die Brille ab und reibt sich die Augen. Brem grinst,
+          klopft dir auf die Schulter und sammelt die Bleistifte ein.
+        </p>
+        <p>
+          Draußen ist es längst dunkel. Der Gemeinschaftsraum riecht nach
+          kaltem Tee und altem Papier. Dein Charakterbogen liegt vor dir —
+          gut beschmiert, mit Eselsohren.
+        </p>
+      </div>
+      <div className="flex justify-end pt-2">
+        <button
+          onClick={onLeave}
+          className="inline-flex items-center gap-2 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-4 py-2 text-sm font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a] transition-all"
+        >
+          Vom Tisch aufstehen
+        </button>
+      </div>
+    </div>
+  );
+}
