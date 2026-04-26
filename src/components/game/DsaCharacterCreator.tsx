@@ -121,18 +121,18 @@ function AttrBox({
   }, [rolling, finalValue]);
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="dsa-typed text-[8px] uppercase tracking-[0.2em] dsa-ink-faded mb-0.5">
+    <div className="flex min-w-0 flex-col items-center">
+      <div className="dsa-typed hidden w-full truncate text-center text-[8px] uppercase tracking-[0.2em] dsa-ink-faded mb-0.5 sm:block">
         {ATTR_LABEL[attr]}
       </div>
       <div
-        className={`dsa-box-thick flex h-12 w-12 items-center justify-center sm:h-14 sm:w-14 ${
+        className={`dsa-box-thick flex h-9 w-9 items-center justify-center sm:h-14 sm:w-14 ${
           rolling ? "bg-amber-100/60" : ""
         }`}
       >
         <span
           key={pulseKey}
-          className={`font-display text-2xl sm:text-3xl dsa-ink ${
+          className={`font-display text-xl sm:text-3xl dsa-ink ${
             finalValue !== null && !rolling ? "dsa-value-in" : ""
           }`}
         >
@@ -157,11 +157,11 @@ function Field({
   className?: string;
 }) {
   return (
-    <div className={`flex items-end gap-2 ${className}`}>
+    <div className={`flex min-w-0 items-end gap-2 ${className}`}>
       <span className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded shrink-0">
         {label}
       </span>
-      <span className="dsa-rule flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
+      <span className="dsa-rule min-w-0 flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
         {value || "\u00A0"}
       </span>
     </div>
