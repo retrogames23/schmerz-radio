@@ -133,7 +133,7 @@ export function FloatingChatter({ enabled }: { enabled: boolean }) {
           style={{
             borderLeft: "8px solid transparent",
             borderRight: "8px solid transparent",
-            borderTop: "10px solid rgb(var(--background) / 0.95)",
+            borderTop: "10px solid hsl(0 0% 6% / 0.95)",
             filter: "drop-shadow(0 2px 1px rgba(0,0,0,0.4))",
           }}
         />
