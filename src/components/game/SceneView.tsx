@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { scenes, useGame } from "@/game/GameContext";
 import type { SceneId } from "@/game/types";
 import { Hotspot } from "./Hotspot";
+import { FloatingChatter } from "./FloatingChatter";
 
 // Mapping Szene → Aufzug-Etage. Wird genutzt, um im Aufzug die digitale
 // Anzeige passend zu der Etage zu zeigen, von der Layard gerade kam.
@@ -187,6 +188,9 @@ export function SceneView() {
         {current.hotspots.map((h) => (
           <Hotspot key={h.id} hotspot={h} reveal={revealHotspots} />
         ))}
+
+        {/* Hintergrund-Sprechblasen der DSA-Runde im Gemeinschaftsraum */}
+        <FloatingChatter enabled={scene === "commonRoomE67"} />
 
         {/* Aufzug: dynamische Etagen-Anzeige über dem Indikator.
             Überdeckt die statisch ins Hintergrundbild gemalte Ziffer mit
