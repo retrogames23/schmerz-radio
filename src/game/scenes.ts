@@ -1983,10 +1983,12 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bremSpot",
         // Brem (rote Haare, rot-schwarz gestreift) steht links am Tisch.
-        x: 26,
-        y: 8,
-        w: 16,
-        h: 56,
+        // Stage ist 4:3 mit object-cover über einem 16:9-Bild — die Stage
+        // zeigt nur ~12.8%..87.2% der Bildbreite, daher angepasste %.
+        x: 13,
+        y: 12,
+        w: 22,
+        h: 78,
         label: "Brem (Streuner)",
         onUse: (api) =>
           api.showText([
