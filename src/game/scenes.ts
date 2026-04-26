@@ -1930,35 +1930,7 @@ export const scenes: Record<string, Scene> = {
     title: "Gemeinschaftsraum — Erdgeschoss, E67",
     intro:
       "Warmes Lampenlicht über einem viel zu großen Tisch. Würfel, ein aufgeschlagenes Regelwerk, ein Plan auf Karopapier. Drei Jugendliche schauen auf, als die Tür aufgeht.",
-    npcs: [
-      {
-        id: "bremSprite",
-        src: bremSprite,
-        x: 14,
-        y: 22,
-        w: 14,
-        h: 56,
-        alt: "Brem, der Streuner-Spieler",
-      },
-      {
-        id: "tjarkSprite",
-        src: tjarkSprite,
-        x: 56,
-        y: 22,
-        w: 14,
-        h: 56,
-        alt: "Tjark, der Spielleiter",
-      },
-      {
-        id: "yelvaSprite",
-        src: yelvaSprite,
-        x: 76,
-        y: 22,
-        w: 14,
-        h: 56,
-        alt: "Yelva, die Elfen-Spielerin",
-      },
-    ],
+    // NPCs sind direkt ins Hintergrundbild gemalt — keine Sprites.
     hotspots: [
       {
         id: "tableSeat",
@@ -1984,10 +1956,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "tjarkSpot",
-        x: 56,
-        y: 22,
+        // Tjark sitzt hinten rechts hinter dem GM-Schirm.
+        x: 64,
+        y: 6,
         w: 14,
-        h: 56,
+        h: 36,
         label: "Tjark (Meister)",
         onUse: (api) =>
           api.showText([
@@ -1997,9 +1970,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "yelvaSpot",
-        x: 76,
-        y: 22,
-        w: 14,
+        // Yelva sitzt rechts am Tisch.
+        x: 78,
+        y: 38,
+        w: 18,
         h: 56,
         label: "Yelva (Elfe)",
         onUse: (api) =>
@@ -2010,10 +1984,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "bremSpot",
-        x: 14,
-        y: 22,
-        w: 14,
-        h: 56,
+        // Brem steht links am Tisch.
+        x: 18,
+        y: 10,
+        w: 18,
+        h: 60,
         label: "Brem (Streuner)",
         onUse: (api) =>
           api.showText([
