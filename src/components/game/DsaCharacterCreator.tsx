@@ -181,6 +181,7 @@ export function DsaCharacterCreator() {
   const [chosenName, setChosenName] = useState<string>("");
   const [chosenGender, setChosenGender] = useState<Geschlecht>("männlich");
   const [nameTouched, setNameTouched] = useState<boolean>(false);
+  const [signingOpen, setSigningOpen] = useState<boolean>(false);
   const cancelRef = useRef(false);
 
   useEffect(() => {
@@ -196,6 +197,7 @@ export function DsaCharacterCreator() {
     setChosenName("");
     setChosenGender("männlich");
     setNameTouched(false);
+    setSigningOpen(false);
   }, [dsaCreatorOpen, flags]);
 
   const fullAttrs: Attrs | null = useMemo(() => {
@@ -295,6 +297,16 @@ export function DsaCharacterCreator() {
     closeDsaCreator();
     // Abenteuer sofort starten, sobald der Bogen unterschrieben ist.
     api.openDsaAdventure();
+  }
+
+  function handleOpenSigning() {
+    if (!chosenClassId) return;
+    // Falls noch kein Name vorgeschlagen wurde, einen pre-fillen.
+    if (!chosenName.trim()) {
+      const cid = chosenClass?.id ?? "krieger";
+      setChosenName(pickRandomName(cid, chosenGender));
+    }
+    setSigningOpen(true);
   }
 
   function handleCancel() {
@@ -606,13 +618,11 @@ export function DsaCharacterCreator() {
                 <div className="flex flex-wrap items-center gap-3 pt-2">
                   <button
                     type="button"
-                    onClick={handleConfirm}
-                    disabled={!chosenClassId || !chosenName.trim()}
+                    onClick={handleOpenSigning}
+                    disabled={!chosenClassId}
                     title={
                       !chosenClassId
                         ? "Erst einen Typus wählen"
-                        : !chosenName.trim()
-                        ? "Erst einen Namen eintragen"
                         : "Bogen unterschreiben"
                     }
                     className="dsa-stamp text-sm cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
@@ -642,6 +652,99 @@ export function DsaCharacterCreator() {
             <span>© Schmidt-Spiele · Ulisses</span>
           </div>
         </div>
+
+        {signingOpen && chosenClass && (
+          <div
+            className="absolute inset-0 z-30 flex items-center justify-center bg-black/60 px-3 py-3"
+            onClick={() => setSigningOpen(false)}
+          >
+            <div
+              className="dsa-paper relative w-full max-w-md px-5 py-5 sm:px-7 sm:py-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="font-display text-xl dsa-ink leading-tight mb-1">
+                Bogen unterschreiben
+              </div>
+              <p className="dsa-typed text-xs dsa-ink-faded mb-4">
+                Trag noch deinen Charakternamen und das Geschlecht ein. Danach
+                wird der Bogen versiegelt — und das Abenteuer beginnt.
+              </p>
+
+              <div className="space-y-3 mb-4">
+                <div>
+                  <div className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded mb-1">
+                    Geschlecht
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(["männlich", "weiblich"] as const).map((g) => (
+                      <button
+                        key={g}
+                        type="button"
+                        onClick={() => setChosenGender(g)}
+                        className={`dsa-typed text-xs px-3 py-1 border transition ${
+                          chosenGender === g
+                            ? "border-[#6b1a0e] bg-[rgba(180,60,40,0.15)] dsa-ink"
+                            : "border-[rgba(30,18,8,0.45)] dsa-ink-faded hover:bg-[rgba(255,250,230,0.5)]"
+                        }`}
+                      >
+                        {g}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded mb-1">
+                    Charaktername
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      autoFocus
+                      value={chosenName}
+                      onChange={(e) => {
+                        setChosenName(e.target.value);
+                        setNameTouched(true);
+                      }}
+                      placeholder="z. B. Hjalmar von Salzgar"
+                      className="dsa-rule min-w-0 flex-1 dsa-typed text-sm dsa-ink pb-0.5 bg-transparent outline-none focus:bg-[rgba(255,250,230,0.4)]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const cid = chosenClass.id;
+                        setChosenName(pickRandomName(cid, chosenGender));
+                        setNameTouched(true);
+                      }}
+                      title="Zufallsname"
+                      className="dsa-typed text-[10px] uppercase tracking-widest dsa-ink underline shrink-0"
+                    >
+                      🎲
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-[rgba(30,18,8,0.4)]">
+                <button
+                  type="button"
+                  onClick={() => setSigningOpen(false)}
+                  className="dsa-typed text-xs uppercase tracking-widest dsa-ink-faded underline px-2"
+                >
+                  Zurück
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirm}
+                  disabled={!chosenName.trim()}
+                  className="dsa-stamp text-sm cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  ✒ Unterschreiben
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
