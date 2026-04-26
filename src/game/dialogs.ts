@@ -143,7 +143,7 @@ export const dialogs: Record<string, DialogTree> = {
       q3: {
         id: "q3",
         speaker: "PHILIPPE",
-        text: "Hier wohnt ein alleinstehender Mann. Älter, vielleicht Mitte sechzig. Ich weiß nicht, wie er heißt. Ich habe geklingelt. Niemand öffnet.",
+        text: "Hier wohnt ein alleinstehender Mann. Schlank, hager, vielleicht Mitte, Ende vierzig. Ich weiß nicht, wie er heißt. Ich habe geklingelt. Niemand öffnet.",
         subtext: "Niemand kennt hier den Nachbarn. Das ist Statut, nicht Zufall.",
         next: "q4",
       },
