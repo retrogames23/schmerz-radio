@@ -1934,11 +1934,11 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "tableSeat",
-        // Der freie Stuhl im Vordergrund.
-        x: 30,
+        // Der freie Stuhl links im Vordergrund (mit Lehne).
+        x: 4,
         y: 60,
-        w: 28,
-        h: 36,
+        w: 22,
+        h: 38,
         label: (() => "Freier Stuhl am Tisch")(),
         onUse: (api) => {
           api.setFlag("enteredCommonRoom");
@@ -1958,21 +1958,21 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "tjarkSpot",
-        // Tjark sitzt hinten rechts hinter dem GM-Schirm.
-        x: 64,
-        y: 6,
-        w: 14,
-        h: 36,
+        // Tjark (schwarze Haare, Brille) hinten Mitte-Rechts hinter dem GM-Schirm.
+        x: 65,
+        y: 4,
+        w: 18,
+        h: 38,
         label: "Tjark (Meister)",
         onUse: (api) => api.startDialog("tjarkSmalltalk"),
       },
       {
         id: "yelvaSpot",
-        // Yelva sitzt rechts am Tisch.
-        x: 78,
+        // Yelva (grünes Kleid, Brille) sitzt rechts am Tisch.
+        x: 80,
         y: 38,
-        w: 18,
-        h: 56,
+        w: 19,
+        h: 58,
         label: "Yelva (Elfe)",
         onUse: (api) =>
           api.showText([
@@ -1982,11 +1982,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "bremSpot",
-        // Brem steht links am Tisch.
-        x: 18,
-        y: 10,
-        w: 18,
-        h: 60,
+        // Brem (rote Haare, rot-schwarz gestreift) steht links am Tisch.
+        x: 23,
+        y: 8,
+        w: 16,
+        h: 70,
         label: "Brem (Streuner)",
         onUse: (api) =>
           api.showText([
@@ -1996,10 +1996,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "rulebook",
-        x: 35,
-        y: 75,
+        // Aufgeschlagenes DSA-Regelwerk auf dem Tisch (links unten).
+        x: 28,
+        y: 64,
         w: 18,
-        h: 14,
+        h: 16,
         label: "DSA-Regelwerk",
         onUse: (api) =>
           api.showText([
@@ -2009,10 +2010,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "exitCommon",
+        // Schmaler Streifen am linken Bildrand (Tür außerhalb des Bildes).
         x: 0,
-        y: 30,
-        w: 10,
-        h: 60,
+        y: 0,
+        w: 4,
+        h: 100,
         label: "Zurück in die Lobby",
         onUse: (api) => api.goTo("floor1Lobby"),
       },
