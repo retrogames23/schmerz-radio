@@ -350,19 +350,80 @@ export function DsaCharacterCreator() {
                 {chosenClass.name}
               </div>
             )}
-            {rerolled && (
+            {rollCount > 1 && (
               <div className="absolute right-12 top-3 dsa-stamp text-[10px] opacity-70">
-                2. Wurf
+                {rollCount}. Wurf
               </div>
             )}
           </div>
 
           {/* Persönliche Angaben */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 mb-5">
-            <Field label="Name" value={persona.name} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 mb-5">
+            {/* Name — editierbar, sobald eine Klasse gewählt wurde */}
+            <div className="flex items-end gap-2">
+              <span className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded shrink-0">
+                Name
+              </span>
+              {phase === "review" && chosenClass ? (
+                <>
+                  <input
+                    type="text"
+                    value={chosenName}
+                    onChange={(e) => {
+                      setChosenName(e.target.value);
+                      setNameTouched(true);
+                    }}
+                    placeholder="Charaktername eintragen …"
+                    className="dsa-rule flex-1 dsa-typed text-sm dsa-ink pb-0.5 bg-transparent outline-none focus:bg-[rgba(255,250,230,0.4)]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setChosenName(pickRandomName(chosenClass.id, chosenGender));
+                      setNameTouched(true);
+                    }}
+                    title="Zufallsname"
+                    className="dsa-typed text-[10px] uppercase tracking-widest dsa-ink underline shrink-0"
+                  >
+                    🎲
+                  </button>
+                </>
+              ) : (
+                <span className="dsa-rule flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
+                  {persona.name || "\u00A0"}
+                </span>
+              )}
+            </div>
             <Field label="Typus" value={persona.typus} />
             <Field label="Stand" value={persona.stand} />
-            <Field label="Geschlecht" value={persona.geschlecht} />
+            {/* Geschlecht — Auswahl */}
+            <div className="flex items-end gap-2">
+              <span className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded shrink-0">
+                Geschlecht
+              </span>
+              {phase === "review" && chosenClass ? (
+                <div className="flex-1 flex items-center gap-1.5 pb-0.5">
+                  {(["männlich", "weiblich"] as const).map((g) => (
+                    <button
+                      key={g}
+                      type="button"
+                      onClick={() => setChosenGender(g)}
+                      className={`dsa-typed text-xs px-2 py-0.5 border transition ${
+                        chosenGender === g
+                          ? "border-[#6b1a0e] bg-[rgba(180,60,40,0.15)] dsa-ink"
+                          : "border-[rgba(30,18,8,0.45)] dsa-ink-faded hover:bg-[rgba(255,250,230,0.5)]"
+                      }`}
+                    >
+                      {g}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <span className="dsa-rule flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
+                  {persona.geschlecht}
+                </span>
+              )}
+            </div>
             <Field label="Heimat" value={persona.heimat} />
             <Field label="Götter" value={persona.goetter} />
             <Field label="Haar" value={persona.haar} />
@@ -463,9 +524,8 @@ export function DsaCharacterCreator() {
                   zu.
                 </p>
                 <p className="dsa-typed text-xs dsa-ink-faded">
-                  {rerolled
-                    ? "Zweiter Wurf — danach bleibt es, wie es ist."
-                    : "Wenn kein Krieger drin ist, darfst du noch einmal alles neu würfeln."}
+                  Du kannst so oft neu würfeln, wie du willst — solange du den
+                  Bogen noch nicht unterschrieben hast.
                 </p>
                 <div className="flex flex-wrap gap-2 pt-1">
                   <button
@@ -494,6 +554,14 @@ export function DsaCharacterCreator() {
 
             {phase === "review" && fullAttrs && (
               <>
+                {snippy && (
+                  <div className="dsa-table-aside text-sm italic">
+                    <span className="font-semibold not-italic mr-1">
+                      {snippy.speaker}:
+                    </span>
+                    „{snippy.text}"
+                  </div>
+                )}
                 <div>
                   <div className="dsa-typed text-[10px] uppercase tracking-[0.3em] dsa-ink-faded mb-2">
                     Typus wählen — möglich mit diesen Werten:
@@ -534,19 +602,29 @@ export function DsaCharacterCreator() {
                   <button
                     type="button"
                     onClick={handleConfirm}
-                    disabled={!chosenClassId}
+                    disabled={!chosenClassId || !chosenName.trim()}
+                    title={
+                      !chosenClassId
+                        ? "Erst einen Typus wählen"
+                        : !chosenName.trim()
+                        ? "Erst einen Namen eintragen"
+                        : "Bogen unterschreiben"
+                    }
                     className="dsa-stamp text-sm cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     ▣ Bogen unterschreiben
                   </button>
-                  {!kriegerOk && !rerolled && (
-                    <button
-                      type="button"
-                      onClick={handleReroll}
-                      className="dsa-typed text-xs uppercase tracking-widest dsa-ink underline"
-                    >
-                      ↻ Nochmal würfeln (kein Krieger möglich)
-                    </button>
+                  <button
+                    type="button"
+                    onClick={handleReroll}
+                    className="dsa-typed text-xs uppercase tracking-widest dsa-ink underline"
+                  >
+                    {rerollLabel}
+                  </button>
+                  {!kriegerOk && (
+                    <span className="dsa-typed text-[10px] dsa-ink-faded italic">
+                      (kein Krieger möglich)
+                    </span>
                   )}
                 </div>
               </>
