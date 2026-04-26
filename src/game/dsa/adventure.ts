@@ -590,12 +590,14 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
             outcome: {
               success: [
                 "Du schiebst den Krug zur Seite. „Such dir andere, Magister.“",
-                "Wendelmir nickt müde. „Schade.“ Brem starrt dich an, als hättest du ihm den letzten Heller geklaut.",
-                "Am nächsten Morgen liegt ein Brief auf eurem Tisch — ein anderer Auftrag, dieselbe Ruine, dieselbe Bezahlung. Manche Wege findet man nicht, sie finden einen.",
+                "Wendelmir nickt müde. „Schade.“ Er erhebt sich, zahlt sein Bier und geht ohne Eile in die Nacht hinaus.",
+                "Brem starrt dich an, als hättest du ihm den letzten Heller geklaut. Yelva schweigt — sie schweigt sehr deutlich.",
+                "Am nächsten Morgen reitet ihr nach Süden, in die warme, ruhige Richtung. Drei Wochen später hört ihr von einer anderen Gruppe, die nach Hesindes Auge aufgebrochen ist. Niemand hat sie wiedergesehen.",
+                "Manchmal ist das richtige Ende, gar nicht erst anzufangen.",
               ],
-              table: { speaker: "TJARK", text: "Auch Ablehnen ist eine Entscheidung. Das Schicksal ist hartnäckig." },
+              table: { speaker: "TJARK", text: "Auch Ablehnen ist eine Entscheidung. Da endet eure Geschichte — heute jedenfalls." },
             },
-            next: "scene3",
+            next: "end",
           },
         ],
       },
