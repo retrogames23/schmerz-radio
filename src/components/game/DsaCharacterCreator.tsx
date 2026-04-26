@@ -222,14 +222,16 @@ export function DsaCharacterCreator() {
     ? DSA_CLASSES.find((c) => c.id === chosenClassId) ?? null
     : null;
 
-  // Wenn die Klasse gewechselt wird (oder zum ersten Mal eine Klasse
-  // gewählt wird) und der Spieler den Namen noch nicht selbst getippt hat,
-  // schlagen wir einen passenden Default-Namen vor.
+  // Sobald der Bogen geprüft wird, schlagen wir einen passenden
+  // Default-Namen vor (aus der Krieger-Liste, bis eine Klasse gewählt wird).
+  // Wechselt die Klasse oder das Geschlecht und der Spieler hat den Namen
+  // noch nicht selbst getippt, wird der Vorschlag aktualisiert.
   useEffect(() => {
-    if (!chosenClass) return;
+    if (phase !== "review") return;
     if (nameTouched) return;
-    setChosenName(pickRandomName(chosenClass.id, chosenGender));
-  }, [chosenClass, chosenGender, nameTouched]);
+    const cid = chosenClass?.id ?? "krieger";
+    setChosenName(pickRandomName(cid, chosenGender));
+  }, [phase, chosenClass, chosenGender, nameTouched]);
 
   const ae = useMemo(() => {
     if (!fullAttrs || !chosenClass) return null;
