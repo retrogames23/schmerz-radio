@@ -8,7 +8,11 @@ import {
   type ReactNode,
 } from "react";
 
-const STORAGE_KEY = "schmerz-radio.settings.v1";
+// v2: Default für `ttsEnabled` von true auf false geändert. Key-Bump
+// erzwingt, dass auch bestehende Spieler die neue Voreinstellung
+// übernehmen — sonst würde der alte v1-Eintrag (mit ttsEnabled: true)
+// die neue Default-Logik überschreiben.
+const STORAGE_KEY = "schmerz-radio.settings.v2";
 
 export interface Settings {
   musicEnabled: boolean;
@@ -19,7 +23,9 @@ export interface Settings {
 
 const DEFAULTS: Settings = {
   musicEnabled: true,
-  ttsEnabled: true,
+  // Standardmäßig aus, solange die Dialoge noch nicht final sind
+  // (TTS-Credits sollen nicht für Zwischenversionen verbraucht werden).
+  ttsEnabled: false,
   musicVolume: 0.45,
   sfxVolume: 0.7,
 };
