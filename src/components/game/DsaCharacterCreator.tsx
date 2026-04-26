@@ -15,16 +15,32 @@ import {
   DSA_CLASSES,
   qualifiesFor,
   type DsaClass,
+  type DsaClassId,
 } from "@/game/dsa/classes";
 
 type Phase = "intro" | "rolling" | "review" | "done";
+
+/** Flavor-Default-Felder je Klasse — handgeschriebene Persona auf dem Bogen. */
+const CLASS_FLAVOR: Record<
+  DsaClassId,
+  { stand: string; heimat: string; goetter: string; haar: string; augen: string }
+> = {
+  krieger: { stand: "Edelmann", heimat: "Mittelreich, Gareth", goetter: "Rondra · Praios", haar: "dunkelbraun", augen: "graublau" },
+  streuner: { stand: "Bürgerlich", heimat: "Havena, Albernia", goetter: "Phex", haar: "strohblond", augen: "braun" },
+  magier: { stand: "Magier-Adept", heimat: "Akademie zu Punin", goetter: "Hesinde", haar: "schwarz", augen: "grün" },
+  elf: { stand: "Auelf", heimat: "Salamandersteine", goetter: "Pheks · Tairach", haar: "kupferrot", augen: "moosgrün" },
+  zwerg: { stand: "Erzzwerg", heimat: "Xorlosch, Koschberge", goetter: "Angrosch", haar: "rotbraun", augen: "stahlgrau" },
+  gaukler: { stand: "Fahrendes Volk", heimat: "Khunchom, Tulamidenlande", goetter: "Phex · Rahja", haar: "pechschwarz", augen: "haselnuss" },
+  thorwaler: { stand: "Hetfrau", heimat: "Thorwal, Olport", goetter: "Swafnir · Travia", haar: "honigblond", augen: "eisblau" },
+  druide: { stand: "Hain-Druide", heimat: "Salamandersteine", goetter: "Sumu · Tairach", haar: "ergraut", augen: "tief schwarz" },
+};
 
 function emptyAttrs(): Partial<Attrs> {
   return {};
 }
 
-/** Glühender Würfel-Wurf eines einzelnen Eigenschaftswerts. */
-function DiceCell({
+/** Ein Eigenschafts-Kästchen in DSA2-Optik. */
+function AttrBox({
   attr,
   finalValue,
   rolling,
@@ -33,48 +49,68 @@ function DiceCell({
   finalValue: number | null;
   rolling: boolean;
 }) {
-  const [shown, setShown] = useState<number | null>(null);
+  const [shown, setShown] = useState<number | null>(finalValue);
+  const lastFinal = useRef<number | null>(null);
+  const [pulseKey, setPulseKey] = useState(0);
 
   useEffect(() => {
-    if (!rolling) {
-      setShown(finalValue);
-      return;
+    if (rolling) {
+      const interval = window.setInterval(() => {
+        setShown(8 + Math.floor(Math.random() * 6));
+      }, 55);
+      return () => window.clearInterval(interval);
     }
-    let cancelled = false;
-    let frame = 0;
-    const interval = window.setInterval(() => {
-      if (cancelled) return;
-      frame += 1;
-      setShown(8 + Math.floor(Math.random() * 6));
-      if (frame > 12) {
-        window.clearInterval(interval);
-      }
-    }, 50);
-    return () => {
-      cancelled = true;
-      window.clearInterval(interval);
-    };
+    setShown(finalValue);
+    if (finalValue !== null && finalValue !== lastFinal.current) {
+      lastFinal.current = finalValue;
+      setPulseKey((k) => k + 1);
+    }
   }, [rolling, finalValue]);
 
   return (
-    <div
-      className={`flex flex-col items-center justify-center rounded-sm border px-2 py-2 transition ${
-        finalValue !== null
-          ? "border-amber-glow/60 bg-amber-glow/10 text-amber-glow"
-          : "border-border bg-secondary/40 text-muted-foreground"
-      }`}
-    >
-      <div className="font-mono-crt text-[10px] uppercase tracking-widest">
-        {attr}
+    <div className="flex flex-col items-center">
+      <div className="dsa-typed text-[8px] uppercase tracking-[0.2em] dsa-ink-faded mb-0.5">
+        {ATTR_LABEL[attr]}
       </div>
       <div
-        className={`font-display text-2xl leading-none ${
-          finalValue !== null ? "amber-glow" : ""
+        className={`dsa-box-thick flex h-12 w-12 items-center justify-center sm:h-14 sm:w-14 ${
+          rolling ? "bg-amber-100/60" : ""
         }`}
       >
-        {shown ?? "–"}
+        <span
+          key={pulseKey}
+          className={`font-display text-2xl sm:text-3xl dsa-ink ${
+            finalValue !== null && !rolling ? "dsa-value-in" : ""
+          }`}
+        >
+          {shown ?? "—"}
+        </span>
       </div>
-      <div className="text-[9px] text-muted-foreground">{ATTR_LABEL[attr]}</div>
+      <div className="dsa-typed text-[10px] font-bold tracking-widest dsa-ink mt-0.5">
+        {attr}
+      </div>
+    </div>
+  );
+}
+
+/** Kleine beschriftete Linie wie auf dem Originalbogen. */
+function Field({
+  label,
+  value,
+  className = "",
+}: {
+  label: string;
+  value: string;
+  className?: string;
+}) {
+  return (
+    <div className={`flex items-end gap-2 ${className}`}>
+      <span className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded shrink-0">
+        {label}
+      </span>
+      <span className="dsa-rule flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
+        {value || "\u00A0"}
+      </span>
     </div>
   );
 }
@@ -86,11 +122,10 @@ export function DsaCharacterCreator() {
   const [attrs, setAttrs] = useState<Partial<Attrs>>(emptyAttrs());
   const [le, setLe] = useState<number | null>(null);
   const [rollingIdx, setRollingIdx] = useState<number>(-1);
-  const [chosenClassId, setChosenClassId] = useState<string | null>(null);
+  const [chosenClassId, setChosenClassId] = useState<DsaClassId | null>(null);
   const [rerolled, setRerolled] = useState<boolean>(false);
   const cancelRef = useRef(false);
 
-  // Beim Öffnen alles zurücksetzen.
   useEffect(() => {
     if (!dsaCreatorOpen) return;
     cancelRef.current = false;
@@ -122,16 +157,26 @@ export function DsaCharacterCreator() {
     return qualifiesFor(k, fullAttrs);
   }, [fullAttrs]);
 
+  const chosenClass = chosenClassId
+    ? DSA_CLASSES.find((c) => c.id === chosenClassId) ?? null
+    : null;
+
+  const ae = useMemo(() => {
+    if (!fullAttrs || !chosenClass) return null;
+    if (!chosenClass.magic) return null;
+    return rollAE(fullAttrs.MU, fullAttrs.IN);
+  }, [fullAttrs, chosenClass]);
+
   async function rollAll() {
     setPhase("rolling");
     setAttrs(emptyAttrs());
     setLe(null);
+    setChosenClassId(null);
     const rolled: Partial<Attrs> = {};
     for (let i = 0; i < ATTR_ORDER.length; i++) {
       if (cancelRef.current) return;
       setRollingIdx(i);
-      // Animations-Pause während die Ziffern flackern.
-      await new Promise((r) => window.setTimeout(r, 700));
+      await new Promise((r) => window.setTimeout(r, 650));
       const a = ATTR_ORDER[i];
       rolled[a] = roll1d6plus7();
       setAttrs({ ...rolled });
@@ -150,13 +195,11 @@ export function DsaCharacterCreator() {
   }
 
   function handleConfirm() {
-    if (!fullAttrs || !chosenClassId || le === null) return;
-    const cls = DSA_CLASSES.find((c) => c.id === chosenClassId)!;
-    const ae = cls.magic ? rollAE(fullAttrs.MU, fullAttrs.IN) : null;
+    if (!fullAttrs || !chosenClass || le === null) return;
     setDsaCharacter({
-      classId: cls.id,
-      className: cls.name,
-      name: DEFAULT_NAME[cls.id],
+      classId: chosenClass.id,
+      className: chosenClass.name,
+      name: DEFAULT_NAME[chosenClass.id],
       attrs: { ...fullAttrs },
       le,
       ae,
@@ -174,62 +217,80 @@ export function DsaCharacterCreator() {
 
   if (!dsaCreatorOpen) return null;
 
+  const flavor = chosenClass ? CLASS_FLAVOR[chosenClass.id] : null;
+  const persona = {
+    name: chosenClass ? DEFAULT_NAME[chosenClass.id] : "",
+    typus: chosenClass?.name ?? "",
+    stand: flavor?.stand ?? "",
+    heimat: flavor?.heimat ?? "",
+    goetter: flavor?.goetter ?? "",
+    haar: flavor?.haar ?? "",
+    augen: flavor?.augen ?? "",
+    geschlecht: chosenClass?.id === "elf" || chosenClass?.id === "thorwaler" ? "weiblich" : "männlich",
+  };
+
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-6">
-      <div className="relative w-full max-w-3xl overflow-hidden rounded-sm border border-amber-glow/50 bg-background/95 shadow-[0_0_60px_rgba(0,0,0,0.8)]">
+    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/85 px-4 py-4 overflow-y-auto">
+      <div className="relative w-full max-w-4xl my-auto">
         <CloseButton
           onClick={handleCancel}
           label="Charakter-Erschaffung abbrechen"
-          className="absolute right-3 top-3 z-10"
+          className="absolute -right-1 -top-1 z-20"
         />
-        <div className="border-b border-amber-glow/30 bg-amber-glow/5 px-5 py-3">
-          <div className="font-mono-crt text-xs uppercase tracking-[0.3em] text-amber-glow">
-            ▣ Heldenerschaffung — Das Schwarze Auge, 2. Edition
-          </div>
-          <div className="mt-1 font-display text-lg text-foreground">
-            Sieben Eigenschaften, ein Wurf je 1W6+7.
-          </div>
-        </div>
 
-        <div className="px-5 py-5">
-          {phase === "intro" && (
-            <div className="space-y-4">
-              <p className="font-display text-base leading-relaxed text-foreground">
-                Tjark schiebt dir einen sechsseitigen Würfel zu.
-                <br />
-                Sieben Eigenschaften, sagt er. Mut, Klugheit, Charisma,
-                Fingerfertigkeit, Gewandtheit, Intuition, Körperkraft. Für
-                jede einmal würfeln, plus sieben.
-              </p>
-              <p className="font-display text-sm leading-relaxed text-muted-foreground">
-                {rerolled
-                  ? "Du hast deinen zweiten Wurf — danach bleibt es, wie es ist."
-                  : "Wenn du keinen Krieger erschaffen kannst, darfst du noch einmal alles neu würfeln."}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={rollAll}
-                  className="rounded-sm border border-amber-glow/60 bg-amber-glow/10 px-4 py-2 text-sm uppercase tracking-widest text-amber-glow hover:bg-amber-glow/20"
-                >
-                  ▸ Würfeln
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="rounded-sm border border-border px-4 py-2 text-sm uppercase tracking-widest text-muted-foreground hover:border-amber-glow/40 hover:text-foreground"
-                >
-                  Doch nicht
-                </button>
+        {/* Der Bogen */}
+        <div className="dsa-paper relative px-6 py-5 sm:px-10 sm:py-7">
+          {/* Kopfzeile */}
+          <div className="flex items-start justify-between border-b-2 border-[rgba(30,18,8,0.85)] pb-3 mb-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[rgba(30,18,8,0.85)] dsa-ink">
+                <span className="font-display text-2xl">◉</span>
+              </div>
+              <div>
+                <div className="dsa-typed text-[10px] uppercase tracking-[0.35em] dsa-ink-faded">
+                  Schmidt-Spiele · Verlag
+                </div>
+                <div className="font-display text-2xl sm:text-3xl dsa-ink leading-tight">
+                  HELDEN-DOKUMENT
+                </div>
+                <div className="dsa-typed text-[11px] tracking-widest dsa-ink-faded">
+                  DAS SCHWARZE AUGE · Zweite Edition
+                </div>
               </div>
             </div>
-          )}
+            {phase === "review" && chosenClass && (
+              <div className="dsa-stamp text-xs sm:text-sm">
+                {chosenClass.name}
+              </div>
+            )}
+            {rerolled && (
+              <div className="absolute right-12 top-3 dsa-stamp text-[10px] opacity-70">
+                2. Wurf
+              </div>
+            )}
+          </div>
 
-          {(phase === "rolling" || phase === "review") && (
-            <div className="space-y-5">
-              <div className="grid grid-cols-7 gap-2">
+          {/* Persönliche Angaben */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 mb-5">
+            <Field label="Name" value={persona.name} />
+            <Field label="Typus" value={persona.typus} />
+            <Field label="Stand" value={persona.stand} />
+            <Field label="Geschlecht" value={persona.geschlecht} />
+            <Field label="Heimat" value={persona.heimat} />
+            <Field label="Götter" value={persona.goetter} />
+            <Field label="Haar" value={persona.haar} />
+            <Field label="Augen" value={persona.augen} />
+          </div>
+
+          {/* Eigenschaften + LE/AE */}
+          <div className="flex flex-col lg:flex-row gap-5 mb-5">
+            <div className="flex-1">
+              <div className="dsa-typed text-[10px] uppercase tracking-[0.3em] dsa-ink-faded mb-2 border-b border-[rgba(30,18,8,0.55)] pb-1">
+                Eigenschaftswerte (1W6 + 7)
+              </div>
+              <div className="grid grid-cols-7 gap-1 sm:gap-2">
                 {ATTR_ORDER.map((a, idx) => (
-                  <DiceCell
+                  <AttrBox
                     key={a}
                     attr={a}
                     finalValue={attrs[a] ?? null}
@@ -237,99 +298,179 @@ export function DsaCharacterCreator() {
                   />
                 ))}
               </div>
+            </div>
 
-              {phase === "review" && fullAttrs && le !== null && (
-                <>
-                  <div className="rounded-sm border border-border/60 bg-secondary/30 px-3 py-2 text-sm">
-                    <span className="font-mono-crt text-xs uppercase tracking-widest text-muted-foreground">
-                      Lebensenergie
-                    </span>{" "}
-                    <span className="font-display text-lg amber-glow">{le}</span>
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      (KK {fullAttrs.KK} + 1W6 + 15)
-                    </span>
+            <div className="flex flex-row lg:flex-col gap-3 lg:w-32">
+              <div className="flex-1">
+                <div className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded text-center mb-1">
+                  Lebensenergie
+                </div>
+                <div className="dsa-box-thick flex h-14 items-center justify-center">
+                  <span className="font-display text-3xl dsa-ink">
+                    {le ?? "—"}
+                  </span>
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded text-center mb-1">
+                  Astralenergie
+                </div>
+                <div className="dsa-box-thick flex h-14 items-center justify-center">
+                  <span className="font-display text-3xl dsa-ink">
+                    {ae ?? "—"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Negative Eigenschaften (Deko) + Talente-Andeutung */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+            <div>
+              <div className="dsa-typed text-[10px] uppercase tracking-[0.3em] dsa-ink-faded mb-2 border-b border-[rgba(30,18,8,0.55)] pb-1">
+                Negative Eigenschaften
+              </div>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1 dsa-typed text-[11px] dsa-ink">
+                {["Aberglaube", "Höhenangst", "Goldgier", "Jähzorn", "Neugier", "Raumangst", "Totenangst"].map((n) => (
+                  <div key={n} className="flex items-center justify-between border-b border-[rgba(40,25,5,0.35)]">
+                    <span>{n}</span>
+                    <span className="dsa-ink-faded">3W+4</span>
                   </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="dsa-typed text-[10px] uppercase tracking-[0.3em] dsa-ink-faded mb-2 border-b border-[rgba(30,18,8,0.55)] pb-1">
+                Talente · Auswahl
+              </div>
+              <div className="dsa-typed text-[11px] dsa-ink space-y-1">
+                {(chosenClass?.id === "magier" || chosenClass?.id === "druide"
+                  ? ["Stab+5", "Lesen/Schreiben +6", "Sprachen +4", "Pflanzenkunde +3"]
+                  : chosenClass?.id === "streuner" || chosenClass?.id === "gaukler"
+                  ? ["Dolch +5", "Schleichen +6", "Taschendieb +5", "Lügen +4"]
+                  : chosenClass?.id === "elf"
+                  ? ["Bogen +7", "Sinnenschärfe +6", "Wildnisleben +5", "Singen +4"]
+                  : chosenClass?.id === "thorwaler"
+                  ? ["Hiebwaffen +7", "Boote fahren +5", "Zechen +5"]
+                  : chosenClass?.id === "zwerg"
+                  ? ["Hiebwaffen +6", "Mineralogie +5", "Bergbau +5"]
+                  : ["Hiebwaffen +6", "Schild +5", "Reiten +4", "Athletik +4"]
+                ).map((t) => (
+                  <div key={t} className="flex items-center justify-between border-b border-[rgba(40,25,5,0.35)]">
+                    <span>{t.split(" ").slice(0, -1).join(" ") || t}</span>
+                    <span className="dsa-ink-faded">{t.split(" ").slice(-1)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
-                  <div>
-                    <div className="mb-2 font-mono-crt text-xs uppercase tracking-widest text-muted-foreground">
-                      Mögliche Klassen
+          {/* Aktions-Bereich (am Tisch) */}
+          <div className="border-t-2 border-[rgba(30,18,8,0.85)] pt-4 space-y-3">
+            {phase === "intro" && (
+              <>
+                <p className="dsa-typed text-sm dsa-ink leading-relaxed">
+                  „Sieben Eigenschaften", sagt Tjark. „Mut, Klugheit, Charisma,
+                  Fingerfertigkeit, Gewandtheit, Intuition, Körperkraft.
+                  Jeweils einen Sechser plus sieben." Er schiebt dir den Würfel
+                  zu.
+                </p>
+                <p className="dsa-typed text-xs dsa-ink-faded">
+                  {rerolled
+                    ? "Zweiter Wurf — danach bleibt es, wie es ist."
+                    : "Wenn kein Krieger drin ist, darfst du noch einmal alles neu würfeln."}
+                </p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={rollAll}
+                    className="dsa-stamp text-sm hover:bg-[rgba(255,250,230,0.5)] cursor-pointer"
+                  >
+                    ▸ Würfeln
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    className="dsa-typed text-xs uppercase tracking-widest dsa-ink-faded underline px-2"
+                  >
+                    Doch nicht
+                  </button>
+                </div>
+              </>
+            )}
+
+            {phase === "rolling" && (
+              <p className="dsa-typed text-sm dsa-ink-faded italic">
+                Der Würfel rollt über das Tischtuch …
+              </p>
+            )}
+
+            {phase === "review" && fullAttrs && (
+              <>
+                <div>
+                  <div className="dsa-typed text-[10px] uppercase tracking-[0.3em] dsa-ink-faded mb-2">
+                    Typus wählen — möglich mit diesen Werten:
+                  </div>
+                  {qualifying.length === 0 ? (
+                    <p className="dsa-typed text-sm" style={{ color: "#6b1a0e" }}>
+                      Keine Standardklasse erfüllt diese Werte. Würfle nochmal.
+                    </p>
+                  ) : (
+                    <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-4">
+                      {DSA_CLASSES.map((c) => {
+                        const ok = qualifying.includes(c);
+                        const selected = chosenClassId === c.id;
+                        return (
+                          <button
+                            key={c.id}
+                            type="button"
+                            disabled={!ok}
+                            onClick={() => setChosenClassId(c.id)}
+                            title={c.blurb}
+                            className={`dsa-typed text-xs px-2 py-1.5 text-left transition border ${
+                              selected
+                                ? "border-[#6b1a0e] bg-[rgba(180,60,40,0.15)] dsa-ink"
+                                : ok
+                                ? "border-[rgba(30,18,8,0.6)] dsa-ink hover:bg-[rgba(255,250,230,0.5)]"
+                                : "border-[rgba(30,18,8,0.2)] dsa-ink-faded opacity-40 cursor-not-allowed line-through"
+                            }`}
+                          >
+                            {c.name}
+                          </button>
+                        );
+                      })}
                     </div>
-                    {qualifying.length === 0 ? (
-                      <p className="font-display text-sm text-rust">
-                        Keine Standardklasse erfüllt diese Werte. Das passiert
-                        statistisch eigentlich nie — würfle nochmal.
-                      </p>
-                    ) : (
-                      <div className="grid gap-2 sm:grid-cols-2">
-                        {DSA_CLASSES.map((c) => {
-                          const ok = qualifying.includes(c);
-                          const selected = chosenClassId === c.id;
-                          return (
-                            <button
-                              key={c.id}
-                              type="button"
-                              disabled={!ok}
-                              onClick={() => setChosenClassId(c.id)}
-                              className={`rounded-sm border px-3 py-2 text-left transition ${
-                                selected
-                                  ? "border-amber-glow bg-amber-glow/15"
-                                  : ok
-                                  ? "border-border bg-secondary/40 hover:border-amber-glow/60 hover:bg-amber-glow/5"
-                                  : "cursor-not-allowed border-border/40 bg-secondary/20 opacity-50"
-                              }`}
-                            >
-                              <div className="flex items-center justify-between">
-                                <span className="font-display text-base text-foreground">
-                                  {c.name}
-                                </span>
-                                <span className="font-mono-crt text-[10px] uppercase tracking-widest">
-                                  {ok ? (
-                                    <span className="text-amber-glow">✓</span>
-                                  ) : (
-                                    <span className="text-muted-foreground">
-                                      ✗
-                                    </span>
-                                  )}
-                                </span>
-                              </div>
-                              <div className="mt-1 text-xs text-muted-foreground">
-                                {c.blurb}
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
+                  )}
+                </div>
 
-                  <div className="flex flex-wrap gap-2 pt-1">
+                <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={handleConfirm}
+                    disabled={!chosenClassId}
+                    className="dsa-stamp text-sm cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    ▣ Bogen unterschreiben
+                  </button>
+                  {!kriegerOk && !rerolled && (
                     <button
                       type="button"
-                      onClick={handleConfirm}
-                      disabled={!chosenClassId}
-                      className="rounded-sm border border-amber-glow/60 bg-amber-glow/10 px-4 py-2 text-sm uppercase tracking-widest text-amber-glow hover:bg-amber-glow/20 disabled:cursor-not-allowed disabled:opacity-40"
+                      onClick={handleReroll}
+                      className="dsa-typed text-xs uppercase tracking-widest dsa-ink underline"
                     >
-                      ▣ Mit dieser Klasse spielen
+                      ↻ Nochmal würfeln (kein Krieger möglich)
                     </button>
-                    {!kriegerOk && !rerolled && (
-                      <button
-                        type="button"
-                        onClick={handleReroll}
-                        className="rounded-sm border border-rust/60 bg-rust/10 px-4 py-2 text-sm uppercase tracking-widest text-rust hover:bg-rust/20"
-                      >
-                        ↻ Nochmal — der Krieger fehlt euch ja
-                      </button>
-                    )}
-                    {rerolled && !kriegerOk && (
-                      <span className="self-center font-mono-crt text-xs uppercase tracking-widest text-muted-foreground">
-                        zweiter Wurf — kein dritter mehr
-                      </span>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-          )}
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Fußzeile */}
+          <div className="mt-4 pt-2 border-t border-[rgba(30,18,8,0.4)] flex items-center justify-between dsa-typed text-[9px] dsa-ink-faded uppercase tracking-widest">
+            <span>Formular HD-2 / 1988</span>
+            <span>© Schmidt-Spiele · Ulisses</span>
+          </div>
         </div>
       </div>
     </div>
