@@ -1983,10 +1983,10 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bremSpot",
         // Brem (rote Haare, rot-schwarz gestreift) steht links am Tisch.
-        x: 23,
+        x: 26,
         y: 8,
         w: 16,
-        h: 70,
+        h: 56,
         label: "Brem (Streuner)",
         onUse: (api) =>
           api.showText([
