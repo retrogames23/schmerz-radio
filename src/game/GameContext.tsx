@@ -502,6 +502,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         savedAt: new Date().toISOString(),
         miraFloors: miraFloorsRef.current,
         philippeFloor: philippeFloorRef.current,
+        dsaCharacter: dsaCharacterRef.current,
       };
       const summary: SaveSummary = {
         slot,
@@ -546,6 +547,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setInventory(persisted.inventory);
       setResonance(persisted.resonance);
       setEnding(persisted.ending);
+      // DSA-Charakter wiederherstellen (oder klar zurücksetzen).
+      if (persisted.dsaCharacter) {
+        dsaCharacterRef.current = persisted.dsaCharacter;
+        setDsaCharacterState(persisted.dsaCharacter);
+      } else {
+        dsaCharacterRef.current = null;
+        setDsaCharacterState(null);
+      }
       // Wiederherstellung mit Rückwärtskompatibilität: Mira darf nie auf
       // Etage 3 stehen. Alte Saves, die das noch erlaubten, werden auf das
       // neue Schema (Mira ∈ {4,5}, Philippe = die andere, 3 frei) gemappt.
