@@ -1935,9 +1935,12 @@ export const scenes: Record<string, Scene> = {
       {
         id: "tableSeat",
         // Der freie Stuhl links im Vordergrund (mit Lehne).
-        x: 4,
-        y: 60,
-        w: 22,
+        // Stage 1024×640 zeigt 16:9-Bild via object-cover: sichtbar
+        // sind ~5.4 %..94.6 % der Original-Bildbreite. Alle Werte sind
+        // bereits in Stage-% angegeben.
+        x: 0,
+        y: 62,
+        w: 18,
         h: 38,
         label: (() => "Freier Stuhl am Tisch")(),
         onUse: (api) => {
@@ -1959,19 +1962,19 @@ export const scenes: Record<string, Scene> = {
       {
         id: "tjarkSpot",
         // Tjark (schwarze Haare, Brille) hinten Mitte-Rechts hinter dem GM-Schirm.
-        x: 65,
+        x: 66,
         y: 4,
-        w: 18,
-        h: 38,
+        w: 20,
+        h: 54,
         label: "Tjark (Meister)",
         onUse: (api) => api.startDialog("tjarkSmalltalk"),
       },
       {
         id: "yelvaSpot",
         // Yelva (grünes Kleid, Brille) sitzt rechts am Tisch.
-        x: 80,
+        x: 84,
         y: 38,
-        w: 19,
+        w: 16,
         h: 58,
         label: "Yelva (Elfe)",
         onUse: (api) =>
@@ -1983,8 +1986,6 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bremSpot",
         // Brem (rote Haare, rot-schwarz gestreift) steht links am Tisch.
-        // Stage ist 4:3 mit object-cover über einem 16:9-Bild — die Stage
-        // zeigt nur ~12.8%..87.2% der Bildbreite, daher angepasste %.
         x: 13,
         y: 12,
         w: 22,
@@ -1999,9 +2000,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "rulebook",
         // Aufgeschlagenes DSA-Regelwerk auf dem Tisch (links unten).
-        x: 28,
+        x: 24,
         y: 64,
-        w: 18,
+        w: 22,
         h: 16,
         label: "DSA-Regelwerk",
         onUse: (api) =>
