@@ -52,6 +52,8 @@ interface GameState {
   dsaCreatorOpen: boolean;
   /** Aktueller DSA-Charakter, oder `null`. */
   dsaCharacter: DsaCharacterSummary | null;
+  /** DSA-Charakterbogen-Overlay (Lese-Ansicht) sichtbar. */
+  dsaSheetOpen: boolean;
 }
 
 interface GameContextValue extends GameState {
@@ -70,6 +72,10 @@ interface GameContextValue extends GameState {
   endCutscene: () => void;
   closeDsaCreator: () => void;
   setDsaCharacter: (c: DsaCharacterSummary | null) => void;
+  /** Charakterbogen-Overlay öffnen / schließen / umschalten. */
+  openDsaSheet: () => void;
+  closeDsaSheet: () => void;
+  toggleDsaSheet: () => void;
   /** DSA-Abenteuer-Overlay sichtbar (nach Charaktererstellung). */
   dsaAdventureOpen: boolean;
   /** Aktueller Beat im Abenteuer, oder null. */
@@ -148,6 +154,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [burnSequence, setBurnSequence] = useState<boolean>(false);
   const [cutscene, setCutscene] = useState<CutsceneId | null>(null);
   const [dsaCreatorOpen, setDsaCreatorOpen] = useState(false);
+  const [dsaSheetOpen, setDsaSheetOpen] = useState(false);
   const [dsaCharacter, setDsaCharacterState] =
     useState<DsaCharacterSummary | null>(null);
   const dsaCharacterRef = useRef<DsaCharacterSummary | null>(null);
@@ -492,6 +499,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dsaCharacter,
     dsaAdventureOpen,
     dsaBeat,
+    dsaSheetOpen,
     closeDsaAdventure: () => setDsaAdventureOpen(false),
     api,
     setCaption,
@@ -518,6 +526,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     endBurnSequence: () => setBurnSequence(false),
     endCutscene: () => setCutscene(null),
     closeDsaCreator: () => setDsaCreatorOpen(false),
+    openDsaSheet: () => setDsaSheetOpen(true),
+    closeDsaSheet: () => setDsaSheetOpen(false),
+    toggleDsaSheet: () => setDsaSheetOpen((v) => !v),
     setDsaCharacter: (c) => {
       dsaCharacterRef.current = c;
       setDsaCharacterState(c);

@@ -35,7 +35,9 @@ export function DsaCharacterSheet() {
 
   const cls = DSA_CLASSES.find((c) => c.id === dsaCharacter.classId);
   const combatant = heroCombatantFromCharacter(dsaCharacter);
-  const profile = CLASS_COMBAT_PROFILES[dsaCharacter.classId] ?? null;
+  const profile =
+    (CLASS_COMBAT_PROFILES as Record<string, unknown>)[dsaCharacter.classId] ??
+    null;
 
   return (
     <div
