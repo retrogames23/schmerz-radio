@@ -1940,7 +1940,7 @@ export const scenes: Record<string, Scene> = {
         // bereits in Stage-% angegeben.
         x: 0,
         y: 62,
-        w: 18,
+        w: 13,
         h: 38,
         label: (() => "Freier Stuhl am Tisch")(),
         onUse: (api) => {
