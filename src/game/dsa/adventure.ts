@@ -23,6 +23,14 @@ export interface DsaOption {
   requires?: DsaRequirement;
   /** Optional: Eigenschafts-Probe (3W20 unter Eigenschaft). */
   attrCheck?: { attr: Attr; modifier?: number };
+  /**
+   * Optional: automatischer Kampf statt einfacher Probe. Ist das gesetzt,
+   * wird die Kampfszene gezeigt — Sieg → success-Text, Niederlage → failure.
+   */
+  combat?: {
+    /** Gegner-IDs aus ENEMY_STATS. Mehrere = mehrere Feinde gleichzeitig. */
+    enemyIds: string[];
+  };
   outcome: {
     /** Erzähltext bei Erfolg / kein Check. */
     success: string[];
