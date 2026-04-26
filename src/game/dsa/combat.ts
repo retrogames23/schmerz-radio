@@ -274,8 +274,10 @@ export interface CombatEvent {
 export interface CombatResult {
   victory: boolean;
   events: CombatEvent[];
-  /** LE-Status des Helden am Ende (für Übernahme in Charakterbogen). */
+  /** LE-Status des Spieler-Helden (Layards Charakter) am Ende. */
   heroLeFinal: number;
+  /** LE-Status aller Helden am Ende (Held + Gefährten). */
+  heroesFinal: { id: string; le: number }[];
 }
 
 function snapshot(all: Combatant[]): { id: string; le: number }[] {
@@ -284,6 +286,12 @@ function snapshot(all: Combatant[]): { id: string; le: number }[] {
 
 function alive(c: Combatant): boolean {
   return c.le > 0;
+}
+
+function pickWeakest(group: Combatant[]): Combatant | null {
+  const live = group.filter(alive);
+  if (live.length === 0) return null;
+  return live.sort((a, b) => a.le - b.le)[0];
 }
 
 function pickFoeTarget(foes: Combatant[]): Combatant | null {
@@ -298,12 +306,13 @@ function pickFoeTarget(foes: Combatant[]): Combatant | null {
  * Die Anzeige spielt die Events dann zeitversetzt ab.
  */
 export function resolveCombat(
-  hero: Combatant,
+  heroes: Combatant[],
   foes: Combatant[],
   opts: { maxRounds?: number } = {},
 ): CombatResult {
   const maxRounds = opts.maxRounds ?? 20;
-  const all: Combatant[] = [hero, ...foes];
+  const hero = heroes[0];
+  const all: Combatant[] = [...heroes, ...foes];
   const events: CombatEvent[] = [];
 
   // Intro-Events für Gegner mit Flavor.
@@ -318,12 +327,14 @@ export function resolveCombat(
     }
   }
 
+  const heroesAllDead = () => heroes.every((h) => !alive(h));
+
   for (let round = 1; round <= maxRounds; round++) {
-    if (!alive(hero)) break;
+    if (heroesAllDead()) break;
     if (foes.every((f) => !alive(f))) break;
 
     // Initiative pro Runde — höchste zuerst.
-    const order = [hero, ...foes.filter(alive)]
+    const order = [...heroes.filter(alive), ...foes.filter(alive)]
       .map((c) => ({ c, ini: c.iniBase + d6() }))
       .sort((a, b) => b.ini - a.ini);
 
@@ -346,11 +357,13 @@ export function resolveCombat(
 
     for (const { c: actor } of order) {
       if (!alive(actor)) continue;
-      if (!alive(hero)) break;
+      if (heroesAllDead()) break;
       if (foes.every((f) => !alive(f))) break;
 
       const target =
-        actor.side === "hero" ? pickFoeTarget(foes) : alive(hero) ? hero : null;
+        actor.side === "hero"
+          ? pickFoeTarget(foes)
+          : pickWeakest(heroes);
       if (!target) continue;
 
       // Attacke
@@ -435,12 +448,12 @@ export function resolveCombat(
     }
   }
 
-  const victory = alive(hero) && foes.every((f) => !alive(f));
+  const victory = !heroesAllDead() && foes.every((f) => !alive(f));
   events.push({
     kind: victory ? "end-victory" : "end-defeat",
     text: victory
       ? "Der Kampf ist vorbei. Ihr habt überlebt."
-      : "Der Kampf ist verloren. Brem zieht euch raus.",
+      : "Der Kampf ist verloren. Stille legt sich über die Lichtung.",
     snapshot: snapshot(all),
   });
 
@@ -448,5 +461,6 @@ export function resolveCombat(
     victory,
     events,
     heroLeFinal: hero.le,
+    heroesFinal: heroes.map((h) => ({ id: h.id, le: h.le })),
   };
 }
