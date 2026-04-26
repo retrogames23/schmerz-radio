@@ -1930,7 +1930,7 @@ export const scenes: Record<string, Scene> = {
     title: "Gemeinschaftsraum — Erdgeschoss, E67",
     intro:
       "Warmes Lampenlicht über einem viel zu großen Tisch. Würfel, ein aufgeschlagenes Regelwerk, ein Plan auf Karopapier. Drei Jugendliche schauen auf, als die Tür aufgeht.",
-    // NPCs sind direkt ins Hintergrundbild gemalt — keine Sprites.
+    // NPCs sind direkt ins Hintergrundbild gemalt (keine Sprites).
     hotspots: [
       {
         id: "tableSeat",
