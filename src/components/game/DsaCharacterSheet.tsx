@@ -52,20 +52,20 @@ export function DsaCharacterSheet() {
 
         {/* Header */}
         <div className="dsa-adventure-header shrink-0 px-5 sm:px-6 pt-5 pb-3 border-b-2 border-[rgba(30,18,8,0.85)]">
-          <div className="dsa-typed text-[10px] uppercase tracking-[0.3em] dsa-ink-faded">
+          <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold">
             Charakterbogen · DSA 2
           </div>
           <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <h2 className="font-display text-2xl sm:text-3xl dsa-ink">
+            <h2 className="font-display text-2xl sm:text-3xl dsa-ink font-extrabold">
               {dsaCharacter.name}
             </h2>
-            <span className="dsa-typed text-sm dsa-ink-faded">
+            <span className="dsa-typed text-sm dsa-ink font-bold">
               · {dsaCharacter.className}
               {cls?.magic ? " · magiebegabt" : ""}
             </span>
           </div>
           {cls?.blurb && (
-            <p className="dsa-typed mt-2 text-xs italic dsa-ink-faded leading-snug">
+            <p className="dsa-typed mt-2 text-sm italic dsa-ink leading-snug font-semibold">
               {cls.blurb}
             </p>
           )}
@@ -75,7 +75,7 @@ export function DsaCharacterSheet() {
         <div className="dsa-adventure-body min-h-0 flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
           {/* Eigenschaften + LE/AE */}
           <section>
-            <div className="dsa-typed text-[10px] uppercase tracking-[0.3em] dsa-ink-faded mb-2 border-b border-[rgba(30,18,8,0.55)] pb-1">
+            <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.85)] pb-1">
               Eigenschaftswerte
             </div>
             <div className="grid grid-cols-7 gap-1 sm:gap-2">
@@ -117,7 +117,7 @@ export function DsaCharacterSheet() {
 
           {/* Kampfwerte (Held in der Tafelrunde) */}
           <section>
-            <div className="dsa-typed text-[10px] uppercase tracking-[0.3em] dsa-ink-faded mb-2 border-b border-[rgba(30,18,8,0.55)] pb-1">
+            <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.85)] pb-1">
               Kampfwerte (im Abenteuer)
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -136,25 +136,25 @@ export function DsaCharacterSheet() {
                 small
               />
             </div>
-            <div className="dsa-typed mt-2 text-xs dsa-ink-faded">
-              Bewaffnung: <span className="dsa-ink">{combatant.weapon}</span>
+            <div className="dsa-typed mt-2 text-sm dsa-ink font-semibold">
+              Bewaffnung: <span className="dsa-ink font-extrabold">{combatant.weapon}</span>
             </div>
           </section>
 
           {/* Talente (passend zur Klasse) */}
           {profile && (
             <section>
-              <div className="dsa-typed text-[10px] uppercase tracking-[0.3em] dsa-ink-faded mb-2 border-b border-[rgba(30,18,8,0.55)] pb-1">
+              <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.85)] pb-1">
                 Talente · Auswahl
               </div>
-              <div className="dsa-typed text-[12px] dsa-ink grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
+              <div className="dsa-typed text-[13px] dsa-ink font-semibold grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
                 {classTalents(dsaCharacter.classId).map((t) => (
                   <div
                     key={t}
-                    className="flex items-center justify-between border-b border-[rgba(40,25,5,0.35)]"
+                    className="flex items-center justify-between border-b border-[rgba(20,12,4,0.55)] py-0.5"
                   >
                     <span>{t.split(" ").slice(0, -1).join(" ") || t}</span>
-                    <span className="dsa-ink-faded">
+                    <span className="dsa-ink font-bold">
                       {t.split(" ").slice(-1)}
                     </span>
                   </div>
@@ -186,13 +186,13 @@ export function DsaCharacterSheet() {
 function ReadAttr({ attr, value }: { attr: Attr; value: number }) {
   return (
     <div className="flex flex-col items-center min-w-0">
-      <div className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded">
+      <div className="dsa-typed text-[10px] uppercase tracking-widest dsa-ink font-bold">
         {attr}
       </div>
       <div className="dsa-box-thick mt-1 flex h-12 w-full items-center justify-center">
-        <span className="font-display text-2xl dsa-ink">{value}</span>
+        <span className="font-display text-2xl dsa-ink font-extrabold">{value}</span>
       </div>
-      <div className="dsa-typed text-[9px] dsa-ink-faded mt-1 truncate">
+      <div className="dsa-typed text-[10px] dsa-ink font-semibold mt-1 truncate">
         {ATTR_LABEL[attr]}
       </div>
     </div>
@@ -212,7 +212,7 @@ function Stat({
 }) {
   return (
     <div>
-      <div className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded mb-1">
+      <div className="dsa-typed text-[10px] uppercase tracking-widest dsa-ink font-bold mb-1">
         {label}
       </div>
       <div
@@ -223,7 +223,7 @@ function Stat({
       >
         <span
           className={
-            "font-display dsa-ink " +
+            "font-display dsa-ink font-extrabold " +
             (accent ? "text-2xl" : small ? "text-base" : "text-xl")
           }
         >
