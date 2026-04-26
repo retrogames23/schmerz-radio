@@ -56,6 +56,9 @@ export function DialogOverlay() {
     ENNIS: "text-foreground",
     STEGMANN: "text-amber-glow",
     OKWU: "text-foreground",
+    TJARK: "text-foreground",
+    BREM: "text-foreground",
+    YELVA: "text-foreground",
   };
 
   return (

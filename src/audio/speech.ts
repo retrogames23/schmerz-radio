@@ -18,7 +18,10 @@ type Speaker =
   | "HELKA"
   | "ENNIS"
   | "STEGMANN"
-  | "OKWU";
+  | "OKWU"
+  | "TJARK"
+  | "BREM"
+  | "YELVA";
 
 
 interface VoiceProfile {
@@ -125,6 +128,25 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
     voiceId: "EXAVITQu4vr4xnSDxMaL", // Sarah — warm, mittlere Frauenstimme, Anfang 50
     speed: 1.0,
     settings: { stability: 0.5, similarity_boost: 0.85, style: 0.2, use_speaker_boost: true },
+  },
+  // DSA-Runde im Gemeinschaftsraum — drei Jugendliche.
+  TJARK: {
+    // Liam — junger Mann, leicht förmlich (Spielleiter-Ton).
+    voiceId: "TX3LPaxmHKxFdv7VOQHJ",
+    speed: 0.98,
+    settings: { stability: 0.5, similarity_boost: 0.8, style: 0.2, use_speaker_boost: true },
+  },
+  BREM: {
+    // Charlie — jünger, schneller, schnoddrig.
+    voiceId: "IKne3meq5aSn9XLyUdCD",
+    speed: 1.1,
+    settings: { stability: 0.4, similarity_boost: 0.8, style: 0.35, use_speaker_boost: true },
+  },
+  YELVA: {
+    // Charlotte — junge Frau, ruhig, intelligent.
+    voiceId: "XB0fDUnXU5powFXDhCwa",
+    speed: 1.0,
+    settings: { stability: 0.55, similarity_boost: 0.8, style: 0.2, use_speaker_boost: true },
   },
 };
 

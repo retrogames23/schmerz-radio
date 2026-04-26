@@ -436,3 +436,31 @@
     pointer-events: auto;
   }
 }
+
+/* ===== Floating Chatter (Monkey-Island-Style Sprechblasen) ===== */
+@keyframes bubble-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -8px) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -16px) scale(1);
+  }
+}
+@keyframes bubble-out {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -16px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -22px) scale(0.96);
+  }
+}
+.chatter-bubble {
+  animation: bubble-in 0.35s ease-out forwards;
+}
+.chatter-bubble.is-out {
+  animation: bubble-out 0.35s ease-in forwards;
+}

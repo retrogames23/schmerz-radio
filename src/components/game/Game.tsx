@@ -21,6 +21,7 @@ import { Ending } from "./Ending";
 import { TitleScreen } from "./TitleScreen";
 import { PauseMenu } from "./PauseMenu";
 import { MobileStage } from "./MobileStage";
+import { DsaCharacterCreator } from "./DsaCharacterCreator";
 import { useGame } from "@/game/GameContext";
 
 export function Game() {
@@ -95,6 +96,7 @@ function GameStage({
             <NodeTerminal />
             <BurnSequence />
             <ParamedicsCutscene />
+            <DsaCharacterCreator />
             <Ending />
             <PauseMenu open={pauseOpen} onClose={() => setPauseOpen(false)} />
           </div>
