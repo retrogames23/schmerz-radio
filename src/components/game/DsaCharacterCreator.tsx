@@ -360,7 +360,7 @@ export function DsaCharacterCreator() {
           {/* Persönliche Angaben */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 mb-5">
             {/* Name — editierbar, sobald eine Klasse gewählt wurde */}
-            <div className="flex items-end gap-2">
+            <div className="flex min-w-0 items-end gap-2">
               <span className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded shrink-0">
                 Name
               </span>
@@ -374,7 +374,7 @@ export function DsaCharacterCreator() {
                       setNameTouched(true);
                     }}
                     placeholder="Charaktername eintragen …"
-                    className="dsa-rule flex-1 dsa-typed text-sm dsa-ink pb-0.5 bg-transparent outline-none focus:bg-[rgba(255,250,230,0.4)]"
+                    className="dsa-rule min-w-0 flex-1 dsa-typed text-sm dsa-ink pb-0.5 bg-transparent outline-none focus:bg-[rgba(255,250,230,0.4)]"
                   />
                   <button
                     type="button"
@@ -389,7 +389,7 @@ export function DsaCharacterCreator() {
                   </button>
                 </>
               ) : (
-                <span className="dsa-rule flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
+                <span className="dsa-rule min-w-0 flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
                   {persona.name || "\u00A0"}
                 </span>
               )}
@@ -397,12 +397,12 @@ export function DsaCharacterCreator() {
             <Field label="Typus" value={persona.typus} />
             <Field label="Stand" value={persona.stand} />
             {/* Geschlecht — Auswahl */}
-            <div className="flex items-end gap-2">
+            <div className="flex min-w-0 items-end gap-2">
               <span className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded shrink-0">
                 Geschlecht
               </span>
               {phase === "review" && chosenClass ? (
-                <div className="flex-1 flex items-center gap-1.5 pb-0.5">
+                <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 pb-0.5">
                   {(["männlich", "weiblich"] as const).map((g) => (
                     <button
                       key={g}
@@ -419,7 +419,7 @@ export function DsaCharacterCreator() {
                   ))}
                 </div>
               ) : (
-                <span className="dsa-rule flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
+                <span className="dsa-rule min-w-0 flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
                   {persona.geschlecht}
                 </span>
               )}
@@ -436,7 +436,7 @@ export function DsaCharacterCreator() {
               <div className="dsa-typed text-[10px] uppercase tracking-[0.3em] dsa-ink-faded mb-2 border-b border-[rgba(30,18,8,0.55)] pb-1">
                 Eigenschaftswerte (1W6 + 7)
               </div>
-              <div className="grid grid-cols-7 gap-1 sm:gap-2">
+              <div className="grid min-w-0 grid-cols-7 gap-1 sm:gap-2">
                 {ATTR_ORDER.map((a, idx) => (
                   <AttrBox
                     key={a}
