@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useSettings } from "@/audio/SettingsContext";
-import { Radio, TerminalSquare, Menu, ChevronLeft, ChevronRight, Music2 } from "lucide-react";
+import { Radio, TerminalSquare, Menu, ChevronLeft, ChevronRight, Music2, ScrollText } from "lucide-react";
 
 interface Props {
   onOpenPause: () => void;
@@ -10,7 +10,7 @@ interface Props {
 
 export function TopBar({ onOpenPause }: Props) {
   const game = useGame();
-  const { scene, radioActive, flags, ending } = game;
+  const { scene, radioActive, flags, ending, dsaCharacter, dsaSheetOpen, toggleDsaSheet } = game;
   const inAct2 = flags.has("enteredE71");
   const music = useMusic();
   const { musicEnabled } = useSettings();
@@ -112,6 +112,24 @@ export function TopBar({ onOpenPause }: Props) {
             <TerminalSquare className="h-3.5 w-3.5" strokeWidth={2.25} />
             <span className="font-display">Terminal</span>
           </button>
+          {dsaCharacter && (
+            <button
+              type="button"
+              onClick={toggleDsaSheet}
+              title={`Charakterbogen ${dsaSheetOpen ? "schließen" : "öffnen"} (C)`}
+              className={`group inline-flex items-center gap-2 rounded-sm border px-3 py-1.5 text-xs uppercase tracking-[0.2em] transition-all duration-200 ${
+                dsaSheetOpen
+                  ? "border-amber-glow bg-amber-glow/15 text-amber-glow shadow-[0_0_14px_rgba(255,170,60,0.35)]"
+                  : "border-amber-glow/30 bg-gradient-to-b from-amber-glow/10 to-transparent text-amber-glow/85 hover:-translate-y-px hover:border-amber-glow/70 hover:text-amber-glow"
+              }`}
+            >
+              <ScrollText className="h-3.5 w-3.5" strokeWidth={2.25} />
+              <span className="font-display hidden sm:inline">Bogen</span>
+              <span className="font-mono-crt text-[10px] opacity-80 hidden md:inline">
+                {dsaCharacter.name.split(" ")[0]} · LE {dsaCharacter.le}
+              </span>
+            </button>
+          )}
           <button
             type="button"
             onClick={onOpenPause}

@@ -129,8 +129,9 @@ export const ENEMY_STATS: Record<string, EnemyStat> = {
   },
 };
 
-/** Klassen-Profile für die Spielerableitung. */
-const CLASS_COMBAT: Record<
+/** Klassen-Profile für die Spielerableitung. Exportiert, damit der
+ *  Charakterbogen-Overlay die abgeleiteten Werte zeigen kann. */
+export const CLASS_COMBAT_PROFILES: Record<
   DsaClassId,
   { atBase: number; paBase: number; tpDice: number; tpBonus: number; rs: number; weapon: string }
 > = {
@@ -149,7 +150,8 @@ export function heroCombatantFromCharacter(
   ch: DsaCharacterSummary,
 ): Combatant {
   const profile =
-    CLASS_COMBAT[(ch.classId as DsaClassId)] ?? CLASS_COMBAT.streuner;
+    CLASS_COMBAT_PROFILES[(ch.classId as DsaClassId)] ??
+    CLASS_COMBAT_PROFILES.streuner;
   const a = ch.attrs as Attrs;
   // Eigenschaften beeinflussen AT/PA leicht (vereinfacht):
   //   AT-Bonus = (KK-11 + GE-11) / 2, abgerundet.

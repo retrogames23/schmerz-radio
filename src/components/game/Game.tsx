@@ -23,6 +23,7 @@ import { PauseMenu } from "./PauseMenu";
 import { MobileStage } from "./MobileStage";
 import { DsaCharacterCreator } from "./DsaCharacterCreator";
 import { DsaAdventureScene } from "./DsaAdventureScene";
+import { DsaCharacterSheet } from "./DsaCharacterSheet";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useGame } from "@/game/GameContext";
 
@@ -99,7 +100,48 @@ function GameStage({
   pauseOpen: boolean;
   setPauseOpen: (v: boolean) => void;
 }) {
-  const { terminalOpen, nodeOpen, dsaCreatorOpen, dsaAdventureOpen } = useGame();
+  const {
+    terminalOpen,
+    nodeOpen,
+    dsaCreatorOpen,
+    dsaAdventureOpen,
+    dsaCharacter,
+    toggleDsaSheet,
+  } = useGame();
+
+  // Tastenkürzel C: Charakterbogen ein-/ausblenden — nur wenn ein
+  // Charakter existiert und gerade kein anderes textlastiges Modal
+  // aktiv ist (Terminal/Charakter-Erstellung/Abenteuer-Beat eingeben).
+  useEffect(() => {
+    if (!dsaCharacter) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "c" && e.key !== "C") return;
+      // Nicht abfangen, wenn der Spieler in einem Eingabefeld tippt.
+      const t = e.target as HTMLElement | null;
+      if (
+        t &&
+        (t.tagName === "INPUT" ||
+          t.tagName === "TEXTAREA" ||
+          t.isContentEditable)
+      ) {
+        return;
+      }
+      // Nicht öffnen, während andere Vollbild-Overlays aktiv sind.
+      if (terminalOpen || nodeOpen || dsaCreatorOpen || dsaAdventureOpen)
+        return;
+      e.preventDefault();
+      toggleDsaSheet();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [
+    dsaCharacter,
+    terminalOpen,
+    nodeOpen,
+    dsaCreatorOpen,
+    dsaAdventureOpen,
+    toggleDsaSheet,
+  ]);
   // Im Hochformat NICHT rotieren, wenn ein textlastiges Overlay sichtbar
   // ist: Terminal-Konsolen ODER die DSA-Charaktererstellung / das
   // DSA-Abenteuer (sonst läuft der Erzähltext seitwärts, siehe Mobile-Bug).
@@ -123,6 +165,7 @@ function GameStage({
             <ParamedicsCutscene />
             <DsaCharacterCreator />
             <DsaAdventureScene />
+            <DsaCharacterSheet />
             <DsaMusicBridge />
             <Ending />
             <PauseMenu open={pauseOpen} onClose={() => setPauseOpen(false)} />
