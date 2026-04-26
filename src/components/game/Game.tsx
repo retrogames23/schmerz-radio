@@ -95,8 +95,12 @@ function GameStage({
   pauseOpen: boolean;
   setPauseOpen: (v: boolean) => void;
 }) {
-  const { terminalOpen, nodeOpen } = useGame();
-  const consoleOpen = terminalOpen || nodeOpen;
+  const { terminalOpen, nodeOpen, dsaCreatorOpen, dsaAdventureOpen } = useGame();
+  // Im Hochformat NICHT rotieren, wenn ein textlastiges Overlay sichtbar
+  // ist: Terminal-Konsolen ODER die DSA-Charaktererstellung / das
+  // DSA-Abenteuer (sonst läuft der Erzähltext seitwärts, siehe Mobile-Bug).
+  const consoleOpen =
+    terminalOpen || nodeOpen || dsaCreatorOpen || dsaAdventureOpen;
   return (
     <MobileStage uprightOnPortrait={consoleOpen}>
       <div className="flex h-screen flex-col overflow-hidden bg-bureaucracy mobile-stage-host">
