@@ -141,6 +141,58 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
             },
             next: "s1b2",
           },
+          {
+            id: "s1b1-dwarf-tracks",
+            text: "(Zwerg) Du gehst in die Hocke und liest den Boden.",
+            requires: "zwerg",
+            attrCheck: { attr: "KL" },
+            outcome: {
+              success: [
+                "Du tippst mit dem Finger an einen Abdruck. Stiefel, billiges Leder. Drei Mann, schwer beladen — aber der mittlere humpelt.",
+                "„Da hinter dem Findling lauert was. Drei. Einer langsam.“ Brem nickt anerkennend.",
+              ],
+              failure: [
+                "Du brummst über schlechtes Licht und dreckigen Schnee, kommst aber zu keinem Schluss.",
+                "Ihr geht weiter — wachsam, aber blind.",
+              ],
+              table: { speaker: "TJARK", text: "Saubere Spurenlese, Zwerg." },
+            },
+            next: "s1b2",
+          },
+          {
+            id: "s1b1-rogue-scout",
+            text: "(Streuner / Gaukler) Du schleichst voraus, prüfst die Lage.",
+            requires: ["streuner", "gaukler"],
+            attrCheck: { attr: "GE" },
+            outcome: {
+              success: [
+                "Du gleitest zwischen die Stämme, leise wie ein Gerücht.",
+                "Hinter dem Findling: drei Männer, Armbrüste auf den Knien, einer schnitzt an einem Bolzen. Du kommst zurück, ehe sie atmen können.",
+              ],
+              failure: [
+                "Ein Ast knackt unter deiner Sohle. Du erstarrst — niemand reagiert. Glück gehabt. Aber wissen tust du nichts.",
+              ],
+              table: { speaker: "YELVA", text: "Endlich macht jemand etwas Sinnvolles." },
+            },
+            next: "s1b2",
+          },
+          {
+            id: "s1b1-mage-omen",
+            text: "(Magier) Du fragst die Zeichen — Wind, Vogelflug, das Knacken im Holz.",
+            requires: "magier",
+            attrCheck: { attr: "KL" },
+            outcome: {
+              success: [
+                "Du schließt die Augen, legst zwei Finger an die Schläfe. Krähen, links. Drei. Schlechtes Omen.",
+                "Ein Frost, der zu früh kommt. Etwas wartet vor uns. Du sagst es leise. Brem zieht den Dolch.",
+              ],
+              failure: [
+                "Die Zeichen schweigen. Heute hat Hesinde anderes zu tun.",
+              ],
+              table: { speaker: "TJARK", text: "Akademist-Wissen ist auch Wissen." },
+            },
+            next: "s1b2",
+          },
         ],
       },
       {
@@ -155,8 +207,8 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
         options: [
           {
             id: "s1b2-fight",
-            text: "(Krieger / Thorwaler) Du ziehst das Schwert. „Den Zoll zahle ich in Eisen.“",
-            requires: ["krieger", "thorwaler"],
+            text: "(Krieger / Thorwaler / Zwerg) Du ziehst das Schwert. „Den Zoll zahle ich in Eisen.“",
+            requires: ["krieger", "thorwaler", "zwerg"],
             combat: {
               enemyIds: [
                 "wegelagerer_anfuehrer",
@@ -182,8 +234,8 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
           },
           {
             id: "s1b2-talk",
-            text: "(Streuner / Gaukler) Du redest sie weich. „Drei Silber? Wir haben nichts. Aber eine Geschichte hätten wir.“",
-            requires: ["streuner", "gaukler"],
+            text: "(Streuner / Gaukler / Elf) Du redest sie weich. „Drei Silber? Wir haben nichts. Aber eine Geschichte hätten wir.“",
+            requires: ["streuner", "gaukler", "elf"],
             attrCheck: { attr: "CH" },
             outcome: {
               success: [
@@ -217,6 +269,23 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
                 "Es wird zur Schlägerei. Ihr kommt durch, aber ihr seid zerschlagen.",
               ],
               table: { speaker: "TJARK", text: "Patzer auf der MU-Probe. Astralpunkte sind trotzdem weg." },
+            },
+            next: "s1b3",
+          },
+          {
+            id: "s1b2-bluff",
+            text: "Du bluffst: „Wir sind nicht allein. Hinter uns reiten Bewaffnete.“",
+            attrCheck: { attr: "MU" },
+            outcome: {
+              success: [
+                "Du sagst es ruhig, ohne zu lächeln. Der Anführer mustert dich, blickt nervös den Pfad zurück.",
+                "Er zischt etwas zu seinen Männern, sie verschwinden zwischen die Bäume. Ihr geht weiter — schneller als nötig.",
+              ],
+              failure: [
+                "Der Anführer lacht. „Hinter euch ist genau gar nichts. Beutel.“",
+                "Es kommt zur Schlägerei. Ihr verliert ein paar Münzen, niemand stirbt — aber dein Stolz hat eine Beule.",
+              ],
+              table: { speaker: "BREM", text: "Klassiker. Funktioniert manchmal." },
             },
             next: "s1b3",
           },
@@ -298,8 +367,8 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
           },
           {
             id: "s2b2-listen-rumor",
-            text: "(Streuner) Wir setzen uns an die Theke und fangen Gerede ein.",
-            requires: "streuner",
+            text: "(Streuner / Gaukler) Wir setzen uns an die Theke und fangen Gerede ein.",
+            requires: ["streuner", "gaukler"],
             attrCheck: { attr: "IN" },
             outcome: {
               success: [
@@ -313,8 +382,8 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
           },
           {
             id: "s2b1-elf-watch",
-            text: "(Elf) Du beobachtest ihn, ohne dich zu rühren.",
-            requires: "elf",
+            text: "(Elf / Magier / Druide) Du beobachtest ihn, ohne dich zu rühren.",
+            requires: ["elf", "magier", "druide"],
             outcome: {
               success: [
                 "Du siehst seine Hände. Tinte unter den Fingernägeln, eine kleine Brandnarbe am rechten Daumen — ein Magier, ohne Zweifel.",
@@ -326,14 +395,26 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
           },
           {
             id: "s2b1-dwarf-drink",
-            text: "(Zwerg / Thorwaler) Wir kümmern uns erstmal ums Bier. Der wartet schon.",
-            requires: ["zwerg", "thorwaler"],
+            text: "(Zwerg / Thorwaler / Krieger) Wir kümmern uns erstmal ums Bier. Der wartet schon.",
+            requires: ["zwerg", "thorwaler", "krieger"],
             outcome: {
               success: [
                 "Du leerst den ersten Krug in zwei Zügen. Der Wirt hebt anerkennend die Brauen.",
                 "Beim zweiten Krug kommt der Mann von selbst. Setzt sich, ohne zu fragen. „Ihr habt das Aussehen von Leuten, die Arbeit brauchen.“",
               ],
               table: { speaker: "BREM", text: "DAS ist Diplomatie." },
+            },
+            next: "s2b2",
+          },
+          {
+            id: "s2b1-wait",
+            text: "Wir tun, als merkten wir ihn nicht — und warten ab.",
+            outcome: {
+              success: [
+                "Ihr esst, trinkt, lacht etwas zu laut. Nach einer Weile erhebt sich der Fremde von selbst und kommt herüber.",
+                "„Vier Augen sehen mehr als zwei. Sechs noch mehr. Darf ich?“ Er setzt sich, ohne die Antwort abzuwarten.",
+              ],
+              table: { speaker: "TJARK", text: "Geduld ist auch eine Tugend, sagen die Hesindiner." },
             },
             next: "s2b2",
           },
@@ -350,8 +431,8 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
         options: [
           {
             id: "s2b2-fight",
-            text: "(Krieger / Thorwaler) Wir mischen mit. Eine gute Schlägerei wärmt das Blut.",
-            requires: ["krieger", "thorwaler"],
+            text: "(Krieger / Thorwaler / Zwerg) Wir mischen mit. Eine gute Schlägerei wärmt das Blut.",
+            requires: ["krieger", "thorwaler", "zwerg"],
             combat: { enemyIds: ["glatzkopf"] },
             outcome: {
               success: [
@@ -369,8 +450,8 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
           },
           {
             id: "s2b2-trick",
-            text: "(Gaukler / Streuner) Wir lenken ab. Ein Trick, ein Lied, irgendwas.",
-            requires: ["gaukler", "streuner"],
+            text: "(Gaukler / Streuner / Elf) Wir lenken ab. Ein Trick, ein Lied, irgendwas.",
+            requires: ["gaukler", "streuner", "elf"],
             attrCheck: { attr: "CH" },
             outcome: {
               success: [
@@ -401,6 +482,23 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
                 "„Hexer!“ brüllt er und stürmt los. Ihr kommt mit blauen Flecken davon.",
               ],
               table: { speaker: "TJARK", text: "Somnigravis, klassisch." },
+            },
+            next: "s2b3",
+          },
+          {
+            id: "s2b2-druid-calm",
+            text: "(Druide) Du legst dem Glatzkopf ruhig die Hand auf die Schulter.",
+            requires: "druide",
+            attrCheck: { attr: "CH" },
+            outcome: {
+              success: [
+                "Du sagst kein Wort. Du atmest tief, und plötzlich atmet er mit dir.",
+                "Seine Faust öffnet sich, der Krug rutscht ihm aus der Hand. Er setzt sich, blickt drein wie ein Kind, das gleich weint.",
+              ],
+              failure: [
+                "Er schüttelt deine Hand ab und brüllt. Es kommt zum Handgemenge — du kommst mit blauen Flecken davon.",
+              ],
+              table: { speaker: "YELVA", text: "Du bist… seltsam. Aber nützlich." },
             },
             next: "s2b3",
           },
@@ -442,8 +540,8 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
           },
           {
             id: "s2b3-haggle",
-            text: "(Streuner / Thorwaler) Fünfzig sind ein Witz. Hundert.",
-            requires: ["streuner", "thorwaler"],
+            text: "(Streuner / Thorwaler / Gaukler / Zwerg) Fünfzig sind ein Witz. Hundert.",
+            requires: ["streuner", "thorwaler", "gaukler", "zwerg"],
             attrCheck: { attr: "CH" },
             outcome: {
               success: [
@@ -461,7 +559,7 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
           },
           {
             id: "s2b3-info",
-            text: "(Magier / Druide / Elf) Erzähl uns von den „Hütern“.",
+            text: "(Magie) Erzähl uns von den „Hütern“.",
             requires: "magic",
             outcome: {
               success: [
@@ -470,6 +568,32 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
                 "Yelva legt langsam den Krug ab. „Großartig.“",
               ],
               table: { speaker: "TJARK", text: "Hesinde-Tempel. Nehmt das ernst." },
+            },
+            next: "scene3",
+          },
+          {
+            id: "s2b3-warrior-promise",
+            text: "(Krieger / Thorwaler / Zwerg) „Ich gebe dir mein Wort. Wenn das Buch existiert, bringen wir es.“",
+            requires: ["krieger", "thorwaler", "zwerg"],
+            outcome: {
+              success: [
+                "Du sagst es ohne zu blinzeln. Wendelmir mustert dich lange.",
+                "„Ein Wort von einem Mann mit Klinge ist mehr wert als zehn Verträge.“ Er legt einen Beutel auf den Tisch. „Vorab. Damit ihr wisst, dass ich es ernst meine.“",
+              ],
+              table: { speaker: "BREM", text: "Das ist alte Schule. Ich mag das." },
+            },
+            next: "scene3",
+          },
+          {
+            id: "s2b3-decline",
+            text: "Wir lehnen ab. Ruinen sind nichts für uns.",
+            outcome: {
+              success: [
+                "Du schiebst den Krug zur Seite. „Such dir andere, Magister.“",
+                "Wendelmir nickt müde. „Schade.“ Brem starrt dich an, als hättest du ihm den letzten Heller geklaut.",
+                "Am nächsten Morgen liegt ein Brief auf eurem Tisch — ein anderer Auftrag, dieselbe Ruine, dieselbe Bezahlung. Manche Wege findet man nicht, sie finden einen.",
+              ],
+              table: { speaker: "TJARK", text: "Auch Ablehnen ist eine Entscheidung. Das Schicksal ist hartnäckig." },
             },
             next: "scene3",
           },
@@ -495,8 +619,8 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
         options: [
           {
             id: "s3b1-cross-careful",
-            text: "(Streuner / Elf) Wir untersuchen das Muster, bevor wir drüber gehen.",
-            requires: ["streuner", "elf"],
+            text: "(Streuner / Elf / Gaukler) Wir untersuchen das Muster, bevor wir drüber gehen.",
+            requires: ["streuner", "elf", "gaukler"],
             attrCheck: { attr: "FF" },
             outcome: {
               success: [
@@ -532,8 +656,8 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
           },
           {
             id: "s3b1-warrior-charge",
-            text: "(Krieger / Thorwaler) Wir gehen einfach durch. Schild hoch.",
-            requires: ["krieger", "thorwaler"],
+            text: "(Krieger / Thorwaler / Zwerg) Wir gehen einfach durch. Schild hoch.",
+            requires: ["krieger", "thorwaler", "zwerg"],
             attrCheck: { attr: "GE" },
             outcome: {
               success: [
@@ -545,6 +669,68 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
                 "Brem zieht dich rein. „War das wirklich nötig?“",
               ],
               table: { speaker: "BREM", text: "Subtil wie immer." },
+            },
+            next: "s3b2",
+          },
+          {
+            id: "s3b1-dwarf-stone",
+            text: "(Zwerg) Du klopfst die Steinplatten ab — Stein lügt nicht.",
+            requires: "zwerg",
+            attrCheck: { attr: "KL" },
+            outcome: {
+              success: [
+                "Du gehst die Symbole entlang, klopfst leise mit dem Knöchel. Eine Platte klingt hohl.",
+                "Du drückst sie mit dem Stiefel hinunter — ein dumpfes Klack, irgendwo löst sich etwas. Der Rest des Bodens ist sicher.",
+              ],
+              failure: [
+                "Eine Platte gibt nach, schneller als du. Ein Funkenschauer, ein Geruch nach altem Schwefel. Du springst zurück, sengende Härchen am Bart.",
+              ],
+              table: { speaker: "BREM", text: "Stein versteht Stein. Logisch." },
+            },
+            next: "s3b2",
+          },
+          {
+            id: "s3b1-druid-bless",
+            text: "(Druide) Du bittest den Ort um Erlaubnis — leise, mit gebeugtem Haupt.",
+            requires: "druide",
+            attrCheck: { attr: "IN" },
+            outcome: {
+              success: [
+                "Du kniest am Rand der Symbole, legst die Hand auf den kalten Stein.",
+                "Etwas erkennt dich. Die Symbole leuchten kurz blau, dann blass — und werden durchsichtig. Der Weg ist offen, niemandem ein Schaden geschehen.",
+              ],
+              failure: [
+                "Der Ort schweigt. Vielleicht ist Hesinde nicht in der Stimmung. Ihr müsst es anders versuchen — Brem geht voraus und löst die Falle aus. Es kostet Zeit.",
+              ],
+              table: { speaker: "TJARK", text: "Selten gesehen, aber sauber gespielt." },
+            },
+            next: "s3b2",
+          },
+          {
+            id: "s3b1-go-around",
+            text: "Wir suchen einen Weg drum herum. Es muss einen geben.",
+            attrCheck: { attr: "IN" },
+            outcome: {
+              success: [
+                "Ihr taucht in den Nebel, tastet die Mauer entlang. Hinter einem zerbrochenen Säulenfuß: ein schmaler Spalt, gerade breit genug.",
+                "Brem zwängt sich zuerst durch. „Riecht nach Moder. Aber sicher.“ Ihr folgt — die Symbole bleiben unangetastet hinter euch.",
+              ],
+              failure: [
+                "Eine halbe Stunde im Nebel und nichts. Ihr kommt zurück, müde, und Brem zieht den Dolch: „Dann eben durch.“ Er löst die Falle — knapp, aber niemand stirbt.",
+              ],
+              table: { speaker: "YELVA", text: "Manchmal ist drumherum die ganze Kunst." },
+            },
+            next: "s3b2",
+          },
+          {
+            id: "s3b1-throw-stone",
+            text: "Wir werfen Steine drauf, bis nichts mehr passiert.",
+            outcome: {
+              success: [
+                "Brem hat schon einen halben Steinhaufen in den Händen. Ihr werft, eins nach dem anderen.",
+                "Es zischt, es flammt, es klickt. Nach drei Minuten ist die Falle leer. Ihr geht durch — über frischen Ruß, aber unversehrt.",
+              ],
+              table: { speaker: "BREM", text: "Wissenschaft. Reine Wissenschaft." },
             },
             next: "s3b2",
           },
@@ -611,6 +797,41 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
                 "Das Auge bleibt offen. Der Hüter reagiert nicht. Es kommt zum Kampf.",
               ],
               table: { speaker: "TJARK", text: "Ein sehr DSA-Moment. Schön gemacht." },
+            },
+            next: "end",
+          },
+          {
+            id: "s3b2-elf-song",
+            text: "(Elf) Du beginnst zu singen — leise, in der alten Sprache.",
+            requires: "elf",
+            attrCheck: { attr: "CH" },
+            outcome: {
+              success: [
+                "Deine Stimme füllt die Kammer. Ein Lied, das älter ist als der Tempel.",
+                "Der Hüter hebt den Kopf. Etwas in seinen Spiegelaugen ändert sich — Erkennen, vielleicht Heimweh. Er tritt zurück, ohne ein Wort.",
+                "Das Buch liegt offen. Ihr nehmt es mit, behutsam.",
+              ],
+              failure: [
+                "Du singst — der Hüter starrt dich an, als wäre dein Gesang ein Hohn. Es kommt zum Kampf. Ihr siegt knapp.",
+              ],
+              table: { speaker: "YELVA", text: "Singen funktioniert manchmal. Wer hätte das gedacht." },
+            },
+            next: "end",
+          },
+          {
+            id: "s3b2-mage-banish",
+            text: "(Magier) Du sprichst eine Bann-Formel gegen Spiegelwesen.",
+            requires: "magier",
+            attrCheck: { attr: "KL", modifier: -1 },
+            outcome: {
+              success: [
+                "Du sprichst — und sprichst sauber. Drei Silben, ein Zeichen in die Luft.",
+                "Der Hüter zerfließt wie Wasser auf heißem Stein. Das Auge im Boden schließt sich. Das Buch wartet.",
+              ],
+              failure: [
+                "Die Formel hält ihn — eine Sekunde. Dann zerreißt sie. Es kommt zum Kampf, aber er ist geschwächt. Ihr gewinnt.",
+              ],
+              table: { speaker: "TJARK", text: "Bann-Formel auf einen Hesinde-Hüter. Mutig." },
             },
             next: "end",
           },
