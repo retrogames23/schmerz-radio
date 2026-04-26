@@ -7,10 +7,12 @@ import { CHATTER_TOPICS, type ChatterNpcId } from "@/game/dsa/chatter";
  * Punkt zeigt den Mund/Kopf-Anker — die Blase wird darüber positioniert.
  * Werte stimmen mit den Sprite-Positionen in scenes.ts (commonRoomE67) überein.
  */
+// Anker zeigen ungefähr auf den Kopf der jeweils ins Hintergrund-
+// bild gemalten Figur (Werte in % der Szene).
 const NPC_ANCHOR: Record<ChatterNpcId, { x: number; y: number }> = {
-  tjark: { x: 64, y: 22 },
-  brem: { x: 22, y: 22 },
-  yelva: { x: 84, y: 22 },
+  tjark: { x: 70, y: 12 },
+  brem: { x: 26, y: 18 },
+  yelva: { x: 84, y: 42 },
 };
 
 const NPC_LABEL: Record<ChatterNpcId, string> = {
