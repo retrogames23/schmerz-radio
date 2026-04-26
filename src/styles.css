@@ -417,6 +417,11 @@
     height: 640px !important;
     width: 1024px !important;
   }
+  [data-mobile-passthrough="true"] .mobile-stage-host {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    width: 100vw !important;
+  }
   body {
     overscroll-behavior: none;
   }

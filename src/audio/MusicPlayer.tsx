@@ -158,8 +158,11 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
 
   function startPlayback() {
     const active = activeRef.current === "a" ? aRef.current! : bRef.current!;
-    if (!active.src) {
-      active.src = pickTrack(indexRef.current);
+    const overrideId = overrideRef.current;
+    const targetSrc = overrideId ? MUSIC_OVERRIDES[overrideId].src : pickTrack(indexRef.current);
+    if (!active.src || active.src !== new URL(targetSrc, window.location.href).href) {
+      active.src = targetSrc;
+      active.currentTime = 0;
     }
     active.volume = clamp(volumeRef.current);
     void active.play().catch(() => {

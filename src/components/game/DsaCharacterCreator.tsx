@@ -121,8 +121,8 @@ function AttrBox({
   }, [rolling, finalValue]);
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="dsa-typed text-[8px] uppercase tracking-[0.2em] dsa-ink-faded mb-0.5 hidden sm:block truncate w-full text-center">
+    <div className="flex min-w-0 flex-col items-center">
+      <div className="dsa-typed hidden w-full truncate text-center text-[8px] uppercase tracking-[0.2em] dsa-ink-faded mb-0.5 sm:block">
         {ATTR_LABEL[attr]}
       </div>
       <div
@@ -157,11 +157,11 @@ function Field({
   className?: string;
 }) {
   return (
-    <div className={`flex items-end gap-2 ${className}`}>
+    <div className={`flex min-w-0 items-end gap-2 ${className}`}>
       <span className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded shrink-0">
         {label}
       </span>
-      <span className="dsa-rule flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
+      <span className="dsa-rule min-w-0 flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
         {value || "\u00A0"}
       </span>
     </div>
@@ -317,8 +317,8 @@ export function DsaCharacterCreator() {
       : `↻ Nochmal würfeln (${rollCount}× geworfen)`;
 
   return (
-    <div className="absolute inset-0 z-50 flex items-start justify-center bg-black/85 px-2 py-2 sm:px-4 sm:py-4 overflow-y-auto overflow-x-hidden">
-      <div className="relative w-full max-w-4xl my-2 sm:my-auto">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-x-hidden overflow-y-auto bg-black/85 px-2 py-2 sm:absolute sm:items-center sm:px-4 sm:py-4">
+      <div className="relative my-2 w-full max-w-4xl sm:my-auto">
         <CloseButton
           onClick={handleCancel}
           label="Charakter-Erschaffung abbrechen"
@@ -326,21 +326,21 @@ export function DsaCharacterCreator() {
         />
 
         {/* Der Bogen */}
-        <div className="dsa-paper relative px-3 py-4 sm:px-10 sm:py-7">
+        <div className="dsa-paper relative w-full max-w-full overflow-hidden px-3 py-4 sm:px-10 sm:py-7">
           {/* Kopfzeile */}
-          <div className="flex items-start justify-between border-b-2 border-[rgba(30,18,8,0.85)] pb-3 mb-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[rgba(30,18,8,0.85)] dsa-ink">
-                <span className="font-display text-2xl">◉</span>
+          <div className="flex min-w-0 items-start justify-between border-b-2 border-[rgba(30,18,8,0.85)] pb-3 mb-4">
+            <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-[rgba(30,18,8,0.85)] dsa-ink sm:h-12 sm:w-12">
+                <span className="font-display text-xl sm:text-2xl">◉</span>
               </div>
-              <div>
-                <div className="dsa-typed text-[10px] uppercase tracking-[0.35em] dsa-ink-faded">
+              <div className="min-w-0">
+                <div className="dsa-typed truncate text-[8px] uppercase tracking-[0.18em] dsa-ink-faded sm:text-[10px] sm:tracking-[0.35em]">
                   Schmidt-Spiele · Verlag
                 </div>
-                <div className="font-display text-2xl sm:text-3xl dsa-ink leading-tight">
+                <div className="font-display text-xl sm:text-3xl dsa-ink leading-tight">
                   HELDEN-DOKUMENT
                 </div>
-                <div className="dsa-typed text-[11px] tracking-widest dsa-ink-faded">
+                <div className="dsa-typed truncate text-[9px] tracking-normal dsa-ink-faded sm:text-[11px] sm:tracking-widest">
                   DAS SCHWARZE AUGE · Zweite Edition
                 </div>
               </div>
@@ -360,7 +360,7 @@ export function DsaCharacterCreator() {
           {/* Persönliche Angaben */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 mb-5">
             {/* Name — editierbar, sobald eine Klasse gewählt wurde */}
-            <div className="flex items-end gap-2">
+            <div className="flex min-w-0 items-end gap-2">
               <span className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded shrink-0">
                 Name
               </span>
@@ -374,7 +374,7 @@ export function DsaCharacterCreator() {
                       setNameTouched(true);
                     }}
                     placeholder="Charaktername eintragen …"
-                    className="dsa-rule flex-1 dsa-typed text-sm dsa-ink pb-0.5 bg-transparent outline-none focus:bg-[rgba(255,250,230,0.4)]"
+                    className="dsa-rule min-w-0 flex-1 dsa-typed text-sm dsa-ink pb-0.5 bg-transparent outline-none focus:bg-[rgba(255,250,230,0.4)]"
                   />
                   <button
                     type="button"
@@ -389,7 +389,7 @@ export function DsaCharacterCreator() {
                   </button>
                 </>
               ) : (
-                <span className="dsa-rule flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
+                <span className="dsa-rule min-w-0 flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
                   {persona.name || "\u00A0"}
                 </span>
               )}
@@ -397,12 +397,12 @@ export function DsaCharacterCreator() {
             <Field label="Typus" value={persona.typus} />
             <Field label="Stand" value={persona.stand} />
             {/* Geschlecht — Auswahl */}
-            <div className="flex items-end gap-2">
+            <div className="flex min-w-0 items-end gap-2">
               <span className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded shrink-0">
                 Geschlecht
               </span>
               {phase === "review" && chosenClass ? (
-                <div className="flex-1 flex items-center gap-1.5 pb-0.5">
+                <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 pb-0.5">
                   {(["männlich", "weiblich"] as const).map((g) => (
                     <button
                       key={g}
@@ -419,7 +419,7 @@ export function DsaCharacterCreator() {
                   ))}
                 </div>
               ) : (
-                <span className="dsa-rule flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
+                <span className="dsa-rule min-w-0 flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
                   {persona.geschlecht}
                 </span>
               )}
@@ -436,7 +436,7 @@ export function DsaCharacterCreator() {
               <div className="dsa-typed text-[10px] uppercase tracking-[0.3em] dsa-ink-faded mb-2 border-b border-[rgba(30,18,8,0.55)] pb-1">
                 Eigenschaftswerte (1W6 + 7)
               </div>
-              <div className="grid grid-cols-7 gap-1 sm:gap-2">
+              <div className="grid min-w-0 grid-cols-7 gap-1 sm:gap-2">
                 {ATTR_ORDER.map((a, idx) => (
                   <AttrBox
                     key={a}
