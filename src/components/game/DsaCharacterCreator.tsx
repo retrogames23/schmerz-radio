@@ -330,8 +330,8 @@ export function DsaCharacterCreator() {
   };
   const rerollLabel =
     rollCount === 0
-      ? "▸ Würfeln"
-      : `↻ Nochmal würfeln (${rollCount}× geworfen)`;
+      ? "Würfeln"
+      : `Nochmal würfeln (${rollCount}× geworfen)`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-x-hidden overflow-y-auto bg-black/85 px-2 py-2 sm:absolute sm:items-center sm:px-4 sm:py-4">
