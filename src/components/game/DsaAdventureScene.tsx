@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { CloseButton } from "./CloseButton";
+import { ScrollText, LogOut } from "lucide-react";
 import {
   DSA_CAMPAIGN,
   findBeat,
@@ -50,6 +51,8 @@ export function DsaAdventureScene() {
     setDsaCharacter,
     api,
     closeDsaAdventure,
+    toggleDsaSheet,
+    dsaSheetOpen,
   } = useGame();
 
   const [phase, setPhase] = useState<Phase>({ kind: "narration" });
@@ -161,12 +164,34 @@ export function DsaAdventureScene() {
       <div className="dsa-adventure-shell relative my-auto w-full max-w-5xl overflow-hidden rounded-md shadow-2xl flex flex-col max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3rem)]">
         <CloseButton onClick={handleStandUp} />
 
-        {/* Header: Akt-Titel */}
-        <div className="dsa-adventure-header shrink-0 px-6 pt-5 pb-2">
-          <div className="text-xs uppercase tracking-[0.3em] opacity-70">
-            Akt {DSA_CAMPAIGN.findIndex((a) => a.id === act.id) + 1} · Tjark erzählt
+        {/* Header: Akt-Titel + Werkzeugleiste */}
+        <div className="dsa-adventure-header shrink-0 px-6 pt-5 pb-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-xs uppercase tracking-[0.3em] opacity-70">
+                Akt {DSA_CAMPAIGN.findIndex((a) => a.id === act.id) + 1} · Tjark erzählt
+              </div>
+              <h2 className="font-serif text-2xl sm:text-3xl mt-1 truncate">
+                {act.title}
+              </h2>
+            </div>
+            <div className="flex shrink-0 items-center gap-2 mr-10">
+              <button
+                type="button"
+                onClick={toggleDsaSheet}
+                title="Charakterbogen ein-/ausblenden (C)"
+                className={
+                  "inline-flex items-center gap-1.5 rounded border-2 px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all " +
+                  (dsaSheetOpen
+                    ? "border-[#3a2c1a] bg-[#3a2c1a] text-[#f1e6c8]"
+                    : "border-[#3a2c1a] bg-[#fbf2d8] text-[#2a1f10] hover:bg-[#f1d99a]")
+                }
+              >
+                <ScrollText className="h-3.5 w-3.5" strokeWidth={2.5} />
+                <span>Bogen</span>
+              </button>
+            </div>
           </div>
-          <h2 className="font-serif text-2xl sm:text-3xl mt-1">{act.title}</h2>
         </div>
 
         {/* Illustration */}
@@ -208,15 +233,17 @@ export function DsaAdventureScene() {
           )}
         </div>
 
-        <div className="dsa-adventure-footer shrink-0 flex items-center justify-between px-6 py-3 text-xs opacity-80">
-          <span>
+        <div className="dsa-adventure-footer shrink-0 flex items-center justify-between gap-3 px-6 py-3 text-xs">
+          <span className="text-[#2a1f10] font-semibold truncate">
             {dsaCharacter.name} · {dsaCharacter.className}
           </span>
           <button
             onClick={handleStandUp}
-            className="underline-offset-2 hover:underline"
+            title="Abenteuer pausieren — du kannst später am Tisch weitermachen."
+            className="inline-flex items-center gap-2 rounded border-2 border-[#6b1a0e] bg-[#6b1a0e] px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] shadow-[0_2px_0_rgba(0,0,0,0.35)] transition-all hover:bg-[#8a2310] hover:-translate-y-px"
           >
-            Vom Tisch aufstehen
+            <LogOut className="h-3.5 w-3.5" strokeWidth={2.5} />
+            <span>Vom Tisch aufstehen</span>
           </button>
         </div>
       </div>
