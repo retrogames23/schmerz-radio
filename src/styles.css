@@ -579,3 +579,40 @@
   padding: 0.5rem 0.75rem;
   color: #4a1a10;
 }
+
+/* ── DSA-Kampf-Overlay ───────────────────────────────────────────── */
+.dsa-combat-card {
+  /* Karten-Wrapper, leichte Schatten für Tiefe */
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.18));
+}
+@keyframes dsa-card-hit {
+  0%   { transform: translate(0, 0); box-shadow: 0 0 0 0 rgba(107, 26, 14, 0); }
+  20%  { transform: translate(-3px, 1px); box-shadow: 0 0 0 4px rgba(107, 26, 14, 0.45); }
+  40%  { transform: translate(3px, -1px); box-shadow: 0 0 0 4px rgba(107, 26, 14, 0.30); }
+  60%  { transform: translate(-2px, 1px); box-shadow: 0 0 0 2px rgba(107, 26, 14, 0.20); }
+  100% { transform: translate(0, 0);     box-shadow: 0 0 0 0 rgba(107, 26, 14, 0); }
+}
+.dsa-card-hit > .dsa-box-thick {
+  animation: dsa-card-hit 0.42s ease-out;
+  border-color: #6b1a0e;
+}
+.dsa-die {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.25rem;
+  padding: 0.35rem 0.5rem;
+  border: 2px solid rgba(30, 18, 8, 0.85);
+  background: rgba(255, 250, 230, 0.7);
+  border-radius: 4px;
+  gap: 0.1rem;
+}
+.dsa-die-success {
+  border-color: #2d5a1e;
+  background: rgba(45, 90, 30, 0.14);
+}
+.dsa-die-fail {
+  border-color: #6b1a0e;
+  background: rgba(107, 26, 14, 0.14);
+}

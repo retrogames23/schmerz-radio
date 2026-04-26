@@ -23,7 +23,7 @@ import {
   type Combatant,
   type CombatResult,
 } from "@/game/dsa/combat";
-import { DsaCombatScene } from "./DsaCombatScene";
+import { DsaCombatOverlay } from "./DsaCombatOverlay";
 
 /**
  * Vollbild-Overlay, das die DSA-Tafelrunde simuliert. Zeigt
@@ -217,12 +217,16 @@ export function DsaAdventureScene() {
               isMagic={isMagic}
             />
           ) : phase.kind === "combat" ? (
-            <DsaCombatScene
-              hero={phase.hero}
-              foes={phase.foes}
-              result={phase.result}
-              illustration={beat.illustration}
-              onDone={handleCombatDone}
+            // Während des Kampfes Erzählung „eingefroren" sichtbar lassen.
+            // Das eigentliche Kampf-Fenster legt sich als eigenes Overlay drüber.
+            <NarrationView
+              lines={beat.narration}
+              options={beat.options}
+              visibleOptions={[]}
+              onChoose={() => {}}
+              characterName={dsaCharacter.name}
+              isMagic={isMagic}
+              frozen
             />
           ) : (
             <OutcomeView
@@ -247,6 +251,16 @@ export function DsaAdventureScene() {
           </button>
         </div>
       </div>
+
+      {/* Kampf-Overlay (eigenes Fenster wie der Charakterbogen) */}
+      {phase.kind === "combat" && (
+        <DsaCombatOverlay
+          hero={phase.hero}
+          foes={phase.foes}
+          result={phase.result}
+          onDone={handleCombatDone}
+        />
+      )}
     </div>
   );
 }
@@ -258,6 +272,7 @@ function NarrationView({
   onChoose,
   characterName,
   isMagic,
+  frozen,
 }: {
   lines: string[];
   options: DsaOption[];
@@ -265,6 +280,7 @@ function NarrationView({
   onChoose: (o: DsaOption) => void;
   characterName: string;
   isMagic: boolean;
+  frozen?: boolean;
 }) {
   const hiddenCount = options.length - visibleOptions.length;
   return (
@@ -275,6 +291,12 @@ function NarrationView({
         ))}
       </div>
       <div className="border-t border-[#3a2c1a]/40 pt-4">
+        {frozen ? (
+          <div className="dsa-typed text-xs uppercase tracking-widest dsa-ink-faded italic">
+            … die Klingen sind gezogen, der Würfel rollt …
+          </div>
+        ) : (
+          <>
         <div className="text-xs uppercase tracking-widest opacity-70 mb-2">
           Was tut {characterName}?
         </div>
@@ -304,6 +326,8 @@ function NarrationView({
             {hiddenCount === 1 ? "" : "en"} sind nur für andere Klassen
             sichtbar{isMagic ? "" : " — Magie nicht verfügbar"}.)
           </div>
+        )}
+          </>
         )}
       </div>
     </div>
