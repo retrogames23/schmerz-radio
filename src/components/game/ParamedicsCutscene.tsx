@@ -70,8 +70,8 @@ function buildBeats(): Beat[] {
       lines: [
         {
           speaker: "SYSTEM",
-          text: "Beim dritten Schlag knackt das Schloss. Die Tür schwingt auf.",
-          hold: holdFor("Beim dritten Schlag knackt das Schloss. Die Tür schwingt auf."),
+          text: "Beim dritten Schlag gibt die Tür nach. Sie schwingt auf.",
+          hold: holdFor("Beim dritten Schlag gibt die Tür nach. Sie schwingt auf."),
         },
       ],
       tail: 300,

@@ -83,10 +83,13 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
     settings: { stability: 0.5, similarity_boost: 0.85, style: 0.3, use_speaker_boost: true },
   },
   SYSTEM: {
-    voiceId: "N2lVS1w4EtoT3dr4eOWO", // Callum — ruhiger Erzähler, weniger amerikanische Deutschfärbung
-    speed: 0.86,
-    // v3 "Natural" mit etwas mehr Stil für lebendige Narration.
-    settings: { stability: 0.5, similarity_boost: 0.85, style: 0.25, use_speaker_boost: true },
+    // Bill — warmer, älterer Erzähler. Klingt im Deutschen deutlich
+    // organischer als Callum (der auf kurzen Beschreibungen schnell
+    // roboterhaft wirkt). Niedrigere Stability + höherer Style-Wert
+    // geben der Lesung mehr Atem und Phrasierung.
+    voiceId: "pqHfZKP75CvOlQylNhV4",
+    speed: 0.9,
+    settings: { stability: 0.35, similarity_boost: 0.85, style: 0.45, use_speaker_boost: true },
   },
   RECEPTION: {
     voiceId: "Xb7hH8MSUJpSbSDYk0k2", // Alice — klar

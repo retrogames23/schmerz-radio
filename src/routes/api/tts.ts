@@ -162,6 +162,7 @@ const ALLOWED_VOICE_IDS = new Set([
   "IKne3meq5aSn9XLyUdCD",
   "bIHbv24MWmeRgasZH58o",
   "N2lVS1w4EtoT3dr4eOWO", // Callum — Sanitäter
+  "pqHfZKP75CvOlQylNhV4", // Bill — Erzähler (SYSTEM)
   "XrExE9yKIg1WjnnlVkGX",
   "CwhRBWXzGAHq8TQ4Fs17",
   "Xb7hH8MSUJpSbSDYk0k2",
