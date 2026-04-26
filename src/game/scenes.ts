@@ -20,9 +20,6 @@ import serverRoom5610Bg from "@/assets/scene-server-room-5610.jpg";
 import room1532Bg from "@/assets/scene-room-1532.jpg";
 import miraSprite from "@/assets/npc-mira.png";
 import philippeSprite from "@/assets/npc-philippe.png";
-import tjarkSprite from "@/assets/npc-tjark.png";
-import bremSprite from "@/assets/npc-brem.png";
-import yelvaSprite from "@/assets/npc-yelva.png";
 import commonRoomBg from "@/assets/scene-common-room.jpg";
 import type { Scene } from "./types";
 
