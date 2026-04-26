@@ -307,6 +307,29 @@ export function DsaCharacterCreator() {
     rollAll();
   }
 
+  /**
+   * Direktwahl: vorgefertigter, gebalancter Charakter ohne Würfeln.
+   * Setzt Werte, LE/AE, Klasse — und springt direkt zum Unterschreiben.
+   */
+  function handlePickPremade(cid: DsaClassId) {
+    const cls = DSA_CLASSES.find((c) => c.id === cid);
+    if (!cls) return;
+    const a = balancedAttrsFor(cls);
+    setAttrs(a);
+    setLe(rollLE(a.KK));
+    setChosenClassId(cid);
+    setRollingIdx(-1);
+    setSnippy(null);
+    setRollCount(1);
+    setPhase("review");
+    // Namensvorschlag passend zur Klasse + aktuellem Geschlecht.
+    setChosenName(pickRandomName(cid, chosenGender));
+    setNameTouched(false);
+    // Direkt den Unterschreiben-Dialog öffnen, damit Spieler nur noch Name
+    // und Geschlecht festlegen muss.
+    setSigningOpen(true);
+  }
+
   function handleConfirm() {
     if (!fullAttrs || !chosenClass || le === null) return;
     const finalName = chosenName.trim() || DEFAULT_NAME[chosenClass.id];
