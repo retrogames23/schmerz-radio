@@ -126,13 +126,13 @@ function AttrBox({
         {ATTR_LABEL[attr]}
       </div>
       <div
-        className={`dsa-box-thick flex h-12 w-12 items-center justify-center sm:h-14 sm:w-14 ${
+        className={`dsa-box-thick flex h-9 w-9 items-center justify-center sm:h-14 sm:w-14 ${
           rolling ? "bg-amber-100/60" : ""
         }`}
       >
         <span
           key={pulseKey}
-          className={`font-display text-2xl sm:text-3xl dsa-ink ${
+          className={`font-display text-xl sm:text-3xl dsa-ink ${
             finalValue !== null && !rolling ? "dsa-value-in" : ""
           }`}
         >
@@ -317,8 +317,8 @@ export function DsaCharacterCreator() {
       : `↻ Nochmal würfeln (${rollCount}× geworfen)`;
 
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/85 px-4 py-4 overflow-y-auto">
-      <div className="relative w-full max-w-4xl my-auto">
+    <div className="absolute inset-0 z-50 flex items-start justify-center bg-black/85 px-2 py-2 sm:px-4 sm:py-4 overflow-y-auto overflow-x-hidden">
+      <div className="relative w-full max-w-4xl my-2 sm:my-auto">
         <CloseButton
           onClick={handleCancel}
           label="Charakter-Erschaffung abbrechen"
@@ -326,7 +326,7 @@ export function DsaCharacterCreator() {
         />
 
         {/* Der Bogen */}
-        <div className="dsa-paper relative px-6 py-5 sm:px-10 sm:py-7">
+        <div className="dsa-paper relative px-3 py-4 sm:px-10 sm:py-7">
           {/* Kopfzeile */}
           <div className="flex items-start justify-between border-b-2 border-[rgba(30,18,8,0.85)] pb-3 mb-4">
             <div className="flex items-center gap-3">
