@@ -15,6 +15,7 @@ import { useAuth } from "@/auth/AuthContext";
 import type {
   GameApi,
   CutsceneId,
+  DsaCharacterSummary,
   InventoryItem,
   InventoryItemId,
   KnowledgeFlag,
@@ -47,6 +48,10 @@ interface GameState {
   burnSequence: boolean;
   /** Aktive narrative Cutscene (z. B. Sanitäter-Bergung). */
   cutscene: CutsceneId | null;
+  /** DSA-Charaktererschaffungs-Modal sichtbar. */
+  dsaCreatorOpen: boolean;
+  /** Aktueller DSA-Charakter, oder `null`. */
+  dsaCharacter: DsaCharacterSummary | null;
 }
 
 interface GameContextValue extends GameState {
@@ -63,6 +68,8 @@ interface GameContextValue extends GameState {
   closeNode: () => void;
   endBurnSequence: () => void;
   endCutscene: () => void;
+  closeDsaCreator: () => void;
+  setDsaCharacter: (c: DsaCharacterSummary | null) => void;
   setRadioActive: (active: boolean) => void;
   bumpResonance: (delta: number) => void;
   resetResonance: () => void;
@@ -96,6 +103,8 @@ interface PersistedState {
   miraFloors?: Array<3 | 4 | 5> | null;
   /** Floor where Philippe appears in the corridor this run. */
   philippeFloor?: 3 | 4 | 5 | null;
+  /** DSA-Charakter, falls Layard schon einen erwürfelt hat. */
+  dsaCharacter?: DsaCharacterSummary | null;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -133,6 +142,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [ending, setEnding] = useState(false);
   const [burnSequence, setBurnSequence] = useState<boolean>(false);
   const [cutscene, setCutscene] = useState<CutsceneId | null>(null);
+  const [dsaCreatorOpen, setDsaCreatorOpen] = useState(false);
+  const [dsaCharacter, setDsaCharacterState] =
+    useState<DsaCharacterSummary | null>(null);
+  const dsaCharacterRef = useRef<DsaCharacterSummary | null>(null);
+  dsaCharacterRef.current = dsaCharacter;
   // Mira darf NICHT auf Etage 3 erscheinen — dort liegt das Büro des
   // Abschnittsverantwortlichen (E67). Würde sie dort die Tür blockieren und
   // Layard ginge nicht auf sie ein, gäbe es ein Dead End: er erfährt dann
@@ -325,6 +339,22 @@ export function GameProvider({ children }: { children: ReactNode }) {
       },
       getMiraFloors: () => miraFloorsRef.current ?? [4],
       getPhilippeFloor: () => philippeFloorRef.current ?? 5,
+      openDsaCreator: () => {
+        setRadioOpen(false);
+        setTerminalOpen(false);
+        setNodeOpen(false);
+        setKeypadOpen(false);
+        setTvOpen(false);
+        setTextOverlay(null);
+        setDialogId(null);
+        setDialogLineId(null);
+        setDsaCreatorOpen(true);
+      },
+      getDsaCharacter: () => dsaCharacterRef.current,
+      clearDsaCharacter: () => {
+        dsaCharacterRef.current = null;
+        setDsaCharacterState(null);
+      },
     }),
     [],
   );
@@ -425,6 +455,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     ending,
     burnSequence,
     cutscene,
+    dsaCreatorOpen,
+    dsaCharacter,
     api,
     setCaption,
     closeText: () => {
@@ -449,6 +481,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     closeNode: () => setNodeOpen(false),
     endBurnSequence: () => setBurnSequence(false),
     endCutscene: () => setCutscene(null),
+    closeDsaCreator: () => setDsaCreatorOpen(false),
+    setDsaCharacter: (c) => {
+      dsaCharacterRef.current = c;
+      setDsaCharacterState(c);
+    },
     setRadioActive,
     bumpResonance: (d) => setResonance((r) => Math.max(0, Math.min(100, r + d))),
     resetResonance: () => setResonance(0),
