@@ -712,7 +712,7 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
               ],
               table: { speaker: "YELVA", text: "Das war IHR Problem, sagt sie. Nicht ihres." },
             },
-            next: "s3b2",
+            next: "ruin_library",
           },
           {
             id: "s3b1-magic-disarm",
@@ -730,7 +730,7 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
               ],
               table: { speaker: "TJARK", text: "Hesinde-Symbole. Schwierige Probe." },
             },
-            next: "s3b2",
+            next: "ruin_library",
           },
           {
             id: "s3b1-warrior-charge",
@@ -748,7 +748,7 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
               ],
               table: { speaker: "BREM", text: "Subtil wie immer." },
             },
-            next: "s3b2",
+            next: "ruin_library",
           },
           {
             id: "s3b1-dwarf-stone",
@@ -765,7 +765,7 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
               ],
               table: { speaker: "BREM", text: "Stein versteht Stein. Logisch." },
             },
-            next: "s3b2",
+            next: "ruin_library",
           },
           {
             id: "s3b1-druid-bless",
@@ -782,7 +782,7 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
               ],
               table: { speaker: "TJARK", text: "Selten gesehen, aber sauber gespielt." },
             },
-            next: "s3b2",
+            next: "ruin_library",
           },
           {
             id: "s3b1-go-around",
@@ -798,7 +798,7 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
               ],
               table: { speaker: "YELVA", text: "Manchmal ist drumherum die ganze Kunst." },
             },
-            next: "s3b2",
+            next: "ruin_library",
           },
           {
             id: "s3b1-throw-stone",
@@ -810,7 +810,7 @@ export const DSA_CAMPAIGN: ReadonlyArray<DsaAct> = [
               ],
               table: { speaker: "BREM", text: "Wissenschaft. Reine Wissenschaft." },
             },
-            next: "s3b2",
+            next: "ruin_library",
           },
         ],
       },
