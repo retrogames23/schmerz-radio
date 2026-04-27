@@ -321,7 +321,7 @@ export function DsaAdventureScene() {
               onGiveUp={handleDefeatGiveUp}
             />
           ) : phase.kind === "outro" ? (
-            <OutroView onLeave={handleOutroLeaveTable} />
+            <OutroView onLeave={handleOutroLeaveTable} ending={endingId} goldExtra={advState.goldExtra} />
           ) : (
             <OutcomeView
               option={phase.option}
