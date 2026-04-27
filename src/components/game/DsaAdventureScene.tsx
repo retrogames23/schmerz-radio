@@ -5,10 +5,14 @@ import { ScrollText, LogOut } from "lucide-react";
 import {
   DSA_CAMPAIGN,
   findBeat,
-  meetsRequirement,
+  isOptionVisible,
   rollAttrCheck,
+  createAdventureState,
+  pickEnding,
   type AttrCheckResult,
   type DsaOption,
+  type AdventureState,
+  type AdventureFlag,
 } from "@/game/dsa/adventure";
 import {
   DSA_CLASSES,
@@ -59,6 +63,7 @@ export function DsaAdventureScene() {
   } = useGame();
 
   const [phase, setPhase] = useState<Phase>({ kind: "narration" });
+  const [advState, setAdvState] = useState<AdventureState>(() => createAdventureState());
 
   const found = useMemo(() => (dsaBeat ? findBeat(dsaBeat) : null), [dsaBeat]);
 
@@ -82,9 +87,24 @@ export function DsaAdventureScene() {
     // Automatischer Kampf hat Vorrang vor einfacher Probe.
     if (option.combat && dsaCharacter) {
       const hero = heroCombatantFromCharacter(dsaCharacter);
+      // LE-Bonus aus Rast/Trank in den Kampf übernehmen, einmalig.
+      if (advState.leBonus > 0) {
+        hero.le = Math.min(hero.leMax + advState.leBonus, hero.le + advState.leBonus);
+        hero.leMax = hero.leMax + advState.leBonus;
+      }
+      if (advState.rsBonus > 0) {
+        hero.rs = hero.rs + advState.rsBonus;
+      }
       const companions = companionCombatants();
       const heroes = [hero, ...companions];
-      const foes = option.combat.enemyIds.map((id, i) => {
+      // Endkampf flagsensitiv: krypt_pillaged → zorniger Hüter, krypt_freed → milder Hüter.
+      const swappedIds = option.combat.enemyIds.map((id) => {
+        if (id !== "spiegelhueter") return id;
+        if (advState.flags.has("krypt_pillaged")) return "spiegelhueter_zornig";
+        if (advState.flags.has("krypt_freed")) return "spiegelhueter_milde";
+        return id;
+      });
+      const foes = swappedIds.map((id, i) => {
         const stat = ENEMY_STATS[id];
         if (!stat) {
           throw new Error(`Unknown enemy id ${id} in option ${option.id}`);
@@ -97,6 +117,10 @@ export function DsaAdventureScene() {
       const foesForFight = foes.map((f) => ({ ...f }));
       const result = resolveCombat(heroesForFight, foesForFight);
       setPhase({ kind: "combat", option, heroes, foes, result });
+      // Boni nach Verbrauch zurücksetzen, damit sie nicht doppelt gelten.
+      if (advState.leBonus > 0 || advState.rsBonus > 0) {
+        setAdvState((s) => ({ ...s, leBonus: 0, rsBonus: 0 }));
+      }
       return;
     }
     let result: AttrCheckResult | null = null;
@@ -104,7 +128,31 @@ export function DsaAdventureScene() {
       const attrVal = dsaCharacter!.attrs[option.attrCheck.attr] ?? 10;
       result = rollAttrCheck(attrVal, option.attrCheck.modifier ?? 0);
     }
+    // Flags + Stat-Modifikatoren aus dem Outcome übernehmen.
+    applyOutcomeEffects(option, result?.success ?? true);
     setPhase({ kind: "outcome", option, check: result });
+  }
+
+  function applyOutcomeEffects(option: DsaOption, success: boolean) {
+    const o = option.outcome;
+    const flags = success ? o.setFlags : (o.setFlagsOnFailure ?? o.setFlags);
+    const grant = success;
+    if (!flags && !grant) return;
+    setAdvState((s) => {
+      const next: AdventureState = {
+        flags: new Set(s.flags),
+        goldExtra: s.goldExtra,
+        leBonus: s.leBonus,
+        rsBonus: s.rsBonus,
+      };
+      if (flags) flags.forEach((f) => next.flags.add(f as AdventureFlag));
+      if (grant) {
+        if (o.grantGold) next.goldExtra += o.grantGold;
+        if (o.grantLeBonus) next.leBonus += o.grantLeBonus;
+        if (o.grantRsBonus) next.rsBonus += o.grantRsBonus;
+      }
+      return next;
+    });
   }
 
   function handleCombatDone(victory: boolean) {
@@ -127,6 +175,8 @@ export function DsaAdventureScene() {
       });
     }
     const opt = phase.option;
+    // Bei Kampfsieg auch Outcome-Flags anwenden (success-Pfad).
+    applyOutcomeEffects(opt, true);
     setPhase({
       kind: "outcome",
       option: { ...opt, attrCheck: undefined },
@@ -138,12 +188,6 @@ export function DsaAdventureScene() {
     if (phase.kind !== "outcome") return;
     const target = phase.option.next;
     if (target === "end") {
-      // Wir schließen NICHT direkt — sonst wirkt es wie ein Abbruch.
-      // Statt­dessen zeigen wir eine Outro-Szene am Tisch, in der Tjark
-      // das Buch zuklappt und der Spieler bewusst aufsteht.
-      // „Sieg" hier heißt: das Abenteuer wurde regulär beendet (Buch
-      // geholt oder bewusst weggegangen). Niederlage geht über die
-      // Defeat-Phase und kommt nie hier an.
       setPhase({ kind: "outro", victory: true });
       return;
     }
@@ -154,6 +198,8 @@ export function DsaAdventureScene() {
       api.setFlag("dsaAdventureScene2Done");
       api.setDsaBeat("s3b1");
     } else {
+      // Camp-Beat erreicht? Markiere Akt 2 als beendet.
+      if (target === "camp1") api.setFlag("dsaAdventureScene2Done");
       api.setDsaBeat(target);
     }
     setPhase({ kind: "narration" });
@@ -187,8 +233,14 @@ export function DsaAdventureScene() {
   }
 
   const visibleOptions = beat.options.filter((o) =>
-    meetsRequirement(classId, isMagic, o.requires),
+    isOptionVisible(o, classId, isMagic, advState),
   );
+
+  // Welche Endung passt zur aktuellen Lage?
+  const endingId =
+    phase.kind === "outro"
+      ? pickEnding(advState, { lastBeatId: beat.id, victory: true })
+      : null;
 
   const wasKrieger = dsaCharacter.classId === "krieger";
 
