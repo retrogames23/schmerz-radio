@@ -610,10 +610,43 @@ function DefeatView({
   );
 }
 
-function OutroView({ onLeave }: { onLeave: () => void }) {
+function OutroView({
+  onLeave,
+  ending,
+  goldExtra,
+}: {
+  onLeave: () => void;
+  ending: import("@/game/dsa/adventure").EndingId | null;
+  goldExtra: number;
+}) {
+  const e = ending ?? "hero_return";
+  const headlines: Record<string, string> = {
+    hero_return: "Auftrag erfüllt — das Buch liegt vor Wendelmir.",
+    hero_betray: "Verrat in Punin — ihr habt das Buch selbst verkauft.",
+    pact_with_warden: "Ein Pakt mit dem Hüter — das Buch bleibt, wo es war.",
+    decline_path: "Ihr seid nie aufgebrochen — andere taten es, und sind nicht zurück.",
+    empty_handed: "Mit leeren Händen, aber lebendig zurück am Tisch.",
+    tragic_victory: "Ein bitterer Sieg — das Buch ist da, einer von euch nicht.",
+  };
+  const flavors: Record<string, string> = {
+    hero_return:
+      "Wendelmir nimmt das Buch wortlos entgegen, zählt fünfzig Dukaten ab und legt sie auf den Tisch. Yelva und Brem teilen schweigend.",
+    hero_betray:
+      "In Punin schmeckt das Bier süßer als verdient. Wendelmir wird euch suchen, aber heute ist heute.",
+    pact_with_warden:
+      "Der Tempel hat sich für euch geöffnet — und wieder geschlossen. Was er euch dafür gab, war kein Gold, sondern etwas, das man nicht wegtragen kann.",
+    decline_path:
+      "Manchmal ist die richtige Heldentat, daheim zu bleiben. Es fühlt sich nicht so an. Aber es ist so.",
+    empty_handed:
+      "Ihr habt drei Atemzüge mehr als drei Gruppen vor euch. Wendelmir wird wütend sein. Aber ihr atmet.",
+    tragic_victory:
+      "Tjark schweigt lange, ehe er das Notizbuch zuklappt. Manche Geschichten enden, indem sie weh tun.",
+  };
   return (
     <div className="space-y-5">
       <div className="space-y-3 font-serif text-base sm:text-lg leading-relaxed dsa-ink">
+        <p className="font-semibold">{headlines[e]}</p>
+        <p>{flavors[e]}</p>
         <p>
           Tjark schließt sein Notizbuch, schiebt die Würfel zur Mitte des
           Tisches und lehnt sich zurück.
@@ -621,6 +654,12 @@ function OutroView({ onLeave }: { onLeave: () => void }) {
         <p className="dsa-table-aside italic text-base">
           „Das war's für heute, Leute. Schöne Runde."
         </p>
+        {goldExtra > 0 && (
+          <p className="text-sm opacity-80">
+            (Zusätzliches Gold aus Verhandlung/Fund: {goldExtra} Dukaten — narrativ
+            verteilt.)
+          </p>
+        )}
         <p>
           Yelva nimmt die Brille ab und reibt sich die Augen. Brem grinst,
           klopft dir auf die Schulter und sammelt die Bleistifte ein.
