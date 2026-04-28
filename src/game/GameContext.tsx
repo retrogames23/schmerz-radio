@@ -54,6 +54,12 @@ interface GameState {
   dsaCharacter: DsaCharacterSummary | null;
   /** DSA-Charakterbogen-Overlay (Lese-Ansicht) sichtbar. */
   dsaSheetOpen: boolean;
+  /** Handbuch-Lese-Overlay sichtbar. */
+  handbookOpen: boolean;
+  /** Bewohner-Ausweis-Lese-Overlay sichtbar. */
+  idCardOpen: boolean;
+  /** Lobby-Schleuse-Overlay sichtbar (Tagesmodus, vor Erstbetreten). */
+  lobbyGateOpen: boolean;
 }
 
 interface GameContextValue extends GameState {
@@ -76,6 +82,14 @@ interface GameContextValue extends GameState {
   openDsaSheet: () => void;
   closeDsaSheet: () => void;
   toggleDsaSheet: () => void;
+  /** Handbuch / Ausweis Overlays. */
+  openHandbook: () => void;
+  closeHandbook: () => void;
+  openIdCard: () => void;
+  closeIdCard: () => void;
+  /** Lobby-Schleuse manuell öffnen / schließen. */
+  openLobbyGate: () => void;
+  closeLobbyGate: () => void;
   /** DSA-Abenteuer-Overlay sichtbar (nach Charaktererstellung). */
   dsaAdventureOpen: boolean;
   /** Aktueller Beat im Abenteuer, oder null. */
@@ -163,6 +177,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [dsaBeat, setDsaBeatState] = useState<string | null>(null);
   const dsaBeatRef = useRef<string | null>(null);
   dsaBeatRef.current = dsaBeat;
+  const [handbookOpen, setHandbookOpen] = useState(false);
+  const [idCardOpen, setIdCardOpen] = useState(false);
+  const [lobbyGateOpen, setLobbyGateOpen] = useState(false);
   // Mira darf NICHT auf Etage 3 erscheinen — dort liegt das Büro des
   // Abschnittsverantwortlichen (E67). Würde sie dort die Tür blockieren und
   // Layard ginge nicht auf sie ein, gäbe es ein Dead End: er erfährt dann
