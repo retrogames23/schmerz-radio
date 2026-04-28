@@ -13,6 +13,7 @@ import trackSunday from "@/assets/sunday-at-the-bunker.mp3";
 import trackMidnight from "@/assets/midnight-at-the-loading-bay.mp3";
 import trackSunrise from "@/assets/music/Before_the_Sunrise.mp3";
 import trackSteelRain from "@/assets/music/Steel_Rain_at_Midnight.mp3";
+import trackWohnung from "@/assets/music/Wohnung.mp3";
 import trackDsaTavern from "@/assets/music/dsa-tavern.mp3";
 import trackDsaTable from "@/assets/music/dsa-table.mp3";
 
@@ -34,6 +35,7 @@ const PLAYLIST: MusicTrack[] = [
   { title: "Midnight at the Loading Bay", src: trackMidnight },
   { title: "Before the Sunrise", src: trackSunrise },
   { title: "Steel Rain at Midnight", src: trackSteelRain },
+  { title: "Wohnung", src: trackWohnung },
 ];
 
 /**

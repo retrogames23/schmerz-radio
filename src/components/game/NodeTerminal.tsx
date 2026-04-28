@@ -319,8 +319,8 @@ export function NodeTerminal() {
           { text: ">> Querkopplung E67↔E71: GETRENNT.", delayMs: 500, kind: "warn", beep: true },
         ],
         () => {
-          // Edge-Case-Schutz: Wenn der Spieler über cheat 0002 hier landet,
-          // bevor das Klopf-Event mit Philippe getriggert wurde, würde
+          // Edge-Case-Schutz: Sollte der Spieler hier landen, bevor das
+          // Klopf-Event mit Philippe getriggert wurde, würde
           // burn die Eröffnung der Story unerreichbar machen (104,6 ist
           // danach für immer stumm). Letzte Welle des sterbenden Knotens
           // reicht in dem Fall noch bis zur Wohnungstür durch.
