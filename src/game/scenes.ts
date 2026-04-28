@@ -1496,9 +1496,9 @@ export const scenes: Record<string, Scene> = {
   corridor36: {
     id: "corridor36",
     background: corridor36Bg,
-    title: "Korridor 36 — Verwaltung E67",
+    title: "Korridor 36 — Verwaltung und Versorgung",
     intro:
-      "Andere Beleuchtung als zuhause. Sterilere Türen. Vor einer davon — 3601 — ein handgeschriebenes Schild.",
+      "Andere Beleuchtung als zuhause. Sterilere Türen. Vor einer davon — 3601 — ein handgeschriebenes Schild. Aus 3602 zieht warm und ranzig ein Geruch nach Mensa-Pampe und Bohnerwachs.",
     npcs: [
       {
         id: "miraSprite36",
@@ -1545,6 +1545,15 @@ export const scenes: Record<string, Scene> = {
           api.setFlag("sawEmptyOffice");
           api.startDialog("emptyOfficeSign");
         },
+      },
+      {
+        id: "cafeteriaDoor",
+        x: 1,
+        y: 30,
+        w: 14,
+        h: 54,
+        label: "Tür 3602 — Kantine E67",
+        onUse: (api) => api.goTo("cafeteriaE67"),
       },
       {
         id: "officeBell",
