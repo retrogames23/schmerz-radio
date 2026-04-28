@@ -517,6 +517,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dsaAdventureOpen,
     dsaBeat,
     dsaSheetOpen,
+    handbookOpen,
+    idCardOpen,
+    lobbyGateOpen,
     closeDsaAdventure: () => setDsaAdventureOpen(false),
     api,
     setCaption,
@@ -546,6 +549,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     openDsaSheet: () => setDsaSheetOpen(true),
     closeDsaSheet: () => setDsaSheetOpen(false),
     toggleDsaSheet: () => setDsaSheetOpen((v) => !v),
+    openHandbook: () => setHandbookOpen(true),
+    closeHandbook: () => setHandbookOpen(false),
+    openIdCard: () => setIdCardOpen(true),
+    closeIdCard: () => setIdCardOpen(false),
+    openLobbyGate: () => setLobbyGateOpen(true),
+    closeLobbyGate: () => setLobbyGateOpen(false),
     setDsaCharacter: (c) => {
       dsaCharacterRef.current = c;
       setDsaCharacterState(c);
