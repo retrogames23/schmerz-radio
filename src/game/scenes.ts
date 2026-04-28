@@ -2064,8 +2064,8 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "kowalkSpot",
-        x: 19,
-        y: 46,
+        x: 13,
+        y: 45,
         w: 14,
         h: 50,
         label: "Frau Kowalk",
@@ -2078,8 +2078,8 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "brustSpot",
-        x: 70,
-        y: 36,
+        x: 77,
+        y: 42,
         w: 14,
         h: 50,
         label: "Herr Brust",

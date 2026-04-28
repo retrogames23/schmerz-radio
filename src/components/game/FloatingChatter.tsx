@@ -25,8 +25,8 @@ const DSA_LABEL: Record<ChatterNpcId, string> = {
 
 const CAFETERIA_ANCHOR: Record<CafeteriaNpcId, { x: number; y: number }> = {
   // Werte passen zu den Sprite-Positionen in cafeteriaE67 (siehe scenes.ts).
-  kowalk: { x: 28, y: 30 },
-  brust: { x: 64, y: 30 },
+  kowalk: { x: 20, y: 45 },
+  brust: { x: 84, y: 42 },
 };
 
 const CAFETERIA_LABEL: Record<CafeteriaNpcId, string> = {
