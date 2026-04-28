@@ -19,7 +19,7 @@ import {
   type DsaClassId,
 } from "@/game/dsa/classes";
 
-type Phase = "intro" | "rolling" | "review" | "done";
+type Phase = "class" | "rolling" | "review" | "done";
 
 /** Ein paar typische DSA2-Vornamen je Klasse + Geschlecht — für den
  *  Würfel-Knopf neben dem Namensfeld. */
@@ -199,10 +199,15 @@ function Field({
 export function DsaCharacterCreator() {
   const { dsaCreatorOpen, closeDsaCreator, setDsaCharacter, flags, api } =
     useGame();
-  const [phase, setPhase] = useState<Phase>("intro");
+  const [phase, setPhase] = useState<Phase>("class");
   const [attrs, setAttrs] = useState<Partial<Attrs>>(emptyAttrs());
   const [le, setLe] = useState<number | null>(null);
   const [rollingIdx, setRollingIdx] = useState<number>(-1);
+  /** Pool gewürfelter Werte, die noch keiner Eigenschaft zugewiesen sind. */
+  const [pool, setPool] = useState<number[]>([]);
+  /** Aktuell rollender Würfel-Wert (vor Zuweisung). null = bereit zum Wurf. */
+  const [pendingRoll, setPendingRoll] = useState<number | null>(null);
+  const [diceRolling, setDiceRolling] = useState<boolean>(false);
   const [chosenClassId, setChosenClassId] = useState<DsaClassId | null>(null);
   const [rollCount, setRollCount] = useState<number>(0);
   const [snippy, setSnippy] = useState<{ speaker: string; text: string } | null>(null);
@@ -215,10 +220,13 @@ export function DsaCharacterCreator() {
   useEffect(() => {
     if (!dsaCreatorOpen) return;
     cancelRef.current = false;
-    setPhase("intro");
+    setPhase("class");
     setAttrs(emptyAttrs());
     setLe(null);
     setRollingIdx(-1);
+    setPool([]);
+    setPendingRoll(null);
+    setDiceRolling(false);
     setChosenClassId(null);
     setRollCount(0);
     setSnippy(null);
@@ -269,42 +277,87 @@ export function DsaCharacterCreator() {
     return rollAE(fullAttrs.MU, fullAttrs.IN);
   }, [fullAttrs, chosenClass]);
 
-  async function rollAll() {
-    setPhase("rolling");
+  /** Klasse gewählt → wechselt in die Würfel-Phase, Pool wird leer initialisiert. */
+  function handleConfirmClass() {
+    if (!chosenClassId) return;
     setAttrs(emptyAttrs());
     setLe(null);
-    setChosenClassId(null);
-    setSnippy(null);
-    const rolled: Partial<Attrs> = {};
-    for (let i = 0; i < ATTR_ORDER.length; i++) {
-      if (cancelRef.current) return;
-      setRollingIdx(i);
-      await new Promise((r) => window.setTimeout(r, 650));
-      const a = ATTR_ORDER[i];
-      rolled[a] = roll1d6plus7();
-      setAttrs({ ...rolled });
-    }
-    setRollingIdx(-1);
-    const finalAttrs = rolled as Attrs;
-    setLe(rollLE(finalAttrs.KK));
-    setPhase("review");
-    // Reroll-Zähler erhöhen + ggf. bissigen Spruch zeigen.
-    setRollCount((prev) => {
-      const next = prev + 1;
-      // Erst ab dem 2. Wurf zählt es als "Re-Roll".
-      if (next > 1) {
-        const rerolls = next - 1; // 1, 2, 3, …
-        if (rerolls > 0 && rerolls % 10 === 0) {
-          const idx = Math.floor((rerolls / 10 - 1) % SNIPPY_COMMENTS.length);
-          setSnippy(SNIPPY_COMMENTS[idx]);
-        }
-      }
-      return next;
-    });
+    setPool([]);
+    setPendingRoll(null);
+    setDiceRolling(false);
+    setPhase("rolling");
   }
 
+  /** Einen einzelnen Wurf (1W6+7) ausführen. Animiert kurz, dann liegt
+   *  der Wert im pendingRoll und wartet auf Zuweisung. */
+  async function rollOne() {
+    if (pendingRoll !== null || diceRolling) return;
+    setDiceRolling(true);
+    // Kurze Animation (~500ms) mit wechselnden Zwischenwerten.
+    const start = Date.now();
+    while (Date.now() - start < 500) {
+      if (cancelRef.current) return;
+      await new Promise((r) => window.setTimeout(r, 60));
+    }
+    const v = roll1d6plus7();
+    setPendingRoll(v);
+    setDiceRolling(false);
+  }
+
+  /** Aktuellen Wurf einer freien Eigenschaft zuweisen. */
+  function assignRollTo(attr: Attr) {
+    if (pendingRoll === null) return;
+    if (typeof attrs[attr] === "number") return; // schon belegt
+    const next = { ...attrs, [attr]: pendingRoll };
+    setAttrs(next);
+    setPendingRoll(null);
+    // Wenn alle 7 belegt sind → in Review wechseln.
+    if (ATTR_ORDER.every((a) => typeof next[a] === "number")) {
+      const filled = next as Attrs;
+      setLe(rollLE(filled.KK));
+      setPhase("review");
+      setRollCount((prev) => {
+        const n = prev + 1;
+        if (n > 1) {
+          const rerolls = n - 1;
+          if (rerolls > 0 && rerolls % 10 === 0) {
+            const idx = Math.floor((rerolls / 10 - 1) % SNIPPY_COMMENTS.length);
+            setSnippy(SNIPPY_COMMENTS[idx]);
+          }
+        }
+        return n;
+      });
+    }
+  }
+
+  /** Alle Würfe verwerfen und neu beginnen (gleiche Klasse). */
   function handleReroll() {
-    rollAll();
+    setAttrs(emptyAttrs());
+    setLe(null);
+    setPool([]);
+    setPendingRoll(null);
+    setDiceRolling(false);
+    setPhase("rolling");
+  }
+
+  /** Erfüllt die aktuelle (Teil-)Verteilung die Mindestwerte der Klasse? */
+  function meetsMinimums(): boolean {
+    if (!chosenClass) return true;
+    const cls = chosenClass;
+    if (!cls.min) return true;
+    for (const k of Object.keys(cls.min) as Array<keyof Attrs>) {
+      const need = cls.min[k];
+      const have = attrs[k];
+      if (need !== undefined && (typeof have !== "number" || have < need)) return false;
+    }
+    if (cls.max) {
+      for (const k of Object.keys(cls.max) as Array<keyof Attrs>) {
+        const cap = cls.max[k];
+        const have = attrs[k];
+        if (cap !== undefined && typeof have === "number" && have > cap) return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -339,6 +392,7 @@ export function DsaCharacterCreator() {
       name: finalName,
       attrs: { ...fullAttrs },
       le,
+      leMax: le,
       ae,
       rerolled: rollCount > 1,
     });
