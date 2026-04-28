@@ -1617,7 +1617,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 54,
         alt: "Philippe vor dem Plakat",
-        hiddenWhen: ["doorbellRang"],
+        hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
         visible: (api) => api.getPhilippeFloor() === 4,
       },
     ],
@@ -1629,7 +1629,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 54,
         label: "Philippe (Nachbar)",
-        hiddenWhen: ["doorbellRang"],
+        hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
         onUse: (api) => api.startDialog("philippeInCorridor46"),
       },
       {
