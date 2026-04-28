@@ -22,8 +22,6 @@ import miraSprite from "@/assets/npc-mira.png";
 import philippeSprite from "@/assets/npc-philippe.png";
 import commonRoomBg from "@/assets/scene-common-room.jpg";
 import cafeteriaBg from "@/assets/scene-cafeteria-e67.jpg";
-import kowalkSprite from "@/assets/npc-kowalk.png";
-import brustSprite from "@/assets/npc-brust.png";
 import type { Scene } from "./types";
 
 export const scenes: Record<string, Scene> = {
