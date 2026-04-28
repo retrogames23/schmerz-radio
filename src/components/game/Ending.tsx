@@ -153,7 +153,7 @@ export function Ending() {
     if (idx >= frames.length) return;
     // Längere Tafeln länger halten, damit der Leser nachkommt.
     const lines = frames[idx]?.length ?? 0;
-    const hold = 2400 + lines * 1100;
+    const hold = 3800 + lines * 1700;
     const t = setTimeout(() => setIdx((i) => i + 1), hold);
     return () => clearTimeout(t);
   }, [ending, frames, idx]);
