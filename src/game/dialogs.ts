@@ -2614,7 +2614,7 @@ export const dialogs: Record<string, DialogTree> = {
         id: "hs4",
         speaker: "HELKA",
         text: "Wörter aufbewahren. Manche kommen nicht mehr vor in offiziellen Mitteilungen. ›Zärtlich.‹ ›Beliebig.‹ ›Sehnsucht.‹ — Wer das letzte Mal eines davon gehört? Der Sprecher merkt nicht einmal, dass es fehlt.",
-        subtext: "Das Passwort ihres alten Berufs liegt in dem Satz. Sie weiß es. Sie testet, ob er zuhört.",
+        subtext: "Sie sagt das beiläufig, aber sie wartet darauf, ob er zuhört.",
         next: "hs5",
       },
       hs5: {
@@ -2626,7 +2626,7 @@ export const dialogs: Record<string, DialogTree> = {
       hs6: {
         id: "hs6",
         speaker: "HELKA",
-        text: "Privat. Auf meinem Rechner. Wer wissen will, wie sie heißt — sie heißt nach dem, was ich war. Das ist alles, was ich Ihnen heute sage.",
+        text: "Privat. Auf meinem Rechner. Sie hat einen Namen, aber den behalte ich für mich. Wer mir lange genug zuhört, kommt vielleicht selbst drauf.",
         end: true,
       },
     },
@@ -3015,6 +3015,19 @@ export const dialogs: Record<string, DialogTree> = {
         id: "bc9",
         speaker: "SYSTEM",
         text: "Bodo steht auf. Langsam, aber ohne Zögern. Greift nach der Jacke.",
+        next: "bc9b",
+      },
+      bc9b: {
+        id: "bc9b",
+        speaker: "LAYARD",
+        text: "Schacht 4 — funktioniert der Aufzug von hier überhaupt runter?",
+        next: "bc9c",
+      },
+      bc9c: {
+        id: "bc9c",
+        speaker: "BODO",
+        text: "Den Aufzug brauche ich nicht. Als Hausmeister kenne ich hier JEDEN Gang. Wartungsschächte, Versorgungstreppen, ein paar Türen, die offiziell gar nicht existieren. Ich bin schneller unten als das Display piept.",
+        subtext: "Er sagt es ohne Stolz. Es ist einfach so.",
         next: "bc10",
       },
       bc10: {
