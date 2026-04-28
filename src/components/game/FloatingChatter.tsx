@@ -1,38 +1,76 @@
 import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { CHATTER_TOPICS, type ChatterNpcId } from "@/game/dsa/chatter";
+import {
+  CAFETERIA_CHATTER_TOPICS,
+  type CafeteriaNpcId,
+} from "@/game/cafeteriaChatter";
 
 /**
  * Position einer Sprechblase je NPC, in % der Szene.
  * Punkt zeigt den Mund/Kopf-Anker — die Blase wird darüber positioniert.
- * Werte stimmen mit den Sprite-Positionen in scenes.ts (commonRoomE67) überein.
+ * Werte stimmen mit den Sprite-Positionen in scenes.ts überein.
  */
-// Anker zeigen ungefähr auf den Kopf der jeweils ins Hintergrund-
-// bild gemalten Figur (Werte in % der Szene).
-const NPC_ANCHOR: Record<ChatterNpcId, { x: number; y: number }> = {
+const DSA_ANCHOR: Record<ChatterNpcId, { x: number; y: number }> = {
   tjark: { x: 70, y: 12 },
   brem: { x: 26, y: 18 },
   yelva: { x: 84, y: 42 },
 };
 
-const NPC_LABEL: Record<ChatterNpcId, string> = {
+const DSA_LABEL: Record<ChatterNpcId, string> = {
   tjark: "Tjark",
   brem: "Brem",
   yelva: "Yelva",
 };
 
+const CAFETERIA_ANCHOR: Record<CafeteriaNpcId, { x: number; y: number }> = {
+  // Werte passen zu den Sprite-Positionen in cafeteriaE67 (siehe scenes.ts).
+  kowalk: { x: 28, y: 30 },
+  brust: { x: 64, y: 30 },
+};
+
+const CAFETERIA_LABEL: Record<CafeteriaNpcId, string> = {
+  kowalk: "Frau Kowalk",
+  brust: "Herr Brust",
+};
+
+type AnyNpcId = ChatterNpcId | CafeteriaNpcId;
+
+interface ChatterTopicLike {
+  id: string;
+  lines: ReadonlyArray<{ npc: AnyNpcId; text: string }>;
+}
+
+interface ChatterConfig {
+  topics: ReadonlyArray<ChatterTopicLike>;
+  anchors: Record<string, { x: number; y: number }>;
+  labels: Record<string, string>;
+}
+
+const DSA_CONFIG: ChatterConfig = {
+  topics: CHATTER_TOPICS as unknown as ReadonlyArray<ChatterTopicLike>,
+  anchors: DSA_ANCHOR as Record<string, { x: number; y: number }>,
+  labels: DSA_LABEL as Record<string, string>,
+};
+
+const CAFETERIA_CONFIG: ChatterConfig = {
+  topics: CAFETERIA_CHATTER_TOPICS as unknown as ReadonlyArray<ChatterTopicLike>,
+  anchors: CAFETERIA_ANCHOR as Record<string, { x: number; y: number }>,
+  labels: CAFETERIA_LABEL as Record<string, string>,
+};
+
 interface ActiveBubble {
   id: string;
-  npc: ChatterNpcId;
+  npc: AnyNpcId;
   text: string;
   fadingOut: boolean;
 }
 
-function pickTopic(lastIdx: number): number {
-  if (CHATTER_TOPICS.length <= 1) return 0;
+function pickTopic(lastIdx: number, total: number): number {
+  if (total <= 1) return 0;
   let next = lastIdx;
   while (next === lastIdx) {
-    next = Math.floor(Math.random() * CHATTER_TOPICS.length);
+    next = Math.floor(Math.random() * total);
   }
   return next;
 }
@@ -44,20 +82,24 @@ function durationFor(text: string): number {
 }
 
 /**
- * Hintergrundgespräche der DSA-Runde, wenn Layard im
- * Gemeinschaftsraum ist und gerade NICHT am Tisch sitzt
- * (kein Dialog/Modal/Char-Creator offen).
- *
- * Nur eine Blase gleichzeitig sichtbar. Eine Themenrunde läuft am
- * Stück durch, dann eine kurze Pause, dann das nächste Thema.
+ * Hintergrundgespräche zweier oder mehrerer NPCs, wenn Layard sich in
+ * einem Raum befindet, in dem die Funktion aktiviert ist (`enabled`).
+ * Welcher Topic-Pool gezogen wird, steuert `variant`.
  */
-export function FloatingChatter({ enabled }: { enabled: boolean }) {
+export function FloatingChatter({
+  enabled,
+  variant = "dsa",
+}: {
+  enabled: boolean;
+  variant?: "dsa" | "cafeteria";
+}) {
   const { dialogId, dsaCreatorOpen } = useGame();
   const [bubble, setBubble] = useState<ActiveBubble | null>(null);
   const cancelRef = useRef(false);
   const seqRef = useRef(0);
 
   const isActive = enabled && !dialogId && !dsaCreatorOpen;
+  const config = variant === "cafeteria" ? CAFETERIA_CONFIG : DSA_CONFIG;
 
   useEffect(() => {
     if (!isActive) {
@@ -81,8 +123,8 @@ export function FloatingChatter({ enabled }: { enabled: boolean }) {
       // Kleine Anlaufzeit, damit das Erscheinen nicht überrumpelt.
       await sleep(900);
       while (!cancelRef.current && seqRef.current === mySeq) {
-        topicIdx = pickTopic(topicIdx);
-        const topic = CHATTER_TOPICS[topicIdx];
+        topicIdx = pickTopic(topicIdx, config.topics.length);
+        const topic = config.topics[topicIdx];
         for (const line of topic.lines) {
           if (cancelRef.current || seqRef.current !== mySeq) return;
           const id = `${topic.id}-${line.npc}-${Math.random().toString(36).slice(2, 7)}`;
@@ -105,11 +147,12 @@ export function FloatingChatter({ enabled }: { enabled: boolean }) {
     return () => {
       cancelRef.current = true;
     };
-  }, [isActive]);
+  }, [isActive, config]);
 
   if (!isActive || !bubble) return null;
 
-  const anchor = NPC_ANCHOR[bubble.npc];
+  const anchor = config.anchors[bubble.npc];
+  const label = config.labels[bubble.npc] ?? bubble.npc;
 
   return (
     <div
@@ -124,7 +167,7 @@ export function FloatingChatter({ enabled }: { enabled: boolean }) {
     >
       <div className="relative max-w-[260px] -translate-x-1/2 rounded-md border border-amber-glow/50 bg-background/95 px-3 py-2 shadow-[0_4px_12px_rgba(0,0,0,0.55)]">
         <div className="font-mono-crt text-[9px] uppercase tracking-[0.25em] text-amber-glow/80">
-          {NPC_LABEL[bubble.npc]}
+          {label}
         </div>
         <div className="mt-1 font-display text-[13px] leading-snug text-foreground">
           {bubble.text}
