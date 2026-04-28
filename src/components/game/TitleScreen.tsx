@@ -117,6 +117,15 @@ export function TitleScreen({ onStart }: Props) {
           <div>Layard Worag · Zimmer 2611</div>
           <div>CentralOS v2.3 · E67.NETZ stabil</div>
         </div>
+
+        <a
+          href="https://buymeacoffee.com/doener"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 inline-block font-mono-crt text-xs uppercase tracking-[0.3em] text-amber-glow/80 underline-offset-4 hover:underline amber-glow"
+        >
+          ☕ Buy me a coffee
+        </a>
       </div>
     </div>
   );
