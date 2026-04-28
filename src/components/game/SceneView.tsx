@@ -1,23 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { scenes, useGame } from "@/game/GameContext";
-import type { SceneId } from "@/game/types";
 import { Hotspot } from "./Hotspot";
 import { FloatingChatter } from "./FloatingChatter";
 
-// Mapping Szene → Aufzug-Etage. Wird genutzt, um im Aufzug die digitale
-// Anzeige passend zu der Etage zu zeigen, von der Layard gerade kam.
-const SCENE_TO_FLOOR: Partial<Record<SceneId, number>> = {
-  floor1Lobby: 1,
-  hallway: 2,
-  apartment: 2,
-  apt2612: 2,
-  corridor36: 3,
-  corridor46: 4,
-  corridor56: 5,
-};
-
 export function SceneView() {
-  const { scene, previousScene, caption, setCaption, radioActive, resonance, flags, api } = useGame();
+  const { scene, caption, setCaption, radioActive, resonance, flags, api } = useGame();
   const current = scenes[scene];
   const backgroundSrc =
     typeof current.background === "function"
