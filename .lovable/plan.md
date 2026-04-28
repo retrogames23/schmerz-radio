@@ -1,157 +1,176 @@
 
-# Bewohner-Ausweis & E67-Handbuch
+# Kantine E67 — Konzept & Integration
 
-## Ziel
+## 1. Korridor-Umbenennung
 
-- Layard startet Akt I mit zwei Inventar-Items: **E67-Bewohner-Ausweis** und **E67-Handbuch (Auszug, 7. revidierte Fassung)**.
-- Das Handbuch ist ein lesbares „Welt-Dokument“: wohlwollend formuliert, aber bürokratisch verschachtelt — gleichzeitig Lore, Tutorial-Camouflage und Quelle für mindestens einen Hinweis, den der Spieler später braucht.
-- Der Ausweis bekommt eine echte spielerische Funktion: ein neues kleines Akt-I-Rätsel (Sektor-Schleuse vor der Lobby), das Akt I um 5–10 Minuten streckt, ohne den bestehenden Hauptpfad zu brechen.
+`corridor36`:
+- Title: „Korridor 36 — Verwaltung und Versorgung"
+- Intro angepasst: erwähnt Kantinengeruch links neben 3601.
+- Keine Flag-/ID-Änderungen — `corridor36` bleibt als Scene-ID stehen, nur Anzeigetext ändert sich.
 
----
+Layout-Skizze:
 
-## 1. Items am Spielstart
+```text
+┌────────────────────────────────────────────────────────────┐
+│   [3602 KANTINE]   [3601 ABSCHNITT]            [Aufzug]    │
+│        🚪              🚪 + Klingel               ↑         │
+└────────────────────────────────────────────────────────────┘
+```
 
-Beim ersten Laden der Wohnung 2611 (`apartment` Szene) liegt im Inventar bereits:
+Neue Tür-Hotspot links neben 3601 (x≈4, y≈32, w≈12, h≈50): „Tür 3602 — Kantine E67". Geht in neue Scene `cafeteriaE67`.
 
-| Item-ID | Name | Kurzbeschreibung |
+## 2. Szene `cafeteriaE67`
+
+**Asset:** Neuer Hintergrund `scene-cafeteria-e67.jpg` im Unavowed-Stil (handgemalt, körniges Licht). Mischung aus:
+- DDR-Kantine: Resopal-Tische, Gardinen mit geometrischem Muster, Zigarettenautomat, ein Wasserkocher, ein Aushang „Hygieneordnung Stand 1994".
+- „Brazil" (Gilliam 1985): überdimensionierte Lüftungsrohre an der Decke, ein blinkender Pneumatikrohrposteingang über der Theke, ein zu grosses Schild „NÄHRSTOFFAUSGABE — BITTE ANSTELLEN" mit Pfeil ins Nichts, Aktenstapel auf einem Beistelltisch.
+- Etabliert: warmes Bernstein-Licht, eine flackernde Leuchtstoffröhre, ein Radio im Hintergrund.
+
+Zwei NPCs hinter der Theke:
+- **Kowalk** (links, weiblich, Mitte 50, Dauerwelle, Kittel mit Namensschild „K. KOWALK — SCHICHT B"). Pragmatisch, direkt, glaubt an die alte Hygieneordnung von 1991.
+- **Brust** (rechts, männlich, Anfang 30, dünn, Kittel mit Namensschild „M. BRUST — SCHICHT B / TRAINEE"). Regelfanatiker, glaubt an die neue Hygieneordnung von 1996.
+
+Hotspots:
+- `kowalkSpot` → `cafeteriaKowalk`-Dialog
+- `brustSpot` → `cafeteriaBrust`-Dialog
+- `cafeteriaCounter` → Schild „Ausgabe nur mit Bewohner-Code oder Vollmacht" (Beobachtung)
+- `cafeteriaPneumaticTube` → Rohrpost (Beobachtung, Schmerz-Radio-Subtext)
+- `cafeteriaPosters` → widersprüchliche Hygieneaushänge (Beobachtung)
+- `back36` → zurück nach corridor36
+
+## 3. Hintergrund-Chatter (DSA-Style)
+
+Neues Modul `src/game/cafeteriaChatter.ts` analog zu `dsa/chatter.ts`. `FloatingChatter`-Komponente wiederverwenden mit `npc`-IDs `kowalk` / `brust`. Aktiv, wenn Layard in `cafeteriaE67` ist und kein Dialog läuft.
+
+Themen (jeweils 3–5 Zeilen, Loop mit Pausen):
+
+1. **Schichtplan-Tausch**
+   - Brust: „Schicht C tauscht wieder mit Schicht B. Drittes Mal diese Woche."
+   - Kowalk: „Weil Schicht C niemand mag. Auch nicht Schicht C selbst."
+   - Brust: „Es steht im Plan, also gilt es."
+   - Kowalk: „Es steht im Plan, weil ich es reingeschrieben habe, Brust."
+
+2. **B2-Zuteilung**
+   - Kowalk: „Achtundachtzig B2 für E67 heute. Letzte Woche sechsundneunzig."
+   - Brust: „Resonanz-bedingt. Sagt Logistik."
+   - Kowalk: „Sagt Logistik immer."
+
+3. **B3-Knappheit**
+   - Brust: „B3 ist offiziell nur für medizinisch indizierte Fälle."
+   - Kowalk: „Frau Doktor Tessmer hat seit dem Frühjahr keinen Antrag mehr gestellt."
+   - Brust: „Trotzdem ist B3 weg."
+   - Kowalk: „Frag den Hausmeister auf 56."
+
+4. **Hygieneordnung — Streitthema**
+   - Brust: „Aushang vier Punkt zwei: Handschuhe bei Ausgabe, jederzeit."
+   - Kowalk: „Aushang sieben Punkt eins, von 91, Brust: Handschuhe nur bei flüssigen Rationen."
+   - Brust: „Der ist überschrieben."
+   - Kowalk: „Wo steht das?"
+   - Brust: „Im neuen Aushang."
+   - Kowalk: „Der den alten überschreibt, weil im neuen steht, dass er ihn überschreibt. Sehr sauber gedacht."
+
+5. **Pneumatik-Rohrpost**
+   - (klong) Kowalk: „Wieder Quadrant E70. Wieder leer."
+   - Brust: „Steht trotzdem in der Eingangsliste."
+   - Kowalk: „Genau."
+
+6. **Bewohner-Codes**
+   - Brust: „Vollmacht 4419 hat heute drei B3 abgeholt."
+   - Kowalk: „4419 ist Frau Tessmer. Lass es."
+   - Brust: „Aber drei."
+   - Kowalk: „Lass es."
+
+7. **Kowalks Tochter** (nur ein Mal, am späten Akt I)
+   - Kowalk: „Meine Tochter war bei Resonanz-Hygiene. Hat aufgehört."
+   - Brust: „Wegen?"
+   - Kowalk: „Hat sie nicht gesagt. Aber sie isst seitdem keine B2 mehr."
+
+## 4. Story-Integration: Vollmachts-Rätsel (Akt I)
+
+### Wo das Rätsel andockt
+
+Aktuell soll Layard nach dem Telefonat mit Insa zu Tür 3601, findet diese leer, klingelt vergeblich. Die Etage hat sonst wenig zu tun. Hier setzt das Rätsel an:
+
+**Auslöser (vor 3601):** Bei Layards erstem Besuch in `corridor36` spricht ihn **Philippe** im Korridor an (oder bei einem Besuch in 2613 nach dem Sanitäter-Vorfall) und bittet:
+
+> „Worag — Sie gehen sowieso nach unten. Würden Sie meine B3 mitnehmen? Ich bin … nicht mehr ganz sicher, ob ich heute durch die Kantine komme. Hier — meine Vollmacht. Vier-Drei-Eins-Sieben."
+
+Layard bekommt **Item: `b3Authorization`** („Vollmacht 4317 — Philippe Marteau, B3-Ausgabe einmalig"). Ist mehr als nur Botengang — Philippe schiebt Layard in einen Raum, der ihn zwingt, mit Personal jenseits der Verwaltungsschicht zu reden, und gibt ihm ein zusätzliches Druckmittel an Insa (Layard hat jetzt belegbar einen offiziellen Bewohner-Auftrag erfüllt — Argument für „Ich war heute schon kooperativ").
+
+### Komplikation (das eigentliche Rätsel)
+
+In der Kantine gibt Brust die B3 nicht raus:
+- Brust: „Vollmacht 4317 ist von Schicht A gegengezeichnet. Heute ist Schicht B. Ich kann das nicht freigeben."
+- Kowalk: „Brust."
+- Brust: „Es steht im Aushang."
+- Kowalk: „Welcher?"
+
+Layard braucht dann **eines von zwei** Dingen, um die B3 zu bekommen:
+
+**Lösungsweg A — Kowalk überreden:**
+Über Dialogoptionen aus Kowalks Hintergrund (ihre Tochter, die Resonanz-Hygiene verlassen hat, und ihre Bemerkung über Frau Tessmer) kann Layard eine Vertrauensbasis aufbauen. Wenn er (a) ihr seinen **Bewohnerausweis** zeigt UND (b) erwähnt, dass Philippe „seit gestern schlecht aussieht" (nur verfügbar nach `metPhilippe`), gibt sie die B3 unter der Theke heraus, ohne Brust einzubeziehen. Setzt Flag `kowalkSidedWithLayard`.
+
+**Lösungsweg B — Brust mit seiner eigenen Logik schlagen:**
+Layard braucht den **älteren Aushang** als Item. Den findet er entweder:
+- als Aushang an Tür 3601 (der „Heute geschlossen"-Zettel ist auf der Rückseite einer alten Hygieneordnung gedruckt), oder
+- über das **E67-Handbuch** (existiert schon als Item) — eine Seite zitiert die Hygieneordnung von 1991 wörtlich.
+
+Layard kombiniert Handbuch + Vollmacht (oder zeigt Brust die entsprechende Handbuchseite), woraufhin Brust kapituliert: „… der Aushang ist tatsächlich nicht widerrufen. Bitte nehmen Sie die Ration." Setzt Flag `brustOutruled`.
+
+### Auflösung & Akt-I-Verzahnung
+
+Layard erhält **Item `b3Ration`**. Bringt er es Philippe (in 2613 oder Korridor 26), gibt Philippe ihm im Gegenzug:
+- den **Sanitäter-Bericht** vom Vorfall in 2615 (neues Item `paramedicsReport`), den Philippe „aus Versehen" mitgenommen hat — oder, wenn dieser narrativ überlastet ist:
+- eine **Notiz mit Insas Geburtsname**, den Philippe noch aus den alten Adressbüchern kennt — direkter Hint auf Helkas/Insas Passwort-Rätsel später, ohne es zu spoilern.
+
+(Empfehlung: Sanitäter-Bericht. Macht das Rätsel handfest und liefert Layard einen Grund, Stegmann/Insa erneut zu kontaktieren — verlängert Akt I um einen sauberen Loop, statt nur ein Item zu pingpongen.)
+
+### Wenn Layard die Vollmacht ignoriert
+
+Vollmacht ist optional. Verfällt nicht; Philippe fragt beim nächsten Treffen einmal nach („Haben Sie zufällig …?"), dann nicht mehr. Subtext-Bemerkung im Schmerz-Radio, wenn Layard endgültig daran vorbeigeht.
+
+## 5. Item-Reaktionen (Kowalk & Brust)
+
+Für `src/game/combine.ts` — Reaktionen auf „Item zeigen". Format: kurze, in-character Sätze.
+
+| Item | Kowalk | Brust |
 |---|---|---|
-| `residentId` | E67-Bewohner-Ausweis | Mattes Plastik, Lichtbild, Quadrant E67/26, Wohnung 2611. Magnetstreifen, daneben handgekratzt: „nicht knicken“. |
-| `e67Handbook` | E67-Handbuch (Auszug, 7. rev. Fassung) | Geheftete Broschüre, 24 Seiten, beigefarben, Stempel „Bewohner-Exemplar — bitte griffbereit halten“. |
+| `protocol` (Layards Ausgangsprotokoll) | „Das ist nicht meine Theke, Worag." | „Formular ist korrekt ausgefüllt. Sie wollen das woanders abgeben." |
+| `exitCode` (Sektor-Code) | „Stecken Sie den weg, bevor jemand reinkommt." | „Bewohnercodes gehören nicht in die Kantine, Herr Worag." |
+| `b3sample` | „Originalverpackung. Wo haben Sie die her?" | „Diese Charge ist offiziell aus dem Verkehr — bitte zurückgeben." |
+| `tuningCrystal` | „Hübsch. Nicht essbar." | „Das ist kein Bewohnergegenstand. Bitte beim Fundbüro abgeben." |
+| `mikaelLetter` | (liest stumm) „Behalten Sie das. Und reden Sie mit niemandem darüber." | „Privater Schriftverkehr. Bitte nicht in der Ausgabezone." |
+| `flyer` (Mira) | „Die haben uns auch welche unter der Tür durchgeschoben. Brust hat sie weggeworfen." | „Nicht-genehmigte Druckerzeugnisse. Bitte entsorgen." |
+| `wartungsnotiz5610` | „Bodos Schrift. Was tun Sie damit?" | „Wartungsdokumente sind technisch. Nicht hier." |
+| `residentId` | „Worag, E67, 2613. In Ordnung." | „Identität bestätigt. Was möchten Sie aufnehmen?" |
+| `e67Handbook` | „Das alte Ding. Vorne im Hygiene-Kapitel ist ein Eselsohr — meins." | „… die Ausgabe von 91 ist offiziell noch gültig?" |
+| `b3Authorization` | (Lösungsweg A — siehe oben) | „Vollmacht 4317. Schicht A. Heute Schicht B. Ich kann das nicht." |
+| `b3Ration` (nach Erhalt) | „Bringen Sie die hoch. Nicht hier öffnen." | „Bitte vor Verlassen der Etage übergeben." |
 
-Beide sind ab `scene === "apartment"` und Spielbeginn im Inventar (kein Pickup nötig). „Untersuchen“ öffnet jeweils ein eigenes Lese-Overlay.
+## 6. Dialog-Bäume (Übersicht)
 
----
+Neu in `src/game/dialogs.ts`:
 
-## 2. Inhalt: E67-Handbuch (Auszug)
+- `philippeAsksFavor` — Vollmachts-Übergabe (Trigger im Korridor 26 oder beim ersten Betreten von corridor36 nach `metPhilippe`).
+- `cafeteriaKowalk` — mehrstufig: Smalltalk → Schichtarbeit → Tochter → (ggf. Ausgabe).
+- `cafeteriaBrust` — Smalltalk → Hygieneordnung → Vollmacht-Streit → (ggf. Ausgabe).
+- `cafeteriaHandover` — Brust gibt klein bei (Lösungsweg B).
+- `cafeteriaUnderTheCounter` — Kowalk gibt B3 unter der Theke (Lösungsweg A).
+- `philippeReceivesB3` — Übergabe in 2613 / Korridor 26, Layard bekommt Sanitäter-Bericht.
 
-Der Inhalt steht zentral in einer neuen Datei `src/game/e67Handbook.ts` als Array von Kapiteln; das Lese-Overlay nutzt das bestehende `TextOverlay`-Pattern (mit Kapitel-Navigation oben, Weiter/Zurück, Schließen per Klick außerhalb).
+## 7. Technische Aspekte
 
-Tonfall: **freundlich-fürsorglich, übergriffig harmlos**, mit Fußnoten, Querverweisen auf Paragraphen, die nicht abgedruckt sind, und Fußnoten zu Fußnoten. Beispiel-Kapitel:
+- **Neue Items in `InventoryItemId`:** `b3Authorization`, `b3Ration`, `paramedicsReport`. Icons in `ItemIcon.tsx` ergänzen.
+- **Neue Flags:** `gotB3Authorization`, `kowalkSidedWithLayard`, `brustOutruled`, `gotB3Ration`, `gaveB3ToPhilippe`, `metKowalk`, `metBrust`, `cafeteriaKnowsHygieneFeud`.
+- **Neue Scene-ID:** `"cafeteriaE67"` in `SceneId`-Union.
+- **Hintergrund-Asset:** `scene-cafeteria-e67.jpg` (gen + import in `scenes.ts`).
+- **NPC-Sprites:** `npc-kowalk.png`, `npc-brust.png` (gen, gleicher Stil wie bestehende Sprites).
+- **Chatter-Modul:** `src/game/cafeteriaChatter.ts`; `FloatingChatter` so erweitern (oder zweite Instanz mounten), dass es eine generische Topic-Liste + NPC-Map akzeptiert. Aktuelles `FloatingChatter` prüfen: falls hart auf DSA-Daten verdrahtet, Refactor zu `<FloatingChatter topics={...} npcPositions={...} />`.
+- **Combine-Reaktionen:** Tabelle aus §5 in `combine.ts` einpflegen, analog zu bestehenden NPC-Reaktionen.
+- **Story-Gating:** Vollmachts-Rätsel darf weder Akt-I-Hauptpfad blockieren noch auf magische Weise das Insa-Passworträtsel oder das Stegmann-Telefonat ersetzen — es ist ein paralleler, optionaler Loop, dessen einzige *narrative* Belohnung (Sanitäter-Bericht) Layard zusätzlichen Hebel gibt, aber nicht zwingend ist.
 
-### §1 Willkommen in E67
-„Sie wohnen jetzt hier. Wir freuen uns. Bitte bewahren Sie dieses Heft griffbereit auf — am besten **sichtbar**, aber **nicht im direkten Lichteinfall** (siehe §17 Abs. 4 lit. b: Vergilbungsschutz).“
+## 8. Offen für Entscheidung
 
-### §2 Der Bewohner-Ausweis
-- Stets bei sich tragen — auch in der eigenen Wohnung („für den Fall der Fälle, den wir alle nicht herbeiwünschen“).
-- **Niemals knicken.** Ein geknickter Ausweis gilt als „eingeschränkt lesbar“ und führt nach §2 Abs. 3 zu einer freundlichen Erinnerung der Leitstelle.
-- Bei Verlust: 001 wählen, **nicht vor 09:30 und nicht nach 16:45** (außerhalb dieser Zeiten greift §11 — siehe dort).
-- Der Ausweis öffnet **alle Innentüren des Quadranten 26**, mit Ausnahme von Türen, die §6 unterstehen.
-- Auf der Rückseite befindet sich ein 4-stelliger **Bewohner-Code** (siehe §2 Abs. 7). Dieser Code ist „im Regelfall identisch mit der Wohnungsnummer modulo 1000“ — *ausgenommen Wohnungen mit ungerader Quersumme; in diesen Fällen gilt der Code „Wohnungsnummer minus 1000“.*
-
-### §3 Wann wähle ich 001?
-Die wohl längste und liebevollste Tabelle des Handbuchs. Auswahl:
-
-| Situation | 001 wählen? | Hinweis |
-|---|---|---|
-| Sie hören es nebenan klopfen, aber niemand öffnet | **Ja**, sofern es **dreimal** klopft *und* länger als 20 Sekunden andauert. Bei nur zweimal: erst eigene Wohnungstür öffnen, freundlich rufen, dann ggf. wählen. | §3.1 |
-| Das Schmerz-Radio rauscht „auffällig harmonisch“ | **Nein.** Dies ist nach §9 ein Zeichen guter Resonanz-Hygiene. Bitte genießen. | §3.2 |
-| Sie riechen Ozon im Treppenhaus | Erst Fenster (falls vorhanden) öffnen, dann **001**, **niemals zuerst 002** (002 existiert nicht mehr seit der Sektor-Reform 1996, vgl. §B). | §3.3 |
-| Aufzug bleibt zwischen zwei Etagen stehen | **Nicht 001.** Dafür ist der Aufzugnotruf im Aufzug zuständig (gelber Knopf, **gedrückt halten, nicht tippen**). 001 nur, wenn der gelbe Knopf nach 4 Minuten nicht reagiert. | §3.4 |
-| Ein Nachbar, den Sie länger nicht gesehen haben, öffnet plötzlich nicht mehr | **Ja, aber höflich.** Bitte nicht „vermisst“ sagen — die Leitstelle bevorzugt die Formulierung „derzeit nicht erreichbar“. | §3.5 |
-| Sie selbst fühlen sich „nicht wie sich selbst“ | **001**, ruhig sprechen, **nicht das Wort „dringend“ verwenden** — es löst eine andere Eskalationsstufe aus, die Sie vermutlich nicht möchten. | §3.6 |
-
-§3 endet mit dem berühmten Schlusssatz: *„Im Zweifel wählen Sie lieber **gar nicht** als **falsch**. Insa hört trotzdem zu.“*
-
-### §4 Terminal-Benutzung (CentralOS 2.3)
-- Anmeldung: Bewohner-Code (siehe §2 Abs. 7), gefolgt von **Enter**, **nicht Return** (auf älteren Tastaturen identisch — *bei neueren Geräten siehe §4 Abs. 9*).
-- Befehle bitte **kleinschreiben**. Großbuchstaben werden „aus Höflichkeit toleriert, aber nicht garantiert ausgeführt“.
-- `help` ist Ihr Freund. `man` ist Ihr **älterer** Freund.
-- Mails der Leitstelle gelten als **gelesen, sobald sie zugestellt sind**, unabhängig davon, ob Sie sie gelesen haben (§4 Abs. 12 — die berühmte „Lesefiktion“).
-- `cancel` ist nur für Wartungsvorgänge gedacht. Verwenden Sie es **nicht** auf eigenen Kalendereinträgen — das ergäbe „eine philosophisch unklare Situation“ (§4 Abs. 17).
-
-### §5 Kantine 26 — Öffnungs- und Schließzeiten
-- Mo–Do: **11:30–13:45** und **17:30–19:00**.
-- Fr: **11:30–13:15** (verkürzt wegen Reinigung der B2-Linie).
-- Sa/So: **geschlossen** (Beschluss der Bewohnerversammlung 11/1996, bestätigt 11/1997).
-- **Ausnahmetage:** Jeder zweite Mittwoch im Monat, sofern dieser nicht auf einen Feiertag fällt — dann gilt der **darauffolgende Donnerstag** als Ausnahmetag, sofern dieser nicht selbst ein Ausnahmetag wäre, in welchem Fall §5 Abs. 6 lit. d greift (nicht abgedruckt).
-- Mitbringen erlaubt: eigene Tasse („1 Stück, nicht mehr“). 
-- Mitbringen verboten: eigenes Besteck (aus „Resonanz-Hygiene-Gründen“, vgl. §9).
-
-### §6 Türen, Schleusen und Sektorgrenzen
-- Innentüren Quadrant 26: **Bewohner-Ausweis** genügt.
-- Sektorschleuse E67 → E71: **Manueller Code**, 8-stellig, wird einmalig durch die Leitstelle vergeben (vgl. §6 Abs. 4 — „Bringschuld der Bewohnerin/des Bewohners“).
-- Wartungstüren (5er-Etage): **Wartungskarte**, kein Bewohnerzugang.
-- **Lobby-Schleuse Etage 1:** Bewohner-Ausweis, *zusätzlich* Eingabe des Bewohner-Codes (§2 Abs. 7), sofern die Schleuse „im Tagesmodus“ steht. Tagesmodus gilt **werktags 06:00–22:00**. Außerhalb dieser Zeit genügt der Ausweis allein. *(Diese Klausel ist der Hebel für das Rätsel, siehe Abschnitt 4.)*
-
-### §7 Resonanz-Hygiene
-Fluffiges Kapitel. Bittet darum, „auffällig harmonische Geräusche“ nicht weiterzuverbreiten, da diese „dem Quadranten zustehen, nicht dem Einzelnen“.
-
-### §8 Bewohnerversammlung
-Findet „bei Bedarf“ statt. Bedarf wird durch die Leitstelle festgestellt.
-
-### §9 Anhang B — Begriffe, die in diesem Heft nicht mehr verwendet werden
-Eine kurze, sehr trockene Liste: *„Notfall“* (ersetzt durch „Anliegen erhöhter Priorität“), *„allein“* („vorübergehend ohne sichtbare Begleitung“), *„002“* („existiert nicht mehr“), *„Stille“* (ohne Ersatz).
-
-### Letzte Seite — handschriftlich
-Ein einzelner Stift-Eintrag eines früheren Bewohners (vermutlich von Bodo, hint, nicht bestätigt):
-> „§6 Abs. 4: ‚Bringschuld‘. Heißt: keiner schickt dir den Code. Du musst fragen. Insa fragt nie zurück.“
-
----
-
-## 3. Bewohner-Ausweis — Untersuchen
-
-Beim „Untersuchen“ zeigt der Ausweis ein eigenes kleines Overlay (gleiches Lese-Pattern wie Handbuch):
-
-- Vorderseite: Lichtbild Layard Worag, „E67 / Q26 / 2611“, Magnetstreifen, „gültig bis: unleserlich“.
-- Rückseite: in winziger Prägung der **Bewohner-Code: 2611** (= Wohnungsnummer modulo 10 000, Standardfall nach §2 Abs. 7).
-
-Damit hat der Spieler den Code passiv „dabei“, muss aber §6 / §2 im Handbuch lesen, um zu verstehen, **wo** er ihn benutzt.
-
----
-
-## 4. Neues Akt-I-Rätsel: Lobby-Schleuse (Tagesmodus)
-
-### Problem (für den Spieler)
-Bisher führt Layards Weg vom Korridor 26 in den Aufzug → Lobby Etage 1 → Sektor-Tür E67/E71 ohne Hindernis. Der Eintritt in die Lobby ist „kostenlos“.
-
-### Neuer Spielfluss (Vorschlag)
-Wir bauen **vor** der Lobby eine **Schleuse** ein (kein neues Hintergrundbild nötig — wir rendern sie als kleines Keypad-Overlay beim Verlassen des Aufzugs auf Etage 1, **bei Erstbetreten** und nur „im Tagesmodus“).
-
-1. Layard fährt mit dem Aufzug zu Etage 1.
-2. Statt sofort in `floor1Lobby` zu landen, öffnet sich ein **Schleusen-Overlay** mit folgendem Text:
-   > „Lobby-Schleuse E67/1. Tagesmodus aktiv (06:00–22:00). Bitte Ausweis vorhalten **und** Bewohner-Code eingeben.“
-3. UI: Slot „Ausweis hier ablegen“ (Drag-Target für `residentId`) + 4-stelliges Keypad.
-4. Akzeptiert wird **nur** Ausweis + Code `2611`. Bei Falscheingabe freundliche Insa-Stimme aus dem Lautsprecher: „Code stimmt nicht ganz. Schauen Sie ruhig im Handbuch nach, §2 Absatz 7.“
-5. Erfolg: Flag `lobbyClearedDay` wird gesetzt, Layard ist in der Lobby. Ab jetzt entfällt das Overlay (Schleuse merkt sich den Bewohner für 24 Stunden Spielzeit — narrativ; technisch dauerhaft offen).
-
-### Sanfte Bypässe (damit das Rätsel nicht blockt)
-- **Ohne Code**: Spieler kann das Handbuch öffnen → Lesefenster zeigt §2 + §6 → Code wird im Klartext sichtbar.
-- **Ohne Handbuch lesen**: Spieler untersucht den Ausweis → Rückseite zeigt 2611.
-- **Ohne Ausweis** (Edge-Case, falls Spieler ihn theoretisch ablegt — aktuell nicht möglich): Schleuse verweigert mit „Nur Bewohner“ und verweist zurück in den Aufzug.
-- **Hardcore-Bypass**: 001 wählen (Telefon Wohnung, falls verfügbar). Insa weist freundlich-genervt darauf hin, das Handbuch zu lesen — und sagt **nicht** den Code. (Kein echter Bypass, nur Flavor.)
-
-### Warum das Akt I streckt, ohne ihn zu bremsen
-- 30–90 Sekunden zusätzliche Spielzeit beim ersten Lobby-Besuch.
-- **Macht Handbuch und Ausweis sofort relevant** — beide werden ab jetzt vom Spieler ernster genommen.
-- Setzt §2/§6 als „Welt-Regel“, sodass spätere Sektor-Tür (8-stelliger Code von Insa, §6 Abs. 4 „Bringschuld“) thematisch konsistent ist.
-- Zahlt direkt auf die zentrale Spielfantasie ein: *„Bürokratie als Labyrinth, das einen freundlich behandelt.“*
-
-### Optionaler Folgeeffekt (Akt II)
-Nach Akt I kippt die Schleuse automatisch in den **Nachtmodus**: Ausweis allein genügt. Wenn der Spieler dann zurückkommt, ist die Schleuse stumm offen — kleine Belohnung dafür, das Rätsel einmal gelöst zu haben.
-
----
-
-## 5. Technische Umsetzung (für später, falls genehmigt)
-
-- **`src/game/types.ts`**:
-  - `InventoryItemId` um `"residentId" | "e67Handbook"` erweitern.
-  - `KeypadTarget` um `"lobbyDay"` erweitern.
-  - Neue Flags: `lobbyClearedDay`, `readHandbook`, `examinedResidentId`.
-- **`src/game/GameContext.tsx`**: beim Initial-Load des Spielstandes, falls `inventory` leer und kein `started`-Flag, beide Items hinzufügen (Migration: bei Spielständen ohne diese Items nachträglich hinzufügen, damit alte Saves funktionieren).
-- **`src/game/e67Handbook.ts`**: neue Datei mit den Kapiteln (Array `{ id, title, body: string[] }`).
-- **`src/components/game/HandbookOverlay.tsx`**: neues Lese-Overlay (basiert auf `TextOverlay`, mit Kapitel-Tabs links / oben). Schließbar per Klick außerhalb.
-- **`src/components/game/IdCardOverlay.tsx`**: Vorder-/Rückseiten-Toggle.
-- **`src/components/game/Inventory.tsx`**: Klick auf `residentId` → `IdCardOverlay`, Klick auf `e67Handbook` → `HandbookOverlay`.
-- **`src/components/game/Keypad.tsx`**: neuen Target-Modus `lobbyDay` (4-stellig, akzeptiert nur „2611“, prüft zusätzlich Drag-Drop des Ausweises).
-- **`src/game/scenes.ts`** → `floor1Lobby`: beim `goTo("floor1Lobby")`, falls `!lobbyClearedDay && !enteredE71`, statt direkt zu wechseln das Schleusen-Overlay öffnen. Nach Erfolg `setFlag("lobbyClearedDay")` und Szenenwechsel.
-- **`src/game/combine.ts`**: Drag des Ausweises auf das Schleusen-Keypad akzeptiert Item temporär (Item bleibt im Inventar).
-
----
-
-## 6. Offene Designfragen
-
-1. Soll das Handbuch ein **echtes scrollbares Buch-Overlay** (mit Kapitelnavigation) sein, oder reicht das vorhandene `TextOverlay`-Pattern (Seite für Seite weiterklicken)?
-2. Sollen wir den **Bewohner-Code** im Verlauf von Akt I noch einmal verwenden (z.B. für ein zweites Schloss in der Wohnung — Briefkasten?), damit sich §2 Abs. 7 langfristig „lohnt“?
-3. Soll die Schleuse Layard bei wiederholter Falscheingabe **eskalieren** (Insa ruft selbst an) — oder bleibt sie freundlich-passiv?
-
-Wenn du den Plan grundsätzlich okay findest, sag mir gerne kurz, **wie** du Frage 1–3 beantworten willst, dann setze ich es im Build-Modus um.
+- Belohnung von Philippe: **Sanitäter-Bericht** (mein Vorschlag) oder **Insas Geburtsname als Notiz**?
+- Soll Layard die B3 *nicht* an Philippe geben können (eigene Verwendung / wegwerfen) — also moralische Mini-Wahl mit späten Konsequenzen?
+- Sollen Kowalk & Brust nach erfolgter B3-Ausgabe weiter chattern, oder ihren Konflikt sichtbar fortsetzen (z. B. Brust beleidigt, redet mit Layard nicht mehr)?
