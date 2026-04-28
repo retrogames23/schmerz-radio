@@ -37,8 +37,12 @@ export function DialogOverlay() {
   useEffect(() => {
     if (!line) return;
     const hasChoices =
-      (line.choices?.filter((c) => (c.requiresRadio ? radioActive : true)) ?? [])
-        .length > 0;
+      (line.choices?.filter((c) => {
+        if (c.requiresRadio && !radioActive) return false;
+        if (c.requires && c.requires.some((f) => !api.hasFlag(f))) return false;
+        if (c.hiddenWhen && c.hiddenWhen.some((f) => api.hasFlag(f))) return false;
+        return true;
+      }) ?? []).length > 0;
     if (hasChoices) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === " " || e.key === "Enter") {
@@ -55,6 +59,8 @@ export function DialogOverlay() {
   const visibleChoices =
     line.choices?.filter((c) => {
       if (c.requiresRadio && !radioActive) return false;
+      if (c.requires && c.requires.some((f) => !api.hasFlag(f))) return false;
+      if (c.hiddenWhen && c.hiddenWhen.some((f) => api.hasFlag(f))) return false;
       return true;
     }) ?? [];
 
