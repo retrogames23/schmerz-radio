@@ -4,7 +4,7 @@ import { CHATTER_TOPICS, type ChatterNpcId } from "@/game/dsa/chatter";
 import {
   CAFETERIA_CHATTER_TOPICS,
   type CafeteriaNpcId,
-} from "@/game/cafeteriaChatter";
+} from "../../game/cafeteriaChatter";
 
 /**
  * Position einer Sprechblase je NPC, in % der Szene.
