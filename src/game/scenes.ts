@@ -2035,4 +2035,126 @@ export const scenes: Record<string, Scene> = {
       },
     ],
   },
+
+  // ───────────────────────────────────────────────────────────
+  // Kantine 3602 — Nährstoffausgabe E67
+  // Zwei Mitarbeiter:innen hinter der Theke (Kowalk & Brust),
+  // wechselseitiges Hintergrund-Geplauder (FloatingChatter "cafeteria").
+  // ───────────────────────────────────────────────────────────
+  cafeteriaE67: {
+    id: "cafeteriaE67",
+    background: cafeteriaBg,
+    title: "Kantine 3602 — Nährstoffausgabe E67",
+    intro:
+      "Hinter der Theke zwei Kittel. Auf dem Boden ein Streifen, der einmal weiß war, jetzt eine Spur Anstellen markiert. Im Rohr über dem Tresen blinkt rot ein Licht, das niemand quittiert.",
+    npcs: [
+      {
+        id: "kowalkSprite",
+        src: kowalkSprite,
+        x: 22,
+        y: 30,
+        w: 14,
+        h: 56,
+        alt: "Frau Kowalk hinter der Ausgabetheke",
+      },
+      {
+        id: "brustSprite",
+        src: brustSprite,
+        x: 58,
+        y: 30,
+        w: 14,
+        h: 56,
+        alt: "Herr Brust hinter der Ausgabetheke",
+      },
+    ],
+    hotspots: [
+      {
+        id: "kowalkSpot",
+        x: 22,
+        y: 30,
+        w: 14,
+        h: 56,
+        label: "Frau Kowalk",
+        onUse: (api) => {
+          if (!api.hasFlag("metKowalk")) {
+            api.setFlag("metKowalk");
+          }
+          api.startDialog("cafeteriaKowalk");
+        },
+      },
+      {
+        id: "brustSpot",
+        x: 58,
+        y: 30,
+        w: 14,
+        h: 56,
+        label: "Herr Brust",
+        onUse: (api) => {
+          if (!api.hasFlag("metBrust")) {
+            api.setFlag("metBrust");
+          }
+          api.startDialog("cafeteriaBrust");
+        },
+      },
+      {
+        id: "cafeteriaCounter",
+        x: 36,
+        y: 56,
+        w: 22,
+        h: 16,
+        label: "Ausgabetheke",
+        onUse: (api) =>
+          api.showText([
+            "Ein gestempeltes Schild auf dem Tresen:",
+            "„AUSGABE NUR MIT BEWOHNER-AUSWEIS ODER GEGENGEZEICHNETER VOLLMACHT.“",
+            "Daneben ein zweites Schild, gelber:",
+            "„AUSNAHMEN AUF KULANZ — Schicht B / Frau Kowalk.“",
+          ]),
+      },
+      {
+        id: "cafeteriaPneumaticTube",
+        x: 38,
+        y: 14,
+        w: 14,
+        h: 18,
+        label: "Pneumatik-Rohrpost",
+        onUse: (api) =>
+          api.showText(
+            api.hasFlag("radioTunedTo1046")
+              ? [
+                  "Messing, blank gewienert. Das Licht oben blinkt rot.",
+                  "(SCHMERZ-RADIO: Hinter der Klappe atmet etwas, wie ein Mensch, der vergessen hat, wie das geht.)",
+                ]
+              : [
+                  "Messing, blank gewienert. Das Licht oben blinkt rot.",
+                  "Niemand schaut hin. Vielleicht blinkt es schon eine Weile.",
+                ],
+          ),
+      },
+      {
+        id: "cafeteriaPosters",
+        x: 60,
+        y: 28,
+        w: 18,
+        h: 24,
+        label: "Hygiene-Aushänge",
+        onUse: (api) =>
+          api.showText([
+            "Zwei Aushänge, übereinander getackert.",
+            "Oben, neu, von 1996: »Handschuhe bei jeder Ausgabe — ausnahmslos.«",
+            "Darunter, von 1991, vergilbt: »Handschuhe nur bei flüssigen Rationen — sonst Geschmacksstörung.«",
+            "Beide tragen das gleiche Siegel der Leitstelle.",
+          ]),
+      },
+      {
+        id: "back36FromCafeteria",
+        x: 86,
+        y: 70,
+        w: 12,
+        h: 28,
+        label: "Zurück in den Korridor",
+        onUse: (api) => api.goTo("corridor36"),
+      },
+    ],
+  },
 };
