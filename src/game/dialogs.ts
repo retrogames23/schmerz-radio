@@ -943,7 +943,7 @@ export const dialogs: Record<string, DialogTree> = {
       pl4: {
         id: "pl4",
         speaker: "PHILIPPE",
-        text: "Ich … bin viel unterwegs. Wenn ich zu lange in der Wohnung bin, höre ich Dinge. Aus der Nachbarwand.",
+        text: "Ich … musste kurz raus. Wenn ich zu lange in der Wohnung bin, höre ich Dinge. Aus der Nachbarwand.",
         subtext: "Er sagt das so, wie man Wetterprognosen sagt.",
         next: "pl5",
       },
