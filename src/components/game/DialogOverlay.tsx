@@ -92,8 +92,7 @@ export function DialogOverlay() {
         }}
       >
         <CloseButton
-          onClick={(e) => {
-            e?.stopPropagation?.();
+          onClick={() => {
             stopSpeech();
             closeDialog();
           }}
