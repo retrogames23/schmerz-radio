@@ -1312,7 +1312,7 @@ export const scenes: Record<string, Scene> = {
         y: 49,
         w: 20,
         h: 9,
-        label: "Etage 3 — Verwaltung",
+        label: "Etage 3 — Verwaltung und Versorgung",
         onUse: (api) => api.goTo("corridor36"),
       },
       {
