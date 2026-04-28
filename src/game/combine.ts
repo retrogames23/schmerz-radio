@@ -196,6 +196,80 @@ const MIKAEL_REACTIONS: ItemReactionMap = {
   ],
 };
 
+const KOWALK_REACTIONS: ItemReactionMap = {
+  protocol: ["Kowalk: „Das ist nicht meine Theke, Worag.“"],
+  exitCode: ["Kowalk: „Stecken Sie den weg, bevor jemand reinkommt.“"],
+  b3sample: [
+    "Kowalk hebt eine Augenbraue. „Originalverpackung. Wo haben Sie die her?“",
+  ],
+  tuningCrystal: ["Kowalk: „Hübsch. Nicht essbar.“"],
+  mikaelLetter: [
+    "Kowalk liest stumm. Faltet ihn sehr sorgfältig wieder zusammen.",
+    "„Behalten Sie das. Und reden Sie mit niemandem darüber.“",
+  ],
+  flyer: [
+    "Kowalk: „Die haben uns auch welche unter der Tür durchgeschoben.",
+    " Brust hat sie weggeworfen. Ich nicht.“",
+  ],
+  wartungsnotiz5610: [
+    "Kowalk: „Bodos Schrift. Was tun Sie damit, Worag?“",
+  ],
+  residentId: ["Kowalk: „Worag, E67, 2611. In Ordnung.“"],
+  e67Handbook: [
+    "Kowalk: „Das alte Ding. Vorne im Hygiene-Kapitel ist ein Eselsohr — meins.“",
+  ],
+  b3Authorization: [
+    "Kowalk nimmt die Vollmacht. „Vier-Drei-Eins-Sieben. Marteau.“",
+    "„Reden Sie mich an, nicht den Tresen, dann kümmere ich mich.“",
+  ],
+  b3Ration: [
+    "Kowalk: „Bringen Sie die hoch. Nicht hier öffnen.“",
+  ],
+  paramedicsReport: [
+    "Kowalk wirft einen kurzen Blick. Sieht weg.",
+    "„So ein Papier hab’ ich noch nie gesehen, Worag. Verstehen wir uns?“",
+  ],
+};
+
+const BRUST_REACTIONS: ItemReactionMap = {
+  protocol: [
+    "Brust: „Formular ist korrekt ausgefüllt. Bitte an zuständiger Stelle abgeben.“",
+  ],
+  exitCode: [
+    "Brust: „Bewohnercodes gehören nicht in die Ausgabezone, Herr Worag.“",
+  ],
+  b3sample: [
+    "Brust: „Diese Charge ist offiziell aus dem Verkehr — bitte zurückgeben.“",
+  ],
+  tuningCrystal: [
+    "Brust: „Das ist kein Bewohnergegenstand. Bitte beim Fundbüro abgeben.“",
+  ],
+  mikaelLetter: [
+    "Brust: „Privater Schriftverkehr. Bitte nicht in der Ausgabezone.“",
+  ],
+  flyer: [
+    "Brust: „Nicht-genehmigte Druckerzeugnisse. Bitte umgehend entsorgen.“",
+  ],
+  wartungsnotiz5610: [
+    "Brust: „Wartungsdokumente sind technisch. Nicht hier.“",
+  ],
+  residentId: [
+    "Brust: „Identität bestätigt. Was möchten Sie aufnehmen?“",
+  ],
+  e67Handbook: [
+    "Brust blättert. Stockt. „… die Ausgabe von 91 ist offiziell noch gültig?“",
+  ],
+  b3Authorization: [
+    "Brust: „Vollmacht 4317. Schicht A. Heute Schicht B. Ich kann das nicht.“",
+  ],
+  b3Ration: [
+    "Brust: „Bitte vor Verlassen der Etage übergeben.“",
+  ],
+  paramedicsReport: [
+    "Brust liest. Wird sehr still. „Bitte zeigen Sie mir das nicht noch einmal.“",
+  ],
+};
+
 /** NPC-Hotspot-IDs → Reaktionsmap. */
 const NPC_REACTIONS: Record<string, ItemReactionMap> = {
   philippeNpc: PHILIPPE_REACTIONS,
@@ -207,6 +281,8 @@ const NPC_REACTIONS: Record<string, ItemReactionMap> = {
   miraSpot36: MIRA_REACTIONS,
   miraSpot46: MIRA_REACTIONS,
   miraSpot56: MIRA_REACTIONS,
+  kowalkSpot: KOWALK_REACTIONS,
+  brustSpot: BRUST_REACTIONS,
 };
 
 // ─── Spezielle Hotspot-Reaktionen (Geräte) ────────────────────
