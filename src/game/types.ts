@@ -15,7 +15,8 @@ export type SceneId =
   | "corridor46"
   | "corridor56"
   | "serverRoom5610"
-  | "commonRoomE67";
+  | "commonRoomE67"
+  | "cafeteriaE67";
 
 export type InventoryItemId =
   | "protocol"
@@ -26,7 +27,10 @@ export type InventoryItemId =
   | "flyer"
   | "wartungsnotiz5610"
   | "residentId"
-  | "e67Handbook";
+  | "e67Handbook"
+  | "b3Authorization"
+  | "b3Ration"
+  | "paramedicsReport";
 
 export type KnowledgeFlag =
   | "responsibilityE67"
@@ -189,7 +193,19 @@ export type StoryFlag =
   | "examinedResidentId"
   // Lobby-Schleuse (Tagesmodus): Bewohner-Ausweis + 4-stelliger Code
   | "lobbyClearedDay"
-  | "insaLobbyEscalated";
+  | "insaLobbyEscalated"
+  // Kantine 3602 + Vollmachts-Rätsel (Akt I, Erweiterung)
+  | "philippeAskedFavor"
+  | "gotB3Authorization"
+  | "metKowalk"
+  | "metBrust"
+  | "kowalkToldHerDaughter"
+  | "brustOutruled"
+  | "kowalkSidedWithLayard"
+  | "gotB3Ration"
+  | "gaveB3ToPhilippe"
+  | "gotParamedicsReport"
+  | "refusedB3Favor";
 
 export interface InventoryItem {
   id: InventoryItemId;
@@ -293,7 +309,9 @@ export interface DialogLine {
     | "OKWU"
     | "TJARK"
     | "BREM"
-    | "YELVA";
+    | "YELVA"
+    | "KOWALK"
+    | "BRUST";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;
