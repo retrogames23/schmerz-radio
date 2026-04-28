@@ -177,7 +177,12 @@ export function SceneView() {
         ))}
 
         {/* Hintergrund-Sprechblasen der DSA-Runde im Gemeinschaftsraum */}
-        <FloatingChatter enabled={scene === "commonRoomE67"} />
+        <FloatingChatter enabled={scene === "commonRoomE67"} variant="dsa" />
+        {/* Hintergrund-Sprechblasen Kowalk/Brust in der Kantine */}
+        <FloatingChatter
+          enabled={scene === "cafeteriaE67"}
+          variant="cafeteria"
+        />
 
         {/* Amber vignette when radio is active */}
         {radioActive && <div className="amber-vignette" />}
