@@ -3653,7 +3653,7 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "LAYARD",
         text: "Tür 3601. Verstanden.",
         hiddenWhen: ["sawEmptyOffice"],
-        end: true,
+        next: "ic6",
       },
       ic6: {
         id: "ic6",
