@@ -14,6 +14,7 @@ import elevatorBg from "@/assets/scene-elevator.jpg";
 import floor1LobbyBg from "@/assets/scene-floor1-lobby.jpg";
 import passageBg from "@/assets/scene-passage.jpg";
 import corridor36Bg from "@/assets/scene-corridor-36.jpg";
+import corridor36PhilippeBg from "@/assets/scene-corridor-36-philippe.jpg";
 import corridor46Bg from "@/assets/scene-corridor-46.jpg";
 import corridor56Bg from "@/assets/scene-corridor-56.jpg";
 import serverRoom5610Bg from "@/assets/scene-server-room-5610.jpg";
@@ -1513,7 +1514,12 @@ export const scenes: Record<string, Scene> = {
   // ───────────────────────────────────────────────────────────
   corridor36: {
     id: "corridor36",
-    background: corridor36Bg,
+    background: (api) =>
+      api.getPhilippeFloor() === 3 &&
+      !api.hasFlag("doorbellRang") &&
+      !api.hasFlag("metPhilippeBefore")
+        ? corridor36PhilippeBg
+        : corridor36Bg,
     title: "Korridor 36 — Verwaltung und Versorgung",
     intro:
       "Andere Beleuchtung als zuhause. Sterilere Türen. Vor einer davon — 3601 — ein handgeschriebenes Schild. Aus 3602 zieht warm und ranzig ein Geruch nach Mensa-Pampe und Bohnerwachs.",
@@ -1529,35 +1535,25 @@ export const scenes: Record<string, Scene> = {
         hiddenWhen: ["tookFlyer"],
         visible: (api) => api.getMiraFloors().includes(3),
       },
-      {
-        id: "philippeSprite36",
-        src: philippeSprite,
-        x: 70,
-        y: 34,
-        w: 14,
-        h: 54,
-        alt: "Philippe, etwas verloren im Korridor",
-        hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
-        visible: (api) => api.getPhilippeFloor() === 3,
-      },
     ],
     hotspots: [
       {
         id: "philippeSpot36",
-        x: 70,
+        x: 63,
         y: 36,
-        w: 14,
-        h: 54,
+        w: 10,
+        h: 50,
         label: "Philippe (Nachbar)",
         hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
+        visible: (api) => api.getPhilippeFloor() === 3,
         onUse: (api) => api.startDialog("philippeInCorridor36"),
       },
       {
         id: "officeDoor",
-        x: 17,
-        y: 32,
-        w: 18,
-        h: 50,
+        x: 50,
+        y: 24,
+        w: 15,
+        h: 64,
         label: "Tür 3601 — Abschnittsverantwortlicher E67",
         onUse: (api) => {
           api.setFlag("sawEmptyOffice");
@@ -1566,19 +1562,19 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "cafeteriaDoor",
-        x: 1,
-        y: 30,
-        w: 14,
-        h: 54,
+        x: 3,
+        y: 18,
+        w: 34,
+        h: 74,
         label: "Tür 3602 — Kantine E67",
         onUse: (api) => api.goTo("cafeteriaE67"),
       },
       {
         id: "officeBell",
-        x: 36,
+        x: 65,
         y: 47,
-        w: 6,
-        h: 8,
+        w: 4,
+        h: 7,
         label: "Klingelknopf",
         requires: ["sawEmptyOffice"],
         hiddenWhen: ["rangEmptyOfficeBell"],
@@ -1611,10 +1607,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "back36",
-        x: 50,
-        y: 27,
+        x: 73,
+        y: 18,
         w: 22,
-        h: 60,
+        h: 74,
         label: "Zurück zum Aufzug",
         onUse: (api) => api.goTo("elevator"),
       },
