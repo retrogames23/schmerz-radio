@@ -90,6 +90,10 @@ interface GameContextValue extends GameState {
   /** Lobby-Schleuse manuell öffnen / schließen. */
   openLobbyGate: () => void;
   closeLobbyGate: () => void;
+  /** Lobby-Schleusen-Eskalation (Fehlversuche, transient). */
+  getLobbyGateAttempts: () => number;
+  bumpLobbyGateAttempts: () => number;
+  resetLobbyGateAttempts: () => void;
   /** DSA-Abenteuer-Overlay sichtbar (nach Charaktererstellung). */
   dsaAdventureOpen: boolean;
   /** Aktueller Beat im Abenteuer, oder null. */
