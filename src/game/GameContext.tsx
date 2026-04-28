@@ -180,6 +180,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [handbookOpen, setHandbookOpen] = useState(false);
   const [idCardOpen, setIdCardOpen] = useState(false);
   const [lobbyGateOpen, setLobbyGateOpen] = useState(false);
+  // Eskalationszähler der Lobby-Schleuse (Fehlversuche), nicht persistiert.
+  const lobbyGateAttemptsRef = useRef(0);
   // Mira darf NICHT auf Etage 3 erscheinen — dort liegt das Büro des
   // Abschnittsverantwortlichen (E67). Würde sie dort die Tür blockieren und
   // Layard ginge nicht auf sie ein, gäbe es ein Dead End: er erfährt dann
@@ -431,6 +433,50 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(t);
   }, [burnSequence, flags, scene, dialogId, api]);
 
+  // Start-Items: Bewohner-Ausweis & E67-Handbuch landen einmalig im Inventar,
+  // sobald der GameProvider mountet (Spielstart). Ein vorhandener Eintrag
+  // (z. B. nach Save-Load) wird respektiert.
+  useEffect(() => {
+    if (!inventoryRef.current.some((i) => i.id === "residentId")) {
+      api.addItem({
+        id: "residentId",
+        name: "E67-Bewohner-Ausweis",
+        description:
+          "Beige Plastikkarte mit Lichtbild und Magnetstreifen. Vorne: Worag, Layard — Wohnung 2611. Auf der Rückseite ist etwas geprägt; im Tageslicht schwer zu erkennen.",
+      });
+    }
+    if (!inventoryRef.current.some((i) => i.id === "e67Handbook")) {
+      api.addItem({
+        id: "e67Handbook",
+        name: "E67-Handbuch (7. rev. Fassung)",
+        description:
+          "Eine geheftete Broschüre mit Eselsohren. Trägt den Stempel der Leitstelle E67. Acht Kapitel und ein Anhang. Wohlmeinend formuliert. Trotzdem: kompliziert.",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Lobby-Schleuse (Tagesmodus): Beim Betreten der Etage-1-Lobby vor dem
+  // Aufbruch nach E71 muss Layard sich am Eingangsterminal ausweisen.
+  // Ab `enteredE71` (Akt II) entfällt die Schleuse — der Ausgang gilt als
+  // gemeldet und das Personal hat ohnehin Schichtwechsel.
+  useEffect(() => {
+    if (scene !== "floor1Lobby") return;
+    if (flags.has("lobbyClearedDay")) return;
+    if (flags.has("enteredE71")) return;
+    if (dialogId || textOverlay || keypadOpen || nodeOpen || terminalOpen)
+      return;
+    setLobbyGateOpen(true);
+  }, [
+    scene,
+    flags,
+    dialogId,
+    textOverlay,
+    keypadOpen,
+    nodeOpen,
+    terminalOpen,
+  ]);
+
   const advanceDialog = useCallback(
     (nextId?: string) => {
       if (!dialogId) return;
@@ -555,6 +601,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
     closeIdCard: () => setIdCardOpen(false),
     openLobbyGate: () => setLobbyGateOpen(true),
     closeLobbyGate: () => setLobbyGateOpen(false),
+    /** Aktueller Fehlversuchs-Zähler der Lobby-Schleuse (für die UI). */
+    getLobbyGateAttempts: () => lobbyGateAttemptsRef.current,
+    bumpLobbyGateAttempts: () => {
+      lobbyGateAttemptsRef.current += 1;
+      return lobbyGateAttemptsRef.current;
+    },
+    resetLobbyGateAttempts: () => {
+      lobbyGateAttemptsRef.current = 0;
+    },
     setDsaCharacter: (c) => {
       dsaCharacterRef.current = c;
       setDsaCharacterState(c);
