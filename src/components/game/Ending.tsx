@@ -74,7 +74,7 @@ const FRAMES_FLYER_EXTRA: string[][] = [
 export function Ending() {
   const { ending, api } = useGame();
   const { musicVolume } = useSettings();
-  const { setDuck } = useMusic();
+  const { pause: pauseMusic, resume: resumeMusic } = useMusic();
   const [idx, setIdx] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -106,12 +106,12 @@ export function Ending() {
     : FRAMES_BASE;
 
   // Abspann-Musik: läuft NUR während des Endings. Die normale Spielmusik
-  // wird über setDuck(0) hart stumm geschaltet, damit nicht zwei Tracks
-  // übereinander laufen. Beim Verlassen des Endings setzen wir das Ducking
-  // wieder zurück auf 1 (volle Lautstärke).
+  // wird komplett pausiert (nicht nur stumm geschaltet), damit auf keinen
+  // Fall zwei Tracks gleichzeitig laufen. Beim Verlassen des Endings
+  // wird die reguläre Wiedergabe wieder fortgesetzt.
   useEffect(() => {
     if (!ending) return;
-    setDuck(0);
+    pauseMusic();
     const a = new Audio(endingTrack);
     a.loop = true;
     a.volume = 0;
@@ -134,7 +134,7 @@ export function Ending() {
       a.pause();
       a.src = "";
       audioRef.current = null;
-      setDuck(1);
+      resumeMusic();
     };
     // musicVolume bewusst nicht in deps: wir setzen das Ziel beim Start,
     // spätere Lautstärke-Änderungen sollen den Fade nicht resetten.
