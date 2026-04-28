@@ -358,6 +358,7 @@ export const dialogs: Record<string, DialogTree> = {
           {
             text: "Ich komme nicht durchs Netz. Error 4567.",
             next: "idNet1",
+            hiddenWhen: ["calledStegmann"],
           },
           {
             text: "Ich brauche einen Code für die Sektor-Tür.",
