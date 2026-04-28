@@ -33,6 +33,23 @@ export function DialogOverlay() {
     return () => stopSpeech();
   }, [line, ttsEnabled]);
 
+  // Tastatur: Space/Enter → weiter (wenn keine Auswahl ansteht)
+  useEffect(() => {
+    if (!line) return;
+    const hasChoices =
+      (line.choices?.filter((c) => (c.requiresRadio ? radioActive : true)) ?? [])
+        .length > 0;
+    if (hasChoices) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        advanceDialog();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [line, radioActive, advanceDialog]);
+
   if (!line || !tree) return null;
 
   const visibleChoices =
