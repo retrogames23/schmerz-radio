@@ -87,11 +87,7 @@ export function DsaAdventureScene() {
     // Automatischer Kampf hat Vorrang vor einfacher Probe.
     if (option.combat && dsaCharacter) {
       const hero = heroCombatantFromCharacter(dsaCharacter);
-      // LE-Bonus aus Rast/Trank in den Kampf übernehmen, einmalig.
-      if (advState.leBonus > 0) {
-        hero.le = Math.min(hero.leMax + advState.leBonus, hero.le + advState.leBonus);
-        hero.leMax = hero.leMax + advState.leBonus;
-      }
+      // RS-Bonus (Hesinde-Amulett) für den Endkampf übernehmen.
       if (advState.rsBonus > 0) {
         hero.rs = hero.rs + advState.rsBonus;
       }
@@ -117,10 +113,6 @@ export function DsaAdventureScene() {
       const foesForFight = foes.map((f) => ({ ...f }));
       const result = resolveCombat(heroesForFight, foesForFight);
       setPhase({ kind: "combat", option, heroes, foes, result });
-      // Boni nach Verbrauch zurücksetzen, damit sie nicht doppelt gelten.
-      if (advState.leBonus > 0 || advState.rsBonus > 0) {
-        setAdvState((s) => ({ ...s, leBonus: 0, rsBonus: 0 }));
-      }
       return;
     }
     let result: AttrCheckResult | null = null;
@@ -138,6 +130,20 @@ export function DsaAdventureScene() {
     const flags = success ? o.setFlags : (o.setFlagsOnFailure ?? o.setFlags);
     const grant = success;
     if (!flags && !grant) return;
+    // Heilung sofort auf den Charakter anwenden — gerastet/getrunken heißt:
+    // verlorene LE kommen zurück (bis zum Maximum).
+    if (grant && o.grantLeBonus && dsaCharacter) {
+      const healed = Math.min(
+        dsaCharacter.le + o.grantLeBonus,
+        // leMax aus KK + 16..21 — wir kennen das Maximum nicht direkt; nehmen
+        // den höheren Wert von aktuellem Höchststand und neuem Stand. Zur
+        // Sicherheit cappen wir bei KK + 21 (rollLE-Obergrenze).
+        Math.max(dsaCharacter.le, dsaCharacter.attrs.KK + 21),
+      );
+      if (healed !== dsaCharacter.le) {
+        setDsaCharacter({ ...dsaCharacter, le: healed });
+      }
+    }
     setAdvState((s) => {
       const next: AdventureState = {
         flags: new Set(s.flags),
@@ -148,7 +154,6 @@ export function DsaAdventureScene() {
       if (flags) flags.forEach((f) => next.flags.add(f as AdventureFlag));
       if (grant) {
         if (o.grantGold) next.goldExtra += o.grantGold;
-        if (o.grantLeBonus) next.leBonus += o.grantLeBonus;
         if (o.grantRsBonus) next.rsBonus += o.grantRsBonus;
       }
       return next;
