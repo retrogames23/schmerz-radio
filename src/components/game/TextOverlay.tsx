@@ -37,12 +37,10 @@ export function TextOverlay() {
       tabIndex={-1}
     >
       <CloseButton
-        onClick={(e) => {
-          e.stopPropagation();
-          closeText();
-        }}
+        onClick={closeText}
         label="Schließen"
         className="absolute right-4 top-4 z-10"
+        stopPropagation
       />
       <button
         type="button"
