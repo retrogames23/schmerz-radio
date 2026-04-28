@@ -90,7 +90,15 @@ export function DsaCharacterSheet() {
           </section>
 
           <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <Stat label="Lebensenergie" value={`${dsaCharacter.le}`} accent />
+            <Stat
+              label="Lebensenergie"
+              value={
+                dsaCharacter.leMax && dsaCharacter.leMax !== dsaCharacter.le
+                  ? `${dsaCharacter.le} / ${dsaCharacter.leMax}`
+                  : `${dsaCharacter.le}`
+              }
+              accent
+            />
             {dsaCharacter.ae !== null ? (
               <Stat label="Astralenergie" value={`${dsaCharacter.ae}`} />
             ) : (

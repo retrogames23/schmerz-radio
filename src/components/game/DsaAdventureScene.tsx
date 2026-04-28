@@ -133,13 +133,8 @@ export function DsaAdventureScene() {
     // Heilung sofort auf den Charakter anwenden — gerastet/getrunken heißt:
     // verlorene LE kommen zurück (bis zum Maximum).
     if (grant && o.grantLeBonus && dsaCharacter) {
-      const healed = Math.min(
-        dsaCharacter.le + o.grantLeBonus,
-        // leMax aus KK + 16..21 — wir kennen das Maximum nicht direkt; nehmen
-        // den höheren Wert von aktuellem Höchststand und neuem Stand. Zur
-        // Sicherheit cappen wir bei KK + 21 (rollLE-Obergrenze).
-        Math.max(dsaCharacter.le, dsaCharacter.attrs.KK + 21),
-      );
+      const cap = dsaCharacter.leMax ?? dsaCharacter.le;
+      const healed = Math.min(dsaCharacter.le + o.grantLeBonus, cap);
       if (healed !== dsaCharacter.le) {
         setDsaCharacter({ ...dsaCharacter, le: healed });
       }
