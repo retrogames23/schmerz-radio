@@ -4205,7 +4205,7 @@ export const dialogs: Record<string, DialogTree> = {
         id: "kSideA6",
         speaker: "KOWALK",
         text: "Und Worag — wenn Sie Marteau sehen: ich frage nicht, was er hat. Aber sagen Sie ihm, er soll runterkommen, wenn’s wieder geht. Tilla hat auch immer gesagt, sie kann nicht. Bis sie nicht mehr konnte.",
-        choices: [{ text: "[ Beenden ]", end: true }],
+        choices: [{ text: "[ Beenden ]", next: "kBye" }],
       },
       // Lösungsweg B — Brust kapituliert vor seiner eigenen Logik
       kSideB1: {
@@ -4256,7 +4256,7 @@ export const dialogs: Record<string, DialogTree> = {
                   "Eine grau-amber lackierte Konservendose, Etikett »B3 — KOMPENSATIONSRATION«. Brust hat sie freigegeben, weil sein eigenes Regelwerk ihn dazu zwang. Er hat dabei nicht aufgeschaut.",
               });
             },
-            end: true,
+            next: "kBye",
           },
         ],
       },
