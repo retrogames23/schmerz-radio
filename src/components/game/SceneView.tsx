@@ -1,23 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { scenes, useGame } from "@/game/GameContext";
-import type { SceneId } from "@/game/types";
 import { Hotspot } from "./Hotspot";
 import { FloatingChatter } from "./FloatingChatter";
 
-// Mapping Szene → Aufzug-Etage. Wird genutzt, um im Aufzug die digitale
-// Anzeige passend zu der Etage zu zeigen, von der Layard gerade kam.
-const SCENE_TO_FLOOR: Partial<Record<SceneId, number>> = {
-  floor1Lobby: 1,
-  hallway: 2,
-  apartment: 2,
-  apt2612: 2,
-  corridor36: 3,
-  corridor46: 4,
-  corridor56: 5,
-};
-
 export function SceneView() {
-  const { scene, previousScene, caption, setCaption, radioActive, resonance, flags, api } = useGame();
+  const { scene, caption, setCaption, radioActive, resonance, flags, api } = useGame();
   const current = scenes[scene];
   const backgroundSrc =
     typeof current.background === "function"
@@ -191,41 +178,6 @@ export function SceneView() {
 
         {/* Hintergrund-Sprechblasen der DSA-Runde im Gemeinschaftsraum */}
         <FloatingChatter enabled={scene === "commonRoomE67"} />
-
-        {/* Aufzug: dynamische Etagen-Anzeige über dem Indikator.
-            Überdeckt die statisch ins Hintergrundbild gemalte Ziffer mit
-            einem schwarzen Display-Streifen und rendert die aktuelle Etage. */}
-        {scene === "elevator" && (() => {
-          const floor = previousScene ? SCENE_TO_FLOOR[previousScene] : undefined;
-          return (
-            <div
-              className="pointer-events-none absolute z-20 flex items-center justify-center overflow-hidden rounded-[2px]"
-              style={{
-                left: "15.5%",
-                top: "7.6%",
-                width: "13%",
-                height: "4.4%",
-                background: "#0a0705",
-                boxShadow: "inset 0 0 4px rgba(0,0,0,0.9)",
-              }}
-              aria-hidden
-            >
-              <span
-                className="font-mono-crt"
-                style={{
-                  fontSize: "min(2.4vw, 22px)",
-                  lineHeight: 1,
-                  color: "#ffb347",
-                  textShadow:
-                    "0 0 4px rgba(255,170,60,0.9), 0 0 10px rgba(255,140,40,0.6)",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                {floor ?? "–"}
-              </span>
-            </div>
-          );
-        })()}
 
         {/* Amber vignette when radio is active */}
         {radioActive && <div className="amber-vignette" />}
