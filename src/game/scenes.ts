@@ -1356,7 +1356,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 56,
         alt: "Philippe wartet vor dem Tresen",
-        hiddenWhen: ["doorbellRang"],
+        hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
       },
     ],
     hotspots: [
@@ -1367,7 +1367,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 54,
         label: "Philippe (Nachbar)",
-        hiddenWhen: ["doorbellRang"],
+        hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
         onUse: (api) => api.startDialog("philippeInLobby"),
       },
       {
