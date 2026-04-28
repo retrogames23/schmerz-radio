@@ -24,6 +24,9 @@ import { MobileStage } from "./MobileStage";
 import { DsaCharacterCreator } from "./DsaCharacterCreator";
 import { DsaAdventureScene } from "./DsaAdventureScene";
 import { DsaCharacterSheet } from "./DsaCharacterSheet";
+import { HandbookOverlay } from "./HandbookOverlay";
+import { IdCardOverlay } from "./IdCardOverlay";
+import { LobbyGate } from "./LobbyGate";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useGame } from "@/game/GameContext";
 
@@ -107,6 +110,10 @@ function GameStage({
     dsaAdventureOpen,
     dsaCharacter,
     toggleDsaSheet,
+    handbookOpen,
+    closeHandbook,
+    idCardOpen,
+    closeIdCard,
   } = useGame();
 
   // Tastenkürzel C: Charakterbogen ein-/ausblenden — nur wenn ein
@@ -167,6 +174,9 @@ function GameStage({
             <DsaAdventureScene />
             <DsaCharacterSheet />
             <DsaMusicBridge />
+            <HandbookOverlay open={handbookOpen} onClose={closeHandbook} />
+            <IdCardOverlay open={idCardOpen} onClose={closeIdCard} />
+            <LobbyGate />
             <Ending />
             <PauseMenu open={pauseOpen} onClose={() => setPauseOpen(false)} />
           </div>

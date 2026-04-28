@@ -14,7 +14,7 @@ import type { InventoryItem } from "@/game/types";
  *   Item-Slots in diesem Panel).
  */
 export function Inventory() {
-  const { inventory, api } = useGame();
+  const { inventory, api, openHandbook, openIdCard } = useGame();
   const drag = useInventoryDrag();
   const [open, setOpen] = useState(false);
 
@@ -43,7 +43,16 @@ export function Inventory() {
       window.removeEventListener("pointerup", onUp);
       // Reiner Klick (kein Drag): Beschreibung zeigen.
       if (!started) {
-        api.showText([item.name, item.description]);
+        // Spezielle „Lese“-Items: eigenes Overlay statt nüchterner Beschreibung.
+        if (item.id === "e67Handbook") {
+          api.setFlag("readHandbook");
+          openHandbook();
+        } else if (item.id === "residentId") {
+          api.setFlag("examinedResidentId");
+          openIdCard();
+        } else {
+          api.showText([item.name, item.description]);
+        }
       } else {
         // Wenn beim Loslassen kein Drop-Ziel über uns lag, beendet der
         // globale Listener den Drag von selbst. Hier nichts zu tun.

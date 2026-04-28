@@ -388,7 +388,7 @@ export interface GameApi {
  * Aktuell nur die Sektor-Tür E67/E71 (8-stellig). Tür 5610 öffnet
  * über Wartungs-Override bzw. Wartungskarte ohne Keypad.
  */
-export type KeypadTarget = "sectorDoor" | "lobbyDay";
+export type KeypadTarget = "sectorDoor";
 
 /** Snapshot des im Gemeinschaftsraum gespielten DSA-Helden. */
 export interface DsaCharacterSummary {

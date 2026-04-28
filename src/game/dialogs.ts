@@ -3790,4 +3790,45 @@ export const dialogs: Record<string, DialogTree> = {
       },
     },
   },
+
+  // ---------------------------------------------------------------
+  // Lobby-Schleuse: drei Fehlversuche → Insa schaltet sich selbst ein.
+  // ---------------------------------------------------------------
+  insaLobbyEscalation: {
+    id: "insaLobbyEscalation",
+    start: "le1",
+    lines: {
+      le1: {
+        id: "le1",
+        speaker: "SYSTEM",
+        text: "[ Aus dem winzigen Lautsprecher der Schleuse: ein Klacken. Eine Verbindung. Insa, am anderen Ende. ]",
+        next: "le2",
+      },
+      le2: {
+        id: "le2",
+        speaker: "INSA",
+        text: "Bauerfeind. — Worag, das war jetzt der dritte Versuch. Standardprotokoll sagt: ich rufe Sie an, bevor die Anlage es tut.",
+        subtext: "Keine Genervtheit. Eher: Routine, die sich Mühe gibt.",
+        next: "le3",
+      },
+      le3: {
+        id: "le3",
+        speaker: "INSA",
+        text: "Ihr Bewohner-Code ist die Wohnungsnummer modulo zehntausend. Steht im Handbuch, §2 Abs. 7. — Ich gebe Ihnen für heute frei. Aber lesen Sie das Kapitel, ja?",
+        next: "le4",
+      },
+      le4: {
+        id: "le4",
+        speaker: "LAYARD",
+        text: "Verstanden. Danke, Frau Bauerfeind.",
+        next: "le5",
+      },
+      le5: {
+        id: "le5",
+        speaker: "SYSTEM",
+        text: "[ Ein Summen, dann ein hörbares Klacken in der Verriegelung. Die Schleuse ist offen. ]",
+        end: true,
+      },
+    },
+  },
 };
