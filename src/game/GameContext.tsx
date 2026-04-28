@@ -596,8 +596,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setEnding(persisted.ending);
       // DSA-Charakter wiederherstellen (oder klar zurücksetzen).
       if (persisted.dsaCharacter) {
-        dsaCharacterRef.current = persisted.dsaCharacter;
-        setDsaCharacterState(persisted.dsaCharacter);
+        // Rückwärtskompatibilität: leMax wurde später eingeführt — alte Saves
+        // bekommen leMax = le als Default, damit Heilung sinnvoll cappen kann.
+        const c = persisted.dsaCharacter;
+        const migrated = {
+          ...c,
+          leMax: typeof (c as { leMax?: number }).leMax === "number" ? (c as { leMax: number }).leMax : c.le,
+        };
+        dsaCharacterRef.current = migrated;
+        setDsaCharacterState(migrated);
       } else {
         dsaCharacterRef.current = null;
         setDsaCharacterState(null);

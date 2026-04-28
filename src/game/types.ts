@@ -389,6 +389,8 @@ export interface DsaCharacterSummary {
   name: string;
   attrs: Record<string, number>;
   le: number;
+  /** Maximaler LE-Wert beim Erschaffen (für Heilung als Obergrenze). */
+  leMax: number;
   ae: number | null;
   rerolled: boolean;
 }

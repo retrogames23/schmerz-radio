@@ -219,7 +219,7 @@ export function heroCombatantFromCharacter(
     name: ch.name,
     side: "hero",
     le: ch.le,
-    leMax: ch.le,
+    leMax: ch.leMax ?? ch.le,
     at: profile.atBase + atBonus,
     pa: profile.paBase + paBonus,
     tpDice: profile.tpDice,

@@ -19,7 +19,7 @@ import {
   type DsaClassId,
 } from "@/game/dsa/classes";
 
-type Phase = "intro" | "rolling" | "review" | "done";
+type Phase = "class" | "rolling" | "review" | "done";
 
 /** Ein paar typische DSA2-Vornamen je Klasse + Geschlecht — für den
  *  Würfel-Knopf neben dem Namensfeld. */
@@ -199,10 +199,15 @@ function Field({
 export function DsaCharacterCreator() {
   const { dsaCreatorOpen, closeDsaCreator, setDsaCharacter, flags, api } =
     useGame();
-  const [phase, setPhase] = useState<Phase>("intro");
+  const [phase, setPhase] = useState<Phase>("class");
   const [attrs, setAttrs] = useState<Partial<Attrs>>(emptyAttrs());
   const [le, setLe] = useState<number | null>(null);
   const [rollingIdx, setRollingIdx] = useState<number>(-1);
+  /** Pool gewürfelter Werte, die noch keiner Eigenschaft zugewiesen sind. */
+  const [pool, setPool] = useState<number[]>([]);
+  /** Aktuell rollender Würfel-Wert (vor Zuweisung). null = bereit zum Wurf. */
+  const [pendingRoll, setPendingRoll] = useState<number | null>(null);
+  const [diceRolling, setDiceRolling] = useState<boolean>(false);
   const [chosenClassId, setChosenClassId] = useState<DsaClassId | null>(null);
   const [rollCount, setRollCount] = useState<number>(0);
   const [snippy, setSnippy] = useState<{ speaker: string; text: string } | null>(null);
@@ -215,10 +220,13 @@ export function DsaCharacterCreator() {
   useEffect(() => {
     if (!dsaCreatorOpen) return;
     cancelRef.current = false;
-    setPhase("intro");
+    setPhase("class");
     setAttrs(emptyAttrs());
     setLe(null);
     setRollingIdx(-1);
+    setPool([]);
+    setPendingRoll(null);
+    setDiceRolling(false);
     setChosenClassId(null);
     setRollCount(0);
     setSnippy(null);
@@ -269,42 +277,87 @@ export function DsaCharacterCreator() {
     return rollAE(fullAttrs.MU, fullAttrs.IN);
   }, [fullAttrs, chosenClass]);
 
-  async function rollAll() {
-    setPhase("rolling");
+  /** Klasse gewählt → wechselt in die Würfel-Phase, Pool wird leer initialisiert. */
+  function handleConfirmClass() {
+    if (!chosenClassId) return;
     setAttrs(emptyAttrs());
     setLe(null);
-    setChosenClassId(null);
-    setSnippy(null);
-    const rolled: Partial<Attrs> = {};
-    for (let i = 0; i < ATTR_ORDER.length; i++) {
-      if (cancelRef.current) return;
-      setRollingIdx(i);
-      await new Promise((r) => window.setTimeout(r, 650));
-      const a = ATTR_ORDER[i];
-      rolled[a] = roll1d6plus7();
-      setAttrs({ ...rolled });
-    }
-    setRollingIdx(-1);
-    const finalAttrs = rolled as Attrs;
-    setLe(rollLE(finalAttrs.KK));
-    setPhase("review");
-    // Reroll-Zähler erhöhen + ggf. bissigen Spruch zeigen.
-    setRollCount((prev) => {
-      const next = prev + 1;
-      // Erst ab dem 2. Wurf zählt es als "Re-Roll".
-      if (next > 1) {
-        const rerolls = next - 1; // 1, 2, 3, …
-        if (rerolls > 0 && rerolls % 10 === 0) {
-          const idx = Math.floor((rerolls / 10 - 1) % SNIPPY_COMMENTS.length);
-          setSnippy(SNIPPY_COMMENTS[idx]);
-        }
-      }
-      return next;
-    });
+    setPool([]);
+    setPendingRoll(null);
+    setDiceRolling(false);
+    setPhase("rolling");
   }
 
+  /** Einen einzelnen Wurf (1W6+7) ausführen. Animiert kurz, dann liegt
+   *  der Wert im pendingRoll und wartet auf Zuweisung. */
+  async function rollOne() {
+    if (pendingRoll !== null || diceRolling) return;
+    setDiceRolling(true);
+    // Kurze Animation (~500ms) mit wechselnden Zwischenwerten.
+    const start = Date.now();
+    while (Date.now() - start < 500) {
+      if (cancelRef.current) return;
+      await new Promise((r) => window.setTimeout(r, 60));
+    }
+    const v = roll1d6plus7();
+    setPendingRoll(v);
+    setDiceRolling(false);
+  }
+
+  /** Aktuellen Wurf einer freien Eigenschaft zuweisen. */
+  function assignRollTo(attr: Attr) {
+    if (pendingRoll === null) return;
+    if (typeof attrs[attr] === "number") return; // schon belegt
+    const next = { ...attrs, [attr]: pendingRoll };
+    setAttrs(next);
+    setPendingRoll(null);
+    // Wenn alle 7 belegt sind → in Review wechseln.
+    if (ATTR_ORDER.every((a) => typeof next[a] === "number")) {
+      const filled = next as Attrs;
+      setLe(rollLE(filled.KK));
+      setPhase("review");
+      setRollCount((prev) => {
+        const n = prev + 1;
+        if (n > 1) {
+          const rerolls = n - 1;
+          if (rerolls > 0 && rerolls % 10 === 0) {
+            const idx = Math.floor((rerolls / 10 - 1) % SNIPPY_COMMENTS.length);
+            setSnippy(SNIPPY_COMMENTS[idx]);
+          }
+        }
+        return n;
+      });
+    }
+  }
+
+  /** Alle Würfe verwerfen und neu beginnen (gleiche Klasse). */
   function handleReroll() {
-    rollAll();
+    setAttrs(emptyAttrs());
+    setLe(null);
+    setPool([]);
+    setPendingRoll(null);
+    setDiceRolling(false);
+    setPhase("rolling");
+  }
+
+  /** Erfüllt die aktuelle (Teil-)Verteilung die Mindestwerte der Klasse? */
+  function meetsMinimums(): boolean {
+    if (!chosenClass) return true;
+    const cls = chosenClass;
+    if (!cls.min) return true;
+    for (const k of Object.keys(cls.min) as Array<keyof Attrs>) {
+      const need = cls.min[k];
+      const have = attrs[k];
+      if (need !== undefined && (typeof have !== "number" || have < need)) return false;
+    }
+    if (cls.max) {
+      for (const k of Object.keys(cls.max) as Array<keyof Attrs>) {
+        const cap = cls.max[k];
+        const have = attrs[k];
+        if (cap !== undefined && typeof have === "number" && have > cap) return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -339,6 +392,7 @@ export function DsaCharacterCreator() {
       name: finalName,
       attrs: { ...fullAttrs },
       le,
+      leMax: le,
       ae,
       rerolled: rollCount > 1,
     });
@@ -583,25 +637,68 @@ export function DsaCharacterCreator() {
 
           {/* Aktions-Bereich (am Tisch) */}
           <div className="border-t-2 border-[rgba(30,18,8,0.85)] pt-4 space-y-3">
-            {phase === "intro" && (
+            {phase === "class" && (
               <>
                 <p className="dsa-typed text-sm dsa-ink leading-relaxed">
-                  „Sieben Eigenschaften", sagt Tjark. „Mut, Klugheit, Charisma,
-                  Fingerfertigkeit, Gewandtheit, Intuition, Körperkraft.
-                  Jeweils einen Sechser plus sieben." Er schiebt dir den Würfel
-                  zu.
+                  „Bevor wir würfeln," sagt Tjark, „sag mir, wen du spielen
+                  willst. Klasse zuerst, Werte danach. So weißt du, worauf du
+                  hinwürfelst." Er klopft auf das Regelheft.
                 </p>
                 <p className="dsa-typed text-xs dsa-ink-faded">
-                  Du kannst so oft neu würfeln, wie du willst — solange du den
-                  Bogen noch nicht unterschrieben hast.
+                  Wähle eine Klasse — die Mindestwerte siehst du dann unter
+                  jeder Eigenschaft. Du würfelst sieben Mal nacheinander
+                  (1W6+7) und verteilst jeden Wurf selbst.
                 </p>
+                <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-4">
+                  {DSA_CLASSES.map((c) => {
+                    const selected = chosenClassId === c.id;
+                    const minBits = c.min
+                      ? Object.entries(c.min)
+                          .map(([k, v]) => `${k} ≥ ${v}`)
+                          .join(" · ")
+                      : "";
+                    const maxBits = c.max
+                      ? Object.entries(c.max)
+                          .map(([k, v]) => `${k} ≤ ${v}`)
+                          .join(" · ")
+                      : "";
+                    return (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => setChosenClassId(c.id)}
+                        title={c.blurb}
+                        className={`dsa-typed text-xs px-2 py-1.5 text-left transition border ${
+                          selected
+                            ? "border-[#6b1a0e] bg-[rgba(180,60,40,0.18)] dsa-ink"
+                            : "border-[rgba(30,18,8,0.6)] dsa-ink hover:bg-[rgba(255,250,230,0.5)]"
+                        }`}
+                      >
+                        <div className="font-semibold">{c.name}</div>
+                        {(minBits || maxBits) && (
+                          <div className="text-[10px] dsa-ink-faded mt-0.5">
+                            {minBits}
+                            {minBits && maxBits ? " · " : ""}
+                            {maxBits}
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                {chosenClass && (
+                  <p className="dsa-typed text-xs dsa-ink italic">
+                    {chosenClass.blurb}
+                  </p>
+                )}
                 <div className="flex flex-wrap gap-2 pt-1">
                   <button
                     type="button"
-                    onClick={rollAll}
-                    className="dsa-stamp text-sm hover:bg-[rgba(255,250,230,0.5)] cursor-pointer"
+                    onClick={handleConfirmClass}
+                    disabled={!chosenClassId}
+                    className="dsa-stamp text-sm hover:bg-[rgba(255,250,230,0.5)] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    ▸ Würfeln
+                    ▸ Klasse wählen — los würfeln
                   </button>
                   <button
                     type="button"
@@ -635,9 +732,97 @@ export function DsaCharacterCreator() {
             )}
 
             {phase === "rolling" && (
-              <p className="dsa-typed text-sm dsa-ink-faded italic">
-                Der Würfel rollt über das Tischtuch …
-              </p>
+              <>
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={rollOne}
+                    disabled={pendingRoll !== null || diceRolling}
+                    className="dsa-stamp inline-flex items-center gap-2 text-base px-4 py-2 cursor-pointer hover:bg-[rgba(255,250,230,0.5)] disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="Einen Wurf (1W6+7) machen"
+                  >
+                    <Dices className="h-5 w-5" aria-hidden="true" />
+                    <span>{diceRolling ? "Würfel rollt …" : "1W6 + 7 würfeln"}</span>
+                  </button>
+                  {pendingRoll !== null && (
+                    <div className="flex items-center gap-2">
+                      <span className="dsa-typed text-[10px] uppercase tracking-widest dsa-ink-faded">
+                        Ergebnis:
+                      </span>
+                      <div className="dsa-box-thick flex h-12 w-12 items-center justify-center bg-amber-100/60">
+                        <span className="font-display text-2xl dsa-ink">{pendingRoll}</span>
+                      </div>
+                      <span className="dsa-typed text-xs dsa-ink italic">
+                        → einer Eigenschaft zuweisen:
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {pendingRoll !== null && (
+                  <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
+                    {ATTR_ORDER.map((a) => {
+                      const taken = typeof attrs[a] === "number";
+                      const need = chosenClass?.min?.[a];
+                      const cap = chosenClass?.max?.[a];
+                      const wouldFailMin = need !== undefined && pendingRoll < need;
+                      const wouldFailMax = cap !== undefined && pendingRoll > cap;
+                      return (
+                        <button
+                          key={a}
+                          type="button"
+                          disabled={taken}
+                          onClick={() => assignRollTo(a)}
+                          title={
+                            taken
+                              ? `${ATTR_LABEL[a]} schon belegt`
+                              : wouldFailMin
+                              ? `${ATTR_LABEL[a]} verlangt ≥ ${need}`
+                              : wouldFailMax
+                              ? `${ATTR_LABEL[a]} maximal ${cap}`
+                              : `${pendingRoll} → ${ATTR_LABEL[a]}`
+                          }
+                          className={`dsa-typed text-xs px-1 py-2 border transition ${
+                            taken
+                              ? "border-[rgba(30,18,8,0.2)] dsa-ink-faded opacity-30 cursor-not-allowed"
+                              : wouldFailMin || wouldFailMax
+                              ? "border-[#6b1a0e]/60 dsa-ink hover:bg-[rgba(180,60,40,0.12)]"
+                              : "border-[rgba(30,18,8,0.6)] dsa-ink hover:bg-[rgba(255,250,230,0.6)]"
+                          }`}
+                        >
+                          <div className="font-bold">{a}</div>
+                          {need !== undefined && (
+                            <div className="text-[9px] dsa-ink-faded">≥{need}</div>
+                          )}
+                          {cap !== undefined && need === undefined && (
+                            <div className="text-[9px] dsa-ink-faded">≤{cap}</div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+                <div className="dsa-typed text-[11px] dsa-ink-faded">
+                  Klasse: <span className="dsa-ink font-semibold">{chosenClass?.name}</span>
+                  {" · "}
+                  Geworfen: {ATTR_ORDER.filter((a) => typeof attrs[a] === "number").length} / 7
+                </div>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleReroll}
+                    className="dsa-typed text-xs uppercase tracking-widest dsa-ink-faded underline px-2"
+                  >
+                    Alles zurücksetzen
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPhase("class")}
+                    className="dsa-typed text-xs uppercase tracking-widest dsa-ink-faded underline px-2"
+                  >
+                    Klasse ändern
+                  </button>
+                </div>
+              </>
             )}
 
             {phase === "review" && fullAttrs && (
@@ -650,41 +835,12 @@ export function DsaCharacterCreator() {
                     „{snippy.text}"
                   </div>
                 )}
-                <div>
-                  <div className="dsa-typed text-[10px] uppercase tracking-[0.3em] dsa-ink-faded mb-2">
-                    Typus wählen — möglich mit diesen Werten:
+                {!meetsMinimums() && chosenClass && (
+                  <div className="dsa-typed text-sm" style={{ color: "#6b1a0e" }}>
+                    Die Werte erfüllen die Voraussetzungen für „{chosenClass.name}" nicht.
+                    Du kannst nochmal würfeln oder die Klasse ändern.
                   </div>
-                  {qualifying.length === 0 ? (
-                    <p className="dsa-typed text-sm" style={{ color: "#6b1a0e" }}>
-                      Keine Standardklasse erfüllt diese Werte. Würfle nochmal.
-                    </p>
-                  ) : (
-                    <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-4">
-                      {DSA_CLASSES.map((c) => {
-                        const ok = qualifying.includes(c);
-                        const selected = chosenClassId === c.id;
-                        return (
-                          <button
-                            key={c.id}
-                            type="button"
-                            disabled={!ok}
-                            onClick={() => setChosenClassId(c.id)}
-                            title={c.blurb}
-                            className={`dsa-typed text-xs px-2 py-1.5 text-left transition border ${
-                              selected
-                                ? "border-[#6b1a0e] bg-[rgba(180,60,40,0.15)] dsa-ink"
-                                : ok
-                                ? "border-[rgba(30,18,8,0.6)] dsa-ink hover:bg-[rgba(255,250,230,0.5)]"
-                                : "border-[rgba(30,18,8,0.2)] dsa-ink-faded opacity-40 cursor-not-allowed line-through"
-                            }`}
-                          >
-                            {c.name}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                )}
 
                 <div className="flex flex-wrap items-center gap-3 pt-2">
                   <button
@@ -696,7 +852,14 @@ export function DsaCharacterCreator() {
                     <Dices className="h-5 w-5" aria-hidden="true" />
                     <span>{rerollLabel}</span>
                   </button>
-                  {chosenClassId && (
+                  <button
+                    type="button"
+                    onClick={() => setPhase("class")}
+                    className="dsa-typed text-xs uppercase tracking-widest dsa-ink-faded underline px-2"
+                  >
+                    Klasse ändern
+                  </button>
+                  {chosenClassId && meetsMinimums() && (
                     <button
                       type="button"
                       onClick={handleOpenSigning}
@@ -705,11 +868,6 @@ export function DsaCharacterCreator() {
                     >
                       ▣ Bogen unterschreiben
                     </button>
-                  )}
-                  {!kriegerOk && (
-                    <span className="dsa-typed text-[10px] dsa-ink-faded italic">
-                      (kein Krieger möglich)
-                    </span>
                   )}
                 </div>
 
