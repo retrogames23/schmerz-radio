@@ -266,6 +266,91 @@ function E67HandbookIcon() {
   );
 }
 
+/** B3-Vollmacht — Formular mit Unterschrift und Stempel. */
+function B3AuthorizationIcon() {
+  return (
+    <>
+      {/* Papier */}
+      <rect x="3" y="3" width="18" height="18" fill={ICON_DK} />
+      <rect x="4" y="4" width="16" height="16" fill={ICON_HI} />
+      {/* Kopfzeile "VOLLMACHT" */}
+      <rect x="6" y="6" width="12" height="2" fill={ICON_BG} />
+      {/* Textzeilen */}
+      <rect x="6" y="10" width="10" height="1" fill={ICON_BG} opacity="0.7" />
+      <rect x="6" y="12" width="8" height="1" fill={ICON_BG} opacity="0.7" />
+      {/* Vier Ziffern 4-3-1-7 */}
+      <rect x="6" y="14" width="2" height="2" fill={ICON_BG} />
+      <rect x="9" y="14" width="2" height="2" fill={ICON_BG} />
+      <rect x="12" y="14" width="2" height="2" fill={ICON_BG} />
+      <rect x="15" y="14" width="2" height="2" fill={ICON_BG} />
+      {/* Schwungvolle Unterschrift */}
+      <rect x="6" y="18" width="1" height="1" fill={ICON_BG} />
+      <rect x="7" y="17" width="1" height="1" fill={ICON_BG} />
+      <rect x="8" y="18" width="2" height="1" fill={ICON_BG} />
+      <rect x="10" y="17" width="1" height="1" fill={ICON_BG} />
+      <rect x="11" y="18" width="1" height="1" fill={ICON_BG} />
+      {/* Stempel rund (rot) */}
+      <rect x="15" y="17" width="4" height="3" fill="#b3331a" />
+      <rect x="16" y="18" width="2" height="1" fill={ICON_HI} />
+    </>
+  );
+}
+
+/** B3-Ration — Konservendose mit B3-Etikett. */
+function B3RationIcon() {
+  return (
+    <>
+      {/* Dosendeckel */}
+      <rect x="6" y="3" width="12" height="2" fill={ICON_DK} />
+      <rect x="7" y="4" width="10" height="1" fill={ICON_HI} />
+      {/* Dosenkörper */}
+      <rect x="6" y="5" width="12" height="16" fill={ICON_DK} />
+      <rect x="7" y="6" width="10" height="14" fill={ICON_FG} />
+      {/* Highlight */}
+      <rect x="7" y="6" width="2" height="14" fill={ICON_HI} opacity="0.5" />
+      {/* Etikett */}
+      <rect x="7" y="10" width="10" height="6" fill={ICON_BG} />
+      {/* "B3" */}
+      <rect x="9" y="11" width="2" height="4" fill={ICON_FG} />
+      <rect x="11" y="11" width="1" height="1" fill={ICON_FG} />
+      <rect x="11" y="13" width="1" height="1" fill={ICON_FG} />
+      <rect x="13" y="11" width="2" height="1" fill={ICON_FG} />
+      <rect x="14" y="12" width="1" height="1" fill={ICON_FG} />
+      <rect x="13" y="13" width="2" height="1" fill={ICON_FG} />
+      <rect x="14" y="14" width="1" height="1" fill={ICON_FG} />
+      <rect x="13" y="15" width="2" height="1" fill={ICON_FG} />
+      {/* Bodenrille */}
+      <rect x="7" y="20" width="10" height="1" fill={ICON_DK} opacity="0.6" />
+    </>
+  );
+}
+
+/** Sanitäter-Bericht — gefaltetes Formblatt mit rotem Kreuz. */
+function ParamedicsReportIcon() {
+  return (
+    <>
+      {/* Papier */}
+      <rect x="3" y="3" width="18" height="18" fill={ICON_DK} />
+      <rect x="4" y="4" width="16" height="16" fill={ICON_HI} />
+      {/* Kopfbalken */}
+      <rect x="4" y="4" width="16" height="3" fill={ICON_BG} />
+      {/* Rotes Kreuz im Kopf */}
+      <rect x="11" y="4" width="2" height="3" fill="#b3331a" />
+      <rect x="10" y="5" width="4" height="1" fill="#b3331a" />
+      {/* Formular-Zeilen */}
+      <rect x="6" y="9" width="12" height="1" fill={ICON_BG} opacity="0.8" />
+      <rect x="6" y="11" width="10" height="1" fill={ICON_BG} opacity="0.7" />
+      <rect x="6" y="13" width="11" height="1" fill={ICON_BG} opacity="0.7" />
+      <rect x="6" y="15" width="8" height="1" fill={ICON_BG} opacity="0.6" />
+      {/* Ankreuz-Kästchen */}
+      <rect x="6" y="17" width="2" height="2" fill={ICON_DK} />
+      <rect x="7" y="18" width="1" height="1" fill={ICON_BG} />
+      <rect x="10" y="17" width="2" height="2" fill={ICON_DK} />
+      <rect x="14" y="17" width="2" height="2" fill={ICON_DK} />
+    </>
+  );
+}
+
 const ICON_MAP: Record<InventoryItemId, () => React.ReactElement> = {
   protocol: ProtocolIcon,
   exitCode: ExitCodeIcon,
