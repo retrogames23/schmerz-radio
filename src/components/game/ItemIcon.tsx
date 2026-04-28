@@ -276,6 +276,9 @@ const ICON_MAP: Record<InventoryItemId, () => React.ReactElement> = {
   wartungsnotiz5610: WartungsnotizIcon,
   residentId: ResidentIdIcon,
   e67Handbook: E67HandbookIcon,
+  b3Authorization: B3AuthorizationIcon,
+  b3Ration: B3RationIcon,
+  paramedicsReport: ParamedicsReportIcon,
 };
 
 export function ItemIcon({ id, className, size = 24, title }: Props) {
