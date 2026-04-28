@@ -195,6 +195,16 @@ export function Ending() {
             >
               ▸ Neu beginnen
             </button>
+            <div>
+              <a
+                href="https://buymeacoffee.com/doener"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-block font-mono-crt text-xs uppercase tracking-[0.3em] text-amber-glow/80 underline-offset-4 hover:underline amber-glow"
+              >
+                ☕ Buy me a coffee
+              </a>
+            </div>
           </div>
         </>
       )}
