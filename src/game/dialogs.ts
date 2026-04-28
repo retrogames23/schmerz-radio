@@ -3639,6 +3639,8 @@ export const dialogs: Record<string, DialogTree> = {
       // Variante, wenn Layard noch gar nicht beim Abschnittsverantwortlichen
       // war: Insa kann ihm keinen Code geben — er weiß ja nicht einmal,
       // wohin er das Protokoll bringen soll. Sie schickt ihn erst dorthin.
+      // ic5 ist dann durch `requires` versteckt; resolveVisible springt
+      // entlang `next` weiter zu ic5b.
       ic5b: {
         id: "ic5b",
         speaker: "INSA",
