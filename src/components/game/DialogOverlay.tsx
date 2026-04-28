@@ -41,6 +41,13 @@ export function DialogOverlay() {
       return true;
     }) ?? [];
 
+  const canAdvance = visibleChoices.length === 0;
+
+  const handleAdvance = () => {
+    if (!canAdvance) return;
+    advanceDialog();
+  };
+
   const speakerColor: Record<string, string> = {
     LAYARD: "text-foreground",
     INSA: "text-amber-glow",
@@ -61,11 +68,32 @@ export function DialogOverlay() {
     YELVA: "text-foreground",
   };
 
+  // Tastatur: Space / Enter / Klick-irgendwohin → weiter (nur wenn keine Auswahl)
+  // Esc → schließen
+  // (eigene useEffect, damit Listener mit jeder Zeile aktuell sind)
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+
   return (
-    <div className="absolute inset-0 z-40 flex items-end justify-center bg-black/55 px-4 pb-6">
-      <div className="fade-in relative w-full max-w-3xl rounded-sm border border-amber-glow/40 bg-background/95 p-5 pr-12 shadow-[0_0_40px_rgba(0,0,0,0.7)]">
+    <div
+      className={`absolute inset-0 z-40 flex items-end justify-center bg-black/55 px-4 pb-6 ${
+        canAdvance ? "cursor-pointer" : ""
+      }`}
+      onClick={handleAdvance}
+    >
+      <div
+        className="fade-in relative w-full max-w-3xl rounded-sm border border-amber-glow/40 bg-background/95 p-5 pr-12 shadow-[0_0_40px_rgba(0,0,0,0.7)]"
+        onClick={(e) => {
+          // Klick auf die Bubble selbst zählt nur als „weiter“,
+          // wenn keine Auswahl ansteht. Sonst stoppen wir die Propagation
+          // damit Choice-Buttons nicht versehentlich auch das Backdrop triggern.
+          if (!canAdvance) {
+            e.stopPropagation();
+          }
+        }}
+      >
         <CloseButton
-          onClick={() => {
+          onClick={(e) => {
+            e?.stopPropagation?.();
             stopSpeech();
             closeDialog();
           }}
