@@ -2058,6 +2058,7 @@ export const scenes: Record<string, Scene> = {
         w: 13,
         h: 38,
         label: (() => "Freier Stuhl am Tisch")(),
+        kind: "use",
         onUse: (api) => {
           api.setFlag("enteredCommonRoom");
           api.setFlag("metRpgGroup");
