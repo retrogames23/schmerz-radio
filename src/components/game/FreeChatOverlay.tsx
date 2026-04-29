@@ -148,7 +148,10 @@ function FreeChatInner({
     inputRef.current?.focus();
   }, []);
 
-  const locked = patience.lockedUntil > Date.now() || patience.remaining <= 0;
+  // Geduld nur bei Cloud durchsetzen — lokal sind Antworten „gratis".
+  const isCloud = status.kind === "cloud";
+  const locked =
+    isCloud && (patience.lockedUntil > Date.now() || patience.remaining <= 0);
   const lockMins = locked
     ? Math.max(1, Math.ceil((patience.lockedUntil - Date.now()) / 60_000))
     : 0;
@@ -188,14 +191,17 @@ function FreeChatInner({
       }
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
 
-      // Geduld erst nach erfolgreicher Antwort runterzählen.
-      const after = consumePatience(userId, npcId);
-      setPatience(after);
-      if (after.remaining === 0) {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: persona.patienceExhaustedLine },
-        ]);
+      // Geduld erst nach erfolgreicher Antwort runterzählen — und nur
+      // bei Cloud, da lokale Antworten den Spieler nichts kosten.
+      if (isCloud) {
+        const after = consumePatience(userId, npcId);
+        setPatience(after);
+        if (after.remaining === 0) {
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: persona.patienceExhaustedLine },
+          ]);
+        }
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Unbekannter Fehler.";
