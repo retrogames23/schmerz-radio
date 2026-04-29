@@ -411,6 +411,16 @@ export function combineItem(
       //    Layard braucht beide noch.
       const pair = pairKey(itemId, otherId);
       if (pair === pairKey("pencilStub", "b3Authorization")) {
+        // Layard braucht ein dünnes Papier für die Reibung — der
+        // Quittungsblock liefert es. Ohne den geht's nicht.
+        if (!ctx.api.hasItem("quittungBlankoB")) {
+          ctx.api.showText([
+            "Layard braucht ein dünnes Stück Papier, um die Kontur",
+            "des Trockensiegels herauszureiben. Carbon-Formularpapier",
+            "wäre perfekt — aus der Kantine zum Beispiel.",
+          ]);
+          return;
+        }
         if (!ctx.api.hasItem("siegelAbdruck")) {
           ctx.api.addItem({
             id: "siegelAbdruck",
