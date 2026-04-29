@@ -1,100 +1,60 @@
-import type { ChatMsg, LlmRuntime, LlmRuntimeStatus } from "./runtime";
+import type { LlmRuntime, LlmRuntimeStatus } from "./runtime";
+import {
+  cancelLocalLlmLoad,
+  getLoadedEngineOrLoad,
+  hasLoadedEngine,
+  startLocalLlmLoad,
+  subscribe as subscribeLoader,
+} from "./webLlmLoader";
 
 /**
- * Lokale WebLLM-Runtime — lädt ein kleines Modell direkt im Browser
- * via WebGPU. Modul-Singleton: Ein Modell-Reload würde ein paar
- * hundert MB neu herunterladen.
- */
-
-type Engine = {
-  reload: (model: string) => Promise<void>;
-  chat: {
-    completions: {
-      create: (args: {
-        messages: ChatMsg[];
-        temperature?: number;
-        max_tokens?: number;
-        stream?: false;
-      }) => Promise<{
-        choices: Array<{ message: { content?: string | null } }>;
-      }>;
-    };
-  };
-};
-
-const PRIMARY_MODEL = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
-const FALLBACK_MODEL = "Phi-3.5-mini-instruct-q4f16_1-MLC";
-
-let enginePromise: Promise<Engine> | null = null;
-
-export interface InitProgress {
-  text: string;
-  progress?: number;
-}
-
-async function loadEngine(
-  onProgress: (p: InitProgress) => void,
-): Promise<Engine> {
-  if (enginePromise) return enginePromise;
-  enginePromise = (async () => {
-    const mod = await import("@mlc-ai/web-llm");
-    const engine = new mod.MLCEngine({
-      initProgressCallback: (report: InitProgress) => onProgress(report),
-    }) as unknown as Engine;
-    try {
-      await engine.reload(PRIMARY_MODEL);
-    } catch (e) {
-      console.warn("WebLLM primary model failed, trying fallback:", e);
-      await engine.reload(FALLBACK_MODEL);
-    }
-    return engine;
-  })();
-  try {
-    return await enginePromise;
-  } catch (e) {
-    enginePromise = null;
-    throw e;
-  }
-}
-
-/**
- * Erstellt eine lokale Runtime, die sich selbst initialisiert. Der
- * Aufrufer übergibt einen Status-Callback, um Lade-Fortschritt &
- * Fehler in die UI zu spiegeln.
+ * Lokale Runtime — dünner Wrapper über den globalen Singleton-Loader.
+ * Mehrere Aufrufe teilen sich denselben Modell-Lade-Vorgang.
  */
 export function createWebLlmRuntime(
   onStatus: (s: LlmRuntimeStatus) => void,
-): LlmRuntime {
+): LlmRuntime & { cancelLoad: () => void } {
   const status: LlmRuntimeStatus = {
     kind: "local",
-    ready: false,
-    loading: { text: "Initialisiere lokales Modell …" },
+    ready: hasLoadedEngine(),
+    loading: hasLoadedEngine()
+      ? undefined
+      : { text: "Initialisiere lokales Modell …" },
   };
   onStatus({ ...status });
 
-  const enginePromiseLocal = loadEngine((p) => {
-    status.loading = { text: p.text, pct: p.progress };
-    onStatus({ ...status });
-  })
-    .then((eng) => {
+  const unsub = subscribeLoader((p) => {
+    if (p.phase === "ready") {
       status.ready = true;
       status.loading = undefined;
-      onStatus({ ...status });
-      return eng;
-    })
-    .catch((e: unknown) => {
-      status.error = e instanceof Error ? e.message : String(e);
+      status.error = null;
+    } else if (p.phase === "error") {
       status.ready = false;
-      onStatus({ ...status });
-      throw e;
-    });
+      status.loading = undefined;
+      status.error = p.error ?? p.text;
+    } else if (p.phase === "cancelled") {
+      status.ready = false;
+      status.loading = undefined;
+      status.error = "cancelled";
+    } else if (p.phase === "loading") {
+      status.ready = false;
+      status.loading = { text: p.text, pct: p.pct };
+      status.error = null;
+    }
+    onStatus({ ...status });
+  });
+
+  // Lade-Vorgang sicher anstoßen (Singleton — no-op wenn schon fertig/läuft).
+  void startLocalLlmLoad().catch(() => {
+    /* Status wird via Subscriber gespiegelt. */
+  });
 
   return {
     get status() {
       return status;
     },
     async send(messages, opts) {
-      const eng = await enginePromiseLocal;
+      const eng = await getLoadedEngineOrLoad();
       if (opts?.signal?.aborted) throw new Error("aborted");
       const res = await eng.chat.completions.create({
         messages,
@@ -105,6 +65,12 @@ export function createWebLlmRuntime(
       const reply = res.choices?.[0]?.message?.content?.trim() ?? "";
       if (!reply) throw new Error("Leere Antwort vom lokalen Modell.");
       return reply;
+    },
+    cancelLoad() {
+      cancelLocalLlmLoad();
+    },
+    dispose() {
+      unsub();
     },
   };
 }
