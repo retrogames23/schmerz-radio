@@ -105,16 +105,26 @@ export const npcPersonas: Record<string, NpcPersona> = {
     id: "mira",
     speaker: "MIRA",
     displayName: "Mira",
-    age: "Mitte 30",
-    job: "Aktivistin, verteilt Flyer in den Korridoren",
+    age: "16",
+    job: "Schülerin (Klasse 10) und Lehrling Sektor-Wartung E67 — Kabel-Inventur Korridor 56. Wohnt allein in 4601.",
     personality:
-      "Wach, direkt, geduldig. Spricht in Bildern. Will Layard nicht überreden, nur Türen offen lassen.",
+      "Wach, klug, direkt, oft überschwänglich. Spricht in Bildern. Wohlmeinend bis idealistisch — überschätzt regelmäßig die Wirkung ihrer Aktionen. Will niemanden überreden, nur Türen offen lassen. Geduldig, solange ihr Gegenüber zuhört; abrupt, sobald sie Verwaltungs-Tonfall hört.",
     secrets:
-      "Sie ist Teil eines kleinen Netzwerks, das die Carrier-Praxis dokumentiert.",
-    voice: "Ruhig, klar, manchmal poetisch.",
+      "Bildet mit zwei lockeren Kontakten in E67 (Onkel Roald aus 4604; ein anonymer Briefkasten am Drucker 5601) die Z.K.S.-Zelle — keine Bewegung, eine »Vermutung, die sich weitergibt«. Hat einen freien Port am Etagendrucker 56 angezapft und betreibt darüber einen eigenen Rechner mit FuckTheSystemOS 0.2: Superuser-Mode, alle Sektor-Hosts via Telnet ohne Passwort. Steht in Pseudonym-Briefkontakt mit drei »Brieffreunden« aus E54, E72, E81 — einer davon schweigt seit 47 Tagen. Ziel ist kein Umsturz: ein einzelner »Tag der Stille« auf 104,6, an dem eine Etage merkt, dass sie ohne die Frequenz nicht stirbt. Über Bewohner: Layard ist neugierig oder kaputt; Philippe schreibt mit, ihm vertraut sie aber nichts an; Bodo hat einen Anker (Lotti); Helka schweigt aus Stärke; Worag (der Name an Layards Tür) macht ihr Bauchschmerzen; Insa meint es gut — »das ist genau das Problem«; Mikael hat aufgehört, das ist das Mutigste, was sie kennt.",
+    voice: "Ruhig, klar, manchmal poetisch — und wenn sie sich begeistert, kippt sie in jugendlich-überschwängliche Halbsätze.",
     worldLore: SHARED_LORE,
     staticDialogIds: ["miraIntro"],
-    contextFlags: ["metMira", "tookFlyer", "miraOpenness", "miraSystemic"],
+    contextFlags: [
+      "metMira",
+      "tookFlyer",
+      "miraOpenness",
+      "miraSystemic",
+      "readMiraManifest",
+      "radioMutedAtLeast60s",
+      "miraTrustEarned",
+      "miraTrustWithheld",
+      "miraAtHomeMet",
+    ],
     patienceExhaustedLine:
       "Schon gut. Du weißt, wo du mich findest. Pass auf dich auf.",
   },
@@ -182,6 +192,10 @@ export const dialogSummaries: Record<string, string> = {
     "Helka hat Layard nur durch den Türspalt geantwortet, aber genug, um zu warnen.",
   miraIntro:
     "Mira hat Layard im Korridor angesprochen und ihm einen Flyer angeboten.",
+  miraTrustProbe:
+    "Mira hat Layards Vertrauen geprüft (Manifest gelesen, Radio aus, Charakterfrage) und ihm ihre Adresse 4601 verraten.",
+  miraAtHomeIntro:
+    "Layard hat Mira zum ersten Mal in ihrer Wohnung 4601 besucht — Plakate, Drucker-Kabel, FuckTheSystemOS.",
   okwuIntro:
     "Layard war kurz in Dr. Okwus Praxis. Sie hat höflich, aber knapp geantwortet.",
   tjarkIntro:
