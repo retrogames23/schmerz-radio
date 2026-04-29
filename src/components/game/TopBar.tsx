@@ -46,7 +46,7 @@ export function TopBar({ onOpenPause }: Props) {
         </div>
 
         <div className="flex items-center gap-2">
-          {!ending && scene !== "commonRoomE67" && <div
+          {!ending && scene !== "commonRoomE67" && scene !== "cafeteriaE67" && <div
             className={`group hidden items-center gap-1 rounded-sm border px-1.5 py-1 text-[10px] uppercase tracking-[0.2em] transition-all duration-200 sm:inline-flex ${
               musicEnabled
                 ? "border-amber-glow/30 bg-gradient-to-b from-amber-glow/10 to-transparent text-amber-glow/80 hover:border-amber-glow/60"

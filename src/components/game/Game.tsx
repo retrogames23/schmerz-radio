@@ -45,7 +45,16 @@ function DsaMusicBridge() {
     // anderen Abenteuer-Szenen läuft die ruhigere Tafelrunden-Musik.
     const inTavern = dsaAdventureOpen && !!dsaBeat && dsaBeat.startsWith("s2");
     const inDsa = scene === "commonRoomE67" || dsaAdventureOpen;
-    setOverride(inTavern ? "dsaTavern" : inDsa ? "dsaTable" : null);
+    const inCafeteria = scene === "cafeteriaE67";
+    setOverride(
+      inTavern
+        ? "dsaTavern"
+        : inDsa
+          ? "dsaTable"
+          : inCafeteria
+            ? "cafeteria"
+            : null,
+    );
   }, [scene, dsaAdventureOpen, dsaBeat, setOverride]);
   return null;
 }
