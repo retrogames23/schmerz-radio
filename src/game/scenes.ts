@@ -1659,18 +1659,7 @@ export const scenes: Record<string, Scene> = {
     title: "Korridor 36 — Verwaltung und Versorgung",
     intro:
       "Andere Beleuchtung als zuhause. Sterilere Türen. Vor einer davon — 3601 — ein handgeschriebenes Schild. Aus 3602 zieht warm und ranzig ein Geruch nach Mensa-Pampe und Bohnerwachs.",
-    npcs: [
-      {
-        id: "miraSprite36",
-        src: miraSprite,
-        x: 22,
-        y: 36,
-        w: 14,
-        h: 54,
-        alt: "Junge Frau, an die Wand gelehnt",
-        visible: (api) => api.getMiraFloors().includes(3),
-      },
-    ],
+    npcs: [],
     hotspots: [
       {
         id: "philippeSpot36",
@@ -1720,28 +1709,6 @@ export const scenes: Record<string, Scene> = {
         onUse: (api) => {
           api.setFlag("rangEmptyOfficeBell");
           api.startDialog("emptyOfficeBell");
-        },
-      },
-      {
-        id: "miraSpot36",
-        x: 22,
-        y: 38,
-        w: 14,
-        h: 50,
-        label: "Junge Frau an der Wand",
-        kind: "talk",
-        visible: (api) => api.getMiraFloors().includes(3),
-        onUse: (api) => {
-          if (api.hasFlag("tookFlyer")) {
-            api.startDialog("miraAfter");
-          } else if (api.hasFlag("miraSystemic")) {
-            api.startDialog("miraSystemicGreeting");
-          } else if (api.hasFlag("metMira")) {
-            api.startDialog("miraReturn");
-          } else {
-            api.setFlag("metMira");
-            api.startDialog("miraIntro");
-          }
         },
       },
       {
