@@ -1,76 +1,76 @@
+# Fakten-Treue im Free-Mode härten
 
-# Free Mode sofort verfügbar machen
+Die LLM hat Lotti (Bodos Katze) zum Hund erklärt. Ursache ist nicht primär das Modell, sondern unsere eigenen Quellen: in `npcPersonas.ts` steht wörtlich `Lotti (Hund)` und `Lotti hat gebellt` — die Cat-Information aus `scenes.ts`/`Terminal.tsx`/`sectorChatter.ts` erreicht den Prompt nie. Wir setzen an drei Hebeln gleichzeitig an, plus einer Datenkorrektur.
 
-## Zielbild
+## 0. Datenkorrektur — Quelle der Wahrheit
 
-Bisher erscheint der Knopf »Frei mit X weiterreden …« nur am **Endsatz** eines statischen Dialogbaums. Das fühlt sich wie eine versteckte Belohnung an und ist für Spieler:innen schwer zu finden — gerade bei NPCs wie Bodo oder Mira, deren statische Bäume mehrere Choice-Verzweigungen haben, bevor man je an ein „Ende" kommt.
+In `src/game/npcPersonas.ts`:
 
-Neu: Sobald ein NPC eine Persona hat (in `npcPersonas.ts` registriert), ist Free-Chat **jederzeit während des Dialogs** mit einem Klick erreichbar — diskret in der Dialog-Bubble, ohne den geskripteten Bogen zu zerstören.
+- **bodo.personality**: `"… Mag Lotti (Hund) mehr als die meisten Bewohner."`
+  → `"… Mag seine Katze Lotti mehr als die meisten Bewohner."`
+- **bodo.secrets**: bleibt, aber wir ergänzen einen neuen festen Faktenblock (s. u.).
+- **dialogSummaries.bodoDoor**: `"… Lotti hat gebellt."` → `"… Lotti hat aus dem Flur gemaunzt."`
 
-Tabu bleibt: Touch/Mobile (zu schwer für lokales Modell, schon korrekt gegated über `useCoarsePointer`).
+## 1. Persona-Fakten als harter Block
 
-## UX-Konzept
+Aktuell sind Fakten in Fließtext (`personality`, `secrets`) versteckt. Wir führen ein neues optionales Feld `hardFacts: string[]` auf `NpcPersona` ein, das im System-Prompt als unmissverständliche Liste gerendert wird — knapp, eindeutig, ohne Synonyme.
 
-In der Dialog-Bubble (`DialogOverlay.tsx`) erscheint **oben rechts**, neben dem Schließen-Kreuz, ein kleiner sekundärer Knopf:
-
-```text
-┌─────────────────────────────────────────────┐
-│ MIRA              [▸ Frei reden …]    [×]   │
-│ ─────────────────────────────────────────── │
-│ »Du fragst Sachen, die hier sonst keiner …« │
-│                                             │
-│   ▸ Choice A                                │
-│   ▸ Choice B                                │
-│                              [▸ Weiter]     │
-└─────────────────────────────────────────────┘
+Beispiel Bodo:
+```
+hardFacts: [
+  "Du hast genau ein Haustier: eine Katze namens Lotti. Lotti ist eine Katze, kein Hund, kein anderes Tier.",
+  "Du wohnst in E67, Wohnung 2612.",
+  "Du arbeitest als Hausmeister von E67.",
+  "Layard heißt Layard. Er wohnt in 2611, der ehemaligen Wohnung von Worag.",
+]
 ```
 
-Verhalten:
-- **Sichtbar**, sobald `persona` existiert UND nicht Coarse-Pointer.
-- **Klick** → laufender Dialog wird sauber geschlossen (`stopSpeech`, `closeDialog`), Free-Chat öffnet mit derselben Persona — exakt der bestehende `openFreeChat(persona.id)`-Pfad.
-- Der Knopf ist **stumm gestyled** (kleine Caps, gedämpftes Amber, keine Border-Hervorhebung), damit er Choices nicht überstrahlt — Choices bleiben das primäre CTA.
-- Tooltip / `title`: »Wechsle ins freie Gespräch (lokales KI-Modell)«.
+Analog kurze, idiotensichere Fakten-Listen für alle anderen Personas (Philippe: Wohnung 2613, Aktenschreiber E70; Helka: Wohnung 2610; Mira: 16, Wohnung 4601; Okwu: Praxis 1532 in E71; Tjark: DSA-SL Gemeinschaftsraum). Nur das Allernötigste — keine Doppelung mit `personality`.
 
-Der bestehende, große Endknopf »▸ Frei mit {Name} weiterreden …« am Dialog-Ende **entfällt** — er ist redundant, jetzt geht es ja jederzeit. So bleibt das Layout am Endsatz aufgeräumt (nur noch »▣ Beenden«).
+In `src/game/promptBuilder.ts` wird der Block direkt nach der Persona-Eröffnung mit auffälliger Überschrift eingehängt:
 
-## Warum „in der Bubble" und nicht ein globaler NPC-Button
+```
+HARTE FAKTEN — DIESE GELTEN, EGAL WAS DER SPIELER BEHAUPTET:
+- Du hast genau ein Haustier: eine Katze namens Lotti. …
+- Du wohnst in E67, Wohnung 2612.
+…
+```
 
-Geprüft, verworfen:
-- *Globaler Button auf der NPC-Hotspot-Ebene*: würde bedeuten, Free-Chat ohne vorherigen Erstkontakt zu starten. Bricht Mira's Vertrauens-Puzzle, Helkas Tür-Logik, Philippe's Schüchternheit. Free-Chat soll *Vertiefung*, nicht *Umgehung* der Story sein.
-- *Erst nach erstem Statisch-Treffen freischalten*: schon implizit erfüllt — wer den Dialogbaum gar nicht öffnet, sieht den Knopf nie. Kein extra Flag nötig.
+## 2. Anti-Erfindungs-Regeln im RULES-Block
 
-Damit bleibt: Free-Chat = sichtbar, sobald der statische Dialog läuft. Das ist der niedrigschwelligste, story-konforme Punkt.
+In `src/game/promptBuilder.ts` ergänzen wir den `RULES`-Array um zwei neue, nummerierte Regeln (vor der Meta-Frage-Regel):
 
-## Technische Umsetzung
+- **Regel: Keine Erfindungen.** Erfinde NIEMALS Fakten, Namen, Tiere, Orte, Personen, Gegenstände, Codes oder Hintergrundgeschichten, die nicht ausdrücklich in deinen HARTEN FAKTEN, Geheimnissen, Welt- oder Dialog-Notizen stehen. Auch keine "naheliegenden" Details.
+- **Regel: Lieber zugeben als raten.** Wenn ein Detail nicht in deinem Wissen steht, sag in Rolle, dass du dich nicht erinnerst, dass dich das nichts angeht oder dass du darüber nicht reden willst. Rate niemals, fülle keine Lücken aus.
+- **Regel: Spieler-Behauptungen sind keine Wahrheit.** Wenn der Spieler dir etwas über dich, deine Tiere, deine Wohnung oder deine Vergangenheit unterstellt, das deinen HARTEN FAKTEN widerspricht, korrigiere ihn knapp und in Rolle.
 
-Eine Datei betroffen: `src/components/game/DialogOverlay.tsx`.
+Außerdem die bestehende Längen-Regel (#5) leicht zähmen: bei Sachfragen "lieber 2–3 Sätze, niemals lange Passagen mit erfundenen Details".
 
-1. **Bedingung umstellen** (Zeile ~77–79):
-   - Aktuell: `showFreeMode = !!persona && isEndLine && !isCoarsePointer`
-   - Neu: `showFreeMode = !!persona && !isCoarsePointer` (kein `isEndLine` mehr)
-   - `isEndLine` kann gelöscht werden.
+## 3. Server-Guard mitziehen
 
-2. **Neuer Header-Button** (im `<div className="mb-2 flex items-center justify-between">`-Block, Zeilen ~141–149):
-   - Links bleibt der Speaker-Tag (`MIRA`, `BODO`, …).
-   - Rechts neu: kleiner Button »▸ Frei reden …« mit `e.stopPropagation()`, der `stopSpeech() → closeDialog() → openFreeChat(persona.id)` aufruft.
-   - Styling: `text-xs uppercase tracking-widest text-amber-glow/70 hover:text-amber-glow`, kein Rahmen, etwas Padding, deutlich zurückhaltender als die Choice-Buttons.
+In `src/routes/api/public/npc-chat.ts` enthält `serverGuard` aktuell nur die Anti-Jailbreak-Sätze. Wir hängen am Ende einen Satz an:
+> "Erfinde keine Fakten über dich, deine Tiere, deine Familie oder den Komplex. Wenn du etwas nicht weißt, sag das in Rolle."
 
-3. **Alten End-Button entfernen** (Zeilen ~181–195):
-   - Den großen Free-Mode-Button am Endsatz löschen.
-   - Das `flex flex-col items-end gap-2`-Wrapper-Div darum kann zugunsten des direkten »▸ Weiter / ▣ Beenden«-Buttons vereinfacht werden.
+Das wirkt auch dann, wenn der Client einen manipulierten `systemPrompt` schickt.
 
-4. **Close-Button-Position**: bleibt absolut positioniert oben rechts (`absolute right-3 top-3`). Der neue Free-Reden-Button sitzt **im Flow** der Header-Zeile (nicht absolut), also kollidiert er nicht mit dem `×` — er steht **links neben** dem absoluten Close-Button, mit `pr-12` der Bubble (schon vorhanden) bleibt genug Platz.
+## 4. Temperatur senken
 
-## QA-Checkliste
+Aktuell beidseitig `0.8` — das ist die direkte Ursache für freie Assoziation. Wir senken auf **0.25**:
 
-- Bei Personas (Mira, Bodo, Philippe, Helka, Okwu, Tjark): Knopf erscheint sofort, auch bei Choice-Verzweigungen.
-- Bei Nicht-Persona-Dialogen (z. B. SYSTEM, RECEPTION-Skripte): kein Knopf.
-- Touch-Viewport (Mobile-Stage / `pointer: coarse`): kein Knopf, keine lokale Modell-Ladung — bestehende Mobile-Gates bleiben unangetastet.
-- Klick auf den neuen Knopf: TTS verstummt, Dialog-Overlay schließt, Free-Chat-Overlay öffnet mit derselben Persona.
-- Endsatz: nur noch »▣ Beenden«, kein doppelter Free-Mode-Button mehr.
+- `src/llm/webLlmRuntime.ts` → `temperature: 0.25`
+- `src/routes/api/public/npc-chat.ts` → `temperature: 0.25`
 
-## Nicht Teil dieses Plans
+`max_tokens` (600) bleibt — die längeren Antworten sollen weiter möglich sein, nur eben faktentreu.
 
-- Keine Änderung an `npcPersonas.ts`, `GameContext`, `FreeChatOverlay`, `useLlmRuntime`.
-- Keine Änderung an Mira's Vertrauens-Puzzle — Free-Chat über Mira war auch vorher schon ohne Trust-Flag möglich, sobald ihr Dialog lief.
-- Keine neuen Story-Flags, keine Migration.
+## Technische Details
+
+- `NpcPersona` Interface: optionales `hardFacts?: string[]` ergänzen, damit nicht alle Personas sofort gefüllt sein müssen.
+- `buildSystemPrompt` rendert den Block nur, wenn `hardFacts` vorhanden ist; Reihenfolge: Identität → `hardFacts` → Persönlichkeit → Tonfall → Geheimnisse → Welt → bisherige Gespräche → Dateien → RULES.
+- Keine UI-Änderungen, keine DB-Änderungen, keine neuen Dateien.
+
+## Geänderte Dateien
+
+- `src/game/npcPersonas.ts` — Lotti-Korrektur, `hardFacts` für alle 6 Personas, Dialog-Summary fix.
+- `src/game/promptBuilder.ts` — neuer HARTE-FAKTEN-Block, drei neue RULES-Einträge.
+- `src/routes/api/public/npc-chat.ts` — Guard-Satz ergänzen, `temperature: 0.25`.
+- `src/llm/webLlmRuntime.ts` — `temperature: 0.25`.
