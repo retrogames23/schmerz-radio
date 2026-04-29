@@ -623,13 +623,13 @@
    Hotspot.kind. Hotspot-Punkt ist jeweils so gewählt, dass die intuitive
    "Spitze" auf dem Pixel sitzt (Lupen-Mitte, Hand-Zeigefinger, etc.). */
 .cursor-look {
-  cursor: url("/src/assets/cursors/look.svg") 13 13, crosshair;
+  cursor: url("/cursors/look.svg") 13 13, crosshair;
 }
 .cursor-talk {
-  cursor: url("/src/assets/cursors/talk.svg") 6 6, pointer;
+  cursor: url("/cursors/talk.svg") 6 6, pointer;
 }
 .cursor-exit {
-  cursor: url("/src/assets/cursors/exit.svg") 4 16, pointer;
+  cursor: url("/cursors/exit.svg") 4 16, pointer;
 }
 /* Animierte Hand: zwei SVG-Frames im Wechsel.
    `cursor` selbst ist nicht keyframe-animierbar in allen Browsern
@@ -638,14 +638,14 @@
    für den Cursor. Workaround: animation auf cursor-image via
    step-Keyframes (funktioniert in Chromium/Firefox/WebKit aktuell). */
 .cursor-use {
-  cursor: url("/src/assets/cursors/hand-1.svg") 11 4, pointer;
+  cursor: url("/cursors/hand-1.svg") 11 4, pointer;
   animation: cursor-hand 0.7s steps(2, end) infinite;
 }
 @keyframes cursor-hand {
   0%, 49% {
-    cursor: url("/src/assets/cursors/hand-1.svg") 11 4, pointer;
+    cursor: url("/cursors/hand-1.svg") 11 4, pointer;
   }
   50%, 100% {
-    cursor: url("/src/assets/cursors/hand-2.svg") 11 4, pointer;
+    cursor: url("/cursors/hand-2.svg") 11 4, pointer;
   }
 }
