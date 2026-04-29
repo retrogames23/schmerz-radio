@@ -236,15 +236,15 @@ function FreeChatInner({
         <div className="flex items-center justify-between border-b border-amber-glow/20 px-4 py-3 pr-12">
           <div className="flex items-center gap-3">
             <span
-              className={`font-mono-crt text-sm uppercase tracking-[0.3em] ${speakerColor}`}
+              className={`font-mono-crt text-base uppercase tracking-[0.3em] ${speakerColor}`}
             >
               {persona.speaker}
             </span>
-            <span className="font-mono-crt text-[11px] uppercase tracking-widest text-muted-foreground">
+            <span className="font-mono-crt text-xs uppercase tracking-widest text-muted-foreground">
               · Free-Mode
             </span>
           </div>
-          <div className="flex items-center gap-3 font-mono-crt text-[11px] uppercase tracking-widest text-muted-foreground">
+          <div className="flex items-center gap-3 font-mono-crt text-xs uppercase tracking-widest text-muted-foreground">
             <span>{modeLabel}</span>
             {/* Geduld-Counter ist eine Cloud-Schutzmaßnahme (Token-Kosten /
                 Spam). Lokale Antworten kosten nichts → kein Limit anzeigen. */}
@@ -265,7 +265,7 @@ function FreeChatInner({
           className="min-h-0 flex-1 overflow-y-auto px-4 py-4"
         >
           {messages.length === 0 && (
-            <p className="font-mono-crt text-xs italic text-muted-foreground">
+            <p className="font-display text-base italic leading-relaxed text-muted-foreground">
               [ Du sprichst jetzt frei mit {persona.displayName}.
               {status.kind === "local" && !status.ready
                 ? " Das lokale Modell wird gerade geladen — Fortschritt siehst du unten."
@@ -284,7 +284,7 @@ function FreeChatInner({
                 }
               >
                 <div
-                  className={`mb-1 font-mono-crt text-[10px] uppercase tracking-widest ${
+                  className={`mb-1 font-mono-crt text-xs uppercase tracking-widest ${
                     m.role === "user"
                       ? "text-muted-foreground"
                       : speakerColor
@@ -292,13 +292,13 @@ function FreeChatInner({
                 >
                   {m.role === "user" ? "LAYARD" : persona.speaker}
                 </div>
-                <div className="whitespace-pre-wrap font-display text-base leading-relaxed text-foreground">
+                <div className="whitespace-pre-wrap font-display text-lg leading-relaxed text-foreground">
                   {m.content}
                 </div>
               </div>
             ))}
             {sending && (
-              <div className="self-start font-mono-crt text-xs italic text-amber-glow">
+              <div className="self-start font-mono-crt text-sm italic text-amber-glow">
                 {persona.displayName} sagt …
               </div>
             )}
@@ -319,12 +319,12 @@ function FreeChatInner({
           />
         )}
         {error && (
-          <div className="border-t border-rust/40 bg-rust/10 px-4 py-2 font-mono-crt text-[11px] text-rust">
+          <div className="border-t border-rust/40 bg-rust/10 px-4 py-3 font-mono-crt text-sm text-rust">
             {error}
           </div>
         )}
         {locked && (
-          <div className="border-t border-rust/40 bg-rust/10 px-4 py-2 font-mono-crt text-[11px] text-rust">
+          <div className="border-t border-rust/40 bg-rust/10 px-4 py-3 font-mono-crt text-sm text-rust">
             {persona.displayName} braucht eine Pause. Versuch es in {lockMins}{" "}
             {lockMins === 1 ? "Minute" : "Minuten"} noch einmal.
           </div>
@@ -350,12 +350,13 @@ function FreeChatInner({
                 : `Was sagst du zu ${persona.displayName}?`
             }
             className="min-h-[44px] flex-1 resize-none rounded-sm border border-border bg-secondary/40 px-3 py-2 font-display text-sm text-foreground outline-none focus:border-amber-glow/60 disabled:opacity-50"
+            style={{ fontSize: "1rem" }}
           />
           <button
             type="button"
             onClick={onSubmit}
             disabled={locked || sending || !input.trim()}
-            className="rounded-sm border border-amber-glow/40 px-3 py-2 font-mono-crt text-xs uppercase tracking-widest text-amber-glow hover:bg-amber-glow/10 disabled:opacity-40"
+            className="rounded-sm border border-amber-glow/40 px-4 py-2 font-mono-crt text-sm uppercase tracking-widest text-amber-glow hover:bg-amber-glow/10 disabled:opacity-40"
           >
             Senden
           </button>
