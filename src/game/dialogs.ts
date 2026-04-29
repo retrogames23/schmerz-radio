@@ -3400,6 +3400,59 @@ export const dialogs: Record<string, DialogTree> = {
   },
 
   // ═════════════════════════════════════════════════════════════
+  // BODO — Gegenzeichnung Quittung 4317-K (Akt-I-Pflichträtsel)
+  // ═════════════════════════════════════════════════════════════
+  bodoSignsTilla: {
+    id: "bodoSignsTilla",
+    start: "bt1",
+    onEnd: (api) => {
+      api.setFlag("bodoSignedForTilla");
+    },
+    lines: {
+      bt1: {
+        id: "bt1",
+        speaker: "LAYARD",
+        text: "Bodo. Eine kleine Sache. Schicht-B-Quittung. Wartung. Sie kennen das.",
+        subtext: "Layard hält den Bogen so flach, dass nur das Kopffeld sichtbar ist.",
+        next: "bt2",
+      },
+      bt2: {
+        id: "bt2",
+        speaker: "BODO",
+        text: "Schicht B. Kulanz. Was hat Frau Kowalk wieder unten an der Theke …",
+        subtext: "Er greift den Bogen, ohne hinzusehen. Wie hundert Wartungsformulare zuvor.",
+        next: "bt3",
+      },
+      bt3: {
+        id: "bt3",
+        speaker: "SYSTEM",
+        text: "[ Bodo sucht den Stift, findet keinen. Lotti zwinkert. Layard reicht ihm den Bleistiftstummel. ]",
+        next: "bt4",
+      },
+      bt4: {
+        id: "bt4",
+        speaker: "BODO",
+        text: "Marschke, Schicht B, Kulanz. Datum kennen Sie selber. — So. Wo unterschreibt man da heute eigentlich.",
+        subtext: "Er findet das Feld trotzdem. Setzt den Strich.",
+        next: "bt5",
+      },
+      bt5: {
+        id: "bt5",
+        speaker: "LAYARD",
+        text: "Hier. Danke, Bodo.",
+        next: "bt6",
+      },
+      bt6: {
+        id: "bt6",
+        speaker: "BODO",
+        text: "Schon gut. Wenn die Theke das braucht, kriegt die Theke das. Hauptsache, Lotti merkt nichts vom Lärm.",
+        subtext: "Lotti merkt alles. Sie sagt nur nichts.",
+        end: true,
+      },
+    },
+  },
+
+  // ═════════════════════════════════════════════════════════════
   // ENNIS KORR — Tür 2614 (Türgespräch)
   // ═════════════════════════════════════════════════════════════
   ennisAtDoor: {
