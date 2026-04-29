@@ -1349,6 +1349,7 @@ export const scenes: Record<string, Scene> = {
         h: 9,
         label: "Etage 5 — Wohnen / Dach",
         kind: "exit",
+        exitDir: "left",
         onUse: (api) => api.goTo("corridor56"),
       },
       {
@@ -1359,6 +1360,7 @@ export const scenes: Record<string, Scene> = {
         h: 9,
         label: "Etage 4 — Wohnen",
         kind: "exit",
+        exitDir: "left",
         onUse: (api) => api.goTo("corridor46"),
       },
       {
@@ -1369,6 +1371,7 @@ export const scenes: Record<string, Scene> = {
         h: 9,
         label: "Etage 3 — Verwaltung und Versorgung",
         kind: "exit",
+        exitDir: "left",
         onUse: (api) => api.goTo("corridor36"),
       },
       {
@@ -1379,6 +1382,7 @@ export const scenes: Record<string, Scene> = {
         h: 9,
         label: "Etage 2 — Korridor 26 (Heim)",
         kind: "exit",
+        exitDir: "left",
         onUse: (api) => api.goTo("hallway"),
       },
       {
@@ -1389,6 +1393,7 @@ export const scenes: Record<string, Scene> = {
         h: 9,
         label: "Etage 1 — Lobby",
         kind: "exit",
+        exitDir: "left",
         onUse: (api) => api.goTo("floor1Lobby"),
       },
       {
