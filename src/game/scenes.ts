@@ -1823,16 +1823,6 @@ export const scenes: Record<string, Scene> = {
       "Oben. Am Ende des Korridors: ein vergittertes Fenster auf einen grauen Himmel.",
     npcs: [
       {
-        id: "miraSprite56",
-        src: miraSprite,
-        x: 22,
-        y: 36,
-        w: 14,
-        h: 54,
-        alt: "Junge Frau, an die Wand gelehnt",
-        visible: (api) => api.getMiraFloors().includes(5),
-      },
-      {
         id: "philippeSprite56",
         src: philippeSprite,
         x: 66,
@@ -1856,28 +1846,6 @@ export const scenes: Record<string, Scene> = {
         hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
         visible: (api) => api.getPhilippeFloor() === 5,
         onUse: (api) => api.startDialog("philippeInCorridor56"),
-      },
-      {
-        id: "miraSpot56",
-        x: 22,
-        y: 38,
-        w: 14,
-        h: 50,
-        label: "Junge Frau an der Wand",
-        kind: "talk",
-        visible: (api) => api.getMiraFloors().includes(5),
-        onUse: (api) => {
-          if (api.hasFlag("tookFlyer")) {
-            api.startDialog("miraAfter");
-          } else if (api.hasFlag("miraSystemic")) {
-            api.startDialog("miraSystemicGreeting");
-          } else if (api.hasFlag("metMira")) {
-            api.startDialog("miraReturn");
-          } else {
-            api.setFlag("metMira");
-            api.startDialog("miraIntro");
-          }
-        },
       },
       {
         id: "window56",
