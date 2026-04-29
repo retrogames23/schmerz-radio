@@ -58,7 +58,8 @@ function FreeChatInner({
 }) {
   const game = useGame();
   const persona = getPersona(npcId)!;
-  const { runtime, status } = useLlmRuntime(npcId);
+  const { runtime, status, cancelLocalLoad, switchToCloud } =
+    useLlmRuntime(npcId);
   const cloudFallbackRef = useRef<LlmRuntime | null>(null);
 
   const [messages, setMessages] = useState<UiMsg[]>([]);
@@ -227,7 +228,7 @@ function FreeChatInner({
             ))}
             {sending && (
               <div className="self-start font-mono-crt text-xs italic text-amber-glow">
-                {persona.displayName} schreibt …
+                {persona.displayName} sagt …
               </div>
             )}
           </div>
@@ -235,12 +236,14 @@ function FreeChatInner({
 
         {/* Loader / error footer */}
         {status.loading && status.kind === "local" && !status.ready && (
-          <div className="border-t border-amber-glow/10 px-4 py-2 font-mono-crt text-[11px] text-muted-foreground">
-            {status.loading.text}
-            {typeof status.loading.pct === "number"
-              ? ` · ${Math.round(status.loading.pct * 100)}%`
-              : ""}
-          </div>
+          <LocalLoadingFooter
+            text={status.loading.text}
+            pct={status.loading.pct}
+            onCancel={() => {
+              cancelLocalLoad();
+              switchToCloud();
+            }}
+          />
         )}
         {error && (
           <div className="border-t border-rust/40 bg-rust/10 px-4 py-2 font-mono-crt text-[11px] text-rust">
