@@ -30,16 +30,17 @@ export function Hotspot({ hotspot, reveal = false }: Props) {
   if (hotspot.visible && !hotspot.visible(api)) return null;
 
   // Kontext-Cursor je nach Interaktionstyp (Broken-Sword-Stil).
-  // Default ist "use" (animierte Hand) für die Mehrzahl der Hotspots.
+  // Default ist "look" (Lupe): nur Info, keine echte Interaktion.
+  // Hotspots, die wirklich etwas tun (use/talk/exit), markieren das explizit.
   const kindCursorClass = drag.dragItem
     ? "cursor-copy"
-    : hotspot.kind === "look"
-      ? "cursor-look"
+    : hotspot.kind === "use"
+      ? "cursor-use"
       : hotspot.kind === "talk"
         ? "cursor-talk"
         : hotspot.kind === "exit"
           ? "cursor-exit"
-          : "cursor-use";
+          : "cursor-look";
 
   return (
     <button

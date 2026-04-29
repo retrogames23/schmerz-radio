@@ -2247,6 +2247,7 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 28,
         label: "Zurück in den Korridor",
+        kind: "exit",
         onUse: (api) => api.goTo("corridor36"),
       },
     ],
