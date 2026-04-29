@@ -370,6 +370,7 @@ const ICON_MAP: Record<InventoryItemId, () => React.ReactElement> = {
   quittungBlankoB: QuittungBlankoIcon,
   quittungForged4317: QuittungForgedIcon,
   tillaTransfer: TillaTransferIcon,
+  miraDoorNote: FlyerIcon,
 };
 
 /* ─── Akt-I-Pflichträtsel: Zusatz-Icons ─────────────────── */
