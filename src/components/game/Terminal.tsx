@@ -2253,11 +2253,11 @@ export function Terminal() {
           });
           newLines.push(
             {
-              text: ">> Bodo zieht eine abgegriffene blaue Karte aus der Schublade.",
+              text: ">> Neben der Tastatur, halb unter einem Stapel Quittungen: eine abgegriffene blaue Plastikkarte. Rückseite mit Bleistift: »5610 · nur Bodo«.",
               kind: "system",
             },
             {
-              text: ">> »Falls Sie da mal hinmüssen, Worag — die hier öffnet 5610.«",
+              text: ">> Layard lässt sie unauffällig in die Innentasche gleiten.",
               kind: "system",
             },
             {
