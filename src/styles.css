@@ -618,18 +618,17 @@
 }
 
 /* ===== Kontext-sensitive Cursor (Broken-Sword-Stil) =====
-   Vier Cursor-Bilder werden als statische Assets aus src/assets/cursors
-   per URL eingebunden. Hotspot.tsx setzt eine dieser Klassen je nach
-   Hotspot.kind. Hotspot-Punkt ist jeweils so gewählt, dass die intuitive
-   "Spitze" auf dem Pixel sitzt (Lupen-Mitte, Hand-Zeigefinger, etc.). */
+   Cursor-Bilder werden als gebündelte Assets referenziert, damit sie auch
+   in der Preview zuverlässig geladen werden. Hotspot.tsx setzt eine dieser
+   Klassen je nach Hotspot.kind. */
 .cursor-look {
-  cursor: url("/cursors/look.png") 13 13, url("/cursors/look.svg") 13 13, pointer;
+  cursor: url("./assets/cursors/look.png") 13 13, url("./assets/cursors/look.svg") 13 13, pointer;
 }
 .cursor-talk {
-  cursor: url("/cursors/talk.png") 6 6, url("/cursors/talk.svg") 6 6, pointer;
+  cursor: url("./assets/cursors/talk.png") 6 6, url("./assets/cursors/talk.svg") 6 6, pointer;
 }
 .cursor-exit {
-  cursor: url("/cursors/exit.png") 4 16, url("/cursors/exit.svg") 4 16, pointer;
+  cursor: url("./assets/cursors/exit.png") 4 16, url("./assets/cursors/exit.svg") 4 16, pointer;
 }
 /* Animierte Hand: zwei SVG-Frames im Wechsel.
    `cursor` selbst ist nicht keyframe-animierbar in allen Browsern
@@ -638,14 +637,14 @@
    für den Cursor. Workaround: animation auf cursor-image via
    step-Keyframes (funktioniert in Chromium/Firefox/WebKit aktuell). */
 .cursor-use {
-  cursor: url("/cursors/hand-1.png") 11 4, url("/cursors/hand-1.svg") 11 4, pointer;
+  cursor: url("./assets/cursors/hand-1.png") 11 4, url("./assets/cursors/hand-1.svg") 11 4, pointer;
   animation: cursor-hand 0.7s steps(2, end) infinite;
 }
 @keyframes cursor-hand {
   0%, 49% {
-    cursor: url("/cursors/hand-1.png") 11 4, url("/cursors/hand-1.svg") 11 4, pointer;
+    cursor: url("./assets/cursors/hand-1.png") 11 4, url("./assets/cursors/hand-1.svg") 11 4, pointer;
   }
   50%, 100% {
-    cursor: url("/cursors/hand-2.png") 11 4, url("/cursors/hand-2.svg") 11 4, pointer;
+    cursor: url("./assets/cursors/hand-2.png") 11 4, url("./assets/cursors/hand-2.svg") 11 4, pointer;
   }
 }
