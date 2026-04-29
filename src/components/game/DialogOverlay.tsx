@@ -74,9 +74,17 @@ export function DialogOverlay() {
   // Baum eine Persona hinterlegt hat (DialogTree.npcId).
   const npcId = (tree as unknown as { npcId?: string }).npcId ?? null;
   const persona = getPersona(npcId);
-  const isEndLine = !line.choices?.length && (line.end || !line.next);
   // Free-Chat ist auf Touch-/Mobile-Geräten deaktiviert (zu speicher-/leistungsintensiv).
-  const showFreeMode = !!persona && isEndLine && !isCoarsePointer;
+  // Sobald eine Persona hinterlegt ist, ist der Wechsel jederzeit möglich —
+  // diskreter Knopf in der Header-Zeile, nicht erst am Endsatz.
+  const showFreeMode = !!persona && !isCoarsePointer;
+
+  const enterFreeChat = () => {
+    if (!persona) return;
+    stopSpeech();
+    closeDialog();
+    openFreeChat(persona.id);
+  };
 
   const handleAdvance = () => {
     if (!canAdvance) return;
@@ -146,6 +154,19 @@ export function DialogOverlay() {
           >
             {line.speaker}
           </span>
+          {showFreeMode && persona && (
+            <button
+              type="button"
+              title="Wechsle ins freie Gespräch (lokales KI-Modell)"
+              onClick={(e) => {
+                e.stopPropagation();
+                enterFreeChat();
+              }}
+              className="mr-6 font-mono-crt text-[10px] uppercase tracking-widest text-amber-glow/60 transition hover:text-amber-glow"
+            >
+              ▸ Frei reden …
+            </button>
+          )}
         </div>
 
         <p className="font-display text-lg leading-relaxed text-foreground text-shadow-hard">
@@ -178,29 +199,13 @@ export function DialogOverlay() {
               </button>
             ))
           ) : (
-            <div className="flex flex-col items-end gap-2">
-              {showFreeMode && persona && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    stopSpeech();
-                    closeDialog();
-                    openFreeChat(persona.id);
-                  }}
-                  className="rounded-sm border border-amber-glow/60 bg-amber-glow/10 px-3 py-1 text-xs uppercase tracking-widest text-amber-glow hover:bg-amber-glow/20"
-                >
-                  ▸ Frei mit {persona.displayName} weiterreden …
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => advanceDialog()}
-                className="self-end rounded-sm border border-amber-glow/40 px-3 py-1 text-xs uppercase tracking-widest text-amber-glow hover:bg-amber-glow/10"
-              >
-                {line.end || !line.next ? "▣ Beenden" : "▸ Weiter"}
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => advanceDialog()}
+              className="self-end rounded-sm border border-amber-glow/40 px-3 py-1 text-xs uppercase tracking-widest text-amber-glow hover:bg-amber-glow/10"
+            >
+              {line.end || !line.next ? "▣ Beenden" : "▸ Weiter"}
+            </button>
           )}
         </div>
       </div>
