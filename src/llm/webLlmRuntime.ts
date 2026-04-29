@@ -58,8 +58,8 @@ export function createWebLlmRuntime(
       if (opts?.signal?.aborted) throw new Error("aborted");
       const res = await eng.chat.completions.create({
         messages,
-        temperature: 0.7,
-        max_tokens: 220,
+        temperature: 0.8,
+        max_tokens: 600,
         stream: false,
       });
       const reply = res.choices?.[0]?.message?.content?.trim() ?? "";
