@@ -2121,14 +2121,20 @@ export function Terminal() {
             { text: `Versuche ${host.host} (${host.ip})…`, kind: "out" },
             { text: `>> Verbindung verweigert: kein telnet-daemon auf Port 23.`, kind: "out" },
           );
-        } else if (superuser) {
+        } else if (superuser || miraMode) {
           // Cheat aktiv: Auth-Schritt komplett überspringen, direkt in
-          // die authentifizierte Sitzung wechseln.
+          // die authentifizierte Sitzung wechseln. Im Mira-Modus kommt
+          // dasselbe Verhalten vom »root tunnel« über Drucker 5601.
           playUnlock(0.5 * sfxVolume);
           newLines.push(
             { text: `Versuche ${host.host} (${host.ip})…`, kind: "out" },
             { text: ">> Verbunden.", kind: "system" },
-            { text: ">> [superuser] Authentifizierung übersprungen.", kind: "system" },
+            {
+              text: miraMode
+                ? ">> [root tunnel] Authentifizierung übersprungen."
+                : ">> [superuser] Authentifizierung übersprungen.",
+              kind: "system",
+            },
           );
           if (host.motd) {
             newLines.push(
