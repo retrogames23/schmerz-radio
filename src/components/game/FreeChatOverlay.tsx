@@ -240,9 +240,13 @@ function FreeChatInner({
           </div>
           <div className="flex items-center gap-3 font-mono-crt text-[11px] uppercase tracking-widest text-muted-foreground">
             <span>{modeLabel}</span>
-            <span className={patience.remaining < 10 ? "text-rust" : ""}>
-              Geduld: {patience.remaining}/{PATIENCE_MAX}
-            </span>
+            {/* Geduld-Counter ist eine Cloud-Schutzmaßnahme (Token-Kosten /
+                Spam). Lokale Antworten kosten nichts → kein Limit anzeigen. */}
+            {status.kind === "cloud" && (
+              <span className={patience.remaining < 10 ? "text-rust" : ""}>
+                Geduld: {patience.remaining}/{PATIENCE_MAX}
+              </span>
+            )}
           </div>
           <span className="absolute right-3 top-3">
             <CloseButton onClick={onClose} label="Free-Chat schließen" />
