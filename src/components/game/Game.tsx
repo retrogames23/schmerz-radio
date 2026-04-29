@@ -26,6 +26,7 @@ import { DsaCharacterCreator } from "./DsaCharacterCreator";
 import { DsaAdventureScene } from "./DsaAdventureScene";
 import { DsaCharacterSheet } from "./DsaCharacterSheet";
 import { HandbookOverlay } from "./HandbookOverlay";
+import { HelpOverlay } from "./HelpOverlay";
 import { IdCardOverlay } from "./IdCardOverlay";
 import { LobbyGate } from "./LobbyGate";
 import { PneumaticTubeOverlay } from "./PneumaticTubeOverlay";
@@ -63,11 +64,16 @@ function DsaMusicBridge() {
 export function Game() {
   const [started, setStarted] = useState(false);
   const [pauseOpen, setPauseOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     if (!started) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setPauseOpen((v) => !v);
+      if (e.key === "F1") {
+        e.preventDefault();
+        setHelpOpen((v) => !v);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -93,7 +99,12 @@ export function Game() {
       <MusicPlayer>
         <GameProvider>
           <InventoryDragProvider>
-            <GameStage pauseOpen={pauseOpen} setPauseOpen={setPauseOpen} />
+            <GameStage
+              pauseOpen={pauseOpen}
+              setPauseOpen={setPauseOpen}
+              helpOpen={helpOpen}
+              setHelpOpen={setHelpOpen}
+            />
             <DragCursorLayer />
             <ActiveItemBanner />
           </InventoryDragProvider>
@@ -111,9 +122,13 @@ export function Game() {
 function GameStage({
   pauseOpen,
   setPauseOpen,
+  helpOpen,
+  setHelpOpen,
 }: {
   pauseOpen: boolean;
   setPauseOpen: (v: boolean) => void;
+  helpOpen: boolean;
+  setHelpOpen: (v: boolean) => void;
 }) {
   const {
     terminalOpen,
@@ -169,7 +184,10 @@ function GameStage({
   return (
     <MobileStage uprightOnPortrait={consoleOpen}>
       <div className="flex h-screen flex-col overflow-hidden bg-bureaucracy mobile-stage-host">
-        <TopBar onOpenPause={() => setPauseOpen(true)} />
+        <TopBar
+          onOpenPause={() => setPauseOpen(true)}
+          onOpenHelp={() => setHelpOpen(true)}
+        />
         <main className="relative flex min-h-0 flex-1 items-center justify-center px-2 py-2 sm:px-4">
           <div className="relative flex h-full w-full items-center justify-center">
             <SceneView />
@@ -187,6 +205,7 @@ function GameStage({
             <DsaCharacterSheet />
             <DsaMusicBridge />
             <HandbookOverlay open={handbookOpen} onClose={closeHandbook} />
+            <HelpOverlay open={helpOpen} onClose={() => setHelpOpen(false)} />
             <IdCardOverlay open={idCardOpen} onClose={closeIdCard} />
             <LobbyGate />
             <PneumaticTubeOverlay />
