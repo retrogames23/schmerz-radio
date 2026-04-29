@@ -29,6 +29,18 @@ export function Hotspot({ hotspot, reveal = false }: Props) {
   if (hotspot.hiddenWhen?.some((f) => flags.has(f))) return null;
   if (hotspot.visible && !hotspot.visible(api)) return null;
 
+  // Kontext-Cursor je nach Interaktionstyp (Broken-Sword-Stil).
+  // Default ist "use" (animierte Hand) für die Mehrzahl der Hotspots.
+  const kindCursorClass = drag.dragItem
+    ? "cursor-copy"
+    : hotspot.kind === "look"
+      ? "cursor-look"
+      : hotspot.kind === "talk"
+        ? "cursor-talk"
+        : hotspot.kind === "exit"
+          ? "cursor-exit"
+          : "cursor-use";
+
   return (
     <button
       type="button"
@@ -73,10 +85,10 @@ export function Hotspot({ hotspot, reveal = false }: Props) {
       aria-label={hotspot.label}
       className={`hotspot-touch absolute z-20 rounded-sm border transition-colors duration-200 focus:outline-none ${
         drag.dragItem
-          ? "cursor-copy border-amber-glow/40 bg-amber-glow/5 hover:border-amber-glow hover:bg-amber-glow/20"
+          ? `${kindCursorClass} border-amber-glow/40 bg-amber-glow/5 hover:border-amber-glow hover:bg-amber-glow/20`
           : reveal
-            ? "cursor-crosshair border-amber-glow/80 bg-amber-glow/15 hover:border-amber-glow hover:bg-amber-glow/25 focus:border-amber-glow/80 focus:bg-amber-glow/10"
-            : "cursor-crosshair border-amber-glow/0 hover:border-amber-glow/80 hover:bg-amber-glow/10 focus:border-amber-glow/80 focus:bg-amber-glow/10"
+            ? `${kindCursorClass} border-amber-glow/80 bg-amber-glow/15 hover:border-amber-glow hover:bg-amber-glow/25 focus:border-amber-glow/80 focus:bg-amber-glow/10`
+            : `${kindCursorClass} border-amber-glow/0 hover:border-amber-glow/80 hover:bg-amber-glow/10 focus:border-amber-glow/80 focus:bg-amber-glow/10`
       }`}
       style={{
         left: `${hotspot.x}%`,
