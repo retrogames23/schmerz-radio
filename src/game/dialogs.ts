@@ -4167,6 +4167,12 @@ export const dialogs: Record<string, DialogTree> = {
             hiddenWhen: ["gotB3Ration"],
           },
           {
+            text: "[ Insas Auftrag ] Insa hat mich geschickt. Quittung 4317-K — Transferbogen für Ihre Tochter.",
+            next: "kInsa1",
+            requires: ["insaGaveTransferTask"],
+            hiddenWhen: ["gotTillaTransferInfo"],
+          },
+          {
             text: "Ich wollte mich nur umsehen.",
             next: "kSmall1",
           },
