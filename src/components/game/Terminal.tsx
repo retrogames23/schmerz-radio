@@ -1161,7 +1161,11 @@ export function Terminal() {
       // evtl. noch hängende Remote-Sitzung wird hart zurückgesetzt.
       setRemoteMode(null);
       savedCwdRef.current = null;
-      const startHome = localBodoMode ? HOME_PATH_BODO : HOME_PATH_WORAG;
+      const startHome = terminalMiraMode
+        ? HOME_PATH_MIRA
+        : localBodoMode
+          ? HOME_PATH_BODO
+          : HOME_PATH_WORAG;
       setCwd([...startHome]);
       setTelnetHost(null);
       setTelnetAwaitPass(null);
@@ -1176,7 +1180,30 @@ export function Terminal() {
       // Banner explizit vom lokalen Modus aus aufbauen — eine zuvor
       // aktive Remote-Sitzung wurde gerade zurückgesetzt, der nächste
       // Render hat aber noch das alte (effektive) bodoMode-Flag.
-      if (localBodoMode) {
+      if (terminalMiraMode) {
+        const banner: Line[] = [
+          {
+            text: ">> FuckTheSystemOS 0.2 — root tunnel via 5601",
+            kind: "system",
+          },
+          { text: ">> Benutzer: root  (kein Login. kein Logfile.)", kind: "system" },
+          { text: ">> Letzter Boot: gestern 23:11. Uptime: zu lang.", kind: "system" },
+          { text: "", kind: "out" },
+          {
+            text: "  »wenn du das hier liest, bist du in meinem zimmer.",
+            kind: "out",
+          },
+          { text: "   sei freundlich. — m.«", kind: "out" },
+          { text: "", kind: "out" },
+          {
+            text: ">> NETZWERK: telnet umgeht alle Auth (root tunnel).",
+            kind: "system",
+          },
+          { text: ">> Tippe 'help' oder 'cat manifest.txt'.", kind: "system" },
+          { text: "", kind: "out" },
+        ];
+        setLines(banner);
+      } else if (localBodoMode) {
         const updated = flags.has("centralOsUpdatedBodo");
         const banner: Line[] = [
           {
