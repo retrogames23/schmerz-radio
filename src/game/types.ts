@@ -222,7 +222,11 @@ export type StoryFlag =
   | "bodoSignedForTilla"
   | "forgedQuittung4317"
   | "sentForgedQuittung"
-  | "receivedTillaTransfer";
+  | "receivedTillaTransfer"
+  // Wartungskarte 5610 — eingesteckt an Bodos Terminal, Hinweis-Overlay
+  // wird beim Verlassen des Terminals ausgelöst.
+  | "pickedWartungskarteAtBodoTerminal"
+  | "notedWartungskartePickup";
 
 export interface InventoryItem {
   id: InventoryItemId;

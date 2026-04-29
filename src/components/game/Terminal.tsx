@@ -2251,21 +2251,10 @@ export function Terminal() {
             description:
               "Eine abgegriffene blaue Plastikkarte aus Bodos zweiter Schublade. Auf der Rückseite mit Bleistift: »5610 · nur Bodo«. Öffnet den Kartenleser an der Wartungstür im Korridor 56.",
           });
-          newLines.push(
-            {
-              text: ">> Neben der Tastatur, halb unter einem Stapel Quittungen: eine abgegriffene blaue Plastikkarte. Rückseite mit Bleistift: »5610 · nur Bodo«.",
-              kind: "system",
-            },
-            {
-              text: ">> Layard lässt sie unauffällig in die Innentasche gleiten.",
-              kind: "system",
-            },
-            {
-              text: ">> [ Wartungskarte (E67 · Korridor 56) ins Inventar ]",
-              kind: "system",
-            },
-            { text: "", kind: "out" },
-          );
+          // Keine Narration im Terminal — die Karte liegt physisch neben
+          // der Tastatur, nicht im System. Beim Verlassen des Terminals
+          // zeigt GameContext einen kurzen Overlay-Text (siehe Flag).
+          api.setFlag("pickedWartungskarteAtBodoTerminal");
         }
         if (flags.has("elevatorMaintBlocked") && !flags.has("elevatorMaintCleared")) {
           newLines.push({

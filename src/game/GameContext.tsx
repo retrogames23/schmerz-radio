@@ -623,7 +623,27 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setDialogLineId(null);
     },
     closeRadio: () => setRadioOpen(false),
-    closeTerminal: () => setTerminalOpen(false),
+    closeTerminal: () => {
+      setTerminalOpen(false);
+      // Wenn Layard an Bodos Terminal gerade die Wartungskarte
+      // eingesteckt hat, zeigen wir das beim Verlassen — nicht im
+      // System-Output, sondern als diegetischer Hinweis.
+      if (
+        flags.has("pickedWartungskarteAtBodoTerminal") &&
+        !flags.has("notedWartungskartePickup")
+      ) {
+        setFlags((prev) => {
+          const n = new Set(prev);
+          n.add("notedWartungskartePickup");
+          return n;
+        });
+        setTextOverlay([
+          "Neben der Tastatur, halb unter einem Stapel Quittungen, liegt eine abgegriffene blaue Plastikkarte. Rückseite mit Bleistift: »5610 · nur Bodo«.",
+          "Layard lässt sie unauffällig in die Innentasche gleiten.",
+          "[ Wartungskarte (E67 · Korridor 56) ins Inventar ]",
+        ]);
+      }
+    },
     closeKeypad: () => setKeypadOpen(false),
     closeTelevision: () => setTvOpen(false),
     closeNode: () => setNodeOpen(false),
