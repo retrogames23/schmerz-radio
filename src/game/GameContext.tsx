@@ -36,6 +36,7 @@ interface GameState {
   radioOpen: boolean;
   terminalOpen: boolean;
   terminalBodoMode: boolean;
+  terminalMiraMode: boolean;
   keypadOpen: boolean;
   tvOpen: boolean;
   /** Welche Tür wird gerade am Keypad geprüft. */
@@ -171,6 +172,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [radioOpen, setRadioOpen] = useState(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [terminalBodoMode, setTerminalBodoMode] = useState(false);
+  const [terminalMiraMode, setTerminalMiraMode] = useState(false);
   const [keypadOpen, setKeypadOpen] = useState(false);
   // Aktuell nur eine Sorte Keypad (Sektor-Tür). Tür 5610 öffnet über
   // Wartungs-Override / Wartungskarte ohne Keypad.
@@ -200,29 +202,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [isEssentialAssetsLoaded, setIsEssentialAssetsLoaded] = useState(false);
   // Eskalationszähler der Lobby-Schleuse (Fehlversuche), nicht persistiert.
   const lobbyGateAttemptsRef = useRef(0);
-  // Mira darf NICHT auf Etage 3 erscheinen — dort liegt das Büro des
-  // Abschnittsverantwortlichen (E67). Würde sie dort die Tür blockieren und
-  // Layard ginge nicht auf sie ein, gäbe es ein Dead End: er erfährt dann
-  // nicht, dass E67 nicht da ist.
-  // Verteilung: Mira besetzt EINE der Wohnetagen {4, 5}, Philippe besetzt
-  // die andere. Etage 3 bleibt für beide NPCs frei. Wird einmal beim Mounten
-  // kryptografisch zufällig gewählt.
+  // Mira lebt fest in Wohnung 4601 (Etage 4) — sie taucht im Korridor 46 auf
+  // und kann später dort zu Hause besucht werden. Philippe wohnt fest auf
+  // Etage 5. Etage 3 (Verwaltung / Kantine) bleibt für beide NPCs frei.
+  // (Die Refs bleiben für Save-Migration alter Stände aus früheren Builds.)
   const miraFloorsRef = useRef<Array<3 | 4 | 5> | null>(null);
   const philippeFloorRef = useRef<3 | 4 | 5 | null>(null);
   if (miraFloorsRef.current === null) {
-    const livingFloors: Array<4 | 5> = [4, 5];
-    let idx = 0;
-    if (typeof crypto !== "undefined" && crypto.getRandomValues) {
-      const buf = new Uint32Array(1);
-      crypto.getRandomValues(buf);
-      idx = buf[0] % 2;
-    } else {
-      idx = Math.floor(Math.random() * 2);
-    }
-    const miraFloor = livingFloors[idx];
-    const philippeFloor = livingFloors[1 - idx];
-    miraFloorsRef.current = [miraFloor];
-    philippeFloorRef.current = philippeFloor;
+    miraFloorsRef.current = [4];
+    philippeFloorRef.current = 5;
   }
 
   // Debug-Sprung über URL-Parameter:
@@ -348,9 +336,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setDialogId(id);
         setDialogLineId(cursor);
       },
-      openTerminal: (asBodo?: boolean) => {
+      openTerminal: (asBodoOrOpts) => {
         setRadioOpen(false);
-        setTerminalBodoMode(!!asBodo);
+        const opts =
+          typeof asBodoOrOpts === "boolean"
+            ? { bodo: asBodoOrOpts, mira: false }
+            : { bodo: !!asBodoOrOpts?.bodo, mira: !!asBodoOrOpts?.mira };
+        // Mira-Modus hat Vorrang vor Bodo-Modus, falls jemand beides setzt.
+        setTerminalMiraMode(opts.mira);
+        setTerminalBodoMode(opts.bodo && !opts.mira);
         setTerminalOpen(true);
       },
       openRadio: () => {
