@@ -3036,7 +3036,41 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "BODO",
         text: "Eine Viertelstunde. Höchstens. — Und Worag: am Terminal hängen ein paar Privatsachen. Die gehen Sie nichts an.",
         subtext: "Er sagt das, ohne sich umzudrehen. Er weiß, was er gerade gesagt hat.",
-        next: "bc11",
+        next: "bc10b",
+      },
+      bc10b: {
+        id: "bc10b",
+        speaker: "SYSTEM",
+        text: "[ Bodo bleibt an der Schublade stehen. Zieht sie noch einmal halb auf, kramt kurz, und legt eine abgegriffene blaue Plastikkarte vor Layard auf den Tisch. Auf der Rückseite mit Bleistift: »5610 · nur Bodo«. ]",
+        next: "bc10c",
+      },
+      bc10c: {
+        id: "bc10c",
+        speaker: "BODO",
+        text: "Wenn Sie eh hier sitzen, Worag — tun Sie mir einen Gefallen. 5610, Tech-Knoten Korridor 56. Ich war gestern dran und hab' meine Thermoskanne stehenlassen. Grüne, mit Delle. Holen Sie die nur raus, wenn Sie sowieso runter müssen.",
+        subtext: "Er sagt es beiläufig. Wie etwas, das er sich nicht abringen muss.",
+        next: "bc10d",
+      },
+      bc10d: {
+        id: "bc10d",
+        speaker: "BODO",
+        text: "Karte behalten Sie. An der Tür weiß keiner mehr, dass es die noch gibt. Mir lieber bei Ihnen als im Schubfach.",
+        subtext: "Lotti hebt kurz den Kopf. Bodo nickt nur einmal, knapp.",
+        choices: [
+          {
+            text: "[ Karte einstecken ]",
+            action: (api) => {
+              api.addItem({
+                id: "wartungsnotiz5610",
+                name: "Wartungskarte (E67 · Korridor 56)",
+                description:
+                  "Eine abgegriffene blaue Plastikkarte. Auf der Rückseite mit Bleistift: »5610 · nur Bodo«. Bodo hat sie Layard ohne Aufhebens in die Hand gedrückt — als Gefälligkeit, mit Auftrag: Thermoskanne aus dem Tech-Knoten 5610 holen.",
+              });
+              api.setFlag("bodoGaveWartungskarte");
+            },
+            next: "bc11",
+          },
+        ],
       },
       bc11: {
         id: "bc11",
