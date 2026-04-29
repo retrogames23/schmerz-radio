@@ -230,6 +230,12 @@ export interface Hotspot {
    *  - "exit": Pfeil (Szenenwechsel, Korridor-Ausgang, Aufzug)
    */
   kind?: "look" | "use" | "talk" | "exit";
+  /**
+   * Nur für `kind: "exit"` relevant: in welche Richtung zeigt der Pfeil?
+   * Wird sonst automatisch aus der Hotspot-Position auf dem Bildschirm
+   * abgeleitet (Rand, der am nächsten ist).
+   */
+  exitDir?: "left" | "right" | "up" | "down";
   /** required flags before this hotspot is active */
   requires?: StoryFlag[];
   /** hide once these flags are present */

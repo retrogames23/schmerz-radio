@@ -32,6 +32,29 @@ export function Hotspot({ hotspot, reveal = false }: Props) {
   // Kontext-Cursor je nach Interaktionstyp (Broken-Sword-Stil).
   // Default ist "look" (Lupe): nur Info, keine echte Interaktion.
   // Hotspots, die wirklich etwas tun (use/talk/exit), markieren das explizit.
+  // Bei Exit-Hotspots zeigt der Pfeil in die passende Richtung — entweder
+  // explizit über `exitDir` oder automatisch aus der Position auf dem
+  // Bildschirm (welcher Rand ist am nächsten?).
+  const exitDirClass = (() => {
+    if (hotspot.kind !== "exit") return "cursor-exit";
+    const dir =
+      hotspot.exitDir ??
+      (() => {
+        const cx = hotspot.x + hotspot.w / 2;
+        const cy = hotspot.y + hotspot.h / 2;
+        // Abstand zu den vier Rändern (in %).
+        const distLeft = cx;
+        const distRight = 100 - cx;
+        const distTop = cy;
+        const distBottom = 100 - cy;
+        const min = Math.min(distLeft, distRight, distTop, distBottom);
+        if (min === distLeft) return "left" as const;
+        if (min === distRight) return "right" as const;
+        if (min === distTop) return "up" as const;
+        return "down" as const;
+      })();
+    return `cursor-exit-${dir}`;
+  })();
   const kindCursorClass = drag.dragItem
     ? "cursor-copy"
     : hotspot.kind === "use"
@@ -39,7 +62,7 @@ export function Hotspot({ hotspot, reveal = false }: Props) {
       : hotspot.kind === "talk"
         ? "cursor-talk"
         : hotspot.kind === "exit"
-          ? "cursor-exit"
+          ? exitDirClass
           : "cursor-look";
 
   return (
