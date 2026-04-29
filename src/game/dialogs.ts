@@ -1842,6 +1842,7 @@ export const dialogs: Record<string, DialogTree> = {
   // ───────────────────────────────────────────────────────────
   miraIntro: {
     id: "miraIntro",
+    npcId: "mira",
     start: "mi1",
     lines: {
       mi1: {
