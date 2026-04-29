@@ -192,8 +192,8 @@ export const Route = createFileRoute("/api/public/npc-chat")({
               body: JSON.stringify({
                 model: "google/gemini-3-flash-preview",
                 messages,
-                temperature: 0.7,
-                max_tokens: 220,
+                temperature: 0.8,
+                max_tokens: 600,
                 stream: false,
               }),
             },
