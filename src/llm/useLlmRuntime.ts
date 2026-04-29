@@ -3,6 +3,7 @@ import type { LlmRuntime, LlmRuntimeStatus } from "./runtime";
 import { createCloudRuntime } from "./cloudLlmRuntime";
 import { createWebLlmRuntime } from "./webLlmRuntime";
 import { isWebGpuAvailable } from "./webLlmLoader";
+import { readLlmModeOverride } from "@/dev/devMode";
 
 /**
  * Wählt die Runtime: WebGPU vorhanden → lokal, sonst Cloud.
@@ -23,7 +24,14 @@ export function useLlmRuntime(npcId: string): {
   const localRef = useRef<(LlmRuntime & { cancelLoad: () => void }) | null>(
     null,
   );
-  const [, force] = useState(0);
+  const [overrideTick, setOverrideTick] = useState(0);
+
+  // Auf Dev-Mode-Override hören.
+  useEffect(() => {
+    const handler = () => setOverrideTick((n) => n + 1);
+    window.addEventListener("e67:llm-mode-change", handler);
+    return () => window.removeEventListener("e67:llm-mode-change", handler);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -33,7 +41,12 @@ export function useLlmRuntime(npcId: string): {
       !!window.matchMedia &&
       window.matchMedia("(pointer: coarse)").matches;
 
-    if (isCoarse || !isWebGpuAvailable()) {
+    const override = readLlmModeOverride();
+    const useCloud =
+      override === "cloud" ||
+      (override !== "local" && (isCoarse || !isWebGpuAvailable()));
+
+    if (useCloud) {
       const r = createCloudRuntime(npcId);
       runtimeRef.current = r;
       setStatus(r.status);
@@ -56,7 +69,7 @@ export function useLlmRuntime(npcId: string): {
       runtimeRef.current = null;
       localRef.current = null;
     };
-  }, [npcId]);
+  }, [npcId, overrideTick]);
 
   const cancelLocalLoad = useCallback(() => {
     localRef.current?.cancelLoad();
@@ -67,7 +80,7 @@ export function useLlmRuntime(npcId: string): {
     const r = createCloudRuntime(npcId);
     runtimeRef.current = r;
     setStatus(r.status);
-    force((n) => n + 1);
+    setOverrideTick((n) => n + 1);
   }, [npcId]);
 
   return {
