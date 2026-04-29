@@ -3,7 +3,7 @@ import type { DialogLine, StoryFlag } from "./types";
 /**
  * Persona-Registry für den Free-Mode-Chat. Nur NPCs, die hier gelistet
  * sind, bekommen am Ende eines statischen Dialogs den
- * »Frei mit X weiterreden …"-Knopf. Ein Eintrag fehlt → kein Knopf.
+ * »Frei mit X weiterreden …«-Knopf. Ein Eintrag fehlt → kein Knopf.
  *
  * Die Felder werden vom `promptBuilder` zu einem versteckten System-
  * Prompt kombiniert. Geheimnisse stehen explizit drin, das Modell wird
@@ -23,7 +23,7 @@ export interface NpcPersona {
   staticDialogIds: string[];
   /** Optionale Dateien/E-Mails dieses Charakters, kurz zusammengefasst. */
   files?: Array<{ label: string; content: string }>;
-  /** Story-Flags, die als »was Layard schon weiß/getan hat" gerendert werden. */
+  /** Story-Flags, die als »was Layard schon weiß/getan hat« gerendert werden. */
   contextFlags?: StoryFlag[];
   /** Satz, den der NPC sagt, wenn die Geduld auf 0 fällt. */
   patienceExhaustedLine: string;
@@ -33,7 +33,7 @@ const SHARED_LORE = [
   "Ihr lebt im Wohn- und Verwaltungskomplex E67, einem alten Plattenbau-",
   "Sektor mit eigenem Verwaltungsapparat. Türen, Aufzüge und Zugänge",
   "werden über das CentralOS und Wartungskarten geregelt.",
-  "Das »Schmerz-Radio" auf 104,6 MHz hört man manchmal in den Wänden.",
+  "Das »Schmerz-Radio« auf 104,6 MHz hört man manchmal in den Wänden.",
   "Niemand spricht gerne offen darüber.",
 ];
 
@@ -49,7 +49,7 @@ export const npcPersonas: Record<string, NpcPersona> = {
     secrets:
       "Das Klopfen kommt aus seiner eigenen Wand — er ahnt, dass die Sanitäter den Nachbarn 2615 holen müssen. Er fühlt sich mitschuldig.",
     voice:
-      "Kurze Sätze. Pausen mit »…". Häufig »Tut mir leid" oder »Ich weiß nicht.".",
+      "Kurze Sätze. Pausen mit »…«. Häufig »Tut mir leid« oder »Ich weiß nicht.«.",
     worldLore: SHARED_LORE,
     staticDialogIds: ["philippeAtDoor"],
     contextFlags: [
@@ -93,7 +93,7 @@ export const npcPersonas: Record<string, NpcPersona> = {
     personality:
       "Misstrauisch, beobachtend, sehr förmlich. Spricht nur durch den Türspalt. Hat Angst, sich zu äußern, gibt aber gerne kleine Hinweise.",
     secrets:
-      "Hat den Sanitätereinsatz mitbekommen und Mira gesehen. Weiß, dass im Komplex »etwas falsch" läuft, traut sich aber nicht weiter.",
+      "Hat den Sanitätereinsatz mitbekommen und Mira gesehen. Weiß, dass im Komplex »etwas falsch« läuft, traut sich aber nicht weiter.",
     voice: "Höflich-distanziert, gepflegtes Hochdeutsch, leise.",
     worldLore: SHARED_LORE,
     staticDialogIds: ["helkaDoor"],
