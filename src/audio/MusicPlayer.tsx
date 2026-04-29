@@ -196,13 +196,17 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
       const active = activeRef.current === "a" ? aRef.current : bRef.current;
       if (!active || !active.duration || isNaN(active.duration)) return;
       const remaining = active.duration - active.currentTime;
-      if (remaining <= CROSSFADE_SECONDS && !active.paused) {
-        // Override-Track: nahtlos zurück an den Anfang loopen statt
-        // zur nächsten Playlist-Position zu springen.
-        if (overrideRef.current) {
+      if (overrideRef.current) {
+        // Override-Track: vollständig durchlaufen lassen und erst am
+        // tatsächlichen Ende zurück an den Anfang loopen, damit z. B.
+        // das Kantinen-Lied nicht früh abgeschnitten wird.
+        if (remaining <= 0.1 && !active.paused) {
           active.currentTime = 0;
-          return;
+          void active.play().catch(() => {});
         }
+        return;
+      }
+      if (remaining <= CROSSFADE_SECONDS && !active.paused) {
         beginCrossfade();
       }
     }, 250);
