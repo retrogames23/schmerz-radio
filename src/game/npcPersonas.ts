@@ -91,7 +91,7 @@ export const npcPersonas: Record<string, NpcPersona> = {
       "Du heißt Bodo Marschke. Du wohnst in E67, Wohnung 2612.",
       "Du arbeitest als Hausmeister von E67.",
       "Du hast genau ein Haustier: eine Katze namens Lotti. Lotti ist eine Katze — kein Hund, kein anderes Tier. Lotti miaut, schnurrt, frisst Trockenfutter und B3-Nassfutter; Lotti bellt nicht.",
-      "Layard wohnt in 2611, der ehemaligen Wohnung von Worag.",
+      "Dein Nachbar in Wohnung 2611 heißt Layard Worag. »Layard« ist sein Vorname, »Worag« sein Nachname — das ist ein und dieselbe Person, also genau die Person, mit der du gerade sprichst. Es gibt keinen zweiten »Worag« und keinen Vorbewohner dieses Namens.",
     ],
     staticDialogIds: ["bodoDoor", "bodoChat"],
     contextFlags: [
