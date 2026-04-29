@@ -4,7 +4,7 @@ import { dialogs } from "@/game/dialogs";
 import { useSettings } from "@/audio/SettingsContext";
 import { speak, stopSpeech } from "@/audio/speech";
 import { CloseButton } from "./CloseButton";
-import { getPersona } from "@/game/npcPersonas";
+import { getPersona, getPersonaBySpeaker } from "@/game/npcPersonas";
 import { useCoarsePointer } from "@/hooks/useCoarsePointer";
 
 export function DialogOverlay() {
@@ -73,7 +73,7 @@ export function DialogOverlay() {
   // Free-Mode-Einstieg: nur am Endsatz eines Baums anbieten, wenn dieser
   // Baum eine Persona hinterlegt hat (DialogTree.npcId).
   const npcId = (tree as unknown as { npcId?: string }).npcId ?? null;
-  const persona = getPersona(npcId);
+  const persona = getPersona(npcId) ?? getPersonaBySpeaker(line.speaker);
   // Free-Chat ist auf Touch-/Mobile-Geräten deaktiviert (zu speicher-/leistungsintensiv).
   // Sobald eine Persona hinterlegt ist, ist der Wechsel jederzeit möglich —
   // diskreter Knopf in der Header-Zeile, nicht erst am Endsatz.

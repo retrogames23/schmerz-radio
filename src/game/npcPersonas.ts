@@ -176,6 +176,22 @@ export function getPersona(id: string | undefined | null): NpcPersona | null {
 }
 
 /**
+ * Fallback-Auflösung über den Speaker-Tag des Dialogs (z. B. "BODO" → bodo).
+ * Damit erscheint der Free-Reden-Knopf auch in Dialogbäumen, an denen kein
+ * explizites `npcId` gesetzt ist — solange der Speaker zu einer Persona passt.
+ */
+export function getPersonaBySpeaker(
+  speaker: string | undefined | null,
+): NpcPersona | null {
+  if (!speaker) return null;
+  const target = speaker.toUpperCase();
+  for (const p of Object.values(npcPersonas)) {
+    if (p.speaker.toUpperCase() === target) return p;
+  }
+  return null;
+}
+
+/**
  * Sehr knappe 1-Satz-Zusammenfassungen für gespielte Dialogbäume.
  * Wird in den System-Prompt eingebaut, damit der NPC weiß, worüber
  * er mit Layard schon gesprochen hat. Fehlt ein Eintrag, fällt der
