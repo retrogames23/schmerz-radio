@@ -223,10 +223,15 @@ export type StoryFlag =
   | "forgedQuittung4317"
   | "sentForgedQuittung"
   | "receivedTillaTransfer"
-  // Wartungskarte 5610 — eingesteckt an Bodos Terminal, Hinweis-Overlay
-  // wird beim Verlassen des Terminals ausgelöst.
-  | "pickedWartungskarteAtBodoTerminal"
-  | "notedWartungskartePickup";
+  // Wartungskarte 5610 — Bodo übergibt sie als Gefälligkeitsauftrag,
+  // bevor er zum B3-Holen aufbricht.
+  | "bodoGaveWartungskarte"
+  // Insa hat den Tilla-Transferauftrag erteilt (Quittung 4317-K).
+  | "insaGaveTransferTask"
+  // Kowalk hat Layard erklärt, was 4317-K bedeutet — und nebenbei
+  // den Aktenzusammenhang zu Marteau (Philippe) offenbart.
+  | "gotTillaTransferInfo"
+  | "learnedMarteauPhilippeLink";
 
 export interface InventoryItem {
   id: InventoryItemId;

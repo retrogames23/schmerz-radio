@@ -2242,20 +2242,9 @@ export function Terminal() {
           },
           { text: "", kind: "out" },
         );
-        // Im Bodo-Modus: Wartungskarte für Tür 5610 abgreifen,
-        // sobald `maint list` ausgeführt wurde.
-        if (bodoMode && !api.hasItem("wartungsnotiz5610")) {
-          api.addItem({
-            id: "wartungsnotiz5610",
-            name: "Wartungskarte (E67 · Korridor 56)",
-            description:
-              "Eine abgegriffene blaue Plastikkarte aus Bodos zweiter Schublade. Auf der Rückseite mit Bleistift: »5610 · nur Bodo«. Öffnet den Kartenleser an der Wartungstür im Korridor 56.",
-          });
-          // Keine Narration im Terminal — die Karte liegt physisch neben
-          // der Tastatur, nicht im System. Beim Verlassen des Terminals
-          // zeigt GameContext einen kurzen Overlay-Text (siehe Flag).
-          api.setFlag("pickedWartungskarteAtBodoTerminal");
-        }
+        // Hinweis: Die Wartungskarte für 5610 vergibt Bodo selbst, bevor er
+        // zum B3-Holen aufbricht (siehe Dialog `bodoLeavesForB3`). Hier wird
+        // im Listing nur bestätigt, dass Bodos Auftrag echt ist.
         if (flags.has("elevatorMaintBlocked") && !flags.has("elevatorMaintCleared")) {
           newLines.push({
             text: bodoMode

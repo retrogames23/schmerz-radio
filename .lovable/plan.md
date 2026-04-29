@@ -1,139 +1,59 @@
+## 1. Wartungskarte als Bodo-Gefälligkeit (entschieden: vor dem Gehen)
 
-# Akt-I-Pflichträtsel „Quittung 4317"
+In `bodoLeavesForB3` (`src/game/dialogs.ts`, um `bc10`/`bc11`) zwei neue Lines vor dem Türschließen einfügen:
 
-## Was sich gegenüber dem ersten Vorschlag ändert
+- Bodo zieht die abgegriffene blaue Karte aus der Schublade: „Wenn Sie eh hier sitzen, Worag — tun Sie mir einen Gefallen. 5610, Tech-Knoten Korridor 56. Ich war gestern dran, hab' aber meine Thermoskanne stehenlassen. Sichtprüfung mache ich selber, holen Sie nur das Ding raus."
+- „Karte behalten Sie. An der Tür weiß keiner mehr, dass es die noch gibt. Mir lieber bei Ihnen als im Schubfach."
+- `action`: vergibt `wartungsnotiz5610` und setzt einen neuen Flag `bodoGaveWartungskarte` (ersetzt `pickedWartungskarteAtBodoTerminal`).
 
-Pflichtpfad statt optional. **Und**: Brusts Schluss-Reaktion wird
-komisch statt bitter — siehe „Brusts Selbstüberführung" weiter unten.
+Folgeänderungen:
+- `src/components/game/Terminal.tsx` (Bodo-Modus, `maint list` ~Z. 2247): Auto-Pickup entfernen. Der Listing-Eintrag „5610 · OFFEN · letzte: 02.11.1997 · B. Marschke" bleibt — er bestätigt jetzt nur noch, dass Bodos Auftrag echt ist.
+- `src/game/GameContext.tsx` `closeTerminal` (~Z. 628–645): Pickup-Overlay entfernen.
+- `src/game/types.ts`: `pickedWartungskarteAtBodoTerminal` und `notedWartungskartePickup` entfernen, `bodoGaveWartungskarte` hinzufügen.
 
-Der Übergang nach Akt II — heute getriggert über das Telefonat in
-2611, das den Sektor-Code freigibt — wird hinter das Rätsel gehängt.
-Insa rückt den Sektor-Code erst raus, wenn Layard ihr Tillas
-Transfer-Code nennen kann.
+## 2. Vollmachts-/Kowalk-Rätsel
 
-## Fluss im Überblick
+### 2A. Marteau-Nennung diegetisch absichern
+In `kSideA1` Subtext ergänzen, dass Kowalk auf die Vollmacht in ihrer Hand tippt, bevor sie den Namen ausspricht — damit ist klar, dass sie Marteau gerade abliest, nicht aus dem Nichts kennt.
 
-```text
-B3-Rätsel (existiert)
-        │
-        ▼
-gaveB3ToPhilippe + gotParamedicsReport + kowalkToldHerDaughter
-        │
-        ▼
-Bericht erneut anschauen ─► noticedTransferCode
-        │
-        ▼
-Zug 1: 4 Items sammeln
-   ├─ quittungBlankoB     (Tresen, Kantine)
-   ├─ pencilStub          (Bodos Wohnung)
-   ├─ siegelAbdruck       (b3Authorization + pencilStub)
-   └─ aushang71Original   (Handbuch · "Seite herausnehmen")
-        │
-        ▼
-Zug 2: Bodo-Terminal · `forge`-Befehl  ─► forgedQuittung4317
-        │
-        ▼
-Zug 3: Pneumatik-Rohrpost (Overlay)    ─► sentForgedQuittung
-        │
-        ▼
-Nächster Kantinenbesuch: Rohr-LED grün ─► tillaTransfer (Item)
-        │
-        ▼
-Telefonat Insa: verlangt jetzt zuerst Tillas Transfer-Code
-        │
-        ▼
-Sektor-Code freigegeben ─► Akt II
-```
+### 2B. Insa-Auftrag bei Kowalk + Brücke zu Philippe (entscheidender Punkt)
 
-## Brusts Selbstüberführung (Zug 3, neuer Tonfall)
+**Kern-Mechanik (neue Bürokratie-Pointe):** 4317 ist Philippes Bewohnervertretungs-Code aus Schicht A. 4317-K ist die K-Variante derselben Akte — dieselbe Nummer, weil Tilla Kowalk damals in derselben Schicht-A-Liste geführt wurde wie Philippe. Beide Vorgänge laufen historisch über dieselbe Aktennummer. Diese Tatsache ist die Brücke, die der Spieler bei Kowalk lernt.
 
-Brust steht am Rohr und liest die Quittung mit. Statt Drama:
+Konkrete Dialog-Erweiterung in `cafeteriaKowalk` (`src/game/dialogs.ts`):
 
-- Brust runzelt die Stirn. „Schicht-A-Gegenzeichnung Marschke …
-  1996-11-06 … Aushang 7 Punkt 1 …"
-- Er greift nach **Aushang 4.2** an der Wand. Liest. Greift nach
-  Aushang **7.1**. Liest. Greift nach **4.2**. Liest.
-- Frau Kowalk, ohne hochzusehen: „Brust."
-- Brust, sehr leise: „Es ist … formal … in Ordnung."
-- Brust, noch leiser: „Es ist sogar **vorbildlich** in Ordnung."
-- Er drückt selbst den Hebel. Die Hülse rauscht weg.
-- Er notiert in sein Klemmbrett: „Quittung 4317-K · einwandfrei ·
-  ggf. zur Schulung verwenden." Setzt einen kleinen Haken.
-- Frau Kowalk schaut Layard kurz an. Layard schaut zurück. Niemand
-  sagt etwas. Lottis abwesende Würde, bei zwei Erwachsenen.
+Neue Hub-Option in `k0`, sichtbar wenn `insaGaveTransferTask` und nicht `gotTillaTransferInfo`:
+- „[ Insas Auftrag ] Insa hat mich geschickt. Quittung 4317-K — Transferbogen für Ihre Tochter."
 
-→ Brust hat **nicht** gemerkt, dass er getäuscht wurde. Er hat
-gemerkt, dass sein eigenes Regelwerk ihn dazu **zwingt**, die
-Fälschung freizugeben — und er ist darauf stolz. Das ist die
-Kantinen-Variante des Mikael-Witzes („das System ist makellos, bis
-es jemanden umbringt"), zwei Akte früher und in Pantoffelgröße.
+Neuer Strang `kInsa1`–`kInsa4`:
+1. Kowalk wird einen Moment still. „4317-K. Ja. Das ist ihre alte Nummer. Schicht A."
+2. „Wir hatten damals fünf, sechs Leute auf der Liste. Tilla. Marteau. Ein paar andere. Alle 4317, mit Buchstabe hintendran. Heute ist Tilla die Einzige, die noch eine offene Akte hat. — Außer Marteau."
+3. Setzt `gotTillaTransferInfo` und — entscheidend — `learnedMarteauPhilippeLink`.
+4. Anweisung zum Mechanismus: Quittung-Schicht-B ans linke Pneumatikrohr, Antwort kommt zurück. „Ich darf das selber nicht abschicken. Aushang. Aber Sie können."
+5. Bei Variante mit `metPhilippe` zusätzlich: „Wenn Sie Marteau mal sehen — der war das Pendant auf der Männer-Liste. Selbe Nummer, anderer Buchstabe. Er weiß, was 4317 heißt."
 
-Konsequenz: keine `brustOutruled`-/`kowalkSidedWithLayard`-
-Bedingung mehr für den Pneumatik-Pfad. Brust nimmt **immer** an,
-über sein eigenes Regelwerk. Die früheren B3-Pfade beeinflussen nur
-noch eine Pointe in der letzten Zeile (Brust-Klemmbrett-Eintrag
-variiert um ein Adjektiv: „einwandfrei" / „mustergültig" /
-„exemplarisch"). Macht das Rätsel narrensicher und schiebt den Witz
-in die Beobachtung statt in die Verzweigung.
+**Wirkung für die Dramaturgie:**
+- Spieler*in erfährt explizit, dass Philippes Vollmachtsnummer (4317) und Insas Quittung (4317-K) **denselben Aktenursprung** haben.
+- Wenn Spieler*in Philippe danach trifft, ergibt seine pinke Vollmacht 4317 plötzlich Sinn: er war auf derselben Schicht-A-Liste wie Tilla. Die Vollmacht ist nicht zufällig, sondern Erbe derselben Verwaltungsblase.
+- Wenn Spieler*in Philippe schon getroffen hat: das Klick-Moment passiert sofort bei Kowalk — sie hört seinen Namen aus Kowalks Mund und versteht, warum Insas Auftrag und Philippes Notlage zusammenhängen.
 
-## Wo der Pflicht-Gate sitzt
+### 2C. Pfad A verschärfen (entschieden)
 
-Im Telefon-Dialogbaum **`insa2`** (Code-Freigabe) wird die Freigabe
-an `receivedTillaTransfer` gekettet. Drei Verzweigungen:
+Pfad A im `kAuth6`-Hub bleibt, bekommt aber kumulative Bedingungen:
+- `residentId` im Inventar
+- `kowalkToldHerDaughter` (Tilla-Gespräch geführt)
+- `metPhilippe` (echtes Treffen in 2613, nicht nur die Begegnung im Gang)
+- *Optional, falls 2B umgesetzt:* zusätzlich `learnedMarteauPhilippeLink`, damit der Vertrauenspfad voraussetzt, dass die Spieler*in den Aktenzusammenhang verstanden hat.
 
-- **Code im Inventar** → Insa erkennt 70-2244 („Das ist eine
-  E70-K-Nummer. Wo haben Sie die her?"), liefert dann den
-  Sektor-Code. → bisheriges Akt-II-Übergangsverhalten.
-- **Item nicht da, `noticedTransferCode` aktiv** → Insa: „Bringen
-  Sie mir etwas, das ich dem Apparat zeigen kann. Etwas mit
-  Stempel von E70." Kein Code.
-- **Item nicht da, Trigger nicht ausgelöst** → Insa bleibt beim
-  alten „Erst Wartungsarbeiten melden"-Pfad. Beim nächsten
-  Bericht-Anschauen wird der Transfer-Code-Absatz enthüllt.
+Pfad B (Handbuch §7.1) bleibt unverändert als alternative, bürokratische Lösung.
 
-## Anti-Sackgassen-Garantien
+`requires` in der Wahlmöglichkeit `kAuth6 → kSideA1` entsprechend erweitern. Wenn die Spieler*in zwar Philippe getroffen, aber Tilla-Gespräch noch nicht geführt hat, wird Pfad A nicht angeboten — das schickt sie zurück in den Hub, um zuerst über Tilla zu reden, was dramaturgisch perfekt ist.
 
-| Schritt | Wenn der Spieler hängt | Auffang |
-|---|---|---|
-| Bericht erneut lesen | Schaut ihn nicht nochmal an | Philippe-Smalltalk: „Lesen Sie das Papier, das ich Ihnen gegeben habe, nochmal. Den Rand." |
-| Bleistift finden | Übersieht Pickup in Bodos Wohnung | Lotti, sobald `noticedTransferCode`: „Lotti hat etwas zwischen den Pfoten — einen Bleistiftstummel." |
-| Aushang aus Handbuch | Probiert Combine nicht | Look-Text aufs Handbuch: „Seite 7.1 ist nur lose eingelegt." |
-| Schicht-A-Unterschrift | Geht nicht zu Bodo | Insa: „Schicht-A-Gegenzeichnung. Marschke war Schicht A, fragen Sie ihn." |
-| `forge`-Befehl | Findet ihn nicht | `help` listet `forge` erst, sobald die 4 Items zusammen sind |
-| Rohrpost-Versuch zu früh | Items fehlen | Overlay zeigt explizit, was im Rohr fehlt, bevor der Hebel scharf wird |
+## Betroffene Dateien
+- `src/game/dialogs.ts` — `bodoLeavesForB3` (Karten-Übergabe), `cafeteriaKowalk` (Insa-Strang `kInsa*`, `kSideA1`-Subtext, `kAuth6`-Requires)
+- `src/components/game/Terminal.tsx` — Auto-Pickup entfernen
+- `src/game/GameContext.tsx` — `closeTerminal`-Overlay entfernen
+- `src/game/types.ts` — Flags aufräumen: `bodoGaveWartungskarte`, `insaGaveTransferTask` (falls fehlend), `gotTillaTransferInfo`, `learnedMarteauPhilippeLink`; alte Pickup-Flags entfernen
 
-## Was an Code/Assets neu gebraucht wird
-
-**Items**: `pencilStub`, `siegelAbdruck`, `aushang71Original`,
-`quittungBlankoB`, `quittungForged4317`, `tillaTransfer`.
-
-**Flags**: `noticedTransferCode`, `bodoSignedForTilla`,
-`forgedQuittung4317`, `sentForgedQuittung`, `receivedTillaTransfer`.
-(`brustNoticedForge` entfällt — Brust merkt's prinzipiell nicht.)
-
-**Dialoge**: `bodoSignsForTilla`, `kowalkAfterForge`,
-`brustOnTube` (eine Linie, drei Adjektiv-Varianten am Ende),
-Erweiterung `insa2`/`insa2a` um den Tilla-Gate, je 1 Zeile bei
-Philippe und Insa als Hint.
-
-**Hotspots**: `cafeteriaQuittungsblock`, `bodoPencil`,
-`cafeteriaPneumaticTube` von `look` auf `use`.
-
-**UI**: `PneumaticTubeOverlay.tsx` (kleines Overlay analog
-`LobbyGate`).
-
-**Terminal**: `forge`-Befehl in `filesystemBodo.ts` mit
-Inventar-Validierung.
-
-**Combine**: `b3Authorization + pencilStub → siegelAbdruck`,
-„Seite 7.1 herausnehmen" als Self-Action am Handbuch.
-
-**Bericht-Update**: zweiter Absatz erscheint dynamisch, sobald die
-Trigger erfüllt sind.
-
-## Was bewusst NICHT gemacht wird
-
-- Keine neue Szene, kein neuer NPC.
-- Keine neue Tür. Pflicht-Gate hängt am bestehenden `insa2`.
-- Akt-II-Inhalte bleiben unverändert, das Rätsel ändert nur den
-  Übergang.
+## Offene Frage
+Ist die 4317 / 4317-K-Brücke (gemeinsame Schicht-A-Aktennummer) erzählerisch in Ordnung, oder soll der Zusammenhang anders gebaut werden — z. B. dass Philippe selbst schon einmal versucht hat, Tillas Akte zu schließen, und Kowalk ihn deshalb kennt? Beide Varianten lassen sich umsetzen; die Aktennummern-Brücke ist die ökonomischere und nutzt eine bereits bestehende Zahlenkollision im Spiel.

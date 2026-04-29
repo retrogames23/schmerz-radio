@@ -3036,7 +3036,41 @@ export const dialogs: Record<string, DialogTree> = {
         speaker: "BODO",
         text: "Eine Viertelstunde. Höchstens. — Und Worag: am Terminal hängen ein paar Privatsachen. Die gehen Sie nichts an.",
         subtext: "Er sagt das, ohne sich umzudrehen. Er weiß, was er gerade gesagt hat.",
-        next: "bc11",
+        next: "bc10b",
+      },
+      bc10b: {
+        id: "bc10b",
+        speaker: "SYSTEM",
+        text: "[ Bodo bleibt an der Schublade stehen. Zieht sie noch einmal halb auf, kramt kurz, und legt eine abgegriffene blaue Plastikkarte vor Layard auf den Tisch. Auf der Rückseite mit Bleistift: »5610 · nur Bodo«. ]",
+        next: "bc10c",
+      },
+      bc10c: {
+        id: "bc10c",
+        speaker: "BODO",
+        text: "Wenn Sie eh hier sitzen, Worag — tun Sie mir einen Gefallen. 5610, Tech-Knoten Korridor 56. Ich war gestern dran und hab' meine Thermoskanne stehenlassen. Grüne, mit Delle. Holen Sie die nur raus, wenn Sie sowieso runter müssen.",
+        subtext: "Er sagt es beiläufig. Wie etwas, das er sich nicht abringen muss.",
+        next: "bc10d",
+      },
+      bc10d: {
+        id: "bc10d",
+        speaker: "BODO",
+        text: "Karte behalten Sie. An der Tür weiß keiner mehr, dass es die noch gibt. Mir lieber bei Ihnen als im Schubfach.",
+        subtext: "Lotti hebt kurz den Kopf. Bodo nickt nur einmal, knapp.",
+        choices: [
+          {
+            text: "[ Karte einstecken ]",
+            action: (api) => {
+              api.addItem({
+                id: "wartungsnotiz5610",
+                name: "Wartungskarte (E67 · Korridor 56)",
+                description:
+                  "Eine abgegriffene blaue Plastikkarte. Auf der Rückseite mit Bleistift: »5610 · nur Bodo«. Bodo hat sie Layard ohne Aufhebens in die Hand gedrückt — als Gefälligkeit, mit Auftrag: Thermoskanne aus dem Tech-Knoten 5610 holen.",
+              });
+              api.setFlag("bodoGaveWartungskarte");
+            },
+            next: "bc11",
+          },
+        ],
       },
       bc11: {
         id: "bc11",
@@ -3456,6 +3490,9 @@ export const dialogs: Record<string, DialogTree> = {
   insaWaitingForTransfer: {
     id: "insaWaitingForTransfer",
     start: "iw1",
+    onEnd: (api) => {
+      api.setFlag("insaGaveTransferTask");
+    },
     lines: {
       iw1: {
         id: "iw1",
@@ -4130,6 +4167,12 @@ export const dialogs: Record<string, DialogTree> = {
             hiddenWhen: ["gotB3Ration"],
           },
           {
+            text: "[ Insas Auftrag ] Insa hat mich geschickt. Quittung 4317-K — Transferbogen für Ihre Tochter.",
+            next: "kInsa1",
+            requires: ["insaGaveTransferTask"],
+            hiddenWhen: ["gotTillaTransferInfo"],
+          },
+          {
             text: "Ich wollte mich nur umsehen.",
             next: "kSmall1",
           },
@@ -4191,6 +4234,60 @@ export const dialogs: Record<string, DialogTree> = {
           },
         ],
       },
+      // ── Insa-Auftrag — Brücke 4317-K ↔ Marteau (Philippe) ─────
+      kInsa1: {
+        id: "kInsa1",
+        speaker: "KOWALK",
+        text: "4317-K.",
+        subtext: "Sie wird einen Moment still. Wischt mit dem Tuch über den Tresen, obwohl der Tresen sauber ist.",
+        next: "kInsa2",
+      },
+      kInsa2: {
+        id: "kInsa2",
+        speaker: "KOWALK",
+        text: "Das ist ihre alte Aktennummer. Schicht A. Damals haben sie Nummern nicht doppelt vergeben — sie haben Buchstaben drangehängt. Tilla war 4317-K. Marteau war 4317. Lischke war 4317-L. Drei, vier andere noch.",
+        next: "kInsa3",
+      },
+      kInsa3: {
+        id: "kInsa3",
+        speaker: "KOWALK",
+        text: "Heute ist Tilla die Einzige aus der Liste, die noch eine offene Akte hat. — Außer Marteau. Den haben sie nie geschlossen. Und der lebt noch hier.",
+        subtext: "Sie sagt »Marteau« mit der Selbstverständlichkeit von jemandem, der den Namen seit zwanzig Jahren kennt.",
+        choices: [
+          {
+            text: "[ Marteau — das ist Philippe? Mein Nachbar? ]",
+            requires: ["metPhilippe"],
+            next: "kInsa3b",
+          },
+          {
+            text: "Was muss ich für die Quittung tun?",
+            next: "kInsa4",
+          },
+        ],
+      },
+      kInsa3b: {
+        id: "kInsa3b",
+        speaker: "KOWALK",
+        text: "Philippe Marteau, ja. 2613. — Er war damals das Pendant auf der Männer-Liste. Wenn er Ihnen jemals eine 4317 in die Hand drückt: das ist nicht zufällig, das ist die alte Schicht-A-Akte. Er weiß genau, was die Nummer heißt.",
+        subtext: "Sie schaut Layard kurz direkt an. Etwas hängt zwischen ihnen, das sie nicht ausspricht.",
+        next: "kInsa4",
+      },
+      kInsa4: {
+        id: "kInsa4",
+        speaker: "KOWALK",
+        text: "Sie brauchen einen Quittungsblanko, Schicht B. Tragen 4317-K ein, gegenzeichnen, ans linke Pneumatikrohr — Ziel E70-K. Antwort kommt zurück: Transferbogen, Bewohnernummer, Heim. Ich darf das selber nicht abschicken. Aushang. Aber Sie können.",
+        subtext: "Sie tippt zweimal mit dem Finger auf den Tresen. So lautlos, dass Brust nichts hört.",
+        choices: [
+          {
+            text: "Verstanden. Ich kümmere mich.",
+            action: (api) => {
+              api.setFlag("gotTillaTransferInfo");
+              api.setFlag("learnedMarteauPhilippeLink");
+            },
+            next: "k0",
+          },
+        ],
+      },
       // Vollmacht-Pfad ──────────────────────────────────────
       kAuth1: {
         id: "kAuth1",
@@ -4230,8 +4327,8 @@ export const dialogs: Record<string, DialogTree> = {
         choices: [
           {
             // Lösungsweg A — Vertrauen via Ausweis + Philippe-Hinweis
-            text: "[ Bewohner-Ausweis zeigen ] Philippe sieht seit gestern schlecht aus. Ich gehe für ihn.",
-            requires: ["metPhilippe"],
+            text: "[ Bewohner-Ausweis zeigen ] Philippe sieht seit gestern schlecht aus. Ich gehe für ihn — Sie wissen, warum.",
+            requires: ["metPhilippe", "kowalkToldHerDaughter", "learnedMarteauPhilippeLink"],
             hiddenWhen: ["brustOutruled"],
             next: "kSideA1",
           },
@@ -4252,6 +4349,7 @@ export const dialogs: Record<string, DialogTree> = {
         id: "kSideA1",
         speaker: "KOWALK",
         text: "Marteau. — Marteau wohnt neben der Klopfwand. Ich weiß.",
+        subtext: "Sie hat die Vollmacht halb hochgehoben und tippt mit dem Finger auf die Unterschrift, bevor sie den Namen ausspricht.",
         next: "kSideA2",
       },
       kSideA2: {
