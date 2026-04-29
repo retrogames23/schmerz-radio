@@ -1803,6 +1803,32 @@ export const scenes: Record<string, Scene> = {
           ]),
       },
       {
+        id: "door4601Look",
+        x: 4,
+        y: 26,
+        w: 14,
+        h: 56,
+        label: "Tür 4601",
+        kind: "look",
+        hiddenWhen: ["miraTrustEarned"],
+        onUse: (api) =>
+          api.showText([
+            "Tür 4601. Kein Schild. Verkratzter Lack.",
+            "Auf Brusthöhe ein winziger Aufkleber: ein durchgestrichenes Ohr.",
+          ]),
+      },
+      {
+        id: "door4601Enter",
+        x: 4,
+        y: 26,
+        w: 14,
+        h: 56,
+        label: "Tür 4601 — Mira",
+        kind: "exit",
+        requires: ["miraTrustEarned"],
+        onUse: (api) => api.goTo("aptMira4601"),
+      },
+      {
         id: "back46",
         x: 80,
         y: 30,
