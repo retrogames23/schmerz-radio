@@ -84,6 +84,21 @@ export function RadioPanel() {
   const lastFreqRef = useRef(freq);
   const [tick, setTick] = useState(0);
 
+  // Silence-Test (für Mira-Trust): Wenn das Radio offen ist UND
+  // die Lautstärke 60 Sekunden ununterbrochen auf 0 steht, setzen
+  // wir `radioMutedAtLeast60s`. Sobald die Lautstärke wieder steigt,
+  // wird der Timer zurückgesetzt. Schließen des Radios setzt den
+  // Timer ebenfalls zurück (aber das Flag bleibt natürlich gesetzt).
+  useEffect(() => {
+    if (!radioOpen) return;
+    if (flags.has("radioMutedAtLeast60s")) return;
+    if (volume > 0.001) return;
+    const t = setTimeout(() => {
+      api.setFlag("radioMutedAtLeast60s");
+    }, 60_000);
+    return () => clearTimeout(t);
+  }, [radioOpen, volume, flags, api]);
+
   // Animate waveform for all bands
   useEffect(() => {
     if (!radioOpen) return;

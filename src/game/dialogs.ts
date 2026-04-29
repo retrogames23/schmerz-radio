@@ -2307,6 +2307,150 @@ export const dialogs: Record<string, DialogTree> = {
     },
   },
 
+  // ───────────────────────────────────────────────────────────
+  // Mira — Vertrauensprobe (Korridor 46).
+  // Wird nach `miraAfter` von der Szene gestartet, sobald Layard
+  // das Flugblatt hat. Erfolg verlangt:
+  //   - readMiraManifest      (Manifest auf Druckerport gelesen)
+  //   - radioMutedAtLeast60s  (Radio 60 s lang stumm gehört)
+  //   - eine bewusste Charakter-Wahl im Dialog
+  // ───────────────────────────────────────────────────────────
+  miraTrustProbe: {
+    id: "miraTrustProbe",
+    npcId: "mira",
+    start: "mtp1",
+    lines: {
+      mtp1: {
+        id: "mtp1",
+        speaker: "MIRA",
+        text: "Du bist nochmal da. Mit dem Blatt. Und jetzt willst du was.",
+        subtext: "Sie wirkt nicht überrascht. Eher: bereit.",
+        next: "mtp2",
+      },
+      mtp2: {
+        id: "mtp2",
+        speaker: "MIRA",
+        text: "Bevor ich dir mehr sage: drei Sachen. Erstens — auf Etage 56, am Drucker, hängt ein freier Port. Wenn du einen Rechner hast, der Telnet kann, kommst du auf eine Maschine. Da liegt ein Manifest. Lies es. Nicht jetzt. Allein.",
+        next: "mtp3",
+      },
+      mtp3: {
+        id: "mtp3",
+        speaker: "MIRA",
+        text: "Zweitens — schalt das Schmerz-Radio aus. Nicht leise. AUS. Eine Minute lang. Wenn du das nicht aushältst, sind wir hier fertig.",
+        next: "mtp4",
+      },
+      mtp4: {
+        id: "mtp4",
+        speaker: "MIRA",
+        text: "Und drittens — eine Frage. Wenn morgen niemand mehr 104,6 hört: Was tust du als erstes?",
+        choices: [
+          { text: "Ich gehe raus. Ohne Meldung.", next: "mtpAnswerGood" },
+          { text: "Ich rufe die Leitstelle und frage, was los ist.", next: "mtpAnswerBad" },
+          { text: "Ich drehe die Frequenz wieder auf.", next: "mtpAnswerBad" },
+          { text: "Nichts. Ich sitze und höre, was übrig ist.", next: "mtpAnswerGood" },
+        ],
+      },
+      mtpAnswerGood: {
+        id: "mtpAnswerGood",
+        speaker: "MIRA",
+        text: "Gute Antwort. — Komm wieder, wenn du das Manifest gelesen UND die Stille ausgehalten hast. Dann reden wir weiter.",
+        next: "mtpCheck",
+      },
+      mtpAnswerBad: {
+        id: "mtpAnswerBad",
+        speaker: "MIRA",
+        text: "Schade. — Du bist noch nicht so weit. Das ist okay. Geh, hör dein Radio.",
+        choices: [
+          {
+            text: "[ Beenden ]",
+            action: (api) => api.setFlag("miraTrustWithheld"),
+          },
+        ],
+      },
+      // Beim Beenden prüfen wir die beiden Sachflags. Stimmen beide,
+      // verrät Mira die Adresse und übergibt den Türzettel.
+      mtpCheck: {
+        id: "mtpCheck",
+        speaker: "SYSTEM",
+        text: "[ Mira mustert ihn kurz. ]",
+        requires: ["readMiraManifest", "radioMutedAtLeast60s"],
+        next: "mtpReveal",
+      },
+      mtpReveal: {
+        id: "mtpReveal",
+        speaker: "MIRA",
+        text: "Beides erledigt. Ich seh's an dir. — Also gut. 4601. Vierte Etage, gleich hier um die Ecke. Klopf nicht. Tür ist offen, wenn ich da bin.",
+        requires: ["readMiraManifest", "radioMutedAtLeast60s"],
+        next: "mtpReveal2",
+      },
+      mtpReveal2: {
+        id: "mtpReveal2",
+        speaker: "SYSTEM",
+        text: "[ Sie drückt Layard einen kleinen, gefalteten Zettel in die Hand. ]",
+        requires: ["readMiraManifest", "radioMutedAtLeast60s"],
+        choices: [
+          {
+            text: "[ Annehmen ]",
+            action: (api) => {
+              api.setFlag("miraTrustEarned");
+              api.addItem({
+                id: "miraDoorNote",
+                name: "Zettel von Mira",
+                description:
+                  "Karierter Schnipsel, eckige Schrift: »4601. nicht klopfen. wenn ich da bin, ist offen. — m.« Auf der Rückseite ein winzig gemaltes durchgestrichenes Ohr.",
+              });
+            },
+          },
+        ],
+      },
+      // Fallback, wenn Voraussetzungen nicht erfüllt sind: Mira hat
+      // mtpAnswerGood gehört, aber die zwei Aufgaben fehlen noch.
+      mtpHold: {
+        id: "mtpHold",
+        speaker: "MIRA",
+        text: "Komm wieder, wenn du beides hast. Du weißt, was zu tun ist.",
+        hiddenWhen: ["miraTrustEarned"],
+        end: true,
+      },
+    },
+  },
+
+  // ───────────────────────────────────────────────────────────
+  // Mira — erstes Treffen in Wohnung 4601.
+  // Wird beim ersten Betreten von aptMira4601 gestartet.
+  // ───────────────────────────────────────────────────────────
+  miraAtHomeIntro: {
+    id: "miraAtHomeIntro",
+    npcId: "mira",
+    start: "mah1",
+    lines: {
+      mah1: {
+        id: "mah1",
+        speaker: "SYSTEM",
+        text: "[ Die Tür war angelehnt. Mira sitzt im Schneidersitz auf dem Bett, Kopfhörer um den Hals, ein offenes Schulbuch im Schoß. ]",
+        next: "mah2",
+      },
+      mah2: {
+        id: "mah2",
+        speaker: "MIRA",
+        text: "Du hast tatsächlich nicht geklopft. Das ist die erste Bewährung.",
+        subtext: "Sie lächelt halb. Es wirkt geübt — als hätte sie den Satz aufgespart.",
+        next: "mah3",
+      },
+      mah3: {
+        id: "mah3",
+        speaker: "MIRA",
+        text: "Setz dich, wenn du willst. Oder steh. Ist eh ein bisschen klein hier. — Frag, was du fragen wolltest.",
+        choices: [
+          {
+            text: "[ Bleiben und reden ]",
+            action: (api) => api.setFlag("miraAtHomeMet"),
+          },
+        ],
+      },
+    },
+  },
+
   // ---------------------------------------------------------------
   // Philippe — Sondierungs-Dialoge nach versiegelter Tür (2615).
   // Philippe versucht über mehrere Besuche herauszufinden, wer

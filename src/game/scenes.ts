@@ -1775,7 +1775,13 @@ export const scenes: Record<string, Scene> = {
         kind: "talk",
         visible: (api) => api.getMiraFloors().includes(4),
         onUse: (api) => {
-          if (api.hasFlag("tookFlyer")) {
+          if (
+            api.hasFlag("tookFlyer") &&
+            !api.hasFlag("miraTrustEarned") &&
+            !api.hasFlag("miraTrustWithheld")
+          ) {
+            api.startDialog("miraTrustProbe");
+          } else if (api.hasFlag("tookFlyer")) {
             api.startDialog("miraAfter");
           } else if (api.hasFlag("miraSystemic")) {
             api.startDialog("miraSystemicGreeting");
@@ -2349,6 +2355,22 @@ export const scenes: Record<string, Scene> = {
     intro:
       "Eng. Ein Bett, ein Schreibtisch, an der Wand mehr Plakate als Tapete. Auf dem Tisch summt ein offenes Terminal in giftigem Phosphorgrün. Ein Kabel verschwindet hinter der Wand Richtung Etagendrucker.",
     hotspots: [
+      {
+        id: "miraInRoom",
+        x: 38,
+        y: 50,
+        w: 22,
+        h: 38,
+        label: "Mira",
+        kind: "talk",
+        onUse: (api) => {
+          if (!api.hasFlag("miraAtHomeMet")) {
+            api.startDialog("miraAtHomeIntro");
+          } else {
+            api.startDialog("miraAtHomeIntro");
+          }
+        },
+      },
       {
         id: "miraTerminal",
         x: 70,

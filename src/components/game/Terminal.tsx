@@ -17,6 +17,12 @@ import {
   FREIHEIT_TXT,
   LAYARD_TXT,
 } from "@/game/filesystemBodo";
+import {
+  FILESYSTEM_MIRA,
+  HOME_PATH_MIRA,
+  resolveMira,
+  pathStringMira,
+} from "@/game/filesystemMira";
 import type { StoryFlag } from "@/game/types";
 import {
   adventureCommand,
@@ -1051,6 +1057,7 @@ export function Terminal() {
     api,
     knowledge,
     terminalBodoMode,
+    terminalMiraMode,
   } = useGame();
   const { sfxVolume } = useSettings();
   const [lines, setLines] = useState<Line[]>([]);
@@ -1091,21 +1098,52 @@ export function Terminal() {
   const localBodoMode = terminalBodoMode;
   // „Effektiver" Modus = welche Maschine wir gerade bedienen. Während
   // einer vollwertigen Telnet-Sitzung kann das ein anderer Host sein.
-  const bodoMode = remoteMode ? remoteMode === "bodo" : localBodoMode;
-  const userName = bodoMode ? "bodo" : "worag";
+  // Mira-Modus: Layard sitzt an Miras gehackter Maschine (FuckTheSystemOS).
+  // Hat Vorrang vor jedem anderen Modus, solange keine Remote-Sitzung läuft.
+  const miraMode = terminalMiraMode && !remoteMode;
+  const bodoMode = remoteMode
+    ? remoteMode === "bodo"
+    : !miraMode && localBodoMode;
+  const userName = miraMode ? "root" : bodoMode ? "bodo" : "worag";
   // Beide Maschinen hängen am Sektor-Netz E67 — der Hostname ist
   // konsistent „e67“, nur der Benutzer wechselt. In einer Remote-Sitzung
   // zeigt der Prompt zusätzlich den Zielhost (z. B. `worag@bodo:~$`).
-  const hostName = remoteMode ? (remoteMode === "bodo" ? "bodo" : "worag") : "e67";
-  const homePath = bodoMode ? HOME_PATH_BODO : HOME_PATH_WORAG;
-  const homeLabel = bodoMode ? "/home/bodo" : "/home/worag";
+  const hostName = remoteMode
+    ? remoteMode === "bodo"
+      ? "bodo"
+      : "worag"
+    : miraMode
+      ? "miranet"
+      : "e67";
+  const homePath = miraMode
+    ? HOME_PATH_MIRA
+    : bodoMode
+      ? HOME_PATH_BODO
+      : HOME_PATH_WORAG;
+  const homeLabel = miraMode
+    ? "/home/mira"
+    : bodoMode
+      ? "/home/bodo"
+      : "/home/worag";
   // ── Filesystem-Adapter: leiten je nach Modus auf den jeweiligen Baum.
   // Damit bleibt der Rest der Komponente unverändert lesbar; alle
   // resolvePath/pathString-Aufrufe greifen automatisch auf den richtigen
   // Baum (Worag oder Bodo). Mono-`FILESYSTEM` gibt es nicht mehr.
-  const resolvePath = bodoMode ? resolveBodo : resolveWorag;
-  const pathString = bodoMode ? pathStringBodo : pathStringWorag;
-  const FILESYSTEM = bodoMode ? FILESYSTEM_BODO : FILESYSTEM_WORAG;
+  const resolvePath = miraMode
+    ? resolveMira
+    : bodoMode
+      ? resolveBodo
+      : resolveWorag;
+  const pathString = miraMode
+    ? pathStringMira
+    : bodoMode
+      ? pathStringBodo
+      : pathStringWorag;
+  const FILESYSTEM = miraMode
+    ? FILESYSTEM_MIRA
+    : bodoMode
+      ? FILESYSTEM_BODO
+      : FILESYSTEM_WORAG;
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastTabRef = useRef<{ input: string; matches: string[] } | null>(null);
@@ -1123,7 +1161,11 @@ export function Terminal() {
       // evtl. noch hängende Remote-Sitzung wird hart zurückgesetzt.
       setRemoteMode(null);
       savedCwdRef.current = null;
-      const startHome = localBodoMode ? HOME_PATH_BODO : HOME_PATH_WORAG;
+      const startHome = terminalMiraMode
+        ? HOME_PATH_MIRA
+        : localBodoMode
+          ? HOME_PATH_BODO
+          : HOME_PATH_WORAG;
       setCwd([...startHome]);
       setTelnetHost(null);
       setTelnetAwaitPass(null);
@@ -1138,7 +1180,30 @@ export function Terminal() {
       // Banner explizit vom lokalen Modus aus aufbauen — eine zuvor
       // aktive Remote-Sitzung wurde gerade zurückgesetzt, der nächste
       // Render hat aber noch das alte (effektive) bodoMode-Flag.
-      if (localBodoMode) {
+      if (terminalMiraMode) {
+        const banner: Line[] = [
+          {
+            text: ">> FuckTheSystemOS 0.2 — root tunnel via 5601",
+            kind: "system",
+          },
+          { text: ">> Benutzer: root  (kein Login. kein Logfile.)", kind: "system" },
+          { text: ">> Letzter Boot: gestern 23:11. Uptime: zu lang.", kind: "system" },
+          { text: "", kind: "out" },
+          {
+            text: "  »wenn du das hier liest, bist du in meinem zimmer.",
+            kind: "out",
+          },
+          { text: "   sei freundlich. — m.«", kind: "out" },
+          { text: "", kind: "out" },
+          {
+            text: ">> NETZWERK: telnet umgeht alle Auth (root tunnel).",
+            kind: "system",
+          },
+          { text: ">> Tippe 'help' oder 'cat manifest.txt'.", kind: "system" },
+          { text: "", kind: "out" },
+        ];
+        setLines(banner);
+      } else if (localBodoMode) {
         const updated = flags.has("centralOsUpdatedBodo");
         const banner: Line[] = [
           {
@@ -1941,21 +2006,24 @@ export function Terminal() {
       if (!node || node.type !== "dir") {
         newLines.push({ text: "ls: aktuelles Verzeichnis ungültig.", kind: "out" });
       } else {
-        const hideHomeName = bodoMode ? "worag" : "bodo";
+        const hideHomeName = miraMode ? null : bodoMode ? "worag" : "bodo";
         newLines.push({ text: `Inhalt von ${pathString(cwd)}:`, kind: "system" });
         let kids = visibleChildren(node, showAll, (f) => flags.has(f));
         // /home zeigt jeweils nur das eigene Heimatverzeichnis — Sektor-
         // Privatsphäre. Layard sieht bodo dort nicht, Bodo nicht worag.
-        if (pathString(cwd) === "/home") {
+        if (pathString(cwd) === "/home" && hideHomeName) {
           kids = kids.filter((c) => c.name !== hideHomeName);
         }
         newLines.push(...formatLs(kids));
       }
     } else if (head === "cd") {
       const target = args[0] ?? "";
-      const hideHomeName = bodoMode ? "worag" : "bodo";
+      const hideHomeName = miraMode ? null : bodoMode ? "worag" : "bodo";
       const isHiddenHome = (parts: string[]) =>
-        parts.length >= 2 && parts[0] === "home" && parts[1] === hideHomeName;
+        hideHomeName !== null &&
+        parts.length >= 2 &&
+        parts[0] === "home" &&
+        parts[1] === hideHomeName;
       if (!target || target === "~") {
         setCwd([...homePath]);
       } else if (target === "/") {
@@ -1994,8 +2062,9 @@ export function Terminal() {
         const segments = target.split("/").filter(Boolean);
         const base = target.startsWith("/") ? [] : [...cwd];
         const fullParts = [...base, ...segments];
-        const hideHomeName = bodoMode ? "worag" : "bodo";
+        const hideHomeName = miraMode ? null : bodoMode ? "worag" : "bodo";
         const isHiddenHome =
+          hideHomeName !== null &&
           fullParts.length >= 2 &&
           fullParts[0] === "home" &&
           fullParts[1] === hideHomeName;
@@ -2017,6 +2086,10 @@ export function Terminal() {
             ),
           );
           newLines.push({ text: "── EOF ──────────────────────────────", kind: "system" });
+          // Mira-Manifest gelesen → Trust-Voraussetzung erfüllt.
+          if (miraMode && node.name === "manifest.txt") {
+            api.setFlag("readMiraManifest");
+          }
         }
       }
     } else if (head === "tree") {
@@ -2056,14 +2129,20 @@ export function Terminal() {
             { text: `Versuche ${host.host} (${host.ip})…`, kind: "out" },
             { text: `>> Verbindung verweigert: kein telnet-daemon auf Port 23.`, kind: "out" },
           );
-        } else if (superuser) {
+        } else if (superuser || miraMode) {
           // Cheat aktiv: Auth-Schritt komplett überspringen, direkt in
-          // die authentifizierte Sitzung wechseln.
+          // die authentifizierte Sitzung wechseln. Im Mira-Modus kommt
+          // dasselbe Verhalten vom »root tunnel« über Drucker 5601.
           playUnlock(0.5 * sfxVolume);
           newLines.push(
             { text: `Versuche ${host.host} (${host.ip})…`, kind: "out" },
             { text: ">> Verbunden.", kind: "system" },
-            { text: ">> [superuser] Authentifizierung übersprungen.", kind: "system" },
+            {
+              text: miraMode
+                ? ">> [root tunnel] Authentifizierung übersprungen."
+                : ">> [superuser] Authentifizierung übersprungen.",
+              kind: "system",
+            },
           );
           if (host.motd) {
             newLines.push(
@@ -2439,29 +2518,47 @@ export function Terminal() {
     <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-black/85 sm:items-center sm:px-4">
       <div
         className={`fade-in relative flex h-full w-full flex-col overflow-hidden rounded-none border-0 bg-black shadow-[0_0_60px_rgba(0,0,0,0.85)] scanlines sm:h-auto sm:max-w-4xl sm:rounded-sm sm:border ${
-          bodoMode ? "border-sepia/50" : "border-phosphor/50"
+          miraMode
+            ? "border-destructive/60"
+            : bodoMode
+              ? "border-sepia/50"
+              : "border-phosphor/50"
         }`}
       >
         <div
           className={`flex items-center justify-between border-b bg-black px-4 py-2 ${
-            bodoMode ? "border-sepia/30" : "border-phosphor/30"
+            miraMode
+              ? "border-destructive/40"
+              : bodoMode
+                ? "border-sepia/30"
+                : "border-phosphor/30"
           }`}
         >
           <span
             className={`font-mono-crt text-base uppercase tracking-[0.3em] ${
-              bodoMode ? "text-sepia sepia-glow" : "text-phosphor phosphor-glow"
+              miraMode
+                ? "text-destructive"
+                : bodoMode
+                  ? "text-sepia sepia-glow"
+                  : "text-phosphor phosphor-glow"
             }`}
           >
-            CentralOS v
-            {osVersion(
-              flags.has(bodoMode ? "centralOsUpdatedBodo" : "centralOsUpdated"),
-              bodoMode,
+            {miraMode ? (
+              <>FuckTheSystemOS 0.2 — root@miranet</>
+            ) : (
+              <>
+                CentralOS v
+                {osVersion(
+                  flags.has(bodoMode ? "centralOsUpdatedBodo" : "centralOsUpdated"),
+                  bodoMode,
+                )}
+                {bodoMode ? " — 2612" : ""}
+              </>
             )}
-            {bodoMode ? " — 2612" : ""}
           </span>
           <CloseButton
             onClick={closeTerminal}
-            tone={bodoMode ? "amber" : "phosphor"}
+            tone={miraMode ? "amber" : bodoMode ? "amber" : "phosphor"}
             label="Terminal schließen"
           />
         </div>
@@ -2475,16 +2572,22 @@ export function Terminal() {
               key={i}
               className={
                 l.kind === "system"
-                  ? bodoMode
-                    ? "sepia-glow"
-                    : "phosphor-glow"
-                  : l.kind === "in"
-                    ? bodoMode
-                      ? "text-sepia"
-                      : "text-phosphor"
+                  ? miraMode
+                    ? "text-destructive"
                     : bodoMode
-                      ? "text-sepia-dim"
-                      : "text-phosphor-dim"
+                      ? "sepia-glow"
+                      : "phosphor-glow"
+                  : l.kind === "in"
+                    ? miraMode
+                      ? "text-destructive"
+                      : bodoMode
+                        ? "text-sepia"
+                        : "text-phosphor"
+                    : miraMode
+                      ? "text-destructive/80"
+                      : bodoMode
+                        ? "text-sepia-dim"
+                        : "text-phosphor-dim"
               }
             >
               {l.text || "\u00A0"}
@@ -2495,12 +2598,20 @@ export function Terminal() {
         <form
           onSubmit={handleSubmit}
           className={`flex items-center gap-2 border-t bg-black px-4 py-2 ${
-            bodoMode ? "border-sepia/30" : "border-phosphor/30"
+            miraMode
+              ? "border-destructive/40"
+              : bodoMode
+                ? "border-sepia/30"
+                : "border-phosphor/30"
           }`}
         >
           <span
             className={`font-mono-crt text-[15px] sm:text-sm ${
-              bodoMode ? "text-sepia sepia-glow" : "text-phosphor phosphor-glow"
+              miraMode
+                ? "text-destructive"
+                : bodoMode
+                  ? "text-sepia sepia-glow"
+                  : "text-phosphor phosphor-glow"
             }`}
           >
             {advState
@@ -2626,9 +2737,11 @@ export function Terminal() {
               }
             }}
             className={`flex-1 bg-transparent font-mono-crt text-base outline-none disabled:opacity-40 ${
-              bodoMode
-                ? "text-sepia caret-sepia placeholder:text-sepia-dim/60"
-                : "text-phosphor caret-phosphor placeholder:text-phosphor-dim/60"
+              miraMode
+                ? "text-destructive caret-destructive placeholder:text-destructive/40"
+                : bodoMode
+                  ? "text-sepia caret-sepia placeholder:text-sepia-dim/60"
+                  : "text-phosphor caret-phosphor placeholder:text-phosphor-dim/60"
             }`}
             placeholder={scriptedRunning ? "… Ausgabe läuft …" : "Befehl eingeben …"}
             spellCheck={false}
