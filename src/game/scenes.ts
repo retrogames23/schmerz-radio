@@ -2337,4 +2337,111 @@ export const scenes: Record<string, Scene> = {
       },
     ],
   },
+
+  // ───────────────────────────────────────────────────────────
+  // Wohnung 4601 — Miras gehacktes Jugendzimmer.
+  // Zugang nur, wenn `miraTrustEarned` gesetzt ist (siehe corridor46).
+  // ───────────────────────────────────────────────────────────
+  aptMira4601: {
+    id: "aptMira4601",
+    background: aptMira4601Bg,
+    title: "Wohnung 4601 — Mira",
+    intro:
+      "Eng. Ein Bett, ein Schreibtisch, an der Wand mehr Plakate als Tapete. Auf dem Tisch summt ein offenes Terminal in giftigem Phosphorgrün. Ein Kabel verschwindet hinter der Wand Richtung Etagendrucker.",
+    hotspots: [
+      {
+        id: "miraTerminal",
+        x: 70,
+        y: 50,
+        w: 22,
+        h: 30,
+        label: "Miras Terminal (FuckTheSystemOS)",
+        kind: "use",
+        onUse: (api) => api.openTerminal({ mira: true }),
+      },
+      {
+        id: "miraPosterLeine",
+        x: 28,
+        y: 22,
+        w: 30,
+        h: 24,
+        label: "Plakat „104,6 — DEINE LEINE“",
+        kind: "look",
+        onUse: (api) =>
+          api.showText([
+            "Stenciled, schwarz, schief geklebt. Darunter, klein:",
+            "»eine leine ist erst dann eine, wenn man sie spürt.«",
+            "Und ganz unten: Z.K.S.",
+          ]),
+      },
+      {
+        id: "miraPosterStille",
+        x: 56,
+        y: 36,
+        w: 14,
+        h: 14,
+        label: "Zettel „TAG DER STILLE — bald.“",
+        kind: "look",
+        onUse: (api) =>
+          api.showText([
+            "Mit roter Kreide übermalt: »bald.« Darunter, kleiner:",
+            "»eine etage. eine stunde. wir merken, dass wir nicht sterben.«",
+          ]),
+      },
+      {
+        id: "miraPortraits",
+        x: 0,
+        y: 24,
+        w: 22,
+        h: 38,
+        label: "Korkbrett mit Porträts",
+        kind: "look",
+        onUse: (api) =>
+          api.showText([
+            "Vier kopierte Bewohnerporträts, mit rotem Faden verbunden.",
+            "Mira hat daneben mit Bleistift kleine Notizen geschrieben:",
+            "»hört zu / schreibt mit / hat einen anker / weiß alles, sagt nichts«.",
+          ]),
+      },
+      {
+        id: "miraBed",
+        x: 14,
+        y: 64,
+        w: 32,
+        h: 30,
+        label: "Bett",
+        kind: "look",
+        onUse: (api) =>
+          api.showText([
+            "Zerwühlte Decke. Halb aufgeschlagen ein Schulbuch:",
+            "»Sektor-Geographie · Klasse 10«. Am Rand mit Kuli:",
+            "»E54, E72, E81 — Brieffreunde. nicht namen. nie namen.«",
+          ]),
+      },
+      {
+        id: "miraVent",
+        x: 84,
+        y: 6,
+        w: 14,
+        h: 16,
+        label: "Verklebter Lüftungsschlitz",
+        kind: "look",
+        onUse: (api) =>
+          api.showText([
+            "Mit Paketband zugeklebt. Wer hier wohnt, will nicht,",
+            "dass sein Zimmer mithört.",
+          ]),
+      },
+      {
+        id: "aptMiraBack",
+        x: 0,
+        y: 80,
+        w: 14,
+        h: 18,
+        label: "Zurück in den Korridor",
+        kind: "exit",
+        onUse: (api) => api.goTo("corridor46"),
+      },
+    ],
+  },
 };
