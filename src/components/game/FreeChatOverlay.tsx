@@ -3,6 +3,7 @@ import { useGame } from "@/game/GameContext";
 import { useAuth } from "@/auth/AuthContext";
 import { getPersona } from "@/game/npcPersonas";
 import { buildSystemPrompt } from "@/game/promptBuilder";
+import { getFewshotMetaDeflection } from "@/game/promptBuilder";
 import {
   consumePatience,
   getPatience,
@@ -158,8 +159,15 @@ function FreeChatInner({
     setMessages(next);
     setSending(true);
     try {
+      const fewshot: ChatMsg[] = getFewshotMetaDeflection(persona).flatMap(
+        (ex) => [
+          { role: "user", content: ex.user } as ChatMsg,
+          { role: "assistant", content: ex.assistant } as ChatMsg,
+        ],
+      );
       const chatMsgs: ChatMsg[] = [
         { role: "system", content: systemPrompt },
+        ...fewshot,
         ...next.map((m) => ({ role: m.role, content: m.content }) as ChatMsg),
       ];
 
