@@ -55,7 +55,7 @@ export function Hotspot({ hotspot, reveal = false }: Props) {
       })();
     return `cursor-exit-${dir}`;
   })();
-  const kindCursorClass = drag.dragItem
+  const kindCursorClass = drag.activeItem
     ? "cursor-copy"
     : hotspot.kind === "use"
       ? "cursor-use"
@@ -85,8 +85,8 @@ export function Hotspot({ hotspot, reveal = false }: Props) {
         setCaption(null);
       }}
       onPointerUp={(e) => {
+        // Drag-Drop-Pfad (Desktop): nur wenn gerade aktiv gezogen wird.
         if (!drag.dragItem) return;
-        // Drop eines Inventar-Items auf diesen Hotspot → Kombinieren
         e.preventDefault();
         e.stopPropagation();
         const source = drag.endDrag();
@@ -103,12 +103,26 @@ export function Hotspot({ hotspot, reveal = false }: Props) {
         // Wenn gerade ein Drag aktiv ist (oder gerade abgeschlossen wurde),
         // soll der Klick nicht zusätzlich die normale Hotspot-Aktion auslösen.
         if (drag.dragItem) return;
+        // Tap-to-Use-Pfad (Mobile): aktives selektiertes Item auf diesen
+        // Hotspot anwenden, statt die normale Hotspot-Aktion auszuführen.
+        if (drag.selectedItem) {
+          const source = drag.consumeActive();
+          if (!source) return;
+          setCaption(null);
+          combineItem(source.id, {
+            api,
+            targetId: hotspot.id,
+            targetKind: "hotspot",
+            targetLabel: hotspot.label,
+          });
+          return;
+        }
         setCaption(null);
         hotspot.onUse(api);
       }}
       aria-label={hotspot.label}
       className={`hotspot-touch absolute z-20 rounded-sm border transition-colors duration-200 focus:outline-none ${
-        drag.dragItem
+        drag.activeItem
           ? `${kindCursorClass} border-amber-glow/40 bg-amber-glow/5 hover:border-amber-glow hover:bg-amber-glow/20`
           : reveal
             ? `${kindCursorClass} border-amber-glow/80 bg-amber-glow/15 hover:border-amber-glow hover:bg-amber-glow/25 focus:border-amber-glow/80 focus:bg-amber-glow/10`
