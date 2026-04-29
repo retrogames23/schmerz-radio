@@ -8,6 +8,7 @@ import { preloadVoices } from "@/audio/speech";
 import { SceneView } from "./SceneView";
 import { TopBar } from "./TopBar";
 import { Inventory, DragCursorLayer } from "./Inventory";
+import { ActiveItemBanner } from "./ActiveItemBanner";
 import { TextOverlay } from "./TextOverlay";
 import { DialogOverlay } from "./DialogOverlay";
 import { RadioPanel } from "./RadioPanel";
@@ -94,6 +95,7 @@ export function Game() {
           <InventoryDragProvider>
             <GameStage pauseOpen={pauseOpen} setPauseOpen={setPauseOpen} />
             <DragCursorLayer />
+            <ActiveItemBanner />
           </InventoryDragProvider>
         </GameProvider>
       </MusicPlayer>

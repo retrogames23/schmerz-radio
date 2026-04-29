@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { useInventoryDrag } from "@/game/InventoryDragContext";
 import { combineItem } from "@/game/combine";
 import { ItemIcon, BriefcaseIcon } from "./ItemIcon";
+import { useCoarsePointer } from "@/hooks/useCoarsePointer";
 import type { InventoryItem } from "@/game/types";
 
 /**
@@ -14,9 +15,86 @@ import type { InventoryItem } from "@/game/types";
  *   Item-Slots in diesem Panel).
  */
 export function Inventory() {
-  const { inventory, api, openHandbook, openIdCard } = useGame();
+  const { inventory, api, openHandbook, openIdCard, scene } = useGame();
   const drag = useInventoryDrag();
+  const isCoarse = useCoarsePointer();
   const [open, setOpen] = useState(false);
+
+  // Auto-Clear: wenn der Spieler die Szene wechselt, soll keine
+  // Tap-to-Use-Selektion bestehen bleiben (verhindert versehentliche
+  // Kombinationen in der nächsten Szene).
+  useEffect(() => {
+    drag.clearSelection();
+    // Absichtlich nur auf `scene` reagieren.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scene]);
+
+  // Hilfsfunktion: „ansehen" / lesen (geteilt zwischen Tap-Pfad-Long-Press
+  // und Desktop-Klick).
+  const examineItem = (item: InventoryItem) => {
+    if (item.id === "e67Handbook") {
+      api.setFlag("readHandbook");
+      openHandbook();
+    } else if (item.id === "residentId") {
+      api.setFlag("examinedResidentId");
+      openIdCard();
+    } else {
+      api.showText([item.name, item.description]);
+    }
+  };
+
+  // Touch-/Mobile-Pfad: kurzer Tap = selektieren (oder ab-selektieren),
+  // Long-Press = ansehen. Kein Drag.
+  const handleItemPointerDownTouch = (
+    e: React.PointerEvent<HTMLButtonElement>,
+    item: InventoryItem,
+  ) => {
+    if (e.button !== 0 && e.pointerType === "mouse") return;
+    const startX = e.clientX;
+    const startY = e.clientY;
+    let longPressed = false;
+    let cancelled = false;
+
+    const timer = window.setTimeout(() => {
+      longPressed = true;
+      examineItem(item);
+    }, 450);
+
+    const cleanup = () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onCancel);
+    };
+
+    const onMove = (ev: PointerEvent) => {
+      const dx = Math.abs(ev.clientX - startX);
+      const dy = Math.abs(ev.clientY - startY);
+      if (dx > 8 || dy > 8) {
+        // Bewegung → Long-Press abbrechen, kein Tap.
+        cancelled = true;
+        cleanup();
+      }
+    };
+    const onUp = () => {
+      cleanup();
+      if (longPressed || cancelled) return;
+      // Kurzer Tap: Toggle-Selektion.
+      if (drag.selectedItem?.id === item.id) {
+        drag.clearSelection();
+      } else {
+        drag.selectItem(item);
+        setOpen(false);
+      }
+    };
+    const onCancel = () => {
+      cancelled = true;
+      cleanup();
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onCancel);
+  };
 
   // Pointerdown auf einem Item: Drag erst nach kleiner Bewegung starten
   // (sonst feuert ein einfacher Klick versehentlich auch einen Drag).
@@ -43,16 +121,7 @@ export function Inventory() {
       window.removeEventListener("pointerup", onUp);
       // Reiner Klick (kein Drag): Beschreibung zeigen.
       if (!started) {
-        // Spezielle „Lese“-Items: eigenes Overlay statt nüchterner Beschreibung.
-        if (item.id === "e67Handbook") {
-          api.setFlag("readHandbook");
-          openHandbook();
-        } else if (item.id === "residentId") {
-          api.setFlag("examinedResidentId");
-          openIdCard();
-        } else {
-          api.showText([item.name, item.description]);
-        }
+        examineItem(item);
       } else {
         // Wenn beim Loslassen kein Drop-Ziel über uns lag, beendet der
         // globale Listener den Drag von selbst. Hier nichts zu tun.
@@ -68,6 +137,7 @@ export function Inventory() {
     e: React.PointerEvent<HTMLButtonElement>,
     target: InventoryItem,
   ) => {
+    // Desktop-Drag-Drop-Pfad.
     if (!drag.dragItem) return;
     e.preventDefault();
     e.stopPropagation();
@@ -79,6 +149,24 @@ export function Inventory() {
       targetKind: "item",
       targetLabel: target.name,
     });
+  };
+
+  // Tap-to-Use auf ein anderes Inventar-Item (Mobile-Pfad).
+  const handleItemTapAsTarget = (target: InventoryItem) => {
+    if (!drag.selectedItem) return false;
+    if (drag.selectedItem.id === target.id) {
+      drag.clearSelection();
+      return true;
+    }
+    const source = drag.consumeActive();
+    if (!source) return true;
+    combineItem(source.id, {
+      api,
+      targetId: target.id,
+      targetKind: "item",
+      targetLabel: target.name,
+    });
+    return true;
   };
 
   return (
@@ -128,17 +216,42 @@ export function Inventory() {
               <div className="grid grid-cols-4 gap-2">
                 {inventory.map((item) => {
                   const isDragging = drag.dragItem?.id === item.id;
+                  const isSelected = drag.selectedItem?.id === item.id;
                   return (
                     <button
                       key={item.id}
                       type="button"
                       title={item.name}
-                      onPointerDown={(e) => handleItemPointerDown(e, item)}
-                      onPointerUp={(e) => handleItemPointerUp(e, item)}
+                      onPointerDown={(e) => {
+                        if (isCoarse) {
+                          // Mobile: zuerst prüfen, ob ein Tap-Target-Drop fällig ist.
+                          if (drag.selectedItem && drag.selectedItem.id !== item.id) {
+                            // Wird im onClick-Pfad behandelt — hier nichts tun.
+                            return;
+                          }
+                          handleItemPointerDownTouch(e, item);
+                        } else {
+                          handleItemPointerDown(e, item);
+                        }
+                      }}
+                      onPointerUp={(e) => {
+                        if (isCoarse) return;
+                        handleItemPointerUp(e, item);
+                      }}
+                      onClick={() => {
+                        if (!isCoarse) return;
+                        // Wenn ein anderes Item bereits selektiert ist:
+                        // dieses hier ist das Ziel der Kombination.
+                        if (drag.selectedItem && drag.selectedItem.id !== item.id) {
+                          handleItemTapAsTarget(item);
+                        }
+                      }}
                       className={`group relative flex aspect-square items-center justify-center rounded-sm border bg-secondary/30 p-1 transition ${
                         isDragging
                           ? "border-amber-glow/30 opacity-30"
-                          : "border-border hover:border-amber-glow/70 hover:bg-amber-glow/10"
+                          : isSelected
+                            ? "border-amber-glow bg-amber-glow/15 shadow-[0_0_14px_rgba(255,170,60,0.45)]"
+                            : "border-border hover:border-amber-glow/70 hover:bg-amber-glow/10"
                       }`}
                     >
                       <ItemIcon id={item.id} size={28} title={item.name} />
@@ -147,9 +260,19 @@ export function Inventory() {
                 })}
               </div>
               <div className="mt-3 border-t border-border/60 pt-2 font-mono-crt text-[10px] leading-relaxed text-muted-foreground">
-                Klick: ansehen.
-                <br />
-                Halten + ziehen: kombinieren.
+                {isCoarse ? (
+                  <>
+                    Tippen: verwenden.
+                    <br />
+                    Halten: ansehen.
+                  </>
+                ) : (
+                  <>
+                    Klick: ansehen.
+                    <br />
+                    Halten + ziehen: kombinieren.
+                  </>
+                )}
               </div>
             </>
           )}
