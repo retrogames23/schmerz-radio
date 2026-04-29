@@ -12,6 +12,7 @@ import { dialogs } from "./dialogs";
 import { scenes } from "./scenes";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/auth/AuthContext";
+import { markEssentialAssetsLoaded as notifyLoaderEssentialAssets } from "@/llm/webLlmLoader";
 import type {
   GameApi,
   CutsceneId,
@@ -70,6 +71,10 @@ interface GameContextValue extends GameState {
   freeChatNpcId: string | null;
   openFreeChat: (npcId: string) => void;
   closeFreeChat: () => void;
+  /** True, sobald die Assets der ersten Szene geladen sind. */
+  isEssentialAssetsLoaded: boolean;
+  /** Wird aus der SceneView aufgerufen, wenn der erste Hintergrund da ist. */
+  markEssentialAssetsLoaded: () => void;
   setCaption: (s: string | null) => void;
   closeText: () => void;
   advanceDialog: (nextId?: string) => void;
