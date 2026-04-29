@@ -37,8 +37,13 @@ type Engine = {
   };
 };
 
-const PRIMARY_MODEL = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
-const FALLBACK_MODEL = "Phi-3.5-mini-instruct-q4f16_1-MLC";
+// Modell-Kaskade: gutes Deutsch zuerst, bei VRAM-Mangel kleiner werden.
+// 8B (~4–5 GB) → 3B (~2 GB) → 1B (~700 MB).
+const MODEL_CASCADE = [
+  "Llama-3.1-8B-Instruct-q4f16_1-MLC",
+  "Llama-3.2-3B-Instruct-q4f16_1-MLC",
+  "Llama-3.2-1B-Instruct-q4f16_1-MLC",
+];
 
 let engine: Engine | null = null;
 let loadingPromise: Promise<Engine> | null = null;
@@ -103,14 +108,28 @@ export function startLocalLlmLoad(): Promise<Engine> {
         });
       },
     }) as unknown as Engine;
-    try {
-      await eng.reload(PRIMARY_MODEL);
-    } catch (e) {
+    let lastErr: unknown = null;
+    let loaded = false;
+    for (let i = 0; i < MODEL_CASCADE.length; i++) {
       if (cancelled) throw new Error("cancelled");
-      console.warn("WebLLM primary model failed, trying fallback:", e);
-      emit({ text: "Primärmodell fehlgeschlagen — versuche Ausweich-Modell …" });
-      await eng.reload(FALLBACK_MODEL);
+      const model = MODEL_CASCADE[i];
+      try {
+        if (i > 0) {
+          emit({
+            text: `Vorheriges Modell zu groß — versuche kleineres (${i + 1}/${MODEL_CASCADE.length}) …`,
+            pct: 0,
+          });
+        }
+        await eng.reload(model);
+        loaded = true;
+        break;
+      } catch (e) {
+        if (cancelled) throw new Error("cancelled");
+        console.warn(`WebLLM model ${model} failed:`, e);
+        lastErr = e;
+      }
     }
+    if (!loaded) throw lastErr ?? new Error("Kein Modell konnte geladen werden.");
     if (cancelled) throw new Error("cancelled");
     engine = eng;
     emit({ phase: "ready", text: "Lokales Modell bereit.", pct: 1 });

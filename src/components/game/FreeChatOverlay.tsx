@@ -3,6 +3,7 @@ import { useGame } from "@/game/GameContext";
 import { useAuth } from "@/auth/AuthContext";
 import { getPersona } from "@/game/npcPersonas";
 import { buildSystemPrompt } from "@/game/promptBuilder";
+import { getFewshotMetaDeflection } from "@/game/promptBuilder";
 import {
   consumePatience,
   getPatience,
@@ -44,7 +45,7 @@ function LocalLoadingFooter({
           onClick={onCancel}
           className="rounded-sm border border-rust/50 px-2 py-1 font-mono-crt text-[10px] uppercase tracking-widest text-rust hover:bg-rust/10"
         >
-          Abbrechen · Cloud nutzen
+          Später · Dialog schließen
         </button>
       </div>
       <div className="h-1.5 w-full overflow-hidden rounded-sm bg-background/60">
@@ -65,9 +66,10 @@ function LocalLoadingFooter({
         </span>
       </div>
       <p className="mt-2 font-mono-crt text-[10px] leading-relaxed text-muted-foreground">
-        Das Spiel ist nicht abgestürzt. Beim ersten Mal wird ein kleines
-        Sprachmodell (~600 MB) in deinen Browser geladen. Folge-Gespräche
-        starten dann sofort.
+        Das Spiel ist nicht abgestürzt. Beim ersten Mal wird ein lokales
+        Sprachmodell (~4–5 GB, je nach Hardware kleiner) in deinen Browser
+        geladen. Du kannst diesen Dialog schließen — der Download läuft im
+        Hintergrund weiter.
       </p>
     </div>
   );
@@ -111,8 +113,7 @@ function FreeChatInner({
 }) {
   const game = useGame();
   const persona = getPersona(npcId)!;
-  const { runtime, status, cancelLocalLoad, switchToCloud } =
-    useLlmRuntime(npcId);
+  const { runtime, status } = useLlmRuntime(npcId);
   const cloudFallbackRef = useRef<LlmRuntime | null>(null);
 
   const [messages, setMessages] = useState<UiMsg[]>([]);
@@ -158,8 +159,15 @@ function FreeChatInner({
     setMessages(next);
     setSending(true);
     try {
+      const fewshot: ChatMsg[] = getFewshotMetaDeflection(persona).flatMap(
+        (ex) => [
+          { role: "user", content: ex.user } as ChatMsg,
+          { role: "assistant", content: ex.assistant } as ChatMsg,
+        ],
+      );
       const chatMsgs: ChatMsg[] = [
         { role: "system", content: systemPrompt },
+        ...fewshot,
         ...next.map((m) => ({ role: m.role, content: m.content }) as ChatMsg),
       ];
 
@@ -293,8 +301,10 @@ function FreeChatInner({
             text={status.loading.text}
             pct={status.loading.pct}
             onCancel={() => {
-              cancelLocalLoad();
-              switchToCloud();
+              // Lade-Vorgang läuft im Hintergrund weiter (Singleton),
+              // damit der Spieler beim nächsten Free-Mode davon profitiert.
+              // Wir schließen nur den Dialog.
+              onClose();
             }}
           />
         )}
