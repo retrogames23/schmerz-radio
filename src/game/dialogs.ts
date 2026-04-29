@@ -3474,6 +3474,13 @@ export const dialogs: Record<string, DialogTree> = {
         id: "iw3",
         speaker: "INSA",
         text: "Frau Kowalks Tochter. 4317-K. Ich brauche eine saubere Antwort von E70-K — Transferbogen, Bewohnernummer, Heim. Sie wissen, wie das geht: Ausgabestelle, Quittung Schicht B, Rohrpost.",
+        next: "iw3b",
+      },
+      iw3b: {
+        id: "iw3b",
+        speaker: "INSA",
+        text: "Frau Kowalk steht unten an der Nährstoffausgabe — Kantine 3602, E67, Schicht B. Graue Haare, Kittel, immer am linken Tresen. Sie kennt den Vorgang. Reden Sie mit ihr, nicht mit Brust.",
+        subtext: "»Reden Sie mit ihr, nicht mit Brust.« — eine kleine Warnung, ruhig hingelegt.",
         next: "iw4",
       },
       iw4: {

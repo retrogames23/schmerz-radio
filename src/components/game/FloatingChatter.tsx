@@ -154,13 +154,19 @@ export function FloatingChatter({
   const anchor = config.anchors[bubble.npc];
   const label = config.labels[bubble.npc] ?? bubble.npc;
 
+  // Sprechblase ist max. 260 px breit und um -50 % horizontal verschoben,
+  // ragt also je nach Anker links/rechts aus dem Bild heraus. Wir klemmen
+  // den effektiven Anker so, dass eine ~150 px breite Halb-Bubble immer
+  // innerhalb der Szene bleibt (Annahme: Szene ≥ 600 px breit ⇒ ~25 %).
+  const clampedX = Math.min(78, Math.max(22, anchor.x));
+
   return (
     <div
       className={`chatter-bubble pointer-events-none absolute z-30 ${
         bubble.fadingOut ? "is-out" : ""
       }`}
       style={{
-        left: `${anchor.x}%`,
+        left: `${clampedX}%`,
         top: `${anchor.y}%`,
       }}
       aria-live="polite"
