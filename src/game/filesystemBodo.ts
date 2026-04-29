@@ -344,6 +344,27 @@ const HOME_BODO: FsDir = {
       requires: "bodoLeftForB3",
       content: LAYARD_TXT,
     },
+    {
+      type: "file",
+      name: ".forge.macro",
+      kind: "text",
+      size: 320,
+      date: "—",
+      content: [
+        "# .forge.macro — interne werkstatt-vorlage",
+        "# bodo, halbtags. wird vom befehl »forge« geladen.",
+        "#",
+        "# eingaben (im inventar erwartet):",
+        "#   - quittungsbogen schicht b (blanko)",
+        "#   - trockensiegel-abdruck (schicht a)",
+        "#   - aushang 7.1 (original, mit kopfzeile)",
+        "#   - eine schicht-b-gegenzeichnung (z.b. wartung)",
+        "#",
+        "# ausgabe: quittung 4317-k, fertig zum versand per rohrpost.",
+        "# wer das hier liest: bitte nicht für blödsinn benutzen.",
+        "#                                          — b.",
+      ],
+    },
   ],
 };
 
