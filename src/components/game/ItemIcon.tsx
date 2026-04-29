@@ -364,7 +364,133 @@ const ICON_MAP: Record<InventoryItemId, () => React.ReactElement> = {
   b3Authorization: B3AuthorizationIcon,
   b3Ration: B3RationIcon,
   paramedicsReport: ParamedicsReportIcon,
+  pencilStub: PencilStubIcon,
+  siegelAbdruck: SiegelAbdruckIcon,
+  aushang71Original: Aushang71Icon,
+  quittungBlankoB: QuittungBlankoIcon,
+  quittungForged4317: QuittungForgedIcon,
+  tillaTransfer: TillaTransferIcon,
 };
+
+/* ─── Akt-I-Pflichträtsel: Zusatz-Icons ─────────────────── */
+
+/** Bleistiftstummel — kurzer, abgenutzter Bleistift. */
+function PencilStubIcon() {
+  return (
+    <>
+      {/* Spitze */}
+      <rect x="4" y="11" width="2" height="2" fill={ICON_BG} />
+      <rect x="6" y="10" width="2" height="4" fill={ICON_HI} />
+      {/* Holzkörper */}
+      <rect x="8" y="9" width="9" height="6" fill={ICON_FG} />
+      <rect x="8" y="9" width="9" height="1" fill={ICON_HI} />
+      <rect x="8" y="14" width="9" height="1" fill={ICON_DK} />
+      {/* Metallhülse + Radiergummi */}
+      <rect x="17" y="9" width="2" height="6" fill={ICON_DK} />
+      <rect x="19" y="10" width="2" height="4" fill={ICON_HI} />
+    </>
+  );
+}
+
+/** Trockensiegel-Abdruck — Bleistift-Reibung auf dünnem Papier. */
+function SiegelAbdruckIcon() {
+  return (
+    <>
+      <rect x="3" y="3" width="18" height="18" fill={ICON_HI} />
+      <rect x="3" y="3" width="18" height="1" fill={ICON_FG} />
+      {/* Wappen-Kontur */}
+      <rect x="9" y="6" width="6" height="1" fill={ICON_DK} />
+      <rect x="8" y="7" width="8" height="1" fill={ICON_DK} />
+      <rect x="8" y="8" width="1" height="6" fill={ICON_DK} />
+      <rect x="15" y="8" width="1" height="6" fill={ICON_DK} />
+      <rect x="9" y="14" width="6" height="1" fill={ICON_DK} />
+      <rect x="10" y="15" width="4" height="1" fill={ICON_DK} />
+      <rect x="11" y="16" width="2" height="1" fill={ICON_DK} />
+      {/* Reibungs-Schraffur */}
+      <rect x="6" y="18" width="12" height="1" fill={ICON_DK} opacity="0.4" />
+    </>
+  );
+}
+
+/** Aushang 7.1 — vergilbtes Faksimile. */
+function Aushang71Icon() {
+  return (
+    <>
+      <rect x="4" y="3" width="16" height="18" fill={ICON_FG} />
+      <rect x="4" y="3" width="16" height="2" fill={ICON_HI} />
+      <rect x="4" y="3" width="16" height="1" fill={ICON_DK} />
+      {/* "7.1" */}
+      <rect x="6" y="6" width="3" height="1" fill={ICON_DK} />
+      <rect x="8" y="7" width="1" height="1" fill={ICON_DK} />
+      <rect x="7" y="8" width="1" height="1" fill={ICON_DK} />
+      <rect x="10" y="8" width="1" height="1" fill={ICON_DK} />
+      <rect x="12" y="6" width="1" height="3" fill={ICON_DK} />
+      {/* Textzeilen */}
+      <rect x="6" y="11" width="12" height="1" fill={ICON_DK} opacity="0.7" />
+      <rect x="6" y="13" width="11" height="1" fill={ICON_DK} opacity="0.7" />
+      <rect x="6" y="15" width="12" height="1" fill={ICON_DK} opacity="0.7" />
+      <rect x="6" y="17" width="9" height="1" fill={ICON_DK} opacity="0.7" />
+    </>
+  );
+}
+
+/** Blanko-Quittungsbogen Schicht B — leeres Carbon-Formular. */
+function QuittungBlankoIcon() {
+  return (
+    <>
+      <rect x="4" y="3" width="16" height="18" fill={ICON_HI} />
+      <rect x="4" y="3" width="16" height="2" fill={ICON_DK} />
+      <rect x="14" y="4" width="5" height="1" fill={ICON_HI} />
+      {/* Linien */}
+      <rect x="6" y="8" width="12" height="1" fill={ICON_DK} opacity="0.5" />
+      <rect x="6" y="11" width="12" height="1" fill={ICON_DK} opacity="0.5" />
+      <rect x="6" y="14" width="12" height="1" fill={ICON_DK} opacity="0.5" />
+      <rect x="6" y="17" width="8" height="1" fill={ICON_DK} opacity="0.5" />
+      {/* Eselsohr */}
+      <rect x="17" y="18" width="3" height="3" fill={ICON_FG} />
+      <rect x="17" y="18" width="1" height="1" fill={ICON_DK} />
+    </>
+  );
+}
+
+/** Gefälschte Quittung 4317 — wie Blanko, aber mit Stempel + Eintrag. */
+function QuittungForgedIcon() {
+  return (
+    <>
+      <rect x="4" y="3" width="16" height="18" fill={ICON_HI} />
+      <rect x="4" y="3" width="16" height="2" fill={ICON_DK} />
+      {/* Eintrag */}
+      <rect x="6" y="7" width="10" height="1" fill={ICON_DK} />
+      <rect x="6" y="9" width="8" height="1" fill={ICON_DK} opacity="0.7" />
+      <rect x="6" y="11" width="9" height="1" fill={ICON_DK} opacity="0.7" />
+      {/* Stempel oben rechts */}
+      <rect x="14" y="13" width="6" height="6" fill={ICON_DK} opacity="0.7" />
+      <rect x="15" y="14" width="4" height="4" fill={ICON_FG} />
+      <rect x="15" y="14" width="4" height="1" fill={ICON_HI} />
+      <rect x="16" y="16" width="2" height="1" fill={ICON_DK} />
+    </>
+  );
+}
+
+/** Tilla-Transferbogen — eingehende Rohrpost-Antwort, mit Pfeil. */
+function TillaTransferIcon() {
+  return (
+    <>
+      <rect x="3" y="4" width="18" height="16" fill={ICON_FG} />
+      <rect x="3" y="4" width="18" height="1" fill={ICON_HI} />
+      <rect x="3" y="19" width="18" height="1" fill={ICON_DK} />
+      {/* Pfeil "→" */}
+      <rect x="6" y="11" width="9" height="2" fill={ICON_BG} />
+      <rect x="13" y="9" width="2" height="2" fill={ICON_BG} />
+      <rect x="14" y="10" width="2" height="2" fill={ICON_BG} />
+      <rect x="15" y="11" width="2" height="2" fill={ICON_BG} />
+      <rect x="14" y="13" width="2" height="2" fill={ICON_BG} />
+      <rect x="13" y="14" width="2" height="2" fill={ICON_BG} />
+      {/* Stempelpunkt unten */}
+      <rect x="6" y="16" width="3" height="2" fill={ICON_DK} />
+    </>
+  );
+}
 
 export function ItemIcon({ id, className, size = 24, title }: Props) {
   const Render = ICON_MAP[id];
