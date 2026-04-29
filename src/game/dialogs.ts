@@ -3490,6 +3490,9 @@ export const dialogs: Record<string, DialogTree> = {
   insaWaitingForTransfer: {
     id: "insaWaitingForTransfer",
     start: "iw1",
+    onEnd: (api) => {
+      api.setFlag("insaGaveTransferTask");
+    },
     lines: {
       iw1: {
         id: "iw1",
