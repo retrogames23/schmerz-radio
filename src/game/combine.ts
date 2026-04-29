@@ -379,7 +379,7 @@ const LAYARD_NOPE: string[] = [
   "Layard schaut beide Dinge an und kommt zu keinem Ergebnis.",
   "Nein. Auch beim zweiten Mal nicht.",
   "Das passt zusammen wie B2-Pampe und Geschmack.",
-  "Worag legt es zurück, ohne es ausgesprochen zu haben.",
+  "Layard legt es zurück, ohne es ausgesprochen zu haben.",
   "Das gibt das Standardprotokoll nicht her.",
   "Es bleibt, was es ist. Das ist meistens schon zu viel.",
   "Vielleicht später. Vielleicht morgen. Vielleicht nie.",
