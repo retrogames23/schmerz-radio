@@ -3400,6 +3400,92 @@ export const dialogs: Record<string, DialogTree> = {
   },
 
   // ═════════════════════════════════════════════════════════════
+  // BODO — Gegenzeichnung Quittung 4317-K (Akt-I-Pflichträtsel)
+  // ═════════════════════════════════════════════════════════════
+  bodoSignsTilla: {
+    id: "bodoSignsTilla",
+    start: "bt1",
+    onEnd: (api) => {
+      api.setFlag("bodoSignedForTilla");
+    },
+    lines: {
+      bt1: {
+        id: "bt1",
+        speaker: "LAYARD",
+        text: "Bodo. Eine kleine Sache. Schicht-B-Quittung. Wartung. Sie kennen das.",
+        subtext: "Layard hält den Bogen so flach, dass nur das Kopffeld sichtbar ist.",
+        next: "bt2",
+      },
+      bt2: {
+        id: "bt2",
+        speaker: "BODO",
+        text: "Schicht B. Kulanz. Was hat Frau Kowalk wieder unten an der Theke …",
+        subtext: "Er greift den Bogen, ohne hinzusehen. Wie hundert Wartungsformulare zuvor.",
+        next: "bt3",
+      },
+      bt3: {
+        id: "bt3",
+        speaker: "SYSTEM",
+        text: "[ Bodo sucht den Stift, findet keinen. Lotti zwinkert. Layard reicht ihm den Bleistiftstummel. ]",
+        next: "bt4",
+      },
+      bt4: {
+        id: "bt4",
+        speaker: "BODO",
+        text: "Marschke, Schicht B, Kulanz. Datum kennen Sie selber. — So. Wo unterschreibt man da heute eigentlich.",
+        subtext: "Er findet das Feld trotzdem. Setzt den Strich.",
+        next: "bt5",
+      },
+      bt5: {
+        id: "bt5",
+        speaker: "LAYARD",
+        text: "Hier. Danke, Bodo.",
+        next: "bt6",
+      },
+      bt6: {
+        id: "bt6",
+        speaker: "BODO",
+        text: "Schon gut. Wenn die Theke das braucht, kriegt die Theke das. Hauptsache, Lotti merkt nichts vom Lärm.",
+        subtext: "Lotti merkt alles. Sie sagt nur nichts.",
+        end: true,
+      },
+    },
+  },
+
+  // Insa hält den Code zurück, solange die Tilla-Sache nicht geklärt ist.
+  insaWaitingForTransfer: {
+    id: "insaWaitingForTransfer",
+    start: "iw1",
+    lines: {
+      iw1: {
+        id: "iw1",
+        speaker: "SYSTEM",
+        text: "[ Vermittlung. Insa. Im Hintergrund: das stete Klacken einer Tastatur. ]",
+        next: "iw2",
+      },
+      iw2: {
+        id: "iw2",
+        speaker: "INSA",
+        text: "Worag. Bevor Sie fragen — der Code liegt fertig. Aber ich gebe ihn heute nicht raus, solange auf meinem Tisch noch ein offener Vorgang aus E67 liegt.",
+        subtext: "Sie sagt das ruhig. Es ist keine Drohung. Es ist eine Reihenfolge.",
+        next: "iw3",
+      },
+      iw3: {
+        id: "iw3",
+        speaker: "INSA",
+        text: "Frau Kowalks Tochter. 4317-K. Ich brauche eine saubere Antwort von E70-K — Transferbogen, Bewohnernummer, Heim. Sie wissen, wie das geht: Ausgabestelle, Quittung Schicht B, Rohrpost.",
+        next: "iw4",
+      },
+      iw4: {
+        id: "iw4",
+        speaker: "INSA",
+        text: "Sobald der Bogen bei Ihnen aus dem Rohr fällt, rufen Sie mich noch einmal an. Dann bekommen Sie Ihren Code. Auf Wiederhören, Worag.",
+        end: true,
+      },
+    },
+  },
+
+  // ═════════════════════════════════════════════════════════════
   // ENNIS KORR — Tür 2614 (Türgespräch)
   // ═════════════════════════════════════════════════════════════
   ennisAtDoor: {

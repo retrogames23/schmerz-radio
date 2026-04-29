@@ -129,6 +129,20 @@ export const HANDBOOK_CHAPTERS: HandbookChapter[] = [
     ],
   },
   {
+    id: "p71",
+    shortTitle: "§7.1 Aushang Schicht A",
+    title: "§7.1 Aushang — Bewohnervertretung E67, Schicht A",
+    body: [
+      "Auf der Innenseite eingeklebt: ein **vergilbtes, dünnes Aushangblatt**, an drei Stellen mit Tesafilm fixiert. Ecke oben rechts: Trockensiegel »BEWOHNERVERTRETUNG E67 / SCHICHT A«. Format: ein halbes A5, Carbon-Durchschlag (zweite Lage).",
+      "**Aushang 7.1 — Verfahren bei Verlegung in Folgeeinrichtung.**",
+      "- Vor Einleitung einer Verlegung ist eine **Quittung Schicht B** auszufüllen (Code, Schichtkürzel, Gegenzeichnung).",
+      "- Quittung samt Identifikator (Code-K) per **Pneumatik-Rohrpost** an Ausgabestelle E70-K übermitteln.",
+      "- E70-K antwortet mit dem **Transferbogen** (Bewohnernummer der Folgeeinrichtung). Erst dieser gilt als Verlegungsnachweis.",
+      "> *„Ein formal vollständiger Vorgang braucht keinen Anruf. Insa wird sich freuen.“* — handschriftlicher Randvermerk, eckig, kein Datum.",
+      "Unter dem Aushang, mit Bleistift, eilig: »P. — wenn du das mal brauchst: das Original ist hier eingeklebt. Reiß es raus, wenn es sein muss. — B.«",
+    ],
+  },
+  {
     id: "p8",
     shortTitle: "§8 Versammlung",
     title: "§8 Bewohnerversammlung",

@@ -139,6 +139,7 @@ const COMMANDS = [
   "sysupdate",
   "trouble",
   "maint",
+  "forge",
 ];
 
 /** Longest common string prefix across all candidates. */
@@ -1511,6 +1512,16 @@ export function Terminal() {
 
     if (cmd === "help") {
       newLines.push(...buildHelpLines(bodoMode));
+      // Hausmeister-Werkstatt: Macro »forge« taucht nur dann in der Hilfe
+      // auf, wenn Layard wirklich anfangen kann, eine Quittung zu bauen
+      // (Aushang 7.1 herausgelöst).
+      if (bodoMode && flags.has("extractedAushang71") && !flags.has("forgedQuittung4317")) {
+        newLines.push(
+          { text: "", kind: "out" },
+          { text: "WERKSTATT (intern):", kind: "system" },
+          { text: "  forge         — Quittungsmacher (.forge.macro / Schicht-B-Vorlage)", kind: "out" },
+        );
+      }
       if (!bodoMode && flags.has("calledInsa2") && !flags.has("calledStegmann")) {
         newLines.push(
           { text: "", kind: "out" },
@@ -2336,6 +2347,81 @@ export function Terminal() {
           text: `maint: Unbekannter Unterbefehl »${sub}«. Versuchen Sie: maint list  /  maint cancel <id>`,
           kind: "out",
         });
+      }
+    } else if (head === "forge") {
+      // Akt-I-Pflichträtsel „Quittung 4317". Nur auf Bodos Konsole sinnvoll —
+      // die Macro-Datei /home/bodo/.forge.macro liegt nur dort. Auf Worags
+      // Maschine ist der Befehl unbekannt.
+      if (!bodoMode) {
+        newLines.push({
+          text: "bash: forge: Befehl nicht gefunden.",
+          kind: "out",
+        });
+      } else if (api.hasItem("quittungForged4317")) {
+        newLines.push({
+          text: "forge: Eine fertige Quittung 4317-K liegt bereits in der Aktentasche.",
+          kind: "out",
+        });
+      } else {
+        const need: Array<[string, string]> = [
+          ["quittungBlankoB", "Quittungsbogen Schicht B (blanko)"],
+          ["siegelAbdruck", "Trockensiegel-Abdruck"],
+          ["aushang71Original", "Aushang 7.1 (Original)"],
+        ];
+        const missing = need.filter(([id]) => !api.hasItem(id as never));
+        const signed = api.hasFlag("bodoSignedForTilla");
+        if (missing.length > 0 || !signed) {
+          newLines.push(
+            { text: "── forge — Quittungsmacher (intern) ──", kind: "system" },
+            { text: "  Voraussetzungen:", kind: "out" },
+          );
+          need.forEach(([id, label]) => {
+            const ok = api.hasItem(id as never);
+            newLines.push({
+              text: `  [${ok ? "✓" : " "}] ${label}`,
+              kind: ok ? "out" : "system",
+            });
+          });
+          newLines.push({
+            text: `  [${signed ? "✓" : " "}] Bodos Gegenzeichnung (Schicht-B)`,
+            kind: signed ? "out" : "system",
+          });
+          newLines.push(
+            { text: "", kind: "out" },
+            {
+              text: "forge: noch nicht alles beisammen. Bitte fehlende Posten beschaffen.",
+              kind: "out",
+            },
+          );
+        } else {
+          setLines((prev) => [...prev, ...newLines]);
+          runScriptedSequence(
+            [
+              { text: ">> forge: lade .forge.macro …", delayMs: 0, kind: "system", beep: true },
+              { text: ">> Übernehme Trockensiegel-Kontur …", delayMs: 360 },
+              { text: ">> Übernehme Aushang-7.1-Kopfzeile …", delayMs: 380 },
+              { text: ">> Setze Code: 4317-K   Schicht: B   Empfänger: E70-K", delayMs: 400, beep: true },
+              { text: ">> Übernehme Gegenzeichnung: B. Marschke (Schicht-B-Kulanz)", delayMs: 380 },
+              { text: ">> Drucke Carbon-Durchschlag …", delayMs: 320 },
+              { text: ">> Fertig. Quittung liegt in der Aktentasche.", delayMs: 280, kind: "system" },
+            ],
+            () => {
+              api.setFlag("forgedQuittung4317");
+              api.addItem({
+                id: "quittungForged4317",
+                name: "Quittung 4317-K (Schicht B, fertig)",
+                description:
+                  "Hellblauer Carbon-Quittungsbogen, akkurat ausgefüllt: »QUITTUNG / SCHICHT B / KOPIE FÜR E70 / CODE 4317-K«. Trockensiegel-Abdruck Schicht A in der oberen Ecke, daneben Bodos Wartungs-Signatur. Sieht aus, als wäre sie nie etwas anderes gewesen als echt.",
+              });
+            },
+          );
+          const h = termHistoryRef.current;
+          if (h[h.length - 1] !== raw) h.push(raw);
+          historyCursorRef.current = -1;
+          draftRef.current = "";
+          setInput("");
+          return;
+        }
       }
     } else {
       newLines.push({

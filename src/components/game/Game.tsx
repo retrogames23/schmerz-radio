@@ -27,6 +27,7 @@ import { DsaCharacterSheet } from "./DsaCharacterSheet";
 import { HandbookOverlay } from "./HandbookOverlay";
 import { IdCardOverlay } from "./IdCardOverlay";
 import { LobbyGate } from "./LobbyGate";
+import { PneumaticTubeOverlay } from "./PneumaticTubeOverlay";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useGame } from "@/game/GameContext";
 
@@ -177,6 +178,7 @@ function GameStage({
             <HandbookOverlay open={handbookOpen} onClose={closeHandbook} />
             <IdCardOverlay open={idCardOpen} onClose={closeIdCard} />
             <LobbyGate />
+            <PneumaticTubeOverlay />
             <Ending />
             <PauseMenu open={pauseOpen} onClose={() => setPauseOpen(false)} />
           </div>

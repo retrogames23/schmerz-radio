@@ -84,6 +84,12 @@ export const scenes: Record<string, Scene> = {
             // Layard war im Serverraum 5610 und hat »tap« ausgeführt.
             // Jetzt ruft er Insa zurück → sie hält ihr Versprechen und
             // legt ihm die Code-Mail (Datum 06.11.1997) ins Postfach.
+            // Pflicht: Layard muss die Tilla-Frage geklärt haben (Transferbogen
+            // aus der Rohrpost). Sonst bricht Insa ab.
+            if (!api.hasFlag("receivedTillaTransfer")) {
+              api.startDialog("insaWaitingForTransfer");
+              return;
+            }
             api.setFlag("calledForCode");
             api.startDialog("insa2");
           } else if (
@@ -94,6 +100,10 @@ export const scenes: Record<string, Scene> = {
             !api.hasFlag("calledForCode")
           ) {
             // Standardweg: Layard hat brav gemeldet → direkt zum Code.
+            if (!api.hasFlag("receivedTillaTransfer")) {
+              api.startDialog("insaWaitingForTransfer");
+              return;
+            }
             api.setFlag("calledForCode");
             api.startDialog("insa2");
           } else if (
@@ -461,6 +471,15 @@ export const scenes: Record<string, Scene> = {
           ) {
             api.setFlag("bodoSawFlyer");
             api.startDialog("bodoFlyer");
+          } else if (
+            // Akt-I-Pflichträtsel: Layard hat den Blanko-Quittungsbogen UND
+            // den Trockensiegel-Abdruck — er kann Bodo überreden, das Ding
+            // als „Wartungs-Schicht-B-Quittung" gegenzuzeichnen.
+            api.hasItem("quittungBlankoB") &&
+            api.hasItem("siegelAbdruck") &&
+            !api.hasFlag("bodoSignedForTilla")
+          ) {
+            api.startDialog("bodoSignsTilla");
           } else if (
             api.hasFlag("knowsLotti") &&
             api.hasFlag("elevatorMaintSeen") &&

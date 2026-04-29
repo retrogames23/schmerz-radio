@@ -6,6 +6,7 @@ import {
   type HandbookChapter,
 } from "@/game/e67Handbook";
 import { CloseButton } from "./CloseButton";
+import { useGame } from "@/game/GameContext";
 
 interface Props {
   open: boolean;
@@ -21,6 +22,10 @@ interface Props {
 export function HandbookOverlay({ open, onClose }: Props) {
   const [chapterId, setChapterId] = useState<string>(HANDBOOK_CHAPTERS[0].id);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const { api } = useGame();
+  const noticed = api.hasFlag("noticedTransferCode");
+  const hasPencil = api.hasItem("pencilStub");
+  const alreadyExtracted = api.hasFlag("extractedAushang71");
 
   // Beim Öffnen: scrollen wir das Kapitel an den Anfang.
   useEffect(() => {
@@ -135,6 +140,48 @@ export function HandbookOverlay({ open, onClose }: Props) {
               {chapter.title}
             </h1>
             <ChapterBody chapter={chapter} />
+
+            {chapter.id === "p71" && noticed && !alreadyExtracted && (
+              <div className="mt-5 rounded-sm border border-[#a87d2a] bg-[#ead8a8]/80 p-3 font-mono-crt text-xs text-[#5a4015]">
+                {hasPencil ? (
+                  <>
+                    <p className="mb-2">
+                      Layard fährt mit dem Bleistiftstummel die Tesa-Kanten nach.
+                      Der Aushang löst sich in einem Stück ab.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        api.setFlag("extractedAushang71");
+                        api.addItem({
+                          id: "aushang71Original",
+                          name: "Aushang 7.1 (Original)",
+                          description:
+                            "Das aus dem Handbuch herausgelöste, vergilbte Aushangblatt §7.1 — Verfahren bei Verlegung. Trägt den Trockensiegel-Stempel »BEWOHNERVERTRETUNG E67 / SCHICHT A« in der oberen rechten Ecke. Carbon-Durchschlag, zweite Lage.",
+                        });
+                        onClose();
+                        setTimeout(() => {
+                          api.showText([
+                            "Layard zieht den Aushang heraus. Auf der Rückseite hat",
+                            "irgendwer einmal mit Kuli notiert: »7.1 IST OFFIZIELL.«",
+                            "Drei Ausrufezeichen. Nicht durchgestrichen.",
+                            "[ Aushang 7.1 (Original) eingesteckt. ]",
+                          ]);
+                        }, 80);
+                      }}
+                      className="rounded-sm border border-[#6b4a16] bg-[#f4e8c8] px-3 py-1 text-[#2a1c0a] hover:bg-[#f0dfb0]"
+                    >
+                      ▸ Aushang 7.1 herauslösen
+                    </button>
+                  </>
+                ) : (
+                  <p className="italic">
+                    Die Tesa-Streifen halten fest. Mit einem Bleistift oder etwas
+                    Ähnlichem ließe sich die Klebekante nachfahren.
+                  </p>
+                )}
+              </div>
+            )}
 
             <Divider />
 
