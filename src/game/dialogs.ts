@@ -4327,8 +4327,8 @@ export const dialogs: Record<string, DialogTree> = {
         choices: [
           {
             // Lösungsweg A — Vertrauen via Ausweis + Philippe-Hinweis
-            text: "[ Bewohner-Ausweis zeigen ] Philippe sieht seit gestern schlecht aus. Ich gehe für ihn.",
-            requires: ["metPhilippe"],
+            text: "[ Bewohner-Ausweis zeigen ] Philippe sieht seit gestern schlecht aus. Ich gehe für ihn — Sie wissen, warum.",
+            requires: ["metPhilippe", "kowalkToldHerDaughter", "learnedMarteauPhilippeLink"],
             hiddenWhen: ["brustOutruled"],
             next: "kSideA1",
           },
@@ -4349,6 +4349,7 @@ export const dialogs: Record<string, DialogTree> = {
         id: "kSideA1",
         speaker: "KOWALK",
         text: "Marteau. — Marteau wohnt neben der Klopfwand. Ich weiß.",
+        subtext: "Sie hat die Vollmacht halb hochgehoben und tippt mit dem Finger auf die Unterschrift, bevor sie den Namen ausspricht.",
         next: "kSideA2",
       },
       kSideA2: {
