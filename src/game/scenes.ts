@@ -462,6 +462,15 @@ export const scenes: Record<string, Scene> = {
             api.setFlag("bodoSawFlyer");
             api.startDialog("bodoFlyer");
           } else if (
+            // Akt-I-Pflichträtsel: Layard hat den Blanko-Quittungsbogen UND
+            // den Trockensiegel-Abdruck — er kann Bodo überreden, das Ding
+            // als „Wartungs-Schicht-B-Quittung" gegenzuzeichnen.
+            api.hasItem("quittungBlankoB") &&
+            api.hasItem("siegelAbdruck") &&
+            !api.hasFlag("bodoSignedForTilla")
+          ) {
+            api.startDialog("bodoSignsTilla");
+          } else if (
             api.hasFlag("knowsLotti") &&
             api.hasFlag("elevatorMaintSeen") &&
             !api.hasFlag("bodoBackAfterB3")
