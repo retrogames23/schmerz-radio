@@ -28,7 +28,12 @@ export function useLlmRuntime(npcId: string): {
   useEffect(() => {
     let cancelled = false;
 
-    if (!isWebGpuAvailable()) {
+    const isCoarse =
+      typeof window !== "undefined" &&
+      !!window.matchMedia &&
+      window.matchMedia("(pointer: coarse)").matches;
+
+    if (isCoarse || !isWebGpuAvailable()) {
       const r = createCloudRuntime(npcId);
       runtimeRef.current = r;
       setStatus(r.status);
