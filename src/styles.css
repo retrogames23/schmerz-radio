@@ -616,3 +616,36 @@
   border-color: #6b1a0e;
   background: rgba(107, 26, 14, 0.14);
 }
+
+/* ===== Kontext-sensitive Cursor (Broken-Sword-Stil) =====
+   Vier Cursor-Bilder werden als statische Assets aus src/assets/cursors
+   per URL eingebunden. Hotspot.tsx setzt eine dieser Klassen je nach
+   Hotspot.kind. Hotspot-Punkt ist jeweils so gewählt, dass die intuitive
+   "Spitze" auf dem Pixel sitzt (Lupen-Mitte, Hand-Zeigefinger, etc.). */
+.cursor-look {
+  cursor: url("/cursors/look.svg") 13 13, crosshair;
+}
+.cursor-talk {
+  cursor: url("/cursors/talk.svg") 6 6, pointer;
+}
+.cursor-exit {
+  cursor: url("/cursors/exit.svg") 4 16, pointer;
+}
+/* Animierte Hand: zwei SVG-Frames im Wechsel.
+   `cursor` selbst ist nicht keyframe-animierbar in allen Browsern
+   verlässlich — wir wechseln stattdessen zwischen zwei Klassen über
+   einen :hover-Trick: zwei verschachtelte ::before-Ebenen gehen nicht
+   für den Cursor. Workaround: animation auf cursor-image via
+   step-Keyframes (funktioniert in Chromium/Firefox/WebKit aktuell). */
+.cursor-use {
+  cursor: url("/cursors/hand-1.svg") 11 4, pointer;
+  animation: cursor-hand 0.7s steps(2, end) infinite;
+}
+@keyframes cursor-hand {
+  0%, 49% {
+    cursor: url("/cursors/hand-1.svg") 11 4, pointer;
+  }
+  50%, 100% {
+    cursor: url("/cursors/hand-2.svg") 11 4, pointer;
+  }
+}

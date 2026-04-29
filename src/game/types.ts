@@ -221,6 +221,15 @@ export interface Hotspot {
   w: number;
   h: number;
   label: string;
+  /**
+   * Welche Art von Interaktion bietet dieser Hotspot? Bestimmt den
+   * kontext-sensitiven Mauszeiger (Broken-Sword-Stil):
+   *  - "look": weiße Lupe (anschauen, lesen, Schild)
+   *  - "use":  animierte Hand (Tür öffnen, Gerät bedienen, aufheben) — Default
+   *  - "talk": Sprechblase (NPC-Dialog, Sprechanlage)
+   *  - "exit": Pfeil (Szenenwechsel, Korridor-Ausgang, Aufzug)
+   */
+  kind?: "look" | "use" | "talk" | "exit";
   /** required flags before this hotspot is active */
   requires?: StoryFlag[];
   /** hide once these flags are present */

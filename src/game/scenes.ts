@@ -40,6 +40,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 20,
         label: "Schmerz-Radio",
+        kind: "use",
         onUse: (api) => api.openRadio(),
       },
       {
@@ -49,6 +50,7 @@ export const scenes: Record<string, Scene> = {
         w: 22,
         h: 30,
         label: "CentralOS Terminal",
+        kind: "use",
         onUse: (api) => api.openTerminal(),
       },
       {
@@ -58,6 +60,7 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 28,
         label: "Telefon",
+        kind: "use",
         // Only available after Layard saw the empty office on floor 3.
         requires: ["sawEmptyOffice"],
         hiddenWhen: ["calledInsaAfterE71"],
@@ -115,6 +118,7 @@ export const scenes: Record<string, Scene> = {
         w: 44,
         h: 30,
         label: "Bett",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "Ungemacht. Wie immer.",
@@ -128,6 +132,7 @@ export const scenes: Record<string, Scene> = {
         w: 22,
         h: 22,
         label: "B2-Ration",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "Synthetische Nährpaste B2.",
@@ -145,6 +150,7 @@ export const scenes: Record<string, Scene> = {
         w: 24,
         h: 34,
         label: "Fenster",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "Hinter dem Fenster: derselbe Innenhof wie gestern.",
@@ -159,6 +165,7 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 33,
         label: "Wohnungstür",
+        kind: "exit",
         onUse: (api) => {
           // Resonanz-Überlastung wurde ausgelöst (Radio @104,6),
           // Philippe steht beim ersten Heimkommen vor der Tür.
@@ -194,6 +201,7 @@ export const scenes: Record<string, Scene> = {
         w: 26,
         h: 78,
         label: "Philippe",
+        kind: "talk",
         requires: ["knockingHeard"],
         // Nach dem ersten "Warten"-Klick verschwindet der Dialog-Hotspot.
         // Er kommt erst wieder, wenn Layard die Wohnung verlässt und neu
@@ -217,6 +225,7 @@ export const scenes: Record<string, Scene> = {
         w: 26,
         h: 78,
         label: "Philippe",
+        kind: "talk",
         requires: ["paramedicsArrived"],
         onUse: (api) => {
           // Höchste Priorität: Layard hat die B3-Ration für Philippe und
@@ -284,6 +293,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 24,
         label: "Lampe",
+        kind: "look",
         requires: ["paramedicsArrived"],
         onUse: (api) =>
           api.showText([
@@ -299,6 +309,7 @@ export const scenes: Record<string, Scene> = {
         w: 38,
         h: 50,
         label: "Wand mit Klopfen (zur 2615)",
+        kind: "look",
         hiddenWhen: ["doorBrokenOpen"],
         onUse: (api) => {
           api.setFlag("knockingHeard");
@@ -319,6 +330,7 @@ export const scenes: Record<string, Scene> = {
         w: 38,
         h: 50,
         label: "Wand zur 2615 (still)",
+        kind: "look",
         requires: ["doorBrokenOpen"],
         onUse: (api) =>
           api.showText([
@@ -335,6 +347,7 @@ export const scenes: Record<string, Scene> = {
         w: 22,
         h: 55,
         label: "Telefon (Wandapparat)",
+        kind: "use",
         requires: ["talkedPhilippe2613"],
         hiddenWhen: ["calledLeitstelle"],
         onUse: (api) => {
@@ -349,6 +362,7 @@ export const scenes: Record<string, Scene> = {
         w: 24,
         h: 18,
         label: "Warten",
+        kind: "use",
         requires: ["calledLeitstelle"],
         hiddenWhen: ["paramedicsArrived"],
         onUse: (api) => {
@@ -387,6 +401,7 @@ export const scenes: Record<string, Scene> = {
         w: 6,
         h: 80,
         label: "In den Korridor",
+        kind: "exit",
         // Sobald die Sanitäter da sind, kann Layard hinaus. Beim ersten
         // Verlassen läuft die Bergungs-Cutscene; danach normales Navigieren.
         requires: ["paramedicsArrived"],
@@ -426,6 +441,7 @@ export const scenes: Record<string, Scene> = {
         w: 30,
         h: 60,
         label: "Bodo Marschke",
+        kind: "talk",
         // Wenn Bodo gerade unterwegs zum B3 holen ist, ist er nicht da.
         visible: (api) => {
           const away1 =
@@ -481,6 +497,7 @@ export const scenes: Record<string, Scene> = {
         w: 30,
         h: 50,
         label: "Bodos leerer Sessel",
+        kind: "look",
         requires: ["bodoLeftForB3"],
         hiddenWhen: ["bodoBackAfterB3Twice"],
         visible: (api) =>
@@ -503,6 +520,7 @@ export const scenes: Record<string, Scene> = {
         w: 22,
         h: 22,
         label: "Lotti (Katze)",
+        kind: "talk",
         onUse: (api) => {
           if (api.hasFlag("knowsLotti")) {
             api.showText([
@@ -528,6 +546,7 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 22,
         label: "Wandtelefon",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "Ein schwarzer Bakelit-Apparat. Hörer staubig.",
@@ -543,6 +562,7 @@ export const scenes: Record<string, Scene> = {
         w: 26,
         h: 32,
         label: "Bodos Terminal",
+        kind: "use",
         onUse: (api) => {
           const bodoAway =
             (api.hasFlag("bodoLeftForB3") &&
@@ -581,6 +601,7 @@ export const scenes: Record<string, Scene> = {
         w: 20,
         h: 80,
         label: "Zurück in den Korridor",
+        kind: "exit",
         onUse: (api) => {
           // Wenn Bodo gerade unterwegs ist: er kommt zurück, bevor Layard
           // den Raum verlassen kann. Beide treffen sich an der Tür.
@@ -652,6 +673,7 @@ export const scenes: Record<string, Scene> = {
         w: 18,
         h: 60,
         label: "Tür 2611 (zurück in die Wohnung)",
+        kind: "exit",
         onUse: (api) => api.goTo("apartment"),
       },
       // Tür 2613 — Philippes Wohnung. Bleibt jederzeit begehbar.
@@ -662,6 +684,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 50,
         label: "Tür 2613 (Philippe)",
+        kind: "exit",
         onUse: (api) => {
           // Vor dem Klingeln (= vor der Resonanz-Überlastung) ist Philippe
           // unterwegs im Komplex. Er öffnet nicht.
@@ -690,6 +713,7 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 42,
         label: "Tür 2615 (versiegelt)",
+        kind: "look",
         requires: ["paramedicsCutsceneSeen"],
         onUse: (api) =>
           api.showText([
@@ -707,6 +731,7 @@ export const scenes: Record<string, Scene> = {
         w: 12,
         h: 50,
         label: "Tür 2610 (Helka Vint)",
+        kind: "talk",
         onUse: (api) => {
           if (!api.hasFlag("metHelka")) {
             api.setFlag("metHelka");
@@ -739,6 +764,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 52,
         label: "Tür 2612 (Bodo Marschke)",
+        kind: "exit",
         onUse: (api) => api.goTo("apt2612"),
       },
       // Tür 2614 — Ennis Korr. Nur Türgespräch.
@@ -749,6 +775,7 @@ export const scenes: Record<string, Scene> = {
         w: 9,
         h: 50,
         label: "Tür 2614 (Ennis Korr)",
+        kind: "talk",
         onUse: (api) => {
           if (!api.hasFlag("metEnnis")) {
             api.setFlag("metEnnis");
@@ -779,6 +806,7 @@ export const scenes: Record<string, Scene> = {
         w: 16,
         h: 30,
         label: "Aufzug",
+        kind: "exit",
         // Sichtbar, solange keine aktive Wartungssperre auf dem Aufzug liegt.
         // Sobald die Sperre per `maint cancel 4711` storniert wurde
         // (elevatorMaintCleared), wird sie ignoriert und der Aufzug ist
@@ -798,6 +826,7 @@ export const scenes: Record<string, Scene> = {
         w: 16,
         h: 30,
         label: "Aufzug (gesperrt — Wartung 4711)",
+        kind: "look",
         requires: ["elevatorMaintBlocked"],
         hiddenWhen: ["elevatorMaintCleared"],
         onUse: (api) => {
@@ -825,6 +854,7 @@ export const scenes: Record<string, Scene> = {
         w: 20,
         h: 22,
         label: "Status-Monitor",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             ">> CENTRALOS v2.3 — SEKTOR-GATEWAY",
@@ -840,6 +870,7 @@ export const scenes: Record<string, Scene> = {
         w: 16,
         h: 20,
         label: "Keypad — Code eingeben",
+        kind: "use",
         onUse: (api) => {
           if (api.hasFlag("sectorDoorOpen")) {
             api.showText([
@@ -875,6 +906,7 @@ export const scenes: Record<string, Scene> = {
         w: 38,
         h: 60,
         label: "Sektor-Tür öffnen → Verbindungsgang",
+        kind: "exit",
         requires: ["sectorDoorOpen"],
         onUse: (api) => {
           if (!api.hasFlag("feetWontMove")) {
@@ -902,6 +934,7 @@ export const scenes: Record<string, Scene> = {
         w: 38,
         h: 60,
         label: "Tür betrachten",
+        kind: "look",
         hiddenWhen: ["calledInsa2"],
         onUse: (api) =>
           api.showText([
@@ -919,6 +952,7 @@ export const scenes: Record<string, Scene> = {
         w: 18,
         h: 60,
         label: "Zurück in die Lobby",
+        kind: "exit",
         onUse: (api) => api.goTo("floor1Lobby"),
       },
     ],
@@ -949,6 +983,7 @@ export const scenes: Record<string, Scene> = {
         w: 25,
         h: 50,
         label: "Empfangsdame",
+        kind: "talk",
         hiddenWhen: ["metReceptionist"],
         onUse: (api) => {
           api.setFlag("metReceptionist");
@@ -968,6 +1003,7 @@ export const scenes: Record<string, Scene> = {
         w: 18,
         h: 22,
         label: "Hinweisschild",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             ">> SEKTOR E71 — MEDIZIN",
@@ -985,6 +1021,7 @@ export const scenes: Record<string, Scene> = {
         w: 13,
         h: 20,
         label: "Teleempfänger",
+        kind: "use",
         onUse: (api) => api.openTelevision(),
       },
       {
@@ -994,6 +1031,7 @@ export const scenes: Record<string, Scene> = {
         w: 22,
         h: 65,
         label: "Aufzug zurück nach E67",
+        kind: "exit",
         // Sobald Layard mit Mikael gesprochen hat, ist der Rückweg offen.
         requires: ["mikaelRejectedProtocol"],
         onUse: (api) => api.goTo("apartment"),
@@ -1005,6 +1043,7 @@ export const scenes: Record<string, Scene> = {
         w: 20,
         h: 50,
         label: "Tür → Korridor 15",
+        kind: "exit",
         requires: ["metReceptionist"],
         onUse: (api) => api.goTo("corridor15"),
       },
@@ -1026,6 +1065,7 @@ export const scenes: Record<string, Scene> = {
         w: 17,
         h: 76,
         label: "Tür 1531 (versiegelt)",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "Ein gelbes Siegelband klebt schräg über dem Türrahmen.",
@@ -1046,6 +1086,7 @@ export const scenes: Record<string, Scene> = {
         w: 36,
         h: 50,
         label: "Türen 1530–1540",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "1530, 1536 — grün. Leer.",
@@ -1064,6 +1105,7 @@ export const scenes: Record<string, Scene> = {
         w: 11,
         h: 38,
         label: "Tür 1532 — Praxis Dr. Okwu",
+        kind: "exit",
         onUse: (api) => api.goTo("room1532"),
       },
       {
@@ -1074,6 +1116,7 @@ export const scenes: Record<string, Scene> = {
         w: 11,
         h: 38,
         label: "Tür 1534 (rot beleuchtet)",
+        kind: "exit",
         onUse: (api) => {
           api.setFlag("foundRoom1534");
           api.goTo("room1534");
@@ -1086,6 +1129,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 18,
         label: "Zurück zum Empfang",
+        kind: "exit",
         onUse: (api) => api.goTo("e71Lobby"),
       },
     ],
@@ -1106,6 +1150,7 @@ export const scenes: Record<string, Scene> = {
         w: 30,
         h: 60,
         label: "Alter Mann",
+        kind: "talk",
         hiddenWhen: ["metMikael"],
         onUse: (api) => {
           api.setFlag("metMikael");
@@ -1120,6 +1165,7 @@ export const scenes: Record<string, Scene> = {
         w: 30,
         h: 60,
         label: "Mikael Stegmann",
+        kind: "look",
         requires: ["metMikael"],
         onUse: (api) => {
           api.showText([
@@ -1137,6 +1183,7 @@ export const scenes: Record<string, Scene> = {
         w: 26,
         h: 60,
         label: "Aktenstapel",
+        kind: "look",
         requires: ["metMikael"],
         onUse: (api) =>
           api.showText([
@@ -1153,6 +1200,7 @@ export const scenes: Record<string, Scene> = {
         w: 26,
         h: 60,
         label: "Aktenschränke",
+        kind: "look",
         requires: ["metMikael"],
         onUse: (api) =>
           api.showText([
@@ -1170,6 +1218,7 @@ export const scenes: Record<string, Scene> = {
         w: 6,
         h: 90,
         label: "Zurück in den Korridor",
+        kind: "exit",
         requires: ["mikaelRejectedProtocol"],
         onUse: (api) => api.goTo("corridor15"),
       },
@@ -1197,6 +1246,7 @@ export const scenes: Record<string, Scene> = {
         w: 28,
         h: 76,
         label: "Dr. Adaeze Okwu",
+        kind: "talk",
         onUse: (api) => {
           // Progressive Schichten: jeder erneute Klick öffnet die nächste
           // Ebene. Ab dem zweiten Klick werden die Folge-Dialoge freigeschaltet.
@@ -1222,6 +1272,7 @@ export const scenes: Record<string, Scene> = {
         w: 16,
         h: 26,
         label: "Patient:innen-Terminal",
+        kind: "use",
         onUse: (api) =>
           api.showText([
             "Ein bernsteinfarbenes Terminal. Auf dem Schirm laufen ruhig Datenzeilen — Wartezimmer leer, drei Termine heute, alle bestätigt.",
@@ -1237,6 +1288,7 @@ export const scenes: Record<string, Scene> = {
         w: 38,
         h: 32,
         label: "Aktenordner",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "Reihen von Aktenordnern, sauber nach Quadranten beschriftet:",
@@ -1252,6 +1304,7 @@ export const scenes: Record<string, Scene> = {
         w: 36,
         h: 42,
         label: "Untersuchungsliege",
+        kind: "exit",
         onUse: (api) =>
           api.showText([
             "Eine alte Lederliege, weich vom Gebrauch. Ein zusammengelegtes Kissen darauf.",
@@ -1266,6 +1319,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 94,
         label: "Zurück in den Korridor",
+        kind: "exit",
         onUse: (api) => api.goTo("corridor15"),
       },
     ],
@@ -1294,6 +1348,7 @@ export const scenes: Record<string, Scene> = {
         w: 20,
         h: 9,
         label: "Etage 5 — Wohnen / Dach",
+        kind: "exit",
         onUse: (api) => api.goTo("corridor56"),
       },
       {
@@ -1303,6 +1358,7 @@ export const scenes: Record<string, Scene> = {
         w: 20,
         h: 9,
         label: "Etage 4 — Wohnen",
+        kind: "exit",
         onUse: (api) => api.goTo("corridor46"),
       },
       {
@@ -1312,6 +1368,7 @@ export const scenes: Record<string, Scene> = {
         w: 20,
         h: 9,
         label: "Etage 3 — Verwaltung und Versorgung",
+        kind: "exit",
         onUse: (api) => api.goTo("corridor36"),
       },
       {
@@ -1321,6 +1378,7 @@ export const scenes: Record<string, Scene> = {
         w: 20,
         h: 9,
         label: "Etage 2 — Korridor 26 (Heim)",
+        kind: "exit",
         onUse: (api) => api.goTo("hallway"),
       },
       {
@@ -1330,6 +1388,7 @@ export const scenes: Record<string, Scene> = {
         w: 20,
         h: 9,
         label: "Etage 1 — Lobby",
+        kind: "exit",
         onUse: (api) => api.goTo("floor1Lobby"),
       },
       {
@@ -1340,6 +1399,7 @@ export const scenes: Record<string, Scene> = {
         w: 30,
         h: 6,
         label: "Etagen-Indikator",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "Ein schmales amberfarbenes Sieben-Segment-Display.",
@@ -1389,6 +1449,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 54,
         label: "Philippe (Nachbar)",
+        kind: "talk",
         hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
         onUse: (api) => api.startDialog("philippeInLobby"),
       },
@@ -1399,6 +1460,7 @@ export const scenes: Record<string, Scene> = {
         w: 22,
         h: 30,
         label: "Empfangstresen (unbesetzt)",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "Niemand hinter dem Tresen. Eine Kaffeetasse, halb voll, kalt.",
@@ -1413,6 +1475,7 @@ export const scenes: Record<string, Scene> = {
         w: 13,
         h: 19,
         label: "Teleempfänger",
+        kind: "use",
         onUse: (api) => api.openTelevision(),
       },
       {
@@ -1422,6 +1485,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 14,
         label: "Schwarzes Brett",
+        kind: "exit",
         onUse: (api) =>
           api.showText([
             "Aushang: „Resonanz-Hygiene — Pflichtinformation für alle Hörer.“",
@@ -1436,6 +1500,7 @@ export const scenes: Record<string, Scene> = {
         w: 18,
         h: 70,
         label: "Aufzug",
+        kind: "exit",
         onUse: (api) => api.goTo("elevator"),
       },
       {
@@ -1445,6 +1510,7 @@ export const scenes: Record<string, Scene> = {
         w: 18,
         h: 50,
         label: "Sektor-Tür → E71",
+        kind: "exit",
         onUse: (api) => api.goTo("sectorDoor"),
       },
       {
@@ -1456,6 +1522,7 @@ export const scenes: Record<string, Scene> = {
         w: 8,
         h: 36,
         label: "Tür: Gemeinschaftsraum",
+        kind: "exit",
         onUse: (api) => api.goTo("commonRoomE67"),
       },
     ],
@@ -1476,6 +1543,7 @@ export const scenes: Record<string, Scene> = {
         w: 30,
         h: 50,
         label: "Wand E67 (zurück)",
+        kind: "exit",
         onUse: (api) => api.goTo("sectorDoor"),
       },
       {
@@ -1485,6 +1553,7 @@ export const scenes: Record<string, Scene> = {
         w: 24,
         h: 22,
         label: "Himmel",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "Grau. Niedrig. Kein Vogel.",
@@ -1499,6 +1568,7 @@ export const scenes: Record<string, Scene> = {
         w: 30,
         h: 60,
         label: "Eingang E71 →",
+        kind: "exit",
         onUse: (api) => {
           api.setFlag("elevatorTaken");
           api.setFlag("enteredE71");
@@ -1544,6 +1614,7 @@ export const scenes: Record<string, Scene> = {
         w: 10,
         h: 50,
         label: "Philippe (Nachbar)",
+        kind: "talk",
         hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
         visible: (api) => api.getPhilippeFloor() === 3,
         onUse: (api) => api.startDialog("philippeInCorridor36"),
@@ -1555,6 +1626,7 @@ export const scenes: Record<string, Scene> = {
         w: 15,
         h: 64,
         label: "Tür 3601 — Abschnittsverantwortlicher E67",
+        kind: "talk",
         onUse: (api) => {
           api.setFlag("sawEmptyOffice");
           api.startDialog("emptyOfficeSign");
@@ -1567,6 +1639,7 @@ export const scenes: Record<string, Scene> = {
         w: 34,
         h: 74,
         label: "Tür 3602 — Kantine E67",
+        kind: "exit",
         onUse: (api) => api.goTo("cafeteriaE67"),
       },
       {
@@ -1576,6 +1649,7 @@ export const scenes: Record<string, Scene> = {
         w: 4,
         h: 7,
         label: "Klingelknopf",
+        kind: "use",
         requires: ["sawEmptyOffice"],
         hiddenWhen: ["rangEmptyOfficeBell"],
         onUse: (api) => {
@@ -1590,6 +1664,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 50,
         label: "Junge Frau an der Wand",
+        kind: "talk",
         hiddenWhen: ["tookFlyer"],
         visible: (api) => api.getMiraFloors().includes(3),
         onUse: (api) => {
@@ -1612,6 +1687,7 @@ export const scenes: Record<string, Scene> = {
         w: 22,
         h: 74,
         label: "Zurück zum Aufzug",
+        kind: "exit",
         onUse: (api) => api.goTo("elevator"),
       },
     ],
@@ -1655,6 +1731,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 54,
         label: "Philippe (Nachbar)",
+        kind: "talk",
         hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
         onUse: (api) => api.startDialog("philippeInCorridor46"),
       },
@@ -1665,6 +1742,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 50,
         label: "Junge Frau an der Wand",
+        kind: "talk",
         hiddenWhen: ["tookFlyer"],
         visible: (api) => api.getMiraFloors().includes(4),
         onUse: (api) => {
@@ -1687,6 +1765,7 @@ export const scenes: Record<string, Scene> = {
         w: 18,
         h: 22,
         label: "Plakat „Resonanz-Hygiene“",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "„HÖREN HEISST GEHÖREN.“",
@@ -1701,6 +1780,7 @@ export const scenes: Record<string, Scene> = {
         w: 18,
         h: 60,
         label: "Zurück zum Aufzug",
+        kind: "exit",
         onUse: (api) => api.goTo("elevator"),
       },
     ],
@@ -1744,6 +1824,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 54,
         label: "Philippe (Nachbar)",
+        kind: "talk",
         hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
         visible: (api) => api.getPhilippeFloor() === 5,
         onUse: (api) => api.startDialog("philippeInCorridor56"),
@@ -1755,6 +1836,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 50,
         label: "Junge Frau an der Wand",
+        kind: "talk",
         hiddenWhen: ["tookFlyer"],
         visible: (api) => api.getMiraFloors().includes(5),
         onUse: (api) => {
@@ -1777,6 +1859,7 @@ export const scenes: Record<string, Scene> = {
         w: 18,
         h: 30,
         label: "Vergittertes Fenster",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "Hinter den Gitterstäben: Dächer. Antennenwald. Eine Möwe.",
@@ -1790,6 +1873,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 10,
         label: "Wartungsluke (verriegelt)",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "Schwere Stahlluke, mit zwei Riegeln und einem Schloss gesichert.",
@@ -1819,6 +1903,7 @@ export const scenes: Record<string, Scene> = {
         w: 16,
         h: 74,
         label: "Tür 5610 · Technik",
+        kind: "exit",
         visible: (api) => {
           if (api.hasFlag("serverRoom5610Open")) return true;
           if (api.hasFlag("insaSentTo5610")) return true;
@@ -1897,6 +1982,7 @@ export const scenes: Record<string, Scene> = {
         w: 18,
         h: 60,
         label: "Zurück zum Aufzug",
+        kind: "exit",
         onUse: (api) => api.goTo("elevator"),
       },
     ],
@@ -1919,6 +2005,7 @@ export const scenes: Record<string, Scene> = {
         w: 26,
         h: 40,
         label: "Wartungsterminal",
+        kind: "use",
         onUse: (api) => api.openNode5610(),
       },
       {
@@ -1928,6 +2015,7 @@ export const scenes: Record<string, Scene> = {
         w: 38,
         h: 60,
         label: "Racks (warm)",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "Drei Racks, dicht an dicht. Die LEDs flackern im Takt von 104,6.",
@@ -1942,6 +2030,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 50,
         label: "Zurück in den Korridor",
+        kind: "exit",
         onUse: (api) => api.goTo("corridor56"),
       },
     ],
@@ -1969,6 +2058,7 @@ export const scenes: Record<string, Scene> = {
         w: 13,
         h: 38,
         label: (() => "Freier Stuhl am Tisch")(),
+        kind: "use",
         onUse: (api) => {
           api.setFlag("enteredCommonRoom");
           api.setFlag("metRpgGroup");
@@ -1993,6 +2083,7 @@ export const scenes: Record<string, Scene> = {
         w: 20,
         h: 54,
         label: "Tjark (Meister)",
+        kind: "talk",
         onUse: (api) => api.startDialog("tjarkSmalltalk"),
       },
       {
@@ -2003,6 +2094,7 @@ export const scenes: Record<string, Scene> = {
         w: 16,
         h: 58,
         label: "Yelva (Elfe)",
+        kind: "talk",
         onUse: (api) =>
           api.showText([
             "Yelva mustert dich kurz, dann das Regelwerk.",
@@ -2017,6 +2109,7 @@ export const scenes: Record<string, Scene> = {
         w: 22,
         h: 78,
         label: "Brem (Streuner)",
+        kind: "talk",
         onUse: (api) =>
           api.showText([
             "Brem grinst schief.",
@@ -2031,6 +2124,7 @@ export const scenes: Record<string, Scene> = {
         w: 22,
         h: 16,
         label: "DSA-Regelwerk",
+        kind: "look",
         onUse: (api) =>
           api.showText([
             "„Das Schwarze Auge“, zweite Edition. Eselsohren, Kaffeeflecken,",
@@ -2045,6 +2139,7 @@ export const scenes: Record<string, Scene> = {
         w: 4,
         h: 100,
         label: "Zurück in die Lobby",
+        kind: "exit",
         onUse: (api) => api.goTo("floor1Lobby"),
       },
     ],
@@ -2069,6 +2164,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 50,
         label: "Frau Kowalk",
+        kind: "talk",
         onUse: (api) => {
           if (!api.hasFlag("metKowalk")) {
             api.setFlag("metKowalk");
@@ -2083,6 +2179,7 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 50,
         label: "Herr Brust",
+        kind: "talk",
         onUse: (api) => {
           if (!api.hasFlag("metBrust")) {
             api.setFlag("metBrust");
