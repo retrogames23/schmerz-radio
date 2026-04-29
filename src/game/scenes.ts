@@ -2249,6 +2249,37 @@ export const scenes: Record<string, Scene> = {
             "„AUSNAHMEN AUF KULANZ — Schicht B / Frau Kowalk.“",
           ]),
       },
+      // Quittungsblock — Layard kann sich einen Blanko-Bogen nehmen,
+      // sobald er gemerkt hat, dass 4317 ein Transfer-Code ist.
+      // Brust und Kowalk sehen geflissentlich weg: Quittungsblöcke
+      // gelten als Verbrauchsmaterial.
+      {
+        id: "cafeteriaQuittungsblock",
+        // Auf dem Tresen, rechts neben dem Schild.
+        x: 56,
+        y: 56,
+        w: 16,
+        h: 14,
+        label: "Quittungsblock Schicht B",
+        kind: "use",
+        requires: ["noticedTransferCode"],
+        hiddenWhen: ["tookQuittungBlanko"],
+        onUse: (api) => {
+          api.setFlag("tookQuittungBlanko");
+          api.addItem({
+            id: "quittungBlankoB",
+            name: "Quittungsbogen Schicht B (blanko)",
+            description:
+              "Ein dünner, hellblauer Carbon-Quittungsbogen, oben perforiert. Trägt vorgedruckt: »QUITTUNG / SCHICHT __ / KOPIE FÜR E70«. Zwei Felder warten leer: Code und Schicht-Gegenzeichnung.",
+          });
+          api.showText([
+            "Layard zieht einen Bogen vom Quittungsblock ab — der oberste,",
+            "dünn und hellblau, perforiert. Brust steht zwei Meter weiter und",
+            "sieht weg. Kowalk auch. Quittungsbögen kosten nichts.",
+            "[ Quittungsbogen Schicht B (blanko) eingesteckt. ]",
+          ]);
+        },
+      },
       {
         id: "cafeteriaPneumaticTube",
         x: 38,
@@ -2256,9 +2287,38 @@ export const scenes: Record<string, Scene> = {
         w: 14,
         h: 18,
         label: "Pneumatik-Rohrpost",
-        kind: "look",
-        onUse: (api) =>
-          api.showText(
+        kind: (() => "use" as const)(),
+        onUse: (api) => {
+          // Sobald Layard die gefälschte Quittung schon abgeschickt hat,
+          // bringt das Rohr die eingehende Antwort: Tillas Transferbogen.
+          if (
+            api.hasFlag("sentForgedQuittung") &&
+            !api.hasFlag("receivedTillaTransfer")
+          ) {
+            api.setFlag("receivedTillaTransfer");
+            api.addItem({
+              id: "tillaTransfer",
+              name: "Transferbogen E70-K → 70-2244",
+              description:
+                "Eingehende Rohrpost-Hülse, beantwortet eine Quittung 4317-K. Inhalt: ein Transferbogen — Patientin Tilla Kowalk, von E70-K verlegt an Heim Lothenau, neue Bewohnernummer 70-2244. Stempel »ÜBERFÜHRUNG STILL«. Datum 06.11.1997.",
+            });
+            api.showText([
+              "Im Rohr klackt es. Eine Hülse landet im Auffangkorb.",
+              "Aufkleber: »EINGANG · QUITTUNG 4317-K · BEANTWORTET«.",
+              "Drinnen: ein Transferbogen. Eine Bewohnernummer. Ein Heim.",
+              "Tilla.",
+              "[ Transferbogen 70-2244 eingesteckt. ]",
+            ]);
+            return;
+          }
+          // Vor der Fälschung: das Overlay öffnet sich nur, wenn Layard
+          // wirklich versuchen kann, etwas zu verschicken (Trigger gesetzt).
+          // Sonst nur der alte Beobachtungs-Text.
+          if (
+            !api.hasFlag("noticedTransferCode") ||
+            !api.hasFlag("forgedQuittung4317")
+          ) {
+            api.showText(
             api.hasFlag("radioTunedTo1046")
               ? [
                   "Messing, blank gewienert. Das Licht oben blinkt rot.",
@@ -2268,7 +2328,11 @@ export const scenes: Record<string, Scene> = {
                   "Messing, blank gewienert. Das Licht oben blinkt rot.",
                   "Niemand schaut hin. Vielleicht blinkt es schon eine Weile.",
                 ],
-          ),
+            );
+            return;
+          }
+          api.openPneumaticTube();
+        },
       },
       {
         id: "cafeteriaPosters",
