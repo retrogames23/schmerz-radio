@@ -5,6 +5,7 @@ import { useSettings } from "@/audio/SettingsContext";
 import { speak, stopSpeech } from "@/audio/speech";
 import { CloseButton } from "./CloseButton";
 import { getPersona } from "@/game/npcPersonas";
+import { useCoarsePointer } from "@/hooks/useCoarsePointer";
 
 export function DialogOverlay() {
   const {
@@ -17,6 +18,7 @@ export function DialogOverlay() {
     openFreeChat,
   } = useGame();
   const { ttsEnabled } = useSettings();
+  const isCoarsePointer = useCoarsePointer();
 
   const tree = dialogId ? dialogs[dialogId] : null;
   const line = tree && dialogLineId ? tree.lines[dialogLineId] : null;
@@ -73,7 +75,8 @@ export function DialogOverlay() {
   const npcId = (tree as unknown as { npcId?: string }).npcId ?? null;
   const persona = getPersona(npcId);
   const isEndLine = !line.choices?.length && (line.end || !line.next);
-  const showFreeMode = !!persona && isEndLine;
+  // Free-Chat ist auf Touch-/Mobile-Geräten deaktiviert (zu speicher-/leistungsintensiv).
+  const showFreeMode = !!persona && isEndLine && !isCoarsePointer;
 
   const handleAdvance = () => {
     if (!canAdvance) return;
