@@ -250,7 +250,7 @@ function FreeChatInner({
             <p className="font-mono-crt text-xs italic text-muted-foreground">
               [ Du sprichst jetzt frei mit {persona.displayName}.
               {status.kind === "local" && !status.ready
-                ? " Das lokale Modell wird im Hintergrund geladen."
+                ? " Das lokale Modell wird gerade geladen — Fortschritt siehst du unten."
                 : ""}{" "}
               Bleib höflich — die Geduld ist begrenzt. ]
             </p>
