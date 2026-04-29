@@ -4,6 +4,7 @@ import { dialogs } from "@/game/dialogs";
 import { useSettings } from "@/audio/SettingsContext";
 import { speak, stopSpeech } from "@/audio/speech";
 import { CloseButton } from "./CloseButton";
+import { getPersona } from "@/game/npcPersonas";
 
 export function DialogOverlay() {
   const {
@@ -13,6 +14,7 @@ export function DialogOverlay() {
     closeDialog,
     radioActive,
     api,
+    openFreeChat,
   } = useGame();
   const { ttsEnabled } = useSettings();
 
@@ -65,6 +67,13 @@ export function DialogOverlay() {
     }) ?? [];
 
   const canAdvance = visibleChoices.length === 0;
+
+  // Free-Mode-Einstieg: nur am Endsatz eines Baums anbieten, wenn dieser
+  // Baum eine Persona hinterlegt hat (DialogTree.npcId).
+  const npcId = (tree as unknown as { npcId?: string }).npcId ?? null;
+  const persona = getPersona(npcId);
+  const isEndLine = !line.choices?.length && (line.end || !line.next);
+  const showFreeMode = !!persona && isEndLine;
 
   const handleAdvance = () => {
     if (!canAdvance) return;
@@ -166,13 +175,29 @@ export function DialogOverlay() {
               </button>
             ))
           ) : (
-            <button
-              type="button"
-              onClick={() => advanceDialog()}
-              className="self-end rounded-sm border border-amber-glow/40 px-3 py-1 text-xs uppercase tracking-widest text-amber-glow hover:bg-amber-glow/10"
-            >
-              {line.end || !line.next ? "▣ Beenden" : "▸ Weiter"}
-            </button>
+            <div className="flex flex-col items-end gap-2">
+              {showFreeMode && persona && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    stopSpeech();
+                    closeDialog();
+                    openFreeChat(persona.id);
+                  }}
+                  className="rounded-sm border border-amber-glow/60 bg-amber-glow/10 px-3 py-1 text-xs uppercase tracking-widest text-amber-glow hover:bg-amber-glow/20"
+                >
+                  ▸ Frei mit {persona.displayName} weiterreden …
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => advanceDialog()}
+                className="self-end rounded-sm border border-amber-glow/40 px-3 py-1 text-xs uppercase tracking-widest text-amber-glow hover:bg-amber-glow/10"
+              >
+                {line.end || !line.next ? "▣ Beenden" : "▸ Weiter"}
+              </button>
+            </div>
           )}
         </div>
       </div>

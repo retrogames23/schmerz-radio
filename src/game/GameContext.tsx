@@ -67,6 +67,9 @@ interface GameState {
 interface GameContextValue extends GameState {
   api: GameApi;
   previousScene: SceneId | null;
+  freeChatNpcId: string | null;
+  openFreeChat: (npcId: string) => void;
+  closeFreeChat: () => void;
   setCaption: (s: string | null) => void;
   closeText: () => void;
   advanceDialog: (nextId?: string) => void;
@@ -188,6 +191,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [handbookOpen, setHandbookOpen] = useState(false);
   const [idCardOpen, setIdCardOpen] = useState(false);
   const [lobbyGateOpen, setLobbyGateOpen] = useState(false);
+  const [freeChatNpcId, setFreeChatNpcId] = useState<string | null>(null);
   // Eskalationszähler der Lobby-Schleuse (Fehlversuche), nicht persistiert.
   const lobbyGateAttemptsRef = useRef(0);
   // Mira darf NICHT auf Etage 3 erscheinen — dort liegt das Büro des
@@ -604,6 +608,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     handbookOpen,
     idCardOpen,
     lobbyGateOpen,
+    freeChatNpcId,
+    openFreeChat: (npcId: string) => setFreeChatNpcId(npcId),
+    closeFreeChat: () => setFreeChatNpcId(null),
     closeDsaAdventure: () => setDsaAdventureOpen(false),
     api,
     setCaption,

@@ -372,6 +372,12 @@ export interface DialogTree {
   lines: Record<string, DialogLine>;
   /** Optional callback fired exactly once when the dialog tree closes. */
   onEnd?: (api: GameApi) => void;
+  /**
+   * Optional NPC-Persona-ID für den Free-Mode-Chat. Ist sie gesetzt UND
+   * existiert ein Eintrag in `npcPersonas`, bietet das DialogOverlay am
+   * Endsatz einen Knopf an, den freien Chat zu starten.
+   */
+  npcId?: string;
 }
 
 export interface GameApi {
