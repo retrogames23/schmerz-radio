@@ -1512,6 +1512,16 @@ export function Terminal() {
 
     if (cmd === "help") {
       newLines.push(...buildHelpLines(bodoMode));
+      // Hausmeister-Werkstatt: Macro »forge« taucht nur dann in der Hilfe
+      // auf, wenn Layard wirklich anfangen kann, eine Quittung zu bauen
+      // (Aushang 7.1 herausgelöst).
+      if (bodoMode && flags.has("extractedAushang71") && !flags.has("forgedQuittung4317")) {
+        newLines.push(
+          { text: "", kind: "out" },
+          { text: "WERKSTATT (intern):", kind: "system" },
+          { text: "  forge         — Quittungsmacher (.forge.macro / Schicht-B-Vorlage)", kind: "out" },
+        );
+      }
       if (!bodoMode && flags.has("calledInsa2") && !flags.has("calledStegmann")) {
         newLines.push(
           { text: "", kind: "out" },
