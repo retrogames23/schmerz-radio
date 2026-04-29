@@ -402,7 +402,13 @@ export interface GameApi {
   hasItem: (id: InventoryItemId) => boolean;
   showText: (lines: string[], onClose?: () => void) => void;
   startDialog: (id: string) => void;
-  openTerminal: (asBodo?: boolean) => void;
+  /**
+   * Öffnet ein Terminal-Overlay.
+   * - `true` (legacy) oder `{ bodo: true }` → Bodos Hausmeister-Konsole.
+   * - `{ mira: true }` → Miras gehackter Rechner (FuckTheSystemOS 0.2).
+   * - sonst → Layards eigenes CentralOS.
+   */
+  openTerminal: (asBodoOrOpts?: boolean | { bodo?: boolean; mira?: boolean }) => void;
   openRadio: () => void;
   openKeypad: (target?: KeypadTarget) => void;
   openTelevision: () => void;
