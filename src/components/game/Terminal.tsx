@@ -2518,29 +2518,47 @@ export function Terminal() {
     <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-black/85 sm:items-center sm:px-4">
       <div
         className={`fade-in relative flex h-full w-full flex-col overflow-hidden rounded-none border-0 bg-black shadow-[0_0_60px_rgba(0,0,0,0.85)] scanlines sm:h-auto sm:max-w-4xl sm:rounded-sm sm:border ${
-          bodoMode ? "border-sepia/50" : "border-phosphor/50"
+          miraMode
+            ? "border-destructive/60"
+            : bodoMode
+              ? "border-sepia/50"
+              : "border-phosphor/50"
         }`}
       >
         <div
           className={`flex items-center justify-between border-b bg-black px-4 py-2 ${
-            bodoMode ? "border-sepia/30" : "border-phosphor/30"
+            miraMode
+              ? "border-destructive/40"
+              : bodoMode
+                ? "border-sepia/30"
+                : "border-phosphor/30"
           }`}
         >
           <span
             className={`font-mono-crt text-base uppercase tracking-[0.3em] ${
-              bodoMode ? "text-sepia sepia-glow" : "text-phosphor phosphor-glow"
+              miraMode
+                ? "text-destructive"
+                : bodoMode
+                  ? "text-sepia sepia-glow"
+                  : "text-phosphor phosphor-glow"
             }`}
           >
-            CentralOS v
-            {osVersion(
-              flags.has(bodoMode ? "centralOsUpdatedBodo" : "centralOsUpdated"),
-              bodoMode,
+            {miraMode ? (
+              <>FuckTheSystemOS 0.2 — root@miranet</>
+            ) : (
+              <>
+                CentralOS v
+                {osVersion(
+                  flags.has(bodoMode ? "centralOsUpdatedBodo" : "centralOsUpdated"),
+                  bodoMode,
+                )}
+                {bodoMode ? " — 2612" : ""}
+              </>
             )}
-            {bodoMode ? " — 2612" : ""}
           </span>
           <CloseButton
             onClick={closeTerminal}
-            tone={bodoMode ? "amber" : "phosphor"}
+            tone={miraMode ? "amber" : bodoMode ? "amber" : "phosphor"}
             label="Terminal schließen"
           />
         </div>
@@ -2554,16 +2572,22 @@ export function Terminal() {
               key={i}
               className={
                 l.kind === "system"
-                  ? bodoMode
-                    ? "sepia-glow"
-                    : "phosphor-glow"
-                  : l.kind === "in"
-                    ? bodoMode
-                      ? "text-sepia"
-                      : "text-phosphor"
+                  ? miraMode
+                    ? "text-destructive"
                     : bodoMode
-                      ? "text-sepia-dim"
-                      : "text-phosphor-dim"
+                      ? "sepia-glow"
+                      : "phosphor-glow"
+                  : l.kind === "in"
+                    ? miraMode
+                      ? "text-destructive"
+                      : bodoMode
+                        ? "text-sepia"
+                        : "text-phosphor"
+                    : miraMode
+                      ? "text-destructive/80"
+                      : bodoMode
+                        ? "text-sepia-dim"
+                        : "text-phosphor-dim"
               }
             >
               {l.text || "\u00A0"}
@@ -2574,12 +2598,20 @@ export function Terminal() {
         <form
           onSubmit={handleSubmit}
           className={`flex items-center gap-2 border-t bg-black px-4 py-2 ${
-            bodoMode ? "border-sepia/30" : "border-phosphor/30"
+            miraMode
+              ? "border-destructive/40"
+              : bodoMode
+                ? "border-sepia/30"
+                : "border-phosphor/30"
           }`}
         >
           <span
             className={`font-mono-crt text-[15px] sm:text-sm ${
-              bodoMode ? "text-sepia sepia-glow" : "text-phosphor phosphor-glow"
+              miraMode
+                ? "text-destructive"
+                : bodoMode
+                  ? "text-sepia sepia-glow"
+                  : "text-phosphor phosphor-glow"
             }`}
           >
             {advState
@@ -2705,9 +2737,11 @@ export function Terminal() {
               }
             }}
             className={`flex-1 bg-transparent font-mono-crt text-base outline-none disabled:opacity-40 ${
-              bodoMode
-                ? "text-sepia caret-sepia placeholder:text-sepia-dim/60"
-                : "text-phosphor caret-phosphor placeholder:text-phosphor-dim/60"
+              miraMode
+                ? "text-destructive caret-destructive placeholder:text-destructive/40"
+                : bodoMode
+                  ? "text-sepia caret-sepia placeholder:text-sepia-dim/60"
+                  : "text-phosphor caret-phosphor placeholder:text-phosphor-dim/60"
             }`}
             placeholder={scriptedRunning ? "… Ausgabe läuft …" : "Befehl eingeben …"}
             spellCheck={false}
