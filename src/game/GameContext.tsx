@@ -41,6 +41,8 @@ interface GameState {
   keypadTarget: "sectorDoor";
   /** Wartungsterminal hinter Tür 5610 sichtbar. */
   nodeOpen: boolean;
+  /** Pneumatik-Rohrpost-Overlay in der Kantine 3602. */
+  pneumaticOpen: boolean;
   radioActive: boolean; // tuned to 104.6, providing subtext
   resonance: number; // 0–100
   ending: boolean;
@@ -74,6 +76,7 @@ interface GameContextValue extends GameState {
   closeKeypad: () => void;
   closeTelevision: () => void;
   closeNode: () => void;
+  closePneumatic: () => void;
   endBurnSequence: () => void;
   endCutscene: () => void;
   closeDsaCreator: () => void;
@@ -165,6 +168,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   // Wartungs-Override / Wartungskarte ohne Keypad.
   const keypadTarget = "sectorDoor" as const;
   const [nodeOpen, setNodeOpen] = useState(false);
+  const [pneumaticOpen, setPneumaticOpen] = useState(false);
   const [radioActive, setRadioActive] = useState(false);
   const [tvOpen, setTvOpen] = useState(false);
   const [resonance, setResonance] = useState(0);
@@ -356,6 +360,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setRadioOpen(false);
         setTerminalOpen(false);
         setNodeOpen(true);
+      },
+      openPneumaticTube: () => {
+        setRadioOpen(false);
+        setTerminalOpen(false);
+        setPneumaticOpen(true);
       },
       setEnding: () => setEnding(true),
       playBurnSequence: () => {
