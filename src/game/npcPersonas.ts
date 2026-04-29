@@ -26,6 +26,24 @@ export interface NpcPersona {
    * Sätze ohne Synonyme — z. B. "Lotti ist eine Katze, kein Hund."
    */
   hardFacts?: string[];
+  /**
+   * Wen diese Person seit jeher kennt (Nachbarn, Verwandte, Bekannte).
+   * STATISCH — wird IMMER in den Prompt gerendert, unabhängig von Story-Flags.
+   * Hier KEINE Wertungen über Layard und KEINE Story-Ereignisse.
+   */
+  socialCircle?: string[];
+  /**
+   * Was diese Person über Layard weiß / wie sie zu ihm steht.
+   * DYNAMISCH — `default` (ohne `requireFlags`) gilt, wenn keine andere
+   * Bedingung greift. `requireFlags` = ALLE müssen aktiv sein.
+   * `forbidFlags` = KEINER darf aktiv sein.
+   */
+  layardKnowledge?: ConditionalFact[];
+  /**
+   * Was diese Person über aktuelle Ereignisse / Story-Beats mitbekommen hat.
+   * DYNAMISCH, gleiche Semantik wie `layardKnowledge`.
+   */
+  storyAwareness?: ConditionalFact[];
   /** IDs statischer Dialogbäume, deren Zusammenfassung in den Prompt fließt. */
   staticDialogIds: string[];
   /** Optionale Dateien/E-Mails dieses Charakters, kurz zusammengefasst. */
@@ -34,6 +52,16 @@ export interface NpcPersona {
   contextFlags?: StoryFlag[];
   /** Satz, den der NPC sagt, wenn die Geduld auf 0 fällt. */
   patienceExhaustedLine: string;
+}
+
+export interface ConditionalFact {
+  /** Alle diese Flags müssen aktiv sein. Leer/undefiniert = kein Required-Filter. */
+  requireFlags?: StoryFlag[];
+  /** Keiner dieser Flags darf aktiv sein. */
+  forbidFlags?: StoryFlag[];
+  /** Wenn true: gilt nur, wenn KEIN anderer ConditionalFact derselben Liste matcht. */
+  default?: boolean;
+  fact: string;
 }
 
 const SHARED_LORE = [
