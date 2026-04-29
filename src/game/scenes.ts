@@ -23,6 +23,7 @@ import miraSprite from "@/assets/npc-mira.png";
 import philippeSprite from "@/assets/npc-philippe.png";
 import commonRoomBg from "@/assets/scene-common-room.jpg";
 import cafeteriaBg from "@/assets/scene-cafeteria-e67.jpg";
+import aptMira4601Bg from "@/assets/scene-apt-mira-4601.jpg";
 import type { Scene } from "./types";
 
 export const scenes: Record<string, Scene> = {
