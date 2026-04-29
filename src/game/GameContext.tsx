@@ -469,6 +469,30 @@ export function GameProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Akt-I-Pflichträtsel: Sobald Layard den Sanitäter-Bericht UND
+  // Kowalks Tochter-Geschichte UND die B3 an Philippe übergeben hat,
+  // fällt ihm beim nächsten Szenenwechsel die Bewohnernummer auf der
+  // Kopie auf. Setzt `noticedTransferCode`, das den Pickup-Hotspot
+  // (Bleistift) und den Quittungsblock freischaltet.
+  useEffect(() => {
+    if (flags.has("noticedTransferCode")) return;
+    if (
+      flags.has("gotParamedicsReport") &&
+      flags.has("kowalkToldHerDaughter") &&
+      flags.has("gaveB3ToPhilippe")
+    ) {
+      api.setFlag("noticedTransferCode");
+      api.showText([
+        "Layard zieht den Sanitäter-Bericht noch einmal heraus.",
+        "Am rechten Rand, mit Kuli, klein: »TRANSFER E70 / 4317-K«.",
+        "Er hat das beim ersten Lesen übersehen.",
+        "Vier-Drei-Eins-Sieben. Das ist nicht Philippes Vollmacht.",
+        "Das ist eine Transfernummer. Und 4317-K — das K steht für",
+        "Kowalk.",
+      ]);
+    }
+  }, [flags, api]);
+
   // Lobby-Schleuse (Tagesmodus): Beim Betreten der Etage-1-Lobby vor dem
   // Aufbruch nach E71 muss Layard sich am Eingangsterminal ausweisen.
   // Ab `enteredE71` (Akt II) entfällt die Schleuse — der Ausgang gilt als
