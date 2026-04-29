@@ -16,7 +16,8 @@ export type SceneId =
   | "corridor56"
   | "serverRoom5610"
   | "commonRoomE67"
-  | "cafeteriaE67";
+  | "cafeteriaE67"
+  | "aptMira4601";
 
 export type InventoryItemId =
   | "protocol"
@@ -37,7 +38,8 @@ export type InventoryItemId =
   | "aushang71Original"
   | "quittungBlankoB"
   | "quittungForged4317"
-  | "tillaTransfer";
+  | "tillaTransfer"
+  | "miraDoorNote";
 
 export type KnowledgeFlag =
   | "responsibilityE67"
