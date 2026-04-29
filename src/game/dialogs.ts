@@ -1842,6 +1842,7 @@ export const dialogs: Record<string, DialogTree> = {
   // ───────────────────────────────────────────────────────────
   miraIntro: {
     id: "miraIntro",
+    npcId: "mira",
     start: "mi1",
     lines: {
       mi1: {
@@ -2051,6 +2052,7 @@ export const dialogs: Record<string, DialogTree> = {
   // Wiederbegegnung: Layard hat noch kein Flugblatt, kann zurückkommen.
   miraReturn: {
     id: "miraReturn",
+    npcId: "mira",
     start: "mr1",
     lines: {
       mr1: {
@@ -2237,6 +2239,7 @@ export const dialogs: Record<string, DialogTree> = {
   // Nach Erhalt des Flugblatts.
   miraAfter: {
     id: "miraAfter",
+    npcId: "mira",
     start: "ma1",
     lines: {
       ma1: {
