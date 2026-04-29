@@ -30,7 +30,14 @@ export type InventoryItemId =
   | "e67Handbook"
   | "b3Authorization"
   | "b3Ration"
-  | "paramedicsReport";
+  | "paramedicsReport"
+  // Akt-I-Pflichträtsel „Quittung 4317"
+  | "pencilStub"
+  | "siegelAbdruck"
+  | "aushang71Original"
+  | "quittungBlankoB"
+  | "quittungForged4317"
+  | "tillaTransfer";
 
 export type KnowledgeFlag =
   | "responsibilityE67"
@@ -205,7 +212,17 @@ export type StoryFlag =
   | "gotB3Ration"
   | "gaveB3ToPhilippe"
   | "gotParamedicsReport"
-  | "refusedB3Favor";
+  | "refusedB3Favor"
+  // Akt-I-Pflichträtsel „Quittung 4317"
+  | "noticedTransferCode"
+  | "tookPencilStub"
+  | "extractedSiegelAbdruck"
+  | "extractedAushang71"
+  | "tookQuittungBlanko"
+  | "bodoSignedForTilla"
+  | "forgedQuittung4317"
+  | "sentForgedQuittung"
+  | "receivedTillaTransfer";
 
 export interface InventoryItem {
   id: InventoryItemId;
@@ -365,6 +382,8 @@ export interface GameApi {
   openTelevision: () => void;
   /** Wartungsterminal hinter Tür 5610 (eigenes UI, kein CentralOS). */
   openNode5610: () => void;
+  /** Pneumatik-Rohrpost-Overlay in der Kantine 3602. */
+  openPneumaticTube: () => void;
   isRadioActive: () => boolean;
   setEnding: () => void;
   /**
