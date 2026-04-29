@@ -630,6 +630,18 @@
 .cursor-exit {
   cursor: url("./assets/cursors/exit.png") 4 16, url("./assets/cursors/exit.svg") 4 16, pointer;
 }
+.cursor-exit-left {
+  cursor: url("./assets/cursors/exit-left.png") 2 16, url("./assets/cursors/exit-left.svg") 2 16, pointer;
+}
+.cursor-exit-right {
+  cursor: url("./assets/cursors/exit-right.png") 30 16, url("./assets/cursors/exit-right.svg") 30 16, pointer;
+}
+.cursor-exit-up {
+  cursor: url("./assets/cursors/exit-up.png") 16 2, url("./assets/cursors/exit-up.svg") 16 2, pointer;
+}
+.cursor-exit-down {
+  cursor: url("./assets/cursors/exit-down.png") 16 30, url("./assets/cursors/exit-down.svg") 16 30, pointer;
+}
 /* Animierte Hand: zwei SVG-Frames im Wechsel.
    `cursor` selbst ist nicht keyframe-animierbar in allen Browsern
    verlässlich — wir wechseln stattdessen zwischen zwei Klassen über
