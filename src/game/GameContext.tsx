@@ -747,30 +747,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
         dsaCharacterRef.current = null;
         setDsaCharacterState(null);
       }
-      // Wiederherstellung mit Rückwärtskompatibilität: Mira darf nie auf
-      // Etage 3 stehen. Alte Saves, die das noch erlaubten, werden auf das
-      // neue Schema (Mira ∈ {4,5}, Philippe = die andere, 3 frei) gemappt.
-      const livingFloors: Array<4 | 5> = [4, 5];
-      const sanitizeMira = (
-        floors: ReadonlyArray<3 | 4 | 5>,
-      ): Array<4 | 5> => {
-        const filtered = floors.filter((f): f is 4 | 5 => f === 4 || f === 5);
-        if (filtered.length > 0) return [filtered[0]];
-        // Save hatte Mira nur auf 3 — zufällig auf 4 oder 5 verschieben.
-        return [livingFloors[Math.floor(Math.random() * 2)]];
-      };
-      if (persisted.miraFloors && persisted.miraFloors.length > 0) {
-        const mira = sanitizeMira(persisted.miraFloors);
-        miraFloorsRef.current = mira;
-        philippeFloorRef.current = livingFloors.find((f) => f !== mira[0]) ?? 5;
-      } else if (persisted.miraFloor) {
-        const mira = sanitizeMira([persisted.miraFloor]);
-        miraFloorsRef.current = mira;
-        philippeFloorRef.current = livingFloors.find((f) => f !== mira[0]) ?? 5;
-      } else {
-        miraFloorsRef.current = null;
-        philippeFloorRef.current = null;
-      }
+      // Mira lebt jetzt fest auf Etage 4, Philippe auf Etage 5.
+      // Alte Saves werden hart auf dieses neue Schema gemappt.
+      miraFloorsRef.current = [4];
+      philippeFloorRef.current = 5;
+      // (persisted.miraFloors / persisted.miraFloor werden bewusst ignoriert.)
+      void persisted.miraFloors;
+      void persisted.miraFloor;
+      void persisted.philippeFloor;
       // Reset transient UI
       setCaption(null);
       setTextOverlay(null);
