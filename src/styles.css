@@ -660,3 +660,8 @@
     cursor: url("./assets/cursors/hand-2.png") 11 4, url("./assets/cursors/hand-2.svg") 11 4, pointer;
   }
 }
+
+@keyframes progressIndeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
