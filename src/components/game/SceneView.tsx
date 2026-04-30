@@ -21,23 +21,21 @@ export function SceneView() {
     typeof current.background === "function"
       ? current.background(api)
       : current.background;
-  // Optionaler Bild-Zoom (siehe Scene.bgFocus). Wird sowohl auf das
-  // Hintergrund-<img> als auch auf den 4:3-Hotspot-Layer angewendet,
-  // damit Koordinaten und Motiv deckungsgleich bleiben.
+  // Optionaler Bild-Zoom (siehe Scene.bgFocus). Wird auf das
+  // Hintergrund-<img> angewendet, damit zu kleinteilige Szenen
+  // (z. B. Aufzug, in dem das Panel nur einen schmalen Bereich
+  // einnimmt) heran-skaliert werden können. Hotspot-Koordinaten
+  // müssen passend zum gezoomten Motiv gesetzt werden.
+  //
+  // Außerdem nutzen wir bgFocus als Hinweis, dass der Hintergrund
+  // visuell auf den 4:3-Bereich „eingerahmt" werden soll: dann
+  // erweitern wir den Bild-Container auf die 4:3-Breite, was
+  // automatisch dafür sorgt, dass Bild und Hotspot-Layer
+  // deckungsgleich sind.
   const bgFocus = current.bgFocus;
   const bgImgStyle: React.CSSProperties | undefined = bgFocus
     ? {
         transform: `scale(${bgFocus.scale})`,
-        transformOrigin: `${bgFocus.originX}% ${bgFocus.originY}%`,
-      }
-    : undefined;
-  // Hotspot-Layer ist bereits mittig per -translate-x-1/2 positioniert.
-  // Damit der Skalierungs-Origin korrekt vom selben Punkt aus wirkt wie
-  // beim Bild, kombinieren wir Translate + Scale in einer einzelnen
-  // transform-Property.
-  const hotspotLayerStyle: React.CSSProperties | undefined = bgFocus
-    ? {
-        transform: `translateX(-50%) scale(${bgFocus.scale})`,
         transformOrigin: `${bgFocus.originX}% ${bgFocus.originY}%`,
       }
     : undefined;
