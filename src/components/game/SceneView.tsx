@@ -28,21 +28,6 @@ export function SceneView() {
   // Rahmen und Label eingeblendet. Beim Loslassen wieder ausgeblendet.
   // Tastatureingaben in Eingabefeldern (Terminal etc.) werden ignoriert.
   const [revealHotspots, setRevealHotspots] = useState(false);
-  // Mobil (Touch / schmaler Viewport): Hintergrund per object-cover füllen,
-  // damit 4:3-Bilder in der gedrehten 16:9-Bühne keine schwarzen Balken
-  // links/rechts erzeugen. Auf Desktop bleibt object-contain, damit native
-  // 16:9-Bilder vollständig sichtbar sind.
-  const [coverBg, setCoverBg] = useState(false);
-  useEffect(() => {
-    const compute = () => setCoverBg(window.innerWidth < 768);
-    compute();
-    window.addEventListener("resize", compute);
-    window.addEventListener("orientationchange", compute);
-    return () => {
-      window.removeEventListener("resize", compute);
-      window.removeEventListener("orientationchange", compute);
-    };
-  }, []);
   useEffect(() => {
     const isTypingTarget = (t: EventTarget | null) => {
       if (!(t instanceof HTMLElement)) return false;
@@ -145,7 +130,7 @@ export function SceneView() {
           scene === "corridor56" && flags.has("burnedNode5610")
             ? "corridor-emergency-power"
             : ""
-        } ${coverBg ? "!object-cover" : ""}`}
+        }`}
       />
 
       {/* 4:3-Hotspot-Layer: liegt mittig in der 16:9-Bühne und deckt
