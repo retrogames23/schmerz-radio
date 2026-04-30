@@ -109,6 +109,7 @@ export function Game() {
             />
             <DragCursorLayer />
             <ActiveItemBanner />
+            <DonationGate />
           </InventoryDragProvider>
         </GameProvider>
       </MusicPlayer>
