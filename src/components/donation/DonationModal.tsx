@@ -212,6 +212,17 @@ export function DonationModal({
         <p className="mt-4 text-center text-[10px] text-muted-foreground">
           Sichere Zahlung via Stripe · Quittung kommt automatisch per Mail
         </p>
+
+        <div className="mt-3 text-center">
+          <a
+            href="https://buymeacoffee.com/doener"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-mono-crt text-[10px] uppercase tracking-[0.25em] text-muted-foreground underline-offset-4 hover:text-amber-glow hover:underline"
+          >
+            Ohne Anmeldung spenden – ohne Code für unbegrenzte Chats
+          </a>
+        </div>
       </div>
       <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
     </div>
