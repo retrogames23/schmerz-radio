@@ -57,12 +57,12 @@ export function OpenSourceOverlay({ open, onClose }: Props) {
               Sourcecode dieses Spiels
             </div>
             <a
-              href="https://github.com/stephandoerner/schmerz-radio"
+              href="https://github.com/retrogames23/adventure-whisper-quest"
               target="_blank"
               rel="noopener noreferrer"
               className="text-amber-glow underline-offset-4 hover:underline amber-glow break-all"
             >
-              github.com/stephandoerner/schmerz-radio
+              github.com/retrogames23/adventure-whisper-quest
             </a>
             <div className="text-xs text-muted-foreground mt-1">
               Lizenz: MIT
