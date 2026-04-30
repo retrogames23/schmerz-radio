@@ -166,23 +166,17 @@ export function BureaucracyDuelOverlay() {
         </p>
 
         {/* Status-Leiste */}
-        <div className="mt-3 flex items-center gap-4 font-mono-crt text-[11px] uppercase tracking-widest text-amber-glow/70">
+        <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 font-mono-crt text-[11px] uppercase tracking-widest text-amber-glow/70">
           <span>
             {DUEL_UI_TEXT.roundLabel} {Math.min(currentIdx + 1, 3)} / 3
           </span>
           <span>
             {DUEL_UI_TEXT.hitsLabel}:{" "}
-            <span className="text-amber-glow">●●●</span>
-              .repeat ?? null
-            {/* fall-through: wir rendern die Punkte unten als Text */}
-          </span>
-        </div>
-        <div className="mt-1 font-mono-crt text-[11px] uppercase tracking-widest text-amber-glow/70">
-          <span className="mr-4">
-            {DUEL_UI_TEXT.hitsLabel}: {renderDots(hits)}
+            <span className="text-amber-glow">{renderDots(hits)}</span>
           </span>
           <span>
-            {DUEL_UI_TEXT.missesLabel}: {renderDots(misses)}
+            {DUEL_UI_TEXT.missesLabel}:{" "}
+            <span className="text-amber-glow">{renderDots(misses)}</span>
           </span>
         </div>
 
