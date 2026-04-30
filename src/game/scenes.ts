@@ -1421,7 +1421,7 @@ export const scenes: Record<string, Scene> = {
         label: "Etage 5 — Wohnen / Dach",
         kind: "exit",
         exitDir: "left",
-        onUse: (api) => api.goTo("corridor56"),
+        onUse: (api) => rideElevator(api, "corridor56"),
       },
       {
         id: "btn4",
@@ -1432,7 +1432,7 @@ export const scenes: Record<string, Scene> = {
         label: "Etage 4 — Wohnen",
         kind: "exit",
         exitDir: "left",
-        onUse: (api) => api.goTo("corridor46"),
+        onUse: (api) => rideElevator(api, "corridor46"),
       },
       {
         id: "btn3",
@@ -1443,7 +1443,7 @@ export const scenes: Record<string, Scene> = {
         label: "Etage 3 — Verwaltung und Versorgung",
         kind: "exit",
         exitDir: "left",
-        onUse: (api) => api.goTo("corridor36"),
+        onUse: (api) => rideElevator(api, "corridor36"),
       },
       {
         id: "btn2",
@@ -1454,7 +1454,7 @@ export const scenes: Record<string, Scene> = {
         label: "Etage 2 — Korridor 26 (Heim)",
         kind: "exit",
         exitDir: "left",
-        onUse: (api) => api.goTo("hallway"),
+        onUse: (api) => rideElevator(api, "hallway"),
       },
       {
         id: "btn1",
@@ -1465,7 +1465,7 @@ export const scenes: Record<string, Scene> = {
         label: "Etage 1 — Lobby",
         kind: "exit",
         exitDir: "left",
-        onUse: (api) => api.goTo("floor1Lobby"),
+        onUse: (api) => rideElevator(api, "floor1Lobby"),
       },
       {
         // Etagen-Indikator über den Türen — kleines amber-Display.
