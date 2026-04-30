@@ -36,9 +36,9 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "radio",
-        x: 0,
+        x: -16.6667,
         y: 52,
-        w: 14,
+        w: 18.6667,
         h: 20,
         label: "Schmerz-Radio",
         kind: "use",
@@ -46,9 +46,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "terminal",
-        x: 12,
+        x: -0.6667,
         y: 40,
-        w: 22,
+        w: 29.3333,
         h: 30,
         label: "CentralOS Terminal",
         kind: "use",
@@ -56,9 +56,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "phoneApt",
-        x: 86,
+        x: 98,
         y: 32,
-        w: 12,
+        w: 16,
         h: 28,
         label: "Telefon",
         kind: "use",
@@ -124,9 +124,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "bed",
-        x: 34,
+        x: 28.6667,
         y: 50,
-        w: 44,
+        w: 58.6667,
         h: 30,
         label: "Bett",
         kind: "look",
@@ -138,9 +138,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "b2",
-        x: 12,
+        x: -0.6667,
         y: 76,
-        w: 22,
+        w: 29.3333,
         h: 22,
         label: "B2-Ration",
         kind: "look",
@@ -156,9 +156,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "window",
         // Fenster mit grünem Schein, Bildmitte etwas nach rechts.
-        x: 48,
+        x: 47.3333,
         y: 18,
-        w: 24,
+        w: 32,
         h: 34,
         label: "Fenster",
         kind: "look",
@@ -171,9 +171,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "door",
-        x: 86,
+        x: 98,
         y: 62,
-        w: 12,
+        w: 16,
         h: 33,
         label: "Wohnungstür",
         kind: "exit",
@@ -207,9 +207,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "philippeNpc",
         // Philippe steht rechts mit verschränkten Armen.
-        x: 64,
+        x: 68.6667,
         y: 18,
-        w: 26,
+        w: 34.6667,
         h: 78,
         label: "Philippe",
         kind: "talk",
@@ -231,9 +231,9 @@ export const scenes: Record<string, Scene> = {
       // Verschiedene Dialoge je nach Stand der Geschichte.
       {
         id: "philippeAfterNpc",
-        x: 64,
+        x: 68.6667,
         y: 18,
-        w: 26,
+        w: 34.6667,
         h: 78,
         label: "Philippe",
         kind: "talk",
@@ -299,9 +299,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "lampPhilippe",
         // Tischlampe rechts neben Philippe auf dem Nachttisch.
-        x: 60,
+        x: 63.3333,
         y: 38,
-        w: 14,
+        w: 18.6667,
         h: 24,
         label: "Lampe",
         kind: "look",
@@ -315,9 +315,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "wall",
         // Mittlere Betonwand zwischen Telefon und Philippe.
-        x: 22,
+        x: 12.6667,
         y: 8,
-        w: 38,
+        w: 50.6667,
         h: 50,
         label: "Wand mit Klopfen (zur 2615)",
         kind: "look",
@@ -336,9 +336,9 @@ export const scenes: Record<string, Scene> = {
       // Nach Akt 1: ruhige Wand zur (jetzt versiegelten) 2615.
       {
         id: "wallAfter",
-        x: 22,
+        x: 12.6667,
         y: 8,
-        w: 38,
+        w: 50.6667,
         h: 50,
         label: "Wand zur 2615 (still)",
         kind: "look",
@@ -353,9 +353,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "phone2613",
         // Beiger Bakelit-Wandapparat ganz links.
-        x: 0,
+        x: -16.6667,
         y: 18,
-        w: 22,
+        w: 29.3333,
         h: 55,
         label: "Telefon (Wandapparat)",
         kind: "use",
@@ -368,9 +368,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "waitParamedics",
-        x: 40,
+        x: 36.6667,
         y: 75,
-        w: 24,
+        w: 32,
         h: 18,
         label: "Warten",
         kind: "use",
@@ -407,9 +407,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "exit2613",
         // Türrahmen ganz rechts (hinter Philippe).
-        x: 94,
+        x: 108.6667,
         y: 18,
-        w: 6,
+        w: 8,
         h: 80,
         label: "In den Korridor",
         kind: "exit",
@@ -447,9 +447,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bodoNpc",
         // Hotspot deckt das Bodo-Sprite auf dem Sessel.
-        x: 14,
+        x: 2,
         y: 36,
-        w: 30,
+        w: 40,
         h: 60,
         label: "Bodo Marschke",
         kind: "talk",
@@ -512,9 +512,9 @@ export const scenes: Record<string, Scene> = {
       // Während Bodo weg ist: Hinweis statt Person.
       {
         id: "bodoEmptyChair",
-        x: 2,
+        x: -14,
         y: 42,
-        w: 30,
+        w: 40,
         h: 50,
         label: "Bodos leerer Sessel",
         kind: "look",
@@ -535,9 +535,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "lottiSpot",
         // Katze liegt auf der Ottomane vor dem Sessel.
-        x: 28,
+        x: 20.6667,
         y: 64,
-        w: 22,
+        w: 29.3333,
         h: 22,
         label: "Lotti (Katze)",
         kind: "talk",
@@ -572,9 +572,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bodoPhone",
         // Beiges Wandtelefon rechts oberhalb des Terminal-Tisches.
-        x: 70,
+        x: 76.6667,
         y: 24,
-        w: 12,
+        w: 16,
         h: 22,
         label: "Wandtelefon",
         kind: "look",
@@ -592,9 +592,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bodoPencil",
         // Tisch links neben dem Terminal.
-        x: 36,
+        x: 31.3333,
         y: 56,
-        w: 12,
+        w: 16,
         h: 10,
         label: "Bleistiftstummel",
         kind: "use",
@@ -618,9 +618,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bodoTerminal",
         // CRT-Monitor mit Tisch in der Bildmitte rechts.
-        x: 46,
+        x: 44.6667,
         y: 38,
-        w: 26,
+        w: 34.6667,
         h: 32,
         label: "Bodos Terminal",
         kind: "use",
@@ -657,9 +657,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "exit2612",
         // Wohnungstür ganz rechts.
-        x: 80,
+        x: 90,
         y: 14,
-        w: 20,
+        w: 26.6667,
         h: 80,
         label: "Zurück in den Korridor",
         kind: "exit",
@@ -729,9 +729,9 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "back2611",
-        x: 82,
+        x: 92.6667,
         y: 28,
-        w: 18,
+        w: 24,
         h: 60,
         label: "Tür 2611 (zurück in die Wohnung)",
         kind: "exit",
@@ -740,9 +740,9 @@ export const scenes: Record<string, Scene> = {
       // Tür 2613 — Philippes Wohnung. Bleibt jederzeit begehbar.
       {
         id: "door2613Philippe",
-        x: 67,
+        x: 72.6667,
         y: 36,
-        w: 14,
+        w: 18.6667,
         h: 50,
         label: "Tür 2613 (Philippe)",
         kind: "exit",
@@ -769,9 +769,9 @@ export const scenes: Record<string, Scene> = {
       // alles, was es zu sehen gibt.
       {
         id: "door2615Sealed",
-        x: 56,
+        x: 58,
         y: 42,
-        w: 12,
+        w: 16,
         h: 42,
         label: "Tür 2615 (versiegelt)",
         kind: "look",
@@ -787,9 +787,9 @@ export const scenes: Record<string, Scene> = {
       // Tür 2610 — Helka Vint. Nur Türgespräch, keine Szene.
       {
         id: "door2610Helka",
-        x: 2,
+        x: -14,
         y: 38,
-        w: 12,
+        w: 16,
         h: 50,
         label: "Tür 2610 (Helka Vint)",
         kind: "talk",
@@ -820,9 +820,9 @@ export const scenes: Record<string, Scene> = {
       // Tür 2612 — Bodo Marschke. Begehbare Wohnung.
       {
         id: "door2612Bodo",
-        x: 18,
+        x: 7.3333,
         y: 36,
-        w: 14,
+        w: 18.6667,
         h: 52,
         label: "Tür 2612 (Bodo Marschke)",
         kind: "exit",
@@ -831,9 +831,9 @@ export const scenes: Record<string, Scene> = {
       // Tür 2614 — Ennis Korr. Nur Türgespräch.
       {
         id: "door2614Ennis",
-        x: 30,
+        x: 23.3333,
         y: 38,
-        w: 9,
+        w: 12,
         h: 50,
         label: "Tür 2614 (Ennis Korr)",
         kind: "talk",
@@ -862,9 +862,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "toSector",
-        x: 42,
+        x: 39.3333,
         y: 42,
-        w: 16,
+        w: 21.3333,
         h: 30,
         label: "Aufzug",
         kind: "exit",
@@ -882,9 +882,9 @@ export const scenes: Record<string, Scene> = {
       // Bodo unterwegs ist (bodoLeftForB3 && !bodoBackAfterB3).
       {
         id: "toSectorBlocked",
-        x: 42,
+        x: 39.3333,
         y: 42,
-        w: 16,
+        w: 21.3333,
         h: 30,
         label: "Aufzug (gesperrt — Wartung 4711)",
         kind: "look",
@@ -910,9 +910,9 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "monitor",
-        x: 14,
+        x: 2,
         y: 30,
-        w: 20,
+        w: 26.6667,
         h: 22,
         label: "Status-Monitor",
         kind: "look",
@@ -926,9 +926,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "keypadCall",
-        x: 16,
+        x: 4.6667,
         y: 54,
-        w: 16,
+        w: 21.3333,
         h: 20,
         label: "Keypad — Code eingeben",
         kind: "use",
@@ -962,9 +962,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "toPassage",
-        x: 48,
+        x: 47.3333,
         y: 26,
-        w: 38,
+        w: 50.6667,
         h: 60,
         label: "Sektor-Tür öffnen → Verbindungsgang",
         kind: "exit",
@@ -990,9 +990,9 @@ export const scenes: Record<string, Scene> = {
       // weiß, dass es jenseits der Tür um E71 geht.
       {
         id: "doorWonder",
-        x: 48,
+        x: 47.3333,
         y: 26,
-        w: 38,
+        w: 50.6667,
         h: 60,
         label: "Tür betrachten",
         kind: "look",
@@ -1008,9 +1008,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "backHallwayS",
-        x: 0,
+        x: -16.6667,
         y: 35,
-        w: 18,
+        w: 24,
         h: 60,
         label: "Zurück in die Lobby",
         kind: "exit",
@@ -1030,18 +1030,18 @@ export const scenes: Record<string, Scene> = {
         id: "tvE71",
         kind: "television",
         // Linke Seitenwand, deutlich über dem schwarzen Brett.
-        x: 6,
+        x: -8.6667,
         y: 6,
-        w: 11,
+        w: 14.6667,
         h: 18,
       },
     ],
     hotspots: [
       {
         id: "receptionist",
-        x: 70,
+        x: 76.6667,
         y: 35,
-        w: 25,
+        w: 33.3333,
         h: 50,
         label: "Empfangsdame",
         kind: "talk",
@@ -1059,9 +1059,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "directory",
-        x: 35,
+        x: 30,
         y: 30,
-        w: 18,
+        w: 24,
         h: 22,
         label: "Hinweisschild",
         kind: "look",
@@ -1077,9 +1077,9 @@ export const scenes: Record<string, Scene> = {
         id: "television",
         // Sichtbares Wandgerät an der linken Seitenwand, über dem
         // schwarzen Verzeichnis-Brett. Klick-Box deckt das Decal.
-        x: 5,
+        x: -10,
         y: 5,
-        w: 13,
+        w: 17.3333,
         h: 20,
         label: "Teleempfänger",
         kind: "use",
@@ -1087,9 +1087,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "elevatorBack",
-        x: 0,
+        x: -16.6667,
         y: 30,
-        w: 22,
+        w: 29.3333,
         h: 65,
         label: "Aufzug zurück nach E67",
         kind: "exit",
@@ -1099,9 +1099,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "toCorridor15",
-        x: 28,
+        x: 20.6667,
         y: 16,
-        w: 20,
+        w: 26.6667,
         h: 50,
         label: "Tür → Korridor 15",
         kind: "exit",
@@ -1121,9 +1121,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "sealedDoor1531",
         // Versiegelte Tür ganz rechts, mit gelbem X über dem Türrahmen.
-        x: 82,
+        x: 92.6667,
         y: 18,
-        w: 17,
+        w: 22.6667,
         h: 76,
         label: "Tür 1531 (versiegelt)",
         kind: "look",
@@ -1142,9 +1142,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "doors",
-        x: 8,
+        x: -6,
         y: 32,
-        w: 36,
+        w: 48,
         h: 50,
         label: "Türen 1530–1540",
         kind: "look",
@@ -1161,9 +1161,9 @@ export const scenes: Record<string, Scene> = {
         id: "door1532",
         // Tür 1532 — Praxis Dr. Okwu. Links neben den anderen Türen,
         // außerhalb der Fluchtachse, damit sie 1534 nicht verdeckt.
-        x: 30,
+        x: 23.3333,
         y: 38,
-        w: 11,
+        w: 14.6667,
         h: 38,
         label: "Tür 1532 — Praxis Dr. Okwu",
         kind: "exit",
@@ -1172,9 +1172,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "door1534",
         // Tür ganz hinten in der Fluchtachse, mit rotem Status-Licht darüber.
-        x: 46,
+        x: 44.6667,
         y: 38,
-        w: 11,
+        w: 14.6667,
         h: 38,
         label: "Tür 1534 (rot beleuchtet)",
         kind: "exit",
@@ -1185,9 +1185,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "backLobby",
-        x: 0,
+        x: -16.6667,
         y: 80,
-        w: 14,
+        w: 18.6667,
         h: 18,
         label: "Zurück zum Empfang",
         kind: "exit",
@@ -1206,9 +1206,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "mikaelNpc",
         // Mikael sitzt mittig hinter dem Schreibtisch, halbe Bildhöhe.
-        x: 36,
+        x: 31.3333,
         y: 28,
-        w: 30,
+        w: 40,
         h: 60,
         label: "Alter Mann",
         kind: "talk",
@@ -1221,9 +1221,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "mikaelNpcAfter",
-        x: 36,
+        x: 31.3333,
         y: 28,
-        w: 30,
+        w: 40,
         h: 60,
         label: "Mikael Stegmann",
         kind: "look",
@@ -1239,9 +1239,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "deskStacks",
         // Linke Aktenstapel-Säule auf dem Schreibtisch.
-        x: 8,
+        x: -6,
         y: 30,
-        w: 26,
+        w: 34.6667,
         h: 60,
         label: "Aktenstapel",
         kind: "look",
@@ -1256,9 +1256,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "filingCabinets",
         // Aktenschränke rechts.
-        x: 70,
+        x: 76.6667,
         y: 30,
-        w: 26,
+        w: 34.6667,
         h: 60,
         label: "Aktenschränke",
         kind: "look",
@@ -1274,9 +1274,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "leaveRoom",
         // Türrahmen am rechten Bildrand, sehr schmal.
-        x: 94,
+        x: 108.6667,
         y: 8,
-        w: 6,
+        w: 8,
         h: 90,
         label: "Zurück in den Korridor",
         kind: "exit",
@@ -1302,9 +1302,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "okwuTalk",
         // Dr. Okwu sitzt mittig hinter dem Schreibtisch.
-        x: 30,
+        x: 23.3333,
         y: 18,
-        w: 28,
+        w: 37.3333,
         h: 76,
         label: "Dr. Adaeze Okwu",
         kind: "talk",
@@ -1328,9 +1328,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "okwuTerminal",
         // Bernsteinfarbenes CRT-Terminal links auf dem Schreibtisch.
-        x: 14,
+        x: 2,
         y: 42,
-        w: 16,
+        w: 21.3333,
         h: 26,
         label: "Patient:innen-Terminal",
         kind: "look",
@@ -1344,9 +1344,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "okwuShelves",
         // Aktenordner-Regal hinter Dr. Okwu, oben rechts.
-        x: 56,
+        x: 58,
         y: 4,
-        w: 38,
+        w: 50.6667,
         h: 32,
         label: "Aktenordner",
         kind: "look",
@@ -1360,9 +1360,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "okwuCouch",
         // Lederliege rechts.
-        x: 60,
+        x: 63.3333,
         y: 50,
-        w: 36,
+        w: 48,
         h: 42,
         label: "Untersuchungsliege",
         kind: "look",
@@ -1375,9 +1375,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "leaveRoom1532",
         // Türrahmen ganz links.
-        x: 0,
+        x: -16.6667,
         y: 4,
-        w: 14,
+        w: 18.6667,
         h: 94,
         label: "Zurück in den Korridor",
         kind: "exit",
@@ -1404,9 +1404,9 @@ export const scenes: Record<string, Scene> = {
       // (oben/unten je 12,5 % beschnitten). y-Werte sind bereits umgerechnet.
       {
         id: "btn5",
-        x: 66,
+        x: 71.3333,
         y: 25,
-        w: 20,
+        w: 26.6667,
         h: 9,
         label: "Etage 5 — Wohnen / Dach",
         kind: "exit",
@@ -1415,9 +1415,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "btn4",
-        x: 66,
+        x: 71.3333,
         y: 37,
-        w: 20,
+        w: 26.6667,
         h: 9,
         label: "Etage 4 — Wohnen",
         kind: "exit",
@@ -1426,9 +1426,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "btn3",
-        x: 66,
+        x: 71.3333,
         y: 49,
-        w: 20,
+        w: 26.6667,
         h: 9,
         label: "Etage 3 — Verwaltung und Versorgung",
         kind: "exit",
@@ -1437,9 +1437,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "btn2",
-        x: 66,
+        x: 71.3333,
         y: 61,
-        w: 20,
+        w: 26.6667,
         h: 9,
         label: "Etage 2 — Korridor 26 (Heim)",
         kind: "exit",
@@ -1448,9 +1448,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "btn1",
-        x: 66,
+        x: 71.3333,
         y: 73,
-        w: 20,
+        w: 26.6667,
         h: 9,
         label: "Etage 1 — Lobby",
         kind: "exit",
@@ -1460,9 +1460,9 @@ export const scenes: Record<string, Scene> = {
       {
         // Etagen-Indikator über den Türen — kleines amber-Display.
         id: "elevatorIndicator",
-        x: 12,
+        x: -0.6667,
         y: 0,
-        w: 30,
+        w: 40,
         h: 6,
         label: "Etagen-Indikator",
         kind: "look",
@@ -1489,9 +1489,9 @@ export const scenes: Record<string, Scene> = {
         id: "tvE67",
         kind: "television",
         // Wand über dem Empfangstresen, gut sichtbar von der Mitte aus.
-        x: 18,
+        x: 7.3333,
         y: 18,
-        w: 11,
+        w: 14.6667,
         h: 17,
       },
     ],
@@ -1499,9 +1499,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "philippeLobby",
         src: philippeSprite,
-        x: 32,
+        x: 26,
         y: 28,
-        w: 14,
+        w: 18.6667,
         h: 56,
         alt: "Philippe wartet vor dem Tresen",
         hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
@@ -1510,9 +1510,9 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "philippeLobbySpot",
-        x: 32,
+        x: 26,
         y: 30,
-        w: 14,
+        w: 18.6667,
         h: 54,
         label: "Philippe (Nachbar)",
         kind: "talk",
@@ -1521,9 +1521,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "lobbyDesk",
-        x: 8,
+        x: -6,
         y: 50,
-        w: 22,
+        w: 29.3333,
         h: 30,
         label: "Empfangstresen (unbesetzt)",
         kind: "look",
@@ -1536,9 +1536,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "televisionE67",
         // Wand-Teleempfänger über dem Tresen.
-        x: 17,
+        x: 6,
         y: 17,
-        w: 13,
+        w: 17.3333,
         h: 19,
         label: "Teleempfänger",
         kind: "use",
@@ -1546,9 +1546,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "lobbyBoard",
-        x: 38,
+        x: 34,
         y: 38,
-        w: 14,
+        w: 18.6667,
         h: 14,
         label: "Schwarzes Brett",
         kind: "look",
@@ -1561,9 +1561,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "lobbyElevator",
-        x: 78,
+        x: 87.3333,
         y: 22,
-        w: 18,
+        w: 24,
         h: 70,
         label: "Aufzug",
         kind: "exit",
@@ -1571,9 +1571,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "lobbySectorDoor",
-        x: 52,
+        x: 52.6667,
         y: 35,
-        w: 18,
+        w: 24,
         h: 50,
         label: "Sektor-Tür → E71",
         kind: "exit",
@@ -1583,9 +1583,9 @@ export const scenes: Record<string, Scene> = {
         id: "commonRoomDoor",
         // Schmale Tür links neben dem Empfangstresen (unterer Bildbereich,
         // damit es nicht mit den anderen Hotspots kollidiert).
-        x: 0,
+        x: -16.6667,
         y: 60,
-        w: 8,
+        w: 10.6667,
         h: 36,
         label: "Tür: Gemeinschaftsraum",
         kind: "exit",
@@ -1604,9 +1604,9 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "lookE67",
-        x: 5,
+        x: -10,
         y: 35,
-        w: 30,
+        w: 40,
         h: 50,
         label: "Wand E67 (zurück)",
         kind: "exit",
@@ -1614,9 +1614,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "lookSky",
-        x: 38,
+        x: 34,
         y: 8,
-        w: 24,
+        w: 32,
         h: 22,
         label: "Himmel",
         kind: "look",
@@ -1629,9 +1629,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "toE71",
-        x: 65,
+        x: 70,
         y: 32,
-        w: 30,
+        w: 40,
         h: 60,
         label: "Eingang E71 →",
         kind: "exit",
@@ -1663,9 +1663,9 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "philippeSpot36",
-        x: 63,
+        x: 67.3333,
         y: 36,
-        w: 10,
+        w: 13.3333,
         h: 50,
         label: "Philippe (Nachbar)",
         kind: "talk",
@@ -1677,7 +1677,7 @@ export const scenes: Record<string, Scene> = {
         id: "officeDoor",
         x: 50,
         y: 24,
-        w: 15,
+        w: 20,
         h: 64,
         label: "Tür 3601 — Abschnittsverantwortlicher E67",
         kind: "talk",
@@ -1688,9 +1688,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "cafeteriaDoor",
-        x: 3,
+        x: -12.6667,
         y: 18,
-        w: 34,
+        w: 45.3333,
         h: 74,
         label: "Tür 3602 — Kantine E67",
         kind: "exit",
@@ -1698,9 +1698,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "officeBell",
-        x: 65,
+        x: 70,
         y: 47,
-        w: 4,
+        w: 5.3333,
         h: 7,
         label: "Klingelknopf",
         kind: "use",
@@ -1713,9 +1713,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "back36",
-        x: 73,
+        x: 80.6667,
         y: 18,
-        w: 22,
+        w: 29.3333,
         h: 74,
         label: "Zurück zum Aufzug",
         kind: "exit",
@@ -1734,9 +1734,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "miraSprite46",
         src: miraSprite,
-        x: 22,
+        x: 12.6667,
         y: 36,
-        w: 14,
+        w: 18.6667,
         h: 54,
         alt: "Junge Frau, an die Wand gelehnt",
         visible: (api) => api.getMiraFloors().includes(4),
@@ -1744,9 +1744,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "philippeSprite46",
         src: philippeSprite,
-        x: 62,
+        x: 66,
         y: 34,
-        w: 14,
+        w: 18.6667,
         h: 54,
         alt: "Philippe vor dem Plakat",
         hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
@@ -1756,9 +1756,9 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "philippeSpot46",
-        x: 62,
+        x: 66,
         y: 36,
-        w: 14,
+        w: 18.6667,
         h: 54,
         label: "Philippe (Nachbar)",
         kind: "talk",
@@ -1767,9 +1767,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "miraSpot46",
-        x: 22,
+        x: 12.6667,
         y: 38,
-        w: 14,
+        w: 18.6667,
         h: 50,
         label: "Junge Frau an der Wand",
         kind: "talk",
@@ -1795,9 +1795,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "poster46",
-        x: 42,
+        x: 39.3333,
         y: 30,
-        w: 18,
+        w: 24,
         h: 22,
         label: "Plakat „Resonanz-Hygiene“",
         kind: "look",
@@ -1810,9 +1810,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "door4601Look",
-        x: 4,
+        x: -11.3333,
         y: 26,
-        w: 14,
+        w: 18.6667,
         h: 56,
         label: "Tür 4601",
         kind: "look",
@@ -1825,9 +1825,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "door4601Enter",
-        x: 4,
+        x: -11.3333,
         y: 26,
-        w: 14,
+        w: 18.6667,
         h: 56,
         label: "Tür 4601 — Mira",
         kind: "exit",
@@ -1836,9 +1836,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "back46",
-        x: 80,
+        x: 90,
         y: 30,
-        w: 18,
+        w: 24,
         h: 60,
         label: "Zurück zum Aufzug",
         kind: "exit",
@@ -1857,9 +1857,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "philippeSprite56",
         src: philippeSprite,
-        x: 66,
+        x: 71.3333,
         y: 34,
-        w: 14,
+        w: 18.6667,
         h: 54,
         alt: "Philippe am Ende des Korridors",
         hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
@@ -1869,9 +1869,9 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "philippeSpot56",
-        x: 66,
+        x: 71.3333,
         y: 36,
-        w: 14,
+        w: 18.6667,
         h: 54,
         label: "Philippe (Nachbar)",
         kind: "talk",
@@ -1881,9 +1881,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "window56",
-        x: 42,
+        x: 39.3333,
         y: 30,
-        w: 18,
+        w: 24,
         h: 30,
         label: "Vergittertes Fenster",
         kind: "look",
@@ -1897,7 +1897,7 @@ export const scenes: Record<string, Scene> = {
         id: "hatch56",
         x: 50,
         y: 6,
-        w: 14,
+        w: 18.6667,
         h: 10,
         label: "Wartungsluke (verriegelt)",
         kind: "look",
@@ -1925,9 +1925,9 @@ export const scenes: Record<string, Scene> = {
       // ─────────────────────────────────────────────────────────
       {
         id: "door5610",
-        x: 8,
+        x: -6,
         y: 16,
-        w: 16,
+        w: 21.3333,
         h: 74,
         label: "Tür 5610 · Technik",
         kind: "exit",
@@ -2004,9 +2004,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "back56",
-        x: 80,
+        x: 90,
         y: 30,
-        w: 18,
+        w: 24,
         h: 60,
         label: "Zurück zum Aufzug",
         kind: "exit",
@@ -2027,9 +2027,9 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "nodeTerminal5610",
-        x: 70,
+        x: 76.6667,
         y: 45,
-        w: 26,
+        w: 34.6667,
         h: 40,
         label: "Wartungsterminal",
         kind: "use",
@@ -2037,9 +2037,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "racks5610",
-        x: 18,
+        x: 7.3333,
         y: 25,
-        w: 38,
+        w: 50.6667,
         h: 60,
         label: "Racks (warm)",
         kind: "look",
@@ -2052,9 +2052,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "exit5610",
-        x: 0,
+        x: -16.6667,
         y: 50,
-        w: 14,
+        w: 18.6667,
         h: 50,
         label: "Zurück in den Korridor",
         kind: "exit",
@@ -2080,9 +2080,9 @@ export const scenes: Record<string, Scene> = {
         // Stage 1024×640 zeigt 16:9-Bild via object-cover: sichtbar
         // sind ~5.4 %..94.6 % der Original-Bildbreite. Alle Werte sind
         // bereits in Stage-% angegeben.
-        x: 0,
+        x: -16.6667,
         y: 62,
-        w: 13,
+        w: 17.3333,
         h: 38,
         label: (() => "Freier Stuhl am Tisch")(),
         kind: "use",
@@ -2105,9 +2105,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "tjarkSpot",
         // Tjark (schwarze Haare, Brille) hinten Mitte-Rechts hinter dem GM-Schirm.
-        x: 66,
+        x: 71.3333,
         y: 4,
-        w: 20,
+        w: 26.6667,
         h: 54,
         label: "Tjark (Meister)",
         kind: "talk",
@@ -2116,9 +2116,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "yelvaSpot",
         // Yelva (grünes Kleid, Brille) sitzt rechts am Tisch.
-        x: 84,
+        x: 95.3333,
         y: 38,
-        w: 16,
+        w: 21.3333,
         h: 58,
         label: "Yelva (Elfe)",
         kind: "talk",
@@ -2131,9 +2131,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "bremSpot",
         // Brem (rote Haare, rot-schwarz gestreift) steht links am Tisch.
-        x: 13,
+        x: 0.6667,
         y: 12,
-        w: 22,
+        w: 29.3333,
         h: 78,
         label: "Brem (Streuner)",
         kind: "talk",
@@ -2146,9 +2146,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "rulebook",
         // Aufgeschlagenes DSA-Regelwerk auf dem Tisch (links unten).
-        x: 24,
+        x: 15.3333,
         y: 64,
-        w: 22,
+        w: 29.3333,
         h: 16,
         label: "DSA-Regelwerk",
         kind: "look",
@@ -2161,9 +2161,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "exitCommon",
         // Schmaler Streifen am linken Bildrand (Tür außerhalb des Bildes).
-        x: 0,
+        x: -16.6667,
         y: 0,
-        w: 4,
+        w: 5.3333,
         h: 100,
         label: "Zurück in die Lobby",
         kind: "exit",
@@ -2186,9 +2186,9 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "kowalkSpot",
-        x: 13,
+        x: 0.6667,
         y: 45,
-        w: 14,
+        w: 18.6667,
         h: 50,
         label: "Frau Kowalk",
         kind: "talk",
@@ -2201,9 +2201,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "brustSpot",
-        x: 77,
+        x: 86,
         y: 42,
-        w: 14,
+        w: 18.6667,
         h: 50,
         label: "Herr Brust",
         kind: "talk",
@@ -2216,9 +2216,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "cafeteriaCounter",
-        x: 36,
+        x: 31.3333,
         y: 56,
-        w: 22,
+        w: 29.3333,
         h: 16,
         label: "Ausgabetheke",
         kind: "look",
@@ -2237,9 +2237,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "cafeteriaQuittungsblock",
         // Auf dem Tresen, rechts neben dem Schild.
-        x: 56,
+        x: 58,
         y: 56,
-        w: 16,
+        w: 21.3333,
         h: 14,
         label: "Quittungsblock Schicht B",
         kind: "use",
@@ -2263,9 +2263,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "cafeteriaPneumaticTube",
-        x: 38,
+        x: 34,
         y: 14,
-        w: 14,
+        w: 18.6667,
         h: 18,
         label: "Pneumatik-Rohrpost",
         kind: (() => "use" as const)(),
@@ -2317,9 +2317,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "cafeteriaPosters",
-        x: 60,
+        x: 63.3333,
         y: 28,
-        w: 18,
+        w: 24,
         h: 24,
         label: "Hygiene-Aushänge",
         kind: "look",
@@ -2333,9 +2333,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "back36FromCafeteria",
-        x: 86,
+        x: 98,
         y: 70,
-        w: 12,
+        w: 16,
         h: 28,
         label: "Zurück in den Korridor",
         kind: "exit",
@@ -2357,9 +2357,9 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "miraInRoom",
-        x: 38,
+        x: 34,
         y: 50,
-        w: 22,
+        w: 29.3333,
         h: 38,
         label: "Mira",
         kind: "talk",
@@ -2373,9 +2373,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "miraTerminal",
-        x: 70,
+        x: 76.6667,
         y: 50,
-        w: 22,
+        w: 29.3333,
         h: 30,
         label: "Miras Terminal (FuckTheSystemOS)",
         kind: "use",
@@ -2383,9 +2383,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "miraPosterLeine",
-        x: 28,
+        x: 20.6667,
         y: 22,
-        w: 30,
+        w: 40,
         h: 24,
         label: "Plakat „104,6 — DEINE LEINE“",
         kind: "look",
@@ -2398,9 +2398,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "miraPosterStille",
-        x: 56,
+        x: 58,
         y: 36,
-        w: 14,
+        w: 18.6667,
         h: 14,
         label: "Zettel „TAG DER STILLE — bald.“",
         kind: "look",
@@ -2412,9 +2412,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "miraPortraits",
-        x: 0,
+        x: -16.6667,
         y: 24,
-        w: 22,
+        w: 29.3333,
         h: 38,
         label: "Korkbrett mit Porträts",
         kind: "look",
@@ -2427,9 +2427,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "miraBed",
-        x: 14,
+        x: 2,
         y: 64,
-        w: 32,
+        w: 42.6667,
         h: 30,
         label: "Bett",
         kind: "look",
@@ -2442,9 +2442,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "miraVent",
-        x: 84,
+        x: 95.3333,
         y: 6,
-        w: 14,
+        w: 18.6667,
         h: 16,
         label: "Verklebter Lüftungsschlitz",
         kind: "look",
@@ -2456,9 +2456,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "aptMiraBack",
-        x: 0,
+        x: -16.6667,
         y: 80,
-        w: 14,
+        w: 18.6667,
         h: 18,
         label: "Zurück in den Korridor",
         kind: "exit",
