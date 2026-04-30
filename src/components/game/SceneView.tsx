@@ -21,6 +21,16 @@ export function SceneView() {
     typeof current.background === "function"
       ? current.background(api)
       : current.background;
+  // Optionaler Bild-Zoom (siehe Scene.bgFocus). Wird sowohl auf das
+  // Hintergrund-<img> als auch auf den 4:3-Hotspot-Layer angewendet,
+  // damit Koordinaten und Motiv deckungsgleich bleiben.
+  const bgFocus = current.bgFocus;
+  const focusStyle: React.CSSProperties | undefined = bgFocus
+    ? {
+        transform: `scale(${bgFocus.scale})`,
+        transformOrigin: `${bgFocus.originX}% ${bgFocus.originY}%`,
+      }
+    : undefined;
   const [showIntro, setShowIntro] = useState(true);
   // Wackelt nur für max. 10 Sekunden ab dem Moment, in dem die Überlastung beginnt.
   const [shakeActive, setShakeActive] = useState(false);
