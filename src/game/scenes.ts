@@ -1427,7 +1427,7 @@ export const scenes: Record<string, Scene> = {
         y: 41.2,
         w: 8.5,
         h: 5.6,
-        label: "Etage 4 — Wohnen",
+        label: "Etage 4 — Korridor",
         kind: "exit",
         exitDir: "left",
         onUse: (api) => rideElevator(api, "corridor46"),
