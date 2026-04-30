@@ -300,7 +300,7 @@ export const DUEL_ROUNDS: DuelRound[] = [
   {
     id: "siegel",
     brustOpening:
-      "Das Siegel auf der Vollmacht ist matt. Ich erkenne den unteren Bogen des B in „BEWOHNERVERTRETUNG" nicht eindeutig.",
+      "Das Siegel auf der Vollmacht ist matt. Ich erkenne den unteren Bogen des B in »BEWOHNERVERTRETUNG« nicht eindeutig.",
     counters: [
       {
         text: "Mattheit allein begründet keine Zurückweisung. §1 Absatz fünf der Schichtübergabeordnung verlangt einen vollständig fehlenden Bogen — der untere Bogen ist sichtbar, nur abgegriffen.",
