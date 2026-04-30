@@ -64,6 +64,8 @@ interface GameState {
   idCardOpen: boolean;
   /** Lobby-Schleuse-Overlay sichtbar (Tagesmodus, vor Erstbetreten). */
   lobbyGateOpen: boolean;
+  /** Bürokratie-Duell-Overlay (Brust-Tresen, Akt I) sichtbar. */
+  duelOpen: boolean;
 }
 
 interface GameContextValue extends GameState {
@@ -102,6 +104,8 @@ interface GameContextValue extends GameState {
   /** Lobby-Schleuse manuell öffnen / schließen. */
   openLobbyGate: () => void;
   closeLobbyGate: () => void;
+  /** Bürokratie-Duell schließen (Abbruch oder nach Sieg/Niederlage). */
+  closeDuel: () => void;
   /** Lobby-Schleusen-Eskalation (Fehlversuche, transient). */
   getLobbyGateAttempts: () => number;
   bumpLobbyGateAttempts: () => number;
@@ -198,6 +202,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [handbookOpen, setHandbookOpen] = useState(false);
   const [idCardOpen, setIdCardOpen] = useState(false);
   const [lobbyGateOpen, setLobbyGateOpen] = useState(false);
+  const [duelOpen, setDuelOpen] = useState(false);
   const [freeChatNpcId, setFreeChatNpcId] = useState<string | null>(null);
   const [isEssentialAssetsLoaded, setIsEssentialAssetsLoaded] = useState(false);
   // Eskalationszähler der Lobby-Schleuse (Fehlversuche), nicht persistiert.
