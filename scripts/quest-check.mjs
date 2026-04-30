@@ -21,12 +21,30 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname;
+// Quest-Logik lebt nicht nur in src/game/* — viele Setter sitzen in
+// UI-Komponenten (RadioPanel, NodeTerminal, Terminal, ParamedicsCutscene
+// etc.) und im GameContext. Wir scannen alles unter src/game und
+// src/components/game, plus den GameContext.
+import { readdirSync, statSync } from "node:fs";
+import { join } from "node:path";
+
+function listFiles(dir, out = []) {
+  for (const name of readdirSync(dir)) {
+    const p = join(dir, name);
+    const st = statSync(p);
+    if (st.isDirectory()) listFiles(p, out);
+    else if (/\.(ts|tsx|mjs)$/.test(name)) out.push(p);
+  }
+  return out;
+}
+
 const SOURCES = [
-  "src/game/scenes.ts",
-  "src/game/dialogs.ts",
-  "src/game/combine.ts",
-  "src/game/adventureGame.ts",
-];
+  ...listFiles(ROOT + "src/game"),
+  ...listFiles(ROOT + "src/components/game"),
+]
+  .map((p) => p.replace(ROOT, ""))
+  // types.ts NICHT scannen — sonst werden die Union-Literale als Reader gewertet.
+  .filter((p) => p !== "src/game/types.ts");
 
 const REPORT_PATH = "/mnt/documents/quest-check-report.md";
 
@@ -102,6 +120,14 @@ for (const [file, src] of Object.entries(files)) {
       file,
       line: lineOf(src, m.index),
       kind: "hasFlag",
+    });
+  }
+  // Variante: flags.has("X") — wird in vielen Komponenten benutzt.
+  for (const m of src.matchAll(/\bflags\.has\(\s*"([^"]+)"\s*\)/g)) {
+    note(flagReaders, m[1], {
+      file,
+      line: lineOf(src, m.index),
+      kind: "flags.has",
     });
   }
   // requires: ["X", "Y"]   /   hiddenWhen: ["X", "Y"]
