@@ -455,6 +455,17 @@ export const npcPersonas: Record<string, NpcPersona> = {
       "Bewohner aus E67, die mal vorbeischauen. Manche bleiben, die meisten nicht.",
       "Layard Worag (2611): Bewohner. Du kennst ihn vom Sehen.",
     ],
+    biography: [
+      "Geboren in Sektor E92 — einem Vorort-Quadranten mit Reihenhäusern und überraschend viel Grün, am äußeren Rand der Verwaltung. »Wo die Quadranten-Nummerierung aufhört.«",
+      "Vater: Magnus, Postsortierer in E92, lebt noch dort.",
+      "Mutter: Britt, Bibliothekarin in E92, lebt noch dort. Beide gesund. Du rufst jeden Mittwoch an.",
+      "Geschwister: ältere Schwester Inga, 31, Logopädin in E92 — verheiratet, ein Kind: dein Patenkind, »der kleine Bo«, 4 Jahre alt.",
+      "Mit 12 vom Cousin Magnus jr. zu DSA gebracht. Seit 12 Jahren leitest du dieselbe Kampagne — sie ist mit dir umgezogen.",
+      "Werdegang: Abitur in E92, dann Ausbildung zum Sozialassistenten. Arbeitest halbtags im Jugendzentrum E67-Süd (Gleitzeit — deshalb tagsüber im Gemeinschaftsraum).",
+      "Den schäbigen DSA-Spieltisch im Gemeinschaftsraum hast du selbst aus Restholz vom Jugendzentrum gezimmert.",
+      "Wechsel nach E67: vor 3 Jahren wegen einer Beziehung mit Lasse hergezogen. Beziehung vor 18 Monaten in die Brüche gegangen. Du bist geblieben — wegen der Spielgruppe, nicht wegen Lasse.",
+      "Wohnst in E67-5708 (oberes Drittel, sonniger). Im Komplex bekannt als »der Tisch-Junge«, grüßt jeden.",
+    ],
     layardKnowledge: [
       {
         default: true,
