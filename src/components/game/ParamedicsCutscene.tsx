@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useGame } from "@/game/GameContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import { speak, stopSpeech } from "@/audio/speech";
+import beat0 from "@/assets/scene-apt-2613.jpg";
 import beat1 from "@/assets/cutscene-paramedics-1.jpg";
 import beat3 from "@/assets/cutscene-paramedics-3.jpg";
 import beat4 from "@/assets/cutscene-paramedics-4.jpg";
@@ -14,41 +16,61 @@ type Speaker = "SANITÄTER" | "LAYARD" | "SYSTEM";
 
 interface Line {
   speaker: Speaker;
-  /** Anzeige-/Untertiteltext. */
   text: string;
-  /** Optional eigener TTS-Text (falls Untertitel verkürzt). */
   speech?: string;
-  /** Wie lange diese Zeile auf dem Bildschirm bleibt (ms). */
   hold: number;
+}
+
+interface Pulse {
+  /** wo an der Wand das Klopfen "sitzt" — in % der Bühne */
+  x: number;
+  y: number;
+  /** Anzahl Pulse innerhalb des Beats */
+  count: number;
+  /** Abstand zwischen Pulsen in ms */
+  intervalMs: number;
 }
 
 interface Beat {
   image: string;
-  /** Ken-Burns: Skalierungs-Range und Translation. */
+  /** Ken-Burns: Skalierungs-Range */
   zoom: [number, number];
-  pan: [number, number, number, number]; // [x0, y0, x1, y1] in %
-  /** Optional einleitende Stille bevor die erste Zeile gesprochen wird. */
+  /** [x0,y0,x1,y1] in % */
+  pan: [number, number, number, number];
   leadIn?: number;
-  /** Optional Pause am Ende vor dem Crossfade. */
   tail?: number;
   lines: Line[];
+  /** stille Beats: kein Untertitel, kein TTS, hält tail ms */
+  silent?: boolean;
+  /** Türbruch: Shake + Splitter */
+  burst?: boolean;
+  /** Klopf-Pulse an einer Wand-Position */
+  pulse?: Pulse;
+  /** sanftes Mikro-Shake während des ganzen Beats */
+  microShake?: boolean;
+  /** grüner Augen-Glow an Position (in %) */
+  eyeGlow?: { x: number; y: number };
 }
 
-/**
- * Hold-Zeit-Heuristik: ~70 ms pro Zeichen, mind. 2.4s, max 7s.
- * Wir kennen die echte Audiolänge nicht (speak() ist fire-and-forget),
- * also wird die Zeile so lange gehalten, dass die TTS-Wiedergabe in
- * aller Regel passt — leicht großzügig, damit Untertitel nicht
- * vorbeihuschen.
- */
 function holdFor(text: string, factor = 70): number {
   return Math.max(2400, Math.min(7000, Math.round(text.length * factor + 800)));
 }
 
 function buildBeats(): Beat[] {
   return [
+    // 0) NEU — stille Vorgeschichte in Philippes Wohnung 2613.
     {
-      // 1) Sanitäter & Techniker vor 2615.
+      image: beat0,
+      zoom: [1.05, 1.10],
+      pan: [2, 0, -2, 0],
+      lines: [],
+      silent: true,
+      tail: 3000,
+      pulse: { x: 86, y: 50, count: 3, intervalMs: 750 },
+      microShake: true,
+    },
+    // 1) Sanitäter & Techniker vor 2615.
+    {
       image: beat1,
       zoom: [1.04, 1.12],
       pan: [0, 0, -2, -1],
@@ -62,8 +84,8 @@ function buildBeats(): Beat[] {
       ],
       tail: 200,
     },
+    // 2) Tür birst auf.
     {
-      // 3) Tür birst auf. Action-Beat — kurz halten.
       image: beat3,
       zoom: [1.0, 1.18],
       pan: [0, 0, 0, 0],
@@ -75,9 +97,10 @@ function buildBeats(): Beat[] {
         },
       ],
       tail: 300,
+      burst: true,
     },
+    // 3) Innen: ausgemergelter Mann klopft.
     {
-      // 4) Innen: ausgemergelter Mann klopft gegen Wand.
       image: beat4,
       zoom: [1.02, 1.10],
       pan: [-2, 0, 2, -1],
@@ -97,11 +120,13 @@ function buildBeats(): Beat[] {
         },
       ],
       tail: 200,
+      pulse: { x: 88, y: 45, count: 5, intervalMs: 850 },
+      microShake: true,
     },
+    // 4) Close-up der grünen Augen.
     {
-      // 5) Close-up der grünen Augen.
       image: beat5,
-      zoom: [1.10, 1.22],
+      zoom: [1.10, 1.28],
       pan: [0, 1, 0, -1],
       lines: [
         {
@@ -120,9 +145,10 @@ function buildBeats(): Beat[] {
         },
       ],
       tail: 400,
+      eyeGlow: { x: 50, y: 42 },
     },
+    // 5) Bergung & Protokoll-Übergabe.
     {
-      // 6) Bergung & Protokoll-Übergabe.
       image: beat6,
       zoom: [1.04, 1.10],
       pan: [-1, -1, 1, 1],
@@ -157,9 +183,6 @@ function buildBeats(): Beat[] {
         {
           speaker: "SYSTEM",
           text: "Warum hat er ja gesagt? Er hätte nein sagen können.",
-          // ElevenLabs setzt sonst den Akzent auf das letzte Inhaltswort
-          // („gesagt"). Mit ALL CAPS + Kommas zwingen wir die Betonung
-          // explizit auf das Kontrast-Paar „JA"/„NEIN".
           speech: "Warum hat er, JA, gesagt? Er hätte auch NEIN sagen können.",
           hold: holdFor("Warum hat er ja gesagt? Er hätte nein sagen können.") + 400,
         },
@@ -175,14 +198,140 @@ function clamp01(v: number): number {
   return Math.max(0, Math.min(1, v));
 }
 
+// ─── Sub-Komponenten ────────────────────────────────────────────────
+
+/** Klopf-Pulse: konzentrische Schockwellen aus einer Wand-Position. */
+function KnockPulses({ pulse, beatKey }: { pulse: Pulse; beatKey: string }) {
+  const rings = Array.from({ length: pulse.count });
+  return (
+    <div
+      key={beatKey}
+      className="pointer-events-none absolute"
+      style={{
+        left: `${pulse.x}%`,
+        top: `${pulse.y}%`,
+        transform: "translate(-50%, -50%)",
+      }}
+    >
+      {rings.map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: [0, 1.6, 2.0], opacity: [0, 0.55, 0] }}
+          transition={{
+            duration: 1.2,
+            delay: (i * pulse.intervalMs) / 1000,
+            ease: "easeOut",
+            repeat: Infinity,
+            repeatDelay: (pulse.count * pulse.intervalMs) / 1000 + 0.3,
+          }}
+          className="absolute h-24 w-24 rounded-full border-2"
+          style={{
+            borderColor: "rgba(255, 220, 140, 0.55)",
+            boxShadow: "0 0 30px rgba(255, 200, 100, 0.35)",
+            left: -48,
+            top: -48,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/** Holzsplitter, die einmalig aus der Türmitte wegfliegen. */
+function DoorBurstParticles({ beatKey }: { beatKey: string }) {
+  // deterministische Pseudo-Random aus dem Index (kein Math.random im Render)
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 14 }).map((_, i) => {
+        const angle = (i / 14) * Math.PI * 2 + (i % 3) * 0.4;
+        const dist = 180 + (i * 37) % 140;
+        return {
+          x: Math.cos(angle) * dist,
+          y: Math.sin(angle) * dist + (i % 2 === 0 ? 80 : 40), // leichter Fall nach unten
+          rot: ((i * 73) % 360) - 180,
+          size: 6 + (i % 4) * 3,
+        };
+      }),
+    [],
+  );
+  return (
+    <div
+      key={beatKey}
+      className="pointer-events-none absolute"
+      style={{ left: "62%", top: "55%" }}
+    >
+      {/* Weißer Blitz */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0, 0.35, 0] }}
+        transition={{ duration: 0.22, ease: "easeOut" }}
+        className="fixed inset-0 -z-0 bg-white"
+        style={{ left: 0, top: 0 }}
+      />
+      {particles.map((p, i) => (
+        <motion.div
+          key={i}
+          initial={{ x: 0, y: 0, rotate: 0, opacity: 1 }}
+          animate={{ x: p.x, y: p.y, rotate: p.rot, opacity: [1, 1, 0] }}
+          transition={{ duration: 0.85, ease: "easeOut" }}
+          className="absolute rounded-sm"
+          style={{
+            width: p.size,
+            height: p.size * 0.45,
+            background:
+              "linear-gradient(180deg, #6b4a2b 0%, #3a2614 100%)",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.6)",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/** Grüner Augen-Glow, atmet langsam. */
+function EyeGlow({ x, y }: { x: number; y: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: [0, 0.45, 0.25, 0.45] }}
+      transition={{ duration: 4, ease: "easeInOut", repeat: Infinity }}
+      className="pointer-events-none absolute h-[40%] w-[55%]"
+      style={{
+        left: `${x}%`,
+        top: `${y}%`,
+        transform: "translate(-50%, -50%)",
+        background:
+          "radial-gradient(ellipse at center, rgba(80, 255, 160, 0.55) 0%, rgba(40, 200, 120, 0.2) 35%, transparent 65%)",
+        mixBlendMode: "screen",
+        filter: "blur(8px)",
+      }}
+    />
+  );
+}
+
+/** Kurzer Flicker einer Neonröhre beim Beat-Eintritt. */
+function NeonFlicker({ beatKey }: { beatKey: string }) {
+  return (
+    <motion.div
+      key={beatKey}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: [0, 0.25, 0, 0.18, 0, 0.08, 0] }}
+      transition={{ duration: 0.55, ease: "linear", times: [0, 0.1, 0.2, 0.35, 0.5, 0.7, 1] }}
+      className="pointer-events-none absolute inset-0 bg-white"
+    />
+  );
+}
+
 export function ParamedicsCutscene() {
   const { cutscene, endCutscene, api } = useGame();
   const { sfxVolume, musicVolume, musicEnabled } = useSettings();
   const music = useMusic();
   const beats = useMemo(buildBeats, []);
   const [beatIdx, setBeatIdx] = useState(0);
-  const [lineIdx, setLineIdx] = useState(-1); // -1 = leadIn
+  const [lineIdx, setLineIdx] = useState(-1);
   const [visible, setVisible] = useState(true);
+  const [shakeNonce, setShakeNonce] = useState(0);
   const startedRef = useRef(false);
   const cancelledRef = useRef(false);
   const timersRef = useRef<ReturnType<typeof setTimeout>[] | null>(null);
@@ -191,9 +340,6 @@ export function ParamedicsCutscene() {
 
   const active = cutscene === "paramedics";
 
-  // Lautstärke der Cutscene-Musik live an Settings koppeln, solange sie spielt.
-  // Wir liegen bewusst ein Stück unter musicVolume, damit Dialog/TTS klar oben
-  // sitzt — die Musik ist nur Untermalung.
   useEffect(() => {
     if (!musicAudioRef.current) return;
     const target = musicEnabled ? clamp01(musicVolume * 0.55) : 0;
@@ -202,7 +348,6 @@ export function ParamedicsCutscene() {
     }
   }, [musicVolume, musicEnabled]);
 
-  // Reset wenn die Cutscene endet.
   useEffect(() => {
     if (!active) {
       cancelledRef.current = true;
@@ -221,15 +366,12 @@ export function ParamedicsCutscene() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 
-  // Hauptablauf: sequenziell abspielen. Jede Dialogzeile wartet auf das echte
-  // Audio-Ende, damit TTS nicht durch die nächste Zeile abgeschnitten wird.
   useEffect(() => {
     if (!active) return;
     if (startedRef.current) return;
     startedRef.current = true;
     cancelledRef.current = false;
 
-    // Hintergrundmusik komplett anhalten und eigene Cutscene-Musik starten.
     music.pause();
     startCutsceneMusic();
 
@@ -256,7 +398,18 @@ export function ParamedicsCutscene() {
           await wait(CROSSFADE_MS / 2);
         }
 
+        // Türbruch: Shake-Trigger
+        if (beat.burst) {
+          setShakeNonce((n) => n + 1);
+        }
+
         await wait(beat.leadIn ?? 200);
+
+        if (beat.silent) {
+          // Stiller Beat: kein TTS, halte tail.
+          await wait(beat.tail ?? 2500);
+          continue;
+        }
 
         for (const [li, ln] of beat.lines.entries()) {
           if (cancelledRef.current) return;
@@ -294,8 +447,6 @@ export function ParamedicsCutscene() {
     }
     fadeOutAndStopCutsceneMusic();
     music.resume();
-    // Folgen, die früher die Dialoge `paramedicsArrive` und `paramedic`
-    // gesetzt haben — die Cutscene ersetzt beide Räume und Dialoge.
     api.setFlag("doorBrokenOpen");
     api.setFlag("paramedicsCutsceneSeen");
     if (!api.hasFlag("protocolReceived")) {
@@ -307,21 +458,14 @@ export function ParamedicsCutscene() {
           "Eine versiegelte Datenkapsel. Ziel: Sektor E71, Zimmer 1534. Etikett: „Fall-ID 5245@E67@2613“.",
       });
       api.setKnowledge("responsibilityE67");
-      // Aufzugssystem meldet danach eine „lokale Übersteuerung“ und
-      // legt eine Wartungssperre — wie zuvor im `paramedic`-Dialog.
       api.setFlag("elevatorMaintBlocked");
     }
     endCutscene();
-    // Spieler wechselt direkt in den Korridor — die Cutscene hat die
-    // Türöffnung und die Protokoll-Übergabe bereits gezeigt; die 2615
-    // ist im Korridor jetzt mit gelbem Band versiegelt.
     api.goTo("hallway");
   };
 
-  // ── Cutscene-Musik (separater Audio-Layer neben der Playlist) ──────
   function musicTargetVolume(): number {
     if (!musicEnabled) return 0;
-    // Etwas leiser als die Hauptmusik, damit Dialog/TTS klar oben sitzt.
     return clamp01(musicVolume * 0.55);
   }
 
@@ -331,10 +475,7 @@ export function ParamedicsCutscene() {
     a.loop = true;
     a.volume = 0;
     musicAudioRef.current = a;
-    void a.play().catch(() => {
-      /* autoplay kann blockiert sein — leise scheitern. */
-    });
-    // Sanftes Einblenden über ~1.2 s.
+    void a.play().catch(() => {});
     const target = musicTargetVolume();
     const startedAt = performance.now();
     const duration = 1200;
@@ -388,7 +529,6 @@ export function ParamedicsCutscene() {
     }
   }
 
-  // Esc / Klick "Überspringen" -> direkt finishen.
   useEffect(() => {
     if (!active) return;
     const onKey = (e: KeyboardEvent) => {
@@ -406,43 +546,126 @@ export function ParamedicsCutscene() {
 
   const beat = beats[beatIdx];
   const currentLine = lineIdx >= 0 ? beat.lines[lineIdx] : null;
-  // Ken-Burns: 0..1 Fortschritt durch den aktuellen Beat.
-  const progress = lineIdx < 0 ? 0 : Math.min(1, (lineIdx + 1) / beat.lines.length);
-  const scale = beat.zoom[0] + (beat.zoom[1] - beat.zoom[0]) * progress;
-  const tx = beat.pan[0] + (beat.pan[2] - beat.pan[0]) * progress;
-  const ty = beat.pan[1] + (beat.pan[3] - beat.pan[1]) * progress;
+  const beatKey = `beat-${beatIdx}`;
+
+  // Ken-Burns-Werte für Endpunkt: einmalige Spring-Animation pro Beat.
+  // Start = pan[0..1] + zoom[0], End = pan[2..3] + zoom[1].
+  const startScale = beat.zoom[0];
+  const endScale = beat.zoom[1];
+  const startX = beat.pan[0];
+  const startY = beat.pan[1];
+  const endX = beat.pan[2];
+  const endY = beat.pan[3];
+
+  // Gesamt-Beat-Dauer (für Ken-Burns animate-Dauer als Estimate).
+  const beatDurationSec =
+    beat.silent
+      ? (beat.tail ?? 2500) / 1000
+      : Math.max(
+          4,
+          ((beat.leadIn ?? 200) +
+            beat.lines.reduce((s, l) => s + l.hold, 0) +
+            (beat.tail ?? 200)) /
+            1000,
+        );
 
   return (
-    // Fullscreen-Overlay: liegt über TopBar, Inventar und allen anderen
-    // UI-Elementen. So erscheint die Cutscene wie ein eigener Filmmodus
-    // ohne sichtbare Bedienleiste.
     <div className="fixed inset-0 z-[200] flex flex-col bg-black">
-      {/* Bild-Layer mit Ken-Burns + Crossfade */}
-      <div className="relative flex-1 overflow-hidden">
-        <img
-          key={beatIdx}
-          src={beat.image}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover transition-opacity"
-          style={{
-            opacity: visible ? 1 : 0,
-            transitionDuration: `${CROSSFADE_MS}ms`,
-            transform: `scale(${scale.toFixed(3)}) translate(${tx}%, ${ty}%)`,
-            transitionProperty: "opacity, transform",
-            // Ken-Burns soll langsam laufen — ungefähr in der Geschwindigkeit
-            // der Beat-Lines. 4s ist ein guter Mittelwert.
-            transitionTimingFunction: "ease-out",
-            // Eigene transition-duration für transform separat:
-          }}
-        />
-        {/* CRT-Vignette + Scanlines */}
+      {/* Bild + Effekte */}
+      <motion.div
+        className="relative flex-1 overflow-hidden"
+        animate={
+          beat.burst
+            ? {
+                x: [0, -8, 7, -5, 4, -2, 0],
+                y: [0, 5, -4, 3, -2, 1, 0],
+              }
+            : beat.microShake
+              ? { x: [0, -1.5, 1.5, -1, 1, 0], y: [0, 1, -1, 1.5, -1, 0] }
+              : { x: 0, y: 0 }
+        }
+        transition={
+          beat.burst
+            ? { duration: 0.45, ease: "easeOut", times: [0, 0.1, 0.25, 0.4, 0.6, 0.8, 1] }
+            : beat.microShake
+              ? {
+                  duration: 0.6,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                  repeatDelay: 0.4,
+                }
+              : { duration: 0.2 }
+        }
+        // Re-trigger Shake beim Türbruch
+        key={`stage-${beatIdx}-${shakeNonce}`}
+      >
+        <AnimatePresence mode="wait">
+          {visible && (
+            <motion.img
+              key={beatIdx}
+              src={beat.image}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+              initial={{
+                opacity: 0,
+                scale: startScale,
+                x: `${startX}%`,
+                y: `${startY}%`,
+              }}
+              animate={{
+                opacity: 1,
+                scale: endScale,
+                x: `${endX}%`,
+                y: `${endY}%`,
+              }}
+              exit={{ opacity: 0 }}
+              transition={{
+                opacity: { duration: CROSSFADE_MS / 1000, ease: "easeOut" },
+                scale: {
+                  type: "spring",
+                  damping: 40,
+                  stiffness: 18,
+                  mass: 1.5,
+                  duration: beatDurationSec,
+                },
+                x: {
+                  type: "spring",
+                  damping: 40,
+                  stiffness: 18,
+                  mass: 1.5,
+                  duration: beatDurationSec,
+                },
+                y: {
+                  type: "spring",
+                  damping: 40,
+                  stiffness: 18,
+                  mass: 1.5,
+                  duration: beatDurationSec,
+                },
+              }}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Beat-spezifische Overlays */}
+        {beat.pulse && <KnockPulses pulse={beat.pulse} beatKey={beatKey} />}
+        {beat.eyeGlow && <EyeGlow x={beat.eyeGlow.x} y={beat.eyeGlow.y} />}
+        {beat.burst && <DoorBurstParticles beatKey={`${beatKey}-${shakeNonce}`} />}
+
+        {/* Neon-Flicker beim Beat-Eintritt */}
+        <NeonFlicker beatKey={beatKey} />
+
+        {/* CRT-Vignette */}
         <div
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%)",
+              beat.eyeGlow
+                ? "radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.75) 100%)"
+                : "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%)",
           }}
         />
+        {/* Scanlines */}
         <div
           className="pointer-events-none absolute inset-0 opacity-25 mix-blend-overlay"
           style={{
@@ -459,29 +682,40 @@ export function ParamedicsCutscene() {
         >
           Überspringen ⏵⏵
         </button>
-      </div>
+      </motion.div>
 
       {/* Untertitel-Box */}
       <div className="relative h-[28%] min-h-[140px] border-t border-amber-glow/20 bg-black/85 px-6 py-5 sm:px-10">
-        {currentLine && (
-          <div
-            key={`${beatIdx}-${lineIdx}`}
-            className="mx-auto flex max-w-3xl flex-col gap-2 animate-fade-in"
-          >
-            <div className="font-mono-crt text-xs uppercase tracking-[0.3em] text-amber-glow/60">
-              {currentLine.speaker === "SYSTEM" ? "—" : currentLine.speaker}
-            </div>
-            <div
-              className={
-                currentLine.speaker === "SYSTEM"
-                  ? "font-mono-crt text-base italic text-amber-glow/70 sm:text-lg"
-                  : "font-mono-crt text-lg text-amber-glow sm:text-xl"
-              }
+        <AnimatePresence mode="wait">
+          {currentLine && (
+            <motion.div
+              key={`${beatIdx}-${lineIdx}`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.28, ease: "easeOut" }}
+              className="mx-auto flex max-w-3xl flex-col gap-2"
             >
-              {currentLine.text}
-            </div>
-          </div>
-        )}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.08, duration: 0.22 }}
+                className="font-mono-crt text-xs uppercase tracking-[0.3em] text-amber-glow/60"
+              >
+                {currentLine.speaker === "SYSTEM" ? "—" : currentLine.speaker}
+              </motion.div>
+              <div
+                className={
+                  currentLine.speaker === "SYSTEM"
+                    ? "font-mono-crt text-base italic text-amber-glow/70 sm:text-lg"
+                    : "font-mono-crt text-lg text-amber-glow sm:text-xl"
+                }
+              >
+                {currentLine.text}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
