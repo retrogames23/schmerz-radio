@@ -10,7 +10,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
  * auffordert, das Gerät querzuhalten (mit "Trotzdem spielen"-Option).
  */
 const STAGE_W = 1024;
-const STAGE_H = 576; // 16:9 (vorher 640 = 16:10), passend zur 16:9-Bühne
+const STAGE_H = 640;
 const MOBILE_BREAKPOINT = 768;
 
 /**
