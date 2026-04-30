@@ -1589,12 +1589,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "commonRoomDoor",
-        // Schmale Tür links neben dem Empfangstresen (unterer Bildbereich,
-        // damit es nicht mit den anderen Hotspots kollidiert).
-        x:  0,
-        y: 60,
-        w: 8,
-        h: 36,
+        // Schmaler Streifen ganz links am Bildrand (bodennah).
+        x: 0,
+        y: 40,
+        w: 10,
+        h: 60,
         label: "Tür: Gemeinschaftsraum",
         kind: "exit",
         onUse: (api) => api.goTo("commonRoomE67"),
