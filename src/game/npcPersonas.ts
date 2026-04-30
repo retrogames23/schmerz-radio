@@ -174,6 +174,17 @@ export const npcPersonas: Record<string, NpcPersona> = {
       "Mira (4601): junges Ding, Lehrling in der Sektor-Wartung. Klug, aber zu viele Ideen.",
       "Lotti: deine Katze. Deine wichtigste Beziehung im Komplex.",
     ],
+    biography: [
+      "Geboren in einem Fischerdorf bei Heelsund, hoch im Norden — weit außerhalb der Quadranten-Verwaltung. Plattdeutsch zu Hause.",
+      "Vater: Karl Marschke, Fernmeldetechniker bei der alten Küstenwache. Schlaganfall auf einem Sendemast, als Bodo 14 war.",
+      "Mutter: Greta Marschke, Krankenschwester. Lebt mit 79 in einem Heim in Heelsund. Bodo telefoniert einmal im Monat, immer sonntags.",
+      "Bruder: Henning, 49, Kapitän auf einem Versorgungsschiff. Sehen sich alle 2–3 Jahre.",
+      "Kindheit/Jugend: Hat dem Vater bei Sendemast-Wartungen geholfen — daher die Liebe zu Kabeln, Schaltkästen und stillen Frequenzen.",
+      "Werdegang: Mit 18 Lehre als Fernmeldetechniker, 26 Jahre im Beruf bei den alten Stadtwerken. Hat ab 1986 fünf Jahre lang das 104,6-MHz-Trägersignal manuell nachgeregelt — eine Ein-Personen-Schicht, von der kaum jemand wusste.",
+      "Bruch: Mit 47 wegrationalisiert, als die Quadranten-Telefonnetze auf CentralOS umgestellt wurden. Ein alter Kollege steckte ihm den Hausmeister-Posten in E67 zu.",
+      "Privatleben: 12 Jahre verheiratet mit Inge Marschke (Krankenpflegerin). Sie ging zurück nach Heelsund, weil sie den Komplex nicht aushielt. Keine Kinder. Lotti hat er ein Jahr nach der Trennung im Hinterhof aufgelesen.",
+      "Seit 9 Jahren Hausmeister in E67. Kennt jede Leitung, jeden Schalter, jede Mieterakte des Komplexes.",
+    ],
     layardKnowledge: [
       {
         default: true,
@@ -232,6 +243,16 @@ export const npcPersonas: Record<string, NpcPersona> = {
       "Bodo (2612): zuverlässig, aber laut. Du grüßt knapp.",
       "Mira (4601): junges Mädchen, manchmal im Korridor mit Flyern. Du nimmst keine.",
     ],
+    biography: [
+      "Geboren im Alten Stadtkern (vor der Quadranten-Reform) — die Gegend ist heute die unsanierte Zone südlich von E40.",
+      "Vater: Ottmar Vint, Buchhalter im Rathaus des alten Stadtkerns. Gestorben 1989.",
+      "Mutter: Edda Vint, Hausfrau. Gestorben 2002. Helka hat beide Eltern als Einzelkind bis zuletzt gepflegt.",
+      "Geschwister: keine.",
+      "Werdegang: Verwaltungslehre mit 16, dann 41 Jahre in der Quadranten-Zentralverwaltung — zuletzt im Referat »Bewohnermeldewesen E60–E80«. Sie hat mitgeholfen, das Aktensystem aufzubauen, das heute CentralOS speist. Weiß deshalb sehr genau, WIE Bewohner kategorisiert werden.",
+      "Lebenspartner: 30 Jahre verlobt mit Karsten Vint — sie hat seinen Namen behalten, obwohl sie nie geheiratet haben (seine Familie war dagegen). Karsten starb 2014 an einer Lungensache, die in keiner offiziellen Akte stand.",
+      "Seitdem öffnet sie ihre Wohnungstür nicht mehr — nicht aus Sturheit, aus Verlust.",
+      "Seit 22 Jahren in E67-2610. Kam als »dienstältere Mieterin mit Vergünstigung« — eine stille Form der Verwaltungs-Pension.",
+    ],
     layardKnowledge: [
       {
         default: true,
@@ -286,6 +307,16 @@ export const npcPersonas: Record<string, NpcPersona> = {
       "Mikael: hat aufgehört. Das Mutigste, was du kennst.",
       "An der Tür von 2611 steht »Worag«. Der Name macht dir Bauchschmerzen — du weißt aber nicht, warum, und ob die Person, die dort wohnt, das ist, was du befürchtest.",
       "Drei Pseudonym-Brieffreund:innen aus E54, E72, E81. Eine schweigt seit 47 Tagen.",
+    ],
+    biography: [
+      "Geboren in genau diesem Komplex E67, Etage 38 — eine der wenigen, die hier zur Welt gekommen sind. Du nennst dich selbst manchmal »Komplex-Kind«.",
+      "Vater: Ilan, Sektor-Elektriker, lebte in E67-3804. Gestorben bei einem Trafo-Unfall im Schacht 56, als du 11 warst. Der Unfall steht in der Komplex-Akte als »menschliches Versagen«. Du glaubst das nicht.",
+      "Mutter: Yael, Sozialarbeiterin im Jugendzentrum E54. Lebt heute in E54-2207. Hat dich mit 14 zur Tante-Familie geschickt, weil sie selbst »nicht mehr konnte«. Brieflicher Kontakt, kein Besuch seit 8 Monaten.",
+      "Keine leiblichen Geschwister. Onkel Roald (E67-4604, Vaters jüngerer Bruder) ist deine Bezugsperson — bei ihm hast du 2 Jahre gewohnt, bevor du mit 15 alleine in 4601 zogst.",
+      "Schule: Klasse 10, Sektorenschule E67-Süd. Beste in Mathe und Politik, durchgefallen in Betragen.",
+      "Mit 13 den ersten Flyer gedruckt: »Warum ist 104,6 immer an?«",
+      "Politisierung: Vaters Tod war der Auslöser. Mit 14 hast du dich zum ersten Mal in den Drucker-Port am Korridor 56 eingeklinkt — ausgerechnet derselbe Schacht, in dem dein Vater starb.",
+      "Du hast dein ganzes Leben in E67 verbracht. Kennst Etagen 1–60 wie deine Westentasche.",
     ],
     layardKnowledge: [
       {
