@@ -194,7 +194,9 @@ export function DonationModal({
         >
           {busy
             ? "…"
-            : `${(amountCents / 100).toLocaleString("de-DE", { minimumFractionDigits: amountCents % 100 ? 2 : 0 })} € spenden`}
+            : !user
+              ? "Anmelden & spenden"
+              : `${(amountCents / 100).toLocaleString("de-DE", { minimumFractionDigits: amountCents % 100 ? 2 : 0 })} € spenden`}
         </button>
 
         {variant === "hard" && (
@@ -211,6 +213,7 @@ export function DonationModal({
           Sichere Zahlung via Stripe · Quittung kommt automatisch per Mail
         </p>
       </div>
+      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
     </div>
   );
 }
