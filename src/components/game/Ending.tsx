@@ -9,12 +9,14 @@ import {
   ENDING_FLYER_FRAMES,
   ENDING_UI_TEXT,
 } from "@/game/cutscenes";
+import { DonationModal } from "@/components/donation/DonationModal";
 
 export function Ending() {
   const { ending, api } = useGame();
   const { musicVolume } = useSettings();
   const { pause: pauseMusic, resume: resumeMusic } = useMusic();
   const [idx, setIdx] = useState(0);
+  const [donationOpen, setDonationOpen] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Zähle, mit wie vielen verschiedenen Personen Layard tatsächlich
@@ -135,18 +137,22 @@ export function Ending() {
               {ENDING_UI_TEXT.restart}
             </button>
             <div>
-              <a
-                href="https://buymeacoffee.com/doener"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={() => setDonationOpen(true)}
                 className="mt-4 inline-block font-mono-crt text-xs uppercase tracking-[0.3em] text-amber-glow/80 underline-offset-4 hover:underline amber-glow"
               >
                 {ENDING_UI_TEXT.coffee}
-              </a>
+              </button>
             </div>
           </div>
         </>
       )}
+      <DonationModal
+        open={donationOpen}
+        onClose={() => setDonationOpen(false)}
+        variant="manual"
+      />
     </div>
   );
 }
