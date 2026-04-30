@@ -6,6 +6,14 @@ import { isWebGpuAvailable, startLocalLlmLoad } from "@/llm/webLlmLoader";
 import { ImpressumOverlay } from "./ImpressumOverlay";
 import { OpenSourceOverlay } from "./OpenSourceOverlay";
 
+const PRE_ALPHA_WARNING_UI_TEXT = {
+  title: "Pre-Alpha-Warnung",
+  body:
+    "Schmerz-Radio ist ein Hobby-Projekt im pre-Alpha-Stadium, das aktiv entwickelt wird. Das Spiel wird aktiv entwickelt und verändert sich oft täglich. Rätsel können kaputt sein und das Spiel unspielbar. Speicherstände gehen regelmäßig kaputt.",
+  acknowledge: "Verstanden — trotzdem starten",
+  cancel: "Abbrechen",
+} as const;
+
 interface Props {
   onStart: () => void;
 }
@@ -16,6 +24,7 @@ export function TitleScreen({ onStart }: Props) {
   const [musicOn, setMusicOn] = useState(true);
   const [impressumOpen, setImpressumOpen] = useState(false);
   const [ossOpen, setOssOpen] = useState(false);
+  const [warningOpen, setWarningOpen] = useState(false);
 
   useEffect(() => {
     const a = new Audio(titleTrack);
@@ -73,7 +82,11 @@ export function TitleScreen({ onStart }: Props) {
     }
   };
 
-  const handleStart = () => {
+  const handleStartRequest = () => {
+    setWarningOpen(true);
+  };
+
+  const handleConfirmStart = () => {
     // Stop title music before entering the game (game has its own playlist).
     startedRef.current = true;
     const a = audioRef.current;
@@ -84,6 +97,7 @@ export function TitleScreen({ onStart }: Props) {
       audioRef.current = null;
     }
     setMusicOn(false);
+    setWarningOpen(false);
     onStart();
   };
 
@@ -126,7 +140,7 @@ export function TitleScreen({ onStart }: Props) {
 
         <button
           type="button"
-          onClick={handleStart}
+          onClick={handleStartRequest}
           className="mt-10 rounded-sm border border-amber-glow/60 bg-background/40 px-8 py-3 font-display text-base uppercase tracking-[0.4em] text-amber-glow transition hover:bg-amber-glow/10 amber-glow"
         >
           ▸ Spiel beginnen
@@ -185,6 +199,45 @@ export function TitleScreen({ onStart }: Props) {
 
       <ImpressumOverlay open={impressumOpen} onClose={() => setImpressumOpen(false)} />
       <OpenSourceOverlay open={ossOpen} onClose={() => setOssOpen(false)} />
+
+      {warningOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="pre-alpha-warning-title"
+        >
+          <div className="scanlines pointer-events-none absolute inset-0 opacity-30" />
+          <div className="relative w-full max-w-lg rounded-sm border border-amber-glow/60 bg-background/95 p-6 text-left shadow-[0_0_40px_rgba(255,170,60,0.25)]">
+            <h2
+              id="pre-alpha-warning-title"
+              className="font-display text-xl uppercase tracking-[0.25em] text-amber-glow amber-glow"
+            >
+              {PRE_ALPHA_WARNING_UI_TEXT.title}
+            </h2>
+            <p className="mt-4 font-mono-crt text-sm leading-relaxed text-foreground">
+              {PRE_ALPHA_WARNING_UI_TEXT.body}
+            </p>
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setWarningOpen(false)}
+                className="rounded-sm border border-muted-foreground/40 bg-transparent px-4 py-2 font-mono-crt text-xs uppercase tracking-[0.3em] text-muted-foreground transition hover:border-muted-foreground hover:text-foreground"
+              >
+                {PRE_ALPHA_WARNING_UI_TEXT.cancel}
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmStart}
+                autoFocus
+                className="rounded-sm border border-amber-glow/70 bg-amber-glow/10 px-4 py-2 font-mono-crt text-xs uppercase tracking-[0.3em] text-amber-glow transition hover:bg-amber-glow/20 amber-glow"
+              >
+                {PRE_ALPHA_WARNING_UI_TEXT.acknowledge}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
