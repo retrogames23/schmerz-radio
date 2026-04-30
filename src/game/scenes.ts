@@ -1399,15 +1399,15 @@ export const scenes: Record<string, Scene> = {
       "Käfig aus Edelstahl, halb so groß wie eine Wohnung. An der rechten Seitenwand: ein Bedienfeld mit fünf Knöpfen. Über der Tür blinzelt der Etagen-Indikator.",
     hotspots: [
       // Knöpfe von oben (5) nach unten (1) — passend zum Hintergrundbild.
-      // Hotspot-Boxen decken Label-Plättchen UND amber-Knopf in einem Stück ab.
-      // Bild ist 1:1, wird in 4:3-Container per object-cover gezeigt
-      // (oben/unten je 12,5 % beschnitten). y-Werte sind bereits umgerechnet.
+      // Bild wurde auf 4:3 zugeschnitten (rechte Hälfte des 16:9-Originals),
+      // sodass das Bedienpanel groß rechts sitzt. Hotspot-Boxen decken
+      // jeweils nur den amber-Knopf ab.
       {
         id: "btn5",
-        x: 66,
-        y: 25,
-        w: 20,
-        h: 9,
+        x: 60,
+        y: 38,
+        w: 8,
+        h: 8,
         label: "Etage 5 — Wohnen / Dach",
         kind: "exit",
         exitDir: "left",
@@ -1415,10 +1415,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "btn4",
-        x: 66,
-        y: 37,
-        w: 20,
-        h: 9,
+        x: 60,
+        y: 48,
+        w: 8,
+        h: 8,
         label: "Etage 4 — Wohnen",
         kind: "exit",
         exitDir: "left",
@@ -1426,10 +1426,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "btn3",
-        x: 66,
-        y: 49,
-        w: 20,
-        h: 9,
+        x: 60,
+        y: 58,
+        w: 8,
+        h: 8,
         label: "Etage 3 — Verwaltung und Versorgung",
         kind: "exit",
         exitDir: "left",
@@ -1437,10 +1437,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "btn2",
-        x: 66,
-        y: 61,
-        w: 20,
-        h: 9,
+        x: 60,
+        y: 68,
+        w: 8,
+        h: 8,
         label: "Etage 2 — Korridor 26 (Heim)",
         kind: "exit",
         exitDir: "left",
@@ -1448,10 +1448,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "btn1",
-        x: 66,
-        y: 73,
-        w: 20,
-        h: 9,
+        x: 60,
+        y: 78,
+        w: 8,
+        h: 8,
         label: "Etage 1 — Lobby",
         kind: "exit",
         exitDir: "left",
@@ -1460,10 +1460,10 @@ export const scenes: Record<string, Scene> = {
       {
         // Etagen-Indikator über den Türen — kleines amber-Display.
         id: "elevatorIndicator",
-        x: 12,
-        y: 0,
-        w: 30,
-        h: 6,
+        x: 26,
+        y: 8,
+        w: 28,
+        h: 10,
         label: "Etagen-Indikator",
         kind: "look",
         onUse: (api) =>
