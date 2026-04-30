@@ -1153,10 +1153,10 @@ export const scenes: Record<string, Scene> = {
       {
         id: "doors",
         // Übersichts-Look auf die Türenreihe im Mittelgrund.
-        x: 22,
-        y: 38,
-        w: 56,
-        h: 10,
+        x: 26,
+        y: 40,
+        w: 48,
+        h: 12,
         label: "Türen 1530–1540",
         kind: "look",
         onUse: (api) =>
