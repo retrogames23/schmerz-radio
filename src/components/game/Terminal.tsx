@@ -14,8 +14,6 @@ import {
   HOME_PATH_BODO,
   resolveBodo,
   pathStringBodo,
-  FREIHEIT_TXT,
-  LAYARD_TXT,
 } from "@/game/filesystemBodo";
 import {
   FILESYSTEM_MIRA,
