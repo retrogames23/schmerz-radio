@@ -163,12 +163,7 @@ export function SceneView() {
           links und rechts dieser Box jetzt Bildinhalt sichtbar, der
           vorher beschnitten war — dort liegen bewusst keine
           interaktiven Elemente. */}
-      <div
-        className={`absolute inset-y-0 left-1/2 z-10 aspect-[4/3] h-full ${
-          bgFocus ? "" : "-translate-x-1/2"
-        }`}
-        style={hotspotLayerStyle}
-      >
+      <div className="absolute inset-y-0 left-1/2 z-10 aspect-[4/3] h-full -translate-x-1/2">
 
         {/* NPC sprites — gerendert über dem Hintergrund, unter den Hotspots */}
         {current.npcs?.map((npc) => {
