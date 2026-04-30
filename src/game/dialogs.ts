@@ -2487,6 +2487,101 @@ export const dialogs: Record<string, DialogTree> = {
     },
   },
 
+  // ── Mira-Verstärker-Quest (Resonanz-Duell) ──────────────────────
+  // Beim zweiten Besuch in 4601 fragt Mira Layard um Hilfe: sie will
+  // Wut auf das Trauer-Band drücken und braucht eine improvisierte
+  // Verstärker-Antenne. Dafür zeigt sie ihm den Bauplan im Kopf:
+  // Bernstein-Kristall + Antennen-Draht.
+  miraAmplifierAsk: {
+    id: "miraAmplifierAsk",
+    npcId: "mira",
+    start: "ma1",
+    lines: {
+      ma1: {
+        id: "ma1",
+        speaker: "MIRA",
+        text: "Gut, dass du nochmal kommst. Ich brauche jemanden mit Hausschlüssel und ohne Akte.",
+        next: "ma2",
+      },
+      ma2: {
+        id: "ma2",
+        speaker: "MIRA",
+        text: "Ich versuche seit drei Wochen, auf das Trauer-Band zu senden. Wut. Konkret. Kein Diffuses.",
+        subtext: "Sie deutet zum Fenster — da hängt ein dünner Draht in den Innenhof.",
+        next: "ma3",
+      },
+      ma3: {
+        id: "ma3",
+        speaker: "MIRA",
+        text: "Aber Trauer ist seit 91 fest belegt. Mein Sender allein reicht nicht. Ich brauche eine Verstärker-Antenne, die mein Signal über das alte legt — wenigstens für ein paar Minuten.",
+        next: "ma4",
+      },
+      ma4: {
+        id: "ma4",
+        speaker: "LAYARD",
+        text: "Und ich soll die bauen?",
+        next: "ma5",
+      },
+      ma5: {
+        id: "ma5",
+        speaker: "MIRA",
+        text: "Du hast bessere Verbindungen als ich. Du brauchst zwei Sachen: einen Bernstein-Resonator — du hast einen, ich seh’ ihn an deiner Tasche — und ein Stück Antennen-Draht. Den findest du nicht im Bewohner-Handel, aber im Wartungsbereich. Frag Bodo. Oder schau im Serverraum 5610, wenn du da reinkommst.",
+        next: "ma6",
+      },
+      ma6: {
+        id: "ma6",
+        speaker: "MIRA",
+        text: "Wenn du beides hast, kombinier es und bring es mir. Ich häng’s an meinen Sender. Dann öffnest du dein Schmerz-Radio bei mir, gehst auf 104,0 und hältst die Frequenz, bis das Band kippt. Den Rest mache ich.",
+        choices: [
+          {
+            text: "Verstanden — ich besorg den Draht.",
+            action: (api) => api.setFlag("miraAskedAmplifier"),
+          },
+          {
+            text: "Klingt nach mehr Ärger, als ich heute brauche.",
+            action: (api) => api.setFlag("miraAskedAmplifier"),
+          },
+        ],
+      },
+    },
+  },
+
+  // Wiederbesuch, solange die Antenne noch nicht gebaut/übergeben ist.
+  miraAmplifierWait: {
+    id: "miraAmplifierWait",
+    npcId: "mira",
+    start: "mw1",
+    lines: {
+      mw1: {
+        id: "mw1",
+        speaker: "MIRA",
+        text: "Bernstein und Draht, Worag. Beides kombinieren, dann mir geben. Ich kann nicht ewig auf das Band schauen — irgendwann merkt jemand, dass ich es versuche.",
+        end: true,
+      },
+    },
+  },
+
+  // Nach erfolgreichem Resonanz-Duell.
+  miraAfterAmplifier: {
+    id: "miraAfterAmplifier",
+    npcId: "mira",
+    start: "mf1",
+    lines: {
+      mf1: {
+        id: "mf1",
+        speaker: "MIRA",
+        text: "Du hast das Band gehalten. Eine ganze Minute lang. Ich hab gemerkt, wie unten im zweiten Stock jemand das Radio leiser gedreht hat — weil Wut anders weh tut als Trauer.",
+        next: "mf2",
+      },
+      mf2: {
+        id: "mf2",
+        speaker: "MIRA",
+        text: "Das Terminal ist offen. Schau dich um, lies, was du willst. Ich passe nicht auf. Wenn du was kaputt machst, ist es eh nicht meins.",
+        end: true,
+      },
+    },
+  },
+
   // ---------------------------------------------------------------
   // Philippe — Sondierungs-Dialoge nach versiegelter Tür (2615).
   // Philippe versucht über mehrere Besuche herauszufinden, wer
