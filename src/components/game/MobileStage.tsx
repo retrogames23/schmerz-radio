@@ -9,8 +9,11 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
  * Im Hochformat auf Mobil zeigen wir einen Hinweis-Banner, der dazu
  * auffordert, das Gerät querzuhalten (mit "Trotzdem spielen"-Option).
  */
-const STAGE_W = 1024;
-const STAGE_H = 640;
+// Virtuelle Bühne im 16:9-Format, damit die SceneView (ebenfalls 16:9)
+// auf Mobil die komplette Breite ausnutzt und nicht auf einen 4:3-Kern
+// zusammenschnurrt. Höhe bleibt 640, Breite wird entsprechend breiter.
+const STAGE_W = 1280;
+const STAGE_H = 720;
 const MOBILE_BREAKPOINT = 768;
 
 /**
