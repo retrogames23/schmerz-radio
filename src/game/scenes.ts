@@ -1284,9 +1284,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "leaveRoom",
         // Türrahmen am rechten Bildrand, sehr schmal.
-        x: 94,
+        x: 88,
         y: 8,
-        w: 6,
+        w: 11,
         h: 90,
         label: "Zurück in den Korridor",
         kind: "exit",
