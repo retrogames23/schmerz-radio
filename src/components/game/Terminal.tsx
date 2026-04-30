@@ -283,10 +283,6 @@ function completeTelnet(
   return { newInput, matches: names };
 }
 
-// Netzwerk-Hosts im Sektor E67 (Daten in src/game/netHosts.ts).
-import { NET_HOSTS, type NetHost } from "@/game/netHosts";
-
-
 function findHost(query: string): NetHost | null {
   const q = query.toLowerCase().trim();
   return (
