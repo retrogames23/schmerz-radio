@@ -1131,10 +1131,10 @@ export const scenes: Record<string, Scene> = {
       {
         id: "sealedDoor1531",
         // Versiegelte Tür rechts vorne, mit gelbem Quarantäne-Band.
-        x: 75,
-        y: 15,
-        w: 22,
-        h: 80,
+        x: 82,
+        y: 5,
+        w: 18,
+        h: 95,
         label: "Tür 1531 (versiegelt)",
         kind: "look",
         onUse: (api) =>
@@ -1153,10 +1153,10 @@ export const scenes: Record<string, Scene> = {
       {
         id: "doors",
         // Übersichts-Look auf die Türenreihe im Mittelgrund.
-        x: 28,
-        y: 32,
-        w: 42,
-        h: 8,
+        x: 22,
+        y: 38,
+        w: 56,
+        h: 10,
         label: "Türen 1530–1540",
         kind: "look",
         onUse: (api) =>
@@ -1171,10 +1171,10 @@ export const scenes: Record<string, Scene> = {
       {
         id: "door1532",
         // Tür vorne links (Praxis Dr. Okwu).
-        x: 9,
-        y: 18,
-        w: 19,
-        h: 75,
+        x: 0,
+        y: 5,
+        w: 16,
+        h: 95,
         label: "Tür 1532 — Praxis Dr. Okwu",
         kind: "exit",
         onUse: (api) => api.goTo("room1532"),
@@ -1182,10 +1182,10 @@ export const scenes: Record<string, Scene> = {
       {
         id: "door1534",
         // Tür ganz hinten in der Fluchtachse, mit rotem Status-Licht darüber.
-        x: 44,
-        y: 38,
-        w: 12,
-        h: 42,
+        x: 43,
+        y: 40,
+        w: 14,
+        h: 38,
         label: "Tür 1534 (rot beleuchtet)",
         kind: "exit",
         onUse: (api) => {
