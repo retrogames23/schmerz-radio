@@ -5,6 +5,7 @@ import { CrtMatrixBackground } from "./CrtMatrixBackground";
 import { isWebGpuAvailable, startLocalLlmLoad } from "@/llm/webLlmLoader";
 import { ImpressumOverlay } from "./ImpressumOverlay";
 import { OpenSourceOverlay } from "./OpenSourceOverlay";
+import { DonationModal } from "@/components/donation/DonationModal";
 
 const PRE_ALPHA_WARNING_UI_TEXT = {
   title: "Pre-Alpha-Warnung",
@@ -25,6 +26,7 @@ export function TitleScreen({ onStart }: Props) {
   const [impressumOpen, setImpressumOpen] = useState(false);
   const [ossOpen, setOssOpen] = useState(false);
   const [warningOpen, setWarningOpen] = useState(false);
+  const [donationOpen, setDonationOpen] = useState(false);
 
   useEffect(() => {
     const a = new Audio(titleTrack);
@@ -151,14 +153,13 @@ export function TitleScreen({ onStart }: Props) {
           <div>CentralOS v2.3 · E67.NETZ stabil</div>
         </div>
 
-        <a
-          href="https://buymeacoffee.com/doener"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          onClick={() => setDonationOpen(true)}
           className="mt-6 inline-block font-mono-crt text-xs uppercase tracking-[0.3em] text-amber-glow/80 underline-offset-4 hover:underline amber-glow"
         >
           ☕ Buy me a coffee
-        </a>
+        </button>
 
         <div className="mt-4 flex justify-center">
           <a
@@ -199,6 +200,11 @@ export function TitleScreen({ onStart }: Props) {
 
       <ImpressumOverlay open={impressumOpen} onClose={() => setImpressumOpen(false)} />
       <OpenSourceOverlay open={ossOpen} onClose={() => setOssOpen(false)} />
+      <DonationModal
+        open={donationOpen}
+        onClose={() => setDonationOpen(false)}
+        variant="manual"
+      />
 
       {warningOpen && (
         <div

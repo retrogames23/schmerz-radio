@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/auth/AuthContext";
+import { AuthDialog } from "@/auth/AuthDialog";
 
 interface Props {
   open: boolean;
@@ -29,6 +30,7 @@ export function DonationModal({
   const [custom, setCustom] = useState<string>("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [authOpen, setAuthOpen] = useState(false);
 
   if (!open) return null;
 
@@ -38,15 +40,15 @@ export function DonationModal({
     return Math.round(n * 100);
   })();
   const amountCents = customCents ?? selected;
-  const validAmount = amountCents >= 100 && amountCents <= 100_000;
+  const validAmount = amountCents >= 300 && amountCents <= 100_000;
 
   const handleDonate = async () => {
     if (!user) {
-      setError("Bitte melde dich zuerst an.");
+      setAuthOpen(true);
       return;
     }
     if (!validAmount) {
-      setError("Mindestens 1 €, höchstens 1000 €.");
+      setError("Mindestens 3 €, höchstens 1000 €.");
       return;
     }
     setError(null);
@@ -192,7 +194,9 @@ export function DonationModal({
         >
           {busy
             ? "…"
-            : `${(amountCents / 100).toLocaleString("de-DE", { minimumFractionDigits: amountCents % 100 ? 2 : 0 })} € spenden`}
+            : !user
+              ? "Anmelden & spenden"
+              : `${(amountCents / 100).toLocaleString("de-DE", { minimumFractionDigits: amountCents % 100 ? 2 : 0 })} € spenden`}
         </button>
 
         {variant === "hard" && (
@@ -209,6 +213,7 @@ export function DonationModal({
           Sichere Zahlung via Stripe · Quittung kommt automatisch per Mail
         </p>
       </div>
+      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
     </div>
   );
 }
