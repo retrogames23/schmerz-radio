@@ -6,67 +6,68 @@ import { useGame } from "@/game/GameContext";
  * über die GameContext-API aus. Reine Dev-Hilfe — Story-Flags werden NICHT
  * angefasst, der Switcher öffnet das Overlay einfach roh.
  */
+type GameCtx = ReturnType<typeof useGame>;
 type ConsoleEntry = {
   id: string;
   title: string;
-  open: (api: ReturnType<typeof useGame>["api"]) => void;
+  open: (ctx: GameCtx) => void;
 };
 
 const consoles: ConsoleEntry[] = [
   {
     id: "terminal-layard",
     title: "Terminal · Layard (E67-Workstation)",
-    open: (api) => api.openTerminal(false),
+    open: ({ api }) => api.openTerminal(false),
   },
   {
     id: "terminal-bodo",
     title: "Terminal · Bodo-Modus",
-    open: (api) => api.openTerminal({ bodo: true }),
+    open: ({ api }) => api.openTerminal({ bodo: true }),
   },
   {
     id: "terminal-mira",
     title: "Terminal · Mira (FuckTheSystemOS)",
-    open: (api) => api.openTerminal({ mira: true }),
+    open: ({ api }) => api.openTerminal({ mira: true }),
   },
   {
     id: "radio",
     title: "Radio-Panel (Schmerz-Radio 104,6)",
-    open: (api) => api.openRadio(),
+    open: ({ api }) => api.openRadio(),
   },
   {
     id: "keypad",
     title: "Keypad (Tür-/Code-Eingabe)",
-    open: (api) => api.openKeypad(),
+    open: ({ api }) => api.openKeypad(),
   },
   {
     id: "television",
     title: "Fernseher (TV-Programm)",
-    open: (api) => api.openTelevision(),
+    open: ({ api }) => api.openTelevision(),
   },
   {
     id: "node-5610",
     title: "Node-Terminal · 56.10",
-    open: (api) => api.openNode5610(),
+    open: ({ api }) => api.openNode5610(),
   },
   {
     id: "pneumatic",
     title: "Rohrpost (Pneumatic Tube)",
-    open: (api) => api.openPneumaticTube(),
+    open: ({ api }) => api.openPneumaticTube(),
   },
   {
     id: "handbook",
     title: "E67-Handbuch",
-    open: (api) => api.openHandbook(),
+    open: (ctx) => ctx.openHandbook(),
   },
   {
     id: "id-card",
     title: "Dienstausweis",
-    open: (api) => api.openIdCard(),
+    open: (ctx) => ctx.openIdCard(),
   },
   {
     id: "duel",
     title: "Bürokratie-Duell",
-    open: (api) => api.openBureaucracyDuel(),
+    open: ({ api }) => api.openBureaucracyDuel(),
   },
 ];
 
@@ -75,7 +76,7 @@ const consoles: ConsoleEntry[] = [
  * Klick. Sitzt neben dem Raum-Switcher links unten. Tastenkürzel: "K".
  */
 export function ConsoleSwitcher() {
-  const { api } = useGame();
+  const ctx = useGame();
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState("");
 
@@ -158,7 +159,7 @@ export function ConsoleSwitcher() {
                     <button
                       type="button"
                       onClick={() => {
-                        c.open(api);
+                        c.open(ctx);
                         setOpen(false);
                       }}
                       className="flex w-full items-center justify-between gap-3 rounded-sm border border-amber-glow/20 px-3 py-2 text-left text-foreground transition hover:border-amber-glow/60 hover:bg-amber-glow/10"
