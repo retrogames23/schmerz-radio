@@ -36,7 +36,7 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "radio",
-        x: 0,
+        x:  0,
         y: 52,
         w: 14,
         h: 20,
@@ -353,7 +353,7 @@ export const scenes: Record<string, Scene> = {
       {
         id: "phone2613",
         // Beiger Bakelit-Wandapparat ganz links.
-        x: 0,
+        x:  0,
         y: 18,
         w: 22,
         h: 55,
@@ -1008,7 +1008,7 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "backHallwayS",
-        x: 0,
+        x:  0,
         y: 35,
         w: 18,
         h: 60,
@@ -1087,7 +1087,7 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "elevatorBack",
-        x: 0,
+        x:  0,
         y: 30,
         w: 22,
         h: 65,
@@ -1185,7 +1185,7 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "backLobby",
-        x: 0,
+        x:  0,
         y: 80,
         w: 14,
         h: 18,
@@ -1375,7 +1375,7 @@ export const scenes: Record<string, Scene> = {
       {
         id: "leaveRoom1532",
         // Türrahmen ganz links.
-        x: 0,
+        x:  0,
         y: 4,
         w: 14,
         h: 94,
@@ -1583,7 +1583,7 @@ export const scenes: Record<string, Scene> = {
         id: "commonRoomDoor",
         // Schmale Tür links neben dem Empfangstresen (unterer Bildbereich,
         // damit es nicht mit den anderen Hotspots kollidiert).
-        x: 0,
+        x:  0,
         y: 60,
         w: 8,
         h: 36,
@@ -2052,7 +2052,7 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "exit5610",
-        x: 0,
+        x:  0,
         y: 50,
         w: 14,
         h: 50,
@@ -2080,7 +2080,7 @@ export const scenes: Record<string, Scene> = {
         // Stage 1024×640 zeigt 16:9-Bild via object-cover: sichtbar
         // sind ~5.4 %..94.6 % der Original-Bildbreite. Alle Werte sind
         // bereits in Stage-% angegeben.
-        x: 0,
+        x:  0,
         y: 62,
         w: 13,
         h: 38,
@@ -2161,7 +2161,7 @@ export const scenes: Record<string, Scene> = {
       {
         id: "exitCommon",
         // Schmaler Streifen am linken Bildrand (Tür außerhalb des Bildes).
-        x: 0,
+        x:  0,
         y: 0,
         w: 4,
         h: 100,
@@ -2412,7 +2412,7 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "miraPortraits",
-        x: 0,
+        x:  0,
         y: 24,
         w: 22,
         h: 38,
@@ -2456,7 +2456,7 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "aptMiraBack",
-        x: 0,
+        x:  0,
         y: 80,
         w: 14,
         h: 18,
