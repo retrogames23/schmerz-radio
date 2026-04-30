@@ -490,6 +490,23 @@ export function combineItem(
         ctx.api.setFlag("sectorDoorOpen");
       }
     }
+    // Spezialfall: Verstärker-Antenne an Mira (in jeder Mira-Szene).
+    // Setzt das Flag, das das Resonanz-Duell im Schmerz-Radio scharf
+    // schaltet. Item bleibt im Inventar — narrativ ist die Antenne
+    // jetzt an Miras Sender; Layards Notiz davon bleibt.
+    const miraHotspots = new Set([
+      "miraSpot36",
+      "miraSpot46",
+      "miraSpot56",
+      "miraInRoom",
+    ]);
+    if (
+      itemId === "amplifierAntenna" &&
+      miraHotspots.has(ctx.targetId) &&
+      !ctx.api.hasFlag("miraHasAmplifier")
+    ) {
+      ctx.api.setFlag("miraHasAmplifier");
+    }
     const hotspotMap = HOTSPOT_REACTIONS[ctx.targetId];
     const npcMap = NPC_REACTIONS[ctx.targetId];
     lines = hotspotMap?.[itemId] ?? npcMap?.[itemId];
