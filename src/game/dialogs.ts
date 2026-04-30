@@ -3009,7 +3009,31 @@ export const dialogs: Record<string, DialogTree> = {
             text: "Da bewegt sich etwas auf dem Sessel.",
             next: "bodoLottiReveal",
           },
+          {
+            text: "Sie haben vorhin von Trägersignalen geredet — gibt es da Frequenzen außerhalb der Skala?",
+            next: "bodoHiddenFreq1",
+          },
           { text: "[ Beenden ]" },
+        ],
+      },
+      // Hinweis 1/3 für die Hidden Frequency 102,7 — Bodo nennt das Band.
+      bodoHiddenFreq1: {
+        id: "bodoHiddenFreq1",
+        speaker: "BODO",
+        text: "Außerhalb der Skala? Nein. Aber zwischen den Bändern, das ist eine andere Sache. Stadtwerke hatten Wartungs-Träger, die haben wir nie auf die Bewohner-Skala gedruckt. Die lagen dort, wo niemand hinhörte: zwischen Einsamkeit und Trauer.",
+        next: "bodoHiddenFreq2",
+      },
+      bodoHiddenFreq2: {
+        id: "bodoHiddenFreq2",
+        speaker: "BODO",
+        text: "Zum Feintunen brauchten wir damals einen Bernstein-Resonator. So einen wie den, den Sie da in der Tasche haben, Worag. — Schon gut. Ich sehe nichts.",
+        choices: [
+          {
+            text: "[ Verstanden. ]",
+            action: (api) => {
+              api.setFlag("bodoHintHiddenFreqBand");
+            },
+          },
         ],
       },
       // Wiederverwendete Lotti-Reveal-Sequenz, falls der Spieler das Tier
