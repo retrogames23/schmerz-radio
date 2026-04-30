@@ -159,7 +159,7 @@ export const Route = createFileRoute("/api/public/npc-chat")({
         }
         const systemPrompt =
           typeof b.systemPrompt === "string" ? b.systemPrompt : "";
-        if (systemPrompt.length < 20 || systemPrompt.length > 8000) {
+        if (systemPrompt.length < 20 || systemPrompt.length > 16000) {
           return json(400, { error: "Invalid systemPrompt length" });
         }
         const userMessage =
