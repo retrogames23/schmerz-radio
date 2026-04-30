@@ -444,6 +444,33 @@ export function combineItem(
           return;
         }
       }
+      // ── Schmerz-Radio-Erweiterung: Verstärker-Antenne bauen.
+      //    Bernstein-Kristall + Antennen-Draht → Verstärker-Antenne.
+      //    Beide Bauteile bleiben in Layards Tasche (er braucht den
+      //    Kristall noch, der Draht ist Teil der Antenne — narrativ
+      //    abstrahiert).
+      if (pair === pairKey("tuningCrystal", "antennaWire")) {
+        if (!ctx.api.hasItem("amplifierAntenna")) {
+          ctx.api.addItem({
+            id: "amplifierAntenna",
+            name: "Verstärker-Antenne (improvisiert)",
+            description:
+              "Eine kleine, gewickelte Spule — Antennen-Draht um den Bernstein-Resonator gelegt. Sieht selbstgebastelt aus. Soll Miras Sender so weit verstärken, dass er das alte Trauer-Band überschreibt.",
+          });
+          ctx.api.showText([
+            "Layard wickelt den Antennen-Draht eng um den Bernstein-Resonator.",
+            "Eine kleine, häßliche Spule entsteht. Sie summt, wenn er sie näher",
+            "ans Schmerz-Radio hält.",
+            "„Mira müsste damit was anfangen können.“",
+          ]);
+        } else {
+          ctx.api.showText([
+            "Eine Verstärker-Antenne hat Layard bereits.",
+            "Eine zweite würde dasselbe tun.",
+          ]);
+        }
+        return;
+      }
       lines = ITEM_PAIRS[pairKey(itemId, otherId)];
     }
   } else {
