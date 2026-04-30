@@ -144,6 +144,19 @@ export function TitleScreen({ onStart }: Props) {
           ☕ Buy me a coffee
         </a>
 
+        <div className="mt-4 flex justify-center">
+          <a
+            href="https://lovable.dev/invite/LN0I260"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Built with Lovable"
+            className="inline-flex items-center gap-2 rounded-sm border border-amber-glow/30 bg-background/40 px-3 py-1.5 font-mono-crt text-[10px] uppercase tracking-[0.3em] text-amber-glow/70 transition hover:border-amber-glow/60 hover:text-amber-glow"
+          >
+            <span className="text-sm leading-none">♥</span>
+            <span>Built with Lovable</span>
+          </a>
+        </div>
+
         <div className="mt-8 flex flex-col items-center gap-2 font-mono-crt text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
           <button
             type="button"

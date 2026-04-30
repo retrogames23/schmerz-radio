@@ -37,7 +37,7 @@ export function ImpressumOverlay({ open, onClose }: Props) {
             Dies ist ein privates Hobbyprojekt, das ich in meiner Freizeit
             entwickle. Um die Kosten der Entwicklung mit{" "}
             <a
-              href="https://lovable.dev/"
+              href="https://lovable.dev/invite/LN0I260"
               target="_blank"
               rel="noopener noreferrer"
               className="text-amber-glow/80 underline-offset-4 hover:underline"
