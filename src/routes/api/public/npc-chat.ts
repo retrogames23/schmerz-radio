@@ -88,55 +88,57 @@ export const Route = createFileRoute("/api/public/npc-chat")({
           return json(429, { error: "Rate limit exceeded" });
         }
 
-        // Per-User Counter & Spenden-Gate (nur für eingeloggte User).
-        // Anonyme Anfragen werden vom Frontend nicht erlaubt — falls doch,
-        // greift weiter unten der IP-Rate-Limit.
+        // Auth ist Pflicht: anonyme Anfragen würden den Donation-Gate umgehen.
         const supabaseUrl = process.env.SUPABASE_URL;
         const supabasePub = process.env.SUPABASE_PUBLISHABLE_KEY;
         const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        if (!supabaseUrl || !supabasePub || !serviceKey) {
+          return json(500, { error: "Auth nicht konfiguriert." });
+        }
         const authHeader = request.headers.get("authorization") ?? "";
         const userToken = authHeader.replace(/^Bearer\s+/i, "");
+        if (!userToken) {
+          return json(401, { error: "Anmeldung erforderlich." });
+        }
 
-        let countAfter: number | null = null;
-        let donationUnlocked = false;
+        const userClient = createClient(supabaseUrl, supabasePub, {
+          global: { headers: { Authorization: `Bearer ${userToken}` } },
+          auth: { persistSession: false, autoRefreshToken: false },
+        });
+        const { data: u, error: authErr } =
+          await userClient.auth.getUser(userToken);
+        const uid = u?.user?.id;
+        if (authErr || !uid) {
+          return json(401, { error: "Ungültiges Token." });
+        }
 
-        if (userToken && supabaseUrl && supabasePub && serviceKey) {
-          const userClient = createClient(supabaseUrl, supabasePub, {
-            global: { headers: { Authorization: `Bearer ${userToken}` } },
-            auth: { persistSession: false, autoRefreshToken: false },
+        const admin = createClient(supabaseUrl, serviceKey, {
+          auth: { persistSession: false, autoRefreshToken: false },
+        });
+        const { data: profile } = await admin
+          .from("profiles")
+          .select("donation_unlocked, cloud_request_count")
+          .eq("user_id", uid)
+          .maybeSingle();
+        const donationUnlocked = !!profile?.donation_unlocked;
+        const current = profile?.cloud_request_count ?? 0;
+        if (!donationUnlocked && current >= HARD_LIMIT) {
+          return json(402, {
+            error:
+              "Cloud-Limit erreicht. Bitte spende, um weiter chatten zu können.",
+            code: "donation_required",
+            count: current,
+            limit: HARD_LIMIT,
           });
-          const { data: u } = await userClient.auth.getUser(userToken);
-          const uid = u?.user?.id;
-          if (uid) {
-            const admin = createClient(supabaseUrl, serviceKey, {
-              auth: { persistSession: false, autoRefreshToken: false },
-            });
-            const { data: profile } = await admin
-              .from("profiles")
-              .select("donation_unlocked, cloud_request_count")
-              .eq("user_id", uid)
-              .maybeSingle();
-            donationUnlocked = !!profile?.donation_unlocked;
-            const current = profile?.cloud_request_count ?? 0;
-            if (!donationUnlocked && current >= HARD_LIMIT) {
-              return json(402, {
-                error:
-                  "Cloud-Limit erreicht. Bitte spende, um weiter chatten zu können.",
-                code: "donation_required",
-                count: current,
-                limit: HARD_LIMIT,
-              });
-            }
-            // Increment (nur wenn nicht freigeschaltet — sonst schenken wir uns die DB-Schreibe).
-            if (!donationUnlocked) {
-              const next = current + 1;
-              await admin
-                .from("profiles")
-                .update({ cloud_request_count: next })
-                .eq("user_id", uid);
-              countAfter = next;
-            }
-          }
+        }
+        let countAfter: number | null = null;
+        if (!donationUnlocked) {
+          const next = current + 1;
+          await admin
+            .from("profiles")
+            .update({ cloud_request_count: next })
+            .eq("user_id", uid);
+          countAfter = next;
         }
 
         let body: unknown;
