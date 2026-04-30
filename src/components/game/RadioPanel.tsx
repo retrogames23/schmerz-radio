@@ -158,6 +158,17 @@ export function RadioPanel() {
     return () => clearInterval(interval);
   }, [radioOpen, freq, volume, bumpResonance, setRadioActive, flags]);
 
+  // Schmerz-Radio-Marker: sobald Layard 104,6 trifft, merken wir das
+  // dauerhaft. Schaltet u.a. den Atmosphäre-Text an der Rohrpost in
+  // der Cafeteria frei. Lautstärke und burn-State sind egal — es geht
+  // nur darum, dass er die Frequenz mal ausprobiert hat.
+  useEffect(() => {
+    if (!radioOpen) return;
+    if (freq !== 104.6) return;
+    if (flags.has("radioTunedTo1046")) return;
+    api.setFlag("radioTunedTo1046");
+  }, [radioOpen, freq, flags, api]);
+
   // Trigger doorbell only when locked on 104.6 at MAXIMUM volume
   useEffect(() => {
     // Nach burn ist das Klopf-Event entweder längst geschehen oder
