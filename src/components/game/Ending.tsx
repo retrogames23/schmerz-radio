@@ -197,7 +197,7 @@ function ChatterAtmosphere({ burned }: { burned: boolean }) {
       const id = nextId++;
       const garbled = burned && Math.random() < 0.3;
       const header = `[${chatterTimestamp()}]  ${m.from}  →  ${m.to}`;
-      const body = garbled ? "» … «" : `» ${m.text} «`;
+      const body = garbled ? ENDING_UI_TEXT.garbledChatter : `» ${m.text} «`;
       setMsgs((prev) => [...prev, { id, top, left, align, header, body }]);
       window.setTimeout(() => {
         setMsgs((prev) => prev.filter((x) => x.id !== id));
