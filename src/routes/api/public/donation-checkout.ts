@@ -8,7 +8,7 @@ import { createClient } from "@supabase/supabase-js";
  * Beträge sind frei wählbar, Mindestbetrag 1 €.
  */
 
-const MIN_AMOUNT_CENTS = 100;
+const MIN_AMOUNT_CENTS = 300;
 const MAX_AMOUNT_CENTS = 100_000;
 
 function json(status: number, data: unknown): Response {
