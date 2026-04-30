@@ -162,6 +162,14 @@ export function buildSystemPrompt(
     for (const f of persona.files) lines.push(`- ${f.label}: ${f.content}`);
   }
 
+  if (persona.biography?.length) {
+    lines.push("");
+    lines.push(
+      "BIOGRAFIE (deine Lebensgeschichte — gilt als WAHR, nicht direkt zitieren, aber bei Nachfragen konsistent darauf zurückgreifen statt zu erfinden):",
+    );
+    for (const b of persona.biography) lines.push(`- ${b}`);
+  }
+
   lines.push("");
   lines.push(RULES);
   return lines.join("\n");
