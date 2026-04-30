@@ -57,7 +57,6 @@ export type StoryFlag =
   | "knockingHeard"
   | "talkedPhilippe2613"
   | "calledLeitstelle"
-  | "smalltalkPhilippe"
   | "paramedicsArrived"
   /** Cutscene "Sanitäter brechen 2615 auf" wurde abgespielt. */
   | "paramedicsCutsceneSeen"
@@ -66,7 +65,6 @@ export type StoryFlag =
   | "wait2613Step1"
   | "wait2613Step2"
   | "doorBrokenOpen"
-  | "sawCatatonic"
   | "protocolReceived"
   | "calledInsa2"
   | "reportedExit"
@@ -87,9 +85,6 @@ export type StoryFlag =
   | "mikaelRejectedProtocol"
   | "insaInvitedToDispatch"
   | "calledInsaAfterE71"
-  | "tookCrystal"
-  | "readLetter"
-  | "insa3Called"
   | "ending"
   | "sawEmptyOffice"
   | "rangEmptyOfficeBell"
@@ -149,12 +144,6 @@ export type StoryFlag =
   | "elevatorMaintBlocked"
   | "elevatorMaintSeen"
   | "elevatorMaintCleared"
-  // Ennis: Layard zitiert Helka & Bodo → Ennis öffnet ohne Flyer.
-  | "ennisOpenedOnQuote"
-  // Insas Rückruf-Code: ein verpasster Anruf landet bei Stegmann.
-  | "insaCallbackPending"
-  | "insaCallbackTaken"
-  | "insaCallbackMissed"
   // Tür 5610 (Serverraum, Korridor 56) — Entdeckung & Zustand
   | "saw5610Door"
   | "serverRoom5610Open"
@@ -221,9 +210,6 @@ export type StoryFlag =
   | "miraTrustEarned"
   | "miraTrustWithheld"
   | "miraAtHomeMet"
-  | "miraAtHomeBackstoryHeard"
-  | "miraAtHomeFriendsHeard"
-  | "miraAtHomeNeighboursHeard"
   // Akt-I-Pflichträtsel „Quittung 4317"
   | "noticedTransferCode"
   | "tookPencilStub"
