@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { LlmRuntime, LlmRuntimeStatus } from "./runtime";
-import { createCloudRuntime } from "./cloudLlmRuntime";
+import { createCloudRuntime, onCloudError } from "./cloudLlmRuntime";
 import { createWebLlmRuntime } from "./webLlmRuntime";
 import { isWebGpuAvailable } from "./webLlmLoader";
 import { readLlmModeOverride } from "@/dev/devMode";
-import { onCloudError } from "./cloudLlmRuntime";
 
 /**
  * Wählt die Runtime: WebGPU vorhanden → lokal, sonst Cloud.
