@@ -174,7 +174,7 @@ export function TitleScreen({ onStart }: Props) {
           </a>
         </div>
 
-        <div className="mt-8 flex flex-col items-center gap-2 font-mono-crt text-xs uppercase tracking-[0.3em] text-muted-foreground">
+        <div className="mt-8 flex flex-col items-center gap-2 font-mono-crt uppercase tracking-[0.3em] text-muted-foreground text-base">
           <button
             type="button"
             onClick={() => setImpressumOpen(true)}
