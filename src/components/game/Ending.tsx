@@ -4,72 +4,11 @@ import { useSettings } from "@/audio/SettingsContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import endingTrack from "@/assets/music/rain-against-the-pane.mp3";
 import { SECTOR_CHATTER, chatterTimestamp } from "@/game/sectorChatter";
-
-/** Spelt-out German numbers for small counts in the closing text. */
-const NUM_WORDS = [
-  "null",
-  "einem",
-  "zwei",
-  "drei",
-  "vier",
-  "fünf",
-  "sechs",
-  "sieben",
-  "acht",
-  "neun",
-  "zehn",
-] as const;
-
-function spell(n: number): string {
-  return NUM_WORDS[n] ?? String(n);
-}
-
-// Jede Frame-Gruppe ist eine kurze, in sich geschlossene Texttafel.
-// Sie wird vollständig eingeblendet, gehalten und gegen die nächste
-// Tafel ausgetauscht. Das ist ruhiger als ein endlos wachsender Lauftext.
-function buildBaseFrames(npcCount: number): string[][] {
-  // Singular-Form, falls Layard heute nur mit einer Person geredet hat
-  // (sehr unwahrscheinlich, aber sauber gehandhabt).
-  const peopleLine =
-    npcCount === 1
-      ? "Er hat heute mit einem Menschen geredet, den er gestern nicht kannte."
-      : `Er hat heute mit ${spell(npcCount)} Menschen geredet, die er gestern nicht kannte.`;
-  return [
-    [
-      "Layard legt den Hörer zurück.",
-      "Auf dem Tisch: die Datenkapsel. Unverändert. Unzustellbar.",
-      "Daneben: das Telefon. Schwarzer Bakelit. Warm vom Hörer.",
-    ],
-    [
-      "In seinem Kopf, langsam: Insas Stimme.",
-      "„Bringen Sie es mir vorbei. Persönlich.“",
-      "Und davor, leiser: „Das überrascht mich nicht.“",
-    ],
-    [
-      "Layard tritt ans Fenster. Innenhof. Solaranlage. 48 Stunden Notstrom.",
-      peopleLine,
-      "Über manche von ihnen werden andere reden, sobald er das Zimmer verlässt.",
-    ],
-    [
-      "Auf 104,6 — heute zum ersten Mal — kein Klopfen.",
-      "Nur ein Rauschen. Vielleicht trägt es etwas. Vielleicht nicht.",
-      "Layard nimmt die Datenkapsel in die Hand.",
-      "Sie ist leichter, als sie heute Morgen war.",
-    ],
-  ];
-}
-
-const FRAMES_FLYER_EXTRA: string[][] = [
-  [
-    "Neben der Kapsel liegt ein gefaltetes Blatt.",
-    "Ein Mädchen auf einer Etage, deren Nummer er sich nicht gemerkt hat.",
-    "„Wer hält das andere Ende?“ — Z.K.S.",
-  ],
-  [
-    "Er zerreißt das Blatt nicht. Er faltet es kleiner.",
-    "Es passt jetzt unter die Kapsel.",
-  ],
-];
+import {
+  buildEndingBaseFrames,
+  ENDING_FLYER_FRAMES,
+  ENDING_UI_TEXT,
+} from "@/game/cutscenes";
 
 export function Ending() {
   const { ending, api } = useGame();
@@ -99,10 +38,10 @@ export function Ending() {
     0,
   );
 
-  const FRAMES_BASE = buildBaseFrames(npcCount);
+  const FRAMES_BASE = buildEndingBaseFrames(npcCount);
 
   const frames: string[][] = api.hasItem("flyer")
-    ? [...FRAMES_BASE, ...FRAMES_FLYER_EXTRA]
+    ? [...FRAMES_BASE, ...ENDING_FLYER_FRAMES]
     : FRAMES_BASE;
 
   // Abspann-Musik: läuft NUR während des Endings. Die normale Spielmusik
@@ -183,17 +122,17 @@ export function Ending() {
           <ChatterAtmosphere burned={api.hasFlag("burnedNode5610")} />
           <div className="slow-fade-in relative z-10 mt-12 space-y-3 text-center">
             <div className="font-mono-crt text-sm uppercase tracking-[0.4em] text-amber-glow amber-glow">
-              AKT II — ENDE
+              {ENDING_UI_TEXT.actLabel}
             </div>
             <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              Schmerz-Radio auf 104,6 — Fortsetzung folgt
+              {ENDING_UI_TEXT.subtitle}
             </div>
             <button
               type="button"
               onClick={() => window.location.reload()}
               className="mt-6 rounded-sm border border-amber-glow/50 px-4 py-2 text-xs uppercase tracking-widest text-amber-glow hover:bg-amber-glow/10"
             >
-              ▸ Neu beginnen
+              {ENDING_UI_TEXT.restart}
             </button>
             <div>
               <a
@@ -202,7 +141,7 @@ export function Ending() {
                 rel="noopener noreferrer"
                 className="mt-4 inline-block font-mono-crt text-xs uppercase tracking-[0.3em] text-amber-glow/80 underline-offset-4 hover:underline amber-glow"
               >
-                ☕ Buy me a coffee
+                {ENDING_UI_TEXT.coffee}
               </a>
             </div>
           </div>
@@ -258,7 +197,7 @@ function ChatterAtmosphere({ burned }: { burned: boolean }) {
       const id = nextId++;
       const garbled = burned && Math.random() < 0.3;
       const header = `[${chatterTimestamp()}]  ${m.from}  →  ${m.to}`;
-      const body = garbled ? "» … «" : `» ${m.text} «`;
+      const body = garbled ? ENDING_UI_TEXT.garbledChatter : `» ${m.text} «`;
       setMsgs((prev) => [...prev, { id, top, left, align, header, body }]);
       window.setTimeout(() => {
         setMsgs((prev) => prev.filter((x) => x.id !== id));

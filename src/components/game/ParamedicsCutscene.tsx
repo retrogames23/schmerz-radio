@@ -4,6 +4,12 @@ import { useGame } from "@/game/GameContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import { speak, stopSpeech } from "@/audio/speech";
+import {
+  PARAMEDICS_LINES,
+  PARAMEDICS_PROTOCOL_ITEM,
+  type ParamedicsLine,
+  type ParamedicsSpeaker,
+} from "@/game/cutscenes";
 import beat0 from "@/assets/scene-apt-2613.jpg";
 import beat1 from "@/assets/cutscene-paramedics-1.jpg";
 import beat3 from "@/assets/cutscene-paramedics-3.jpg";
@@ -12,12 +18,10 @@ import beat5 from "@/assets/cutscene-paramedics-5.jpg";
 import beat6 from "@/assets/cutscene-paramedics-6.jpg";
 import cutsceneMusic from "@/assets/cutscene-paramedics-music.mp3";
 
-type Speaker = "SANITÄTER" | "LAYARD" | "SYSTEM";
+type Speaker = ParamedicsSpeaker;
 
-interface Line {
-  speaker: Speaker;
-  text: string;
-  speech?: string;
+/** Zeile mit berechneter Anzeige-/Halte-Dauer. */
+interface Line extends ParamedicsLine {
   hold: number;
 }
 
@@ -56,6 +60,21 @@ function holdFor(text: string, factor = 70): number {
   return Math.max(2400, Math.min(7000, Math.round(text.length * factor + 800)));
 }
 
+/**
+ * Untertitel-Zeilen mit `hold`-Dauer aus den reinen Text-Daten anreichern.
+ * `extraHoldByIndex` ergänzt einzelne Zeilen um zusätzliche Halte-Zeit
+ * (z. B. für Atempausen vor besonders bedeutungsvollen Sätzen).
+ */
+function withHold(
+  lines: ParamedicsLine[],
+  extraHoldByIndex: Record<number, number> = {},
+): Line[] {
+  return lines.map((ln, i) => ({
+    ...ln,
+    hold: holdFor(ln.text) + (extraHoldByIndex[i] ?? 0),
+  }));
+}
+
 function buildBeats(): Beat[] {
   return [
     // 0) NEU — stille Vorgeschichte in Philippes Wohnung 2613.
@@ -75,13 +94,7 @@ function buildBeats(): Beat[] {
       zoom: [1.04, 1.12],
       pan: [0, 0, -2, -1],
       leadIn: 400,
-      lines: [
-        {
-          speaker: "SANITÄTER",
-          text: "Gehen Sie zurück. Wir brechen die Tür auf.",
-          hold: holdFor("Gehen Sie zurück. Wir brechen die Tür auf."),
-        },
-      ],
+      lines: withHold(PARAMEDICS_LINES[1]),
       tail: 200,
     },
     // 2) Tür birst auf.
@@ -89,13 +102,7 @@ function buildBeats(): Beat[] {
       image: beat3,
       zoom: [1.0, 1.18],
       pan: [0, 0, 0, 0],
-      lines: [
-        {
-          speaker: "SYSTEM",
-          text: "Beim dritten Schlag gibt die Tür nach. Sie schwingt auf.",
-          hold: holdFor("Beim dritten Schlag gibt die Tür nach. Sie schwingt auf."),
-        },
-      ],
+      lines: withHold(PARAMEDICS_LINES[2]),
       tail: 300,
       burst: true,
     },
@@ -105,20 +112,7 @@ function buildBeats(): Beat[] {
       zoom: [1.02, 1.10],
       pan: [-2, 0, 2, -1],
       leadIn: 300,
-      lines: [
-        {
-          speaker: "SYSTEM",
-          text: "Ein ausgemergelter Mann. Fahle Haut. Schlägt rhythmisch gegen die Wand.",
-          hold: holdFor(
-            "Ein ausgemergelter Mann. Fahle Haut. Schlägt rhythmisch gegen die Wand.",
-          ),
-        },
-        {
-          speaker: "SYSTEM",
-          text: "Layard nimmt seinen Mut zusammen und schaut ihm in die Augen.",
-          hold: holdFor("Layard nimmt seinen Mut zusammen und schaut ihm in die Augen."),
-        },
-      ],
+      lines: withHold(PARAMEDICS_LINES[3]),
       tail: 200,
       pulse: { x: 88, y: 45, count: 5, intervalMs: 850 },
       microShake: true,
@@ -128,22 +122,7 @@ function buildBeats(): Beat[] {
       image: beat5,
       zoom: [1.10, 1.28],
       pan: [0, 1, 0, -1],
-      lines: [
-        {
-          speaker: "SYSTEM",
-          text: "Er erwartet tote, glasige Augen. Er findet eine seltsame Klarheit.",
-          hold: holdFor(
-            "Er erwartet tote, glasige Augen. Er findet eine seltsame Klarheit.",
-          ),
-        },
-        {
-          speaker: "SYSTEM",
-          text: "Wie ein Portal in ein mystisches Universum. Layard wird das Bild nicht mehr los.",
-          hold: holdFor(
-            "Wie ein Portal in ein mystisches Universum. Layard wird das Bild nicht mehr los.",
-          ),
-        },
-      ],
+      lines: withHold(PARAMEDICS_LINES[4]),
       tail: 400,
       eyeGlow: { x: 50, y: 42 },
     },
@@ -152,41 +131,9 @@ function buildBeats(): Beat[] {
       image: beat6,
       zoom: [1.04, 1.10],
       pan: [-1, -1, 1, 1],
-      lines: [
-        {
-          speaker: "SANITÄTER",
-          text: "Kein A-, B- oder C-Problem. Transport mit Trage.",
-          hold: holdFor("Kein A-, B- oder C-Problem. Transport mit Trage."),
-        },
-        {
-          speaker: "LAYARD",
-          text: "Brauchen Sie mich noch?",
-          hold: holdFor("Brauchen Sie mich noch?"),
-        },
-        {
-          speaker: "SANITÄTER",
-          text: "Ja. Ich drucke Ihnen das Protokoll. Verschlüsselt — für E67.",
-          hold: holdFor("Ja. Ich drucke Ihnen das Protokoll. Verschlüsselt — für E67."),
-        },
-        {
-          speaker: "SANITÄTER",
-          text: "Wir schicken es per Rohrpost. Aber bitte werfen Sie es heute noch ein.",
-          hold: holdFor(
-            "Wir schicken es per Rohrpost. Aber bitte werfen Sie es heute noch ein.",
-          ),
-        },
-        {
-          speaker: "LAYARD",
-          text: "In Ordnung.",
-          hold: holdFor("In Ordnung.") + 300,
-        },
-        {
-          speaker: "SYSTEM",
-          text: "Warum hat er ja gesagt? Er hätte nein sagen können.",
-          speech: "Warum hat er, JA, gesagt? Er hätte auch NEIN sagen können.",
-          hold: holdFor("Warum hat er ja gesagt? Er hätte nein sagen können.") + 400,
-        },
-      ],
+      // Beat 5: kleine Atempause nach „In Ordnung." (Index 4) und vor
+      // dem SYSTEM-Schlusssatz (Index 5).
+      lines: withHold(PARAMEDICS_LINES[5], { 4: 300, 5: 400 }),
       tail: 600,
     },
   ];
@@ -453,9 +400,8 @@ export function ParamedicsCutscene() {
       api.setFlag("protocolReceived");
       api.addItem({
         id: "protocol",
-        name: "Einsatzprotokoll (verschlüsselt)",
-        description:
-          "Eine versiegelte Datenkapsel. Ziel: Sektor E71, Zimmer 1534. Etikett: „Fall-ID 5245@E67@2613“.",
+        name: PARAMEDICS_PROTOCOL_ITEM.name,
+        description: PARAMEDICS_PROTOCOL_ITEM.description,
       });
       api.setKnowledge("responsibilityE67");
       api.setFlag("elevatorMaintBlocked");
