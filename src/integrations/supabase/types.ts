@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      donation_codes: {
+        Row: {
+          amount_cents: number
+          code: string
+          created_at: string
+          currency: string
+          email: string
+          id: string
+          redeemed_at: string | null
+          redeemed_device_id: string | null
+          stripe_payment_intent: string | null
+          stripe_session_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount_cents: number
+          code: string
+          created_at?: string
+          currency?: string
+          email: string
+          id?: string
+          redeemed_at?: string | null
+          redeemed_device_id?: string | null
+          stripe_payment_intent?: string | null
+          stripe_session_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          code?: string
+          created_at?: string
+          currency?: string
+          email?: string
+          id?: string
+          redeemed_at?: string | null
+          redeemed_device_id?: string | null
+          stripe_payment_intent?: string | null
+          stripe_session_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       game_saves: {
         Row: {
           created_at: string
