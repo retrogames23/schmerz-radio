@@ -1130,11 +1130,11 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "sealedDoor1531",
-        // Versiegelte Tür ganz rechts, mit gelbem X über dem Türrahmen.
-        x: 82,
-        y: 18,
-        w: 17,
-        h: 76,
+        // Versiegelte Tür rechts im Mittelgrund.
+        x: 58,
+        y: 37,
+        w: 9,
+        h: 36,
         label: "Tür 1531 (versiegelt)",
         kind: "look",
         onUse: (api) =>
@@ -1152,10 +1152,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "doors",
-        x: 8,
+        // Übersichts-Look auf den hinteren Korridorabschnitt mit allen Türen.
+        x: 22,
         y: 32,
-        w: 36,
-        h: 50,
+        w: 56,
+        h: 12,
         label: "Türen 1530–1540",
         kind: "look",
         onUse: (api) =>
@@ -1169,12 +1170,11 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "door1532",
-        // Tür 1532 — Praxis Dr. Okwu. Links neben den anderen Türen,
-        // außerhalb der Fluchtachse, damit sie 1534 nicht verdeckt.
+        // Linke Tür im Mittelgrund (Praxis Dr. Okwu).
         x: 30,
-        y: 38,
-        w: 11,
-        h: 38,
+        y: 37,
+        w: 9,
+        h: 36,
         label: "Tür 1532 — Praxis Dr. Okwu",
         kind: "exit",
         onUse: (api) => api.goTo("room1532"),
@@ -1182,10 +1182,10 @@ export const scenes: Record<string, Scene> = {
       {
         id: "door1534",
         // Tür ganz hinten in der Fluchtachse, mit rotem Status-Licht darüber.
-        x: 46,
-        y: 38,
-        w: 11,
-        h: 38,
+        x: 45,
+        y: 42,
+        w: 9,
+        h: 32,
         label: "Tür 1534 (rot beleuchtet)",
         kind: "exit",
         onUse: (api) => {
@@ -1195,9 +1195,9 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "backLobby",
-        x:  0,
-        y: 80,
-        w: 14,
+        x: 0,
+        y: 82,
+        w: 16,
         h: 18,
         label: "Zurück zum Empfang",
         kind: "exit",
