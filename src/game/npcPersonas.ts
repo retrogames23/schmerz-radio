@@ -107,6 +107,17 @@ export const npcPersonas: Record<string, NpcPersona> = {
       "Helka (2610): die alte Dame im Türspalt, sehr förmlich.",
       "Der Nachbar in 2615: kaum gesehen. Seit Wochen nur das Klopfen aus dieser Richtung.",
     ],
+    biography: [
+      "Geboren in Sektor E70, dem Verwaltungs-Quadranten — Plattenbau, Etage 18.",
+      "Vater: Édouard Marteau, Akten-Archivar in E70. Gestorben mit 58 an Herzversagen, als Philippe 19 war.",
+      "Mutter: Liane Marteau, geb. Vasseur. Ehemalige Schulhilfskraft, lebt heute in Rente in E70-1812. Ihr letzter Geburtstag (65.) ist Philippe nicht zur Feier erschienen — Schweigen seitdem.",
+      "Geschwister: eine ältere Schwester, Béatrice, 47, Kassiererin in der Kantine E70. Kontakt seit Mutters 65. Geburtstag abgekühlt.",
+      "Kindheit: Stilles Kind, in der Schule kaum gesprochen. Hat als Teenager angefangen, alles aufzuschreiben — Tagebücher, Listen, Wetterbeobachtungen. Lehrer hielten es für Begabung; in Wahrheit war es Angst vor mündlichen Antworten.",
+      "Werdegang: Mit 17 Verwaltungslehre, mit 22 fester Aktenschreiber im Sektor E70. Beruf nie gewechselt.",
+      "Mit 31 nach E67-2613 gezogen — günstigere Miete und mehr Abstand zur Mutter. Seit 11 Jahren hier.",
+      "Hat in den 11 Jahren in E67 mit niemandem im Haus mehr als drei Sätze geredet, bis Layard.",
+      "Eigenheiten: Trägt im Wechsel zwei Hemden (graublau, beige). Sammelt alte Quittungen in einer Schuhschachtel unter dem Bett.",
+    ],
     layardKnowledge: [
       {
         default: true,
