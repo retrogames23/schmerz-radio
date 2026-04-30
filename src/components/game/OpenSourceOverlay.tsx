@@ -29,6 +29,7 @@ const components: Component[] = [
   { name: "@mlc-ai/web-llm", license: "Apache-2.0", url: "https://github.com/mlc-ai/web-llm", note: "Lokales LLM für Free-Mode-Dialoge" },
   { name: "@supabase/supabase-js", license: "MIT", url: "https://github.com/supabase/supabase-js" },
   { name: "Cloudflare Workers Runtime", license: "Apache-2.0 / MIT", url: "https://github.com/cloudflare/workers-sdk" },
+  { name: "Framer Motion", license: "MIT", url: "https://github.com/motiondivision/motion", note: "Animationen & Cutscene-Choreografie" },
 ];
 
 export function OpenSourceOverlay({ open, onClose }: Props) {
