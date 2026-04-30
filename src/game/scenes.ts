@@ -2451,10 +2451,10 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "miraInRoom",
-        x: 38,
-        y: 50,
+        x: 20,
+        y: 48,
         w: 22,
-        h: 38,
+        h: 45,
         label: "Mira",
         kind: "talk",
         onUse: (api) => {
