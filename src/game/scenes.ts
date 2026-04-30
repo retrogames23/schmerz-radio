@@ -24,13 +24,13 @@ import philippeSprite from "@/assets/npc-philippe.png";
 import commonRoomBg from "@/assets/scene-common-room.jpg";
 import cafeteriaBg from "@/assets/scene-cafeteria-e67.jpg";
 import aptMira4601Bg from "@/assets/scene-apt-mira-4601.jpg";
-import type { Scene } from "./types";
+import type { GameApi, Scene, SceneId } from "./types";
 import { playSound } from "@/lib/sound";
 
 const ELEVATOR_DING = "/audio/elevator-ding.mp3";
 
 /** Spielt das klassische Aufzug-„Ding-Dong" und wechselt danach die Szene. */
-function rideElevator(api: { goTo: (id: string) => void }, target: string) {
+function rideElevator(api: GameApi, target: SceneId) {
   playSound(ELEVATOR_DING, 0.7);
   // Kurze Verzögerung, damit der erste Ton noch im Aufzug zu hören ist.
   window.setTimeout(() => api.goTo(target), 350);
