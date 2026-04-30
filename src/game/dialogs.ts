@@ -1649,6 +1649,42 @@ export const dialogs: Record<string, DialogTree> = {
     },
   },
 
+  // Hinweis 3/3 für die Hidden Frequency 102,7 — Mikael bestätigt das
+  // Gefühl der Frequenz, ohne eine Zahl zu nennen. Er ist Resonanz-
+  // Archivar; das passt diegetisch zum „E67 — Resonanz — 1996–“-Etikett.
+  mikaelHiddenFreq: {
+    id: "mikaelHiddenFreq",
+    start: "mh1",
+    lines: {
+      mh1: {
+        id: "mh1",
+        speaker: "MIKAEL",
+        text: "Sie sind noch hier. Suchen Sie etwas, Herr Worag?",
+        next: "mh2",
+      },
+      mh2: {
+        id: "mh2",
+        speaker: "LAYARD",
+        text: "Eine Frequenz. Zwischen den Bändern. Niemand will sie zugeben.",
+        next: "mh3",
+      },
+      mh3: {
+        id: "mh3",
+        speaker: "MIKAEL",
+        text: "Dann hören Sie sie. Sie klingt wie eine Stimme, die nicht weint, aber kurz davor ist. Wer sie einmal gehört hat, erkennt sie wieder. Mehr sage ich nicht.",
+        subtext: "Er deutet kurz auf den Aktenschrank: »E67 — Resonanz — 1996–«.",
+        choices: [
+          {
+            text: "[ Verstanden. ]",
+            action: (api) => {
+              api.setFlag("mikaelHintHiddenFreqMood");
+            },
+          },
+        ],
+      },
+    },
+  },
+
   // ---------------------------------------------------------------
   // 11b. Akt-II-Übergang: Layard ruft aus 2611 die Leitstelle an.
   //      Insa öffnet sich zum ersten Mal — und lädt ihn ein.
