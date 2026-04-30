@@ -8,6 +8,48 @@ import {
 } from "@/audio/sfx";
 import { CloseButton } from "./CloseButton";
 
+// Schmerz-Radio-Erweiterung — i18n-freundliche UI-/Erzähltexte
+// gehören in eine zentrale Konstante, nicht hartkodiert in JSX.
+const RADIO_EXT_TEXT = {
+  hiddenFreqIntro: [
+    ">> WARTUNGS-FUNKGERÄT 5610 — TRÄGER GEFUNDEN",
+    "Aus dem alten Lautsprecher klickt es. Eine müde Männerstimme:",
+    "„Wenn das hier jemand hört … hier ist Krummbein, Hausmeister-Vorgänger.“",
+    "„Ich lege ein Stück Antennen-Draht in das Schubfach unter dem Funk.“",
+    "„Wer das Band kippen will, braucht beides: Kristall und Draht.“",
+    "Ein Klacken. Im Schubfach: eine kleine Spule Kupferdraht.",
+  ],
+  duelIntro: [
+    ">> SCHMERZ-RADIO — TRAUER-BAND",
+    "Mira hat ihre Antenne aus dem Fenster gehängt.",
+    "Auf demselben Band, das das Haus seit Jahren als Trauer kennt,",
+    "drückt jetzt eine zweite Welle dagegen — Wut, ungeduldig, jung.",
+    "Halte die Frequenz stabil bei 104,0. Lass nicht los, bis das Band kippt.",
+  ],
+  duelHoldLabel: "FREQUENZ HALTEN",
+  duelTargetLabel: "Ziel: 104,0 ±0,1 MHz",
+  duelProgressLabel: "Wut überlagert Trauer",
+  duelSuccess: [
+    ">> BAND GEKIPPT — 103,5–104,5 SENDET JETZT WUT",
+    "Layard lässt los. Mira lacht kurz auf — dann wird sie still.",
+    "„Jetzt hören sie das, was ich meine. Wenigstens für eine Weile.“",
+    "Sie nickt zu ihrem Terminal hinüber. „Wenn du was suchen willst — los.“",
+  ],
+  duelFailure: [
+    "Die Wut-Welle verliert die Spur. Trauer wischt sie weg wie Asche.",
+    "Mira flucht leise. „Nochmal. Beim nächsten Mal halt sie ruhiger.“",
+  ],
+};
+
+/** Ziel-Frequenz des Hidden-Frequency-Rätsels (Hinweise: zwischen
+ * Einsamkeit und Trauer; siebte Stufe nach unten ab 103,4 = 102,7). */
+const HIDDEN_TARGET_FREQ = 102.7;
+/** Das Trauer-Band — hier passiert das Resonanz-Duell. */
+const DUEL_TARGET_FREQ = 104.0;
+const DUEL_TOLERANCE = 0.1;
+/** Wie lange (ms) die Frequenz im Toleranzfenster gehalten werden muss. */
+const DUEL_HOLD_MS = 5000;
+
 const BANDS = [
   {
     from: 100.0,
@@ -83,6 +125,93 @@ export function RadioPanel() {
   const droneStopRef = useRef<(() => void) | null>(null);
   const lastFreqRef = useRef(freq);
   const [tick, setTick] = useState(0);
+
+  // ── Resonanz-Duell (Mira-Verstärker) ────────────────────────────
+  // Aktiv, sobald Layard Miras Antenne übergeben hat (`miraHasAmplifier`)
+  // und sich auf Etage 4 oder in Miras Wohnung befindet. Solange er
+  // im Trauer-Band hält, läuft die Hold-Bar hoch; verlässt er das
+  // Fenster, läuft sie wieder zurück.
+  const [duelHoldMs, setDuelHoldMs] = useState(0);
+  const duelActive =
+    radioOpen &&
+    flags.has("miraHasAmplifier") &&
+    !flags.has("miraSentAnger") &&
+    (scene === "aptMira4601" || scene === "corridor46");
+  const duelInWindow =
+    duelActive &&
+    Math.abs(freq - DUEL_TARGET_FREQ) <= DUEL_TOLERANCE &&
+    volume >= 0.6;
+
+  useEffect(() => {
+    if (!duelActive) {
+      if (duelHoldMs !== 0) setDuelHoldMs(0);
+      return;
+    }
+    const id = setInterval(() => {
+      setDuelHoldMs((prev) => {
+        const next = duelInWindow ? prev + 200 : Math.max(0, prev - 300);
+        return Math.min(DUEL_HOLD_MS, next);
+      });
+    }, 200);
+    return () => clearInterval(id);
+  }, [duelActive, duelInWindow, duelHoldMs]);
+
+  // Erfolg: Hold-Bar voll → Flag setzen, Mira-Terminal freischalten.
+  useEffect(() => {
+    if (!duelActive) return;
+    if (duelHoldMs < DUEL_HOLD_MS) return;
+    if (flags.has("miraSentAnger")) return;
+    api.setFlag("miraSentAnger");
+    api.setFlag("miraTerminalUnlocked");
+    setRadioActive(false);
+    closeRadio();
+    api.showText(RADIO_EXT_TEXT.duelSuccess);
+  }, [duelActive, duelHoldMs, flags, api, setRadioActive, closeRadio]);
+
+  // Einmaliger Intro-Text, wenn das Duell zum ersten Mal scharf ist.
+  const duelIntroSeenRef = useRef(false);
+  useEffect(() => {
+    if (!duelActive) {
+      duelIntroSeenRef.current = false;
+      return;
+    }
+    if (duelIntroSeenRef.current) return;
+    duelIntroSeenRef.current = true;
+    api.showText(RADIO_EXT_TEXT.duelIntro);
+  }, [duelActive, api]);
+
+  // ── Hidden Frequency 102,7 — Wartungs-Funkgerät 5610 ────────────
+  // Layard muss im Serverraum sein, das Schmerz-Radio offen haben,
+  // den Tuning-Kristall im Inventar tragen und die Frequenz innerhalb
+  // einer engen Toleranz exakt auf 102,7 stellen. Belohnung: ein
+  // Stück Antennen-Draht (Bridge zu Rätsel 2).
+  useEffect(() => {
+    if (!radioOpen) return;
+    if (scene !== "serverRoom5610") return;
+    if (flags.has("hiddenFrequencyFound")) return;
+    if (!api.hasItem("tuningCrystal")) return;
+    if (!flags.has("sawWartungsFunk5610")) return;
+    if (Math.abs(freq - HIDDEN_TARGET_FREQ) > 0.05) return;
+    const t = setTimeout(() => {
+      api.setFlag("hiddenFrequencyFound");
+      setRadioActive(false);
+      closeRadio();
+      api.addItem({
+        id: "antennaWire",
+        name: "Antennen-Draht (Spule)",
+        description:
+          "Eine kleine Spule isolierter Kupferdraht aus dem Schubfach des alten Wartungs-Funks. Genug, um eine improvisierte Antenne zu bauen.",
+      });
+      api.addItem({
+        id: "wartungsDiktat",
+        name: "Wartungs-Diktat (Krummbein)",
+        description:
+          "Ein Notizfetzen, der aus dem Funk fiel: »Kristall + Draht = Verstärker. Wer das Band kippen will, sendet damit, nicht dagegen.«",
+      });
+      api.showText(RADIO_EXT_TEXT.hiddenFreqIntro);
+    }, 900);
+    return () => clearTimeout(t);
+  }, [radioOpen, scene, freq, flags, api, setRadioActive, closeRadio]);
 
   // Silence-Test (für Mira-Trust): Wenn das Radio offen ist UND
   // die Lautstärke 60 Sekunden ununterbrochen auf 0 steht, setzen
