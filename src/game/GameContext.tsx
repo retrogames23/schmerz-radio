@@ -614,6 +614,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     handbookOpen,
     idCardOpen,
     lobbyGateOpen,
+    duelOpen,
     freeChatNpcId,
     openFreeChat: (npcId: string) => setFreeChatNpcId(npcId),
     closeFreeChat: () => setFreeChatNpcId(null),
@@ -663,6 +664,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     closeIdCard: () => setIdCardOpen(false),
     openLobbyGate: () => setLobbyGateOpen(true),
     closeLobbyGate: () => setLobbyGateOpen(false),
+    closeDuel: () => setDuelOpen(false),
     /** Aktueller Fehlversuchs-Zähler der Lobby-Schleuse (für die UI). */
     getLobbyGateAttempts: () => lobbyGateAttemptsRef.current,
     bumpLobbyGateAttempts: () => {
