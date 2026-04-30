@@ -3,6 +3,7 @@ import { Volume2, VolumeX } from "lucide-react";
 import titleTrack from "@/assets/almost-freedom.mp3";
 import { CrtMatrixBackground } from "./CrtMatrixBackground";
 import { isWebGpuAvailable, startLocalLlmLoad } from "@/llm/webLlmLoader";
+import { ImpressumOverlay } from "./ImpressumOverlay";
 
 interface Props {
   onStart: () => void;
@@ -12,6 +13,7 @@ export function TitleScreen({ onStart }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const startedRef = useRef(false);
   const [musicOn, setMusicOn] = useState(true);
+  const [impressumOpen, setImpressumOpen] = useState(false);
 
   useEffect(() => {
     const a = new Audio(titleTrack);
@@ -141,7 +143,25 @@ export function TitleScreen({ onStart }: Props) {
         >
           ☕ Buy me a coffee
         </a>
+
+        <div className="mt-8 flex flex-col items-center gap-2 font-mono-crt text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+          <button
+            type="button"
+            onClick={() => setImpressumOpen(true)}
+            className="hover:text-amber-glow"
+          >
+            Impressum
+          </button>
+          <a
+            href="mailto:stephan.doerner@posteo.de"
+            className="hover:text-amber-glow"
+          >
+            Kontakt: stephan.doerner@posteo.de
+          </a>
+        </div>
       </div>
+
+      <ImpressumOverlay open={impressumOpen} onClose={() => setImpressumOpen(false)} />
     </div>
   );
 }

@@ -263,6 +263,16 @@ export function PauseMenu({ open, onClose }: Props) {
         <p className="mt-5 text-center text-xs italic text-muted-foreground">
           ESC schließt das Menü.
         </p>
+
+        <div className="mt-3 text-center font-mono-crt text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+          Kontakt:{" "}
+          <a
+            href="mailto:stephan.doerner@posteo.de"
+            className="text-amber-glow/80 underline-offset-4 hover:underline hover:text-amber-glow"
+          >
+            stephan.doerner@posteo.de
+          </a>
+        </div>
       </div>
       <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
     </div>
