@@ -1293,7 +1293,6 @@ export const scenes: Record<string, Scene> = {
         label: "Zurück in den Korridor",
         kind: "exit",
         exitDir: "right",
-        requires: ["mikaelRejectedProtocol"],
         onUse: (api) => api.goTo("corridor15"),
       },
     ],
