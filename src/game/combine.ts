@@ -285,9 +285,11 @@ const NPC_REACTIONS: Record<string, ItemReactionMap> = {
   bodoNpc: BODO_REACTIONS,
   door2614Ennis: ENNIS_REACTIONS,
   mikaelNpc: MIKAEL_REACTIONS,
+  mikaelNpcAfter: MIKAEL_REACTIONS,
   miraSpot36: MIRA_REACTIONS,
   miraSpot46: MIRA_REACTIONS,
   miraSpot56: MIRA_REACTIONS,
+  miraInRoom: MIRA_REACTIONS,
   kowalkSpot: KOWALK_REACTIONS,
   brustSpot: BRUST_REACTIONS,
 };
