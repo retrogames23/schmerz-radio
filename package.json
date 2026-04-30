@@ -14,8 +14,10 @@
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",
     "@lovable.dev/cloud-auth-js": "^1.1.1",
+    "@lovable.dev/email-js": "^0.0.4",
+    "@lovable.dev/webhooks-js": "^0.0.1",
     "@mlc-ai/web-llm": "^0.2.82",
-    "@supabase/supabase-js": "^2.104.1",
+    "@supabase/supabase-js": "^2.105.1",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-router": "^1.168.0",
     "@tanstack/react-start": "^1.167.14",
