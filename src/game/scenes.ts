@@ -1236,9 +1236,21 @@ export const scenes: Record<string, Scene> = {
         w: 30,
         h: 60,
         label: "Mikael Stegmann",
-        kind: "look",
+        kind: "talk",
         requires: ["metMikael"],
         onUse: (api) => {
+          // Hidden-Frequency-Hinweis: Hat Layard schon mindestens einen
+          // anderen Hinweis (Bodo oder Helka), bietet Mikael den dritten
+          // — kryptisch, aber bestätigend. Ohne Vorwissen bleibt es bei
+          // der bisherigen Schweigeszene.
+          if (
+            !api.hasFlag("mikaelHintHiddenFreqMood") &&
+            (api.hasFlag("bodoHintHiddenFreqBand") ||
+              api.hasFlag("helkaHintHiddenFreqStep"))
+          ) {
+            api.startDialog("mikaelHiddenFreq");
+            return;
+          }
           api.showText([
             "Mikael sieht kurz auf. Schüttelt langsam den Kopf.",
             "„Ich kann nichts annehmen, Herr Worag. Wirklich nicht.“",
