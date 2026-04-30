@@ -4,6 +4,7 @@ import titleTrack from "@/assets/almost-freedom.mp3";
 import { CrtMatrixBackground } from "./CrtMatrixBackground";
 import { isWebGpuAvailable, startLocalLlmLoad } from "@/llm/webLlmLoader";
 import { ImpressumOverlay } from "./ImpressumOverlay";
+import { OpenSourceOverlay } from "./OpenSourceOverlay";
 
 interface Props {
   onStart: () => void;
@@ -14,6 +15,7 @@ export function TitleScreen({ onStart }: Props) {
   const startedRef = useRef(false);
   const [musicOn, setMusicOn] = useState(true);
   const [impressumOpen, setImpressumOpen] = useState(false);
+  const [ossOpen, setOssOpen] = useState(false);
 
   useEffect(() => {
     const a = new Audio(titleTrack);
@@ -171,10 +173,18 @@ export function TitleScreen({ onStart }: Props) {
           >
             Kontakt: stephan.doerner@posteo.de
           </a>
+          <button
+            type="button"
+            onClick={() => setOssOpen(true)}
+            className="hover:text-amber-glow text-center"
+          >
+            Verwendete Freie-Software-Komponenten und Lizenzen
+          </button>
         </div>
       </div>
 
       <ImpressumOverlay open={impressumOpen} onClose={() => setImpressumOpen(false)} />
+      <OpenSourceOverlay open={ossOpen} onClose={() => setOssOpen(false)} />
     </div>
   );
 }
