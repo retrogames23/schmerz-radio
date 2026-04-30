@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { scenes, useGame } from "@/game/GameContext";
-
-type SceneKey = keyof typeof scenes;
+import type { SceneId } from "@/game/types";
 
 /**
  * Dev-only Room-Switcher: Listet alle im Spiel registrierten Räume und
@@ -99,7 +98,7 @@ export function RoomSwitcher() {
                       <button
                         type="button"
                         onClick={() => {
-                          api.goTo(e.id as SceneKey);
+                          api.goTo(e.id as SceneId);
                           setOpen(false);
                         }}
                         className={
