@@ -418,6 +418,11 @@ export interface GameApi {
   openNode5610: () => void;
   /** Pneumatik-Rohrpost-Overlay in der Kantine 3602. */
   openPneumaticTube: () => void;
+  /**
+   * Bürokratie-Duell am Brust-Tresen (Akt I, Kantine 3602). Öffnet das
+   * Overlay und startet einen frischen 3-Runden-Versuch.
+   */
+  openBureaucracyDuel: () => void;
   isRadioActive: () => boolean;
   setEnding: () => void;
   /**

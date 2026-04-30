@@ -375,6 +375,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setTerminalOpen(false);
         setPneumaticOpen(true);
       },
+      openBureaucracyDuel: () => {
+        setRadioOpen(false);
+        setTerminalOpen(false);
+        setPneumaticOpen(false);
+        setDuelOpen(true);
+      },
       setEnding: () => setEnding(true),
       playBurnSequence: () => {
         // Node-Terminal schließen, Sequenz übernimmt den Bildschirm.
