@@ -237,7 +237,20 @@ export type StoryFlag =
   // Kowalk hat Layard erklärt, was 4317-K bedeutet — und nebenbei
   // den Aktenzusammenhang zu Marteau (Philippe) offenbart.
   | "gotTillaTransferInfo"
-  | "learnedMarteauPhilippeLink";
+  | "learnedMarteauPhilippeLink"
+  // ── Schmerz-Radio-Erweiterung (Akt I) ──────────────────────────────
+  // Hidden Frequency 102,7 — Wartungs-Funkgerät im Serverraum 5610
+  | "sawWartungsFunk5610"
+  | "hiddenFrequencyFound"
+  // Mira-Verstärker-Antenne (Resonanz-Duell)
+  | "miraAskedAmplifier"
+  | "miraHasAmplifier"
+  | "miraSentAnger"
+  | "miraTerminalUnlocked"
+  // Lose Wartungs-Hinweise von NPCs (für Hidden Frequency)
+  | "bodoHintHiddenFreqBand"
+  | "helkaHintHiddenFreqStep"
+  | "mikaelHintHiddenFreqMood";
 
 export interface InventoryItem {
   id: InventoryItemId;
