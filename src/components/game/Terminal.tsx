@@ -21,6 +21,7 @@ import {
   resolveMira,
   pathStringMira,
 } from "@/game/filesystemMira";
+import { NET_HOSTS, type NetHost } from "@/game/netHosts";
 import type { StoryFlag } from "@/game/types";
 import {
   adventureCommand,
