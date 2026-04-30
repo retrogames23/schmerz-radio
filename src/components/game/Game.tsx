@@ -30,6 +30,7 @@ import { HelpOverlay } from "./HelpOverlay";
 import { IdCardOverlay } from "./IdCardOverlay";
 import { LobbyGate } from "./LobbyGate";
 import { PneumaticTubeOverlay } from "./PneumaticTubeOverlay";
+import { BureaucracyDuelOverlay } from "./BureaucracyDuelOverlay";
 import { FreeChatOverlay } from "./FreeChatOverlay";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useGame } from "@/game/GameContext";
@@ -212,6 +213,7 @@ function GameStage({
             <IdCardOverlay open={idCardOpen} onClose={closeIdCard} />
             <LobbyGate />
             <PneumaticTubeOverlay />
+            <BureaucracyDuelOverlay />
             <FreeChatOverlay />
             <Ending />
             <PauseMenu open={pauseOpen} onClose={() => setPauseOpen(false)} />

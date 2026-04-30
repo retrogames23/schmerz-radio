@@ -4632,6 +4632,23 @@ export const dialogs: Record<string, DialogTree> = {
             hiddenWhen: ["gotB3Ration"],
           },
           {
+            // Dritter Lösungsweg: Bürokratie-Duell. Sichtbar, sobald
+            // Brust die Vollmacht 4317 abgelehnt hat. Ausgeblendet, sobald
+            // die B3-Ration auf irgendeinem Weg im Inventar liegt.
+            text: "Ich akzeptiere das nicht. Wollen Sie es paragraphengenau ausfechten?",
+            next: "bDuelOffer",
+            requires: ["gotB3Authorization"],
+            hiddenWhen: ["gotB3Ration", "duelLost"],
+          },
+          {
+            // Wiederaufnahme nach verlorenem Duell — Brust war in der
+            // Zwischenzeit schweigsam, lässt sich aber erneut darauf ein.
+            text: "Ich versuche es noch einmal. Mit besseren Argumenten.",
+            next: "bDuelRetry",
+            requires: ["duelLost"],
+            hiddenWhen: ["gotB3Ration", "duelWon"],
+          },
+          {
             text: "Welcher Aushang gilt jetzt eigentlich?",
             next: "bHyg1",
           },
@@ -4658,6 +4675,50 @@ export const dialogs: Record<string, DialogTree> = {
         choices: [
           {
             text: "Verstanden.",
+            next: "b0",
+          },
+        ],
+      },
+      bDuelOffer: {
+        id: "bDuelOffer",
+        speaker: "BRUST",
+        text: "Ausfechten. (Pause.) Bewohner Worag, wenn Sie das wirklich wollen — Aushänge, Paragraphen, Schichtklauseln. Drei Erwiderungen in Folge. Schaffen Sie das, gebe ich aus.",
+        next: "bDuelOffer2",
+      },
+      bDuelOffer2: {
+        id: "bDuelOffer2",
+        speaker: "BRUST",
+        text: "Schaffen Sie es nicht, schließe ich die Ausgabezone für Sie. Bis Sie wiederkommen — mit besseren Argumenten.",
+        choices: [
+          {
+            text: "[ Duell beginnen ]",
+            action: (api) => {
+              api.setFlag("duelOffered");
+              api.setFlag("duelStarted");
+              api.openBureaucracyDuel();
+            },
+            // Dialog beendet sich; das Overlay übernimmt.
+          },
+          {
+            text: "Lieber nicht. Ich überlege es mir.",
+            next: "b0",
+          },
+        ],
+      },
+      bDuelRetry: {
+        id: "bDuelRetry",
+        speaker: "BRUST",
+        text: "Bewohner Worag. Sie sind hartnäckig. (Pause.) Gut. Drei neue Erwiderungen. Wenn Sie diesmal scheitern — bleibt es dabei.",
+        choices: [
+          {
+            text: "[ Duell beginnen ]",
+            action: (api) => {
+              api.setFlag("duelStarted");
+              api.openBureaucracyDuel();
+            },
+          },
+          {
+            text: "Ich überlege es mir.",
             next: "b0",
           },
         ],
