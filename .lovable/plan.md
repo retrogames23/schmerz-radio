@@ -1,60 +1,96 @@
-# Spielbühne auf echte 16:9 umstellen
+# Hotspots gegen neue 16:9-Hintergründe ausrichten
 
-## Was du heute siehst
+## Problem
 
-Auf deinem MacBook Pro bleibt links und rechts ein dicker schwarzer Streifen, weil die Bühne intern auf **4:3** zugeschnitten ist, obwohl die Hintergrundbilder im **16:9**-Format vorliegen. Das Spiel verzerrt nichts — es zeigt nur einen kleineren Bildausschnitt als möglich, und das Asset wird dabei sogar links/rechts beschnitten (rund 5 % Bildrand auf jeder Seite verschwindet hinter `object-cover`).
+Durch das Outpainting auf 16:9 hat sich der Bildinhalt in jeder Szene innerhalb des 4:3-Safe-Zone-Layers leicht verschoben (Beispiel Apartment: das Schmerz-Radio steht jetzt deutlich weiter rechts; der `radio`-Hotspot bei `x: 0, y: 52` markiert noch die alte Wand). Das betrifft potenziell alle ~150 Hotspots in 19 Szenen sowie NPC- und Decal-Positionen.
 
-## Ziel
+Beim Repaint können sich außerdem Details verändern (Fenster verschoben, Möbel umgestellt) — eine reine mathematische Umrechnung reicht nicht. Wir brauchen einen **schnellen, visuellen QA-Loop pro Szene**.
 
-- Szenen füllen 16:9-Laptops fast komplett aus (statt nur ~75 % der Breite).
-- Keine Verzerrung — Seitenverhältnisse von Bildern und Sprites bleiben korrekt.
-- Kein Crop mehr — du siehst alles, was im Hintergrundbild gemalt ist.
-- Hotspots, NPCs und Wandobjekte sitzen weiterhin exakt da, wo sie sollen.
+## Werkzeug: Dev-Hotspot-Editor
 
-## Konkreter Effekt
+Wir nutzen den vorhandenen "Space-halten zeigt alle Hotspots"-Mechanismus aus `SceneView.tsx` und erweitern ihn nur im Dev-Modus (`devMode.ts`, schon im Projekt) zu einem leichtgewichtigen Inline-Editor:
 
-Auf einem 16"-MacBook Pro (≈ 1728×900 nutzbarer Bühnenbereich):
+- Bei aktivem Dev-Mode + gehaltener Space-Taste:
+  - Jeder Hotspot bekommt 8 Resize-Griffe + Drag-Handle.
+  - Drag verschiebt den Hotspot, Eckziehen ändert `w`/`h`.
+  - Werte werden live als Prozent (1 Nachkommastelle) im Hotspot-Label und in der Browser-Konsole angezeigt.
+  - "C"-Taste über einem Hotspot kopiert dessen aktuelle Koordinaten als JSON-Snippet (`{ x, y, w, h }`) in die Zwischenablage.
+- Gleicher Editor für `npcs` und `decals` (sie nutzen identisches Koordinatenschema).
+- Kein Persistieren in der DB — der Editor ist nur ein Mess-/Kopierwerkzeug. Eingefügte Werte werden manuell in `src/game/scenes.ts` übernommen.
+
+Das Tool gibt es nur, wenn `devMode` aktiv ist; im Produktionsbuild bleibt das Verhalten unverändert.
+
+## Vorgehen pro Szene (≈ 1–2 Minuten)
 
 ```
-heute:    [████ schwarzer Rand 264px ████ Szene 4:3 1200×900 ████ Rand 264px ████]
-nachher:  [█ Rand 64px █ Szene 16:9 1600×900 █ Rand 64px █]
+1. Szene öffnen (Dev-Mode an)
+2. Space halten → alle Hotspots/NPCs sehen
+3. Falsch sitzende Hotspots per Drag/Resize über das gemeinte
+   Objekt legen
+4. "C" über jedem geänderten Hotspot → Koordinaten in Clipboard
+5. In scenes.ts die x/y/w/h-Werte ersetzen
+6. Reload, mit Maus durchklicken: jeder Hotspot zeigt korrekten
+   Cursor + Caption über dem richtigen Objekt
 ```
 
-→ ca. **+33 % sichtbare Spielbreite**, schwarze Ränder schrumpfen von ~530 px auf ~130 px Gesamt.
+## Reihenfolge der 19 Szenen
 
-Auf 16:10-Displays bleibt ein dünner Letterbox-Streifen unten/oben — das ist mathematisch unvermeidbar, ohne entweder zu verzerren oder vom Hintergrundbild abzuschneiden.
+Nach Häufigkeit der Spielerinteraktion und Komplexität:
 
-## Was technisch passiert
+1. apartment (höchste Prio, sichtbar bug — Radio, Terminal, Bett, Telefon, Box B2, Tür, Fenster)
+2. hallway / hallway-2615-sealed / hallway-elevator-sealed / hallway-elevator-and-2615-sealed (4 Varianten desselben Flurs — gleiche Hotspots)
+3. apt2612 (mit/ohne Bodo) und apt2613
+4. corridor15, corridor36 (+philippe), corridor46, corridor56
+5. elevator, sectorDoor, e71Lobby, floor1Lobby, passage
+6. room1532, room1534, serverRoom5610
+7. commonRoomE67, cafeteriaE67 (waren schon nativ 16:9 — vermutlich nichts zu tun, trotzdem kurz prüfen)
+8. aptMira4601 (war schon 16:9)
 
-1. **`SceneView.tsx`**: Innerer Stage-Container von `aspect-[4/3]` auf `aspect-[16/9]` umstellen. Damit verschwindet der `object-cover`-Crop, das ganze Hintergrundasset wird sichtbar.
+Die nativ-16:9-Szenen (10 Stück) müssten unverändert korrekt sein, werden aber als Sanity-Check trotzdem einmal kurz aufgerufen.
 
-2. **Hotspot-/NPC-/Decal-Koordinaten umrechnen**: Heute sind alle x/w-Werte in `src/game/scenes.ts` so kalibriert, dass sie sich auf den 4:3-Ausschnitt beziehen (sichtbar sind nur ~5,4 %–94,6 % der Bildbreite). Auf der neuen 16:9-Bühne werden 0–100 % Bildbreite sichtbar. Ich rechne alle x/w-Werte deterministisch um:
+## Prüf-Checkliste pro Szene
 
-   ```
-   neues_x = (altes_x − 5.4) ÷ 89.2 × 100
-   neues_w = altes_w        ÷ 89.2 × 100
-   ```
+Pro Szene jeweils festhalten:
 
-   y/h bleiben unverändert (vertikales Verhältnis ändert sich nicht).
+- [ ] alle Hotspots: Cursor erscheint exakt über dem visuellen Objekt
+- [ ] Caption erscheint mit passendem Label
+- [ ] NPCs (falls vorhanden) stehen korrekt im Raum, nicht in Wand/Möbel
+- [ ] Decals (TV im Common Room/Kantine) sitzen auf dem realen Bildschirm
+- [ ] Exits führen zu erwarteten Szenen
+- [ ] Falls Konditionalitäten (`requires`/`hiddenWhen`): mindestens einen positiven & negativen Zustand prüfen
 
-   Betrifft in `scenes.ts`: alle `hotspots[].{x,w}`, alle `npcs[].{x,w}`, alle `decals[].{x,w}`. Ich mache das per Skript-Pass mit Vorher/Nachher-Vergleich, damit keine Werte vergessen werden.
+Ergebnis: Häkchen-Liste in `.lovable/plan.md`, damit beim nächsten Pass nachvollziehbar ist, was bereits abgenommen wurde.
 
-3. **Mobile-Bühne**: `STAGE_W`/`STAGE_H` in `MobileStage.tsx` von 1024×640 auf 1024×576 (echtes 16:9) anpassen, damit die Skalierung im Hochformat passt. Die Rotations-Logik bleibt gleich.
+## Technische Details
 
-4. **Veraltete Kommentare** in `scenes.ts` zur „5,4 %..94,6 %"-Kalibrierung entfernen.
+### Neue Datei: `src/dev/HotspotEditor.tsx`
 
-## QA
+- Komponente, die innerhalb der 4:3-Safe-Zone in `SceneView.tsx` gerendert wird, wenn `isDevMode() && revealHotspots`.
+- Nimmt `hotspots`, `npcs`, `decals` der aktuellen Szene als Props.
+- Zustand lokal: `dragging | resizing | null`, aktuelle `{x,y,w,h}` der bearbeiteten Box.
+- Mausposition wird relativ zum 4:3-Container in Prozent umgerechnet (`getBoundingClientRect`).
+- Neue Werte werden **nicht** in den globalen State zurückgespielt — sie überschreiben nur die visuelle Darstellung lokal und werden geloggt/kopiert.
+- Beim Loslassen: `console.info` mit Snippet `id: "<id>", x: 12.3, y: 45.6, w: 18.0, h: 22.4,` ready zum Einfügen.
 
-Nach der Umstellung gehe ich in jeder Szene visuell durch:
-- Hintergrundbild zeigt jetzt den vollen 16:9-Ausschnitt (kein Beschnitt links/rechts).
-- Hotspots reagieren noch über den richtigen Objekten (Türen, NPCs, Wandelementen).
-- NPC-Sprites stehen an der richtigen Stelle.
-- Mobile (Querformat) skaliert sauber.
+### Anpassung `src/components/game/SceneView.tsx`
 
-Ich prüfe stichprobenartig: Lobby, Korridor, Gemeinschaftsraum, Kantine, Sprechzimmer, ein Außenraum.
+- Innerhalb der bestehenden 4:3-Safe-Zone den `HotspotEditor` zusätzlich montieren, wenn Dev + Space.
+- Bestehende `Hotspot`-Komponente weiterhin verwenden (Maus-Interaktion bleibt aktiv, damit normales Spielen funktioniert).
+- Editor-Layer liegt darüber mit `z-30`, akzeptiert Pointer-Events nur während aktivem Drag/Resize.
 
-## Was sich für dich nicht ändert
+### Keine Änderungen an
 
-- Die Hintergrund-Assets selbst werden **nicht neu generiert**. Sie sind ohnehin schon 16:9 — du siehst nur künftig die vollen 100 % statt nur 89,2 %.
-- Spiellogik, Dialoge, Rätsel, Inventar bleiben identisch.
-- Die Karte und Tjarks Bleistift bleiben unverändert.
+- `src/game/scenes.ts`-Schema oder Typen (`src/game/types.ts`) — wir editieren nur die Werte.
+- Mobile Stage / Aspect-Ratio-Logik — die ist mit dem 4:3-Layer + 16:9-Bühne richtig.
+- Hotspot-Koordinatensystem (bleibt Prozent vom 4:3-Layer; das hat sich bewährt und vermeidet doppelte Umrechnungen).
+
+## Liefer-Reihenfolge
+
+1. Editor-Werkzeug bauen + dokumentieren (1 Schritt).
+2. Szene 1–6 (Apartment + 4 Flure + apt2612/13) korrigieren — größte sichtbare Bugs.
+3. Szene 7–13 (Korridore, Aufzug, Lobbies, Passage).
+4. Szene 14–17 (Räume, Server-Raum).
+5. Szene 18–19 (Common Room, Kantine, Mira-Apartment) — Sanity-Pass.
+6. Final: kurzer End-to-End-Run durch Akt I, in dem jede Szene mindestens einmal besucht und jeder Pflicht-Hotspot benutzt wird.
+
+Die Korrektur-Schritte 2–5 lassen sich auf mehrere Antworten aufteilen, damit du jederzeit zwischendrin reviewen kannst.
