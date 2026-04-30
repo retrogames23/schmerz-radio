@@ -1283,13 +1283,16 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "leaveRoom",
-        // Türrahmen am rechten Bildrand, sehr schmal.
-        x: 88,
-        y: 8,
-        w: 11,
-        h: 90,
+        // Exit am rechten 16:9-Bildrand: bewusst über die alte 4:3-Hotspot-
+        // Fläche hinausgezogen, damit der sichtbare Türbereich zuverlässig
+        // anklickbar bleibt.
+        x: 98,
+        y: 0,
+        w: 18,
+        h: 100,
         label: "Zurück in den Korridor",
         kind: "exit",
+        exitDir: "right",
         requires: ["mikaelRejectedProtocol"],
         onUse: (api) => api.goTo("corridor15"),
       },
