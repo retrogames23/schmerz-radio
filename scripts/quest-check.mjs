@@ -445,7 +445,7 @@ report.push(`Generated: ${new Date().toISOString()}`);
 report.push(`Mode: ${useLlm ? "static + LLM" : "static only"}`);
 report.push("");
 report.push(
-  `**Summary:** ${counts.HART} HART · ${counts.WEICH} WEICH · ${counts.INFO} INFO`,
+  `**Summary:** ${counts.HARD} HARD · ${counts.SOFT} SOFT · ${counts.INFO} INFO`,
 );
 report.push("");
 
@@ -473,8 +473,8 @@ mkdirSync(dirname(REPORT_PATH), { recursive: true });
 writeFileSync(REPORT_PATH, report.join("\n"));
 
 console.log(
-  `\nQuest-Check: ${counts.HART} HART, ${counts.WEICH} WEICH, ${counts.INFO} INFO`,
+  `\nQuest-Check: ${counts.HARD} HARD, ${counts.SOFT} SOFT, ${counts.INFO} INFO`,
 );
 console.log(`Report: ${REPORT_PATH}`);
 
-process.exit(counts.HART > 0 ? 1 : 0);
+process.exit(counts.HARD > 0 ? 1 : 0);
