@@ -9,7 +9,7 @@ import { OpenSourceOverlay } from "./OpenSourceOverlay";
 const PRE_ALPHA_WARNING_UI_TEXT = {
   title: "Pre-Alpha-Warnung",
   body:
-    "Schmerz-Radio ist ein Hobby-Projekt im pre-Alpha-Stadium, das aktiv entwickelt wird. Das Spiel wird aktiv entwickelt und verändert sich oft täglich. Rätsel können kaputt sein und das Spiel unspielbar. Speicherstände gehen regelmäßig kaputt.",
+    "Schmerz-Radio ist ein Hobby-Projekt im pre-Alpha-Stadium. Das Spiel wird aktiv entwickelt und kann sich jederzeit ändern. Rätsel können kaputt sein und das Spiel unspielbar. Speicherstände gehen regelmäßig kaputt.",
   acknowledge: "Verstanden — trotzdem starten",
   cancel: "Abbrechen",
 } as const;
