@@ -2,25 +2,16 @@ import { useEffect, useState } from "react";
 
 /**
  * Developer-Mode: schaltet zusätzliche Debug-UIs frei (z.B. Free-Chat
- * Debug-Panel, LLM-Mode-Override). Aktivieren per URL: `?dev=1`,
- * deaktivieren per `?dev=0`. Persistiert in localStorage.
+ * Debug-Panel, LLM-Mode-Override). Nur aktiv, solange `?dev=1` in der
+ * URL steht — wird NICHT persistiert, damit normale Spieler den
+ * Debug-Modus niemals zu sehen bekommen.
  */
-const KEY = "e67.devMode";
-
 function readFlag(): boolean {
   if (typeof window === "undefined") return false;
   try {
     const url = new URL(window.location.href);
     const param = url.searchParams.get("dev");
-    if (param === "1") {
-      window.localStorage.setItem(KEY, "1");
-      return true;
-    }
-    if (param === "0") {
-      window.localStorage.removeItem(KEY);
-      return false;
-    }
-    return window.localStorage.getItem(KEY) === "1";
+    return param === "1";
   } catch {
     return false;
   }

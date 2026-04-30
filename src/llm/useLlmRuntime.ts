@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { LlmRuntime, LlmRuntimeStatus } from "./runtime";
-import { createCloudRuntime } from "./cloudLlmRuntime";
+import { createCloudRuntime, onCloudError } from "./cloudLlmRuntime";
 import { createWebLlmRuntime } from "./webLlmRuntime";
 import { isWebGpuAvailable } from "./webLlmLoader";
 import { readLlmModeOverride } from "@/dev/devMode";
@@ -36,15 +36,17 @@ export function useLlmRuntime(npcId: string): {
   useEffect(() => {
     let cancelled = false;
 
-    const isCoarse =
-      typeof window !== "undefined" &&
-      !!window.matchMedia &&
-      window.matchMedia("(pointer: coarse)").matches;
-
     const override = readLlmModeOverride();
+    // Standard ist Cloud. Lokal nur, wenn Dev-Mode `local` erzwingt
+    // ODER wenn das Hard-Limit ohne Spende erreicht wurde (siehe
+    // "force_local"-Flag, das `onCloudError` unten setzt).
+    const forcedLocal =
+      typeof window !== "undefined" &&
+      window.sessionStorage.getItem("e67.forceLocalLlm") === "1";
+    const canRunLocal = isWebGpuAvailable();
     const useCloud =
       override === "cloud" ||
-      (override !== "local" && (isCoarse || !isWebGpuAvailable()));
+      (override !== "local" && !(forcedLocal && canRunLocal));
 
     if (useCloud) {
       const r = createCloudRuntime(npcId);
@@ -70,6 +72,20 @@ export function useLlmRuntime(npcId: string): {
       localRef.current = null;
     };
   }, [npcId, overrideTick]);
+
+  // Bei `donation_required` (Hard-Limit) markieren wir die Session,
+  // damit der nächste Mount auf die lokale Runtime fällt — sofern
+  // WebGPU verfügbar ist. So bleibt Cloud Standard, und nur ohne
+  // Spende wird lokal erzwungen.
+  useEffect(() => {
+    return onCloudError((e) => {
+      if (e.code !== "donation_required") return;
+      if (typeof window === "undefined") return;
+      if (!isWebGpuAvailable()) return;
+      window.sessionStorage.setItem("e67.forceLocalLlm", "1");
+      setOverrideTick((n) => n + 1);
+    });
+  }, []);
 
   const cancelLocalLoad = useCallback(() => {
     localRef.current?.cancelLoad();
