@@ -174,6 +174,32 @@ export const HINT_QUESTS: HintQuest[] = [
       "Halte deinen Bewohner-Ausweis bereit, ruf Insa an und bitte um den heutigen Sektor-Code, dann gib ihn an der Schleuse ein.",
     ],
   },
+
+  // ── Akt I: Schmerz-Radio-Erweiterung ──────────────────────────────
+  {
+    id: "act1.hiddenFrequency",
+    title: "Wartungs-Funkgerät 5610 (versteckte Frequenz)",
+    priority: 65,
+    isActive: (a) => a.hasFlag("sawWartungsFunk5610"),
+    isResolved: (a) => a.hasFlag("hiddenFrequencyFound"),
+    hints: [
+      "Das alte Wartungs-Funkgerät im Serverraum 5610 reagiert nicht auf eine Frequenz, die auf der Skala steht. Du brauchst Vorwissen aus mehreren Quellen.",
+      "Bodo (2612) weiß, in welchem Bereich der Wartungs-Träger liegt. Helka (2610) kennt die genaue Stelle. Mikael (E71) bestätigt, wie sie klingt. Außerdem brauchst du den Bernstein-Resonator zum Feintunen.",
+      "Sprich Bodo und Helka beim Smalltalk auf Trägersignale/Frequenzen an, geh zurück in den Serverraum 5610, öffne dort dein Schmerz-Radio und stelle die Frequenz exakt auf 102,7 MHz.",
+    ],
+  },
+  {
+    id: "act1.miraAmplifier",
+    title: "Miras Verstärker-Antenne",
+    priority: 66,
+    isActive: (a) => a.hasFlag("miraAskedAmplifier"),
+    isResolved: (a) => a.hasFlag("miraSentAnger"),
+    hints: [
+      "Mira will Wut auf das Trauer-Band drücken. Allein schafft ihr Sender das nicht — sie braucht eine Verstärker-Antenne, und du hast bereits ein zentrales Bauteil dafür.",
+      "Du brauchst zwei Sachen: deinen Bernstein-Resonator (Tuning-Kristall) und ein Stück Antennen-Draht. Den Draht findest du hinter dem alten Wartungs-Funk im Serverraum 5610 — wenn du dort die richtige Frequenz triffst.",
+      "Kombiniere im Inventar Tuning-Kristall + Antennen-Draht zur Verstärker-Antenne, gib sie Mira in 4601, öffne dann dein Schmerz-Radio bei ihr und halte die Frequenz mindestens fünf Sekunden bei 104,0 MHz (±0,1).",
+    ],
+  },
 ];
 
 /**
