@@ -104,6 +104,13 @@ export function buildSystemPrompt(
     );
     for (const f of persona.hardFacts) lines.push(`- ${f}`);
   }
+  if (persona.biography?.length) {
+    lines.push("");
+    lines.push(
+      "BIOGRAFIE — DEINE ECHTE LEBENSGESCHICHTE (gilt als WAHR wie HARTE FAKTEN; bei Fragen zu Vergangenheit, Geburtsort, Eltern, Geschwistern oder früheren Jobs IMMER hieraus antworten, nie leugnen, nie 'war nie woanders' o. Ä. sagen; nicht wörtlich zitieren, aber inhaltlich konsistent):",
+    );
+    for (const b of persona.biography) lines.push(`- ${b}`);
+  }
   lines.push(`Persönlichkeit: ${persona.personality}`);
   lines.push(`Tonfall: ${persona.voice}`);
   lines.push(
@@ -152,14 +159,6 @@ export function buildSystemPrompt(
     lines.push("");
     lines.push("DEINE DATEIEN / E-MAILS (interner Kontext, nicht zitieren):");
     for (const f of persona.files) lines.push(`- ${f.label}: ${f.content}`);
-  }
-
-  if (persona.biography?.length) {
-    lines.push("");
-    lines.push(
-      "BIOGRAFIE (deine Lebensgeschichte — gilt als WAHR, nicht direkt zitieren, aber bei Nachfragen konsistent darauf zurückgreifen statt zu erfinden):",
-    );
-    for (const b of persona.biography) lines.push(`- ${b}`);
   }
 
   lines.push("");
