@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as ApiPublicNpcChatRouteImport } from './routes/api/public/npc-chat'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,54 @@ const ApiPublicNpcChatRoute = ApiPublicNpcChatRouteImport.update({
   path: '/api/public/npc-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/tts' | '/api/public/npc-chat'
+  fullPaths:
+    | '/'
+    | '/api/tts'
+    | '/api/public/npc-chat'
+    | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/tts' | '/api/public/npc-chat'
-  id: '__root__' | '/' | '/api/tts' | '/api/public/npc-chat'
+  to: '/' | '/api/tts' | '/api/public/npc-chat' | '/lovable/email/queue/process'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/tts'
+    | '/api/public/npc-chat'
+    | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiTtsRoute: typeof ApiTtsRoute
   ApiPublicNpcChatRoute: typeof ApiPublicNpcChatRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicNpcChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +116,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiTtsRoute: ApiTtsRoute,
   ApiPublicNpcChatRoute: ApiPublicNpcChatRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
