@@ -729,10 +729,10 @@ export const scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "back2611",
-        x: 78,
-        y: 29,
-        w: 9,
-        h: 54,
+        x: 79,
+        y: 21,
+        w: 19,
+        h: 77,
         label: "Tür 2611 (zurück in die Wohnung)",
         kind: "exit",
         onUse: (api) => api.goTo("apartment"),
@@ -743,7 +743,7 @@ export const scenes: Record<string, Scene> = {
         x: 69,
         y: 31,
         w: 8,
-        h: 53,
+        h: 54,
         label: "Tür 2613 (Philippe)",
         kind: "exit",
         onUse: (api) => {
@@ -787,10 +787,10 @@ export const scenes: Record<string, Scene> = {
       // Tür 2610 — Helka Vint. Nur Türgespräch, keine Szene.
       {
         id: "door2610Helka",
-        x: 14,
-        y: 29,
-        w: 10,
-        h: 54,
+        x: 5,
+        y: 20,
+        w: 19,
+        h: 78,
         label: "Tür 2610 (Helka Vint)",
         kind: "talk",
         onUse: (api) => {
@@ -820,10 +820,10 @@ export const scenes: Record<string, Scene> = {
       // Tür 2612 — Bodo Marschke. Begehbare Wohnung.
       {
         id: "door2612Bodo",
-        x: 29,
-        y: 32,
-        w: 7,
-        h: 53,
+        x: 25,
+        y: 22,
+        w: 11,
+        h: 76,
         label: "Tür 2612 (Bodo Marschke)",
         kind: "exit",
         onUse: (api) => api.goTo("apt2612"),
@@ -832,9 +832,9 @@ export const scenes: Record<string, Scene> = {
       {
         id: "door2614Ennis",
         x: 37,
-        y: 35,
-        w: 5,
-        h: 39,
+        y: 31,
+        w: 6,
+        h: 45,
         label: "Tür 2614 (Ennis Korr)",
         kind: "talk",
         onUse: (api) => {
@@ -862,10 +862,10 @@ export const scenes: Record<string, Scene> = {
       },
       {
         id: "toSector",
-        x: 44,
-        y: 38,
-        w: 15,
-        h: 29,
+        x: 43,
+        y: 34,
+        w: 17,
+        h: 36,
         label: "Aufzug",
         kind: "exit",
         // Sichtbar, solange keine aktive Wartungssperre auf dem Aufzug liegt.
@@ -882,10 +882,10 @@ export const scenes: Record<string, Scene> = {
       // Bodo unterwegs ist (bodoLeftForB3 && !bodoBackAfterB3).
       {
         id: "toSectorBlocked",
-        x: 44,
-        y: 38,
-        w: 15,
-        h: 29,
+        x: 43,
+        y: 34,
+        w: 17,
+        h: 36,
         label: "Aufzug (gesperrt — Wartung 4711)",
         kind: "look",
         requires: ["elevatorMaintBlocked"],
