@@ -139,7 +139,7 @@ for (const flag of [
     const reads = flagReaders.get(flag) ?? [];
     const sample = writes[0] ?? reads[0];
     add(
-      "HART",
+      "HARD",
       "unbekannter Flag",
       `Flag "${flag}" wird benutzt, ist aber nicht in StoryFlag deklariert (z. B. ${sample?.file}:${sample?.line})`,
     );
@@ -149,7 +149,7 @@ for (const item of [...itemWriters.keys(), ...itemReaders.keys()]) {
   if (!ITEM_IDS.has(item)) {
     const sample = itemWriters.get(item)?.[0] ?? itemReaders.get(item)?.[0];
     add(
-      "HART",
+      "HARD",
       "unbekanntes Item",
       `Item "${item}" benutzt, aber nicht in InventoryItemId deklariert (${sample?.file}:${sample?.line})`,
     );
@@ -171,14 +171,14 @@ for (const flag of STORY_FLAGS) {
   const reads = flagReaders.get(flag) ?? [];
   if (writes.length === 0 && !FLAG_NO_WRITER_OK.has(flag)) {
     add(
-      "HART",
+      "HARD",
       "Flag nie gesetzt",
       `"${flag}" wird gelesen (${reads.length}×), aber nirgends gesetzt → unerreichbares Gate.`,
     );
   }
   if (reads.length === 0 && !FLAG_NO_READER_OK.has(flag)) {
     add(
-      "WEICH",
+      "SOFT",
       "Flag nie gelesen",
       `"${flag}" wird gesetzt (${writes.length}×), aber nirgends gelesen → toter Schreib-Flag.`,
     );
@@ -189,7 +189,7 @@ for (const item of ITEM_IDS) {
   const reads = itemReaders.get(item) ?? [];
   if (writes.length === 0) {
     add(
-      "HART",
+      "HARD",
       "Item nie vergeben",
       `Item "${item}" hat keinen addItem-Producer → Spieler kann es nie kriegen.`,
     );
@@ -218,7 +218,7 @@ for (const [file, src] of Object.entries(files)) {
     for (const flag of a) {
       if (b.has(flag)) {
         add(
-          "HART",
+          "HARD",
           "requires ∩ hiddenWhen",
           `${file}:${lineOf(src, m.index)} — Flag "${flag}" steht in requires UND hiddenWhen desselben Blocks (Element ist nie sichtbar).`,
         );
@@ -289,7 +289,7 @@ function findStartDialogContexts(dialogId) {
 const endTriggers = findStartDialogContexts("insaAct2Return");
 if (endTriggers.length === 0) {
   add(
-    "HART",
+    "HARD",
     "Kein Endtrigger",
     "startDialog(\"insaAct2Return\") wurde nicht gefunden — Spiel hat keinen erreichbaren Endtrigger.",
   );
@@ -302,7 +302,7 @@ if (endTriggers.length === 0) {
       const w = flagWriters.get(flag) ?? [];
       if (w.length === 0) {
         add(
-          "HART",
+          "HARD",
           "Ende unerreichbar",
           `Endtrigger ${t.file}:${t.line} verlangt "${flag}", aber kein setFlag dafür existiert.`,
         );
@@ -319,7 +319,7 @@ for (const m of combineSrc.matchAll(
   for (const id of [m[1], m[2]]) {
     if (!ITEM_IDS.has(id)) {
       add(
-        "HART",
+        "HARD",
         "combine.ts kennt unbekanntes Item",
         `pairKey("${m[1]}", "${m[2]}") referenziert unbekanntes InventoryItemId "${id}".`,
       );
@@ -418,7 +418,7 @@ async function runLlmLoreReview() {
       if (parsed.verdict === "FAIL") {
         for (const issue of parsed.issues ?? []) {
           add(
-            "WEICH",
+            "SOFT",
             `Lore-Konflikt (${persona.id})`,
             issue,
           );
@@ -436,7 +436,7 @@ async function runLlmLoreReview() {
 }
 
 // ── 10. Report ────────────────────────────────────────────────────
-const order = ["HART", "WEICH", "INFO"];
+const order = ["HARD", "SOFT", "INFO"];
 const counts = Object.fromEntries(order.map((k) => [k, findings[k].length]));
 
 const report = [];
