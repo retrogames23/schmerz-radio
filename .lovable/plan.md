@@ -1,77 +1,60 @@
-## Quest-Logik-Test (statische Analyse + LLM-Review)
+# Spielbühne auf echte 16:9 umstellen
 
-### Worum es geht
+## Was du heute siehst
 
-Das Spiel hat ~150 Story-Flags, ~25 Inventar-Items und ein einziges Ende (`api.setEnding()` im Dialog `insaAct2Return`). Pfade hängen über `requires`/`hiddenWhen` und freie Closures (`onUse`, `action`) zusammen. Ein vollständiger Solver wäre ohne das Spiel auszuführen unmöglich — pragmatisch leistbar (und sehr aussagekräftig) ist eine **statische Analyse über Quelltext-Patterns**, plus ein **optionaler LLM-Pass** für inhaltliche Widersprüche.
+Auf deinem MacBook Pro bleibt links und rechts ein dicker schwarzer Streifen, weil die Bühne intern auf **4:3** zugeschnitten ist, obwohl die Hintergrundbilder im **16:9**-Format vorliegen. Das Spiel verzerrt nichts — es zeigt nur einen kleineren Bildausschnitt als möglich, und das Asset wird dabei sogar links/rechts beschnitten (rund 5 % Bildrand auf jeder Seite verschwindet hinter `object-cover`).
 
-Ergebnis: ein neues Skript `scripts/quest-check.mjs` (analog zu `lore-check.mjs`) plus zwei npm-Skripte.
+## Ziel
 
-### Was das Skript prüft
+- Szenen füllen 16:9-Laptops fast komplett aus (statt nur ~75 % der Breite).
+- Keine Verzerrung — Seitenverhältnisse von Bildern und Sprites bleiben korrekt.
+- Kein Crop mehr — du siehst alles, was im Hintergrundbild gemalt ist.
+- Hotspots, NPCs und Wandobjekte sitzen weiterhin exakt da, wo sie sollen.
 
-**1. Tote Flags (Dead Ends)**
-- Jeder Flag in `StoryFlag` muss irgendwo gesetzt UND gelesen werden.
-  - Nur gesetzt, nie gelesen → toter Schreib-Flag (Code-Müll oder vergessenes Gate).
-  - Nur gelesen, nie gesetzt → unerreichbares Gate (echter Dead End).
-- Gleiches für Items: jedes `InventoryItemId` muss `addItem`-Quelle UND `hasItem`-Senke haben.
+## Konkreter Effekt
 
-**2. Reachability zum Ende**
-- Endzustand = Dialog `insaAct2Return` wird gestartet (= setzt `ending`).
-- Skript baut einen groben Producer/Consumer-Graph:
-  - "Wer setzt Flag X?" (`setFlag("X")` mit umgebender Region: Dialog-ID oder Hotspot-ID per AST-Suche um die Fundstelle).
-  - "Wer braucht Flag X?" (`requires: ["X"]` und `hasFlag("X")`).
-- Für jeden `requires`-Flag eines Pflicht-Hotspots/Dialogs auf dem Hauptpfad zum Ende: gibt es mindestens einen Producer, der NICHT selbst hinter einem `hiddenWhen` mit demselben Flag steht?
-- Hard-Failures, die das Skript meldet:
-  - Pflicht-Flag wird nur an einer Stelle gesetzt, die durch `hiddenWhen` einer ihrer Voraussetzungen blockiert wird.
-  - Pflicht-Item wird nur an einer Stelle vergeben, deren Hotspot `hiddenWhen` einen Flag nennt, der aus dem Item-Erhalt resultiert ("Item kann ich nur kriegen, bevor ich es habe — also nie wieder").
+Auf einem 16"-MacBook Pro (≈ 1728×900 nutzbarer Bühnenbereich):
 
-**3. Pfadabhängigkeits-Konsistenz**
-- `hiddenWhen`/`requires`-Konflikte: kein Hotspot/Dialog/Choice darf einen Flag gleichzeitig in `requires` UND `hiddenWhen` haben.
-- `requires`-Zyklus: A.requires B, B.requires A → Skript meldet.
-- `hiddenWhen` auf Flags, die der eigene `onUse`/`action` selbst setzt, ohne vorher ein Wirkergebnis zu produzieren ("Hotspot deaktiviert sich, bevor er etwas tut").
-- Verwaiste String-Literale: `setFlag("xyz")`/`hasFlag("xyz")`/`requires: ["xyz"]`, deren Flag-Name NICHT in der `StoryFlag`-Union steht (Tippfehler-Detektor — TS fängt das oft, aber nicht in dynamisch zusammengebauten Arrays).
+```
+heute:    [████ schwarzer Rand 264px ████ Szene 4:3 1200×900 ████ Rand 264px ████]
+nachher:  [█ Rand 64px █ Szene 16:9 1600×900 █ Rand 64px █]
+```
 
-**4. Item-Logik**
-- Jedes in `combine.ts` erwähnte Item ist auch ein gültiges `InventoryItemId`.
-- Jedes Pflicht-Combine (z. B. `pencilStub × b3Authorization → siegelAbdruck`): alle Quell-Items existieren als `addItem`-Producer in einer Szene/Dialog, die vor der Combine-Stelle erreichbar ist.
+→ ca. **+33 % sichtbare Spielbreite**, schwarze Ränder schrumpfen von ~530 px auf ~130 px Gesamt.
 
-**5. Lore-Konsistenz (optional, `--llm`)**
-- Der LLM-Judge bekommt pro NPC: HardFacts + Biografie + alle `dialogSummaries` der NPC-Dialoge.
-- Aufgabe des Judges: Widersprüche zwischen statischem Dialog-Text und Biografie/HardFacts melden (z. B. NPC behauptet im Dialog X über sich selbst, was Biografie widerspricht).
-- Lauf pro NPC-Persona; Report wie beim Lore-Check.
+Auf 16:10-Displays bleibt ein dünner Letterbox-Streifen unten/oben — das ist mathematisch unvermeidbar, ohne entweder zu verzerren oder vom Hintergrundbild abzuschneiden.
 
-### Output
+## Was technisch passiert
 
-- Konsole: knappe Pass/Fail-Liste pro Kategorie, exit code != 0 bei Fehlern.
-- `/mnt/documents/quest-check-report.md`: Markdown mit allen Funden, gruppiert nach Schweregrad (HARD = Pfadbruch, SOFT = toter Flag/Stilbruch, INFO = Auffälligkeit).
+1. **`SceneView.tsx`**: Innerer Stage-Container von `aspect-[4/3]` auf `aspect-[16/9]` umstellen. Damit verschwindet der `object-cover`-Crop, das ganze Hintergrundasset wird sichtbar.
 
-### Was das Skript NICHT kann (ehrlich)
+2. **Hotspot-/NPC-/Decal-Koordinaten umrechnen**: Heute sind alle x/w-Werte in `src/game/scenes.ts` so kalibriert, dass sie sich auf den 4:3-Ausschnitt beziehen (sichtbar sind nur ~5,4 %–94,6 % der Bildbreite). Auf der neuen 16:9-Bühne werden 0–100 % Bildbreite sichtbar. Ich rechne alle x/w-Werte deterministisch um:
 
-- Keine echte Symbolausführung von `onUse`/`action`-Closures. Wenn Spiellogik nur in JS-Code lebt (z. B. „Hotspot setzt Flag X nur, wenn `getMiraFloors()` Etage 4 enthält"), sieht der Linter nur die statische Spur.
-- Keine Garantie für Vollständigkeit der Reachability — das Skript meldet **wahrscheinliche Dead Ends**, nicht beweisbare. Falsche Positive werden als INFO statt HARD gemeldet, damit du im Report kuratieren kannst.
+   ```
+   neues_x = (altes_x − 5.4) ÷ 89.2 × 100
+   neues_w = altes_w        ÷ 89.2 × 100
+   ```
 
-### Pragmatischer Einsatz — wann laufen lassen
+   y/h bleiben unverändert (vertikales Verhältnis ändert sich nicht).
 
-| Szenario | Befehl | Kosten |
-|---|---|---|
-| Vor jedem größeren Push (lokal) | `bun run quest:check` | 0 ct, < 2 s |
-| Im CI auf jedem PR | `bun run quest:check` als Pflicht-Gate | 0 ct |
-| Vor einem Release / nach Lore-Updates | `bun run quest:check:llm` | ein paar Cent (1 Judge-Call pro NPC) |
-| Nach jeder neuen Quest / neuem Flag | manuell `bun run quest:check` | 0 ct |
+   Betrifft in `scenes.ts`: alle `hotspots[].{x,w}`, alle `npcs[].{x,w}`, alle `decals[].{x,w}`. Ich mache das per Skript-Pass mit Vorher/Nachher-Vergleich, damit keine Werte vergessen werden.
 
-Empfehlung: statische Variante als **Pflicht in CI** (kostenlos, schnell), LLM-Variante manuell vor Releases. Beide schreiben denselben Markdown-Report, sodass du Funde direkt durchgehen kannst.
+3. **Mobile-Bühne**: `STAGE_W`/`STAGE_H` in `MobileStage.tsx` von 1024×640 auf 1024×576 (echtes 16:9) anpassen, damit die Skalierung im Hochformat passt. Die Rotations-Logik bleibt gleich.
 
-### Technische Details
+4. **Veraltete Kommentare** in `scenes.ts` zur „5,4 %..94,6 %"-Kalibrierung entfernen.
 
-- Sprache: Bun + ts-morph (ist als devDep schon da) für AST-Analyse von `scenes.ts`/`dialogs.ts`/`combine.ts`. Damit kommen wir an die umgebende Funktion/Dialog-ID jeder `setFlag`-Stelle und können Producer korrekt zuordnen.
-- Flag-Wahrheitsquelle: `StoryFlag`-Union aus `src/game/types.ts` per ts-morph einlesen.
-- Pflicht-Pfad zum Ende: heuristisch über die Kette `setEnding` ← `insaAct2Return` ← Trigger-Hotspot in 2611 ← Voraussetzungen rückwärts.
-- LLM-Pass nutzt dieselbe `callGateway`-Helper-Logik wie `lore-check.mjs` (Lovable AI Gateway, Modell `google/gemini-2.5-flash` als Judge).
-- Neue `package.json`-Skripte:
-  - `quest:check` → `bun scripts/quest-check.mjs`
-  - `quest:check:llm` → `bun scripts/quest-check.mjs --llm`
+## QA
 
-### Nicht im Scope (bewusst weggelassen)
+Nach der Umstellung gehe ich in jeder Szene visuell durch:
+- Hintergrundbild zeigt jetzt den vollen 16:9-Ausschnitt (kein Beschnitt links/rechts).
+- Hotspots reagieren noch über den richtigen Objekten (Türen, NPCs, Wandelementen).
+- NPC-Sprites stehen an der richtigen Stelle.
+- Mobile (Querformat) skaliert sauber.
 
-- Kein interaktiver Quest-Graph-Viewer (wäre nett, sprengt aber Scope).
-- Keine Simulation einzelner Spielsessions (separates, größeres Projekt).
-- Keine Änderung an der Spiellogik selbst — nur ein Test-/Lint-Tool.
+Ich prüfe stichprobenartig: Lobby, Korridor, Gemeinschaftsraum, Kantine, Sprechzimmer, ein Außenraum.
+
+## Was sich für dich nicht ändert
+
+- Die Hintergrund-Assets selbst werden **nicht neu generiert**. Sie sind ohnehin schon 16:9 — du siehst nur künftig die vollen 100 % statt nur 89,2 %.
+- Spiellogik, Dialoge, Rätsel, Inventar bleiben identisch.
+- Die Karte und Tjarks Bleistift bleiben unverändert.
