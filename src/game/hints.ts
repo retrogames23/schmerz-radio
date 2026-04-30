@@ -40,37 +40,263 @@ function open(active: boolean, resolved: boolean) {
  * UI muss nicht angefasst werden.
  */
 export const HINT_QUESTS: HintQuest[] = [
-  // ── Akt I: Eröffnung ──────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════
+  // KRITISCHER PFAD AKT I — strikt in der Reihenfolge, in der
+  // das Spiel die nächste Aktion erzwingt. Tipps sind kleinteilig:
+  // jeder Eintrag deckt genau EINEN Story-Trigger ab. Optionale
+  // Nebenpfade (B3, Bürokratie-Duell, Mira-Vertrauen, versteckte
+  // Frequenzen) stehen weiter unten mit höherer Priorität-Zahl.
+  // ════════════════════════════════════════════════════════════════
+
+  // 1) Spielstart — Radio auf 104,6, voll aufdrehen
   {
-    id: "act1.callLeitstelle",
-    title: "Das Klopfen aus 2615",
-    priority: 10,
-    isActive: (a) => a.hasFlag("knockingHeard") || a.hasFlag("doorbellRang"),
-    isResolved: (a) => a.hasFlag("calledLeitstelle"),
+    id: "act1.tuneRadio",
+    title: "Schmerz-Radio einstellen",
+    priority: 1,
+    isActive: (a) =>
+      !a.hasFlag("doorbellRang") &&
+      !a.hasFlag("knockingHeard") &&
+      !a.hasFlag("metPhilippe"),
+    isResolved: (a) => a.hasFlag("doorbellRang"),
     hints: [
-      "Aus einer Wohnung in deinem Stockwerk dringen Geräusche, die nicht zum Tagesablauf passen.",
-      "Such die Wohnung 2615 auf — und überlege, wer dafür zuständig ist, wenn du dort nicht selbst eingreifen kannst.",
-      "Geh in die Wohnung 2613 (Philippe), nutze sein Sprechgerät und ruf die Leitstelle/Insa an, damit sie Sanitäter schickt.",
-    ],
-  },
-  {
-    id: "act1.paramedicsReport",
-    title: "Sanitäter-Bericht aus 2615",
-    priority: 11,
-    isActive: (a) => a.hasFlag("paramedicsArrived"),
-    isResolved: (a) => a.hasItem("paramedicsReport"),
-    hints: [
-      "Die Sanitäter waren da — irgendwo muss etwas Schriftliches zurückgeblieben sein.",
-      "In Wohnung 2613 hat sich seit dem Einsatz etwas verändert. Schau dich dort gründlich um.",
-      "Geh zurück nach 2613, sieh dir den Tisch / die Ablage genau an und nimm den Sanitäter-Bericht mit.",
+      "Layard hat heute Urlaub — und einen ganz konkreten Plan, womit er anfangen will. Auf seinem Tisch steht das wichtigste Gerät seines Alltags.",
+      "Klick in der Wohnung das Schmerz-Radio an. Du brauchst die richtige Frequenz UND die richtige Lautstärke — beides muss zusammenkommen.",
+      "Öffne das Schmerz-Radio, drehe die Frequenz exakt auf 104,6 MHz und schiebe die Lautstärke ganz nach rechts (voll auf). Dann passiert von selbst etwas an deiner Tür.",
     ],
   },
 
-  // ── Akt I: Vollmacht B3 (Hauptpfad) ───────────────────────────────
+  // 2) Es klingelt — Tür öffnen, Philippe trifft Layard
+  {
+    id: "act1.openDoor",
+    title: "Es hat geklingelt",
+    priority: 2,
+    isActive: (a) => a.hasFlag("doorbellRang") && !a.hasFlag("metPhilippe"),
+    isResolved: (a) => a.hasFlag("metPhilippe"),
+    hints: [
+      "Da war ein Geräusch — und es kam nicht aus dem Radio.",
+      "Jemand steht vor deiner Tür. Du musst sie öffnen, um zu sehen, wer.",
+      "Klick auf die Wohnungstür rechts im Bild und führ das Gespräch mit Philippe zu Ende.",
+    ],
+  },
+
+  // 3) Philippe nimmt Layard mit nach 2613 — er muss dorthin
+  {
+    id: "act1.goToApt2613",
+    title: "Mit Philippe nach 2613",
+    priority: 3,
+    isActive: (a) => a.hasFlag("metPhilippe") && !a.hasFlag("knockingHeard"),
+    isResolved: (a) => a.hasFlag("knockingHeard"),
+    hints: [
+      "Philippe hat etwas erwähnt, das er dir zeigen will — bei sich.",
+      "Verlasse deine Wohnung und geh den Gang entlang bis zu Philippes Tür (2613).",
+      "Geh in den Hauptkorridor, klick auf die Tür von Wohnung 2613 und betritt Philippes Wohnung.",
+    ],
+  },
+
+  // 4) In 2613: das Klopfen an der Wand untersuchen
+  {
+    id: "act1.examineWall",
+    title: "Das Klopfen aus der Nachbarwohnung",
+    priority: 4,
+    isActive: (a) =>
+      a.hasFlag("metPhilippe") &&
+      !a.hasFlag("knockingHeard"),
+    isResolved: (a) => a.hasFlag("knockingHeard"),
+    hints: [
+      "Hör genau hin, sobald du in Philippes Wohnung bist. Etwas wiederholt sich.",
+      "Das Geräusch kommt aus der Wand zur Nachbarwohnung 2615 — du musst sie dir ansehen.",
+      "Klick die mittlere Wand zwischen Telefon und Philippe an („Wand mit Klopfen“). Erst dann zählt das Klopfen als von dir wahrgenommen.",
+    ],
+  },
+
+  // 5) Mit Philippe in 2613 sprechen, bevor man telefonieren kann
+  {
+    id: "act1.talkPhilippe2613",
+    title: "Philippe in seiner Wohnung ansprechen",
+    priority: 5,
+    isActive: (a) =>
+      a.hasFlag("knockingHeard") &&
+      !a.hasFlag("talkedPhilippe2613") &&
+      !a.hasFlag("calledLeitstelle"),
+    isResolved: (a) =>
+      a.hasFlag("talkedPhilippe2613") || a.hasFlag("calledLeitstelle"),
+    hints: [
+      "Du musst nicht alleine entscheiden, was zu tun ist. Frag den, der danebensteht.",
+      "Sprich Philippe in 2613 an, bevor du irgendetwas anderes tust.",
+      "Klick Philippe in 2613 an und führ das Gespräch durch. Erst danach gibt sein Telefon dir eine sinnvolle Option.",
+    ],
+  },
+
+  // 6) Leitstelle anrufen — Sanitäter rufen
+  {
+    id: "act1.callLeitstelle",
+    title: "Leitstelle anrufen",
+    priority: 6,
+    isActive: (a) =>
+      a.hasFlag("talkedPhilippe2613") && !a.hasFlag("calledLeitstelle"),
+    isResolved: (a) => a.hasFlag("calledLeitstelle"),
+    hints: [
+      "In 2615 reagiert niemand. Du selbst hast dort keine Befugnis — aber jemand anderes hat sie.",
+      "Philippes Wandapparat (Telefon links) ist jetzt nutzbar. Da gibt es nur eine Stelle, die in so einem Fall zuständig ist.",
+      "Klick das Wandtelefon in 2613 an und ruf die Leitstelle (Insa) an. Sie schickt Sanitäter zur 2615.",
+    ],
+  },
+
+  // 7) Warten, bis die Sanitäter eintreffen
+  {
+    id: "act1.waitForParamedics",
+    title: "Auf die Sanitäter warten",
+    priority: 7,
+    isActive: (a) =>
+      a.hasFlag("calledLeitstelle") && !a.hasFlag("paramedicsArrived"),
+    isResolved: (a) => a.hasFlag("paramedicsArrived"),
+    hints: [
+      "Insa hat den Einsatz angemeldet. Jetzt vergeht Zeit — und du musst sie auch im Spiel verstreichen lassen.",
+      "In Philippes Wohnung gibt es einen „Warten“-Hotspot. Du musst ihn mehrfach benutzen.",
+      "Klick in 2613 zweimal auf „Warten“ (zwei Beats pro Besuch). Beim zweiten Beat startet die Sanitäter-Cutscene.",
+    ],
+  },
+
+  // 8) Aufzug benutzen — auf Etage 3 das leere Büro entdecken
+  {
+    id: "act1.takeElevator",
+    title: "Aufzug benutzen",
+    priority: 8,
+    isActive: (a) =>
+      a.hasFlag("protocolReceived") && !a.hasFlag("elevatorTaken"),
+    isResolved: (a) => a.hasFlag("elevatorTaken") || a.hasFlag("sawEmptyOffice"),
+    hints: [
+      "Du hast jetzt etwas in der Hand, das du jemand anderem geben sollst. Der zuständige Mensch sitzt nicht auf deiner Etage.",
+      "Geh in den Korridor, dann zum Aufzug am Ende des Gangs.",
+      "Verlass 2613, geh in den Korridor 26 und nimm den Aufzug. Fahr ins 3. Stockwerk.",
+    ],
+  },
+
+  // 9) Etage 3 — Büro des Abschnittsverantwortlichen ist leer
+  {
+    id: "act1.findEmptyOffice",
+    title: "Abschnittsverantwortlicher im 3. OG",
+    priority: 9,
+    isActive: (a) =>
+      a.hasFlag("elevatorTaken") && !a.hasFlag("sawEmptyOffice"),
+    isResolved: (a) => a.hasFlag("sawEmptyOffice"),
+    hints: [
+      "Auf Etage 3 sollst du jemanden treffen — du musst sein Büro suchen.",
+      "Geh den Korridor 36 ab, bis du an die richtige Bürotür kommst. Du musst dort klingeln, auch wenn niemand öffnet.",
+      "Geh im Korridor 36 zum Büro des Abschnittsverantwortlichen, klingele dort an der Tür und bestätige, dass das Büro leer ist.",
+    ],
+  },
+
+  // 10) Wartungssperre 4711 am Aufzug — über Bodos Terminal lösen
+  {
+    id: "act1.elevatorMaint",
+    title: "Wartungssperre 4711 am Aufzug",
+    priority: 10,
+    isActive: (a) =>
+      a.hasFlag("elevatorMaintBlocked") && !a.hasFlag("elevatorMaintCleared"),
+    isResolved: (a) => a.hasFlag("elevatorMaintCleared"),
+    hints: [
+      "Der Aufzug fährt nicht mehr. Die Sperre wurde nicht zentral, sondern von einem Hausmeister gesetzt.",
+      "Auf Etage 26 wohnt Bodo (2612). Er hat einen Hausmeister-Account — aber du musst die Wohnung leer haben, um an sein Terminal zu kommen.",
+      "Sprich Bodo so an, dass er die Wohnung verlässt (B3-Gefälligkeit / Lotti-Wasser). Sobald er weg ist, geh in 2612, öffne sein Terminal und lösche dort die Wartungssperre 4711.",
+    ],
+  },
+
+  // 11) Insa anrufen → Wartungs-Override für Knoten 5610
+  {
+    id: "act1.callInsaFor5610",
+    title: "Insa um Wartungs-Override bitten",
+    priority: 11,
+    isActive: (a) =>
+      a.hasFlag("sawEmptyOffice") &&
+      !a.hasFlag("insaSentTo5610") &&
+      !a.hasFlag("tappedNode5610") &&
+      !a.hasFlag("burnedNode5610"),
+    isResolved: (a) => a.hasFlag("insaSentTo5610"),
+    hints: [
+      "Der Abschnittsverantwortliche fehlt — also gibt es jetzt nur noch eine Stelle, die deine Sache weiterbringt.",
+      "Geh zurück in deine Wohnung 2611 und ruf von deinem Telefon aus die Leitstelle an.",
+      "Geh nach 2611, klick dein Telefon an und sprich mit Insa. Sie schickt dich an einen Wartungsknoten und schaltet dir den Magnetriegel der Tür 5610 frei.",
+    ],
+  },
+
+  // 12) Knoten 5610 antippen (oder brennen)
+  {
+    id: "act1.serverRoom5610",
+    title: "Wartungsknoten 5610 antippen",
+    priority: 12,
+    isActive: (a) =>
+      a.hasFlag("insaSentTo5610") &&
+      !a.hasFlag("tappedNode5610") &&
+      !a.hasFlag("burnedNode5610"),
+    isResolved: (a) =>
+      a.hasFlag("tappedNode5610") || a.hasFlag("burnedNode5610"),
+    hints: [
+      "Insa hat dir einen Auftrag gegeben — und einen Riegel für dich freigeschaltet.",
+      "Tür 5610 liegt im Korridor 56. Der Magnetriegel öffnet sich jetzt ohne Karte.",
+      "Nimm den Aufzug bis Etage 5, geh in Korridor 56, betritt den Serverraum 5610 und tippe den Wartungsknoten an („tap“).",
+    ],
+  },
+
+  // 13) Quittung 4317 fälschen (Pflicht — Insa liefert Code erst danach)
+  {
+    id: "act1.quittung4317",
+    title: "Quittung 4317 fälschen",
+    priority: 13,
+    isActive: (a) => a.hasFlag("insaGaveTransferTask"),
+    isResolved: (a) => a.hasItem("tillaTransfer"),
+    hints: [
+      "Insa hat dir einen Auftrag gegeben, dessen Nummer dir noch nichts sagt. Frag jemanden, der die Akten kennt.",
+      "Du brauchst eine korrekt aussehende Quittung 4317. Drei Bauteile sind nötig: ein leerer Vordruck, ein Siegelabdruck und eine Vorlage aus E71.",
+      "Sammle Bleistift-Stummel + Quittungs-Blanko, drück mit dem Bleistift den Siegelabdruck ab, hol den Original-Aushang aus E71, kombiniere alles im Inventar zur Quittung 4317 und schick sie über die Rohrpost in der Kantine 3602.",
+    ],
+  },
+
+  // 14) Insa anrufen für Tagescode
+  {
+    id: "act1.callInsaForCode",
+    title: "Tagescode bei Insa abholen",
+    priority: 14,
+    isActive: (a) =>
+      a.hasFlag("tappedNode5610") &&
+      a.hasItem("tillaTransfer") &&
+      !a.hasFlag("calledForCode"),
+    isResolved: (a) => a.hasFlag("calledForCode"),
+    hints: [
+      "Du hast getan, was Insa wollte. Sie hatte dir etwas versprochen — sie wartet auf deinen Anruf.",
+      "Geh zurück in deine Wohnung 2611 und benutze dein Telefon.",
+      "Klick in 2611 das Telefon an und ruf Insa zurück. Sie schickt dir dann den heutigen Sektor-Code in dein Postfach.",
+    ],
+  },
+
+  // 15) Sektor-Tür öffnen
+  {
+    id: "act1.sectorDoor",
+    title: "Sektor E67 verlassen",
+    priority: 15,
+    isActive: (a) =>
+      a.hasItem("residentId") &&
+      a.hasFlag("calledForCode") &&
+      !a.hasFlag("sectorDoorOpen"),
+    isResolved: (a) => a.hasFlag("sectorDoorOpen"),
+    hints: [
+      "Du hast jetzt alles, was die Schleuse von dir verlangt: dich selbst und einen Code.",
+      "Geh durch die Lobby zur Sektor-Schleuse E67 → E71. Den Code findest du im Postfach deines CentralOS-Terminals (Mail von Insa).",
+      "Lies die Mail von Insa in deinem Terminal, geh zur Sektor-Schleuse, halte den Bewohner-Ausweis bereit und tippe den 8-stelligen Tagescode am Keypad ein.",
+    ],
+  },
+
+  // ════════════════════════════════════════════════════════════════
+  // OPTIONALE NEBENPFADE — höhere Priorität-Zahl, damit sie nicht
+  // den kritischen Pfad verdecken. Werden nur angezeigt, wenn der
+  // Spieler sie tatsächlich aktiv ausgelöst hat.
+  // ════════════════════════════════════════════════════════════════
+
+  // ── Optional: Vollmacht B3 für Philippe ──────────────────────────
   {
     id: "act1.b3Authorization",
-    title: "Vollmacht B3 für Philippe",
-    priority: 20,
+    title: "Vollmacht B3 für Philippe (optional)",
+    priority: 50,
     isActive: (a) => a.hasFlag("philippeAskedFavor"),
     isResolved: (a) =>
       a.hasFlag("gotB3Authorization") ||
@@ -85,8 +311,8 @@ export const HINT_QUESTS: HintQuest[] = [
   },
   {
     id: "act1.bureaucracyDuel",
-    title: "Brust am Tresen herausfordern",
-    priority: 21,
+    title: "Brust am Tresen herausfordern (optional)",
+    priority: 51,
     isActive: (a) =>
       a.hasFlag("philippeAskedFavor") &&
       a.hasFlag("metBrust") &&
@@ -103,39 +329,11 @@ export const HINT_QUESTS: HintQuest[] = [
     ],
   },
 
-  // ── Akt I: Quittung 4317 (Pflichträtsel) ──────────────────────────
-  {
-    id: "act1.quittung4317",
-    title: "Tilla-Transfer / Quittung 4317",
-    priority: 30,
-    isActive: (a) => a.hasFlag("insaGaveTransferTask"),
-    isResolved: (a) => a.hasItem("tillaTransfer"),
-    hints: [
-      "Insa hat dir einen Transferauftrag gegeben, dessen Code dir noch nichts sagt — frag jemanden, der die Akten kennt.",
-      "Du brauchst eine korrekt aussehende Quittung 4317. Dafür sind drei Dinge nötig: ein Blanko, ein Siegelabdruck und ein passender Aushang als Vorlage.",
-      "Drück mit dem Bleistift den Siegelabdruck ab, hol dir den Original-Aushang aus E71 und ein Quittungs-Blanko, kombiniere alles zur gefälschten Quittung 4317 und verschick sie via Rohrpost in der Kantine.",
-    ],
-  },
-  {
-    id: "act1.elevatorMaint",
-    title: "Wartungssperre 4711 am Aufzug",
-    priority: 40,
-    isActive: (a) =>
-      a.hasFlag("elevatorMaintBlocked") &&
-      !a.hasFlag("elevatorMaintCleared"),
-    isResolved: (a) => a.hasFlag("elevatorMaintCleared"),
-    hints: [
-      "Der Aufzug zeigt eine Wartungssperre — die wurde von jemandem im Haus gesetzt, nicht zentral.",
-      "Nur ein Hausmeister-Account kann Sperre 4711 löschen. Bodo (2612) hat genau so einen Zugang.",
-      "Warte, bis Bodo die Wohnung verlässt, geh an sein Terminal in 2612 und entferne dort die Wartungssperre 4711.",
-    ],
-  },
-
-  // ── Akt I: Mira ───────────────────────────────────────────────────
+  // ── Optional: Mira (Vertrauenspfad) ──────────────────────────────
   {
     id: "act1.miraTrust",
-    title: "Miras Vertrauen gewinnen",
-    priority: 50,
+    title: "Miras Vertrauen gewinnen (optional)",
+    priority: 60,
     isActive: (a) => a.hasFlag("metMira"),
     isResolved: (a) =>
       a.hasFlag("miraTrustEarned") || a.hasFlag("miraTrustWithheld"),
@@ -146,40 +344,11 @@ export const HINT_QUESTS: HintQuest[] = [
     ],
   },
 
-  // ── Akt I: Knoten 5610 ────────────────────────────────────────────
-  {
-    id: "act1.serverRoom5610",
-    title: "Knoten 5610 (Wartungsraum)",
-    priority: 60,
-    isActive: (a) =>
-      a.hasFlag("insaSentTo5610") && !a.hasFlag("burnedNode5610"),
-    isResolved: (a) => a.hasFlag("burnedNode5610") || a.hasFlag("tappedNode5610"),
-    hints: [
-      "Insa hat dich zu einem Wartungsknoten geschickt — das Schloss erkennt Wartungsrechte, nicht nur Karten.",
-      "Tür 5610 liegt im Korridor 56. Insa kann den Magnetriegel von der Leitstelle aus freischalten, wenn du sie drum bittest.",
-      "Geh ins Korridor 56, ruf Insa an und bitte um den Wartungs-Override für 5610, geh dann hinein und tippe den Knoten an (oder brenne ihn — beides bringt dich weiter).",
-    ],
-  },
-
-  // ── Akt I: Sektor verlassen ───────────────────────────────────────
-  {
-    id: "act1.sectorDoor",
-    title: "Sektor E67 verlassen",
-    priority: 70,
-    isActive: (a) => a.hasItem("residentId") && !a.hasFlag("sectorDoorOpen"),
-    isResolved: (a) => a.hasFlag("sectorDoorOpen"),
-    hints: [
-      "Die Sektor-Tür braucht zwei Dinge: etwas, das dich identifiziert — und einen Code, der heute gilt.",
-      "Den 8-stelligen Tagescode bekommst du nicht zentral. Er steckt in einer Nachricht, die heute gesendet wurde, und du brauchst Insas Hilfe.",
-      "Halte deinen Bewohner-Ausweis bereit, ruf Insa an und bitte um den heutigen Sektor-Code, dann gib ihn an der Schleuse ein.",
-    ],
-  },
-
-  // ── Akt I: Schmerz-Radio-Erweiterung ──────────────────────────────
+  // ── Optional: Schmerz-Radio-Erweiterung ──────────────────────────
   {
     id: "act1.hiddenFrequency",
-    title: "Wartungs-Funkgerät 5610 (versteckte Frequenz)",
-    priority: 65,
+    title: "Wartungs-Funkgerät 5610 — versteckte Frequenz (optional)",
+    priority: 70,
     isActive: (a) => a.hasFlag("sawWartungsFunk5610"),
     isResolved: (a) => a.hasFlag("hiddenFrequencyFound"),
     hints: [
@@ -190,8 +359,8 @@ export const HINT_QUESTS: HintQuest[] = [
   },
   {
     id: "act1.miraAmplifier",
-    title: "Miras Verstärker-Antenne",
-    priority: 66,
+    title: "Miras Verstärker-Antenne (optional)",
+    priority: 71,
     isActive: (a) => a.hasFlag("miraAskedAmplifier"),
     isResolved: (a) => a.hasFlag("miraSentAnger"),
     hints: [
