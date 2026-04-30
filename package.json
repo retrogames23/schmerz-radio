@@ -11,7 +11,9 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "lore:check": "bun scripts/lore-check.mjs",
-    "lore:check:llm": "bun scripts/lore-check.mjs --llm"
+    "lore:check:llm": "bun scripts/lore-check.mjs --llm",
+    "quest:check": "bun scripts/quest-check.mjs",
+    "quest:check:llm": "bun scripts/quest-check.mjs --llm"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",
