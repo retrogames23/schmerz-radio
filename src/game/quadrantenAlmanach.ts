@@ -51,7 +51,7 @@ export const ALMANACH_CHAPTERS: AlmanachChapter[] = [
     title: "1924 — Eine Personalentscheidung in Moskau",
     body: [
       "Im Januar 1924 starb in Moskau ein Mann, dessen Nachfolge das Jahrhundert geprägt hat: **Wladimir Iljitsch Uljanow**, genannt Lenin.",
-      "Im innerparteilichen Verfahren, das auf seinen Tod folgte, setzte sich nicht der Generalsekretär Stalin durch, sondern **Nikolai Bucharin**, der Vertreter eines wirtschaftlich gemischten, kleinteilig geduldigen Sozialismus.",
+      "Im innerparteilichen Verfahren, das auf seinen Tod folgte, setzte sich gegen einen härteren, eher militärisch gestimmten Flügel **Nikolai Bucharin** durch — der Vertreter eines wirtschaftlich gemischten, kleinteilig geduldigen Sozialismus.",
       "Die *Neue Ökonomische Politik* wurde verlängert. Bäuerliches Eigentum blieb bestehen. Es kam **nicht** zu Zwangskollektivierungen großen Stils, **nicht** zu einem stalinistischen Lager-System, **nicht** zu den Säuberungen der 30er Jahre.",
       "Das hat zwei Folgen, die uns bis heute betreffen:",
       "- Erstens entwickelte sich die Sowjetunion langsamer und industriell schwächer als manche im Westen befürchtet hatten.",
