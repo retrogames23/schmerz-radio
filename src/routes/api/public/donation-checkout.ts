@@ -61,9 +61,14 @@ export const Route = createFileRoute("/api/public/donation-checkout")({
           return json(400, { error: "Ungültiger Betrag." });
         }
 
-        const origin =
-          request.headers.get("origin") ??
-          `https://${request.headers.get("host")}`;
+        // Do NOT trust the client-supplied Origin header — it can be spoofed by
+        // non-browser clients to turn the Stripe success/cancel URLs into an
+        // open redirect. Use a server-configured base URL, falling back to the
+        // request Host header (set by the edge, not the client).
+        const host = request.headers.get("host") ?? "";
+        const baseUrl =
+          process.env.APP_BASE_URL ??
+          (host ? `https://${host}` : "https://schmerz-radio.com");
 
         const stripe = new Stripe(stripeKey, {
           apiVersion: "2026-04-22.dahlia",
@@ -105,8 +110,8 @@ export const Route = createFileRoute("/api/public/donation-checkout")({
                 },
               },
             ],
-            success_url: `${origin}/?donation=success`,
-            cancel_url: `${origin}/?donation=cancel`,
+            success_url: `${baseUrl}/?donation=success`,
+            cancel_url: `${baseUrl}/?donation=cancel`,
           });
         } catch (e) {
           console.error("stripe checkout create failed", e);
