@@ -120,9 +120,11 @@ export function TitleScreen({ onStart }: Props) {
           height: "20.5%",
           overflow: "hidden",
           borderRadius: "6px",
-          mixBlendMode: "screen",
-          opacity: 0.85,
-          boxShadow: "inset 0 0 24px rgba(0,0,0,0.7)",
+          // Solid backdrop so the painted (fake) green text is fully replaced
+          // by the live scrolling code from CrtMatrixBackground.
+          background: "#020a04",
+          boxShadow:
+            "inset 0 0 18px rgba(0,0,0,0.85), inset 0 0 36px rgba(57,255,122,0.15)",
         }}
       >
         <CrtMatrixBackground />
