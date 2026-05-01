@@ -1,0 +1,362 @@
+import type { DialogTree } from "../types";
+
+export const okwuDialogs: Record<string, DialogTree> = {
+  reception: {
+    id: "reception",
+    start: "r1",
+    lines: {
+      r1: {
+        id: "r1",
+        speaker: "RECEPTION",
+        text: "Sektor E71 — Medizin. Sie sind … Worag, korrekt? Quadrant E67. Ihr Eintritt wurde von der Leitstelle vorgemerkt.",
+        subtext: "Vorgemerkt. Wie ein Paket, das man erwartet hat.",
+        next: "r2",
+      },
+      r2: {
+        id: "r2",
+        speaker: "LAYARD",
+        text: "Ich bringe ein Einsatzprotokoll für Herrn Stegmann. Zimmer 1534.",
+        next: "r3",
+      },
+      r3: {
+        id: "r3",
+        speaker: "RECEPTION",
+        text: "Korridor 15. Den langen Gang ganz nach hinten. Die Tür am Ende, mit dem roten Licht.",
+        next: "r4",
+      },
+      r4: {
+        id: "r4",
+        speaker: "RECEPTION",
+        text: "Herr Stegmann hat heute viel auf dem Tisch. Halten Sie es bitte kurz.",
+        subtext: "Sie sagt das, ohne aufzuschauen. Es ist Standard.",
+        next: "r5",
+      },
+      r5: {
+        id: "r5",
+        speaker: "SYSTEM",
+        text: "[ Sie schiebt einen kleinen Besucherchip über den Tresen. Schweigend. ]",
+        end: true,
+      },
+    },
+  },
+  receptionUnannounced: {
+    id: "receptionUnannounced",
+    start: "ru1",
+    lines: {
+      ru1: {
+        id: "ru1",
+        speaker: "RECEPTION",
+        text: "Sektor E71 — Medizin. Sie wünschen?",
+        subtext: "Sie sieht ihn an, ohne zu lächeln. Die Hand bleibt auf dem Terminal.",
+        next: "ru2",
+      },
+      ru2: {
+        id: "ru2",
+        speaker: "LAYARD",
+        text: "Worag. E67, Quadrant 26. Ich bringe ein Einsatzprotokoll für Herrn Stegmann. Zimmer 1534.",
+        next: "ru3",
+      },
+      ru3: {
+        id: "ru3",
+        speaker: "RECEPTION",
+        text: "E67. — Ihr Eintritt ist hier nicht vorgemerkt, Herr Worag.",
+        subtext: "Sie tippt zweimal. Wartet. Tippt noch einmal.",
+        next: "ru4",
+      },
+      ru4: {
+        id: "ru4",
+        speaker: "LAYARD",
+        text: "Die Vermittlung hat mich hierher geschickt. Direkt.",
+        next: "ru5",
+      },
+      ru5: {
+        id: "ru5",
+        speaker: "RECEPTION",
+        text: "Üblich ist das nicht. Übertritte werden vorgemerkt. Das wissen Sie.",
+        subtext: "Es klingt nicht streng. Eher müde. So, als hätte sie heute schon zwei davon gehabt.",
+        next: "ru6",
+      },
+      ru6: {
+        id: "ru6",
+        speaker: "RECEPTION",
+        text: "Ich notiere das nach. Halten Sie Ihren Ausweis bereit, falls jemand fragt.",
+        next: "ru7",
+      },
+      ru7: {
+        id: "ru7",
+        speaker: "RECEPTION",
+        text: "Korridor 15. Den langen Gang ganz nach hinten. Die Tür am Ende, rotes Licht. Herr Stegmann hat heute viel auf dem Tisch — fassen Sie sich kurz.",
+        next: "ru8",
+      },
+      ru8: {
+        id: "ru8",
+        speaker: "SYSTEM",
+        text: "[ Sie schiebt einen Besucherchip über den Tresen. Etwas härter, als es nötig wäre. ]",
+        end: true,
+      },
+    },
+  },
+  okwu1: {
+    id: "okwu1",
+    start: "ok1",
+    lines: {
+      ok1: {
+        id: "ok1",
+        speaker: "OKWU",
+        text: "Sie sehen ein bisschen verloren aus. Tür gesucht oder nur Gegend angeguckt?",
+        subtext: "Sie schiebt die Lesebrille von der Stirn, lächelt knapp.",
+        next: "ok2",
+      },
+      ok2: {
+        id: "ok2",
+        speaker: "LAYARD",
+        text: "Ich bringe nur was vorbei. Zimmer 1534.",
+        next: "ok3",
+      },
+      ok3: {
+        id: "ok3",
+        speaker: "OKWU",
+        text: "Stegmann. Aha. Heute haben Sie's gut getroffen, der Korridor ist fast erstaunlich ruhig. Manchmal steh' ich hier zwischen zwei Visiten und höre tatsächlich die Lüftung.",
+        subtext: "Sie tippt mit dem Klemmbrett gegen den Oberschenkel, ruhig.",
+        next: "ok4",
+      },
+      ok4: {
+        id: "ok4",
+        speaker: "OKWU",
+        text: "Adaeze Okwu, Stationsärztin. Und Sie sind, wenn ich raten darf, nicht von hier.",
+        next: "ok5",
+      },
+      ok5: {
+        id: "ok5",
+        speaker: "LAYARD",
+        text: "E67. Quadrant 26.",
+        next: "ok6",
+      },
+      ok6: {
+        id: "ok6",
+        speaker: "OKWU",
+        text: "E67.",
+        subtext: "Eine Augenbraue hebt sich, kaum merklich. Das Lächeln bleibt.",
+        next: "ok7",
+      },
+      ok7: {
+        id: "ok7",
+        speaker: "OKWU",
+        text: "Selten. Sehr selten sogar. — Nichts gegen Sie persönlich.",
+        choices: [
+          {
+            text: "Was meinen Sie mit »selten«?",
+            action: (api) => api.setFlag("okwuLayer2"),
+            next: "ok_handoff",
+          },
+          {
+            text: "Ich muss weiter.",
+            next: "ok_bye",
+          },
+        ],
+      },
+      ok_handoff: {
+        id: "ok_handoff",
+        speaker: "OKWU",
+        text: "Setzen Sie sich gedanklich kurz hin. Ich erklär's Ihnen.",
+        end: true,
+      },
+      ok_bye: {
+        id: "ok_bye",
+        speaker: "OKWU",
+        text: "Dann viel Erfolg da hinten. Rotes Licht, ganz am Ende, nicht zu übersehen.",
+        end: true,
+      },
+    },
+  },
+  okwu2: {
+    id: "okwu2",
+    start: "ok2a",
+    lines: {
+      ok2a: {
+        id: "ok2a",
+        speaker: "OKWU",
+        text: "Also. E71 ist hier in der Gegend der Medizin-Quadrant. Vorzeige-Trakt, wenn Sie die richtigen Leute fragen. Die Geräte hier sind jünger als meine Praktikanten.",
+        next: "ok2b",
+      },
+      ok2b: {
+        id: "ok2b",
+        speaker: "OKWU",
+        text: "Drumherum: E68, E69, E70. Lauter Wohn- und Verwaltungs-Quadranten. Man sieht sich auf den Quadrantenfesten, man kennt sich.",
+        next: "ok2c",
+      },
+      ok2c: {
+        id: "ok2c",
+        speaker: "OKWU",
+        text: "E68 ist Logistik. Sehr fleißige Menschen. Die heben die Hand schon, bevor du die Frage gestellt hast.",
+        subtext: "Sie sagt das mit der Wärme, die man für Lieblings-Kollegen reserviert.",
+        next: "ok2d",
+      },
+      ok2d: {
+        id: "ok2d",
+        speaker: "OKWU",
+        text: "E69 — Wohnen, viele Familien. Lärm im Treppenhaus, aber wenn jemand Geburtstag hat, klingelt es bei mir und es steht ein Kuchen vor der Tür.",
+        next: "ok2e",
+      },
+      ok2e: {
+        id: "ok2e",
+        speaker: "OKWU",
+        text: "E70 ist Verwaltung. Sehr nett, sehr langsam. Wie eine warme Dusche mit niedrigem Druck.",
+        subtext: "Sie lacht leise, halb in sich hinein.",
+        next: "ok2f",
+      },
+      ok2f: {
+        id: "ok2f",
+        speaker: "LAYARD",
+        text: "Und die Bürokratie? Ist die hier anders?",
+        next: "ok2g",
+      },
+      ok2g: {
+        id: "ok2g",
+        speaker: "OKWU",
+        text: "Ach. Die ist überall. Aber wir gehen lockerer damit um. Papier ist geduldig, Terminal-Daten sind die Ruhe selbst — und ich bin um sieben zu Hause.",
+        next: "ok2h",
+      },
+      ok2h: {
+        id: "ok2h",
+        speaker: "OKWU",
+        text: "Ich unterschreibe, was ich unterschreiben muss, und der Rest darf bis morgen warten. Ist bisher noch keiner dran gestorben.",
+        choices: [
+          {
+            text: "Und was sagen die anderen Quadranten über E67?",
+            action: (api) => api.setFlag("okwuLayer3"),
+            next: "ok2_handoff",
+          },
+          {
+            text: "Ich muss weiter.",
+            next: "ok2_bye",
+          },
+        ],
+      },
+      ok2_handoff: {
+        id: "ok2_handoff",
+        speaker: "OKWU",
+        text: "Hahaaa. Okay. Dafür stelle ich kurz die Tasse ab.",
+        subtext: "Sie schiebt die Brille wieder auf die Stirn, fast amüsiert.",
+        end: true,
+      },
+      ok2_bye: {
+        id: "ok2_bye",
+        speaker: "OKWU",
+        text: "Klar. Tür mit dem roten Licht, ganz hinten. Grüßen Sie Stegmann, falls er guckt.",
+        end: true,
+      },
+    },
+  },
+  okwu3: {
+    id: "okwu3",
+    start: "ok3a",
+    lines: {
+      ok3a: {
+        id: "ok3a",
+        speaker: "OKWU",
+        text: "E67. Also — wie soll ich's nett sagen. Ihr seid … speziell.",
+        subtext: "Sie zieht die Brille runter, schaut über den Rand.",
+        next: "ok3b",
+      },
+      ok3b: {
+        id: "ok3b",
+        speaker: "OKWU",
+        text: "Bei den Quadrantenfesten halten wir immer einen Tisch frei für E67. Und jedes Jahr räumen wir ihn am Abend wieder leer ab. Kein Mensch.",
+        next: "ok3c",
+      },
+      ok3c: {
+        id: "ok3c",
+        speaker: "OKWU",
+        text: "In E69 erzählen sie sich, dass bei euch seit Jahren niemand neu eingezogen ist. Die Aufzüge nach E67 kommen angeblich immer leer zurück, egal um welche Uhrzeit. Wahr ist das wahrscheinlich nicht. Aber es hält sich.",
+        next: "ok3d",
+      },
+      ok3d: {
+        id: "ok3d",
+        speaker: "OKWU",
+        text: "Eine Kollegin aus E68 schwört, sie hat mal jemanden aus eurem Quadranten am Fenster winken sehen. Sie redet seitdem nicht mehr drüber.",
+        subtext: "Augenzwinkern. Ein einziges. Und sehr präzise.",
+        next: "ok3e",
+      },
+      ok3e: {
+        id: "ok3e",
+        speaker: "OKWU",
+        text: "Es gibt Witze, Herr Worag. Wirklich gute, alte Witze. „Wie viele E67er braucht es, um eine Glühbirne zu wechseln?“ — Antwort: Keiner weiß es, es war noch nie jemand drin, der's berichten konnte.",
+        next: "ok3f",
+      },
+      ok3f: {
+        id: "ok3f",
+        speaker: "OKWU",
+        text: "Ihr seid die Eigenbrödler in der Gegend. Die, die sich komplett aus der Welt rausgenommen haben. Nichts Persönliches. Eher … folkloristisch.",
+        choices: [
+          {
+            text: "Und was glauben Sie wirklich über E67?",
+            action: (api) => api.setFlag("okwuLayer4"),
+            next: "ok3_handoff",
+          },
+          {
+            text: "Ich muss jetzt wirklich weiter.",
+            next: "ok3_bye",
+          },
+        ],
+      },
+      ok3_handoff: {
+        id: "ok3_handoff",
+        speaker: "OKWU",
+        text: "Hm. Gute Frage. Lassen Sie mich kurz nachdenken.",
+        end: true,
+      },
+      ok3_bye: {
+        id: "ok3_bye",
+        speaker: "OKWU",
+        text: "Geht klar. Und ehrlich — danke für den Plausch. Ist ein bisschen wie ein Vogel, der aus seinem Käfig in den Garten geflattert kommt. Das hat man nicht alle Tage.",
+        subtext: "Sie sagt es ohne Spott. Eher belustigt-zärtlich.",
+        end: true,
+      },
+    },
+  },
+  okwu4: {
+    id: "okwu4",
+    start: "ok4a",
+    lines: {
+      ok4a: {
+        id: "ok4a",
+        speaker: "OKWU",
+        text: "Ehrlich? Ich glaube nicht, dass mit euch was nicht stimmt. Ich glaube, ihr habt euch da drüben einfach … sehr gründlich eingerichtet. Mit allem drum und dran.",
+        next: "ok4b",
+      },
+      ok4b: {
+        id: "ok4b",
+        speaker: "OKWU",
+        text: "Manche Leute räumen ihre Wohnung jeden Sonntag auf. Manche Quadranten räumen sich selber weg. Das ist ein Unterschied von Grad, nicht von Art.",
+        subtext: "Sie sagt's leise, ohne Schärfe.",
+        next: "ok4c",
+      },
+      ok4c: {
+        id: "ok4c",
+        speaker: "OKWU",
+        text: "Aber Sie sind ja heute hier. Sie stehen in meinem Korridor und unterhalten sich mit mir. Das ist mehr, als die meisten von euch je tun. Vielleicht ist das schon der Anfang von etwas.",
+        next: "ok4d",
+      },
+      ok4d: {
+        id: "ok4d",
+        speaker: "LAYARD",
+        text: "Vielleicht.",
+        next: "ok4e",
+      },
+      ok4e: {
+        id: "ok4e",
+        speaker: "OKWU",
+        text: "Wenn Sie zurückwollen — der Empfang weiß Bescheid, der trägt Sie nach. Wenn Sie nicht zurückwollen, auch gut. Aber dann sagen Sie's vorher jemandem. Spart Papier.",
+        next: "ok4f",
+      },
+      ok4f: {
+        id: "ok4f",
+        speaker: "OKWU",
+        text: "Und jetzt entschuldigen Sie mich. Frau Aldenhoff in 1538 wartet auf ihre Sprechstunde, und sie wartet ungern.",
+        subtext: "Sie hebt das Klemmbrett in einer kleinen, freundlichen Geste.",
+        end: true,
+      },
+    },
+  },
+};
