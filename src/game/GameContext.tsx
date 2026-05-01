@@ -66,6 +66,10 @@ interface GameState {
   lobbyGateOpen: boolean;
   /** Bürokratie-Duell-Overlay (Brust-Tresen, Akt I) sichtbar. */
   duelOpen: boolean;
+  /** Modus des aktiven Duells. */
+  duelMode: "training" | "endgame" | null;
+  /** Notizbuch-Overlay (gelernte Paragraphen) sichtbar. */
+  notizbuchOpen: boolean;
 }
 
 interface GameContextValue extends GameState {
@@ -106,6 +110,10 @@ interface GameContextValue extends GameState {
   closeLobbyGate: () => void;
   /** Bürokratie-Duell schließen (Abbruch oder nach Sieg/Niederlage). */
   closeDuel: () => void;
+  /** Notizbuch schließen. */
+  closeNotizbuch: () => void;
+  /** Set der gelernten Paragraphen-IDs (für Notizbuch-UI). */
+  learnedParagraphs: ReadonlySet<string>;
   /** Lobby-Schleusen-Eskalation (Fehlversuche, transient). */
   getLobbyGateAttempts: () => number;
   bumpLobbyGateAttempts: () => number;
@@ -203,6 +211,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [idCardOpen, setIdCardOpen] = useState(false);
   const [lobbyGateOpen, setLobbyGateOpen] = useState(false);
   const [duelOpen, setDuelOpen] = useState(false);
+  const [duelMode, setDuelMode] = useState<"training" | "endgame" | null>(null);
+  const [notizbuchOpen, setNotizbuchOpen] = useState(false);
+  const [learnedParagraphs, setLearnedParagraphs] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const learnedParagraphsRef = useRef(learnedParagraphs);
+  learnedParagraphsRef.current = learnedParagraphs;
+  const brustWinStreakRef = useRef(0);
   const [freeChatNpcId, setFreeChatNpcId] = useState<string | null>(null);
   const [isEssentialAssetsLoaded, setIsEssentialAssetsLoaded] = useState(false);
   // Eskalationszähler der Lobby-Schleuse (Fehlversuche), nicht persistiert.
@@ -379,6 +395,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setRadioOpen(false);
         setTerminalOpen(false);
         setPneumaticOpen(false);
+        setDuelMode("training");
         setDuelOpen(true);
       },
       setEnding: () => setEnding(true),
