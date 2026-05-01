@@ -151,6 +151,14 @@ export function RainOverlay() {
       ref={canvasRef}
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-[1] h-full w-full"
+      style={{
+        // Confine rain to the "outdoors" portion of the artwork (upper area
+        // showing the skyline & windows). Fades out before the indoor desk.
+        WebkitMaskImage:
+          "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 32%, rgba(0,0,0,0) 46%)",
+        maskImage:
+          "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 32%, rgba(0,0,0,0) 46%)",
+      }}
     />
   );
 }
