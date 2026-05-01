@@ -119,6 +119,32 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
           ]),
       },
       {
+        // Wandregal über dem Bett. Enthält das einzige Buch, das Layard
+        // wirklich gelesen hat: den „Quadranten-Almanach 1997".
+        id: "bookshelf",
+        x: 38,
+        y: 30,
+        w: 20,
+        h: 12,
+        label: "Wandregal",
+        kind: "use",
+        onUse: (api) => {
+          if (!api.hasFlag("openedAlmanach")) {
+            api.setFlag("openedAlmanach");
+            api.showText([
+              "Auf dem Wandregal: ein paar Aktenordner, ein leerer Vinyl-Schuber,",
+              "und — ganz links — der „Quadranten-Almanach 1997".",
+              "Bewohner-Ausgabe, zerlesen. Layard schlägt ihn auf.",
+            ]);
+            // Nach dem Text-Overlay öffnen — kleine Verzögerung, damit
+            // showText sauber durchläuft.
+            setTimeout(() => api.openAlmanach(), 60);
+          } else {
+            api.openAlmanach();
+          }
+        },
+      },
+      {
         id: "b2",
         x: 23,
         y: 73,
