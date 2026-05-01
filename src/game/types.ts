@@ -32,6 +32,8 @@ export type InventoryItemId =
   | "b3Authorization"
   | "b3Ration"
   | "paramedicsReport"
+  // Bürokratie-Duell — Notizbuch mit gelernten Paragraphen
+  | "paragraphenNotizbuch"
   // Akt-I-Pflichträtsel „Quittung 4317"
   | "pencilStub"
   | "siegelAbdruck"
@@ -213,6 +215,12 @@ export type StoryFlag =
   | "duelStarted"
   | "duelWon"
   | "duelLost"
+  // Bürokratie-Duell (mehrstufig) — Trainings-/Endgame-Fortschritt
+  | "duelEverWon"
+  | "vossbeckSummoned"
+  | "vossbeckBeaten"
+  | "vossbeckLost"
+  | "metVossbeck"
   // Mira — Vertrauenspfad
   | "readMiraManifest"
   | "radioMutedAtLeast60s"
@@ -382,7 +390,8 @@ export interface DialogLine {
     | "BREM"
     | "YELVA"
     | "KOWALK"
-    | "BRUST";
+    | "BRUST"
+    | "VOSSBECK";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;
@@ -437,9 +446,21 @@ export interface GameApi {
   openPneumaticTube: () => void;
   /**
    * Bürokratie-Duell am Brust-Tresen (Akt I, Kantine 3602). Öffnet das
-   * Overlay und startet einen frischen 3-Runden-Versuch.
+   * Overlay und startet einen Trainings- oder Endgame-Versuch.
+   * Ohne Argument: Trainings-Modus (gegen Brust). `"endgame"`: gegen
+   * Oberinspektor Vossbeck (Vollmacht 4317).
    */
-  openBureaucracyDuel: () => void;
+  openBureaucracyDuel: (mode?: "training" | "endgame") => void;
+  /** Hat Layard diesen Paragraphen schon gelernt? */
+  hasLearnedParagraph: (id: string) => boolean;
+  /** Alle gelernten Paragraphen (Schnappschuss). */
+  getLearnedParagraphs: () => ReadonlyArray<string>;
+  /** Lernt einen Paragraphen (idempotent). Gibt true zurück, wenn neu gelernt. */
+  learnParagraph: (id: string) => boolean;
+  /** Aktuelle Trainings-Sieg-Serie gegen Brust (zurückgesetzt bei Niederlage). */
+  getBrustWinStreak: () => number;
+  /** Trainings-Sieg-Serie verändern. */
+  setBrustWinStreak: (n: number) => void;
   isRadioActive: () => boolean;
   setEnding: () => void;
   /**
