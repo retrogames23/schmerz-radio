@@ -4847,14 +4847,24 @@ export const dialogs: Record<string, DialogTree> = {
       bAuth1: {
         id: "bAuth1",
         speaker: "BRUST",
-        text: "4317 — Marteau. Schicht A gegengezeichnet. Heute Schicht B. Aushang vier Punkt zwei.",
+        text: "4317 — Marteau. Schicht A gegengezeichnet. Heute Schicht B. Aushang vier Punkt zwei. Ich kann das nicht entscheiden.",
         next: "bAuth2",
       },
       bAuth2: {
         id: "bAuth2",
         speaker: "BRUST",
-        text: "Ich kann das nicht freigeben. Bitte mit Frau Kowalk weiterreden.",
+        text: "Vorgang Vollmacht 4317 ist seit zwei Wochen Vossbeck-Sache. Bewohnervertretung E67, Bürokratiemeisterschaft. Sitzt hinten beim Aktentisch.",
+        next: "bAuth3",
+      },
+      bAuth3: {
+        id: "bAuth3",
+        speaker: "BRUST",
+        text: "Vossbeck nimmt aber nur Vorgänge von Bewohnern an, die paragraphenfest sind. Wenn Sie wollen — wir können vorher einen Trainingsfall durchgehen. Drei in Folge bei mir, dann sind Sie für Vossbeck satisfaktionsfähig.",
         choices: [
+          {
+            text: "Trainingsfall, ja.",
+            next: "bDuelOffer",
+          },
           {
             text: "Verstanden.",
             next: "b0",
@@ -4864,20 +4874,20 @@ export const dialogs: Record<string, DialogTree> = {
       bDuelOffer: {
         id: "bDuelOffer",
         speaker: "BRUST",
-        text: "Ausfechten. (Pause.) Bewohner Worag, wenn Sie das wirklich wollen — Aushänge, Paragraphen, Schichtklauseln. Drei Erwiderungen in Folge. Schaffen Sie das, gebe ich aus.",
+        text: "Trainingsfall. Fiktive Konstellation aus dem Kantinenbetrieb. Ich eröffne mit einem Paragraphen, Sie kontern. Zwei Treffer mehr als Fehler — Sie haben gewonnen. Drei Fehler — Trainingsfall verloren.",
         next: "bDuelOffer2",
       },
       bDuelOffer2: {
         id: "bDuelOffer2",
         speaker: "BRUST",
-        text: "Schaffen Sie es nicht, schließe ich die Ausgabezone für Sie. Bis Sie wiederkommen — mit besseren Argumenten.",
+        text: "Was Sie aus jedem Fall mitnehmen, landet in Ihrem Notizbuch. Drei gewonnene Trainingsfälle in Folge — und Vossbeck nimmt Sie ernst.",
         choices: [
           {
-            text: "[ Duell beginnen ]",
+            text: "[ Trainingsfall beginnen ]",
             action: (api) => {
               api.setFlag("duelOffered");
               api.setFlag("duelStarted");
-              api.openBureaucracyDuel();
+              api.openBureaucracyDuel("training");
             },
             // Dialog beendet sich; das Overlay übernimmt.
           },
@@ -4890,13 +4900,13 @@ export const dialogs: Record<string, DialogTree> = {
       bDuelRetry: {
         id: "bDuelRetry",
         speaker: "BRUST",
-        text: "Bewohner Worag. Sie sind hartnäckig. (Pause.) Gut. Drei neue Erwiderungen. Wenn Sie diesmal scheitern — bleibt es dabei.",
+        text: "Bewohner Worag. Sie sind hartnäckig. (Pause.) Gut. Neuer Trainingsfall.",
         choices: [
           {
-            text: "[ Duell beginnen ]",
+            text: "[ Trainingsfall beginnen ]",
             action: (api) => {
               api.setFlag("duelStarted");
-              api.openBureaucracyDuel();
+              api.openBureaucracyDuel("training");
             },
           },
           {
@@ -4904,6 +4914,12 @@ export const dialogs: Record<string, DialogTree> = {
             next: "b0",
           },
         ],
+      },
+      bVossbeckHint: {
+        id: "bVossbeckHint",
+        speaker: "BRUST",
+        text: "Drei in Folge. Korrekt notiert. — Vossbeck steht hinten beim Hochregal. Er weiß bereits, dass Sie kommen. Klopfen Sie nicht. Er hasst das.",
+        next: "b0",
       },
       bHyg1: {
         id: "bHyg1",
