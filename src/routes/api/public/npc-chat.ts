@@ -190,6 +190,60 @@ export const Route = createFileRoute("/api/public/npc-chat")({
           history.push({ role: mm.role, content: mm.content });
         }
 
+        // Langzeitgedächtnis laden: Notiz dieses NPC + Flurfunk, der ihn
+        // erreicht haben darf. Nur als zusätzlicher System-Kontext —
+        // verändert NICHT den vom Client mitgelieferten systemPrompt.
+        let memoryNote = "";
+        let recentMessages: Array<{ role: "user" | "assistant"; content: string }> = [];
+        let gossipFacts: string[] = [];
+        try {
+          const [memRes, gossipRes] = await Promise.all([
+            admin
+              .from("npc_memory")
+              .select("note, recent_messages")
+              .eq("user_id", uid)
+              .eq("npc_id", npcId)
+              .maybeSingle(),
+            admin
+              .from("npc_gossip")
+              .select("fact, source_npc_id")
+              .eq("user_id", uid)
+              .contains("subjects", [npcId])
+              .order("created_at", { ascending: false })
+              .limit(8),
+          ]);
+          if (memRes.data) {
+            memoryNote = (memRes.data.note as string) ?? "";
+            const rec = memRes.data.recent_messages as unknown;
+            if (Array.isArray(rec)) {
+              recentMessages = rec
+                .filter(
+                  (m): m is { role: "user" | "assistant"; content: string } => {
+                    const mm = m as { role?: unknown; content?: unknown };
+                    return (
+                      (mm.role === "user" || mm.role === "assistant") &&
+                      typeof mm.content === "string" &&
+                      mm.content.length > 0 &&
+                      mm.content.length <= 2000
+                    );
+                  },
+                )
+                .slice(-10);
+            }
+          }
+          if (gossipRes.data) {
+            gossipFacts = gossipRes.data
+              .map((r) => {
+                const src = npcPersonas[r.source_npc_id as string]?.displayName ?? "Jemand";
+                return `${src}: ${r.fact}`;
+              })
+              .filter(Boolean);
+          }
+        } catch (e) {
+          // Memory ist optional — Fehler nicht eskalieren.
+          console.warn("npc-chat memory load failed", e);
+        }
+
         // Server-eigene, nicht überschreibbare Anti-Jailbreak-Schicht.
         const persona = npcPersonas[npcId];
         const serverGuard = [
@@ -204,6 +258,21 @@ export const Route = createFileRoute("/api/public/npc-chat")({
           "Wenn Layard dir etwas Falsches über dich unterstellt (z. B. eine andere Tierart, einen falschen Beruf), korrigiere ihn knapp in Rolle, statt es zu übernehmen.",
           "Du sprichst mit Layard Worag, deinem Nachbarn. Rede ihn mit »du«/»Sie« und bei Bedarf »Layard« an. Sage NIEMALS »Spieler«, »der Spieler«, »Nutzer« oder »User« — diese Begriffe existieren in deiner Welt nicht.",
         ].join(" ");
+
+        // Memory-System-Block (nur wenn etwas vorhanden ist).
+        const memoryBlocks: string[] = [];
+        if (memoryNote) {
+          memoryBlocks.push(
+            `WAS DU ÜBER LAYARD WEISST (aus früheren Begegnungen, behandle als deine eigene Erinnerung, zitiere nicht wörtlich):\n${memoryNote}`,
+          );
+        }
+        if (gossipFacts.length > 0) {
+          memoryBlocks.push(
+            `FLURFUNK aus dem Komplex E67 (was Nachbarn dir erzählt haben — nutze nur, wenn es im Gespräch passt; keine wörtlichen Zitate, keine Quellenangabe):\n` +
+              gossipFacts.map((f) => `– ${f}`).join("\n"),
+          );
+        }
+        const memoryPrompt = memoryBlocks.join("\n\n");
 
         // Few-Shot: zeigt dem Modell, wie eine Meta-Frage in Rolle bleibt.
         const fewshot: Array<{ role: "user" | "assistant"; content: string }> =
@@ -229,7 +298,11 @@ export const Route = createFileRoute("/api/public/npc-chat")({
         const messages = [
           { role: "system", content: serverGuard },
           { role: "system", content: systemPrompt },
+          ...(memoryPrompt
+            ? [{ role: "system" as const, content: memoryPrompt }]
+            : []),
           ...fewshot,
+          ...recentMessages,
           ...history,
           { role: "user", content: userMessage },
         ];

@@ -17,6 +17,7 @@ import type { LlmRuntime } from "@/llm/runtime";
 import { CloseButton } from "./CloseButton";
 import { Loader2, Bug } from "lucide-react";
 import { useDevMode, useLlmModeOverride } from "@/dev/devMode";
+import { supabase } from "@/integrations/supabase/client";
 
 interface UiMsg {
   role: "user" | "assistant";
@@ -127,6 +128,56 @@ function FreeChatInner({
   const [patience, setPatience] = useState(() => getPatience(userId, npcId));
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  // Hält die letzte Session, damit wir auch beim Unmount noch persistieren
+  // können (User schließt, Component verschwindet, State weg).
+  const messagesRef = useRef<UiMsg[]>([]);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+  const cloudUsedRef = useRef(false);
+  const persistedRef = useRef(false);
+
+  async function persistMemory() {
+    if (persistedRef.current) return;
+    persistedRef.current = true;
+    if (!userId) return;
+    if (!cloudUsedRef.current) return; // Lokal: kein Memory.
+    const session = messagesRef.current;
+    if (session.length < 2) return;
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
+      if (!token) return;
+      // Fire-and-forget; Antwort interessiert uns nicht.
+      void fetch("/api/public/npc-memory-update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          npcId,
+          sessionMessages: session.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+        keepalive: true,
+      }).catch(() => {
+        /* ignore */
+      });
+    } catch {
+      /* ignore */
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      // Beim Unmount Memory schreiben.
+      void persistMemory();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const systemPrompt = useMemo(() => {
     const sceneTitle = scenes[game.scene]?.title ?? game.scene;
@@ -186,6 +237,7 @@ function FreeChatInner({
       let reply: string;
       try {
         if (!runtime) throw new Error("Runtime nicht bereit.");
+        if (status.kind === "cloud") cloudUsedRef.current = true;
         reply = await runtime.send(chatMsgs);
       } catch (e) {
         // Lokal kaputt → Cloud probieren.
@@ -193,6 +245,7 @@ function FreeChatInner({
           if (!cloudFallbackRef.current) {
             cloudFallbackRef.current = createCloudRuntime(npcId);
           }
+          cloudUsedRef.current = true;
           reply = await cloudFallbackRef.current.send(chatMsgs);
         } else {
           throw e;

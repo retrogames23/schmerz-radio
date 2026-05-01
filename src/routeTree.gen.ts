@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
+import { Route as ApiPublicNpcMemoryUpdateRouteImport } from './routes/api/public/npc-memory-update'
 import { Route as ApiPublicNpcChatRouteImport } from './routes/api/public/npc-chat'
 import { Route as ApiPublicDonationCheckoutRouteImport } from './routes/api/public/donation-checkout'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -31,6 +32,12 @@ const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   path: '/api/public/stripe-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicNpcMemoryUpdateRoute =
+  ApiPublicNpcMemoryUpdateRouteImport.update({
+    id: '/api/public/npc-memory-update',
+    path: '/api/public/npc-memory-update',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicNpcChatRoute = ApiPublicNpcChatRouteImport.update({
   id: '/api/public/npc-chat',
   path: '/api/public/npc-chat',
@@ -54,6 +61,7 @@ export interface FileRoutesByFullPath {
   '/api/tts': typeof ApiTtsRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
+  '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -62,6 +70,7 @@ export interface FileRoutesByTo {
   '/api/tts': typeof ApiTtsRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
+  '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -71,6 +80,7 @@ export interface FileRoutesById {
   '/api/tts': typeof ApiTtsRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
+  '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -81,6 +91,7 @@ export interface FileRouteTypes {
     | '/api/tts'
     | '/api/public/donation-checkout'
     | '/api/public/npc-chat'
+    | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
@@ -89,6 +100,7 @@ export interface FileRouteTypes {
     | '/api/tts'
     | '/api/public/donation-checkout'
     | '/api/public/npc-chat'
+    | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
     | '/lovable/email/queue/process'
   id:
@@ -97,6 +109,7 @@ export interface FileRouteTypes {
     | '/api/tts'
     | '/api/public/donation-checkout'
     | '/api/public/npc-chat'
+    | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
@@ -106,6 +119,7 @@ export interface RootRouteChildren {
   ApiTtsRoute: typeof ApiTtsRoute
   ApiPublicDonationCheckoutRoute: typeof ApiPublicDonationCheckoutRoute
   ApiPublicNpcChatRoute: typeof ApiPublicNpcChatRoute
+  ApiPublicNpcMemoryUpdateRoute: typeof ApiPublicNpcMemoryUpdateRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
@@ -131,6 +145,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/stripe-webhook'
       fullPath: '/api/public/stripe-webhook'
       preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/npc-memory-update': {
+      id: '/api/public/npc-memory-update'
+      path: '/api/public/npc-memory-update'
+      fullPath: '/api/public/npc-memory-update'
+      preLoaderRoute: typeof ApiPublicNpcMemoryUpdateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/npc-chat': {
@@ -162,6 +183,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiTtsRoute: ApiTtsRoute,
   ApiPublicDonationCheckoutRoute: ApiPublicDonationCheckoutRoute,
   ApiPublicNpcChatRoute: ApiPublicNpcChatRoute,
+  ApiPublicNpcMemoryUpdateRoute: ApiPublicNpcMemoryUpdateRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
