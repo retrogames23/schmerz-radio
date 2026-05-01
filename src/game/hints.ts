@@ -301,31 +301,43 @@ export const HINT_QUESTS: HintQuest[] = [
     isResolved: (a) =>
       a.hasFlag("gotB3Authorization") ||
       a.hasFlag("gotB3Ration") ||
-      a.hasFlag("duelWon") ||
+      a.hasFlag("duelEndgameWon") ||
       a.hasFlag("refusedB3Favor"),
     hints: [
       "Philippe hat dich um etwas gebeten, das mit Verwaltung und einer Unterschrift zu tun hat.",
-      "Die Vollmacht B3 wird in der Kantine 3602 ausgegeben. Es gibt mehrere Wege, sie zu bekommen — über Kowalk, über Brust, oder am Tresen vorbei.",
-      "Geh in Kantine 3602, sprich Kowalk an und bring sie auf deine Seite — sie kann Brusts Ablehnung kippen, sodass du die Vollmacht erhältst.",
+      "Die B3-Ration wird in der Kantine 3602 ausgegeben — aber nur über den amtierenden Bürokratiemeister Vossbeck. Brust und Kowalk dürfen nicht.",
+      "Vossbeck nimmt nur Vorgänge von paragraphenfesten Bewohnern an. Trainier mit Brust: drei Trainingsfälle in Folge gewinnen, dann tritt Vossbeck heran.",
     ],
   },
   {
     id: "act1.bureaucracyDuel",
-    title: "Brust am Tresen herausfordern (optional)",
+    title: "Bürokratie-Duell — Trainingsfälle gegen Brust",
     priority: 51,
     isActive: (a) =>
       a.hasFlag("philippeAskedFavor") &&
       a.hasFlag("metBrust") &&
       a.hasFlag("duelOffered"),
     isResolved: (a) =>
-      a.hasFlag("duelWon") ||
-      a.hasFlag("gotB3Authorization") ||
+      a.hasFlag("duelEndgameWon") ||
       a.hasFlag("gotB3Ration") ||
       a.hasFlag("refusedB3Favor"),
     hints: [
-      "Brust gibt nicht klein bei — aber er liebt Paragraphen. Wer ihn in seinem eigenen Element schlägt, kommt durch.",
-      "Es gibt Floskeln und Klauseln, die seine Argumente kontern. Die meisten stehen in deinem E67-Handbuch (§3.6) oder fallen im Smalltalk mit ihm und Helka.",
-      "Lies Handbuch §3.6, sprich vorher mit Brust und Helka, dann fordere Brust am Tresen heraus und wähle in jeder Runde die formal korrekte Gegenfloskel.",
+      "Brust trainiert Bewohner: fiktive Kantinenfälle. Jeder Fall lehrt dich neue Paragraphen — sie landen in deinem Notizbuch (Inventar-Item).",
+      "Im Duell sind nur Antworten anwählbar, deren Paragraph du bereits gelernt hast. Verlierst du, lernst du den korrekten Konter trotzdem von Brust.",
+      "Drei Trainingsfälle in Folge gewinnen — dann tritt Oberinspektor Vossbeck aus dem Hintergrund hervor und nimmt deinen echten Vorgang (Vollmacht 4317) an.",
+    ],
+  },
+  {
+    id: "act1.vossbeckEndgame",
+    title: "Endduell gegen Vossbeck",
+    priority: 52,
+    isActive: (a) => a.hasFlag("vossbeckSummoned"),
+    isResolved: (a) =>
+      a.hasFlag("duelEndgameWon") || a.hasFlag("gotB3Ration"),
+    hints: [
+      "Vossbeck steht hinten in der Kantine, beim Hochregal. Er führt das Endduell um Philippes Vollmacht 4317.",
+      "Drei Treffer in Folge — und die B3-Ration wird freigegeben. Drei Fehler — und der Vorgang ist verloren.",
+      "Vossbeck spielt §99 (Generalvorbehalt). Den schlägst du nur mit der §99-Erläuterung — also vorher das passende Trainingsspiel gegen Brust durchspielen.",
     ],
   },
 
