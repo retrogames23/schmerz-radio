@@ -5,6 +5,7 @@ import { CrtMatrixBackground } from "./CrtMatrixBackground";
 import { ImpressumOverlay } from "./ImpressumOverlay";
 import { OpenSourceOverlay } from "./OpenSourceOverlay";
 import { DonationModal } from "@/components/donation/DonationModal";
+import titleArtwork from "@/assets/title/whisper-quest-v1.jpg";
 
 const PRE_ALPHA_WARNING_UI_TEXT = {
   title: "Pre-Alpha-Warnung",
@@ -95,12 +96,47 @@ export function TitleScreen({ onStart }: Props) {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-black px-6 text-center">
-      <CrtMatrixBackground />
-      {/* Darken the matrix slightly so the title stays readable. */}
-      <div className="absolute inset-0 bg-black/55" />
-      <div className="scanlines absolute inset-0 opacity-40" />
-      <div className="amber-vignette opacity-30" />
+    <div className="relative flex min-h-screen flex-col items-center overflow-hidden bg-black px-6 text-center">
+      {/* Painted key art as the backdrop. */}
+      <img
+        src={titleArtwork}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+        width={1920}
+        height={1280}
+      />
+      {/* Live CRT code animation, masked to the in-painting monitor on the right.
+          The artwork is 1920x1280; the green monitor screen sits roughly at
+          x: 1230..1620, y: 540..820. We position a clipped CrtMatrixBackground
+          over that region so the scrolling code lives "inside" the CRT. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute"
+        style={{
+          left: "64.0%",
+          top: "53.5%",
+          width: "20.3%",
+          height: "20.5%",
+          overflow: "hidden",
+          borderRadius: "6px",
+          mixBlendMode: "screen",
+          opacity: 0.85,
+          boxShadow: "inset 0 0 24px rgba(0,0,0,0.7)",
+        }}
+      >
+        <CrtMatrixBackground />
+      </div>
+      {/* Vignette + darken so foreground text stays readable on top of the art. */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 35%, rgba(0,0,0,0.55) 70%, rgba(0,0,0,0.85) 100%)",
+        }}
+      />
+      <div className="scanlines pointer-events-none absolute inset-0 opacity-25" />
+      <div className="amber-vignette pointer-events-none opacity-25" />
 
       <button
         type="button"
@@ -112,80 +148,84 @@ export function TitleScreen({ onStart }: Props) {
         <span>{musicOn ? "Musik AN" : "Musik AUS"}</span>
       </button>
 
-      <div className="relative z-10 max-w-3xl">
-        <p className="font-mono-crt text-xs uppercase tracking-[0.5em] text-muted-foreground">
+      {/* Title + tagline pinned in the upper third (where the artwork has sky). */}
+      <div className="relative z-10 mt-[8vh] max-w-3xl">
+        <p className="font-mono-crt text-xs uppercase tracking-[0.5em] text-amber-glow/70">
           Quadrant E67 · Akt I
         </p>
 
-        <h1 className="mt-4 font-display text-5xl uppercase tracking-[0.15em] text-foreground text-shadow-hard sm:text-7xl">
-          SCHMERZ
-          <span className="mx-2 amber-glow text-amber-glow">·</span>
-          RADIO
+        <h1 className="mt-4 font-display text-6xl uppercase tracking-[0.18em] text-foreground text-shadow-hard sm:text-8xl">
+          WHISPER
+          <span className="mx-3 amber-glow text-amber-glow">·</span>
+          QUEST
         </h1>
 
-        <div className="mt-3 font-mono-crt text-2xl text-amber-glow amber-glow">
-          auf 104,6
+        <div className="mt-3 font-mono-crt text-xl text-amber-glow amber-glow sm:text-2xl">
+          Schmerz-Radio auf 104,6
         </div>
 
-        <p className="mx-auto mt-8 max-w-xl font-display text-base leading-relaxed text-muted-foreground sm:text-lg">
+        <p className="mx-auto mt-6 max-w-xl font-display text-base italic leading-relaxed text-foreground/85 sm:text-lg">
           Ein klassisches Cozypunk-Point-&amp;-Click-Adventure
         </p>
 
         <button
           type="button"
           onClick={handleStartRequest}
-          className="mt-10 rounded-sm border border-amber-glow/60 bg-background/40 px-8 py-3 font-display text-base uppercase tracking-[0.4em] text-amber-glow transition hover:bg-amber-glow/10 amber-glow"
+          className="mt-8 rounded-sm border border-amber-glow/70 bg-background/50 px-8 py-3 font-display text-base uppercase tracking-[0.4em] text-amber-glow backdrop-blur-sm transition hover:bg-amber-glow/15 amber-glow"
         >
           ▸ Spiel beginnen
         </button>
+      </div>
 
-        <div className="mt-12 space-y-1 font-mono-crt text-sm uppercase tracking-[0.3em] text-muted-foreground">
-          <div>Layard Worag · Zimmer 2611</div>
-          <div>CentralOS v2.3 · E67.NETZ stabil</div>
-        </div>
+      {/* Spacer pushes the footer to the bottom. */}
+      <div className="flex-1" />
 
-        <button
-          type="button"
-          onClick={() => setDonationOpen(true)}
-          className="mt-6 inline-block font-mono-crt uppercase tracking-[0.3em] text-amber-glow/80 underline-offset-4 hover:underline amber-glow text-base"
-        >
-          ☕ Buy me a coffee
-        </button>
-
-        <div className="mt-4 flex justify-center">
-          <a
-            href="https://lovable.dev/invite/LN0I260"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Built with Lovable"
-            className="inline-flex items-center gap-2 rounded-sm border border-amber-glow/30 bg-background/40 px-3 py-1.5 font-mono-crt text-xs uppercase tracking-[0.3em] text-amber-glow/70 transition hover:border-amber-glow/60 hover:text-amber-glow"
-          >
-            <span className="text-base leading-none">♥</span>
-            <span>Built with Lovable</span>
-          </a>
-        </div>
-
-        <div className="mt-8 flex flex-col items-center gap-2 font-mono-crt uppercase tracking-[0.3em] text-muted-foreground text-base">
-          <button
-            type="button"
-            onClick={() => setImpressumOpen(true)}
-            className="hover:text-amber-glow"
-          >
-            Impressum
-          </button>
-          <a
-            href="mailto:stephan.doerner@posteo.de"
-            className="hover:text-amber-glow"
-          >
-            Kontakt: stephan.doerner@posteo.de
-          </a>
-          <button
-            type="button"
-            onClick={() => setOssOpen(true)}
-            className="hover:text-amber-glow text-center"
-          >
-            Verwendete Freie-Software-Komponenten und Lizenzen
-          </button>
+      {/* Compact two-row footer with all secondary links. */}
+      <div className="relative z-10 mb-6 w-full max-w-4xl">
+        <div className="rounded-sm border border-amber-glow/25 bg-background/65 px-5 py-3 backdrop-blur-sm">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono-crt text-sm uppercase tracking-[0.22em] text-amber-glow/85">
+            <button
+              type="button"
+              onClick={() => setDonationOpen(true)}
+              className="transition hover:text-amber-glow"
+            >
+              ☕ Buy me a coffee
+            </button>
+            <span aria-hidden="true" className="text-amber-glow/40">·</span>
+            <a
+              href="https://lovable.dev/invite/LN0I260"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 transition hover:text-amber-glow"
+            >
+              <span className="text-base leading-none">♥</span>
+              <span>Built with Lovable</span>
+            </a>
+          </div>
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono-crt text-sm uppercase tracking-[0.22em] text-muted-foreground">
+            <button
+              type="button"
+              onClick={() => setImpressumOpen(true)}
+              className="transition hover:text-amber-glow"
+            >
+              Impressum
+            </button>
+            <span aria-hidden="true" className="text-muted-foreground/50">·</span>
+            <a
+              href="mailto:stephan.doerner@posteo.de"
+              className="transition hover:text-amber-glow"
+            >
+              Kontakt: stephan.doerner@posteo.de
+            </a>
+            <span aria-hidden="true" className="text-muted-foreground/50">·</span>
+            <button
+              type="button"
+              onClick={() => setOssOpen(true)}
+              className="transition hover:text-amber-glow"
+            >
+              Freie-Software-Komponenten &amp; Lizenzen
+            </button>
+          </div>
         </div>
       </div>
 
