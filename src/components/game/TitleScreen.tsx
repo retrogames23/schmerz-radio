@@ -193,7 +193,7 @@ export function TitleScreen({ onStart }: Props) {
           Quadrant E67 · Akt I
         </p>
 
-        <h1 className="mt-4 font-display text-6xl uppercase tracking-[0.18em] text-foreground text-shadow-hard sm:text-8xl">
+        <h1 className="mt-4 font-display uppercase tracking-[0.18em] text-foreground text-shadow-hard sm:text-8xl text-7xl">
           WHISPER
           <span className="mx-3 amber-glow text-amber-glow">·</span>
           QUEST
