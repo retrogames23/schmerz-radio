@@ -26,25 +26,6 @@ export function TitleScreen({ onStart }: Props) {
   const [ossOpen, setOssOpen] = useState(false);
   const [warningOpen, setWarningOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
-  const [monitorTick, setMonitorTick] = useState(0);
-  const monitorLines = [
-    ">> CENTRALOS v2.3",
-    "AUTH 001 -> Insa",
-    "open ROUTER567",
-    "ERR 4567 gateway",
-    "uplink E67 stable",
-    "ps -ef | schmerz",
-    "tail klopf.log",
-    "klopf 26.13/26.15",
-    "DISPATCH 26.15",
-    "GET door/code 401",
-    "POST door/code 200",
-    "verify layard OK",
-    "FREQ 104.6 lock",
-    "ALERT res 0.81",
-    "ZKS @ 03:14",
-    ">> ready.",
-  ];
 
   useEffect(() => {
     const a = new Audio(titleTrack);
@@ -75,13 +56,6 @@ export function TitleScreen({ onStart }: Props) {
       window.removeEventListener("pointerdown", onFirstInteract);
       window.removeEventListener("keydown", onFirstInteract);
     };
-  }, []);
-
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      setMonitorTick((tick) => tick + 1);
-    }, 280);
-    return () => window.clearInterval(id);
   }, []);
 
   // Hinweis: Das lokale WebLLM-Modell wird NICHT mehr vom Titelbildschirm
@@ -131,41 +105,6 @@ export function TitleScreen({ onStart }: Props) {
         width={1920}
         height={1280}
       />
-      {/* Live CRT code animation, masked to the in-painting monitor on the right.
-          The artwork is 1920x1280; the green monitor screen sits roughly at
-          x: 1230..1620, y: 540..820. We position a clipped CrtMatrixBackground
-          over that region so the scrolling code lives "inside" the CRT. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute"
-        style={{
-          left: "56.3%",
-          top: "39.8%",
-          width: "19.2%",
-          height: "23.5%",
-          overflow: "hidden",
-          borderRadius: "6px",
-          // Solid backdrop so the painted (fake) green text is fully replaced
-          // by the live scrolling code from CrtMatrixBackground.
-          background: "#020a04",
-          boxShadow:
-            "inset 0 0 18px rgba(0,0,0,0.85), inset 0 0 36px rgba(57,255,122,0.15)",
-        }}
-      >
-        <div className="absolute inset-0 overflow-hidden px-3 py-2 font-mono-crt text-[10px] leading-[1.15] text-[#39ff7a] [text-shadow:0_0_5px_rgba(57,255,122,0.75)] opacity-90">
-          {Array.from({ length: 14 }).map((_, index) => {
-            const line = monitorLines[(monitorTick + index) % monitorLines.length];
-            return <div key={`${monitorTick}-${index}`}>{line}</div>;
-          })}
-        </div>
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(2,10,4,0.82) 0%, rgba(2,10,4,0.12) 18%, rgba(2,10,4,0.08) 82%, rgba(2,10,4,0.88) 100%)",
-          }}
-        />
-      </div>
       {/* Vignette + darken so foreground text stays readable on top of the art. */}
       <div
         className="pointer-events-none absolute inset-0"
