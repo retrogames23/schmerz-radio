@@ -195,6 +195,73 @@ export const PARAGRAPHS: Record<string, Paragraph> = {
   },
 };
 
+/**
+ * Fiktive „Kantinen-Paragraphen" — Layards Pendant zu Guybrushs schlechten
+ * Beleidigungen. Klingen plausibel, schlagen aber niemals etwas. Liegen ab
+ * Spielstart implizit im Antwort-Pool, ohne im Notizbuch zu erscheinen.
+ */
+export const FICTIONAL_PARAGRAPHS: Record<string, Paragraph> = {
+  "f-pause-4": {
+    id: "f-pause-4",
+    shortLabel: "Pausenordnung §4",
+    fullText: "Pausenordnung §4: »Brötchen sind vor der Suppe auszugeben.«",
+    beatenBy: [],
+  },
+  "f-aushang-12-3": {
+    id: "f-aushang-12-3",
+    shortLabel: "Aushang 12.3 (1988)",
+    fullText:
+      "Aushang 12.3 vom 09. Mai 1988: »Tabletts sind in Fahrtrichtung der Ausgabezone zu führen.«",
+    beatenBy: [],
+  },
+  "f-id-7": {
+    id: "f-id-7",
+    shortLabel: "Identitätsordnung §7",
+    fullText:
+      "Identitätsordnung §7: »Bei Nachschlag ist der Lichtbildausweis erneut vorzuzeigen.«",
+    beatenBy: [],
+  },
+  "f-haus-9c": {
+    id: "f-haus-9c",
+    shortLabel: "Hausordnung §9c",
+    fullText: "Hausordnung §9c: »Pfeifen im Speisesaal ist zu unterlassen.«",
+    beatenBy: [],
+  },
+  "f-aushang-2-2": {
+    id: "f-aushang-2-2",
+    shortLabel: "Aushang 2.2 (1993)",
+    fullText:
+      "Aushang 2.2 vom 17. November 1993: »Suppenlöffel sind nach Gebrauch mit der konvexen Seite nach oben abzulegen.«",
+    beatenBy: [],
+  },
+  "f-vor-5": {
+    id: "f-vor-5",
+    shortLabel: "Vorratsordnung §5",
+    fullText:
+      "Vorratsordnung §5: »Nachschub aus dem Lager B-Süd erfolgt ausschließlich freitags nach 14 Uhr.«",
+    beatenBy: [],
+  },
+  "f-tres-3": {
+    id: "f-tres-3",
+    shortLabel: "Tresenordnung §3",
+    fullText:
+      "Tresenordnung §3: »Bewohner haben einen Mindestabstand von vierzig Zentimetern zur Ausgabekante zu wahren.«",
+    beatenBy: [],
+  },
+  "f-stempel-1b": {
+    id: "f-stempel-1b",
+    shortLabel: "Stempelordnung §1 lit. b",
+    fullText:
+      "Stempelordnung §1 lit. b: »Stempel sind mittig auf der Unterschriftenzeile zu setzen, niemals darüber.«",
+    beatenBy: [],
+  },
+};
+
+/** Lookup, der echte UND fiktive Paragraphen findet. */
+export function getParagraph(id: string): Paragraph | undefined {
+  return PARAGRAPHS[id] ?? FICTIONAL_PARAGRAPHS[id];
+}
+
 // ──────────────────────────────────────────────────────────────────
 // RUNDEN-POOLS
 // ──────────────────────────────────────────────────────────────────
@@ -373,6 +440,71 @@ export function resolveCounters(round: DuelRound): DuelCounter[] {
     paragraphId: c.paragraphId,
     correct: c.paragraphId === correctId,
   }));
+}
+
+/**
+ * Baut die vier Antwort-Optionen für eine Runde abhängig vom aktuellen
+ * Wissensstand des Spielers (Monkey-Island-Logik):
+ *
+ *  - Wenn der Spieler mindestens einen korrekten Konter (= einen Paragraph,
+ *    der `attackParagraphId` schlägt) bereits gelernt hat, kommt GENAU EINER
+ *    davon in die Auswahl. Die übrigen Plätze werden mit unpassenden echten
+ *    Paragraphen + fiktiven Kantinen-Paragraphen aufgefüllt.
+ *  - Wenn nicht, sind alle vier Antworten falsch (Mix aus unpassenden echten
+ *    + fiktiven). Die Runde ist dann nicht gewinnbar — der Spieler weiß das
+ *    nicht und muss raten. Bei Fehlschlag lernt er den korrekten Konter.
+ *
+ * Die Original-Counter-Liste der Runde wird als Pool für die "echten,
+ * unpassenden" Optionen genutzt (sie sind passgenau formuliert).
+ */
+export function buildRoundCounters(
+  round: DuelRound,
+  knownIds: ReadonlySet<string>,
+): DuelCounter[] {
+  const TARGET = 4;
+  const attack = PARAGRAPHS[round.attackParagraphId];
+  const correctIds = attack ? attack.beatenBy : [];
+
+  // 1) Korrekten Konter aus den Runden-Optionen wählen — falls bekannt.
+  const correctOption = round.counters.find(
+    (c) => correctIds.includes(c.paragraphId) && knownIds.has(c.paragraphId),
+  );
+
+  const picked: Array<{ text: string; paragraphId: string; correct: boolean }> =
+    [];
+  const usedIds = new Set<string>();
+
+  if (correctOption) {
+    picked.push({ ...correctOption, correct: true });
+    usedIds.add(correctOption.paragraphId);
+  }
+
+  // 2) Auffüllen mit unpassenden echten Optionen aus dem Runden-Pool.
+  const wrongRealPool = shuffle(
+    round.counters.filter(
+      (c) => !correctIds.includes(c.paragraphId) && !usedIds.has(c.paragraphId),
+    ),
+  );
+  for (const c of wrongRealPool) {
+    if (picked.length >= TARGET) break;
+    picked.push({ ...c, correct: false });
+    usedIds.add(c.paragraphId);
+  }
+
+  // 3) Auffüllen mit fiktiven Kantinen-Paragraphen.
+  const fictionalPool = shuffle(Object.values(FICTIONAL_PARAGRAPHS));
+  for (const f of fictionalPool) {
+    if (picked.length >= TARGET) break;
+    if (usedIds.has(f.id)) continue;
+    picked.push({
+      text: f.fullText.replace(/^[^:]+:\s*»?/, "").replace(/«\.?$/, ""),
+      paragraphId: f.id,
+      correct: false,
+    });
+    usedIds.add(f.id);
+  }
+
+  return shuffle(picked);
 }
 
 /**
