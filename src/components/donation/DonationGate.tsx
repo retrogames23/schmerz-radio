@@ -3,6 +3,7 @@ import { onCloudError, onCloudUsage } from "@/llm/cloudLlmRuntime";
 import { useDonationStatus } from "@/hooks/useDonationStatus";
 import { useAuth } from "@/auth/AuthContext";
 import { DonationModal } from "./DonationModal";
+import { isWebGpuAvailable, startLocalLlmLoad } from "@/llm/webLlmLoader";
 
 /**
  * Globaler Listener: zeigt das Spenden-Modal bei Soft-Limit (Warnung)
@@ -37,6 +38,16 @@ export function DonationGate() {
         setVariant("soft");
         setCount(c);
         setOpen(true);
+        // Spieler hat das Soft-Limit erreicht und wird gefragt, ob er
+        // spenden möchte. Falls nicht, wird er bald in den Free-Mode mit
+        // lokalem LLM gedrängt — also fangen wir JETZT an, das Modell
+        // im Hintergrund vorzuladen. Vorher nicht: Spieler, die nie an
+        // dieses Limit kommen, müssen die GB-große Datei nie ziehen.
+        if (isWebGpuAvailable()) {
+          void startLocalLlmLoad().catch(() => {
+            /* still ignorieren — UI zeigt es im Free-Chat ggf. nochmal an */
+          });
+        }
       }
     });
   }, [user, shownSoftAt]);
