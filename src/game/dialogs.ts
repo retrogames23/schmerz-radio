@@ -4652,20 +4652,24 @@ export const dialogs: Record<string, DialogTree> = {
       kAuth6: {
         id: "kAuth6",
         speaker: "KOWALK",
-        text: "Worag. Ich brauche etwas, das ich Brust hinhalten kann. Sonst gibt’s das nicht.",
+        text: "Worag. Hier kommen Sie an mir nicht vorbei — und an Brust auch nicht. Nicht über die Theke.",
+        next: "kAuth7",
+      },
+      kAuth7: {
+        id: "kAuth7",
+        speaker: "KOWALK",
+        text: "Brust hat das vor zwei Wochen weiterdelegiert. Bei der Vollmacht 4317 entscheidet jetzt Oberinspektor Vossbeck. Sitzt drüben, hinterm Aktentisch, beim Hochregal. Mit Ihm reden — nicht mit uns.",
+        subtext: "Sie sagt »Vossbeck« mit der Vorsicht von jemandem, der den Namen schon einmal verloren hat.",
+        next: "kAuth8",
+      },
+      kAuth8: {
+        id: "kAuth8",
+        speaker: "KOWALK",
+        text: "Aber Vossbeck redet nur mit Leuten, die Paragraphen können. Brust trainiert die Bewohner manchmal — fiktive Kantinenfälle. Wer ihn dreimal in Folge schlägt, gilt als satisfaktionsfähig. Wer das nicht ist, läuft bei Vossbeck gegen eine Wand.",
         choices: [
           {
-            // Lösungsweg A — Vertrauen via Ausweis + Philippe-Hinweis
-            text: "[ Bewohner-Ausweis zeigen ] Philippe sieht seit gestern schlecht aus. Ich gehe für ihn — Sie wissen, warum.",
-            requires: ["metPhilippe", "kowalkToldHerDaughter", "learnedMarteauPhilippeLink"],
-            hiddenWhen: ["brustOutruled"],
-            next: "kSideA1",
-          },
-          {
-            // Lösungsweg B — die alte Hygieneordnung
-            text: "[ E67-Handbuch zeigen ] Hier — Hygieneordnung 1991, wörtlich. Aushang sieben Punkt eins.",
-            requires: ["readHandbook"],
-            next: "kSideB1",
+            text: "Verstanden. Ich rede mit Brust.",
+            next: "k0",
           },
           {
             text: "Vergessen Sie’s. Komme später wieder.",
@@ -4813,21 +4817,18 @@ export const dialogs: Record<string, DialogTree> = {
             hiddenWhen: ["gotB3Ration"],
           },
           {
-            // Dritter Lösungsweg: Bürokratie-Duell. Sichtbar, sobald
-            // Brust die Vollmacht 4317 abgelehnt hat. Ausgeblendet, sobald
-            // die B3-Ration auf irgendeinem Weg im Inventar liegt.
-            text: "Ich akzeptiere das nicht. Wollen Sie es paragraphengenau ausfechten?",
+            // Trainingsfall — fiktive Kantinenfälle, lehrt Paragraphen.
+            // Bleibt verfügbar, bis Layard das Endduell gewonnen hat.
+            text: "Ich würde mit Ihnen einen Trainingsfall durchgehen.",
             next: "bDuelOffer",
-            requires: ["gotB3Authorization"],
-            hiddenWhen: ["gotB3Ration", "duelLost"],
+            hiddenWhen: ["gotB3Ration"],
           },
           {
-            // Wiederaufnahme nach verlorenem Duell — Brust war in der
-            // Zwischenzeit schweigsam, lässt sich aber erneut darauf ein.
-            text: "Ich versuche es noch einmal. Mit besseren Argumenten.",
-            next: "bDuelRetry",
-            requires: ["duelLost"],
-            hiddenWhen: ["gotB3Ration", "duelWon"],
+            // Erst sichtbar nach 3-Streak — Brust verweist explizit auf Vossbeck.
+            text: "Ich glaube, ich bin bereit für Vossbeck.",
+            next: "bVossbeckHint",
+            requires: ["vossbeckSummoned"],
+            hiddenWhen: ["gotB3Ration"],
           },
           {
             text: "Welcher Aushang gilt jetzt eigentlich?",
@@ -4846,14 +4847,24 @@ export const dialogs: Record<string, DialogTree> = {
       bAuth1: {
         id: "bAuth1",
         speaker: "BRUST",
-        text: "4317 — Marteau. Schicht A gegengezeichnet. Heute Schicht B. Aushang vier Punkt zwei.",
+        text: "4317 — Marteau. Schicht A gegengezeichnet. Heute Schicht B. Aushang vier Punkt zwei. Ich kann das nicht entscheiden.",
         next: "bAuth2",
       },
       bAuth2: {
         id: "bAuth2",
         speaker: "BRUST",
-        text: "Ich kann das nicht freigeben. Bitte mit Frau Kowalk weiterreden.",
+        text: "Vorgang Vollmacht 4317 ist seit zwei Wochen Vossbeck-Sache. Bewohnervertretung E67, Bürokratiemeisterschaft. Sitzt hinten beim Aktentisch.",
+        next: "bAuth3",
+      },
+      bAuth3: {
+        id: "bAuth3",
+        speaker: "BRUST",
+        text: "Vossbeck nimmt aber nur Vorgänge von Bewohnern an, die paragraphenfest sind. Wenn Sie wollen — wir können vorher einen Trainingsfall durchgehen. Drei in Folge bei mir, dann sind Sie für Vossbeck satisfaktionsfähig.",
         choices: [
+          {
+            text: "Trainingsfall, ja.",
+            next: "bDuelOffer",
+          },
           {
             text: "Verstanden.",
             next: "b0",
@@ -4863,20 +4874,20 @@ export const dialogs: Record<string, DialogTree> = {
       bDuelOffer: {
         id: "bDuelOffer",
         speaker: "BRUST",
-        text: "Ausfechten. (Pause.) Bewohner Worag, wenn Sie das wirklich wollen — Aushänge, Paragraphen, Schichtklauseln. Drei Erwiderungen in Folge. Schaffen Sie das, gebe ich aus.",
+        text: "Trainingsfall. Fiktive Konstellation aus dem Kantinenbetrieb. Ich eröffne mit einem Paragraphen, Sie kontern. Zwei Treffer mehr als Fehler — Sie haben gewonnen. Drei Fehler — Trainingsfall verloren.",
         next: "bDuelOffer2",
       },
       bDuelOffer2: {
         id: "bDuelOffer2",
         speaker: "BRUST",
-        text: "Schaffen Sie es nicht, schließe ich die Ausgabezone für Sie. Bis Sie wiederkommen — mit besseren Argumenten.",
+        text: "Was Sie aus jedem Fall mitnehmen, landet in Ihrem Notizbuch. Drei gewonnene Trainingsfälle in Folge — und Vossbeck nimmt Sie ernst.",
         choices: [
           {
-            text: "[ Duell beginnen ]",
+            text: "[ Trainingsfall beginnen ]",
             action: (api) => {
               api.setFlag("duelOffered");
               api.setFlag("duelStarted");
-              api.openBureaucracyDuel();
+              api.openBureaucracyDuel("training");
             },
             // Dialog beendet sich; das Overlay übernimmt.
           },
@@ -4889,13 +4900,13 @@ export const dialogs: Record<string, DialogTree> = {
       bDuelRetry: {
         id: "bDuelRetry",
         speaker: "BRUST",
-        text: "Bewohner Worag. Sie sind hartnäckig. (Pause.) Gut. Drei neue Erwiderungen. Wenn Sie diesmal scheitern — bleibt es dabei.",
+        text: "Bewohner Worag. Sie sind hartnäckig. (Pause.) Gut. Neuer Trainingsfall.",
         choices: [
           {
-            text: "[ Duell beginnen ]",
+            text: "[ Trainingsfall beginnen ]",
             action: (api) => {
               api.setFlag("duelStarted");
-              api.openBureaucracyDuel();
+              api.openBureaucracyDuel("training");
             },
           },
           {
@@ -4903,6 +4914,12 @@ export const dialogs: Record<string, DialogTree> = {
             next: "b0",
           },
         ],
+      },
+      bVossbeckHint: {
+        id: "bVossbeckHint",
+        speaker: "BRUST",
+        text: "Drei in Folge. Korrekt notiert. — Vossbeck steht hinten beim Hochregal. Er weiß bereits, dass Sie kommen. Klopfen Sie nicht. Er hasst das.",
+        next: "b0",
       },
       bHyg1: {
         id: "bHyg1",
@@ -4933,6 +4950,102 @@ export const dialogs: Record<string, DialogTree> = {
         id: "bBye",
         speaker: "BRUST",
         text: "Auf Wiedersehen, Bewohner Worag.",
+        end: true,
+      },
+    },
+  },
+
+  // ── Vossbeck-Dialogbaum (Endgegner) ───────────────────────
+  // Sichtbar erst nach drei Trainingssiegen in Folge gegen Brust
+  // (Flag `vossbeckSummoned`). Vossbeck führt das Endduell um die
+  // Vollmacht 4317.
+  cafeteriaVossbeck: {
+    id: "cafeteriaVossbeck",
+    start: "v0",
+    lines: {
+      v0: {
+        id: "v0",
+        speaker: "SYSTEM",
+        text: "[ Hinten beim Hochregal: ein Mann in dunklem Kittel, etwa fünfzig, kein Namensschild. Aktendeckel auf den Knien. Bleistift senkrecht in der Hand. ]",
+        hiddenWhen: ["metVossbeck"],
+        next: "v1",
+      },
+      v1: {
+        id: "v1",
+        speaker: "BRUST",
+        text: "Oberinspektor Vossbeck. Bewohnervertretung E67, Bürokratiemeisterschaft.",
+        subtext: "Brust hat das aus zwei Metern Entfernung gerufen. Vossbeck hebt nicht den Kopf.",
+        hiddenWhen: ["metVossbeck"],
+        next: "v2",
+      },
+      v2: {
+        id: "v2",
+        speaker: "BRUST",
+        text: "Bewohner Worag. Vorgang Vollmacht 4317. Drei Trainingssiege in Folge dokumentiert.",
+        hiddenWhen: ["metVossbeck"],
+        next: "v3",
+      },
+      v3: {
+        id: "v3",
+        speaker: "SYSTEM",
+        text: "[ Vossbeck legt den Aktendeckel auf den Tisch. Schaut zum ersten Mal hoch. ]",
+        hiddenWhen: ["metVossbeck"],
+        next: "v4",
+      },
+      vReturn: {
+        id: "vReturn",
+        speaker: "SYSTEM",
+        text: "[ Vossbeck schaut auf, ohne den Bleistift abzulegen. ]",
+        requires: ["metVossbeck"],
+        hiddenWhen: ["duelEndgameWon"],
+        next: "v4",
+      },
+      v4: {
+        id: "v4",
+        speaker: "VOSSBECK",
+        text: "Worag. Sie wollen Vorgang Vollmacht 4317 verhandelt sehen.",
+        hiddenWhen: ["duelEndgameWon"],
+        next: "v5",
+      },
+      v5: {
+        id: "v5",
+        speaker: "VOSSBECK",
+        text: "Drei Runden. Drei Treffer in Folge — und ich gebe die Ration frei. Drei Fehler — und der Vorgang ist abschlägig beschieden. Permanent.",
+        hiddenWhen: ["duelEndgameWon"],
+        next: "v6",
+      },
+      v6: {
+        id: "v6",
+        speaker: "VOSSBECK",
+        text: "Ich verwende ausschließlich Paragraphen, die in Ihrem Notizbuch stehen sollten. Wenn nicht — ist das Ihr Versäumnis.",
+        hiddenWhen: ["duelEndgameWon"],
+        choices: [
+          {
+            text: "[ Endduell beginnen ]",
+            action: (api) => {
+              api.setFlag("metVossbeck");
+              api.openBureaucracyDuel("endgame");
+            },
+          },
+          {
+            text: "Ich brauche noch einen Moment.",
+            action: (api) => api.setFlag("metVossbeck"),
+            next: "vWait",
+          },
+        ],
+      },
+      vWait: {
+        id: "vWait",
+        speaker: "VOSSBECK",
+        text: "Nehmen Sie sich. Ich gehe nirgendwo hin.",
+        end: true,
+      },
+      // Nach gewonnenem Endduell — sehr knapper Smalltalk.
+      vAfter: {
+        id: "vAfter",
+        speaker: "VOSSBECK",
+        text: "Worag. Vorgang abgeschlossen. Ich notiere Sie für Folgetermine.",
+        requires: ["duelEndgameWon"],
         end: true,
       },
     },

@@ -23,7 +23,8 @@ type Speaker =
   | "BREM"
   | "YELVA"
   | "KOWALK"
-  | "BRUST";
+  | "BRUST"
+  | "VOSSBECK";
 
 
 interface VoiceProfile {
@@ -163,6 +164,14 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
     voiceId: "N2lVS1w4EtoT3dr4eOWO",
     speed: 1.05,
     settings: { stability: 0.45, similarity_boost: 0.8, style: 0.3, use_speaker_boost: true },
+  },
+  VOSSBECK: {
+    // Tief, trocken, formal — der amtierende Bürokratiemeister. Gleiche
+    // Voice-ID wie Stegmann (monotone Verwaltungsstimme), aber etwas
+    // langsamer und stabiler — Vossbeck ist nicht nervös, sondern abschlie\u00dfend.
+    voiceId: "JBFqnCBsd6RMkjVDRZzb",
+    speed: 0.92,
+    settings: { stability: 0.7, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true },
   },
 };
 

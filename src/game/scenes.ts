@@ -2309,6 +2309,23 @@ export const scenes: Record<string, Scene> = {
         },
       },
       {
+        // Oberinspektor Vossbeck — sichtbar, sobald Layard drei
+        // Trainingssiege gegen Brust geschafft hat. Steht hinten beim
+        // Hochregal mit Aktendeckel auf den Knien.
+        id: "vossbeckSpot",
+        x: 47,
+        y: 28,
+        w: 8,
+        h: 28,
+        label: "Oberinspektor Vossbeck",
+        kind: "talk",
+        requires: ["vossbeckSummoned"],
+        hiddenWhen: ["duelEndgameWon"],
+        onUse: (api) => {
+          api.startDialog("cafeteriaVossbeck");
+        },
+      },
+      {
         id: "cafeteriaCounter",
         x: 36,
         y: 56,
