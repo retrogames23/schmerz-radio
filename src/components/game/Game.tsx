@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useState } from "react";
 import { GameProvider } from "@/game/GameContext";
 import { InventoryDragProvider } from "@/game/InventoryDragContext";
 import { SettingsProvider } from "@/audio/SettingsContext";
@@ -12,7 +12,6 @@ import { ActiveItemBanner } from "./ActiveItemBanner";
 import { TextOverlay } from "./TextOverlay";
 import { DialogOverlay } from "./DialogOverlay";
 import { RadioPanel } from "./RadioPanel";
-import { Terminal } from "./Terminal";
 import { Keypad } from "./Keypad";
 import { Television } from "./Television";
 import { NodeTerminal } from "./NodeTerminal";
@@ -22,20 +21,46 @@ import { Ending } from "./Ending";
 import { TitleScreen } from "./TitleScreen";
 import { PauseMenu } from "./PauseMenu";
 import { MobileStage } from "./MobileStage";
-import { DsaCharacterCreator } from "./DsaCharacterCreator";
-import { DsaAdventureScene } from "./DsaAdventureScene";
 import { DsaCharacterSheet } from "./DsaCharacterSheet";
-import { HandbookOverlay } from "./HandbookOverlay";
-import { HelpOverlay, type HelpTab } from "./HelpOverlay";
+import type { HelpTab } from "./HelpOverlay";
 import { IdCardOverlay } from "./IdCardOverlay";
 import { LobbyGate } from "./LobbyGate";
 import { PneumaticTubeOverlay } from "./PneumaticTubeOverlay";
-import { BureaucracyDuelOverlay } from "./BureaucracyDuelOverlay";
 import { ParagraphenNotizbuchOverlay } from "./ParagraphenNotizbuchOverlay";
 import { FreeChatOverlay } from "./FreeChatOverlay";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useGame } from "@/game/GameContext";
 import { DonationGate } from "@/components/donation/DonationGate";
+
+/* ─── Lazy-geladene Overlays ──────────────────────────────────────
+ * Diese Komponenten sind groß (200-2000+ LOC) und nur sichtbar, wenn
+ * der Spieler ein bestimmtes Element aktiviert. Wir laden sie erst
+ * beim ersten Öffnen, damit das initiale JS-Bundle klein bleibt.
+ * Re-Export-Form (`{ default: m.Foo }`), weil die Overlays als
+ * Named-Exports geschrieben sind.
+ */
+const Terminal = lazy(() =>
+  import("./Terminal").then((m) => ({ default: m.Terminal })),
+);
+const DsaCharacterCreator = lazy(() =>
+  import("./DsaCharacterCreator").then((m) => ({
+    default: m.DsaCharacterCreator,
+  })),
+);
+const DsaAdventureScene = lazy(() =>
+  import("./DsaAdventureScene").then((m) => ({ default: m.DsaAdventureScene })),
+);
+const HandbookOverlay = lazy(() =>
+  import("./HandbookOverlay").then((m) => ({ default: m.HandbookOverlay })),
+);
+const HelpOverlay = lazy(() =>
+  import("./HelpOverlay").then((m) => ({ default: m.HelpOverlay })),
+);
+const BureaucracyDuelOverlay = lazy(() =>
+  import("./BureaucracyDuelOverlay").then((m) => ({
+    default: m.BureaucracyDuelOverlay,
+  })),
+);
 
 /**
  * Schaltet beim Betreten des DSA-Gemeinschaftsraums (oder solange das
@@ -211,34 +236,55 @@ function GameStage({
             <TextOverlay />
             <DialogOverlay />
             <RadioPanel />
-            <Terminal />
             <Keypad />
             <Television />
             <NodeTerminal />
             <BurnSequence />
             <ParamedicsCutscene />
-            <DsaCharacterCreator />
-            <DsaAdventureScene />
             <DsaCharacterSheet />
             <DsaMusicBridge />
-            <HandbookOverlay open={handbookOpen} onClose={closeHandbook} />
-            <HelpOverlay
-              open={helpOpen !== false}
-              initialTab={helpOpen === false ? "cheatsheet" : helpOpen}
-              onClose={handleCloseHelp}
-            />
             <IdCardOverlay open={idCardOpen} onClose={closeIdCard} />
             <LobbyGate />
             <PneumaticTubeOverlay />
-            <BureaucracyDuelOverlay />
             <ParagraphenNotizbuchOverlay />
             <FreeChatOverlay />
             <Ending />
             <PauseMenu open={pauseOpen} onClose={handleClosePause} />
+            {/* Lazy-Overlays: Komponente erst gemounted (= Chunk geladen),
+                wenn der entsprechende Open-State true ist. So schlummert
+                z. B. der 2000-Zeilen-Terminal-Code bis zum ersten Öffnen. */}
+            <Suspense fallback={null}>
+              {terminalOpen && <Terminal />}
+              {dsaCreatorOpen && <DsaCharacterCreator />}
+              {dsaAdventureOpen && <DsaAdventureScene />}
+              {handbookOpen && (
+                <HandbookOverlay open={handbookOpen} onClose={closeHandbook} />
+              )}
+              {helpOpen !== false && (
+                <HelpOverlay
+                  open
+                  initialTab={helpOpen}
+                  onClose={handleCloseHelp}
+                />
+              )}
+              <BureaucracyDuelGate />
+            </Suspense>
           </div>
         </main>
         <Inventory />
       </div>
     </MobileStage>
   );
+}
+
+/**
+ * Kleiner Gate-Wrapper für das Bürokratie-Duell-Overlay: liest selbst
+ * `duelOpen` aus dem GameContext, damit das schwere Modul erst beim
+ * Öffnen geladen wird, ohne dass `GameStage` den State bei jeder
+ * Interaktion neu prüfen muss.
+ */
+function BureaucracyDuelGate() {
+  const { duelOpen } = useGame();
+  if (!duelOpen) return null;
+  return <BureaucracyDuelOverlay />;
 }
