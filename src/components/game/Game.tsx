@@ -31,6 +31,7 @@ import { IdCardOverlay } from "./IdCardOverlay";
 import { LobbyGate } from "./LobbyGate";
 import { PneumaticTubeOverlay } from "./PneumaticTubeOverlay";
 import { BureaucracyDuelOverlay } from "./BureaucracyDuelOverlay";
+import { ParagraphenNotizbuchOverlay } from "./ParagraphenNotizbuchOverlay";
 import { FreeChatOverlay } from "./FreeChatOverlay";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useGame } from "@/game/GameContext";
@@ -218,6 +219,7 @@ function GameStage({
             <LobbyGate />
             <PneumaticTubeOverlay />
             <BureaucracyDuelOverlay />
+            <ParagraphenNotizbuchOverlay />
             <FreeChatOverlay />
             <Ending />
             <PauseMenu open={pauseOpen} onClose={() => setPauseOpen(false)} />

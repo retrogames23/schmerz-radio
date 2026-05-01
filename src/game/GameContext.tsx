@@ -66,6 +66,10 @@ interface GameState {
   lobbyGateOpen: boolean;
   /** Bürokratie-Duell-Overlay (Brust-Tresen, Akt I) sichtbar. */
   duelOpen: boolean;
+  /** Modus des aktiven Duells. */
+  duelMode: "training" | "endgame" | null;
+  /** Notizbuch-Overlay (gelernte Paragraphen) sichtbar. */
+  notizbuchOpen: boolean;
 }
 
 interface GameContextValue extends GameState {
@@ -106,6 +110,10 @@ interface GameContextValue extends GameState {
   closeLobbyGate: () => void;
   /** Bürokratie-Duell schließen (Abbruch oder nach Sieg/Niederlage). */
   closeDuel: () => void;
+  /** Notizbuch schließen. */
+  closeNotizbuch: () => void;
+  /** Set der gelernten Paragraphen-IDs (für Notizbuch-UI). */
+  learnedParagraphs: ReadonlySet<string>;
   /** Lobby-Schleusen-Eskalation (Fehlversuche, transient). */
   getLobbyGateAttempts: () => number;
   bumpLobbyGateAttempts: () => number;
@@ -203,6 +211,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [idCardOpen, setIdCardOpen] = useState(false);
   const [lobbyGateOpen, setLobbyGateOpen] = useState(false);
   const [duelOpen, setDuelOpen] = useState(false);
+  const [duelMode, setDuelMode] = useState<"training" | "endgame" | null>(null);
+  const [notizbuchOpen, setNotizbuchOpen] = useState(false);
+  const [learnedParagraphs, setLearnedParagraphs] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const learnedParagraphsRef = useRef(learnedParagraphs);
+  learnedParagraphsRef.current = learnedParagraphs;
+  const brustWinStreakRef = useRef(0);
   const [freeChatNpcId, setFreeChatNpcId] = useState<string | null>(null);
   const [isEssentialAssetsLoaded, setIsEssentialAssetsLoaded] = useState(false);
   // Eskalationszähler der Lobby-Schleuse (Fehlversuche), nicht persistiert.
@@ -375,11 +391,49 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setTerminalOpen(false);
         setPneumaticOpen(true);
       },
-      openBureaucracyDuel: () => {
+      openBureaucracyDuel: (mode = "training") => {
         setRadioOpen(false);
         setTerminalOpen(false);
         setPneumaticOpen(false);
+        setDuelMode(mode);
         setDuelOpen(true);
+      },
+      openParagraphenNotizbuch: () => {
+        setNotizbuchOpen(true);
+      },
+      hasParagraph: (id: string) => learnedParagraphsRef.current.has(id),
+      learnParagraph: (id: string) => {
+        setLearnedParagraphs((prev) => {
+          if (prev.has(id)) return prev;
+          const n = new Set(prev);
+          n.add(id);
+          // Sicherstellen, dass das Notizbuch im Inventar liegt, sobald
+          // Layard zum ersten Mal etwas lernt.
+          if (!inventoryRef.current.some((i) => i.id === "paragraphenNotizbuch")) {
+            setInventory((inv) =>
+              inv.find((i) => i.id === "paragraphenNotizbuch")
+                ? inv
+                : [
+                    ...inv,
+                    {
+                      id: "paragraphenNotizbuch",
+                      name: "Paragraphen-Notizbuch",
+                      description:
+                        "Ein abgegriffenes Heft mit Karohaltung. Vorne Layards Initialen, innen wachsende Listen aus Aushängen, Schicht- und Vollmachtsklauseln. Wer Brust an seinem Tresen schlagen will, muss hier nachschlagen.",
+                    },
+                  ],
+            );
+          }
+          return n;
+        });
+      },
+      getBrustWinStreak: () => brustWinStreakRef.current,
+      bumpBrustWinStreak: () => {
+        brustWinStreakRef.current += 1;
+        return brustWinStreakRef.current;
+      },
+      resetBrustWinStreak: () => {
+        brustWinStreakRef.current = 0;
       },
       setEnding: () => setEnding(true),
       playBurnSequence: () => {
@@ -621,6 +675,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     idCardOpen,
     lobbyGateOpen,
     duelOpen,
+    duelMode,
+    notizbuchOpen,
+    learnedParagraphs,
     freeChatNpcId,
     openFreeChat: (npcId: string) => setFreeChatNpcId(npcId),
     closeFreeChat: () => setFreeChatNpcId(null),
@@ -671,6 +728,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     openLobbyGate: () => setLobbyGateOpen(true),
     closeLobbyGate: () => setLobbyGateOpen(false),
     closeDuel: () => setDuelOpen(false),
+    closeNotizbuch: () => setNotizbuchOpen(false),
     /** Aktueller Fehlversuchs-Zähler der Lobby-Schleuse (für die UI). */
     getLobbyGateAttempts: () => lobbyGateAttemptsRef.current,
     bumpLobbyGateAttempts: () => {

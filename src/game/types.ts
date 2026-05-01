@@ -43,7 +43,9 @@ export type InventoryItemId =
   // Schmerz-Radio-Erweiterung (Akt I)
   | "antennaWire"
   | "amplifierAntenna"
-  | "wartungsDiktat";
+  | "wartungsDiktat"
+  // Bürokratie-Duell — gesammelte Verwaltungs-Paragraphen
+  | "paragraphenNotizbuch";
 
 export type KnowledgeFlag =
   | "responsibilityE67"
@@ -213,6 +215,14 @@ export type StoryFlag =
   | "duelStarted"
   | "duelWon"
   | "duelLost"
+  // Bürokratie-Duell — Mehrstufiges Lernsystem (Vossbeck-Endgegner)
+  | "duelTrainingWon1"
+  | "duelTrainingWon2"
+  | "duelTrainingWon3"
+  | "vossbeckSummoned"
+  | "metVossbeck"
+  | "duelEndgameWon"
+  | "duelEndgameLost"
   // Mira — Vertrauenspfad
   | "readMiraManifest"
   | "radioMutedAtLeast60s"
@@ -437,9 +447,21 @@ export interface GameApi {
   openPneumaticTube: () => void;
   /**
    * Bürokratie-Duell am Brust-Tresen (Akt I, Kantine 3602). Öffnet das
-   * Overlay und startet einen frischen 3-Runden-Versuch.
+   * Overlay und startet einen frischen Versuch. `mode` steuert, ob es
+   * ein Trainingsfall gegen Brust ist oder das Endduell gegen Vossbeck.
    */
-  openBureaucracyDuel: () => void;
+  openBureaucracyDuel: (mode?: "training" | "endgame") => void;
+  /** Notizbuch-Overlay öffnen (gelernte Paragraphen). */
+  openParagraphenNotizbuch: () => void;
+  /** Hat Layard den Paragraphen schon im Notizbuch? */
+  hasParagraph: (id: string) => boolean;
+  /** Paragraph ins Notizbuch eintragen (idempotent). */
+  learnParagraph: (id: string) => void;
+  /** Aktueller Brust-Trainings-Streak (gewonnene in Folge). */
+  getBrustWinStreak: () => number;
+  /** Streak inkrementieren oder zurücksetzen. */
+  bumpBrustWinStreak: () => number;
+  resetBrustWinStreak: () => void;
   isRadioActive: () => boolean;
   setEnding: () => void;
   /**
