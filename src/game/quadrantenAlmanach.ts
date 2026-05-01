@@ -91,7 +91,7 @@ export const ALMANACH_CHAPTERS: AlmanachChapter[] = [
     body: [
       "Die 80er Jahre verliefen im Mandatsgebiet **ohne große Erschütterungen**. Manche bezeichnen diese Zeit als Stillstand, andere als die ersten Jahre echter Stabilität — der Almanach möchte das nicht entscheiden.",
       "**1986** wurde das Mandatsgebiet in einen **lockeren Staatenbund** umgewandelt. Der Mandatsrat zog sich aus der laufenden Verwaltung zurück; sein Apparat blieb unverändert in Funktion. Es bestand kein Anlass, ihn zu ändern.",
-      "**1989** ging das **ZENTRAL.NETZ** in Betrieb, ein staatlich kuratiertes Verzeichnis- und Botensystem auf bernsteinfarbenen Terminals. Es löste die letzten verbliebenen Telex-Strecken ab. Das Betriebssystem heißt **CENTRALOS**.",
+      "**1989** ging das **ZENTRAL.NETZ** in Betrieb, ein staatlich kuratiertes Verzeichnis- und Botensystem auf Terminalstationen. Es löste die letzten verbliebenen Telex-Strecken ab. Das Betriebssystem heißt **CENTRALOS**.",
       "**1996 — Sektor-Reform.** Quadranten werden zu Sektoren zusammengefasst. Die alte Notrufnummer 002 wird abgeschafft (vgl. E67-Handbuch §3 Abs. 3). Das Bewohner-Kompendium erscheint in seiner 7. revidierten Fassung.",
       "*„Wir leben in einer Welt, in der wenig passieren muss. Manche finden das tröstlich. Andere weniger.“*",
     ],
@@ -129,7 +129,7 @@ export const ALMANACH_CHAPTERS: AlmanachChapter[] = [
     title: "Technik im Alltag",
     body: [
       "Der Almanach gibt einen knappen Überblick über die Geräte, denen Sie in einem mitteleuropäischen Quadranten regelmäßig begegnen. Andere Geräte gibt es ebenfalls; sie spielen im Alltag aber selten eine Rolle.",
-      "- **CENTRALOS / ZENTRAL.NETZ.** Das staatlich kuratierte Verzeichnis- und Botensystem auf bernsteinfarbenen Terminals. Zugang über die Terminal-Stationen in Postämtern und Verwaltungsstellen, in einzelnen Wohnungen auch privat.",
+      "- **CENTRALOS / ZENTRAL.NETZ.** Das staatlich kuratierte Verzeichnis- und Botensystem auf den verbreiteten bernsteinfarbenen Terminals; daneben kommen je nach Behörde und Baujahr auch Geräte mit grüner oder weißer Bildröhre vor. Zugang über die Terminal-Stationen in Postämtern und Verwaltungsstellen, in einzelnen Wohnungen auch privat.",
       "- **Festnetztelefon und Rohrpost.** Die beiden tragenden Säulen des Schriftverkehrs. Das Telefon für das Dringliche, die Rohrpost für das, was eine Unterschrift braucht.",
       "- **UKW-Radio, Tonband, Vinyl.** Die übliche Hör-Ausstattung. Bandkopien werden seit Jahrzehnten von Hand zu Hand weitergegeben.",
       "- **Fernsehen.** Schwarzweiß ist die Regel, Farbgeräte gibt es vereinzelt. Programm: drei Sektor-Kanäle und ein Konventions-Kanal.",
