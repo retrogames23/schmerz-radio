@@ -53,6 +53,9 @@ const DsaAdventureScene = lazy(() =>
 const HandbookOverlay = lazy(() =>
   import("./HandbookOverlay").then((m) => ({ default: m.HandbookOverlay })),
 );
+const AlmanachOverlay = lazy(() =>
+  import("./AlmanachOverlay").then((m) => ({ default: m.AlmanachOverlay })),
+);
 const HelpOverlay = lazy(() =>
   import("./HelpOverlay").then((m) => ({ default: m.HelpOverlay })),
 );
@@ -169,6 +172,8 @@ function GameStage({
     toggleDsaSheet,
     handbookOpen,
     closeHandbook,
+    almanachOpen,
+    closeAlmanach,
     idCardOpen,
     closeIdCard,
   } = useGame();
@@ -259,6 +264,9 @@ function GameStage({
               {dsaAdventureOpen && <DsaAdventureScene />}
               {handbookOpen && (
                 <HandbookOverlay open={handbookOpen} onClose={closeHandbook} />
+              )}
+              {almanachOpen && (
+                <AlmanachOverlay open={almanachOpen} onClose={closeAlmanach} />
               )}
               {helpOpen !== false && (
                 <HelpOverlay
