@@ -5,6 +5,7 @@ import { ImpressumOverlay } from "./ImpressumOverlay";
 import { OpenSourceOverlay } from "./OpenSourceOverlay";
 import { DonationModal } from "@/components/donation/DonationModal";
 import titleArtwork from "@/assets/title/whisper-quest-v1.jpg";
+import { RainOverlay } from "./RainOverlay";
 
 const PRE_ALPHA_WARNING_UI_TEXT = {
   title: "Pre-Alpha-Warnung",
@@ -105,6 +106,8 @@ export function TitleScreen({ onStart }: Props) {
         width={1920}
         height={1280}
       />
+      {/* Animated rain on top of the painted artwork. */}
+      <RainOverlay />
       {/* Vignette + darken so foreground text stays readable on top of the art. */}
       <div
         className="pointer-events-none absolute inset-0"
