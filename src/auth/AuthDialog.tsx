@@ -106,6 +106,12 @@ export function AuthDialog({ open, onClose }: Props) {
               minLength={mode === "signup" ? 6 : 1}
             />
           </label>
+          {mode === "signup" && (
+            <p className="rounded-sm border border-amber-glow/30 bg-amber-glow/5 px-3 py-2 text-[11px] leading-relaxed text-amber-glow/90">
+              Achtung: Bitte benutze ein Passwort, das du nirgendwo anders
+              benutzt — und auf keinen Fall das Passwort deines E-Mail-Diensts.
+            </p>
+          )}
 
           {error && (
             <div className="rounded-sm border border-destructive/60 bg-destructive/10 px-3 py-2 text-xs text-destructive">
