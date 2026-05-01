@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import {
+  buildRoundCounters,
   DUEL_UI_TEXT,
   PARAGRAPHS,
+  getParagraph,
   pickEndgameRounds,
   pickTrainingRounds,
   resolveCounters,
@@ -37,6 +39,7 @@ export function BureaucracyDuelOverlay() {
   const [feedback, setFeedback] = useState<string[]>([]);
   const [learnedThisRound, setLearnedThisRound] = useState<string[]>([]);
   const [locked, setLocked] = useState(false);
+  const [tutorialShown, setTutorialShown] = useState(false);
 
   // Bei jedem Open: passend zum Modus würfeln + Reset.
   useEffect(() => {
@@ -53,19 +56,21 @@ export function BureaucracyDuelOverlay() {
 
   const round = rounds[currentIdx];
 
-  // Im Trainingsmodus lernt Layard den Angriffs-Paragraphen einer Runde
-  // automatisch, sobald die Runde startet (Brust nennt ihn vor).
+  // Onboarding-Hinweis von Kowalk beim allerersten Trainingsduell-Öffnen.
   useEffect(() => {
-    if (!duelOpen || !round || isEndgame) return;
-    const attackId = round.attackParagraphId;
-    if (!api.hasParagraph(attackId)) {
-      api.learnParagraph(attackId);
-      setLearnedThisRound((prev) =>
-        prev.includes(attackId) ? prev : [...prev, attackId],
-      );
+    if (!duelOpen || isEndgame) return;
+    if (tutorialShown) return;
+    if (api.getFlag?.("duelTutorialShown")) {
+      setTutorialShown(true);
+      return;
     }
+    setTutorialShown(true);
+    api.setFlag("duelTutorialShown");
+    setFeedback([
+      "KOWALK (halblaut): „Worag — du hast noch nicht viele Paragraphen. Wähl irgendwas. Brust korrigiert dich, und dann hast du einen mehr.“",
+    ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [duelOpen, currentIdx, isEndgame]);
+  }, [duelOpen, isEndgame]);
 
   // ESC → Abbruch (zählt nicht als Niederlage).
   useEffect(() => {
@@ -84,10 +89,15 @@ export function BureaucracyDuelOverlay() {
     return "composed";
   }, [hits, misses]);
 
-  const counters: DuelCounter[] = useMemo(
-    () => (round ? resolveCounters(round) : []),
-    [round],
-  );
+  // Endgame: strikt nur echte, vorgegebene Counter (Können statt Glück).
+  // Training: dynamisch je nach Wissensstand — Monkey-Island-Logik.
+  const counters: DuelCounter[] = useMemo(() => {
+    if (!round) return [];
+    if (isEndgame) return resolveCounters(round);
+    return buildRoundCounters(round, api.getLearnedParagraphs());
+    // currentIdx + duelOpen damit pro Runde frisch gewürfelt wird.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [round, isEndgame, currentIdx, duelOpen]);
 
   if (!duelOpen) return null;
   if (!round) return null;
@@ -102,20 +112,27 @@ export function BureaucracyDuelOverlay() {
   function onChoose(idx: number) {
     if (locked || phase !== "round") return;
     const counter = counters[idx];
-    // Wenn der Spieler einen Paragraphen wählt, den er nicht im Notizbuch
-    // hat, geht das nicht — der Button ist eigentlich disabled, aber
-    // sicherheitshalber nochmal hier.
-    if (!api.hasParagraph(counter.paragraphId)) return;
+    if (!counter) return;
     setLocked(true);
     if (counter.correct) {
       const nextHits = hits + 1;
       setHits(nextHits);
+      // Eigenen korrekten Konter ggf. ins Notizbuch.
+      let learnedNow: string | null = null;
+      if (!api.hasParagraph(counter.paragraphId)) {
+        api.learnParagraph(counter.paragraphId);
+        learnedNow = counter.paragraphId;
+      }
       const lines = [
         (isEndgame ? "VOSSBECK: " : "BRUST: ") + round.onHit,
         ...(round.kowalkAside && !isEndgame
           ? ["KOWALK (halblaut): " + round.kowalkAside]
           : []),
       ];
+      if (learnedNow) {
+        const p = PARAGRAPHS[learnedNow];
+        if (p) lines.push(DUEL_UI_TEXT.paragraphLearnedToast(p));
+      }
       setFeedback(lines);
       window.setTimeout(() => {
         const target = isEndgame ? 3 : 2;
@@ -133,11 +150,19 @@ export function BureaucracyDuelOverlay() {
       // Konter — Brust nennt ihn ja in der Belehrung.
       let learnedNow: string | null = null;
       if (!isEndgame) {
-        for (const c of counters) {
-          if (c.correct && !api.hasParagraph(c.paragraphId)) {
-            api.learnParagraph(c.paragraphId);
-            learnedNow = c.paragraphId;
-            break;
+        // Korrekten Konter aus dem Original-Datensatz finden (nicht aus den
+        // ggf. teilweise fiktiven Anzeige-Countern).
+        const attack = PARAGRAPHS[round.attackParagraphId];
+        if (attack) {
+          for (const cand of round.counters) {
+            if (
+              attack.beatenBy.includes(cand.paragraphId) &&
+              !api.hasParagraph(cand.paragraphId)
+            ) {
+              api.learnParagraph(cand.paragraphId);
+              learnedNow = cand.paragraphId;
+              break;
+            }
           }
         }
       }
@@ -308,32 +333,17 @@ export function BureaucracyDuelOverlay() {
               </div>
               <div className="mt-2 grid gap-2">
                 {counters.map((c, i) => {
-                  const known = api.hasParagraph(c.paragraphId);
-                  const para = PARAGRAPHS[c.paragraphId];
+                  const para = getParagraph(c.paragraphId);
                   return (
                     <button
                       key={i}
                       type="button"
-                      disabled={locked || !known}
+                      disabled={locked}
                       onClick={() => onChoose(i)}
-                      title={
-                        !known ? DUEL_UI_TEXT.unlearnedHint : para?.shortLabel
-                      }
+                      title={para?.shortLabel}
                       className="group w-full rounded-sm border border-amber-glow/30 bg-black/40 px-3 py-2 text-left font-mono-crt text-sm leading-snug text-amber-glow/90 transition hover:border-amber-glow hover:bg-amber-glow/10 disabled:cursor-not-allowed disabled:opacity-40"
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <span>{c.text}</span>
-                        <span className="shrink-0 font-mono-crt text-[10px] uppercase tracking-wider opacity-80">
-                          {known
-                            ? DUEL_UI_TEXT.learnedBadge
-                            : DUEL_UI_TEXT.unlearnedBadge}
-                        </span>
-                      </div>
-                      {para && (
-                        <div className="mt-1 text-[10px] uppercase tracking-wider text-amber-glow/50">
-                          {para.shortLabel}
-                        </div>
-                      )}
+                      <div className="leading-snug">{c.text}</div>
                     </button>
                   );
                 })}
