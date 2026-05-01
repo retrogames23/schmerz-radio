@@ -5002,21 +5002,21 @@ export const dialogs: Record<string, DialogTree> = {
       },
       v4: {
         id: "v4",
-        speaker: "BREM",
+        speaker: "VOSSBECK",
         text: "Worag. Sie wollen Vorgang Vollmacht 4317 verhandelt sehen.",
         hiddenWhen: ["duelEndgameWon"],
         next: "v5",
       },
       v5: {
         id: "v5",
-        speaker: "BREM",
+        speaker: "VOSSBECK",
         text: "Drei Runden. Drei Treffer in Folge — und ich gebe die Ration frei. Drei Fehler — und der Vorgang ist abschlägig beschieden. Permanent.",
         hiddenWhen: ["duelEndgameWon"],
         next: "v6",
       },
       v6: {
         id: "v6",
-        speaker: "BREM",
+        speaker: "VOSSBECK",
         text: "Ich verwende ausschließlich Paragraphen, die in Ihrem Notizbuch stehen sollten. Wenn nicht — ist das Ihr Versäumnis.",
         hiddenWhen: ["duelEndgameWon"],
         choices: [
@@ -5036,14 +5036,14 @@ export const dialogs: Record<string, DialogTree> = {
       },
       vWait: {
         id: "vWait",
-        speaker: "BREM",
+        speaker: "VOSSBECK",
         text: "Nehmen Sie sich. Ich gehe nirgendwo hin.",
         end: true,
       },
       // Nach gewonnenem Endduell — sehr knapper Smalltalk.
       vAfter: {
         id: "vAfter",
-        speaker: "BREM",
+        speaker: "VOSSBECK",
         text: "Worag. Vorgang abgeschlossen. Ich notiere Sie für Folgetermine.",
         requires: ["duelEndgameWon"],
         end: true,
