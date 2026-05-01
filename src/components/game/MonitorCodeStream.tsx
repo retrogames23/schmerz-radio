@@ -133,7 +133,6 @@ export function MonitorCodeStream() {
       ref={containerRef}
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 overflow-hidden"
-      style={{ contain: "strict" }}
     >
       {/* DEBUG marker so we can verify the component mounts and renders. */}
       <div
