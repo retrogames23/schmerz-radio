@@ -32,6 +32,21 @@ const components: Component[] = [
   { name: "Framer Motion", license: "MIT", url: "https://github.com/motiondivision/motion", note: "Animationen & Cutscene-Choreografie" },
 ];
 
+const fonts: Component[] = [
+  {
+    name: "Special Elite",
+    license: "SIL Open Font License 1.1",
+    url: "https://fonts.google.com/specimen/Special+Elite",
+    note: "Display- & Body-Schrift, von Astigmatic",
+  },
+  {
+    name: "VT323",
+    license: "SIL Open Font License 1.1",
+    url: "https://fonts.google.com/specimen/VT323",
+    note: "CRT-/Terminal-Schrift, von Peter Hull",
+  },
+];
+
 export function OpenSourceOverlay({ open, onClose }: Props) {
   if (!open) return null;
   return (
@@ -76,6 +91,37 @@ export function OpenSourceOverlay({ open, onClose }: Props) {
             </div>
             <ul className="space-y-2">
               {components.map((c) => (
+                <li key={c.name} className="border-l-2 border-amber-glow/30 pl-3">
+                  <div className="flex flex-wrap items-baseline gap-x-2">
+                    <span className="text-foreground">{c.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      ({c.license})
+                    </span>
+                  </div>
+                  <a
+                    href={c.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-amber-glow/80 underline-offset-4 hover:underline break-all"
+                  >
+                    {c.url}
+                  </a>
+                  {c.note && (
+                    <div className="text-xs italic text-muted-foreground">
+                      {c.note}
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <div className="text-amber-glow uppercase tracking-[0.2em] text-xs mb-2">
+              Verwendete Schriftarten
+            </div>
+            <ul className="space-y-2">
+              {fonts.map((c) => (
                 <li key={c.name} className="border-l-2 border-amber-glow/30 pl-3">
                   <div className="flex flex-wrap items-baseline gap-x-2">
                     <span className="text-foreground">{c.name}</span>
