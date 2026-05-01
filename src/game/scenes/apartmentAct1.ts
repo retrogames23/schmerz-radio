@@ -133,7 +133,7 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
             api.setFlag("openedAlmanach");
             api.showText([
               "Auf dem Wandregal: ein paar Aktenordner, ein leerer Vinyl-Schuber,",
-              "und — ganz links — der „Quadranten-Almanach 1997".",
+              "und — ganz links — der „Quadranten-Almanach 1997“.",
               "Bewohner-Ausgabe, zerlesen. Layard schlägt ihn auf.",
             ]);
             // Nach dem Text-Overlay öffnen — kleine Verzögerung, damit
