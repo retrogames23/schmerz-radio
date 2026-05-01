@@ -74,7 +74,10 @@ function buildColumns(width: number, height: number): ColumnState[] {
 
 export function MonitorCodeStream() {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [size, setSize] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
+  // Sensible defaults so we render columns immediately (the very first frame)
+  // even before the ResizeObserver has fired. Real measurements take over as
+  // soon as the container settles.
+  const [size, setSize] = useState<{ w: number; h: number }>({ w: 320, h: 220 });
   const [columns, setColumns] = useState<ColumnState[]>([]);
   const rafRef = useRef<number | null>(null);
   const lastRef = useRef<number>(0);
@@ -89,7 +92,12 @@ export function MonitorCodeStream() {
     let cancelled = false;
     const update = () => {
       if (cancelled || !el) return;
-      const rect = el.getBoundingClientRect();
+      // Prefer the parent's size — our own absolute+inset-0 element can
+      // momentarily report 0 during first layout. The painted-monitor
+      // wrapper in the parent has explicit percentage sizing.
+      const parent = el.parentElement;
+      const target = parent ?? el;
+      const rect = target.getBoundingClientRect();
       if (rect.width > 0 && rect.height > 0) {
         setSize((prev) =>
           prev.w === rect.width && prev.h === rect.height
@@ -103,6 +111,7 @@ export function MonitorCodeStream() {
     };
     update();
     const ro = new ResizeObserver(update);
+    if (el.parentElement) ro.observe(el.parentElement);
     ro.observe(el);
     return () => {
       cancelled = true;
