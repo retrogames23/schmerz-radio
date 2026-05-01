@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import titleTrack from "@/assets/almost-freedom.mp3";
-import { CrtMatrixBackground } from "./CrtMatrixBackground";
 import { ImpressumOverlay } from "./ImpressumOverlay";
 import { OpenSourceOverlay } from "./OpenSourceOverlay";
 import { DonationModal } from "@/components/donation/DonationModal";
@@ -27,6 +26,7 @@ export function TitleScreen({ onStart }: Props) {
   const [ossOpen, setOssOpen] = useState(false);
   const [warningOpen, setWarningOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
+  const [monitorTick, setMonitorTick] = useState(0);
   const monitorLines = [
     ">> CENTRALOS v2.3",
     "AUTH 001 -> Insa",
@@ -75,6 +75,13 @@ export function TitleScreen({ onStart }: Props) {
       window.removeEventListener("pointerdown", onFirstInteract);
       window.removeEventListener("keydown", onFirstInteract);
     };
+  }, []);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setMonitorTick((tick) => tick + 1);
+    }, 280);
+    return () => window.clearInterval(id);
   }, []);
 
   // Hinweis: Das lokale WebLLM-Modell wird NICHT mehr vom Titelbildschirm
@@ -129,7 +136,6 @@ export function TitleScreen({ onStart }: Props) {
           x: 1230..1620, y: 540..820. We position a clipped CrtMatrixBackground
           over that region so the scrolling code lives "inside" the CRT. */}
       <div
-        ref={monitorRef}
         aria-hidden="true"
         className="pointer-events-none absolute"
         style={{
@@ -146,9 +152,19 @@ export function TitleScreen({ onStart }: Props) {
             "inset 0 0 18px rgba(0,0,0,0.85), inset 0 0 36px rgba(57,255,122,0.15)",
         }}
       >
-        {monitorSize.w > 0 && monitorSize.h > 0 && (
-          <MonitorCodeStream width={monitorSize.w} height={monitorSize.h} />
-        )}
+        <div className="absolute inset-0 overflow-hidden px-3 py-2 font-mono-crt text-[10px] leading-[1.15] text-[#39ff7a] [text-shadow:0_0_5px_rgba(57,255,122,0.75)] opacity-90">
+          {Array.from({ length: 14 }).map((_, index) => {
+            const line = monitorLines[(monitorTick + index) % monitorLines.length];
+            return <div key={`${monitorTick}-${index}`}>{line}</div>;
+          })}
+        </div>
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(2,10,4,0.82) 0%, rgba(2,10,4,0.12) 18%, rgba(2,10,4,0.08) 82%, rgba(2,10,4,0.88) 100%)",
+          }}
+        />
       </div>
       {/* Vignette + darken so foreground text stays readable on top of the art. */}
       <div
