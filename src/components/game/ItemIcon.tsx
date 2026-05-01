@@ -375,6 +375,8 @@ const ICON_MAP: Record<InventoryItemId, () => React.ReactElement> = {
   antennaWire: TuningCrystalIcon,
   amplifierAntenna: TuningCrystalIcon,
   wartungsDiktat: WartungsnotizIcon,
+  // Bürokratie-Duell — Layards Sammlung gelernter Paragraphen.
+  paragraphenNotizbuch: E67HandbookIcon,
 };
 
 /* ─── Akt-I-Pflichträtsel: Zusatz-Icons ─────────────────── */
