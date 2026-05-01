@@ -39,7 +39,7 @@ export const ALMANACH_CHAPTERS: AlmanachChapter[] = [
     title: "Vorwort der Konvention",
     body: [
       "Der vorliegende Almanach erscheint seit 1972 in jährlich revidierter Auflage. Er versteht sich als **freundliche Orientierungshilfe** für Bewohner des Mandatsgebiets Mitteleuropa und der angeschlossenen Konventionsstaaten.",
-      "Er ersetzt **nicht** das *Bewohner-Kompendium* (24 Bände, 1991, vergriffen) und auch nicht das **E67-Handbuch** Ihres Quadranten. Er beantwortet Fragen, die das Handbuch *nicht stellt*: woher die Welt kommt, in der Sie wohnen, und warum sie so ruhig ist.",
+      "Er ersetzt **nicht** das *Bewohner-Kompendium* (24 Bände, 1991, vergriffen) und auch nicht das **E67-Handbuch** Ihres Quadranten. Er beantwortet Fragen, die das Handbuch *nicht stellt*: woher die Welt kommt, in der Sie wohnen, und warum sie heute so geordnet ist.",
       "> Lesen Sie ihn in einer Sitzung — oder, was wir empfehlen, in vielen kleinen. Der Almanach hat Geduld.",
       "*„Wir sind nicht überall zuständig. Wir sind nur überall.“*",
       "— Geleitwort der Quadranten-Konvention, 7. revidierte Fassung",
