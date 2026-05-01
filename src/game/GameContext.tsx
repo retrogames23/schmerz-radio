@@ -60,6 +60,8 @@ interface GameState {
   dsaSheetOpen: boolean;
   /** Handbuch-Lese-Overlay sichtbar. */
   handbookOpen: boolean;
+  /** Quadranten-Almanach-Lese-Overlay sichtbar. */
+  almanachOpen: boolean;
   /** Bewohner-Ausweis-Lese-Overlay sichtbar. */
   idCardOpen: boolean;
   /** Lobby-Schleuse-Overlay sichtbar (Tagesmodus, vor Erstbetreten). */
@@ -103,6 +105,9 @@ interface GameContextValue extends GameState {
   /** Handbuch / Ausweis Overlays. */
   openHandbook: () => void;
   closeHandbook: () => void;
+  /** Quadranten-Almanach Overlay. */
+  openAlmanach: () => void;
+  closeAlmanach: () => void;
   openIdCard: () => void;
   closeIdCard: () => void;
   /** Lobby-Schleuse manuell öffnen / schließen. */
@@ -208,6 +213,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const dsaBeatRef = useRef<string | null>(null);
   dsaBeatRef.current = dsaBeat;
   const [handbookOpen, setHandbookOpen] = useState(false);
+  const [almanachOpen, setAlmanachOpen] = useState(false);
   const [idCardOpen, setIdCardOpen] = useState(false);
   const [lobbyGateOpen, setLobbyGateOpen] = useState(false);
   const [duelOpen, setDuelOpen] = useState(false);
@@ -672,6 +678,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dsaBeat,
     dsaSheetOpen,
     handbookOpen,
+    almanachOpen,
     idCardOpen,
     lobbyGateOpen,
     duelOpen,
@@ -723,6 +730,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     toggleDsaSheet: () => setDsaSheetOpen((v) => !v),
     openHandbook: () => setHandbookOpen(true),
     closeHandbook: () => setHandbookOpen(false),
+    openAlmanach: () => setAlmanachOpen(true),
+    closeAlmanach: () => setAlmanachOpen(false),
     openIdCard: () => setIdCardOpen(true),
     closeIdCard: () => setIdCardOpen(false),
     openLobbyGate: () => setLobbyGateOpen(true),
