@@ -26,7 +26,7 @@ import { CloseButton } from "./CloseButton";
 type Phase = "round" | "victory" | "defeat";
 
 export function BureaucracyDuelOverlay() {
-  const { duelOpen, duelMode, closeDuel, api } = useGame();
+  const { duelOpen, duelMode, closeDuel, api, learnedParagraphs } = useGame();
 
   const mode: DuelMode = duelMode ?? "training";
   const isEndgame = mode === "endgame";
@@ -60,7 +60,7 @@ export function BureaucracyDuelOverlay() {
   useEffect(() => {
     if (!duelOpen || isEndgame) return;
     if (tutorialShown) return;
-    if (api.getFlag?.("duelTutorialShown")) {
+    if (api.hasFlag("duelTutorialShown")) {
       setTutorialShown(true);
       return;
     }
@@ -94,7 +94,7 @@ export function BureaucracyDuelOverlay() {
   const counters: DuelCounter[] = useMemo(() => {
     if (!round) return [];
     if (isEndgame) return resolveCounters(round);
-    return buildRoundCounters(round, api.getLearnedParagraphs());
+    return buildRoundCounters(round, learnedParagraphs);
     // currentIdx + duelOpen damit pro Runde frisch gewürfelt wird.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round, isEndgame, currentIdx, duelOpen]);
