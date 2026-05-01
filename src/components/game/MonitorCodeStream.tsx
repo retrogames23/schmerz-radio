@@ -135,6 +135,21 @@ export function MonitorCodeStream() {
       className="pointer-events-none absolute inset-0 overflow-hidden"
       style={{ contain: "strict" }}
     >
+      {/* DEBUG marker so we can verify the component mounts and renders. */}
+      <div
+        style={{
+          position: "absolute",
+          left: 4,
+          top: 4,
+          color: "#39ff7a",
+          fontSize: "10px",
+          fontFamily: "monospace",
+          textShadow: "0 0 4px rgba(57,255,122,0.8)",
+          zIndex: 5,
+        }}
+      >
+        DBG cols={cols.length} {Math.round(size.w)}x{Math.round(size.h)}
+      </div>
       {cols.map((c, idx) => (
         <div
           key={idx}
