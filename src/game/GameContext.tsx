@@ -391,12 +391,49 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setTerminalOpen(false);
         setPneumaticOpen(true);
       },
-      openBureaucracyDuel: () => {
+      openBureaucracyDuel: (mode = "training") => {
         setRadioOpen(false);
         setTerminalOpen(false);
         setPneumaticOpen(false);
-        setDuelMode("training");
+        setDuelMode(mode);
         setDuelOpen(true);
+      },
+      openParagraphenNotizbuch: () => {
+        setNotizbuchOpen(true);
+      },
+      hasParagraph: (id: string) => learnedParagraphsRef.current.has(id),
+      learnParagraph: (id: string) => {
+        setLearnedParagraphs((prev) => {
+          if (prev.has(id)) return prev;
+          const n = new Set(prev);
+          n.add(id);
+          // Sicherstellen, dass das Notizbuch im Inventar liegt, sobald
+          // Layard zum ersten Mal etwas lernt.
+          if (!inventoryRef.current.some((i) => i.id === "paragraphenNotizbuch")) {
+            setInventory((inv) =>
+              inv.find((i) => i.id === "paragraphenNotizbuch")
+                ? inv
+                : [
+                    ...inv,
+                    {
+                      id: "paragraphenNotizbuch",
+                      name: "Paragraphen-Notizbuch",
+                      description:
+                        "Ein abgegriffenes Heft mit Karohaltung. Vorne Layards Initialen, innen wachsende Listen aus Aushängen, Schicht- und Vollmachtsklauseln. Wer Brust an seinem Tresen schlagen will, muss hier nachschlagen.",
+                    },
+                  ],
+            );
+          }
+          return n;
+        });
+      },
+      getBrustWinStreak: () => brustWinStreakRef.current,
+      bumpBrustWinStreak: () => {
+        brustWinStreakRef.current += 1;
+        return brustWinStreakRef.current;
+      },
+      resetBrustWinStreak: () => {
+        brustWinStreakRef.current = 0;
       },
       setEnding: () => setEnding(true),
       playBurnSequence: () => {
@@ -638,6 +675,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     idCardOpen,
     lobbyGateOpen,
     duelOpen,
+    duelMode,
+    notizbuchOpen,
+    learnedParagraphs,
     freeChatNpcId,
     openFreeChat: (npcId: string) => setFreeChatNpcId(npcId),
     closeFreeChat: () => setFreeChatNpcId(null),
@@ -688,6 +728,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     openLobbyGate: () => setLobbyGateOpen(true),
     closeLobbyGate: () => setLobbyGateOpen(false),
     closeDuel: () => setDuelOpen(false),
+    closeNotizbuch: () => setNotizbuchOpen(false),
     /** Aktueller Fehlversuchs-Zähler der Lobby-Schleuse (für die UI). */
     getLobbyGateAttempts: () => lobbyGateAttemptsRef.current,
     bumpLobbyGateAttempts: () => {
