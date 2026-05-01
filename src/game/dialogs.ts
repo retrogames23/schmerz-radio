@@ -4817,21 +4817,18 @@ export const dialogs: Record<string, DialogTree> = {
             hiddenWhen: ["gotB3Ration"],
           },
           {
-            // Dritter Lösungsweg: Bürokratie-Duell. Sichtbar, sobald
-            // Brust die Vollmacht 4317 abgelehnt hat. Ausgeblendet, sobald
-            // die B3-Ration auf irgendeinem Weg im Inventar liegt.
-            text: "Ich akzeptiere das nicht. Wollen Sie es paragraphengenau ausfechten?",
+            // Trainingsfall — fiktive Kantinenfälle, lehrt Paragraphen.
+            // Bleibt verfügbar, bis Layard das Endduell gewonnen hat.
+            text: "Ich würde mit Ihnen einen Trainingsfall durchgehen.",
             next: "bDuelOffer",
-            requires: ["gotB3Authorization"],
-            hiddenWhen: ["gotB3Ration", "duelLost"],
+            hiddenWhen: ["gotB3Ration"],
           },
           {
-            // Wiederaufnahme nach verlorenem Duell — Brust war in der
-            // Zwischenzeit schweigsam, lässt sich aber erneut darauf ein.
-            text: "Ich versuche es noch einmal. Mit besseren Argumenten.",
-            next: "bDuelRetry",
-            requires: ["duelLost"],
-            hiddenWhen: ["gotB3Ration", "duelWon"],
+            // Erst sichtbar nach 3-Streak — Brust verweist explizit auf Vossbeck.
+            text: "Ich glaube, ich bin bereit für Vossbeck.",
+            next: "bVossbeckHint",
+            requires: ["vossbeckSummoned"],
+            hiddenWhen: ["gotB3Ration"],
           },
           {
             text: "Welcher Aushang gilt jetzt eigentlich?",
