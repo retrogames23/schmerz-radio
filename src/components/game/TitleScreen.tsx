@@ -105,6 +105,9 @@ export function TitleScreen({ onStart }: Props) {
         width={1920}
         height={1280}
       />
+      {/* Animated rain — two parallax layers above the artwork. */}
+      <div aria-hidden="true" className="rain-layer rain-layer-back" />
+      <div aria-hidden="true" className="rain-layer rain-layer-front" />
       {/* Vignette + darken so foreground text stays readable on top of the art. */}
       <div
         className="pointer-events-none absolute inset-0"
