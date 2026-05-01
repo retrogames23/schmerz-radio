@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { useGame } from "@/game/GameContext";
 import { useInventoryDrag } from "@/game/InventoryDragContext";
 import { combineItem } from "@/game/combine";
@@ -11,7 +11,7 @@ interface Props {
   reveal?: boolean;
 }
 
-export function Hotspot({ hotspot, reveal = false }: Props) {
+function HotspotImpl({ hotspot, reveal = false }: Props) {
   const { api, setCaption, flags } = useGame();
   const drag = useInventoryDrag();
   const hoveredRef = useRef(false);
@@ -145,3 +145,11 @@ export function Hotspot({ hotspot, reveal = false }: Props) {
     </button>
   );
 }
+
+/**
+ * Memoisiert: Hotspot-Objekte stammen aus `scenes.ts` (modul-stabil), und
+ * `reveal` ist ein boolean. Damit re-rendert ein Hotspot nur, wenn sich
+ * sein eigener Datensatz oder der Reveal-Status ändert — nicht bei jedem
+ * Caption-Tick aus dem GameContext.
+ */
+export const Hotspot = memo(HotspotImpl);

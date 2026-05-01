@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { InventoryItemId } from "@/game/types";
 
 /**
@@ -499,7 +500,7 @@ function TillaTransferIcon() {
   );
 }
 
-export function ItemIcon({ id, className, size = 24, title }: Props) {
+function ItemIconImpl({ id, className, size = 24, title }: Props) {
   const Render = ICON_MAP[id];
   if (!Render) return null;
   return (
@@ -508,6 +509,13 @@ export function ItemIcon({ id, className, size = 24, title }: Props) {
     </Frame>
   );
 }
+
+/**
+ * Pixel-Item-Icon. Memoisiert: Props sind primitive (id/size/className/title),
+ * dadurch werden die ~550 Zeilen SVG-Switch nicht bei jedem Inventory-/
+ * GameContext-Re-Render neu evaluiert.
+ */
+export const ItemIcon = memo(ItemIconImpl);
 
 /** Aktentaschen-Icon für den Inventar-Button (ebenfalls Pixel-Stil). */
 export function BriefcaseIcon({

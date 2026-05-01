@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useGame } from "@/game/GameContext";
 import { PARAGRAPHS } from "@/game/bureaucracyDuel";
 import { CloseButton } from "./CloseButton";
@@ -11,12 +12,17 @@ import { CloseButton } from "./CloseButton";
  */
 export function ParagraphenNotizbuchOverlay() {
   const { notizbuchOpen, closeNotizbuch, learnedParagraphs } = useGame();
-  if (!notizbuchOpen) return null;
 
   // Sortierte Anzeige in Korpus-Reihenfolge, gefiltert auf gelernte.
-  const ordered = Object.values(PARAGRAPHS).filter((p) =>
-    learnedParagraphs.has(p.id),
+  // useMemo, damit sich die Liste nicht bei jedem Caption-/Game-State-Tick
+  // neu aufbaut, sondern nur bei tatsächlicher Änderung der gelernten Set.
+  const ordered = useMemo(
+    () =>
+      Object.values(PARAGRAPHS).filter((p) => learnedParagraphs.has(p.id)),
+    [learnedParagraphs],
   );
+
+  if (!notizbuchOpen) return null;
 
   return (
     <div
