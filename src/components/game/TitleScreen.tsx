@@ -28,6 +28,34 @@ export function TitleScreen({ onStart }: Props) {
   const [ossOpen, setOssOpen] = useState(false);
   const [warningOpen, setWarningOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
+  const monitorRef = useRef<HTMLDivElement | null>(null);
+  const [monitorSize, setMonitorSize] = useState<{ w: number; h: number }>({
+    w: 0,
+    h: 0,
+  });
+
+  useEffect(() => {
+    const el = monitorRef.current;
+    if (!el) return;
+    const update = () => {
+      const r = el.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) {
+        setMonitorSize((prev) =>
+          prev.w === r.width && prev.h === r.height
+            ? prev
+            : { w: r.width, h: r.height },
+        );
+      }
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    window.addEventListener("resize", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, []);
 
   useEffect(() => {
     const a = new Audio(titleTrack);
@@ -112,6 +140,7 @@ export function TitleScreen({ onStart }: Props) {
           x: 1230..1620, y: 540..820. We position a clipped CrtMatrixBackground
           over that region so the scrolling code lives "inside" the CRT. */}
       <div
+        ref={monitorRef}
         aria-hidden="true"
         className="pointer-events-none absolute"
         style={{
@@ -128,7 +157,9 @@ export function TitleScreen({ onStart }: Props) {
             "inset 0 0 18px rgba(0,0,0,0.85), inset 0 0 36px rgba(57,255,122,0.15)",
         }}
       >
-        <MonitorCodeStream />
+        {monitorSize.w > 0 && monitorSize.h > 0 && (
+          <MonitorCodeStream width={monitorSize.w} height={monitorSize.h} />
+        )}
       </div>
       {/* Vignette + darken so foreground text stays readable on top of the art. */}
       <div
