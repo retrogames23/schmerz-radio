@@ -1,5 +1,5 @@
 import { playSound } from "@/lib/sound";
-import type { GameApi, SceneId } from "./types";
+import type { GameApi, SceneId } from "../types";
 
 export const ELEVATOR_DING = "/audio/elevator-ding.mp3";
 
