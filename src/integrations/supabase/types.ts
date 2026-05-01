@@ -173,6 +173,63 @@ export type Database = {
         }
         Relationships: []
       }
+      npc_gossip: {
+        Row: {
+          created_at: string
+          fact: string
+          id: string
+          source_npc_id: string
+          subjects: string[]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fact: string
+          id?: string
+          source_npc_id: string
+          subjects?: string[]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          fact?: string
+          id?: string
+          source_npc_id?: string
+          subjects?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      npc_memory: {
+        Row: {
+          created_at: string
+          id: string
+          note: string
+          npc_id: string
+          recent_messages: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note?: string
+          npc_id: string
+          recent_messages?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string
+          npc_id?: string
+          recent_messages?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           cloud_request_count: number
