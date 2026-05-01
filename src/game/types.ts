@@ -223,6 +223,7 @@ export type StoryFlag =
   | "metVossbeck"
   | "duelEndgameWon"
   | "duelEndgameLost"
+  | "duelTutorialShown"
   // Mira — Vertrauenspfad
   | "readMiraManifest"
   | "radioMutedAtLeast60s"
