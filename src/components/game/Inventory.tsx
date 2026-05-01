@@ -38,6 +38,8 @@ export function Inventory() {
     } else if (item.id === "residentId") {
       api.setFlag("examinedResidentId");
       openIdCard();
+    } else if (item.id === "paragraphenNotizbuch") {
+      api.openParagraphenNotizbuch();
     } else {
       api.showText([item.name, item.description]);
     }
