@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { ACT2_BRIDGE_BEATS, ACT2_BRIDGE_UI_TEXT } from "@/game/cutscenes";
+import { getHintsUsedCount, HINTS_UI_TEXT } from "@/game/hints";
 
 /**
  * Schmale Bridge-Cutscene für den Akt-II-Einstieg.
@@ -22,6 +23,12 @@ export function Act2BridgeCutscene() {
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(true);
   const finishedRef = useRef(false);
+  // Snapshot der Tipp-Nutzung beim Start der Bridge — soll während der
+  // Cutscene nicht mehr ändern (der Spieler kann hier nichts mehr lesen).
+  const [hintsUsed, setHintsUsed] = useState(0);
+  useEffect(() => {
+    if (active) setHintsUsed(getHintsUsedCount());
+  }, [active]);
 
   // Reset, sobald die Cutscene wieder geschlossen wird.
   useEffect(() => {
@@ -87,6 +94,7 @@ export function Act2BridgeCutscene() {
   if (idx >= ACT2_BRIDGE_BEATS.length) return null;
 
   const beat = ACT2_BRIDGE_BEATS[idx];
+  const isLastBeat = idx === ACT2_BRIDGE_BEATS.length - 1;
 
   // Sehr dezenter Style-Wechsel: schwarz + leichter Farbschimmer am Rand.
   const accentClass =
@@ -120,7 +128,16 @@ export function Act2BridgeCutscene() {
         </div>
       )}
       <div className="absolute bottom-6 left-0 right-0 text-center font-mono-crt text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60">
-        {ACT2_BRIDGE_UI_TEXT.skipHint}
+        {isLastBeat ? (
+          <>
+            <div className="mb-2 text-amber-glow/70">
+              {HINTS_UI_TEXT.hintsUsedSummary(hintsUsed)}
+            </div>
+            {ACT2_BRIDGE_UI_TEXT.skipHint}
+          </>
+        ) : (
+          ACT2_BRIDGE_UI_TEXT.skipHint
+        )}
       </div>
     </div>
   );
