@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import rainMask from "@/assets/title/whisper-quest-v1-rain-mask.png";
 
 /**
@@ -8,36 +8,10 @@ import rainMask from "@/assets/title/whisper-quest-v1-rain-mask.png";
  */
 export function RainOverlay() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [maskCanvas, setMaskCanvas] = useState<HTMLCanvasElement | null>(null);
-
-  // Preload the mask image once and convert black -> transparent so it can be
-  // used as an alpha mask via the canvas 'destination-in' composite op.
-  useEffect(() => {
-    const img = new Image();
-    img.src = rainMask;
-    img.onload = () => {
-      const off = document.createElement("canvas");
-      off.width = img.naturalWidth;
-      off.height = img.naturalHeight;
-      const octx = off.getContext("2d");
-      if (!octx) return;
-      octx.drawImage(img, 0, 0);
-      const data = octx.getImageData(0, 0, off.width, off.height);
-      const px = data.data;
-      for (let i = 0; i < px.length; i += 4) {
-        // Brightness drives alpha. White (rain visible) -> opaque. Black -> transparent.
-        const lum = (px[i] + px[i + 1] + px[i + 2]) / 3;
-        px[i + 3] = lum; // 0..255
-      }
-      octx.putImageData(data, 0, 0);
-      setMaskCanvas(off);
-    };
-  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    if (!maskCanvas) return;
 
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -64,22 +38,6 @@ export function RainOverlay() {
     const drops: Drop[] = [];
     const splashes: Splash[] = [];
     const WIND = 0.35; // horizontal drift factor (slight diagonal)
-
-    // Artwork is rendered with object-cover. Reproduce that mapping for the
-    // mask so it lines up pixel-accurately with the painted scene.
-    const ART_W = 1280;
-    const ART_H = 853; // intrinsic aspect of whisper-quest-v1 (3:2)
-    let coverW = 0;
-    let coverH = 0;
-    let coverX = 0;
-    let coverY = 0;
-    const computeCover = () => {
-      const scale = Math.max(width / ART_W, height / ART_H);
-      coverW = ART_W * scale;
-      coverH = ART_H * scale;
-      coverX = (width - coverW) / 2;
-      coverY = (height - coverH) / 2;
-    };
 
     const makeDrop = (initial = false): Drop => {
       // Three depth layers: far (slow, thin), mid, near (fast, thick).
@@ -131,7 +89,6 @@ export function RainOverlay() {
       );
       drops.length = 0;
       for (let i = 0; i < target; i++) drops.push(makeDrop(true));
-      computeCover();
     };
 
     resize();
@@ -139,7 +96,6 @@ export function RainOverlay() {
 
     let raf = 0;
     const tick = () => {
-      ctx.globalCompositeOperation = "source-over";
       ctx.clearRect(0, 0, width, height);
       ctx.lineCap = "round";
 
@@ -181,14 +137,6 @@ export function RainOverlay() {
         ctx.stroke();
       }
 
-      // Mask: keep rain ONLY where the mask is bright (window-glass areas).
-      // 'destination-in' multiplies existing pixels by the mask's alpha;
-      // because the mask PNG is opaque everywhere, we instead use 'multiply'
-      // by drawing the inverted mask via 'destination-out' for the dark areas.
-      ctx.globalCompositeOperation = "destination-in";
-      ctx.drawImage(maskCanvas, coverX, coverY, coverW, coverH);
-      ctx.globalCompositeOperation = "source-over";
-
       raf = window.requestAnimationFrame(tick);
     };
     raf = window.requestAnimationFrame(tick);
@@ -197,13 +145,30 @@ export function RainOverlay() {
       window.cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
     };
-  }, [maskCanvas]);
+  }, []);
 
   return (
     <canvas
       ref={canvasRef}
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-[1] h-full w-full"
+      style={{
+        // CSS mask matches the artwork's object-cover exactly: same image,
+        // same size mode, same position. White areas of the mask = rain
+        // visible (window glass / sky). Black areas = rain hidden behind
+        // curtains, frames, person, desk, monitor.
+        WebkitMaskImage: `url(${rainMask})`,
+        maskImage: `url(${rainMask})`,
+        WebkitMaskSize: "cover",
+        maskSize: "cover",
+        WebkitMaskPosition: "center",
+        maskPosition: "center",
+        WebkitMaskRepeat: "no-repeat",
+        maskRepeat: "no-repeat",
+        // Treat brightness as alpha (luminance source). White=visible, black=hidden.
+        WebkitMaskMode: "luminance",
+        maskMode: "luminance",
+      }}
     />
   );
 }
