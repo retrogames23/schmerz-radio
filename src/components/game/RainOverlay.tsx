@@ -166,8 +166,7 @@ export function RainOverlay() {
         WebkitMaskRepeat: "no-repeat",
         maskRepeat: "no-repeat",
         // Treat brightness as alpha (luminance source). White=visible, black=hidden.
-        WebkitMaskMode: "luminance",
-        maskMode: "luminance",
+        ...({ WebkitMaskMode: "luminance", maskMode: "luminance" } as React.CSSProperties),
       }}
     />
   );
