@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import rainMask from "@/assets/title/whisper-quest-v1-rain-mask.png";
 
 /**
@@ -166,7 +166,7 @@ export function RainOverlay() {
         WebkitMaskRepeat: "no-repeat",
         maskRepeat: "no-repeat",
         // Treat brightness as alpha (luminance source). White=visible, black=hidden.
-        ...({ WebkitMaskMode: "luminance", maskMode: "luminance" } as React.CSSProperties),
+        ...({ WebkitMaskMode: "luminance", maskMode: "luminance" } as CSSProperties),
       }}
     />
   );
