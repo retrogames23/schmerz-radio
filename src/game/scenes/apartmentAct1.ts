@@ -880,7 +880,6 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
         onUse: (api) => {
           api.setFlag("elevatorMaintSeen");
           api.showText([
-            "Rotes Klebeband versperrt den Aufzug.",
             "Display: „WARTUNGSANFRAGE 4711 — AUFZUG GESPERRT“.",
           ]);
         },
