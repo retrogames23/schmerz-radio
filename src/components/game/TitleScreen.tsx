@@ -152,7 +152,7 @@ export function TitleScreen({ onStart }: Props) {
         <button
           type="button"
           onClick={handleStartRequest}
-          className="mt-8 rounded-sm border border-amber-glow/70 bg-background/50 px-8 py-3 font-display text-base uppercase tracking-[0.4em] text-amber-glow backdrop-blur-sm transition hover:bg-amber-glow/15 amber-glow mx-0 my-[100px]"
+          className="rounded-sm border border-amber-glow/70 bg-background/50 px-8 py-3 font-display text-base uppercase tracking-[0.4em] text-amber-glow backdrop-blur-sm transition hover:bg-amber-glow/15 amber-glow mx-0 mt-[220px] mb-[100px]"
         >
           ▸ Spiel beginnen
         </button>
