@@ -703,22 +703,12 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
   },
   hallway: {
     id: "hallway",
-    // Hintergrund-Varianten:
-    //  - rotes Klebeband am Aufzug, sobald Wartungssperre 4711 aktiv ist
-    //    (elevatorMaintBlocked && !elevatorMaintCleared)
-    //  - gelbes Siegelband an Tür 2615, sobald die Sanitäter-Cutscene
-    //    gesehen wurde (paramedicsCutsceneSeen)
-    //  - kombiniertes Bild, wenn beides zutrifft
-    background: (api) => {
-      const elevatorSealed =
-        api.hasFlag("elevatorMaintBlocked") &&
-        !api.hasFlag("elevatorMaintCleared");
-      const apt2615Sealed = api.hasFlag("paramedicsCutsceneSeen");
-      if (elevatorSealed && apt2615Sealed) return hallwayElevatorAnd2615SealedBg;
-      if (elevatorSealed) return hallwayElevatorSealedBg;
-      if (apt2615Sealed) return hallway2615SealedBg;
-      return hallwayBg;
-    },
+    // Hintergrund: immer das saubere Original. Klebebänder (rotes X am
+    // Aufzug bei Wartungssperre 4711, gelbes Siegelband an Tür 2615 nach
+    // der Sanitäter-Cutscene) werden in SceneView als CSS/SVG-Overlay
+    // eingeblendet — die zuvor verwendeten Bildvarianten hatten harte
+    // Render-Artefakte (horizontales Banding).
+    background: hallwayBg,
     title: "Korridor 26 — Quadrant E67",
     intro:
       "Der Korridor. Wie jeden Morgen. Nur dass Layard ihn jeden Morgen nicht betritt.",
