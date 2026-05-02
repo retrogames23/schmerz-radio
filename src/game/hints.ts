@@ -17,8 +17,9 @@ export interface HintQuest {
   id: string;
   /** Kurzer Titel für die Quest-Auswahl. */
   title: string;
-  /** Genau drei Stufen — vage → konkreter → exakte Anweisung. */
-  hints: [string, string, string];
+  /** 1–3 Stufen — vage → konkreter → exakte Anweisung. Wenn der erste
+   *  Tipp schon eindeutig ist, reicht ein einzelner Eintrag. */
+  hints: [string] | [string, string] | [string, string, string];
   /** Sortierung: kleiner = wichtiger / Default-Vorauswahl. */
   priority: number;
   /** Quest gilt als offen, wenn dieses Prädikat true ist. */
@@ -137,9 +138,20 @@ export const HINT_QUESTS: HintQuest[] = [
       a.hasFlag("calledLeitstelle") && !a.hasFlag("paramedicsArrived"),
     isResolved: (a) => a.hasFlag("paramedicsArrived"),
     hints: [
-      "Insa hat den Einsatz angemeldet. Jetzt vergeht Zeit — und du musst sie auch im Spiel verstreichen lassen.",
-      "In Philippes Wohnung gibt es einen „Warten“-Hotspot. Du musst ihn mehrfach benutzen.",
-      "Klick in 2613 zweimal auf „Warten“ (zwei Beats pro Besuch). Beim zweiten Beat startet die Sanitäter-Cutscene.",
+      "Klick in 2613 zweimal auf „Warten“. Beim zweiten Beat treffen die Sanitäter ein.",
+    ],
+  },
+
+  // 7b) Nach den Sanitätern: Zimmer verlassen
+  {
+    id: "act1.leaveAfterParamedics",
+    title: "2613 verlassen",
+    priority: 7,
+    isActive: (a) =>
+      a.hasFlag("paramedicsArrived") && !a.hasFlag("protocolReceived"),
+    isResolved: (a) => a.hasFlag("protocolReceived"),
+    hints: [
+      "Verlass das Zimmer.",
     ],
   },
 
