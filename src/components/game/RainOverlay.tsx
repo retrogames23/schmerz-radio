@@ -13,9 +13,7 @@ export function RainOverlay() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduceMotion) return;
 
     const ctx = canvas.getContext("2d");
@@ -83,10 +81,7 @@ export function RainOverlay() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       // Density scales with viewport area (capped).
-      const target = Math.min(
-        260,
-        Math.max(120, Math.floor((width * height) / 6500)),
-      );
+      const target = Math.min(260, Math.max(120, Math.floor((width * height) / 6500)));
       drops.length = 0;
       for (let i = 0; i < target; i++) drops.push(makeDrop(true));
     };
