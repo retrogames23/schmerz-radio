@@ -8,19 +8,36 @@ import rainMask from "@/assets/title/whisper-quest-v1-rain-mask.png";
  */
 export function RainOverlay() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [maskImg, setMaskImg] = useState<HTMLImageElement | null>(null);
+  const [maskCanvas, setMaskCanvas] = useState<HTMLCanvasElement | null>(null);
 
-  // Preload the mask image once.
+  // Preload the mask image once and convert black -> transparent so it can be
+  // used as an alpha mask via the canvas 'destination-in' composite op.
   useEffect(() => {
     const img = new Image();
     img.src = rainMask;
-    img.onload = () => setMaskImg(img);
+    img.onload = () => {
+      const off = document.createElement("canvas");
+      off.width = img.naturalWidth;
+      off.height = img.naturalHeight;
+      const octx = off.getContext("2d");
+      if (!octx) return;
+      octx.drawImage(img, 0, 0);
+      const data = octx.getImageData(0, 0, off.width, off.height);
+      const px = data.data;
+      for (let i = 0; i < px.length; i += 4) {
+        // Brightness drives alpha. White (rain visible) -> opaque. Black -> transparent.
+        const lum = (px[i] + px[i + 1] + px[i + 2]) / 3;
+        px[i + 3] = lum; // 0..255
+      }
+      octx.putImageData(data, 0, 0);
+      setMaskCanvas(off);
+    };
   }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    if (!maskImg) return;
+    if (!maskCanvas) return;
 
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -169,7 +186,7 @@ export function RainOverlay() {
       // because the mask PNG is opaque everywhere, we instead use 'multiply'
       // by drawing the inverted mask via 'destination-out' for the dark areas.
       ctx.globalCompositeOperation = "destination-in";
-      ctx.drawImage(maskImg, coverX, coverY, coverW, coverH);
+      ctx.drawImage(maskCanvas, coverX, coverY, coverW, coverH);
       ctx.globalCompositeOperation = "source-over";
 
       raf = window.requestAnimationFrame(tick);
@@ -180,7 +197,7 @@ export function RainOverlay() {
       window.cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
     };
-  }, [maskImg]);
+  }, [maskCanvas]);
 
   return (
     <canvas
