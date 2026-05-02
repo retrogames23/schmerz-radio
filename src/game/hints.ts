@@ -79,21 +79,7 @@ export const HINT_QUESTS: HintQuest[] = [
     ],
   },
 
-  // 3) Philippe nimmt Layard mit nach 2613 — er muss dorthin
-  {
-    id: "act1.goToApt2613",
-    title: "Mit Philippe nach 2613",
-    priority: 3,
-    isActive: (a) => a.hasFlag("metPhilippe") && !a.hasFlag("knockingHeard"),
-    isResolved: (a) => a.hasFlag("knockingHeard"),
-    hints: [
-      "Philippe hat etwas erwähnt, das er dir zeigen will — bei sich.",
-      "Verlasse deine Wohnung und geh den Gang entlang bis zu Philippes Tür (2613).",
-      "Geh in den Hauptkorridor, klick auf die Tür von Wohnung 2613 und betritt Philippes Wohnung.",
-    ],
-  },
-
-  // 4) In 2613: das Klopfen an der Wand untersuchen
+  // 3) In 2613: das Klopfen an der Wand untersuchen
   {
     id: "act1.examineWall",
     title: "Das Klopfen aus der Nachbarwohnung",
@@ -103,8 +89,8 @@ export const HINT_QUESTS: HintQuest[] = [
       !a.hasFlag("knockingHeard"),
     isResolved: (a) => a.hasFlag("knockingHeard"),
     hints: [
-      "Hör genau hin, sobald du in Philippes Wohnung bist. Etwas wiederholt sich.",
-      "Das Geräusch kommt aus der Wand zur Nachbarwohnung 2615 — du musst sie dir ansehen.",
+      "Hör genau hin — etwas in Philippes Wohnung wiederholt sich.",
+      "Das Geräusch kommt aus der Wand zur Nachbarwohnung 2615.",
       "Klick die mittlere Wand zwischen Telefon und Philippe an („Wand mit Klopfen“). Erst dann zählt das Klopfen als von dir wahrgenommen.",
     ],
   },
