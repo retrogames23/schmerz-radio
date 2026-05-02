@@ -268,10 +268,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "window56",
-        x: 42,
-        y: 30,
+        x: 40,
+        y: 23,
         w: 18,
-        h: 30,
+        h: 32,
         label: "Vergittertes Fenster",
         kind: "look",
         onUse: (api) =>
@@ -280,18 +280,34 @@ export const corridorsE67Scenes: Record<string, Scene> = {
             "Darunter, in den Beton geritzt: „Z.K.S. war hier.“",
           ]),
       },
+      // Tür 5614 — vorne links (zukünftiger Inhalt). Reserviert.
       {
-        id: "hatch56",
-        x: 50,
-        y: 6,
-        w: 14,
-        h: 10,
-        label: "Wartungsluke (verriegelt)",
+        id: "door5614",
+        x: 12,
+        y: 15,
+        w: 17,
+        h: 76,
+        label: "Tür 5614",
         kind: "look",
         onUse: (api) =>
           api.showText([
-            "Schwere Stahlluke, mit zwei Riegeln und einem Schloss gesichert.",
-            "Layard rüttelt nicht einmal. Er weiß, was er nicht öffnet.",
+            "Eine Stahltür. Kein Schild, kein Geräusch dahinter.",
+            "Layard klopft nicht. Heute nicht.",
+          ]),
+      },
+      // Tür 5612 — mittlere Position links. Reserviert.
+      {
+        id: "door5612",
+        x: 25,
+        y: 22,
+        w: 10,
+        h: 56,
+        label: "Tür 5612",
+        kind: "look",
+        onUse: (api) =>
+          api.showText([
+            "Eine Stahltür. Kein Schild, kein Geräusch dahinter.",
+            "Layard klopft nicht. Heute nicht.",
           ]),
       },
       // ─────────────────────────────────────────────────────────
@@ -312,10 +328,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       // ─────────────────────────────────────────────────────────
       {
         id: "door5610",
-        x: 8,
-        y: 16,
-        w: 16,
-        h: 74,
+        x: 32,
+        y: 28,
+        w: 7,
+        h: 42,
         label: "Tür 5610 · Technik",
         kind: "exit",
         visible: (api) => {
@@ -391,10 +407,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "back56",
-        x: 80,
-        y: 30,
-        w: 18,
-        h: 60,
+        x: 71,
+        y: 14,
+        w: 17,
+        h: 76,
         label: "Zurück zum Aufzug",
         kind: "exit",
         onUse: (api) => api.goTo("elevator"),
