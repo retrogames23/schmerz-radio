@@ -1993,7 +1993,7 @@ export function Terminal() {
                   input,
                   cwd,
                   (f) => flags.has(f),
-                  bodoMode,
+                  resolvePath,
                   NET_HOSTS.flatMap((h) => [h.host, h.ip]),
                 );
               }
