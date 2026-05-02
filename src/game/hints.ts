@@ -17,8 +17,9 @@ export interface HintQuest {
   id: string;
   /** Kurzer Titel für die Quest-Auswahl. */
   title: string;
-  /** Genau drei Stufen — vage → konkreter → exakte Anweisung. */
-  hints: [string, string, string];
+  /** 1–3 Stufen — vage → konkreter → exakte Anweisung. Wenn der erste
+   *  Tipp schon eindeutig ist, reicht ein einzelner Eintrag. */
+  hints: [string] | [string, string] | [string, string, string];
   /** Sortierung: kleiner = wichtiger / Default-Vorauswahl. */
   priority: number;
   /** Quest gilt als offen, wenn dieses Prädikat true ist. */
