@@ -654,10 +654,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "exit2612",
-        // Wohnungstür ganz rechts.
-        x: 80,
+        // Wohnungstür rechts neben dem Telefon-/Schreibtischbereich.
+        x: 60,
         y: 14,
-        w: 20,
+        w: 16,
         h: 80,
         label: "Zurück in den Korridor",
         kind: "exit",
