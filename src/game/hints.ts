@@ -286,6 +286,20 @@ export const HINT_QUESTS: HintQuest[] = [
     ],
   },
 
+  // 16) Übergang Akt I → Akt II — Ending-Screen, Weiterspielen-Button
+  {
+    id: "act1.toAct2",
+    title: "Weiter nach Akt II",
+    priority: 16,
+    isActive: (a) => a.hasFlag("sectorDoorOpen") && !a.hasFlag("act2Started"),
+    isResolved: (a) => a.hasFlag("act2Started"),
+    hints: [
+      "Akt I ist zu Ende — aber die Geschichte ist es nicht. Insas Stimme im Kopf war kein Abschied.",
+      "Auf dem Akt-I-Ending-Screen gibt es neben „Neu beginnen“ einen zweiten Button, der dich weiterspielen lässt.",
+      "Klick auf dem Ending-Screen den Button „▸ Akt II — Weiterspielen“. Der nächste Morgen beginnt automatisch: Layard bricht mit dem Protokoll zur Leitstelle auf.",
+    ],
+  },
+
   // ════════════════════════════════════════════════════════════════
   // OPTIONALE NEBENPFADE — höhere Priorität-Zahl, damit sie nicht
   // den kritischen Pfad verdecken. Werden nur angezeigt, wenn der
