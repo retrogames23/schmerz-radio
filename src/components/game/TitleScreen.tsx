@@ -149,10 +149,6 @@ export function TitleScreen({ onStart }: Props) {
           Ein klassisches Cozypunk-Point-&amp;-Click-Adventure
         </p>
 
-        <p className="mx-auto mt-6 max-w-xl font-display text-base italic leading-relaxed text-foreground/85 sm:text-lg font-semibold">
-          Ein klassisches Cozypunk-Point-&amp;-Click-Adventure
-        </p>
-
         <button
           type="button"
           onClick={handleStartRequest}
