@@ -7,6 +7,7 @@ import {
   startResonanceDrone,
 } from "@/audio/sfx";
 import { CloseButton } from "./CloseButton";
+import { ACT2_BRIDGE_UI_TEXT } from "@/game/cutscenes";
 
 // Schmerz-Radio-Erweiterung — i18n-freundliche UI-/Erzähltexte
 // gehören in eine zentrale Konstante, nicht hartkodiert in JSX.
@@ -125,6 +126,23 @@ export function RadioPanel() {
   const droneStopRef = useRef<(() => void) | null>(null);
   const lastFreqRef = useRef(freq);
   const [tick, setTick] = useState(0);
+
+  // ── Akt-II-Resonanz-Pause (Dr. Okwu, weich) ─────────────────────
+  // Solange `radioOnPause` gesetzt ist und Layard die Pause noch nicht
+  // einmal innerhalb dieser Session bewusst übergangen hat, blockiert
+  // ein Warnhinweis das Panel. Zwei Optionen: lassen (schließt das Panel)
+  // oder trotzdem einschalten (setzt `cheatedRadioOnPause`).
+  const [pauseAck, setPauseAck] = useState(false);
+  const showPauseGate =
+    radioOpen &&
+    flags.has("radioOnPause") &&
+    !flags.has("cheatedRadioOnPause") &&
+    !pauseAck;
+
+  // Reset des Session-Acks, sobald das Radio wieder geschlossen wird.
+  useEffect(() => {
+    if (!radioOpen) setPauseAck(false);
+  }, [radioOpen]);
 
   // ── Resonanz-Duell (Mira-Verstärker) ────────────────────────────
   // Aktiv, sobald Layard Miras Antenne übergeben hat (`miraHasAmplifier`)
