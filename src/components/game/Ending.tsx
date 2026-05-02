@@ -145,9 +145,7 @@ export function Ending() {
                   // starten. Die Cutscene setzt die Akt-II-Flags und springt
                   // Layard am Ende zurück in seine Wohnung.
                   if (!api.hasFlag("act2Started")) api.setFlag("act2Started");
-                  // Ending-State schließen (es gibt keine eigene close-Funktion;
-                  // der Cutscene-Start verdeckt das Ending optisch, und das Reset
-                  // geschieht beim Bridge-Finish via goTo(apartment) + endCutscene).
+                  api.clearEnding();
                   api.startCutscene("act2Bridge");
                 }}
                 className="mt-3 rounded-sm border border-amber-glow px-5 py-2 text-xs uppercase tracking-widest text-amber-glow hover:bg-amber-glow/15 amber-glow"
