@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import rainMask from "@/assets/title/whisper-quest-v1-rain-mask.png";
 
 /**
  * Canvas-based rain overlay. Renders ~220 falling streaks with three depth
@@ -152,12 +153,17 @@ export function RainOverlay() {
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-[1] h-full w-full"
       style={{
-        // Confine rain to the "outdoors" portion of the artwork (upper area
-        // showing the skyline & windows). Fades out before the indoor desk.
-        WebkitMaskImage:
-          "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 32%, rgba(0,0,0,0) 46%)",
-        maskImage:
-          "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 32%, rgba(0,0,0,0) 46%)",
+        // Pixel-precise mask matching the artwork: rain only renders where the
+        // mask is white (window-glass / sky areas). Curtains, frames, person,
+        // desk, monitor are black -> rain hidden behind them.
+        WebkitMaskImage: `url(${rainMask})`,
+        maskImage: `url(${rainMask})`,
+        WebkitMaskSize: "100% 100%",
+        maskSize: "100% 100%",
+        WebkitMaskRepeat: "no-repeat",
+        maskRepeat: "no-repeat",
+        WebkitMaskPosition: "center",
+        maskPosition: "center",
       }}
     />
   );
