@@ -716,10 +716,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "back2611",
-        x: 79,
+        x: 71,
         y: 21,
-        w: 19,
-        h: 77,
+        w: 15,
+        h: 68,
         label: "Tür 2611 (zurück in die Wohnung)",
         kind: "exit",
         onUse: (api) => api.goTo("apartment"),
@@ -727,10 +727,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Tür 2613 — Philippes Wohnung. Bleibt jederzeit begehbar.
       {
         id: "door2613Philippe",
-        x: 69,
-        y: 31,
+        x: 63,
+        y: 29,
         w: 8,
-        h: 54,
+        h: 56,
         label: "Tür 2613 (Philippe)",
         kind: "exit",
         onUse: (api) => {
@@ -756,10 +756,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // alles, was es zu sehen gibt.
       {
         id: "door2615Sealed",
-        x: 62,
+        x: 57.5,
         y: 36,
-        w: 6,
-        h: 34,
+        w: 5.5,
+        h: 39,
         label: "Tür 2615 (versiegelt)",
         kind: "look",
         requires: ["paramedicsCutsceneSeen"],
@@ -774,10 +774,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Tür 2610 — Helka Vint. Nur Türgespräch, keine Szene.
       {
         id: "door2610Helka",
-        x: 5,
-        y: 20,
-        w: 19,
-        h: 78,
+        x: 16,
+        y: 21,
+        w: 14,
+        h: 68,
         label: "Tür 2610 (Helka Vint)",
         kind: "talk",
         onUse: (api) => {
@@ -807,10 +807,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Tür 2612 — Bodo Marschke. Begehbare Wohnung.
       {
         id: "door2612Bodo",
-        x: 25,
-        y: 22,
-        w: 11,
-        h: 76,
+        x: 30,
+        y: 29,
+        w: 9,
+        h: 56,
         label: "Tür 2612 (Bodo Marschke)",
         kind: "exit",
         onUse: (api) => api.goTo("apt2612"),
@@ -818,10 +818,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Tür 2614 — Ennis Korr. Nur Türgespräch.
       {
         id: "door2614Ennis",
-        x: 37,
-        y: 31,
+        x: 39.5,
+        y: 35,
         w: 6,
-        h: 45,
+        h: 42,
         label: "Tür 2614 (Ennis Korr)",
         kind: "talk",
         onUse: (api) => {
@@ -849,10 +849,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "toSector",
-        x: 43,
-        y: 34,
-        w: 17,
-        h: 36,
+        x: 46,
+        y: 38,
+        w: 11,
+        h: 32,
         label: "Aufzug",
         kind: "exit",
         // Sichtbar, solange keine aktive Wartungssperre auf dem Aufzug liegt.
@@ -869,10 +869,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Bodo unterwegs ist (bodoLeftForB3 && !bodoBackAfterB3).
       {
         id: "toSectorBlocked",
-        x: 43,
-        y: 34,
-        w: 17,
-        h: 36,
+        x: 46,
+        y: 38,
+        w: 11,
+        h: 32,
         label: "Aufzug (gesperrt — Wartung 4711)",
         kind: "look",
         requires: ["elevatorMaintBlocked"],
