@@ -53,7 +53,7 @@ export type KnowledgeFlag =
   | "frequencyControl";
 
 /** Identifier einer narrativen Cutscene. */
-export type CutsceneId = "paramedics";
+export type CutsceneId = "paramedics" | "act2Bridge";
 
 export type StoryFlag =
   | "radioTunedTo1046"
@@ -262,7 +262,16 @@ export type StoryFlag =
   // Lose Wartungs-Hinweise von NPCs (für Hidden Frequency)
   | "bodoHintHiddenFreqBand"
   | "helkaHintHiddenFreqStep"
-  | "mikaelHintHiddenFreqMood";
+  | "mikaelHintHiddenFreqMood"
+  // ── Akt II ──────────────────────────────────────────────────────
+  /** Akt II hat formell begonnen (nach „Weiterspielen“ aus dem Ending). */
+  | "act2Started"
+  /** Akt-II-Bridge-Cutscene wurde komplett abgespielt. */
+  | "act2BridgeSeen"
+  /** Dr. Okwu hat eine weiche Resonanz-Pause für das Schmerz-Radio verhängt. */
+  | "radioOnPause"
+  /** Layard hat während der Pause das Radio trotzdem eingeschaltet. */
+  | "cheatedRadioOnPause";
 
 export interface InventoryItem {
   id: InventoryItemId;
