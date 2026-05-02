@@ -447,6 +447,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         brustWinStreakRef.current = 0;
       },
       setEnding: () => setEnding(true),
+      clearEnding: () => setEnding(false),
       playBurnSequence: () => {
         // Node-Terminal schließen, Sequenz übernimmt den Bildschirm.
         setNodeOpen(false);
