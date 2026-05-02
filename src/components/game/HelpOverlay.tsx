@@ -423,7 +423,7 @@ function HintLevels({
 }) {
   return (
     <div className="space-y-2">
-      {[1, 2, 3].map((level) => {
+      {Array.from({ length: quest.hints.length }, (_, i) => i + 1).map((level) => {
         const isOpen = level <= revealed;
         const text = quest.hints[level - 1];
         return (
