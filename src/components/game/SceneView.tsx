@@ -229,6 +229,21 @@ export function SceneView() {
           <Hotspot key={h.id} hotspot={h} reveal={revealHotspots} />
         ))}
 
+        {/* Hallway-only: Klebeband-Overlays als SVG. Liegen über dem
+            Hintergrund, aber unter den Hotspots (pointer-events: none).
+            Frühere Bildvarianten hatten Render-Artefakte und wurden durch
+            diese sauberen Overlays ersetzt. Koordinaten sind in % des
+            4:3-Layers — abgestimmt auf die Aufzugs- bzw. 2615-Hotspots. */}
+        {scene === "hallway" && (
+          <HallwayTapeOverlays
+            elevatorSealed={
+              flags.has("elevatorMaintBlocked") &&
+              !flags.has("elevatorMaintCleared")
+            }
+            apt2615Sealed={flags.has("paramedicsCutsceneSeen")}
+          />
+        )}
+
         {/* Dev-only: drag/resize Editor über allen Hotspots, NPCs und
             Decals — nur sichtbar mit ?dev=1 + gehaltener Space-Taste. */}
         {dev && revealHotspots && (
@@ -293,5 +308,122 @@ export function SceneView() {
         )}
       </div>
     </div>
+  );
+}
+
+/**
+ * SVG-Overlays für die beiden Klebebänder im Korridor 26.
+ *
+ *  - Rotes Doppel-Klebeband-X über der Aufzugstür, sobald die
+ *    Wartungssperre 4711 aktiv ist.
+ *  - Gelbes Quarantäne-Siegelband schräg über Tür 2615, sobald die
+ *    Sanitäter-Cutscene gesehen wurde.
+ *
+ * Beide Layer liegen im 4:3-Hotspot-Layer und nutzen %-Koordinaten,
+ * die exakt zu den Hotspot-Boxen passen (Aufzug: 43/34/17/36,
+ * 2615: 62/36/6/34). `pointer-events-none` lässt die Hotspots
+ * darunter klickbar bleiben.
+ */
+function HallwayTapeOverlays({
+  elevatorSealed,
+  apt2615Sealed,
+}: {
+  elevatorSealed: boolean;
+  apt2615Sealed: boolean;
+}) {
+  return (
+    <>
+      {elevatorSealed && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute z-[15]"
+          style={{ left: "43%", top: "34%", width: "17%", height: "36%" }}
+        >
+          <svg
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            className="h-full w-full"
+          >
+            {/* Schatten unter den Bändern, damit sie auf dem Türmetall
+                Tiefe bekommen. */}
+            <g style={{ filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.55))" }}>
+              {/* Erstes Band: links-oben → rechts-unten */}
+              <polygon
+                points="6,18 22,6 96,82 80,94"
+                fill="#c93434"
+                stroke="#7a1818"
+                strokeWidth="0.6"
+              />
+              {/* Zweites Band: rechts-oben → links-unten */}
+              <polygon
+                points="78,6 94,18 20,94 4,82"
+                fill="#d23a3a"
+                stroke="#7a1818"
+                strokeWidth="0.6"
+              />
+              {/* Mittiger Knoten / Faltung */}
+              <polygon
+                points="44,40 56,40 56,52 44,52"
+                fill="#a82a2a"
+                opacity="0.85"
+              />
+              {/* Subtile Highlights */}
+              <line
+                x1="6"
+                y1="22"
+                x2="96"
+                y2="86"
+                stroke="#ffffff"
+                strokeOpacity="0.18"
+                strokeWidth="0.8"
+              />
+              <line
+                x1="78"
+                y1="10"
+                x2="4"
+                y2="86"
+                stroke="#ffffff"
+                strokeOpacity="0.18"
+                strokeWidth="0.8"
+              />
+            </g>
+          </svg>
+        </div>
+      )}
+      {apt2615Sealed && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute z-[15]"
+          style={{ left: "62%", top: "36%", width: "6%", height: "34%" }}
+        >
+          <svg
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            className="h-full w-full"
+          >
+            <g style={{ filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.55))" }}>
+              {/* Diagonales gelbes Siegelband, leicht schräg */}
+              <polygon
+                points="0,30 100,8 100,28 0,50"
+                fill="#d6c024"
+                stroke="#5e5210"
+                strokeWidth="0.8"
+              />
+              {/* Schwarze Warnstreifen darauf */}
+              <g
+                stroke="#1a1607"
+                strokeWidth="3"
+                opacity="0.55"
+              >
+                <line x1="10" y1="40" x2="20" y2="22" />
+                <line x1="30" y1="36" x2="40" y2="18" />
+                <line x1="50" y1="32" x2="60" y2="14" />
+                <line x1="70" y1="28" x2="80" y2="10" />
+              </g>
+            </g>
+          </svg>
+        </div>
+      )}
+    </>
   );
 }
