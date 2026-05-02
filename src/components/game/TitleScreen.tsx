@@ -135,7 +135,7 @@ export function TitleScreen({ onStart }: Props) {
           Quadrant E67 · Akt I
         </p>
 
-        <h1 className="mt-4 font-display uppercase tracking-[0.18em] text-foreground text-shadow-hard sm:text-8xl text-7xl">
+        <h1 className="mt-4 font-display uppercase tracking-[0.18em] text-foreground text-shadow-hard text-4xl sm:text-6xl md:text-7xl lg:text-8xl">
           WHISPER
           <span className="mx-3 amber-glow text-amber-glow">·</span>
           QUEST
@@ -152,7 +152,7 @@ export function TitleScreen({ onStart }: Props) {
         <button
           type="button"
           onClick={handleStartRequest}
-          className="rounded-sm border border-amber-glow/70 bg-background/50 px-8 py-3 font-display text-base uppercase tracking-[0.4em] text-amber-glow backdrop-blur-sm transition hover:bg-amber-glow/15 amber-glow mx-0 mt-[220px] mb-[100px]"
+          className="mt-8 rounded-sm border border-amber-glow/70 bg-background/50 px-8 py-3 font-display text-base uppercase tracking-[0.4em] text-amber-glow backdrop-blur-sm transition hover:bg-amber-glow/15 amber-glow"
         >
           ▸ Spiel beginnen
         </button>
