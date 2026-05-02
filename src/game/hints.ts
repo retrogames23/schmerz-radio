@@ -405,6 +405,36 @@ export function getActiveHints(api: GameApi): HintQuest[] {
 }
 
 /**
+ * Persistenz-Schlüssel der enthüllten Hint-Stufen — identisch zum Prefix
+ * im HelpOverlay. Liegt hier, damit andere Module (Ending, Cutscenes) den
+ * Verbrauch zählen können, ohne die UI zu importieren.
+ */
+export const HINT_STATE_PREFIX = "hint:";
+
+/**
+ * Summiert über alle Quests, wie viele Tipp-Stufen der Spieler insgesamt
+ * enthüllt hat. Jede gelesene Stufe (1, 2 oder 3) zählt einzeln, also kann
+ * der Wert pro Quest zwischen 0 und 3 liegen. Quests, die nie geöffnet
+ * wurden, zählen 0.
+ *
+ * Liest aus `sessionStorage`, daher pro Browser-Tab/Session. Reload mit
+ * geladenem Spielstand behält den Stand; ein vollständiger Neustart
+ * (anderes Tab, geleerte Session) beginnt bei 0.
+ */
+export function getHintsUsedCount(): number {
+  if (typeof window === "undefined") return 0;
+  let total = 0;
+  for (const quest of HINT_QUESTS) {
+    const raw = window.sessionStorage.getItem(HINT_STATE_PREFIX + quest.id);
+    if (!raw) continue;
+    const n = parseInt(raw, 10);
+    if (!Number.isFinite(n) || n < 1) continue;
+    total += Math.min(n, quest.hints.length);
+  }
+  return total;
+}
+
+/**
  * UI-Texte für das Tipps-Tab. Zentral, damit später in einem Schritt
  * übersetzt werden kann.
  */
@@ -425,4 +455,11 @@ export const HINTS_UI_TEXT = {
   reset: "Tipps zurücksetzen",
   introHint:
     "Wähle eine Aufgabe und enthülle Schritt für Schritt mehr — nur so weit du musst.",
+  /** Wird in Akt-Übergängen / Endscreen angezeigt. */
+  hintsUsedSummary: (n: number) =>
+    n === 0
+      ? "Tipps verwendet: keine."
+      : n === 1
+        ? "Tipps verwendet: 1."
+        : `Tipps verwendet: ${n}.`,
 };

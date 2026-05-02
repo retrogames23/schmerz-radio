@@ -6,6 +6,7 @@ import {
   getActiveHints,
   HINTS_UI_TEXT,
   type HintQuest,
+  HINT_STATE_PREFIX,
 } from "@/game/hints";
 import { useGame } from "@/game/GameContext";
 
@@ -17,8 +18,6 @@ interface Props {
   /** Mit welchem Tab das Overlay öffnen soll. Default: "cheatsheet". */
   initialTab?: HelpTab;
 }
-
-const HINT_STATE_PREFIX = "hint:";
 
 /** Liest die enthüllte Stufe (1..3) aus sessionStorage. 0 = nichts enthüllt. */
 function readRevealed(questId: string): number {

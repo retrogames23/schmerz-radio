@@ -10,6 +10,7 @@ import {
   ENDING_UI_TEXT,
   ACT2_BRIDGE_UI_TEXT,
 } from "@/game/cutscenes";
+import { getHintsUsedCount, HINTS_UI_TEXT } from "@/game/hints";
 import { DonationModal } from "@/components/donation/DonationModal";
 
 export function Ending() {
@@ -104,6 +105,10 @@ export function Ending() {
 
   const done = idx >= frames.length;
   const current = !done ? frames[idx] : null;
+  // Snapshot beim Erreichen des End-Screens — danach soll die Zahl nicht
+  // mehr wandern, falls der Spieler im Hintergrund noch das Hilfe-Overlay
+  // öffnet (kann er hier ohnehin nicht).
+  const hintsUsed = done ? getHintsUsedCount() : 0;
 
   return (
     <div className="absolute inset-0 z-[60] flex flex-col items-center justify-center bg-black px-6 text-center">
@@ -129,6 +134,9 @@ export function Ending() {
             </div>
             <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
               {ENDING_UI_TEXT.subtitle}
+            </div>
+            <div className="pt-2 font-mono-crt text-[11px] uppercase tracking-[0.3em] text-amber-glow/70">
+              {HINTS_UI_TEXT.hintsUsedSummary(hintsUsed)}
             </div>
             <button
               type="button"
