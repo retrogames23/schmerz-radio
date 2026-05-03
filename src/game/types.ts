@@ -225,6 +225,15 @@ export type StoryFlag =
   | "duelEndgameWon"
   | "duelEndgameLost"
   | "duelTutorialShown"
+  // Pflicht-Verzahnung Akt I: Tilla-Quittung 4317-K hängt am Stamm 4317.
+  | "needsMarteauAuthForTilla"
+  // Endduell-Versuche bei Vossbeck (drei zugelassen).
+  | "vossbeckAttempt1Lost"
+  | "vossbeckAttempt2Lost"
+  // Kowalk hat nach drei Niederlagen die Fälschung als Notausgang angeboten.
+  | "kowalkOfferedForgery"
+  // Layard hat die gefälschte Tilla-Quittung über den Notausgang erstellt.
+  | "usedForgeryRoute"
   // Mira — Vertrauenspfad
   | "readMiraManifest"
   | "radioMutedAtLeast60s"
