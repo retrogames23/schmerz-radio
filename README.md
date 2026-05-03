@@ -40,10 +40,12 @@ shown in-game on the title screen under
 
 Source code is released under the **MIT License** — see [LICENSE](./LICENSE).
 
-**Game assets are not covered by the MIT license.** Images, music, story
-text, character art and other creative content remain the exclusive property
-of Stephan Dörner unless explicitly noted otherwise. If you want to reuse any
-asset, please ask first.
+**Game assets are licensed separately under
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)** —
+see [LICENSE-ASSETS](./LICENSE-ASSETS). Images, music, story text,
+character art and other creative content may be shared and adapted
+(including commercially) as long as you credit *"Stephan Dörner /
+Schmerz-Radio"* and release derivative works under the same license.
 
 ## Contact
 
