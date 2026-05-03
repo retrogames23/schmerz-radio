@@ -13,6 +13,22 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
           "Sie hat die Liste nicht angesehen. Sie kennt die Leute auf E67.",
         choices: [
           {
+            // Notausgang nach drei Niederlagen bei Vossbeck — Kowalk
+            // tritt von sich aus an Layard heran, wenn er noch nicht
+            // mit ihr darüber gesprochen hat.
+            text: "[ Frau Kowalk … wegen 4317-K. Ich habe Vossbeck nicht geschlagen. ]",
+            next: "kForge1",
+            requires: ["duelEndgameLost", "insaGaveTransferTask"],
+            hiddenWhen: ["kowalkOfferedForgery", "usedForgeryRoute"],
+          },
+          {
+            // Hilfe nochmal hören, falls der Spieler aus dem Dialog raus ist.
+            text: "[ Wegen der Quittung 4317-K. Wie kommen wir da raus? ]",
+            next: "kForgeRecap",
+            requires: ["kowalkOfferedForgery"],
+            hiddenWhen: ["usedForgeryRoute"],
+          },
+          {
             text: "Ich habe eine Vollmacht. Vier-Drei-Eins-Sieben.",
             next: "kAuth1",
             requires: ["gotB3Authorization"],
