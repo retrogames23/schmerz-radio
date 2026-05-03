@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { scenes, useGame } from "@/game/GameContext";
 import { Hotspot } from "./Hotspot";
 import { FloatingChatter } from "./FloatingChatter";
@@ -23,19 +23,11 @@ export function SceneView() {
     typeof current.background === "function"
       ? current.background(api)
       : current.background;
-  // Optionaler Bild-Zoom (siehe Scene.bgFocus). Wird auf das
-  // Hintergrund-<img> angewendet, damit zu kleinteilige Szenen
-  // (z. B. Aufzug, in dem das Panel nur einen schmalen Bereich
-  // einnimmt) heran-skaliert werden können. Hotspot-Koordinaten
-  // müssen passend zum gezoomten Motiv gesetzt werden.
-  //
-  // Außerdem nutzen wir bgFocus als Hinweis, dass der Hintergrund
-  // visuell auf den 4:3-Bereich „eingerahmt" werden soll: dann
-  // erweitern wir den Bild-Container auf die 4:3-Breite, was
-  // automatisch dafür sorgt, dass Bild und Hotspot-Layer
-  // deckungsgleich sind.
+  // Optionaler Bild-Zoom (siehe Scene.bgFocus). Wird gemeinsam auf
+  // Hintergrund UND Hotspot-/NPC-/Decal-Layer angewendet, damit das
+  // Bild-Koordinatensystem erhalten bleibt.
   const bgFocus = current.bgFocus;
-  const bgImgStyle: React.CSSProperties | undefined = bgFocus
+  const bgFocusStyle: React.CSSProperties | undefined = bgFocus
     ? {
         transform: `scale(${bgFocus.scale})`,
         transformOrigin: `${bgFocus.originX}% ${bgFocus.originY}%`,
@@ -51,6 +43,67 @@ export function SceneView() {
   // Tastatureingaben in Eingabefeldern (Terminal etc.) werden ignoriert.
   const [revealHotspots, setRevealHotspots] = useState(false);
   const dev = useDevMode();
+  // Pixelgenaues Layout: Hotspot-/NPC-/Decal-Layer werden exakt über die
+  // sichtbare Bildfläche gelegt — auch wenn das Asset nicht exakt 16:9
+  // ist. Dadurch sind alle Hotspot-Koordinaten (in % des Bildes)
+  // unabhängig von der tatsächlichen Bühnen-/Asset-Geometrie korrekt.
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const [imgRect, setImgRect] = useState<{
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null>(null);
+
+  const recomputeImgRect = useCallback(() => {
+    const stage = stageRef.current;
+    const img = imgRef.current;
+    if (!stage || !img) return;
+    const sw = stage.clientWidth;
+    const sh = stage.clientHeight;
+    const nw = img.naturalWidth;
+    const nh = img.naturalHeight;
+    if (!sw || !sh || !nw || !nh) return;
+    const stageRatio = sw / sh;
+    const imgRatio = nw / nh;
+    let width: number;
+    let height: number;
+    if (imgRatio >= stageRatio) {
+      // Bild ist breiter als Bühne → Höhe füllt, Breite überlappt links/rechts.
+      height = sh;
+      width = sh * imgRatio;
+    } else {
+      // Bild ist schmaler als Bühne → Breite füllt, Höhe überlappt oben/unten.
+      width = sw;
+      height = sw / imgRatio;
+    }
+    setImgRect({
+      left: (sw - width) / 2,
+      top: (sh - height) / 2,
+      width,
+      height,
+    });
+  }, []);
+
+  useEffect(() => {
+    recomputeImgRect();
+    const stage = stageRef.current;
+    if (!stage) return;
+    const ro = new ResizeObserver(() => recomputeImgRect());
+    ro.observe(stage);
+    window.addEventListener("resize", recomputeImgRect);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", recomputeImgRect);
+    };
+  }, [recomputeImgRect]);
+
+  // Wenn das Hintergrundbild wechselt: Rect zurücksetzen, damit kein
+  // alter Bildausschnitt für das neue Asset verwendet wird.
+  useEffect(() => {
+    setImgRect(null);
+  }, [backgroundSrc]);
   useEffect(() => {
     const isTypingTarget = (t: EventTarget | null) => {
       if (!(t instanceof HTMLElement)) return false;
@@ -133,32 +186,60 @@ export function SceneView() {
 
   return (
     <div
+      ref={stageRef}
       className={`relative mx-auto aspect-[16/9] h-full max-h-full w-auto max-w-full overflow-hidden border border-border bg-black scanlines ${
         shakeActive ? "resonance-shake" : ""
       }`}
     >
-      {/* Hintergrund + Hotspot-Layer teilen denselben 16:9-Container.
-          Damit liegen Bild und alle Hotspot-/NPC-/Decal-Koordinaten
-          (alle in Prozent der 16:9-Bühne) immer pixelgenau übereinander.
-          object-cover stellt sicher, dass nicht-16:9-Bilder die volle
-          Bühne füllen — minimal beschnitten, aber ohne seitliche
-          Letterbox, die zu Drift gegenüber den Hotspots führen würde. */}
-      <img
-        src={backgroundSrc}
-        alt={current.title}
-        fetchPriority="high"
-        decoding="async"
-        onLoad={() => markEssentialAssetsLoaded()}
-        onError={() => markEssentialAssetsLoaded()}
-        className={`pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-center ${
-          scene === "corridor56" && flags.has("burnedNode5610")
-            ? "corridor-emergency-power"
-            : ""
-        }`}
-        style={bgImgStyle}
-      />
+      {/*
+        Bild-Layer: Hintergrund + Hotspot-/NPC-/Decal-Layer teilen sich
+        EXAKT die Bildfläche (object-cover-Geometrie, pixelgenau aus
+        naturalWidth/Height berechnet). Dadurch sind alle Koordinaten
+        in % des Original-Bildes — unabhängig vom Asset-Format.
+      */}
+      <div
+        className="pointer-events-none absolute z-0"
+        style={{
+          left: imgRect ? imgRect.left : 0,
+          top: imgRect ? imgRect.top : 0,
+          width: imgRect ? imgRect.width : "100%",
+          height: imgRect ? imgRect.height : "100%",
+          ...(bgFocusStyle ?? {}),
+        }}
+      >
+        <img
+          ref={imgRef}
+          src={backgroundSrc}
+          alt={current.title}
+          fetchPriority="high"
+          decoding="async"
+          onLoad={() => {
+            recomputeImgRect();
+            markEssentialAssetsLoaded();
+          }}
+          onError={() => markEssentialAssetsLoaded()}
+          className={`pointer-events-none block h-full w-full select-none ${
+            scene === "corridor56" && flags.has("burnedNode5610")
+              ? "corridor-emergency-power"
+              : ""
+          }`}
+        />
+      </div>
 
-      <div className="absolute inset-0 z-10">
+      <div
+        className="absolute z-10"
+        style={{
+          left: imgRect ? imgRect.left : 0,
+          top: imgRect ? imgRect.top : 0,
+          width: imgRect ? imgRect.width : "100%",
+          height: imgRect ? imgRect.height : "100%",
+          ...(bgFocusStyle ?? {}),
+          // Pointer-Events nur auf den interaktiven Kindern — nicht auf
+          // dem Layer selbst (sonst würde der „Letterbox"-Bereich
+          // außerhalb der Bühne klicks abfangen).
+          pointerEvents: "none",
+        }}
+      >
 
         {/* NPC sprites — gerendert über dem Hintergrund, unter den Hotspots */}
         {current.npcs?.map((npc) => {
