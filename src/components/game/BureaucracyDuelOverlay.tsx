@@ -274,7 +274,6 @@ export function BureaucracyDuelOverlay() {
       } else {
         // Dritter und letzter Versuch — der Vorgang ist verloren.
         api.setFlag("duelEndgameLost");
-        api.setFlag("duelLost");
         setTimeout(() => api.showText(DUEL_UI_TEXT.endgameDefeatLines), 60);
       }
     } else {
