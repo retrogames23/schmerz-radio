@@ -34,9 +34,9 @@ export const HELP_SECTIONS: HelpSection[] = [
     entries: [
       {
         label: "Hotspots hervorheben",
-        keys: ["Leertaste (halten)", "Mobile: nicht nötig"],
+        keys: ["Leertaste (halten)"],
         description:
-          "Halte die Leertaste gedrückt, um alle interaktiven Stellen in der Szene kurz aufleuchten zu lassen. Auf dem Handy sind Hotspots dauerhaft dezent sichtbar.",
+          "Im Normalbetrieb sind die Hotspots unsichtbar — der Mauszeiger verrät beim Hover, ob etwas anschaubar (Lupe), bedienbar (Hand), ansprechbar (Sprechblase) oder ein Ausgang (Pfeil) ist. Halte die Leertaste gedrückt, um alle interaktiven Stellen mit Rahmen und Beschriftung anzuzeigen.",
         tags: ["leertaste", "space", "hotspots", "highlight", "verstecken"],
       },
       {
