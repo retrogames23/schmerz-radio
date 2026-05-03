@@ -13,6 +13,22 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
           "Sie hat die Liste nicht angesehen. Sie kennt die Leute auf E67.",
         choices: [
           {
+            // Notausgang nach drei Niederlagen bei Vossbeck — Kowalk
+            // tritt von sich aus an Layard heran, wenn er noch nicht
+            // mit ihr darüber gesprochen hat.
+            text: "[ Frau Kowalk … wegen 4317-K. Ich habe Vossbeck nicht geschlagen. ]",
+            next: "kForge1",
+            requires: ["duelEndgameLost", "insaGaveTransferTask"],
+            hiddenWhen: ["kowalkOfferedForgery", "usedForgeryRoute"],
+          },
+          {
+            // Hilfe nochmal hören, falls der Spieler aus dem Dialog raus ist.
+            text: "[ Wegen der Quittung 4317-K. Wie kommen wir da raus? ]",
+            next: "kForgeRecap",
+            requires: ["kowalkOfferedForgery"],
+            hiddenWhen: ["usedForgeryRoute"],
+          },
+          {
             text: "Ich habe eine Vollmacht. Vier-Drei-Eins-Sieben.",
             next: "kAuth1",
             requires: ["gotB3Authorization"],
@@ -129,16 +145,85 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         speaker: "KOWALK",
         text: "Sie brauchen einen Quittungsblanko, Schicht B. Tragen 4317-K ein, gegenzeichnen, ans linke Pneumatikrohr — Ziel E70-K. Antwort kommt zurück: Transferbogen, Bewohnernummer, Heim. Ich darf das selber nicht abschicken. Aushang. Aber Sie können.",
         subtext: "Sie tippt zweimal mit dem Finger auf den Tresen. So lautlos, dass Brust nichts hört.",
+        next: "kInsa5",
+      },
+      kInsa5: {
+        id: "kInsa5",
+        speaker: "KOWALK",
+        text: "Aber — und das ist die Bedingung, Worag — E70-K nimmt eine 4317-K nur an, wenn der Stamm-Vorgang 4317 frisch gegengezeichnet vorliegt. Ohne den landet Ihre Quittung im Aushang. Das wird sie sehen, ohne hinzusehen.",
+        subtext: "Sie sagt »ohne hinzusehen« mit der Müdigkeit von jemandem, der das hundertmal erlebt hat.",
+        next: "kInsa6",
+      },
+      kInsa6: {
+        id: "kInsa6",
+        speaker: "KOWALK",
+        text: "Heißt für Sie: Sie brauchen jemanden, der die 4317 jetzt freigibt. Vossbeck. Sitzt hinten beim Hochregal. Sonst läuft hier gar nichts.",
         choices: [
           {
-            text: "Verstanden. Ich kümmere mich.",
+            text: "Verstanden. Ich rede mit Vossbeck.",
             action: (api) => {
               api.setFlag("gotTillaTransferInfo");
               api.setFlag("learnedMarteauPhilippeLink");
+              api.setFlag("needsMarteauAuthForTilla");
             },
             next: "k0",
           },
         ],
+      },
+      // ── Notausgang nach drei verlorenen Versuchen bei Vossbeck ──
+      // Kowalk hat das Duell vom Tresen aus mit angesehen. Sie tritt
+      // einen halben Schritt vor, leise, abseits des Hochregals.
+      kForge1: {
+        id: "kForge1",
+        speaker: "KOWALK",
+        text: "Worag.",
+        subtext: "Sie sagt es so leise, dass Brust am anderen Ende der Theke nicht aufschaut. Sie zieht ihn mit dem Blick einen halben Schritt zur Seite, weg von der Ausgabe.",
+        next: "kForge2",
+      },
+      kForge2: {
+        id: "kForge2",
+        speaker: "KOWALK",
+        text: "Sie haben es versucht. Dreimal. Das wird Vossbeck Ihnen nicht zum vierten Mal anhören. Vorgang 4317 ist für ihn geschlossen — und damit auch der Stamm für Tilla.",
+        next: "kForge3",
+      },
+      kForge3: {
+        id: "kForge3",
+        speaker: "KOWALK",
+        text: "Aber für eine 4317-K brauche ich seinen Stempel nicht selbst in der Hand. Ich brauche eine Quittung, die aussieht, als hätte sie ihn.",
+        subtext: "Sie schaut nicht weg, als sie das sagt. Es ist keine Verschwörung. Es ist Routine, die einmal benannt wird.",
+        next: "kForge4",
+      },
+      kForge4: {
+        id: "kForge4",
+        speaker: "KOWALK",
+        text: "Sie brauchen drei Sachen. Erstens einen Quittungsblanko — nehmen Sie sich einen vom Block hier. Zweitens den Trockensiegel-Abdruck »Schicht A« von Philippes Vollmacht 4317. Bleistift drüber, Carbon-Papier — Sie werden's sehen.",
+        next: "kForge5",
+      },
+      kForge5: {
+        id: "kForge5",
+        speaker: "KOWALK",
+        text: "Und drittens das Original von Aushang sieben Punkt eins, 1991. Hängt in E71. Holen Sie das mit. Stegmann lässt das durchgehen, der weiß, was die Welt aushält.",
+        next: "kForge6",
+      },
+      kForge6: {
+        id: "kForge6",
+        speaker: "KOWALK",
+        text: "Wenn Sie alles haben: zusammensetzen — Bodos Terminal kann das, er hat noch die alten Vorlagen — und dann ans linke Pneumatikrohr. Ich frage nicht, wie sie zustande kam.",
+        choices: [
+          {
+            text: "Verstanden. Danke, Frau Kowalk.",
+            action: (api) => {
+              api.setFlag("kowalkOfferedForgery");
+            },
+            next: "kBye",
+          },
+        ],
+      },
+      kForgeRecap: {
+        id: "kForgeRecap",
+        speaker: "KOWALK",
+        text: "Quittungsblanko. Trockensiegel-Abdruck von Philippes 4317. Original Aushang 7.1 aus E71. Bei Bodo zusammensetzen. Linkes Rohr. — Mehr sage ich nicht, Worag.",
+        end: true,
       },
       // Vollmacht-Pfad ──────────────────────────────────────
       kAuth1: {

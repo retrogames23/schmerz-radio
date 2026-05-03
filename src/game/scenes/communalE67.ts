@@ -118,9 +118,9 @@ export const communalE67Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "kowalkSpot",
-        x: 13,
-        y: 45,
-        w: 14,
+        x: 30,
+        y: 22,
+        w: 18,
         h: 50,
         label: "Frau Kowalk",
         kind: "talk",
@@ -133,9 +133,9 @@ export const communalE67Scenes: Record<string, Scene> = {
       },
       {
         id: "brustSpot",
-        x: 77,
-        y: 42,
-        w: 14,
+        x: 64,
+        y: 22,
+        w: 16,
         h: 50,
         label: "Herr Brust",
         kind: "talk",

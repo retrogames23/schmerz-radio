@@ -1719,6 +1719,11 @@ export function Terminal() {
           text: "forge: Eine fertige Quittung 4317-K liegt bereits in der Aktentasche.",
           kind: "out",
         });
+      } else if (!api.hasFlag("kowalkOfferedForgery")) {
+        newLines.push({
+          text: "forge: Kein Auftrag. (Frau Kowalk müsste Sie zuerst darum bitten.)",
+          kind: "out",
+        });
       } else {
         const need: Array<[string, string]> = [
           ["quittungBlankoB", "Quittungsbogen Schicht B (blanko)"],
@@ -1764,6 +1769,7 @@ export function Terminal() {
             ],
             () => {
               api.setFlag("forgedQuittung4317");
+              api.setFlag("usedForgeryRoute");
               api.addItem({
                 id: "quittungForged4317",
                 name: "Quittung 4317-K (Schicht B, fertig)",

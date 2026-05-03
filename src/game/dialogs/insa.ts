@@ -809,6 +809,12 @@ export const insaDialogs: Record<string, DialogTree> = {
         speaker: "INSA",
         text: "Frau Kowalk steht unten an der Nährstoffausgabe — Kantine 3602, E67, Schicht B. Graue Haare, Kittel, immer am linken Tresen. Sie kennt den Vorgang. Reden Sie mit ihr, nicht mit Brust.",
         subtext: "»Reden Sie mit ihr, nicht mit Brust.« — eine kleine Warnung, ruhig hingelegt.",
+        next: "iw3c",
+      },
+      iw3c: {
+        id: "iw3c",
+        speaker: "INSA",
+        text: "Eins noch, Worag: 4317-K hängt am Stamm-Vorgang 4317. E70-K nimmt die Quittung nur an, wenn die Stamm-Vollmacht frisch gegengezeichnet ist. Wer das gerade entscheidet, sagt Ihnen Frau Kowalk. Es wird Ihnen nicht gefallen.",
         next: "iw4",
       },
       iw4: {

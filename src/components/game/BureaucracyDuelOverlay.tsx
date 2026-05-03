@@ -239,9 +239,43 @@ export function BureaucracyDuelOverlay() {
 
   function onAcceptDefeat() {
     if (isEndgame) {
-      api.setFlag("duelEndgameLost");
+      // Drei Versuche bei Vossbeck. Erst beim dritten verlorenen Versuch
+      // wird der Vorgang endgültig geschlossen (`duelLost`) — dann kommt
+      // Kowalk mit dem Notausgang. Vorher: pedantisch-höfliche Vertagung.
+      const a1 = api.hasFlag("vossbeckAttempt1Lost");
+      const a2 = api.hasFlag("vossbeckAttempt2Lost");
+      const attemptNumber = a2 ? 3 : a1 ? 2 : 1;
       closeDuel();
-      setTimeout(() => api.showText(DUEL_UI_TEXT.endgameDefeatLines), 60);
+      if (attemptNumber === 1) {
+        api.setFlag("vossbeckAttempt1Lost");
+        setTimeout(
+          () =>
+            api.showText([
+              "Vossbeck schlägt die Akte zu, ohne aufzusehen.",
+              "„Bewohner Worag. Vorgang Vollmacht 4317 — heute nicht.“",
+              "„Aktenlage unverändert. Sie kommen wieder, wenn Sie soweit sind.“",
+              "Brust steht hinter ihm. Sehr gerade. Sagt nichts.",
+              "[ Erster Versuch verloren. Sie können noch zweimal antreten. ]",
+            ]),
+          60,
+        );
+      } else if (attemptNumber === 2) {
+        api.setFlag("vossbeckAttempt2Lost");
+        setTimeout(
+          () =>
+            api.showText([
+              "Vossbeck legt den Bleistift parallel zum Aktendeckel.",
+              "„Bewohner Worag. Zweite Anhörung in dieser Sache.“",
+              "„Wenn Sie ein drittes Mal antreten, ist es das letzte Mal. So oder so.“",
+              "[ Zweiter Versuch verloren. Ein Versuch bleibt. ]",
+            ]),
+          60,
+        );
+      } else {
+        // Dritter und letzter Versuch — der Vorgang ist verloren.
+        api.setFlag("duelEndgameLost");
+        setTimeout(() => api.showText(DUEL_UI_TEXT.endgameDefeatLines), 60);
+      }
     } else {
       api.setFlag("duelLost");
       api.resetBrustWinStreak();
