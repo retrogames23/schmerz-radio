@@ -86,6 +86,27 @@ export function OpenSourceOverlay({ open, onClose }: Props) {
           </div>
 
           <div>
+            <div className="text-amber-glow uppercase tracking-[0.2em] text-xs mb-1">
+              Spiel-Assets (Bilder, Musik, Texte)
+            </div>
+            <a
+              href="https://creativecommons.org/licenses/by-sa/4.0/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-amber-glow underline-offset-4 hover:underline amber-glow break-all"
+            >
+              Creative Commons BY-SA 4.0
+            </a>
+            <div className="text-xs text-muted-foreground mt-1">
+              Alle eigens für Schmerz-Radio erstellten Bilder, Musikstücke,
+              Cursor und Story-Texte stehen unter CC BY-SA 4.0 — frei nutz-,
+              veränder- und weitergabbar bei Namensnennung („Stephan Dörner /
+              Schmerz-Radio") und unter gleicher Lizenz. Details siehe
+              <code className="ml-1">LICENSE-ASSETS</code> im Repository.
+            </div>
+          </div>
+
+          <div>
             <div className="text-amber-glow uppercase tracking-[0.2em] text-xs mb-2">
               Verwendete Open-Source-Komponenten
             </div>
@@ -146,9 +167,10 @@ export function OpenSourceOverlay({ open, onClose }: Props) {
           </div>
 
           <p className="text-xs italic leading-relaxed text-muted-foreground">
-            Spielmusik, Bilder, Texte und Story-Inhalte sind eigenständige
-            Werke und nicht Teil der MIT-Lizenz des Quellcodes — sie
-            unterliegen ihren jeweiligen eigenen Lizenzbedingungen.
+            Spielmusik, Bilder, Cursor und Story-Texte sind eigenständige
+            Werke und nicht Teil der MIT-Lizenz des Quellcodes — sie stehen
+            unter CC BY-SA 4.0 (siehe oben). Schriftarten unterliegen ihren
+            jeweiligen eigenen Lizenzbedingungen.
           </p>
         </div>
       </div>
