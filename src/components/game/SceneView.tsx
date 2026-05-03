@@ -6,6 +6,7 @@ import { useDevMode } from "@/dev/devMode";
 import { HotspotEditor } from "@/dev/HotspotEditor";
 import { RoomSwitcher } from "@/dev/RoomSwitcher";
 import { ConsoleSwitcher } from "@/dev/ConsoleSwitcher";
+import { Eye, EyeOff } from "lucide-react";
 
 export function SceneView() {
   const {
@@ -42,6 +43,18 @@ export function SceneView() {
   // Rahmen und Label eingeblendet. Beim Loslassen wieder ausgeblendet.
   // Tastatureingaben in Eingabefeldern (Terminal etc.) werden ignoriert.
   const [revealHotspots, setRevealHotspots] = useState(false);
+  // Touch-Geräte haben keine Leertaste — wir blenden stattdessen einen
+  // kleinen Augen-Button ein, mit dem man die Hotspot-Rahmen umschaltet.
+  const [isTouch, setIsTouch] = useState(false);
+  const [touchReveal, setTouchReveal] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(hover: none), (pointer: coarse)");
+    const update = () => setIsTouch(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
   const dev = useDevMode();
   // Pixelgenaues Layout: Hotspot-/NPC-/Decal-Layer werden exakt über die
   // sichtbare Bildfläche gelegt — auch wenn das Asset nicht exakt 16:9
@@ -296,7 +309,7 @@ export function SceneView() {
 
         {/* Hotspots */}
         {current.hotspots.map((h) => (
-          <Hotspot key={h.id} hotspot={h} reveal={revealHotspots} />
+          <Hotspot key={h.id} hotspot={h} reveal={revealHotspots || touchReveal} />
         ))}
 
         {/* Dev-only: drag/resize Editor über allen Hotspots, NPCs und
@@ -325,6 +338,19 @@ export function SceneView() {
 
         {/* Amber vignette when radio is active */}
         {radioActive && <div className="amber-vignette" />}
+
+        {/* Mobile: Toggle für Hotspot-Rahmen (Ersatz für Leertaste) */}
+        {isTouch && (
+          <button
+            type="button"
+            onClick={() => setTouchReveal((v) => !v)}
+            className="absolute bottom-3 right-3 z-30 inline-flex h-10 w-10 items-center justify-center rounded-sm border border-amber-glow/40 bg-background/85 text-amber-glow amber-glow"
+            aria-label={touchReveal ? "Hotspots ausblenden" : "Hotspots einblenden"}
+            aria-pressed={touchReveal}
+          >
+            {touchReveal ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+          </button>
+        )}
 
         {/* Caption */}
         {caption && (
