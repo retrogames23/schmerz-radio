@@ -15,9 +15,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "monitor",
-        x: 14,
+        x: 23,
         y: 30,
-        w: 20,
+        w: 15,
         h: 22,
         label: "Status-Monitor",
         kind: "look",
@@ -31,9 +31,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "keypadCall",
-        x: 16,
+        x: 24.5,
         y: 54,
-        w: 16,
+        w: 12,
         h: 20,
         label: "Keypad — Code eingeben",
         kind: "use",
@@ -67,9 +67,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "toPassage",
-        x: 48,
+        x: 48.5,
         y: 26,
-        w: 38,
+        w: 28.5,
         h: 60,
         label: "Sektor-Tür öffnen → Verbindungsgang",
         kind: "exit",
@@ -95,9 +95,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       // weiß, dass es jenseits der Tür um E71 geht.
       {
         id: "doorWonder",
-        x: 48,
+        x: 48.5,
         y: 26,
-        w: 38,
+        w: 28.5,
         h: 60,
         label: "Tür betrachten",
         kind: "look",
@@ -113,9 +113,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "backHallwayS",
-        x:  0,
+        x: 12.5,
         y: 35,
-        w: 18,
+        w: 13.5,
         h: 60,
         label: "Zurück in die Lobby",
         kind: "exit",
@@ -134,18 +134,18 @@ export const sectorAct1Scenes: Record<string, Scene> = {
         id: "tvE71",
         kind: "television",
         // Linke Seitenwand, deutlich über dem schwarzen Brett.
-        x: 6,
+        x: 17,
         y: 6,
-        w: 11,
+        w: 8.25,
         h: 18,
       },
     ],
     hotspots: [
       {
         id: "receptionist",
-        x: 70,
+        x: 65,
         y: 35,
-        w: 25,
+        w: 18.75,
         h: 50,
         label: "Empfangsdame",
         kind: "talk",
@@ -163,9 +163,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "directory",
-        x: 35,
+        x: 38.75,
         y: 30,
-        w: 18,
+        w: 13.5,
         h: 22,
         label: "Hinweisschild",
         kind: "look",
@@ -181,9 +181,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
         id: "television",
         // Sichtbares Wandgerät an der linken Seitenwand, über dem
         // schwarzen Verzeichnis-Brett. Klick-Box deckt das Decal.
-        x: 5,
+        x: 16.25,
         y: 5,
-        w: 13,
+        w: 9.75,
         h: 20,
         label: "Teleempfänger",
         kind: "use",
@@ -191,9 +191,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "elevatorBack",
-        x:  0,
+        x: 12.5,
         y: 30,
-        w: 22,
+        w: 16.5,
         h: 65,
         label: "Aufzug zurück nach E67",
         kind: "exit",
@@ -203,9 +203,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "toCorridor15",
-        x: 28,
+        x: 33.5,
         y: 16,
-        w: 20,
+        w: 15,
         h: 50,
         label: "Tür → Korridor 15",
         kind: "exit",
@@ -224,9 +224,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "sealedDoor1531",
         // Versiegelte Tür rechts vorne, mit gelbem Quarantäne-Band.
-        x: 82,
+        x: 74,
         y: 5,
-        w: 18,
+        w: 13.5,
         h: 95,
         label: "Tür 1531 (versiegelt)",
         kind: "look",
@@ -246,9 +246,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "doors",
         // Übersichts-Look auf die Türenreihe im Mittelgrund.
-        x: 26,
+        x: 32,
         y: 40,
-        w: 48,
+        w: 36,
         h: 12,
         label: "Türen 1530–1540",
         kind: "look",
@@ -264,9 +264,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "door1532",
         // Tür vorne links (Praxis Dr. Okwu).
-        x: 0,
+        x: 12.5,
         y: 5,
-        w: 16,
+        w: 12,
         h: 95,
         label: "Tür 1532 — Praxis Dr. Okwu",
         kind: "exit",
@@ -275,9 +275,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "door1534",
         // Tür ganz hinten in der Fluchtachse, mit rotem Status-Licht darüber.
-        x: 43,
+        x: 44.75,
         y: 40,
-        w: 14,
+        w: 10.5,
         h: 38,
         label: "Tür 1534 (rot beleuchtet)",
         kind: "exit",
@@ -288,9 +288,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "backLobby",
-        x: 0,
+        x: 12.5,
         y: 86,
-        w: 9,
+        w: 6.75,
         h: 18,
         label: "Zurück zum Empfang",
         kind: "exit",
@@ -308,9 +308,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "mikaelNpc",
         // Mikael sitzt mittig hinter dem Schreibtisch, halbe Bildhöhe.
-        x: 36,
+        x: 39.5,
         y: 28,
-        w: 30,
+        w: 22.5,
         h: 60,
         label: "Alter Mann",
         kind: "talk",
@@ -323,9 +323,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "mikaelNpcAfter",
-        x: 36,
+        x: 39.5,
         y: 28,
-        w: 30,
+        w: 22.5,
         h: 60,
         label: "Mikael Stegmann",
         kind: "talk",
@@ -353,9 +353,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "deskStacks",
         // Linke Aktenstapel-Säule auf dem Schreibtisch.
-        x: 8,
+        x: 18.5,
         y: 30,
-        w: 26,
+        w: 19.5,
         h: 60,
         label: "Aktenstapel",
         kind: "look",
@@ -370,9 +370,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "filingCabinets",
         // Aktenschränke rechts.
-        x: 70,
+        x: 65,
         y: 30,
-        w: 26,
+        w: 19.5,
         h: 60,
         label: "Aktenschränke",
         kind: "look",
@@ -390,9 +390,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
         // Exit am rechten 16:9-Bildrand: bewusst über die alte 4:3-Hotspot-
         // Fläche hinausgezogen, damit der sichtbare Türbereich zuverlässig
         // anklickbar bleibt.
-        x: 98,
+        x: 86,
         y: 0,
-        w: 18,
+        w: 13.5,
         h: 100,
         label: "Zurück in den Korridor",
         kind: "exit",
@@ -411,9 +411,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "okwuTalk",
         // Dr. Okwu sitzt mittig hinter dem Schreibtisch.
-        x: 30,
+        x: 35,
         y: 18,
-        w: 28,
+        w: 21,
         h: 76,
         label: "Dr. Adaeze Okwu",
         kind: "talk",
@@ -437,9 +437,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "okwuTerminal",
         // Bernsteinfarbenes CRT-Terminal links auf dem Schreibtisch.
-        x: 14,
+        x: 23,
         y: 42,
-        w: 16,
+        w: 12,
         h: 26,
         label: "Patient:innen-Terminal",
         kind: "look",
@@ -453,9 +453,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "okwuShelves",
         // Aktenordner-Regal hinter Dr. Okwu, oben rechts.
-        x: 56,
+        x: 54.5,
         y: 4,
-        w: 38,
+        w: 28.5,
         h: 32,
         label: "Aktenordner",
         kind: "look",
@@ -469,9 +469,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "okwuCouch",
         // Lederliege rechts.
-        x: 60,
+        x: 57.5,
         y: 50,
-        w: 36,
+        w: 27,
         h: 42,
         label: "Untersuchungsliege",
         kind: "look",
@@ -484,9 +484,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "leaveRoom1532",
         // Türrahmen ganz links.
-        x:  0,
+        x: 12.5,
         y: 4,
-        w: 14,
+        w: 10.5,
         h: 94,
         label: "Zurück in den Korridor",
         kind: "exit",

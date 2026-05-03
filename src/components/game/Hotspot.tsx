@@ -126,7 +126,7 @@ function HotspotImpl({ hotspot, reveal = false }: Props) {
           ? `${kindCursorClass} border-amber-glow/40 bg-amber-glow/5 hover:border-amber-glow hover:bg-amber-glow/20`
           : reveal
             ? `${kindCursorClass} border-amber-glow/80 bg-amber-glow/15 hover:border-amber-glow hover:bg-amber-glow/25 focus:border-amber-glow/80 focus:bg-amber-glow/10`
-            : `${kindCursorClass} border-amber-glow/0 hover:border-amber-glow/80 hover:bg-amber-glow/10 focus:border-amber-glow/80 focus:bg-amber-glow/10`
+            : `${kindCursorClass} border-transparent`
       }`}
       style={{
         left: `${hotspot.x}%`,

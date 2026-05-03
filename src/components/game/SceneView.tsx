@@ -137,19 +137,20 @@ export function SceneView() {
         shakeActive ? "resonance-shake" : ""
       }`}
     >
-      {/* Hintergrundbild füllt die volle 16:9-Bühnenbreite. object-contain
-          zeigt 16:9-Bilder komplett (kein seitlicher Crop mehr); 4:3- und
-          1:1-Bilder werden mittig gezeichnet und behalten ihren Inhalt. */}
+      {/* Hintergrund + Hotspot-Layer teilen denselben 16:9-Container.
+          Damit liegen Bild und alle Hotspot-/NPC-/Decal-Koordinaten
+          (alle in Prozent der 16:9-Bühne) immer pixelgenau übereinander.
+          object-cover stellt sicher, dass nicht-16:9-Bilder die volle
+          Bühne füllen — minimal beschnitten, aber ohne seitliche
+          Letterbox, die zu Drift gegenüber den Hotspots führen würde. */}
       <img
         src={backgroundSrc}
         alt={current.title}
-        // Spiel-Assets bekommen Vorfahrt vor dem GB-großen LLM-Download,
-        // der parallel im Hintergrund laufen kann.
         fetchPriority="high"
         decoding="async"
         onLoad={() => markEssentialAssetsLoaded()}
         onError={() => markEssentialAssetsLoaded()}
-        className={`pointer-events-none absolute inset-0 z-0 h-full w-full object-contain ${
+        className={`pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-center ${
           scene === "corridor56" && flags.has("burnedNode5610")
             ? "corridor-emergency-power"
             : ""
@@ -157,15 +158,7 @@ export function SceneView() {
         style={bgImgStyle}
       />
 
-      {/* 4:3-Hotspot-Layer: liegt mittig in der 16:9-Bühne und deckt
-          exakt den Bereich ab, der bei der alten 4:3-Bühne sichtbar war.
-          Alle Hotspot-/NPC-/Decal-/Caption-Koordinaten in scenes.ts sind
-          in Prozent dieses 4:3-Bereichs angegeben und brauchen daher
-          NICHT umgerechnet zu werden. Bei nativen 16:9-Bildern wird
-          links und rechts dieser Box jetzt Bildinhalt sichtbar, der
-          vorher beschnitten war — dort liegen bewusst keine
-          interaktiven Elemente. */}
-      <div className="absolute inset-y-0 left-1/2 z-10 aspect-[4/3] h-full -translate-x-1/2">
+      <div className="absolute inset-0 z-10">
 
         {/* NPC sprites — gerendert über dem Hintergrund, unter den Hotspots */}
         {current.npcs?.map((npc) => {
