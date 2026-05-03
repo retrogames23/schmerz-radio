@@ -1,48 +1,64 @@
-# Bürokratie-Duell als Pflichtteil von Akt I
+## Ziel
 
-## 0. Vorab-Fix: Sprechblasen Kantine 3602
-`src/game/scenes/communalE67.ts`:
-- `kowalkSpot`: x von 13 → ~30 (Figur ist im neuen Bild deutlich rechter).
-- `brustSpot`: x von 77 → ~65.
-- `vossbeckSpot`: Position gegen das aktuelle Hintergrundbild prüfen, ggf. nachjustieren.
+1. Hotspot-Rahmen sind im Normalbetrieb komplett unsichtbar — sichtbar nur, solange die Leertaste gehalten wird.
+2. Hotspot-Boxen liegen pixelgenau über den jeweiligen Objekten im Hintergrundbild — auch ohne sichtbaren Rahmen.
+3. Das gesamte Spiel arbeitet konsistent in **16:9**.
 
-## 1. Verzahnung in den Hauptstrang
+## Befund
 
-Insas **Tilla-Quittung 4317-K** wird über die Rohrpost in 3602 nur akzeptiert bei:
-- `duelEndgameWon` (Vossbeck geschlagen) **oder**
-- `usedForgeryRoute` (Kowalks Notausgang nach 3 Niederlagen).
+Der Versatz kommt aus `src/components/game/SceneView.tsx`: Das Hintergrundbild liegt in der **äußeren 16:9-Bühne** (`object-contain`, füllt die volle Breite), der Hotspot-Layer dagegen in einem inneren **4:3-Container** (75 % der Breite, mittig). Das war ein Workaround aus der Zeit, als die Bilder unterschiedliche Seitenverhältnisse hatten.
 
-`gotB3Authorization` ist **kein** gültiger Weg für 4317-K. Damit muss jeder Spieler das Duell mindestens versuchen.
+Die meisten Hintergrundbilder sind bereits 16:9 (1376×768, 1280×720, 1920×1080). Vier Ausnahmen:
+- `scene-elevator.jpg` (1024×768, 4:3)
+- `scene-corridor-46.jpg` (1536×1024, 3:2)
 
-## 2. Versuchs-Logik
+Die Hotspot-/NPC-/Decal-Koordinaten in `src/game/scenes/*.ts` sind heute in **Prozent des 4:3-Kastens** angegeben (498 Koordinatenzeilen).
 
-Drei Endduell-Versuche bei Vossbeck. Jeder verlorene Versuch übernimmt den Konter-Paragraph ins Notizbuch. Erst nach dem dritten verlorenen Versuch:
-- `duelLost = true`
-- Vossbeck zieht sich endgültig zurück
-- Kowalk tritt an Layard heran, bietet die Fälschung an (`kowalkOfferedForgery`).
+## Umsetzung
 
-## 3. Notausgang & sein Preis
+### 1. Bühne und Hotspot-Layer auf 16:9 vereinheitlichen
 
-- Combine zur gefälschten Quittung (Bleistift-Stummel + Blanko + Siegelabdruck + Aushang E71) erst möglich, wenn `kowalkOfferedForgery` gesetzt ist. Erfolgreiches Combine setzt `usedForgeryRoute`.
-- Notausgang löst **nur** Insas 4317-K. Philippes B3-Ration bleibt verloren — Layard muss Philippe absagen.
-- Optionaler Akt-II-Halbsatz Insas, falls `usedForgeryRoute`: leise, kein Vorwurf.
+`SceneView.tsx`:
+- Den inneren 4:3-Container entfernen — Hintergrund-`<img>`, NPCs, Decals, Hotspots, Caption etc. teilen denselben 16:9-Container (= die Bühne selbst).
+- `<img>` bekommt `object-cover` (statt `contain`) mit `object-position: center`. Damit füllt das Bild den 16:9-Rahmen exakt aus; bei nicht-16:9-Bildern (Aufzug, Korridor 46) wird minimal beschnitten — der 4:3-Bereich, in dem alle Objekte liegen, bleibt erhalten.
+- Nach späterer Re-Generierung dieser zwei Bilder als 16:9 entfällt jegliches Beschneiden.
 
-## 4. Geänderte Dateien
+### 2. Vorhandene Koordinaten von 4:3 → 16:9 umrechnen
 
-- `src/game/scenes/communalE67.ts` — Hotspot-Fix
-- `src/game/types.ts` — neue Flags: `needsMarteauAuthForTilla`, `vossbeckAttempts`, `duelLost`, `kowalkOfferedForgery`, `usedForgeryRoute`
-- `src/game/bureaucracyDuel.ts` — Versuchszähler, Lerngewinn, `duelLost`-Trigger
-- `src/game/dialogs/cafeteria.ts` — Vossbeck-Abschiedszeilen pro Versuch, Kowalk-Notausgang-Dialog, Pneumatik-Gate
-- `src/game/dialogs/insa.ts` — Auftrags-Erklärung präziser, optionaler Akt-II-Halbsatz
-- `src/game/dialogs/philippe.ts` — neue Frage-Option bei `needsMarteauAuthForTilla`
-- `src/game/combine.ts` — Forgery-Combine an `kowalkOfferedForgery` koppeln
-- `src/game/hints.ts` — Schritt 13 in 13a/13b, Duell-Hints entoptionalisieren, `act1.duelLostFallback`
+Mechanische Transformation: alter 4:3-Kasten ist 75 % breit und zentriert in 16:9.
 
-## 5. Reihenfolge
+```
+neu_x = 12.5 + alt_x * 0.75
+neu_w = alt_w * 0.75
+neu_y = alt_y
+neu_h = alt_h
+```
 
-1. Hotspot-Fix Kantine
-2. Flags & Counter
-3. `bureaucracyDuel.ts`
-4. Dialoge (cafeteria, philippe, insa)
-5. Combine
-6. Hints
+Gleiches gilt für `caption.x`, NPC-Positionen, Decal-Positionen, `bgFocus.originX`. Wir schreiben ein einmaliges Node-Skript (`scripts/migrate-coords-16-9.mjs`), das alle `src/game/scenes/*.ts` parst und numerische Felder konsistent umrechnet. Vor dem Schreiben gibt das Skript einen Diff aus zur Sichtprüfung.
+
+Skript-Strategie: AST-frei mittels regex auf den Objektliteralen wäre fragil. Stattdessen: das Skript verwendet `ts-morph` (oder einfach das in TanStack vorhandene `typescript`-Paket) und manipuliert Literale gezielt anhand der Property-Namen `x`, `y`, `w`, `h`, `originX`, `originY` innerhalb von `hotspots`, `npcs`, `decals`, `caption`, `bgFocus`.
+
+Nach der Migration prüfen wir 4–6 Szenen visuell mit gehaltener Leertaste auf Pass-genauigkeit; bei Restdrift wird per HotspotEditor (bereits vorhanden, `?dev=1` + Leertaste) nachjustiert.
+
+### 3. Hotspot-Hover unsichtbar
+
+`Hotspot.tsx`:
+- Wenn `reveal === false` und kein Inventar-Drag aktiv: **keine** Hover-/Focus-Klassen mehr (heute: `border-amber-glow/80 bg-amber-glow/10` beim Hover) — nur Cursor-Kontext + Caption-Label unten als Feedback.
+- `reveal === true` (Leertaste): unverändert Rahmen + Label-Pille.
+- Drag-Pfad (`drag.activeItem`): unverändert dezenter Drop-Hinweis.
+
+### 4. Hilfe-Hinweis ergänzen
+
+`HelpOverlay.tsx`: kurzen Eintrag „Leertaste halten – alle Objekte einer Szene anzeigen", falls noch nicht vorhanden.
+
+## Geänderte / neue Dateien
+
+- `src/components/game/SceneView.tsx` — 4:3-Inner-Container entfernen, `<img>` auf `object-cover`.
+- `src/game/scenes/*.ts` (alle 5) — Koordinaten via Skript umgerechnet.
+- `src/components/game/Hotspot.tsx` — Hover-Reveal entfernen.
+- `src/components/game/HelpOverlay.tsx` — Hinweis ergänzen.
+- `scripts/migrate-coords-16-9.mjs` (neu, einmalig) — Migrationsskript.
+
+## Folgeschritte (separat, nicht Teil dieses PRs)
+
+- `scene-elevator.jpg` und `scene-corridor-46.jpg` perspektivisch als 16:9 neu generieren, damit kein Beschnitt mehr nötig ist. Bis dahin sorgt `object-cover` dafür, dass die für Hotspots relevante Bildmitte sichtbar bleibt.
