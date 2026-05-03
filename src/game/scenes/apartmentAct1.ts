@@ -16,9 +16,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "radio",
-        x: 17,
+        x: 25.25,
         y: 52,
-        w: 9,
+        w: 6.75,
         h: 19,
         label: "Schmerz-Radio",
         kind: "use",
@@ -26,9 +26,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "terminal",
-        x: 23,
+        x: 29.75,
         y: 38,
-        w: 18,
+        w: 13.5,
         h: 28,
         label: "CentralOS Terminal",
         kind: "use",
@@ -36,9 +36,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "phoneApt",
-        x: 81,
+        x: 73.25,
         y: 30,
-        w: 9,
+        w: 6.75,
         h: 25,
         label: "Telefon",
         kind: "use",
@@ -104,9 +104,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "bed",
-        x: 38,
+        x: 41,
         y: 50,
-        w: 27,
+        w: 20.25,
         h: 28,
         label: "Bett",
         kind: "look",
@@ -120,9 +120,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
         // Wandregal über dem Bett. Enthält das einzige Buch, das Layard
         // wirklich gelesen hat: den „Quadranten-Almanach 1997".
         id: "bookshelf",
-        x: 38,
+        x: 41,
         y: 30,
-        w: 20,
+        w: 15,
         h: 12,
         label: "Wandregal",
         kind: "use",
@@ -145,9 +145,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "b2",
-        x: 23,
+        x: 29.75,
         y: 73,
-        w: 21,
+        w: 15.75,
         h: 22,
         label: "B2-Ration",
         kind: "look",
@@ -163,9 +163,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "window",
         // Fenster mit grünem Schein, Bildmitte etwas nach rechts.
-        x: 51,
+        x: 50.75,
         y: 18,
-        w: 17,
+        w: 12.75,
         h: 37,
         label: "Fenster",
         kind: "look",
@@ -178,9 +178,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "door",
-        x: 92,
+        x: 81.5,
         y: 4,
-        w: 8,
+        w: 6,
         h: 92,
         label: "Wohnungstür",
         kind: "exit",
@@ -209,9 +209,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "philippeNpc",
         // Philippe steht rechts mit verschränkten Armen.
-        x: 64,
+        x: 60.5,
         y: 18,
-        w: 26,
+        w: 19.5,
         h: 78,
         label: "Philippe",
         kind: "talk",
@@ -233,9 +233,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Verschiedene Dialoge je nach Stand der Geschichte.
       {
         id: "philippeAfterNpc",
-        x: 64,
+        x: 60.5,
         y: 18,
-        w: 26,
+        w: 19.5,
         h: 78,
         label: "Philippe",
         kind: "talk",
@@ -301,9 +301,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "lampPhilippe",
         // Tischlampe rechts neben Philippe auf dem Nachttisch.
-        x: 60,
+        x: 57.5,
         y: 38,
-        w: 14,
+        w: 10.5,
         h: 24,
         label: "Lampe",
         kind: "look",
@@ -317,9 +317,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "wall",
         // Mittlere Betonwand zwischen Telefon und Philippe.
-        x: 22,
+        x: 29,
         y: 8,
-        w: 38,
+        w: 28.5,
         h: 50,
         label: "Wand mit Klopfen (zur 2615)",
         kind: "look",
@@ -338,9 +338,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Nach Akt 1: ruhige Wand zur (jetzt versiegelten) 2615.
       {
         id: "wallAfter",
-        x: 22,
+        x: 29,
         y: 8,
-        w: 38,
+        w: 28.5,
         h: 50,
         label: "Wand zur 2615 (still)",
         kind: "look",
@@ -355,9 +355,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "phone2613",
         // Beiger Bakelit-Wandapparat ganz links.
-        x:  0,
+        x: 12.5,
         y: 18,
-        w: 22,
+        w: 16.5,
         h: 55,
         label: "Telefon (Wandapparat)",
         kind: "use",
@@ -370,9 +370,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "waitParamedics",
-        x: 40,
+        x: 42.5,
         y: 75,
-        w: 24,
+        w: 18,
         h: 18,
         label: "Warten",
         kind: "use",
@@ -409,9 +409,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "exit2613",
         // Türrahmen ganz rechts (hinter Philippe).
-        x: 94,
+        x: 83,
         y: 18,
-        w: 6,
+        w: 4.5,
         h: 80,
         label: "In den Korridor",
         kind: "exit",
@@ -445,9 +445,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "bodoNpc",
         // Hotspot deckt das Bodo-Sprite auf dem Sessel.
-        x: 14,
+        x: 23,
         y: 36,
-        w: 30,
+        w: 22.5,
         h: 60,
         label: "Bodo Marschke",
         kind: "talk",
@@ -510,9 +510,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Während Bodo weg ist: Hinweis statt Person.
       {
         id: "bodoEmptyChair",
-        x: 2,
+        x: 14,
         y: 42,
-        w: 30,
+        w: 22.5,
         h: 50,
         label: "Bodos leerer Sessel",
         kind: "look",
@@ -533,9 +533,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "lottiSpot",
         // Katze liegt auf der Ottomane vor dem Sessel.
-        x: 28,
+        x: 33.5,
         y: 64,
-        w: 22,
+        w: 16.5,
         h: 22,
         label: "Lotti (Katze)",
         kind: "talk",
@@ -570,9 +570,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "bodoPhone",
         // Beiges Wandtelefon rechts oberhalb des Terminal-Tisches.
-        x: 70,
+        x: 65,
         y: 24,
-        w: 12,
+        w: 9,
         h: 22,
         label: "Wandtelefon",
         kind: "look",
@@ -590,9 +590,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "bodoPencil",
         // Tisch links neben dem Terminal.
-        x: 36,
+        x: 39.5,
         y: 56,
-        w: 12,
+        w: 9,
         h: 10,
         label: "Bleistiftstummel",
         kind: "use",
@@ -616,9 +616,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "bodoTerminal",
         // CRT-Monitor mit Tisch in der Bildmitte rechts.
-        x: 46,
+        x: 47,
         y: 38,
-        w: 26,
+        w: 19.5,
         h: 32,
         label: "Bodos Terminal",
         kind: "use",
@@ -655,9 +655,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "exit2612",
         // Wohnungstür rechts neben dem Telefon-/Schreibtischbereich.
-        x: 60,
+        x: 57.5,
         y: 14,
-        w: 16,
+        w: 12,
         h: 80,
         label: "Zurück in den Korridor",
         kind: "exit",
@@ -716,9 +716,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "back2611",
-        x: 71,
+        x: 65.75,
         y: 21,
-        w: 15,
+        w: 11.25,
         h: 68,
         label: "Tür 2611 (zurück in die Wohnung)",
         kind: "exit",
@@ -727,9 +727,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Tür 2613 — Philippes Wohnung. Bleibt jederzeit begehbar.
       {
         id: "door2613Philippe",
-        x: 63,
+        x: 59.75,
         y: 29,
-        w: 8,
+        w: 6,
         h: 56,
         label: "Tür 2613 (Philippe)",
         kind: "exit",
@@ -756,9 +756,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // alles, was es zu sehen gibt.
       {
         id: "door2615Sealed",
-        x: 57.5,
+        x: 55.63,
         y: 36,
-        w: 5.5,
+        w: 4.13,
         h: 39,
         label: "Tür 2615 (versiegelt)",
         kind: "look",
@@ -774,9 +774,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Tür 2610 — Helka Vint. Nur Türgespräch, keine Szene.
       {
         id: "door2610Helka",
-        x: 16,
+        x: 24.5,
         y: 21,
-        w: 14,
+        w: 10.5,
         h: 68,
         label: "Tür 2610 (Helka Vint)",
         kind: "talk",
@@ -807,9 +807,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Tür 2612 — Bodo Marschke. Begehbare Wohnung.
       {
         id: "door2612Bodo",
-        x: 30,
+        x: 35,
         y: 29,
-        w: 9,
+        w: 6.75,
         h: 56,
         label: "Tür 2612 (Bodo Marschke)",
         kind: "exit",
@@ -818,9 +818,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Tür 2614 — Ennis Korr. Nur Türgespräch.
       {
         id: "door2614Ennis",
-        x: 39.5,
+        x: 42.13,
         y: 35,
-        w: 6,
+        w: 4.5,
         h: 42,
         label: "Tür 2614 (Ennis Korr)",
         kind: "talk",
@@ -849,9 +849,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "toSector",
-        x: 46,
+        x: 47,
         y: 38,
-        w: 11,
+        w: 8.25,
         h: 32,
         label: "Aufzug",
         kind: "exit",
@@ -869,9 +869,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Bodo unterwegs ist (bodoLeftForB3 && !bodoBackAfterB3).
       {
         id: "toSectorBlocked",
-        x: 46,
+        x: 47,
         y: 38,
-        w: 11,
+        w: 8.25,
         h: 32,
         label: "Aufzug (gesperrt — Wartung 4711)",
         kind: "look",
