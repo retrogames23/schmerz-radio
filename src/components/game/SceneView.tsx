@@ -234,10 +234,6 @@ export function SceneView() {
           width: imgRect ? imgRect.width : "100%",
           height: imgRect ? imgRect.height : "100%",
           ...(bgFocusStyle ?? {}),
-          // Pointer-Events nur auf den interaktiven Kindern — nicht auf
-          // dem Layer selbst (sonst würde der „Letterbox"-Bereich
-          // außerhalb der Bühne klicks abfangen).
-          pointerEvents: "none",
         }}
       >
 
