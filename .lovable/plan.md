@@ -1,64 +1,60 @@
-## Ziel
+Ich habe die aktuelle Ursache eingegrenzt: Die Bühne ist zwar jetzt 16:9, aber die Assets sind nicht alle exakt gleich formatiert. Viele Bilder sind 1376×768 (leicht breiter als 16:9), einige sind echtes 1920×1080, ein Korridor ist 1536×1024 (3:2), der Aufzug ist 1024×768 (4:3). Mit `object-cover` wird je nach Asset unterschiedlich beschnitten. Dadurch liegen Prozent-Hotspots nicht dauerhaft auf denselben Bildpixeln – selbst wenn die Szene selbst korrekt aussieht.
 
-1. Hotspot-Rahmen sind im Normalbetrieb komplett unsichtbar — sichtbar nur, solange die Leertaste gehalten wird.
-2. Hotspot-Boxen liegen pixelgenau über den jeweiligen Objekten im Hintergrundbild — auch ohne sichtbaren Rahmen.
-3. Das gesamte Spiel arbeitet konsistent in **16:9**.
+Plan für eine robuste, pixelgenaue Lösung für alle Szenen:
 
-## Befund
+1. Gemeinsames Bild-Koordinatensystem statt Bühnen-Koordinatensystem
+   - Hotspots, NPCs und Decals werden nicht mehr relativ zur sichtbaren 16:9-Bühne positioniert, sondern relativ zur echten Hintergrundbild-Fläche.
+   - Der Hintergrund und alle interaktiven Layer werden in denselben inneren `scene-image-layer` gelegt.
+   - Dieser Layer bekommt dieselbe `object-fit`-Geometrie wie das Bild. Damit stimmen Bildpixel und Hotspot-Pixel immer exakt überein.
 
-Der Versatz kommt aus `src/components/game/SceneView.tsx`: Das Hintergrundbild liegt in der **äußeren 16:9-Bühne** (`object-contain`, füllt die volle Breite), der Hotspot-Layer dagegen in einem inneren **4:3-Container** (75 % der Breite, mittig). Das war ein Workaround aus der Zeit, als die Bilder unterschiedliche Seitenverhältnisse hatten.
+2. Szene bekommt explizites Asset-Format
+   - Ich erweitere den Scene-Typ um optionale `imageSize` / `imageFit`-Metadaten.
+   - Für jede Szene wird die echte Assetgröße hinterlegt, z. B. 1376×768, 1920×1080, 1024×768, 1536×1024.
+   - Standard bleibt `cover`, damit das Spiel weiterhin die 16:9-Fläche füllt.
 
-Die meisten Hintergrundbilder sind bereits 16:9 (1376×768, 1280×720, 1920×1080). Vier Ausnahmen:
-- `scene-elevator.jpg` (1024×768, 4:3)
-- `scene-corridor-46.jpg` (1536×1024, 3:2)
+3. Automatische Umrechnung der sichtbaren Bildfläche
+   - `SceneView` berechnet aus Bühne und Assetgröße:
+     - wie groß das Bild im Container tatsächlich gerendert wird,
+     - wie viel links/rechts bzw. oben/unten bei `cover` abgeschnitten wird,
+     - wie der Hotspot-Layer identisch darübergelegt werden muss.
+   - Dadurch gibt es keine Drift mehr zwischen Hintergrund und Hotspots, auch nicht bei 4:3- oder 3:2-Assets.
 
-Die Hotspot-/NPC-/Decal-Koordinaten in `src/game/scenes/*.ts` sind heute in **Prozent des 4:3-Kastens** angegeben (498 Koordinatenzeilen).
+   Technisch wird das Prinzip so aussehen:
 
-## Umsetzung
+   ```text
+   16:9 stage
+   └─ rendered image layer: exakt dieselbe Größe/Position wie das CSS-Bild
+      ├─ img fills layer 100% × 100%
+      ├─ hotspot buttons in Bild-Prozent
+      ├─ NPC sprites in Bild-Prozent
+      └─ decals in Bild-Prozent
+   ```
 
-### 1. Bühne und Hotspot-Layer auf 16:9 vereinheitlichen
+4. Koordinaten zurück auf Bild-Prozent normalisieren
+   - Die letzte Migration hat viele alte 4:3-Werte in 16:9-Stage-Werte umgerechnet (`x = 12.5 + oldX * 0.75`).
+   - Für die Szenen, die dadurch verschoben wurden, rechne ich diese Werte wieder zurück bzw. migriere sie sauber ins neue Bild-Koordinatensystem.
+   - Für echte 16:9-Szenen bleiben Werte unverändert, außer wenn sie bereits fälschlich mit der 4:3-Formel bearbeitet wurden.
+   - Besonders wichtig: 1376×768-Bilder werden nicht mehr so behandelt, als wären sie exakt 16:9; ihre kleine horizontale Abweichung wird korrekt berücksichtigt.
 
-`SceneView.tsx`:
-- Den inneren 4:3-Container entfernen — Hintergrund-`<img>`, NPCs, Decals, Hotspots, Caption etc. teilen denselben 16:9-Container (= die Bühne selbst).
-- `<img>` bekommt `object-cover` (statt `contain`) mit `object-position: center`. Damit füllt das Bild den 16:9-Rahmen exakt aus; bei nicht-16:9-Bildern (Aufzug, Korridor 46) wird minimal beschnitten — der 4:3-Bereich, in dem alle Objekte liegen, bleibt erhalten.
-- Nach späterer Re-Generierung dieser zwei Bilder als 16:9 entfällt jegliches Beschneiden.
+5. Kein verstecktes `object-cover`-Problem mehr
+   - Die `<img>`-Darstellung und der Overlay-Layer nutzen nicht mehr zwei getrennte Koordinatensysteme.
+   - Selbst wenn ein Asset später ausgetauscht wird, muss nur dessen `imageSize` stimmen; die Hotspots bleiben pixelgenau.
 
-### 2. Vorhandene Koordinaten von 4:3 → 16:9 umrechnen
+6. Dev-Editor auf dasselbe System umstellen
+   - Der HotspotEditor arbeitet künftig auf dem Bild-Layer, nicht auf der äußeren Bühne.
+   - Wenn man in `?dev=1` einen Hotspot zieht, kopiert er Koordinaten, die direkt zu den Bildpixeln passen.
+   - Damit können spätere Korrekturen nicht wieder durch Stage-/Cover-Beschnitt verfälscht werden.
 
-Mechanische Transformation: alter 4:3-Kasten ist 75 % breit und zentriert in 16:9.
+7. Sichtbarkeit bleibt wie gewünscht
+   - Hotspot-Rahmen bleiben im normalen Spiel versteckt.
+   - Mit Leertaste werden sie sichtbar.
+   - Beim Ziehen eines Inventarobjekts bleibt eine dezente Ziel-Hervorhebung erhalten.
 
-```
-neu_x = 12.5 + alt_x * 0.75
-neu_w = alt_w * 0.75
-neu_y = alt_y
-neu_h = alt_h
-```
+Dateien, die ich voraussichtlich ändere:
+- `src/game/types.ts`
+- `src/components/game/SceneView.tsx`
+- `src/components/game/Hotspot.tsx` nur falls für Layer-Kompatibilität nötig
+- `src/dev/HotspotEditor.tsx`
+- `src/game/scenes/*.ts`
 
-Gleiches gilt für `caption.x`, NPC-Positionen, Decal-Positionen, `bgFocus.originX`. Wir schreiben ein einmaliges Node-Skript (`scripts/migrate-coords-16-9.mjs`), das alle `src/game/scenes/*.ts` parst und numerische Felder konsistent umrechnet. Vor dem Schreiben gibt das Skript einen Diff aus zur Sichtprüfung.
-
-Skript-Strategie: AST-frei mittels regex auf den Objektliteralen wäre fragil. Stattdessen: das Skript verwendet `ts-morph` (oder einfach das in TanStack vorhandene `typescript`-Paket) und manipuliert Literale gezielt anhand der Property-Namen `x`, `y`, `w`, `h`, `originX`, `originY` innerhalb von `hotspots`, `npcs`, `decals`, `caption`, `bgFocus`.
-
-Nach der Migration prüfen wir 4–6 Szenen visuell mit gehaltener Leertaste auf Pass-genauigkeit; bei Restdrift wird per HotspotEditor (bereits vorhanden, `?dev=1` + Leertaste) nachjustiert.
-
-### 3. Hotspot-Hover unsichtbar
-
-`Hotspot.tsx`:
-- Wenn `reveal === false` und kein Inventar-Drag aktiv: **keine** Hover-/Focus-Klassen mehr (heute: `border-amber-glow/80 bg-amber-glow/10` beim Hover) — nur Cursor-Kontext + Caption-Label unten als Feedback.
-- `reveal === true` (Leertaste): unverändert Rahmen + Label-Pille.
-- Drag-Pfad (`drag.activeItem`): unverändert dezenter Drop-Hinweis.
-
-### 4. Hilfe-Hinweis ergänzen
-
-`HelpOverlay.tsx`: kurzen Eintrag „Leertaste halten – alle Objekte einer Szene anzeigen", falls noch nicht vorhanden.
-
-## Geänderte / neue Dateien
-
-- `src/components/game/SceneView.tsx` — 4:3-Inner-Container entfernen, `<img>` auf `object-cover`.
-- `src/game/scenes/*.ts` (alle 5) — Koordinaten via Skript umgerechnet.
-- `src/components/game/Hotspot.tsx` — Hover-Reveal entfernen.
-- `src/components/game/HelpOverlay.tsx` — Hinweis ergänzen.
-- `scripts/migrate-coords-16-9.mjs` (neu, einmalig) — Migrationsskript.
-
-## Folgeschritte (separat, nicht Teil dieses PRs)
-
-- `scene-elevator.jpg` und `scene-corridor-46.jpg` perspektivisch als 16:9 neu generieren, damit kein Beschnitt mehr nötig ist. Bis dahin sorgt `object-cover` dafür, dass die für Hotspots relevante Bildmitte sichtbar bleibt.
+Ergebnis: Alle Szenen verwenden weiterhin 16:9 als Spielbühne, aber die interaktiven Bereiche werden pixelgenau an den echten Hintergrundbildern ausgerichtet – unabhängig davon, ob ein Asset minimal breiter, echtes 16:9, 3:2 oder 4:3 ist.
