@@ -32,21 +32,47 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" },
       { title: "WHISPER·QUEST – kostenloses klassisches Point-&-Click-Adventure im Cozypunk-Universum" },
       { name: "description", content: "Ein dystopisch-gemütliches Cozypunk-Grafik-Adventure" },
-      { name: "author", content: "Lovable" },
+      { name: "author", content: "Stephan Dörner" },
+      { name: "robots", content: "index, follow" },
       { property: "og:title", content: "WHISPER·QUEST – kostenloses klassisches Point-&-Click-Adventure im Cozypunk-Universum" },
       { property: "og:description", content: "Ein dystopisch-gemütliches Cozypunk-Grafik-Adventure" },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { property: "og:site_name", content: "WHISPER·QUEST" },
+      { property: "og:locale", content: "de_DE" },
+      { property: "og:url", content: "https://schmerz-radio.com/" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "WHISPER·QUEST – kostenloses klassisches Point-&-Click-Adventure im Cozypunk-Universum" },
       { name: "twitter:description", content: "Ein dystopisch-gemütliches Cozypunk-Grafik-Adventure" },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/bc900fd6-891e-4eb3-94e5-250b99b05fd1/id-preview-ff0a6747--1c79d45f-aa8e-4dca-81ae-ef180577487c.lovable.app-1776893954764.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/bc900fd6-891e-4eb3-94e5-250b99b05fd1/id-preview-ff0a6747--1c79d45f-aa8e-4dca-81ae-ef180577487c.lovable.app-1776893954764.png" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "canonical", href: "https://schmerz-radio.com/" },
+    ],
+    scripts: [
       {
-        rel: "stylesheet",
-        href: appCss,
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "VideoGame",
+          name: "WHISPER·QUEST",
+          alternateName: "Schmerz-Radio 104,6",
+          description:
+            "Kostenloses klassisches Point-&-Click-Adventure im Cozypunk-Universum.",
+          url: "https://schmerz-radio.com/",
+          inLanguage: "de",
+          genre: ["Adventure", "Point and Click", "Cozypunk"],
+          gamePlatform: "Web Browser",
+          applicationCategory: "Game",
+          operatingSystem: "Any",
+          author: { "@type": "Person", name: "Stephan Dörner" },
+          offers: {
+            "@type": "Offer",
+            price: "0",
+            priceCurrency: "EUR",
+          },
+        }),
       },
     ],
   }),
@@ -57,7 +83,7 @@ export const Route = createRootRoute({
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="de">
       <head>
         <HeadContent />
       </head>
