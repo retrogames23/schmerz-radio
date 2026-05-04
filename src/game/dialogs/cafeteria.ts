@@ -157,7 +157,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kInsa6: {
         id: "kInsa6",
         speaker: "KOWALK",
-        text: "Heißt für Sie: Sie brauchen jemanden, der die 4317 jetzt freigibt. Vossbeck. Sitzt in seinem Aktenzimmer hinter dem Hochregal. Sonst läuft hier gar nichts.",
+        text: "Heißt für Sie: Sie brauchen jemanden, der die 4317 jetzt freigibt. Vossbeck. Sitzt nebenan, Tür 3603, Kantinenverwaltung. Sonst läuft hier gar nichts.",
         choices: [
           {
             text: "Verstanden. Ich rede mit Vossbeck.",
@@ -266,7 +266,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kAuth7: {
         id: "kAuth7",
         speaker: "KOWALK",
-        text: "Brust hat das vor zwei Wochen weiterdelegiert. Bei der Vollmacht 4317 entscheidet jetzt Oberinspektor Vossbeck. Hat sein eigenes Aktenzimmer, schmale Tür hinter dem Hochregal. Mit Ihm reden — nicht mit uns.",
+        text: "Brust hat das vor zwei Wochen weiterdelegiert. Bei der Vollmacht 4317 entscheidet jetzt Oberinspektor Vossbeck. Sitzt nebenan in 3603, Kantinenverwaltung. Mit Ihm reden — nicht mit uns.",
         subtext: "Sie sagt »Vossbeck« mit der Vorsicht von jemandem, der den Namen schon einmal verloren hat.",
         next: "kAuth8",
       },
@@ -459,7 +459,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       bAuth2: {
         id: "bAuth2",
         speaker: "BRUST",
-        text: "Vorgang Vollmacht 4317 ist seit zwei Wochen Vossbeck-Sache. Bewohnervertretung E67, Bürokratiemeisterschaft. Sitzt in seinem Aktenzimmer hinter dem Hochregal.",
+        text: "Vorgang Vollmacht 4317 ist seit zwei Wochen Vossbeck-Sache. Bewohnervertretung E67, Bürokratiemeisterschaft. Sitzt nebenan in 3603 — Kantinenverwaltung.",
         next: "bAuth3",
       },
       bAuth3: {
@@ -524,7 +524,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       bVossbeckHint: {
         id: "bVossbeckHint",
         speaker: "BRUST",
-        text: "Drei in Folge. Korrekt notiert. — Hinter dem Hochregal ist eine schmale Aktentür. Dahinter sitzt Vossbeck. Er weiß bereits, dass Sie kommen. Klopfen Sie nicht. Er hasst das.",
+        text: "Drei in Folge. Korrekt notiert. — Direkt nebenan, Tür 3603, Kantinenverwaltung. Dahinter sitzt Vossbeck. Er weiß bereits, dass Sie kommen. Klopfen Sie nicht. Er hasst das.",
         next: "b0",
       },
       bHyg1: {
@@ -567,7 +567,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       v0: {
         id: "v0",
         speaker: "SYSTEM",
-        text: "[ Hinter der Aktentür: ein schmales Zimmer, kaum drei Schritte breit. Ein Mann in dunklem Kittel, etwa fünfzig, kein Namensschild. Aktendeckel aufgeschlagen. Bleistift senkrecht in der Hand. ]",
+        text: "[ Hinter der Tür 3603: ein schmales Zimmer, kaum drei Schritte breit. Ein Mann in dunklem Kittel, etwa fünfzig, kein Namensschild. Aktendeckel aufgeschlagen. Bleistift senkrecht in der Hand. ]",
         hiddenWhen: ["metVossbeck"],
         next: "v1",
       },
