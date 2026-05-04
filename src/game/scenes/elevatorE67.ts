@@ -254,10 +254,10 @@ export const elevatorE67Scenes: Record<string, Scene> = {
         id: "toPub",
         // Tür mit Lampe und Schild „Zum stillen Funk" am zentralen Gebäude
         // hinten am Ende des Gehwegs.
-        x: 35,
-        y: 56,
-        w: 7,
-        h: 24,
+        x: 33,
+        y: 55,
+        w: 9,
+        h: 28,
         label: "Kneipe „Zum stillen Funk“",
         kind: "exit",
         exitDir: "down",
