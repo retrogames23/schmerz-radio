@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Hotspot, NpcSprite, SceneDecal } from "@/game/types";
-import { pushSnippet } from "./overlayQAState";
+import { pushSnippet, setOverride, getOverridesFor } from "./overlayQAState";
 
 /**
  * Dev-only Hotspot/NPC/Decal-Editor.
@@ -48,16 +48,34 @@ export function HotspotEditor({
   const [drag, setDrag] = useState<Drag>(null);
   const [hover, setHover] = useState<string | null>(null);
 
-  // Reset overrides when scene changes.
+  // Reset local drag state when scene changes; persistente Overrides
+  // werden aus localStorage gelesen (siehe initialBoxes unten).
   useEffect(() => {
     setOverrides({});
     setDrag(null);
   }, [sceneId]);
 
+  const persisted = getOverridesFor(sceneId);
+  const withPersisted = <T extends { id: string; x: number; y: number; w: number; h: number }>(
+    key: string,
+    src: T,
+  ): T => {
+    const o = persisted[key];
+    return o ? { ...src, x: o.x, y: o.y, w: o.w, h: o.h } : src;
+  };
   const initialBoxes: Box[] = [
-    ...hotspots.map<Box>((h) => ({ id: h.id, label: h.label, x: h.x, y: h.y, w: h.w, h: h.h, kind: "hotspot" })),
-    ...(npcs ?? []).map<Box>((n) => ({ id: `npc:${n.id}`, label: n.alt || n.id, x: n.x, y: n.y, w: n.w, h: n.h, kind: "npc" })),
-    ...(decals ?? []).map<Box>((d) => ({ id: `decal:${d.id}`, label: d.id, x: d.x, y: d.y, w: d.w, h: d.h, kind: "decal" })),
+    ...hotspots.map<Box>((h0) => {
+      const h = withPersisted(h0.id, h0);
+      return { id: h.id, label: h.label, x: h.x, y: h.y, w: h.w, h: h.h, kind: "hotspot" };
+    }),
+    ...(npcs ?? []).map<Box>((n0) => {
+      const n = withPersisted(`npc:${n0.id}`, n0);
+      return { id: `npc:${n0.id}`, label: n0.alt || n0.id, x: n.x, y: n.y, w: n.w, h: n.h, kind: "npc" };
+    }),
+    ...(decals ?? []).map<Box>((d0) => {
+      const d = withPersisted(`decal:${d0.id}`, d0);
+      return { id: `decal:${d0.id}`, label: d0.id, x: d.x, y: d.y, w: d.w, h: d.h, kind: "decal" };
+    }),
   ];
 
   const boxes = initialBoxes.map((b) => overrides[b.id] ?? b);
@@ -102,6 +120,14 @@ export function HotspotEditor({
         /* ignore */
       }
       pushSnippet(sceneId, s);
+      // Persistiere die neuen Koordinaten — überlebt Szenenwechsel
+      // und Reload, bis sie in den Code übernommen werden.
+      setOverride(sceneId, drag.id, {
+        x: pct(final.x),
+        y: pct(final.y),
+        w: pct(final.w),
+        h: pct(final.h),
+      });
     }
     setDrag(null);
   };
