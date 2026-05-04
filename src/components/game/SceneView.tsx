@@ -312,7 +312,11 @@ export function SceneView() {
 
         {/* Hotspots */}
         {current.hotspots.map((h) => (
-          <Hotspot key={h.id} hotspot={h} reveal={revealHotspots || touchReveal} />
+          <Hotspot
+            key={h.id}
+            hotspot={h}
+            reveal={revealHotspots || touchReveal || qa.active}
+          />
         ))}
 
         {/* Dev-only: drag/resize Editor über allen Hotspots, NPCs und
