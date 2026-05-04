@@ -73,10 +73,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "officeBell",
-        // Klingelknopf neben Tür 3601 (links).
-        x: 16,
+        // Brass-Klingelknopf an der Wand zwischen Tür 3601 und 3602.
+        x: 21,
         y: 47,
-        w: 3,
+        w: 4,
         h: 7,
         label: "Klingelknopf",
         kind: "use",
