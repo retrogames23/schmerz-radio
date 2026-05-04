@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Hotspot, NpcSprite, SceneDecal } from "@/game/types";
+import { pushSnippet } from "./overlayQAState";
 
 /**
  * Dev-only Hotspot/NPC/Decal-Editor.
@@ -100,6 +101,7 @@ export function HotspotEditor({
       } catch {
         /* ignore */
       }
+      pushSnippet(sceneId, s);
     }
     setDrag(null);
   };
@@ -125,6 +127,7 @@ export function HotspotEditor({
       } catch {
         /* ignore */
       }
+      pushSnippet(sceneId, s);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
