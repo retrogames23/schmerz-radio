@@ -19,10 +19,10 @@ export const kantinenverwaltung3603Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "vossbeckSpot",
-        x: 39,
-        y: 24,
-        w: 24,
-        h: 70,
+        x: 38.9,
+        y: 38.5,
+        w: 23.3,
+        h: 39.2,
         label: "Oberinspektor Vossbeck",
         kind: "talk",
         onUse: (api) => {
@@ -35,8 +35,8 @@ export const kantinenverwaltung3603Scenes: Record<string, Scene> = {
       },
       {
         id: "vossbeckDesk",
-        x: 28,
-        y: 78,
+        x: 24.3,
+        y: 71.5,
         w: 50,
         h: 18,
         label: "Schreibtisch",
@@ -50,9 +50,9 @@ export const kantinenverwaltung3603Scenes: Record<string, Scene> = {
       },
       {
         id: "vossbeckShelves",
-        x: 80,
+        x: 73.4,
         y: 4,
-        w: 19,
+        w: 25.6,
         h: 92,
         label: "Aktenregal bis zur Decke",
         kind: "look",
@@ -67,8 +67,8 @@ export const kantinenverwaltung3603Scenes: Record<string, Scene> = {
         id: "vossbeckWindow",
         x: 1,
         y: 0,
-        w: 25,
-        h: 70,
+        w: 19.7,
+        h: 57.9,
         label: "Fenster mit Jalousie",
         kind: "look",
         onUse: (api) =>
@@ -81,7 +81,7 @@ export const kantinenverwaltung3603Scenes: Record<string, Scene> = {
         id: "vossbeckExit",
         x: 0,
         y: 70,
-        w: 12,
+        w: 22.7,
         h: 30,
         label: "Zurück in den Korridor",
         kind: "exit",
