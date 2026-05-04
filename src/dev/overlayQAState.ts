@@ -10,6 +10,7 @@ export type QAStatus = "todo" | "ok" | "skip" | "fix";
 const STATUS_KEY = (sceneId: string) => `e67.overlayQA.${sceneId}`;
 const ACTIVE_KEY = "e67.overlayQA.active";
 const EDITOR_KEY = "e67.overlayQA.editor";
+const OVERRIDES_KEY = "e67.overlayQA.overrides";
 
 const EVT_CHANGE = "e67:overlayQA-change";
 const snippetBuffer: { sceneId: string; snippet: string; ts: number }[] = [];
@@ -108,6 +109,71 @@ export function getSnippetsBy(sceneId: string) {
 export function clearSnippets() {
   snippetBuffer.length = 0;
   emit();
+}
+
+/* ------------------------------------------------------------------ */
+/* Persistente Hotspot-/NPC-/Decal-Overrides (pro Szene, pro Box-ID). */
+/* Werden direkt beim Rendern angewendet, damit Korrekturen sofort    */
+/* sichtbar sind und Szenenwechsel überleben.                          */
+/* ------------------------------------------------------------------ */
+
+export type BoxOverride = { x: number; y: number; w: number; h: number };
+type AllOverrides = Record<string, Record<string, BoxOverride>>;
+
+function readAll(): AllOverrides {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(OVERRIDES_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? (parsed as AllOverrides) : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeAll(all: AllOverrides) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(OVERRIDES_KEY, JSON.stringify(all));
+  } catch {
+    /* ignore */
+  }
+  emit();
+}
+
+export function getOverridesFor(sceneId: string): Record<string, BoxOverride> {
+  return readAll()[sceneId] ?? {};
+}
+
+export function setOverride(
+  sceneId: string,
+  boxId: string,
+  box: BoxOverride,
+) {
+  const all = readAll();
+  const scene = { ...(all[sceneId] ?? {}) };
+  scene[boxId] = box;
+  all[sceneId] = scene;
+  writeAll(all);
+}
+
+export function clearOverridesFor(sceneId: string) {
+  const all = readAll();
+  if (!all[sceneId]) return;
+  delete all[sceneId];
+  writeAll(all);
+}
+
+export function clearAllOverrides() {
+  writeAll({});
+}
+
+export function getOverrideCount(): number {
+  const all = readAll();
+  let n = 0;
+  for (const k of Object.keys(all)) n += Object.keys(all[k] ?? {}).length;
+  return n;
 }
 
 export function useQA() {
