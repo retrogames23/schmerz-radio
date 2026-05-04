@@ -268,10 +268,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "window56",
-        x: 42.5,
-        y: 23,
-        w: 13.5,
-        h: 32,
+        x: 42.2,
+        y: 22.8,
+        w: 21,
+        h: 38.4,
         label: "Vergittertes Fenster",
         kind: "look",
         onUse: (api) =>
@@ -283,10 +283,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       // Tür 5614 — vorne links (zukünftiger Inhalt). Reserviert.
       {
         id: "door5614",
-        x: 21.5,
-        y: 15,
-        w: 12.75,
-        h: 76,
+        x: 10.9,
+        y: 12.4,
+        w: 13.8,
+        h: 76.8,
         label: "Tür 5614",
         kind: "look",
         onUse: (api) =>
@@ -298,10 +298,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       // Tür 5612 — mittlere Position links. Reserviert.
       {
         id: "door5612",
-        x: 31.25,
-        y: 22,
-        w: 7.5,
-        h: 56,
+        x: 24.7,
+        y: 21.5,
+        w: 6.2,
+        h: 56.6,
         label: "Tür 5612",
         kind: "look",
         onUse: (api) =>
@@ -328,10 +328,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       // ─────────────────────────────────────────────────────────
       {
         id: "door5610",
-        x: 36.5,
-        y: 28,
-        w: 5.25,
-        h: 42,
+        x: 30.9,
+        y: 28.6,
+        w: 4.7,
+        h: 40.4,
         label: "Tür 5610 · Technik",
         kind: "exit",
         visible: (api) => {
@@ -407,10 +407,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "back56",
-        x: 65.75,
-        y: 14,
-        w: 12.75,
-        h: 76,
+        x: 71.1,
+        y: 16.9,
+        w: 12.3,
+        h: 61.2,
         label: "Zurück zum Aufzug",
         kind: "exit",
         onUse: (api) => api.goTo("elevator"),
