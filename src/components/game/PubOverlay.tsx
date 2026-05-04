@@ -188,6 +188,13 @@ export function PubOverlay() {
             onClick={() => setTab("bram")}
             label={`Bram${bramHistory.length > 0 ? ` (${bramHistory.length})` : ""}`}
           />
+          <button
+            type="button"
+            onClick={() => game.api.goTo("pubToilet")}
+            className="ml-2 rounded-sm border border-amber-glow/40 px-2 py-1 font-mono-crt text-[10px] uppercase tracking-widest text-amber-glow hover:bg-amber-glow/10"
+          >
+            Toilette →
+          </button>
         </div>
         <span className="absolute right-2 top-2">
           <CloseButton
