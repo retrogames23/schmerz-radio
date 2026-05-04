@@ -38,10 +38,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       {
         id: "officeDoor",
         // Tür 3601 — links außen.
-        x: 5.5,
-        y: 22,
-        w: 11,
-        h: 65,
+        x: 4.4,
+        y: 31.7,
+        w: 14,
+        h: 45.4,
         label: "Tür 3601 — Abschnittsverantwortlicher E67",
         kind: "talk",
         onUse: (api) => {
@@ -53,9 +53,9 @@ export const corridorsE67Scenes: Record<string, Scene> = {
         id: "cafeteriaDoor",
         // Tür 3602 — Kantine, mittig.
         x: 25,
-        y: 19,
-        w: 27,
-        h: 65,
+        y: 31.3,
+        w: 25.5,
+        h: 52.7,
         label: "Tür 3602 — Kantine E67",
         kind: "exit",
         onUse: (api) => api.goTo("cafeteriaE67"),
@@ -64,9 +64,9 @@ export const corridorsE67Scenes: Record<string, Scene> = {
         id: "verwaltungDoor",
         // Tür 3603 — Kantinenverwaltung, rechts neben 3602.
         x: 60,
-        y: 22,
+        y: 32,
         w: 13,
-        h: 65,
+        h: 45.7,
         label: "Tür 3603 — Kantinenverwaltung",
         kind: "exit",
         onUse: (api) => api.goTo("kantinenverwaltung3603"),
@@ -74,10 +74,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       {
         id: "officeBell",
         // Brass-Klingelknopf an der Wand zwischen Tür 3601 und 3602.
-        x: 21,
-        y: 53,
-        w: 2,
-        h: 3,
+        x: 20.1,
+        y: 48,
+        w: 3.1,
+        h: 6.2,
         label: "Klingelknopf",
         kind: "use",
         requires: ["sawEmptyOffice"],
@@ -91,9 +91,9 @@ export const corridorsE67Scenes: Record<string, Scene> = {
         id: "back36",
         // Aufzug rechts außen.
         x: 82,
-        y: 19,
+        y: 33,
         w: 14,
-        h: 70,
+        h: 44.5,
         label: "Zurück zum Aufzug",
         kind: "exit",
         onUse: (api) => api.goTo("elevator"),
@@ -285,10 +285,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "window56",
-        x: 42.2,
-        y: 22.8,
-        w: 21,
-        h: 38.4,
+        x: 39,
+        y: 29.8,
+        w: 22,
+        h: 27.9,
         label: "Vergittertes Fenster",
         kind: "look",
         onUse: (api) =>
@@ -425,7 +425,7 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       {
         id: "back56",
         x: 71.1,
-        y: 16.9,
+        y: 21.1,
         w: 12.3,
         h: 61.2,
         label: "Zurück zum Aufzug",
@@ -453,10 +453,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "racks5610",
-        x: 26,
-        y: 25,
-        w: 28.5,
-        h: 60,
+        x: 22.1,
+        y: 25.2,
+        w: 22.5,
+        h: 72.6,
         label: "Racks (warm)",
         kind: "look",
         onUse: (api) =>
@@ -473,8 +473,8 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       // das Schmerz-Radio öffnen und feintunen.
       {
         id: "wartungsFunk5610",
-        x: 46,
-        y: 40,
+        x: 48.6,
+        y: 41.4,
         w: 13,
         h: 22,
         label: "Wartungs-Funkgerät (alt)",
@@ -511,10 +511,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "exit5610",
-        x: 12.5,
-        y: 50,
+        x: 11.4,
+        y: 0.9,
         w: 10.5,
-        h: 50,
+        h: 99.8,
         label: "Zurück in den Korridor",
         kind: "exit",
         onUse: (api) => api.goTo("corridor56"),

@@ -15,8 +15,8 @@ export const sectorAct1Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "monitor",
-        x: 23,
-        y: 30,
+        x: 26.9,
+        y: 29.8,
         w: 15,
         h: 22,
         label: "Status-Monitor",
@@ -31,10 +31,10 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "keypadCall",
-        x: 24.5,
-        y: 54,
-        w: 12,
-        h: 20,
+        x: 29,
+        y: 54.3,
+        w: 9.9,
+        h: 15.8,
         label: "Keypad — Code eingeben",
         kind: "use",
         onUse: (api) => {
@@ -97,8 +97,8 @@ export const sectorAct1Scenes: Record<string, Scene> = {
         id: "doorWonder",
         x: 48.5,
         y: 26,
-        w: 28.5,
-        h: 60,
+        w: 26.3,
+        h: 51.3,
         label: "Tür betrachten",
         kind: "look",
         hiddenWhen: ["calledInsa2"],
@@ -113,7 +113,7 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "backHallwayS",
-        x: 12.5,
+        x: 10.9,
         y: 35,
         w: 13.5,
         h: 60,
@@ -143,9 +143,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "receptionist",
-        x: 65,
-        y: 35,
-        w: 18.75,
+        x: 68.8,
+        y: 31.3,
+        w: 18.8,
         h: 50,
         label: "Empfangsdame",
         kind: "talk",
@@ -163,10 +163,10 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "directory",
-        x: 38.75,
+        x: 43.2,
         y: 30,
-        w: 13.5,
-        h: 22,
+        w: 9,
+        h: 5.9,
         label: "Hinweisschild",
         kind: "look",
         onUse: (api) =>
@@ -191,10 +191,10 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "elevatorBack",
-        x: 12.5,
-        y: 30,
-        w: 16.5,
-        h: 65,
+        x: 23.5,
+        y: 31.8,
+        w: 6.8,
+        h: 41.4,
         label: "Aufzug zurück nach E67",
         kind: "exit",
         // Sobald Layard mit Mikael gesprochen hat, ist der Rückweg offen.
@@ -203,10 +203,10 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "toCorridor15",
-        x: 33.5,
-        y: 16,
-        w: 15,
-        h: 50,
+        x: 40.4,
+        y: 37.8,
+        w: 14.1,
+        h: 31,
         label: "Tür → Korridor 15",
         kind: "exit",
         requires: ["metReceptionist"],
@@ -224,10 +224,10 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "sealedDoor1531",
         // Versiegelte Tür rechts vorne, mit gelbem Quarantäne-Band.
-        x: 74,
-        y: 5,
+        x: 73.9,
+        y: 16.8,
         w: 13.5,
-        h: 95,
+        h: 75.2,
         label: "Tür 1531 (versiegelt)",
         kind: "look",
         onUse: (api) =>
@@ -305,8 +305,8 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "mikaelNpcAfter",
-        x: 39.5,
-        y: 28,
+        x: 37.1,
+        y: 19.7,
         w: 22.5,
         h: 60,
         label: "Mikael Stegmann",
@@ -335,8 +335,8 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "deskStacks",
         // Linke Aktenstapel-Säule auf dem Schreibtisch.
-        x: 18.5,
-        y: 30,
+        x: 14.5,
+        y: 20,
         w: 19.5,
         h: 60,
         label: "Aktenstapel",
@@ -352,8 +352,8 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       {
         id: "filingCabinets",
         // Aktenschränke rechts.
-        x: 65,
-        y: 30,
+        x: 68.1,
+        y: 19.9,
         w: 19.5,
         h: 60,
         label: "Aktenschränke",
@@ -372,13 +372,13 @@ export const sectorAct1Scenes: Record<string, Scene> = {
         // Exit am rechten 16:9-Bildrand: bewusst über die alte 4:3-Hotspot-
         // Fläche hinausgezogen, damit der sichtbare Türbereich zuverlässig
         // anklickbar bleibt.
-        x: 86,
-        y: 0,
-        w: 13.5,
-        h: 100,
+        x: 16.9,
+        y: 84.4,
+        w: 64.8,
+        h: 15.3,
         label: "Zurück in den Korridor",
         kind: "exit",
-        exitDir: "right",
+        exitDir: "down",
         onUse: (api) => api.goTo("corridor15"),
       },
     ],
