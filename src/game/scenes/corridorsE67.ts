@@ -23,7 +23,7 @@ export const corridorsE67Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "philippeSpot36",
-        x: 59.75,
+        x: 64,
         y: 36,
         w: 7.5,
         h: 50,
@@ -35,7 +35,7 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "officeDoor",
-        x: 50,
+        x: 60,
         y: 24,
         w: 11.25,
         h: 64,
@@ -50,15 +50,26 @@ export const corridorsE67Scenes: Record<string, Scene> = {
         id: "cafeteriaDoor",
         x: 6.6,
         y: 17,
-        w: 32.4,
+        w: 27,
         h: 60.6,
         label: "Tür 3602 — Kantine E67",
         kind: "exit",
         onUse: (api) => api.goTo("cafeteriaE67"),
       },
       {
+        id: "verwaltungDoor",
+        // Tür 3603 — Kantinenverwaltung, direkt rechts neben 3602.
+        x: 36,
+        y: 22,
+        w: 13,
+        h: 65,
+        label: "Tür 3603 — Kantinenverwaltung",
+        kind: "exit",
+        onUse: (api) => api.goTo("kantinenverwaltung3603"),
+      },
+      {
         id: "officeBell",
-        x: 61.25,
+        x: 65.5,
         y: 47,
         w: 3,
         h: 7,
@@ -73,7 +84,7 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "back36",
-        x: 74.5,
+        x: 80,
         y: 17.2,
         w: 16.5,
         h: 74,
