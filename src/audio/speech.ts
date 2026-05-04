@@ -24,7 +24,8 @@ type Speaker =
   | "YELVA"
   | "KOWALK"
   | "BRUST"
-  | "VOSSBECK";
+  | "VOSSBECK"
+  | "BRAM";
 
 
 interface VoiceProfile {
