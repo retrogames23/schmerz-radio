@@ -147,21 +147,6 @@ export const communalE67Scenes: Record<string, Scene> = {
         },
       },
       {
-        // Schmale Aktentür hinter dem Hochregal — führt in Vossbecks
-        // Hinterzimmer. Erst sichtbar, wenn Layard drei Trainingssiege
-        // gegen Brust dokumentiert hat (Flag `vossbeckSummoned`). Vorher
-        // existiert die Tür offiziell nicht.
-        id: "vossbeckDoor",
-        x: 47.75,
-        y: 28,
-        w: 6,
-        h: 50,
-        label: "Aktentür — Oberinspektor Vossbeck",
-        kind: "exit",
-        requires: ["vossbeckSummoned"],
-        onUse: (api) => api.goTo("vossbeckOffice"),
-      },
-      {
         id: "cafeteriaCounter",
         x: 39.5,
         y: 56,
