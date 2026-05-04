@@ -147,21 +147,19 @@ export const communalE67Scenes: Record<string, Scene> = {
         },
       },
       {
-        // Oberinspektor Vossbeck — sichtbar, sobald Layard drei
-        // Trainingssiege gegen Brust geschafft hat. Steht hinten beim
-        // Hochregal mit Aktendeckel auf den Knien.
-        id: "vossbeckSpot",
+        // Schmale Aktentür hinter dem Hochregal — führt in Vossbecks
+        // Hinterzimmer. Erst sichtbar, wenn Layard drei Trainingssiege
+        // gegen Brust dokumentiert hat (Flag `vossbeckSummoned`). Vorher
+        // existiert die Tür offiziell nicht.
+        id: "vossbeckDoor",
         x: 47.75,
         y: 28,
         w: 6,
-        h: 28,
-        label: "Oberinspektor Vossbeck",
-        kind: "talk",
+        h: 50,
+        label: "Aktentür — Oberinspektor Vossbeck",
+        kind: "exit",
         requires: ["vossbeckSummoned"],
-        hiddenWhen: ["duelEndgameWon"],
-        onUse: (api) => {
-          api.startDialog("cafeteriaVossbeck");
-        },
+        onUse: (api) => api.goTo("vossbeckOffice"),
       },
       {
         id: "cafeteriaCounter",
