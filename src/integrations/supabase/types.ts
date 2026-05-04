@@ -260,6 +260,39 @@ export type Database = {
         }
         Relationships: []
       }
+      pub_chat_messages: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+          is_anonymous: boolean
+          seat_index: number | null
+          shift_number: number | null
+          text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          id?: string
+          is_anonymous?: boolean
+          seat_index?: number | null
+          shift_number?: number | null
+          text: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_anonymous?: boolean
+          seat_index?: number | null
+          shift_number?: number | null
+          text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -281,6 +314,48 @@ export type Database = {
           id?: string
           metadata?: Json | null
           reason?: string
+        }
+        Relationships: []
+      }
+      toilet_graffiti: {
+        Row: {
+          color_index: number
+          created_at: string
+          display_name: string
+          expires_at: string | null
+          id: string
+          is_anonymous: boolean
+          rotation: number
+          text: string
+          user_id: string
+          x: number
+          y: number
+        }
+        Insert: {
+          color_index?: number
+          created_at?: string
+          display_name: string
+          expires_at?: string | null
+          id?: string
+          is_anonymous?: boolean
+          rotation?: number
+          text: string
+          user_id: string
+          x: number
+          y: number
+        }
+        Update: {
+          color_index?: number
+          created_at?: string
+          display_name?: string
+          expires_at?: string | null
+          id?: string
+          is_anonymous?: boolean
+          rotation?: number
+          text?: string
+          user_id?: string
+          x?: number
+          y?: number
         }
         Relationships: []
       }
