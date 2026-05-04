@@ -18,7 +18,9 @@ export type SceneId =
   | "commonRoomE67"
   | "cafeteriaE67"
   | "aptMira4601"
-  | "kantinenverwaltung3603";
+  | "kantinenverwaltung3603"
+  | "pub"
+  | "pubToilet";
 
 export type InventoryItemId =
   | "protocol"
