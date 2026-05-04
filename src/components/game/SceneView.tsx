@@ -8,6 +8,7 @@ import { RoomSwitcher } from "@/dev/RoomSwitcher";
 import { ConsoleSwitcher } from "@/dev/ConsoleSwitcher";
 import { OverlayQAOverlay } from "@/dev/OverlayQAOverlay";
 import { useQA } from "@/dev/overlayQAState";
+import { getOverridesFor } from "@/dev/overlayQAState";
 import { Eye, EyeOff } from "lucide-react";
 
 export function SceneView() {
@@ -59,6 +60,16 @@ export function SceneView() {
   }, []);
   const dev = useDevMode();
   const qa = useQA();
+  // Persistente Editor-Overrides (localStorage) — werden bei jedem
+  // QA-Tick neu gelesen, damit Drag/Resize sofort sichtbar wird.
+  const overrides = getOverridesFor(scene);
+  const applyOverride = <T extends { id: string; x: number; y: number; w: number; h: number }>(
+    key: string,
+    box: T,
+  ): T => {
+    const o = overrides[key];
+    return o ? { ...box, x: o.x, y: o.y, w: o.w, h: o.h } : box;
+  };
   // Pixelgenaues Layout: Hotspot-/NPC-/Decal-Layer werden exakt über die
   // sichtbare Bildfläche gelegt — auch wenn das Asset nicht exakt 16:9
   // ist. Dadurch sind alle Hotspot-Koordinaten (in % des Bildes)
@@ -254,7 +265,8 @@ export function SceneView() {
       >
 
         {/* NPC sprites — gerendert über dem Hintergrund, unter den Hotspots */}
-        {current.npcs?.map((npc) => {
+        {current.npcs?.map((rawNpc) => {
+        const npc = applyOverride(`npc:${rawNpc.id}`, rawNpc);
         if (npc.requires?.some((f) => !flags.has(f))) return null;
         if (npc.hiddenWhen?.some((f) => flags.has(f))) return null;
         if (npc.visible && !npc.visible(api)) return null;
@@ -281,7 +293,8 @@ export function SceneView() {
         })}
 
         {/* Decals — sichtbare Wandgeräte etc., unter den Hotspots */}
-        {current.decals?.map((d) => {
+        {current.decals?.map((rawD) => {
+          const d = applyOverride(`decal:${rawD.id}`, rawD);
           if (d.requires?.some((f) => !flags.has(f))) return null;
           if (d.hiddenWhen?.some((f) => flags.has(f))) return null;
           if (d.kind !== "television") return null;
@@ -311,13 +324,16 @@ export function SceneView() {
         })}
 
         {/* Hotspots */}
-        {current.hotspots.map((h) => (
+        {current.hotspots.map((rawH) => {
+          const h = applyOverride(rawH.id, rawH);
+          return (
           <Hotspot
             key={h.id}
             hotspot={h}
             reveal={revealHotspots || touchReveal || qa.active}
           />
-        ))}
+          );
+        })}
 
         {/* Dev-only: drag/resize Editor über allen Hotspots, NPCs und
             Decals — nur sichtbar mit ?dev=1 + gehaltener Space-Taste. */}
