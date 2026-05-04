@@ -91,6 +91,20 @@ export function DialogOverlay() {
     advanceDialog();
   };
 
+  // Manche NPCs stehen am linken oder rechten Bildrand. Damit die
+  // Sprechblase sie nicht verdeckt, richten wir sie pro Sprecher aus.
+  // KOWALK steht in der Kantine links → Bubble nach rechts.
+  const speakerAlign: Record<string, "start" | "center" | "end"> = {
+    KOWALK: "end",
+  };
+  const align = speakerAlign[line.speaker] ?? "center";
+  const justifyClass =
+    align === "end"
+      ? "justify-end"
+      : align === "start"
+        ? "justify-start"
+        : "justify-center";
+
   const speakerColor: Record<string, string> = {
     LAYARD: "text-foreground",
     INSA: "text-amber-glow",
@@ -118,7 +132,7 @@ export function DialogOverlay() {
 
   return (
     <div
-      className={`absolute inset-0 z-40 flex items-end justify-center bg-black/80 px-4 pb-6 ${
+      className={`absolute inset-0 z-40 flex items-end ${justifyClass} bg-black/80 px-4 pb-6 ${
         canAdvance ? "cursor-pointer" : ""
       }`}
       onClick={handleAdvance}
