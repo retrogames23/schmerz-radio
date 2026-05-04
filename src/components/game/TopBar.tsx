@@ -2,7 +2,7 @@ import { memo, useEffect, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useSettings } from "@/audio/SettingsContext";
-import { Radio, TerminalSquare, Menu, ChevronLeft, ChevronRight, Music2, ScrollText, HelpCircle, Lightbulb } from "lucide-react";
+import { Radio, TerminalSquare, Menu, ChevronLeft, ChevronRight, Music2, ScrollText, HelpCircle, Lightbulb, Maximize2, Minimize2 } from "lucide-react";
 
 interface Props {
   onOpenPause: () => void;
@@ -19,6 +19,25 @@ function TopBarImpl({ onOpenPause, onOpenHelp }: Props) {
 
   // Kurze Einblendung beim Übergang: AKT I → AKT II.
   const [showActBanner, setShowActBanner] = useState(false);
+  // Vollbild-Status (Desktop). Synchronisiert mit der Browser-API,
+  // damit ESC-Verlassen den Button korrekt zurücksetzt.
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch {
+      // Browser hat Vollbild verweigert – stillschweigend ignorieren.
+    }
+  };
   useEffect(() => {
     if (!inAct2) return;
     const seen = sessionStorage.getItem("act2-banner-seen");
@@ -139,6 +158,19 @@ function TopBarImpl({ onOpenPause, onOpenHelp }: Props) {
           >
             <Menu className="h-3.5 w-3.5" strokeWidth={2.25} />
             <span className="font-display">Menü</span>
+          </button>
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            title={isFullscreen ? "Vollbild verlassen" : "Vollbild"}
+            aria-label={isFullscreen ? "Vollbild verlassen" : "Vollbild aktivieren"}
+            className="group hidden h-8 w-8 items-center justify-center rounded-sm border border-amber-glow/30 bg-gradient-to-b from-amber-glow/10 to-transparent text-amber-glow/85 transition-all duration-200 hover:-translate-y-px hover:border-amber-glow/70 hover:text-amber-glow hover:shadow-[0_0_12px_rgba(255,170,60,0.25)] sm:inline-flex"
+          >
+            {isFullscreen ? (
+              <Minimize2 className="h-4 w-4" strokeWidth={2.25} />
+            ) : (
+              <Maximize2 className="h-4 w-4" strokeWidth={2.25} />
+            )}
           </button>
           <button
             type="button"
