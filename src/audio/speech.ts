@@ -174,6 +174,13 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
     speed: 0.92,
     settings: { stability: 0.7, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true },
   },
+  BRAM: {
+    // Bram, der Wirt der Kneipe „Zum stillen Funk“ — abgewetzt, trocken,
+    // ehemaliger Sektorenwart. Tiefe, leicht raue Männerstimme.
+    voiceId: "JBFqnCBsd6RMkjVDRZzb",
+    speed: 0.95,
+    settings: { stability: 0.6, similarity_boost: 0.8, style: 0.25, use_speaker_boost: true },
+  },
 };
 
 /** Currently playing audio element — cancelled before each new line. */
