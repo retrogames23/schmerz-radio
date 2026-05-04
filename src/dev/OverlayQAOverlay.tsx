@@ -8,6 +8,7 @@ import {
   getSnippets,
   getStatus,
   getOverrideCount,
+  getOverridesFor,
   isEditorForced,
   isQAActive,
   setEditorForced,
@@ -109,15 +110,29 @@ export function OverlayQAOverlay() {
       lines.push(`- ${sym} ${id} — ${s}`);
     }
     const snips = getSnippets();
-    if (snips.length > 0) {
+    // Persistierte Overrides pro Szene zusätzlich als Snippets ausgeben,
+    // damit der Report auch dann vollständig ist, wenn der User Räume
+    // direkt mit „OK" markiert hat statt live zu draggen.
+    const bySc = new Map<string, string[]>();
+    for (const sn of snips) {
+      const arr = bySc.get(sn.sceneId) ?? [];
+      arr.push(sn.snippet);
+      bySc.set(sn.sceneId, arr);
+    }
+    for (const id of sceneIds) {
+      const ov = getOverridesFor(id);
+      const keys = Object.keys(ov);
+      if (keys.length === 0) continue;
+      const arr = bySc.get(id) ?? [];
+      for (const k of keys) {
+        const o = ov[k];
+        arr.push(`id: "${k}", x: ${o.x}, y: ${o.y}, w: ${o.w}, h: ${o.h},`);
+      }
+      bySc.set(id, arr);
+    }
+    if (bySc.size > 0) {
       lines.push("");
       lines.push("## Korrektur-Snippets");
-      const bySc = new Map<string, string[]>();
-      for (const sn of snips) {
-        const arr = bySc.get(sn.sceneId) ?? [];
-        arr.push(sn.snippet);
-        bySc.set(sn.sceneId, arr);
-      }
       for (const [sc, arr] of bySc) {
         lines.push("");
         lines.push(`### ${sc}`);
