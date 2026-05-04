@@ -252,14 +252,15 @@ export const elevatorE67Scenes: Record<string, Scene> = {
       },
       {
         id: "toPub",
-        // Schmale, verwitterte Tür mit Schild „Zum stillen Funk" links im Bild.
-        x: 16,
-        y: 52,
-        w: 9,
-        h: 38,
+        // Tür mit Lampe und Schild „Zum stillen Funk" am zentralen Gebäude
+        // hinten am Ende des Gehwegs.
+        x: 35,
+        y: 56,
+        w: 7,
+        h: 24,
         label: "Kneipe „Zum stillen Funk“",
         kind: "exit",
-        exitDir: "left",
+        exitDir: "down",
         onUse: (api) => api.goTo("pub"),
       },
     ],
