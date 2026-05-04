@@ -288,9 +288,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "backLobby",
-        x: 12.5,
-        y: 86,
-        w: 6.75,
+        x: 22,
+        y: 79.5,
+        w: 53.1,
         h: 18,
         label: "Zurück zum Empfang",
         kind: "exit",

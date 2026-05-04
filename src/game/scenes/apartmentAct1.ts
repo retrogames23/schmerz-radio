@@ -104,9 +104,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "bed",
-        x: 41,
+        x: 36.6,
         y: 50,
-        w: 20.25,
+        w: 32.6,
         h: 28,
         label: "Bett",
         kind: "look",
@@ -178,9 +178,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "door",
-        x: 81.5,
-        y: 4,
-        w: 6,
+        x: 81.6,
+        y: 4.1,
+        w: 10.7,
         h: 92,
         label: "Wohnungstür",
         kind: "exit",
@@ -233,8 +233,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Verschiedene Dialoge je nach Stand der Geschichte.
       {
         id: "philippeAfterNpc",
-        x: 60.5,
-        y: 18,
+        x: 64.5,
+        y: 22.5,
         w: 19.5,
         h: 78,
         label: "Philippe",
@@ -370,8 +370,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "waitParamedics",
-        x: 42.5,
-        y: 75,
+        x: 42.4,
+        y: 80.4,
         w: 18,
         h: 18,
         label: "Warten",
@@ -510,8 +510,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Während Bodo weg ist: Hinweis statt Person.
       {
         id: "bodoEmptyChair",
-        x: 14,
-        y: 42,
+        x: 9.1,
+        y: 35.9,
         w: 22.5,
         h: 50,
         label: "Bodos leerer Sessel",
