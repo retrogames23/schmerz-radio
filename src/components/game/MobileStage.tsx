@@ -53,9 +53,12 @@ export function MobileStage({
           // Bühnen-Höhe (nach Rotation = sichtbare Viewport-Breite) so
           // wählen, dass beide Achsen identisch skalieren → kein toter
           // Platz oben/unten.
+          // Bühnen-Höhe so wählen, dass scale auf beiden Achsen identisch
+          // ist → keine schwarzen Balken oben/unten. Untergrenze entfernt,
+          // damit schmale Hochformate (iPhone) den vollen Viewport füllen.
           const desiredStageH = Math.min(
             STAGE_H_PORTRAIT_MAX,
-            Math.max(STAGE_H, (w * STAGE_W) / h),
+            (w * STAGE_W) / h,
           );
           setRotate(true);
           setPassthrough(false);
