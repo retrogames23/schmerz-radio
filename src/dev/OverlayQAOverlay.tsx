@@ -140,7 +140,7 @@ export function OverlayQAOverlay() {
         type="button"
         onClick={() => setOpen((o) => !o)}
         title="Dev: Overlay-QA"
-        className="fixed bottom-4 left-28 z-[120] flex h-10 items-center justify-center rounded-full border border-amber-glow/60 bg-background/80 px-3 font-mono-crt text-xs text-amber-glow shadow-lg hover:bg-amber-glow/15"
+        className="fixed bottom-4 left-32 z-[120] flex h-10 items-center justify-center rounded-full border border-amber-glow/60 bg-background/80 px-3 font-mono-crt text-xs text-amber-glow shadow-lg hover:bg-amber-glow/15"
       >
         QA {active ? `· ${idx + 1}/${total}` : ""}
       </button>
