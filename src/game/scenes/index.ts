@@ -5,6 +5,7 @@ import { elevatorE67Scenes } from "./elevatorE67";
 import { corridorsE67Scenes } from "./corridorsE67";
 import { communalE67Scenes } from "./communalE67";
 import { kantinenverwaltung3603Scenes } from "./kantinenverwaltung3603";
+import { pubScenes } from "./pub";
 
 export const scenes: Record<string, Scene> = {
   ...apartmentAct1Scenes,
@@ -13,4 +14,5 @@ export const scenes: Record<string, Scene> = {
   ...corridorsE67Scenes,
   ...communalE67Scenes,
   ...kantinenverwaltung3603Scenes,
+  ...pubScenes,
 };
