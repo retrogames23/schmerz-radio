@@ -590,10 +590,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "bodoPencil",
         // Tisch links neben dem Terminal.
-        x: 39.5,
-        y: 56,
-        w: 9,
-        h: 10,
+        x: 53,
+        y: 50,
+        w: 7,
+        h: 6,
         label: "Bleistiftstummel",
         kind: "use",
         requires: ["noticedTransferCode"],
