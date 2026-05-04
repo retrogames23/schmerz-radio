@@ -1,5 +1,4 @@
 import kantinenverwaltungBg from "@/assets/scene-kantinenverwaltung-3603.jpg";
-import vossbeckSprite from "@/assets/npc-vossbeck.png";
 import type { Scene } from "../types";
 
 /**
@@ -17,18 +16,6 @@ export const kantinenverwaltung3603Scenes: Record<string, Scene> = {
     title: "3603 — Kantinenverwaltung E67",
     intro:
       "Ein schmales Hinterzimmer, kaum drei Schritte breit. Eine Lampe, ein Bleistift, ein Mann, der nicht aufschaut. An der rechten Wand bis zur Decke Pappschachteln mit Vorgangsnummern. Es riecht nach altem Papier und Bohnerwachs.",
-    npcs: [
-      {
-        id: "vossbeckSprite",
-        src: vossbeckSprite,
-        // Vossbeck mittig hinter dem Schreibtisch.
-        x: 39,
-        y: 24,
-        w: 24,
-        h: 70,
-        alt: "Oberinspektor Vossbeck am Schreibtisch",
-      },
-    ],
     hotspots: [
       {
         id: "vossbeckSpot",
