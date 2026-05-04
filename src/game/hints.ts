@@ -347,7 +347,7 @@ export const HINT_QUESTS: HintQuest[] = [
     isResolved: (a) =>
       a.hasFlag("duelEndgameWon") || a.hasFlag("gotB3Ration"),
     hints: [
-      "Vossbeck steht hinten in der Kantine, beim Hochregal. Er führt das Endduell um Philippes Vollmacht 4317.",
+      "Vossbeck sitzt im Aktenzimmer hinter der Kantine — schmale Tür hinter dem Hochregal. Er führt das Endduell um Philippes Vollmacht 4317.",
       "Drei Treffer in Folge — und die B3-Ration wird freigegeben. Drei Fehler — und der Vorgang ist verloren.",
       "Vossbeck spielt §99 (Generalvorbehalt). Den schlägst du nur mit der §99-Erläuterung — also vorher das passende Trainingsspiel gegen Brust durchspielen.",
     ],
