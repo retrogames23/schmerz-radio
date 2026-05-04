@@ -15,6 +15,10 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 const STAGE_W = 1280;
 const STAGE_H = 720;
 const MOBILE_BREAKPOINT = 768;
+// Im gedrehten Hochformat darf die Bühne breiter werden als 16:9, damit
+// TopBar/Inventory + 16:9-Szene den vollen Viewport füllen statt
+// oben/unten dicke schwarze Streifen zu lassen.
+const STAGE_H_PORTRAIT_MAX = 1100;
 
 /**
  * `uprightOnPortrait`: Wenn true, wird im Hochformat NICHT gedreht — die
@@ -33,6 +37,7 @@ export function MobileStage({
   const [scale, setScale] = useState(1);
   const [rotate, setRotate] = useState(false);
   const [passthrough, setPassthrough] = useState(false);
+  const [stageH, setStageH] = useState(STAGE_H);
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -45,9 +50,17 @@ export function MobileStage({
         const isPortrait = h > w;
         if (isPortrait && !uprightOnPortrait) {
           // Bühne um 90° drehen → Höhe wird zur "Breite" für die Skalierung.
+          // Bühnen-Höhe (nach Rotation = sichtbare Viewport-Breite) so
+          // wählen, dass beide Achsen identisch skalieren → kein toter
+          // Platz oben/unten.
+          const desiredStageH = Math.min(
+            STAGE_H_PORTRAIT_MAX,
+            Math.max(STAGE_H, (w * STAGE_W) / h),
+          );
           setRotate(true);
           setPassthrough(false);
-          setScale(Math.min(h / STAGE_W, w / STAGE_H));
+          setStageH(desiredStageH);
+          setScale(Math.min(h / STAGE_W, w / desiredStageH));
         } else if (isPortrait && uprightOnPortrait) {
           // Aufrecht im Hochformat (Konsole offen): Pass-Through-Modus.
           // Wir verzichten auf die fixe 1024×640-Bühne und lassen die
@@ -55,10 +68,12 @@ export function MobileStage({
           // (mehr Platz für Text + Tastatur, größere Schrift mobil).
           setRotate(false);
           setPassthrough(true);
+          setStageH(STAGE_H);
           setScale(1);
         } else {
           setRotate(false);
           setPassthrough(false);
+          setStageH(STAGE_H);
           setScale(Math.min(w / STAGE_W, h / STAGE_H));
         }
       }
@@ -105,7 +120,7 @@ export function MobileStage({
           left: "50%",
           top: "50%",
           width: STAGE_W,
-          height: STAGE_H,
+          height: stageH,
           transform: `translate(-50%, -50%) rotate(${rotate ? -90 : 0}deg) scale(${scale})`,
           transformOrigin: "center center",
         }}
