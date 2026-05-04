@@ -3,9 +3,11 @@ import { scenes, useGame } from "@/game/GameContext";
 import type { SceneId } from "@/game/types";
 import {
   clearAllStatus,
+  clearAllOverrides,
   clearSnippets,
   getSnippets,
   getStatus,
+  getOverrideCount,
   isEditorForced,
   isQAActive,
   setEditorForced,
@@ -94,6 +96,7 @@ export function OverlayQAOverlay() {
 
   const active = isQAActive();
   const editor = isEditorForced();
+  const overrideCount = getOverrideCount();
 
   const buildReport = () => {
     const lines: string[] = [];
@@ -280,6 +283,7 @@ export function OverlayQAOverlay() {
                 if (!confirm("Alle QA-Status & Snippets zurücksetzen?")) return;
                 clearAllStatus(sceneIds);
                 clearSnippets();
+                clearAllOverrides();
               }}
               className="ml-auto rounded-sm border border-red-500/40 px-2 py-1 text-red-300 hover:bg-red-500/10"
             >
@@ -294,8 +298,10 @@ export function OverlayQAOverlay() {
           )}
 
           <div className="mt-2 text-[10px] text-muted-foreground">
-            Tipp: „Editor an" → Hotspots ziehen/größenändern, Snippets landen
-            automatisch im Report. Bei „Fix" wird der Editor automatisch aktiv.
+            Tipp: „Editor an" → Hotspots ziehen/größenändern. Änderungen werden
+            sofort persistent (localStorage, {overrideCount} aktiv) und
+            überleben Szenenwechsel/Reload. Snippets landen automatisch im
+            Report — von dort in den Code übernehmen, dann „Reset" klicken.
           </div>
         </div>
       )}
