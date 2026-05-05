@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { CloseButton } from "./CloseButton";
 import { ScrollText, LogOut } from "lucide-react";
@@ -18,7 +18,6 @@ import {
   DSA_CLASSES,
   type DsaClassId,
 } from "@/game/dsa/classes";
-import { ATTR_LABEL, type Attr } from "@/game/dsa/dice";
 import {
   ENEMY_STATS,
   foeCombatantFromStat,
@@ -29,6 +28,10 @@ import {
   type CombatResult,
 } from "@/game/dsa/combat";
 import { DsaCombatOverlay } from "./DsaCombatOverlay";
+import { NarrationView } from "./dsa/NarrationView";
+import { OutcomeView } from "./dsa/OutcomeView";
+import { DefeatView } from "./dsa/DefeatView";
+import { OutroView } from "./dsa/OutroView";
 
 /**
  * Vollbild-Overlay, das die DSA-Tafelrunde simuliert. Zeigt
