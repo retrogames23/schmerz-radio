@@ -1,4 +1,4 @@
-import type { ChatMsg, LlmRuntime } from "./runtime";
+import type { ChatMsg, LlmContext, LlmRuntime } from "./runtime";
 import { supabase } from "@/integrations/supabase/client";
 
 // Globaler Hook für UI-Side-Effects (Spenden-Modal triggern, Counter aktualisieren).
@@ -52,7 +52,6 @@ export function createCloudRuntime(npcId: string): LlmRuntime {
   return {
     status: { kind: "cloud", ready: true },
     async send(messages, opts) {
-      const system = messages.find((m) => m.role === "system");
       const history = messages.filter((m) => m.role !== "system");
       const last = history[history.length - 1];
       if (!last || last.role !== "user") {
@@ -74,6 +73,19 @@ export function createCloudRuntime(npcId: string): LlmRuntime {
         throw new Error("Bitte melde dich an, um den Cloud-Chat zu nutzen.");
       }
 
+      const ctx: LlmContext | undefined = opts?.context;
+      // Server baut den System-Prompt selbst — wir schicken nur
+      // typisierte Felder, keinen Freitext.
+      const ctxPayload = ctx
+        ? ctx.kind === "persona"
+          ? {
+              sceneTitle: ctx.sceneTitle,
+              resonance: ctx.resonance,
+              activeFlags: ctx.activeFlags,
+              playedDialogIds: ctx.playedDialogIds,
+            }
+          : { seatedCount: ctx.seatedCount, myShift: ctx.myShift }
+        : {};
       const resp = await fetch("/api/public/npc-chat", {
         method: "POST",
         signal: opts?.signal,
@@ -83,7 +95,7 @@ export function createCloudRuntime(npcId: string): LlmRuntime {
         },
         body: JSON.stringify({
           npcId,
-          systemPrompt: system?.content ?? "",
+          context: ctxPayload,
           history: priorHistory,
           userMessage: last.content,
         }),
