@@ -521,8 +521,8 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "oilCanPickup5610",
-        x: 86,
-        y: 70,
+        x: 47.3,
+        y: 80.2,
         w: 8,
         h: 14,
         label: "Ölkännchen (Wartungsregal)",
