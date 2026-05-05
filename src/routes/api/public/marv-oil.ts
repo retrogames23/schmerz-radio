@@ -43,18 +43,30 @@ export const Route = createFileRoute("/api/public/marv-oil")({
           .select("empathy_score, unlocked, message_count")
           .eq("user_id", uid)
           .maybeSingle();
+        // Ölen erhöht den Empathie-Wert einmalig um +1 (geclampt auf 10).
+        // Wirkt nur, wenn noch nicht geölt wurde — Doppelt-Ölen bringt nichts.
+        const wasOiled = existing
+          ? Boolean(
+              (existing as unknown as { oiled?: boolean }).oiled,
+            )
+          : false;
+        const prevScore = existing?.empathy_score ?? 0;
+        const newScore = wasOiled
+          ? prevScore
+          : Math.min(10, prevScore + 1);
+        const unlocked = (existing?.unlocked ?? false) || newScore >= 3;
         await admin.from("marv_state").upsert(
           {
             user_id: uid,
-            empathy_score: existing?.empathy_score ?? 0,
-            unlocked: existing?.unlocked ?? false,
+            empathy_score: newScore,
+            unlocked,
             message_count: existing?.message_count ?? 0,
             oiled: true,
             updated_at: new Date().toISOString(),
           },
           { onConflict: "user_id" },
         );
-        return json(200, { ok: true });
+        return json(200, { ok: true, empathyScore: newScore, unlocked });
       },
     },
   },
