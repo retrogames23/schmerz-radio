@@ -53,8 +53,6 @@ function TopBarImpl({ onOpenPause, onOpenHelp }: Props) {
     <header className="shrink-0 border-b border-border bg-background/95 px-4 py-2 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
         <div className="flex items-center gap-3 text-xs uppercase tracking-[0.25em] text-muted-foreground">
-          <span className="hidden sm:inline">SCHMERZ-RADIO</span>
-          <span className="text-muted-foreground/60">|</span>
           <span className="text-foreground/80">{scene}</span>
         </div>
 
