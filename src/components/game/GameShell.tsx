@@ -257,3 +257,9 @@ function BureaucracyDuelGate() {
   if (!duelOpen) return null;
   return <BureaucracyDuelOverlay />;
 }
+
+function FreeChatGate() {
+  const { freeChatNpcId } = useGame();
+  if (!freeChatNpcId) return null;
+  return <FreeChatOverlay />;
+}
