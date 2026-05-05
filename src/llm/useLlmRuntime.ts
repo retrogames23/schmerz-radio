@@ -1,15 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { LlmRuntime, LlmRuntimeStatus } from "./runtime";
 import { createCloudRuntime, onCloudError } from "./cloudLlmRuntime";
-import { createWebLlmRuntime } from "./webLlmRuntime";
-import { isWebGpuAvailable } from "./webLlmLoader";
 import { readLlmModeOverride } from "@/dev/devMode";
+
+/**
+ * Inline WebGPU-Check — vermeidet einen statischen Import von
+ * `webLlmLoader`, das wiederum `@mlc-ai/web-llm`-Typen mit ins
+ * Initial-Bundle ziehen würde.
+ */
+function isWebGpuAvailable(): boolean {
+  return typeof navigator !== "undefined" && "gpu" in (navigator as object);
+}
 
 /**
  * Wählt die Runtime: WebGPU vorhanden → lokal, sonst Cloud.
  * Stellt zusätzlich `cancelLocalLoad()` und `switchToCloud()` bereit,
  * damit die UI dem Spieler eine Abbruch-/Sofort-Cloud-Option geben kann.
  */
+type LocalRuntime = LlmRuntime & { cancelLoad: () => void };
+
 export function useLlmRuntime(npcId: string): {
   runtime: LlmRuntime | null;
   status: LlmRuntimeStatus;
@@ -21,9 +30,7 @@ export function useLlmRuntime(npcId: string): {
     ready: false,
   });
   const runtimeRef = useRef<LlmRuntime | null>(null);
-  const localRef = useRef<(LlmRuntime & { cancelLoad: () => void }) | null>(
-    null,
-  );
+  const localRef = useRef<LocalRuntime | null>(null);
   const [overrideTick, setOverrideTick] = useState(0);
 
   // Auf Dev-Mode-Override hören.
@@ -58,12 +65,24 @@ export function useLlmRuntime(npcId: string): {
       };
     }
 
-    const local = createWebLlmRuntime((s) => {
-      if (cancelled) return;
-      setStatus({ ...s });
+    // Lokale Runtime erst dynamisch nachladen, sobald sie wirklich
+    // gebraucht wird — sonst landet `@mlc-ai/web-llm` (mehrere MB) im
+    // initialen GameShell-Bundle, obwohl die meisten Sessions
+    // ausschließlich Cloud nutzen.
+    setStatus({
+      kind: "local",
+      ready: false,
+      loading: { text: "Initialisiere lokales Modell …" },
     });
-    runtimeRef.current = local;
-    localRef.current = local;
+    void import("./webLlmRuntime").then(({ createWebLlmRuntime }) => {
+      if (cancelled) return;
+      const local = createWebLlmRuntime((s) => {
+        if (cancelled) return;
+        setStatus({ ...s });
+      });
+      runtimeRef.current = local;
+      localRef.current = local;
+    });
 
     return () => {
       cancelled = true;
