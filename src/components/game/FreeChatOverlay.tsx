@@ -13,6 +13,7 @@ import { scenes } from "@/game/scenes";
 import { useLlmRuntime } from "@/llm/useLlmRuntime";
 import type { ChatMsg, LlmContext } from "@/llm/runtime";
 import { createCloudRuntime } from "@/llm/cloudLlmRuntime";
+import { onMarvUpdate, type MarvUpdate } from "@/llm/cloudLlmRuntime";
 import type { LlmRuntime } from "@/llm/runtime";
 import { CloseButton } from "./CloseButton";
 import { Loader2, Bug } from "lucide-react";
@@ -136,6 +137,44 @@ function FreeChatInner({
   }, [messages]);
   const cloudUsedRef = useRef(false);
   const persistedRef = useRef(false);
+
+  const isMarv = npcId === "marv9";
+  const [marv, setMarv] = useState<MarvUpdate | null>(null);
+
+  useEffect(() => {
+    if (!isMarv) return;
+    const off = onMarvUpdate((u) => {
+      setMarv(u);
+      if (u.justUnlocked) {
+        try { game.setFlag("marvUnlocked"); } catch { /* ignore */ }
+      }
+    });
+    return () => { off(); };
+  }, [isMarv, game]);
+
+  // Initialen Marv-Zustand aus DB lesen, damit der Empathie-Balken
+  // bei Wiedereinstieg den richtigen Stand zeigt.
+  useEffect(() => {
+    if (!isMarv || !userId) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("marv_state")
+        .select("empathy_score, unlocked, oiled, message_count")
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (cancelled || !data) return;
+      setMarv({
+        empathyScore: data.empathy_score,
+        unlocked: data.unlocked,
+        oiled: data.oiled,
+        messageCount: data.message_count,
+        delta: 0,
+        justUnlocked: false,
+      });
+    })();
+    return () => { cancelled = true; };
+  }, [isMarv, userId]);
 
   async function persistMemory() {
     if (persistedRef.current) return;
@@ -327,6 +366,17 @@ function FreeChatInner({
             {status.kind === "cloud" && (
               <span className={patience.remaining < 10 ? "text-rust" : ""}>
                 Geduld: {patience.remaining}/{PATIENCE_MAX}
+              </span>
+            )}
+            {isMarv && marv && (
+              <span
+                className={
+                  marv.unlocked ? "text-phosphor" : "text-amber-glow/80"
+                }
+                title="MARV-9 hört zu. Empathie-Resonanz."
+              >
+                Resonanz: {Math.min(4, marv.empathyScore)}/4
+                {marv.unlocked ? " · offen" : ""}
               </span>
             )}
             {devMode && (
