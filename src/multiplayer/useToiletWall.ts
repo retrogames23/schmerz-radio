@@ -65,7 +65,8 @@ export function useToiletWall(active: boolean) {
     lastWriteRef.current = now;
     const { x, y } = pickSpot(graffiti);
     const rotation = -8 + Math.random() * 16;
-    const colorIndex = Math.floor(Math.random() * 5);
+    // Durchwechselnd statt zufällig: nutzt aktuelle Wandlänge als Basis.
+    const colorIndex = (graffiti.length + Math.floor(Math.random() * 2)) % 7;
     const { error: e } = await supabase.from("toilet_graffiti").insert({
       user_id: args.userId,
       display_name: args.displayName,

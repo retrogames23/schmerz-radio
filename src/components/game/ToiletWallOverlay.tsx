@@ -3,14 +3,17 @@ import { useGame } from "@/game/GameContext";
 import { CloseButton } from "./CloseButton";
 import { useToiletWall } from "@/multiplayer/useToiletWall";
 import { ensureAuthSession, getDisplayName, getShiftNumber } from "@/multiplayer/identity";
+import { useDonationStatus } from "@/hooks/useDonationStatus";
 
-const COLORS = ["#0a0a0a", "#1a3a8f", "#8a1a1a", "#1f4f1f", "#4a2a7a"];
+// Helle Spraydosen-Farben, durchwechselnd: rot, grün, blau, gelb, weiß, magenta, orange
+const COLORS = ["#e63946", "#3ddc84", "#3a86ff", "#ffd60a", "#f5f5f5", "#ff5fb0", "#ff7a1a"];
 const FONTS = ["font-graffiti-1", "font-graffiti-2", "font-graffiti-3"];
 
 export function ToiletWallOverlay() {
   const game = useGame();
   const active = game.scene === "pubToilet";
   const wall = useToiletWall(active);
+  const donation = useDonationStatus();
   const [input, setInput] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -27,10 +30,12 @@ export function ToiletWallOverlay() {
         user: { email: auth.email, is_anonymous: auth.isAnonymous },
         shiftNumber: shift,
       });
+      // Nur Spender (donation_unlocked) → permanent. Alle anderen → 48h.
+      const ephemeral = !donation.unlocked;
       const r = await wall.write({
         userId: auth.userId,
         displayName: name,
-        isAnonymous: auth.isAnonymous,
+        isAnonymous: ephemeral,
         text: input,
       });
       if (r.ok) { setInput(""); setErr(null); }
@@ -48,18 +53,18 @@ export function ToiletWallOverlay() {
         {wall.graffiti.map((g) => (
           <div
             key={g.id}
-            className={`absolute max-w-[30%] leading-none ${FONTS[g.id.charCodeAt(0) % FONTS.length]}`}
+            className={`absolute max-w-[22%] leading-none ${FONTS[g.id.charCodeAt(0) % FONTS.length]}`}
             style={{
               left: `${g.x}%`, top: `${g.y}%`,
               transform: `translate(-50%, -50%) rotate(${g.rotation}deg)`,
-              fontSize: `${1.1 + ((g.id.charCodeAt(1) || 0) % 8) * 0.18}rem`,
-              color: COLORS[g.colorIndex] ?? COLORS[0],
-              textShadow: "0 1px 0 rgba(0,0,0,0.5), 0 0 4px rgba(0,0,0,0.4)",
-              filter: "url(#) drop-shadow(0 1px 0 rgba(0,0,0,0.4))",
-              mixBlendMode: "multiply",
-              opacity: g.isAnonymous ? 0.85 : 1,
+              fontSize: `${0.7 + ((g.id.charCodeAt(1) || 0) % 6) * 0.1}rem`,
+              color: COLORS[g.colorIndex % COLORS.length] ?? COLORS[0],
+              textShadow:
+                "0 0 1px rgba(0,0,0,0.7), 0 1px 2px rgba(0,0,0,0.6), 0 0 6px rgba(0,0,0,0.35)",
+              mixBlendMode: "screen",
+              opacity: g.isAnonymous ? 0.9 : 1,
             }}
-            title={`${g.displayName}${g.isAnonymous ? " · verblasst nach 24h" : ""}`}
+            title={`${g.displayName}${g.isAnonymous ? " · verblasst nach 48 h" : ""}`}
           >
             {g.text}
           </div>
@@ -85,7 +90,9 @@ export function ToiletWallOverlay() {
           </button>
         </div>
         <p className="mt-1 font-mono-crt text-[10px] uppercase tracking-widest text-muted-foreground">
-          Ohne Account verblasst deine Kritzelei nach 24 h.
+          {donation.unlocked
+            ? "Spender-Code aktiv – deine Kritzelei bleibt für immer."
+            : "Deine Kritzelei verblasst nach 48 h. Mit Spender-Code bleibt sie für immer."}
         </p>
         {err && <p className="mt-1 font-mono-crt text-xs text-rust">{err}</p>}
       </div>
