@@ -8,6 +8,7 @@ import {
   rollAE,
   rollLE,
   roll1d6plus7,
+  type Attr,
   type Attrs,
 } from "@/game/dsa/dice";
 import {
