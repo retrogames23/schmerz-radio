@@ -228,6 +228,21 @@ export function SceneView() {
     };
   }, []);
 
+  // Stabiler Layer-Style: Position/Größe der sichtbaren Bildfläche +
+  // optionaler Bild-Zoom. Wird sowohl vom Background- als auch vom
+  // Interaktions-Layer verwendet — gleiche Referenz, damit memoisierte
+  // Layer (NpcLayer/DecalLayer/HotspotLayer) nicht neu rendern.
+  const layerStyle = useMemo<React.CSSProperties>(
+    () => ({
+      left: imgRect ? imgRect.left : 0,
+      top: imgRect ? imgRect.top : 0,
+      width: imgRect ? imgRect.width : "100%",
+      height: imgRect ? imgRect.height : "100%",
+      ...(bgFocusStyle ?? {}),
+    }),
+    [imgRect, bgFocusStyle],
+  );
+
   return (
     <div
       ref={stageRef}
@@ -243,17 +258,7 @@ export function SceneView() {
       */}
       <div
         className="pointer-events-none absolute z-0"
-        style={useMemo(
-          () => ({
-            left: imgRect ? imgRect.left : 0,
-            top: imgRect ? imgRect.top : 0,
-            width: imgRect ? imgRect.width : "100%",
-            height: imgRect ? imgRect.height : "100%",
-            ...(bgFocusStyle ?? {}),
-          }),
-          // eslint-disable-next-line react-hooks/exhaustive-deps
-          [imgRect, bgFocusStyle],
-        )}
+        style={layerStyle}
       >
         <img
           ref={imgRef}
@@ -276,17 +281,7 @@ export function SceneView() {
 
       <div
         className="absolute z-10"
-        style={useMemo(
-          () => ({
-            left: imgRect ? imgRect.left : 0,
-            top: imgRect ? imgRect.top : 0,
-            width: imgRect ? imgRect.width : "100%",
-            height: imgRect ? imgRect.height : "100%",
-            ...(bgFocusStyle ?? {}),
-          }),
-          // eslint-disable-next-line react-hooks/exhaustive-deps
-          [imgRect, bgFocusStyle],
-        )}
+        style={layerStyle}
       >
 
         {/* NPC sprites — gerendert über dem Hintergrund, unter den Hotspots */}
