@@ -434,7 +434,8 @@ export interface DialogLine {
     | "KOWALK"
     | "BRUST"
     | "VOSSBECK"
-    | "BRAM";
+    | "BRAM"
+    | "MARV";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;

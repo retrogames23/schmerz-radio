@@ -261,7 +261,7 @@ export const elevatorE67Scenes: Record<string, Scene> = {
         label: "Kneipe „Zum stillen Funk“",
         kind: "exit",
         exitDir: "down",
-        onUse: (api) => api.goTo("pub"),
+        onUse: (api) => api.goTo("pubVestibule"),
       },
     ],
   },
