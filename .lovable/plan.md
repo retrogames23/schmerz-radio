@@ -1,71 +1,92 @@
-## Ziel
 
-Eine einfache, **credit-günstige** Methode, mit der du die Overlay-Korrektheit (Hotspots, NPCs, Decals) für **alle Räume** systematisch prüfen und direkt nachjustieren kannst — ohne dass dabei AI-Credits verbraucht werden. Es geht rein um lokale UI-Tooling-Erweiterungen, kein LLM, kein Server.
+## Refactoring-Plan: Render-Performance der Spiel-Kernkomponenten
 
-## Idee in einem Satz
+Wir gehen iterativ vor — pro Iteration eine Komponente, getestet im Preview, dann die nächste. Dieser Plan beschreibt **Schritt 1 + 2** ausführlich, **Schritt 3–6** als Roadmap.
 
-Ein neuer Dev-Modus „**Overlay-QA**“ läuft alle Szenen automatisch durch, zeigt dir pro Raum sofort alle Overlays über dem Bild, du klickst „OK“ oder korrigierst mit dem bestehenden HotspotEditor, und am Ende bekommst du einen kompletten Report, welche Räume du als „geprüft“ markiert hast und welche Korrekturen du in der Zwischenablage gesammelt hast.
+### Priorisierung (nach Dateigröße & Render-Kosten)
 
-## Was neu gebaut wird
+| # | Komponente | LoC | Hauptkosten |
+|---|---|---|---|
+| 1 | `Terminal.tsx` | 2059 | Riesige Datei, viele State-Branches, große statische Datenstrukturen im Render-Scope, Re-Render bei jedem Tastendruck |
+| 2 | LLM-Setup (`webLlmLoader` / `webLlmRuntime`) | – | `@mlc-ai/web-llm` (mehrere MB) wird zwar dynamisch importiert, aber `webLlmRuntime` und `cloudLlmRuntime` werden statisch in `FreeChatOverlay` & `DonationGate` gezogen (die wiederum aus `GameShell` kommen) |
+| 3 | `GameContext` | 902 | Single-Context für ALLES → jeder State-Change rerendert SceneView, Inventory, TopBar, alle Overlays gemeinsam |
+| 4 | `SceneView.tsx` | 415 | Inline-Maps für NPCs/Decals/Hotspots ohne Memoisation, neue Style-Objekte pro Render |
+| 5 | `RadioPanel.tsx` (698) / `Television.tsx` (377) | – | Audio/Video-Hooks ohne Memo |
+| 6 | DSA-Stack (`DsaCharacterCreator` 998, `DsaAdventureScene` 682, `DsaCombatOverlay` 516) | – | Bereits lazy, aber intern stark monolithisch |
 
-### 1. `OverlayQAOverlay` (neu, `src/dev/OverlayQAOverlay.tsx`)
-Ein dünnes Dev-Overlay (nur bei `?dev=1` aktiv), das oben im Screen eine Leiste einblendet:
+---
 
-```text
-[◀ Prev] [Raum 5/19: corridor56] [Skip] [✓ OK] [✎ Korrigieren] [Next ▶]   (3 OK / 1 todo)
-```
+### Schritt 1 — `Terminal.tsx` aufteilen (jetzt umsetzen)
 
-- Iteriert automatisch durch `Object.keys(scenes)` in fester Reihenfolge.
-- Beim Wechsel ruft es `api.goTo(sceneId)` auf — keine Story-Flags ändern (nutzt vorhandene Switcher-Mechanik).
-- Blendet **dauerhaft** alle Hotspot-Rahmen ein (forciert `revealHotspots=true` für die QA-Session), damit du nicht Space halten musst.
-- Zeigt eine Mini-Checkliste pro Raum: „Anzahl Hotspots: N · NPCs: M · Decals: K“.
-- Status pro Raum wird in `localStorage` gespeichert (`e67.overlayQA.<sceneId>` = `ok|todo|skip`), damit man die QA in mehreren Sessions machen kann.
+**Problem.** Die Komponente bündelt: Filesystem-Logik dreier User (Worag/Bodo/Mira), Adventure-Mini-Spiel, Lotti-Programm, News-Programm, ANSI-Boot-Sequenzen, Tastatur-/Audio-Handling, Versions-Patcher und das eigentliche Terminal-UI. Konstanten und Hilfsfunktionen (z. B. `osVersion`, `applyOsVersion`, `visibleChildren`, `formatLs`, `buildTree`, lange Boot-Sequenzen, Befehlstabellen) liegen im selben Modul wie das React-UI. Bei jedem Tastendruck wird der gesamte Riese neu evaluiert.
 
-### 2. „Korrigieren“-Button bindet bestehenden HotspotEditor ein
-- Klick auf „✎ Korrigieren“ schaltet den vorhandenen `HotspotEditor` an (statt nur über Space). Der Editor existiert schon und kopiert Snippets in die Zwischenablage — keine neue Logik nötig.
-- Zusätzlich sammelt das QA-Overlay alle kopierten Snippets in einem In-Memory-Buffer und zeigt unten einen ausklappbaren „Patch-Report“ (Liste pro Raum), den man am Ende mit einem Klick als ganzen Block in die Zwischenablage kopieren kann.
+**Vorgehen.**
+1. Reine Helpers in eigene Module ohne JSX:
+   - `src/game/terminal/osVersion.ts` (`osVersion`, `applyOsVersion`)
+   - `src/game/terminal/fsView.ts` (`visibleChildren`, `formatLs`, `buildTree`)
+   - `src/game/terminal/bootSequences.ts` (die langen `BOOT_LINES`-Arrays inkl. `gateway-watch`-Listen)
+   - `src/game/terminal/commands/` — pro Mini-Programm eine Datei (`adventure.ts`, `lotti.ts`, `news.ts` als Re-Exports, plus `centralOs.ts`, `bodoFs.ts`, `miraFs.ts`)
+2. UI in kleinere Komponenten splitten:
+   - `TerminalScreen.tsx` — Output-Render (memoisiert, `React.memo`, Props sind die Lines)
+   - `TerminalInput.tsx` — Input-Feld + onKeyDown (eigene `useState`, kapselt Tipp-Re-Renders weg)
+   - `TerminalChrome.tsx` — Frame, CloseButton, Scanlines
+   - `Terminal.tsx` — bleibt Orchestrator (State + Command-Dispatcher), aber unter ~400 LoC
+3. Memoisation gezielt einsetzen:
+   - `useMemo` für aktiven Filesystem-Root pro User-Mode
+   - `useCallback` für `runCommand`, `appendLine`, `handleKey`
+   - `React.memo` auf `TerminalScreen` mit Props `lines` (nur neu rendern, wenn sich das Array-Ref ändert)
+4. Lange statische Arrays (Boot-Sequenzen, Hilfetexte) als `const` auf Modul-Top-Level — werden nicht mehr pro Render neu erzeugt.
 
-### 3. Visuelles Pixel-Raster (optional einblendbar)
-- Toggle „Raster“ legt ein 5%-Prozentraster über die Bildfläche (nutzt bereits das pixelgenau berechnete `imgRect` aus `SceneView`). Das macht Sicht-Korrekturen drastisch schneller, weil man Kanten direkt am Raster ablesen kann.
+**Erwarteter Effekt.** Tastatureingaben lösen nur noch Re-Render von `TerminalInput` + `TerminalScreen` aus, nicht des ganzen Spiels. Initiales Bundle-Splitting bleibt erhalten (Lazy-Import in `GameShell`).
 
-### 4. Report-Export
-- Knopf „Report kopieren“ erzeugt einen Markdown-Block:
-  ```text
-  ## Overlay-QA-Report
-  - apartment        ✓ ok
-  - hallway          ✓ ok
-  - corridor56       ✎ korrigiert (3 Snippets)
-  - elevator         ⚠ todo
-  ...
-  ```
-  Du kannst den Report dann im Chat einfügen, und ich übernehme die gesammelten Snippets in einem einzigen Folge-Loop in `src/game/scenes/*.ts` — das ist der credit-sparende Teil: **eine** AI-Runde für viele Räume statt einer Runde pro Raum.
+---
 
-### 5. Kleine SceneView-Hooks
-- `SceneView.tsx` bekommt eine optionale Prop bzw. liest einen Dev-Context, der `revealHotspots` und „Editor immer an“ erzwingen kann, wenn die QA läuft. Kein Verhalten für normale Spieler.
+### Schritt 2 — LLM-Setup vom kritischen Pfad nehmen
 
-## Was NICHT gebaut wird
+**Problem.** `GameShell` rendert `<DonationGate />`, das statisch `webLlmLoader` importiert; `FreeChatOverlay` (statisch in `GameShell`) zieht `useLlmRuntime` + `cloudLlmRuntime` mit. Damit landet die LLM-Pipeline im `GameShell`-Bundle, obwohl das Modell selbst (`@mlc-ai/web-llm`) korrekt erst beim Start dynamisch geladen wird.
 
-- **Kein automatischer Bild-Vergleich / kein Vision-LLM.** Das wäre teuer und für 19 Räume Overkill — du siehst Fehlausrichtungen in 1–2 Sekunden pro Raum mit dem Auge.
-- **Keine Server-Roundtrips.** Alles läuft im Browser, daher null Backend-Kosten.
-- **Kein automatisches Schreiben in `src/game/scenes/*.ts`.** Bleibt manuell/per AI-Folgeloop, weil sonst Risiko, dass „falsch korrigierte“ Werte direkt eingespielt werden.
+**Vorgehen.**
+1. `FreeChatOverlay` aus dem statischen Importblock von `GameShell` entfernen und über `lazy()` einbinden — analog zu Terminal/HelpOverlay.
+2. `DonationGate` so umbauen, dass `webLlmLoader` nur per `await import()` innerhalb des Effekts gezogen wird, der das Vorladen anstößt. Damit verschwinden `webLlmLoader` und `web-llm`-Typen aus dem GameShell-Chunk.
+3. `useLlmRuntime` als kleinen Wrapper belassen, aber `cloudLlmRuntime` und `webLlmRuntime` jeweils erst beim ersten Senden einer Nachricht importieren (`async function ensureRuntime()` im Hook). Modell-Cascade & WebGPU-Check bleiben unverändert.
+4. Title-Screen-Preload (`Game.tsx`) bleibt — er ruft jetzt `import("./GameShell")` ohne LLM-Ballast.
 
-## Workflow für dich
+**Erwarteter Effekt.** Initiales `GameShell`-Chunk schrumpft spürbar. Erstes Szenenbild erscheint früher; LLM lädt im Hintergrund weiter (Gating über `markEssentialAssetsLoaded` bleibt aktiv).
 
-1. `?dev=1` öffnen → neuer Button „QA“ unten links neben dem ⚡-Switcher.
-2. Auf „QA starten“ klicken → Spiel springt zu Raum 1, alle Overlays sichtbar, optional Raster an.
-3. Pro Raum: kurz draufschauen → „✓ OK“ oder „✎ Korrigieren“ → im Editor die Box ziehen → Snippet wird automatisch kopiert → „Next ▶“.
-4. Am Ende: „Report kopieren“ → Report + Snippets in den Chat → ich pflege die Korrekturen in **einem einzigen** Loop in die Szenen-Dateien ein.
+---
 
-## Geänderte / neue Dateien
+### Schritt 3 — `GameContext` entzerren (geplant)
 
-- **neu** `src/dev/OverlayQAOverlay.tsx` — die QA-Leiste, Status-Persistenz, Raster, Report.
-- **neu** `src/dev/overlayQAState.ts` — kleiner Zustand (localStorage + Snippet-Buffer + Event-Bus).
-- **bearbeitet** `src/components/game/SceneView.tsx` — liest QA-State und erzwingt `revealHotspots` + Dauer-Editor, wenn aktiv; rendert das Raster-Overlay über `imgRect`.
-- **bearbeitet** `src/dev/HotspotEditor.tsx` — meldet jedes kopierte Snippet zusätzlich an den QA-Buffer (kleine Erweiterung, bestehende Funktion bleibt).
-- **bearbeitet** `src/dev/RoomSwitcher.tsx` (oder neue eigene Floating-Button-Datei) — zweiter Floating-Button „QA“ neben dem ⚡-Symbol, damit Einstieg klar ist.
+Aktuell ist alles in einem Context: jede Flag-Änderung rerendert TopBar, Inventory, SceneView, alle Overlays. Plan:
+- Context aufteilen in `GameStateContext` (selten ändernd: scene, flags, knowledge), `OverlayContext` (terminalOpen, helpOpen …) und `InventoryContext`.
+- Alternativ: bestehenden Context lassen, aber Selector-Hook (`useGameSelector`) mit `useSyncExternalStore` einführen, damit Komponenten nur auf benutzte Felder rerendern.
+- `api`-Objekt mit `useMemo` stabilisieren (heute teilweise neu erzeugt).
 
-## Aufwand & Credit-Bilanz
+### Schritt 4 — `SceneView` memoisieren (geplant)
+- `bgFocusStyle`, `imgRect`-Style-Objekte mit `useMemo`.
+- NPC-/Decal-/Hotspot-Listen in eigene `<NpcLayer />`, `<DecalLayer />`, `<HotspotLayer />` mit `React.memo` ausgliedern.
+- `applyOverride`-Closure mit `useCallback`.
 
-- Implementierung: 1 kompakter Loop, keine neuen Pakete, kein Backend, kein LLM.
-- Laufende Kosten der QA selbst: **0 Credits** (alles clientseitig).
-- Folgekorrekturen aller Räume in **einer** AI-Runde statt vieler Einzelrunden — genau wie beim aktuellen „Overlays Hallway / corridor56 korrigieren“-Schema, nur gebündelt.
+### Schritt 5 — `RadioPanel` & `Television` (geplant)
+- Audio-/Video-Logik in eigene Hooks (`useRadioTuner`, `useTvPlayer`) extrahieren.
+- Presentational-Komponenten unter `React.memo`.
+
+### Schritt 6 — DSA-Overlays (geplant)
+- `DsaCharacterCreator` in Step-Komponenten (Volk/Profession/Attribute/Vorteile/Übersicht).
+- `DsaCombatOverlay`: Kampf-Engine als reiner Reducer in `src/game/dsa/combat.ts`, UI dünn drüber.
+
+---
+
+### Technische Details (für später)
+
+- **Verträgliche Refactor-Häppchen:** Pro Schritt nur 1 Komponente bzw. 1 Modul-Familie, anschließend Build-Check & manuelle UI-Verifikation (Terminal, Free-Chat, Szenenwechsel).
+- **Keine Verhaltensänderungen:** Befehls-Output, ANSI-Sequenzen, Filesystem-Daten und LLM-Lade-Phasen bleiben byte-identisch.
+- **Tests:** Es gibt im Repo aktuell keine Vitest-Suite für diese Komponenten — wir prüfen visuell und über die bestehenden Story-Cheats (`F1`, Dev-`?dev=1`).
+- **Kein Memoisations-Spam:** `useMemo`/`useCallback` nur dort, wo Kosten oder Identitäts-Stabilität nachweislich helfen (Listen, Style-Objekte, Callbacks an memoisierte Children).
+- **Bundle-Verifikation:** Nach Schritt 2 prüfen wir die `dist/`-Chunk-Größen via Build-Output, um den Effekt zu bestätigen.
+
+---
+
+### Was passiert nach Approval
+
+Ich setze **Schritt 1 (Terminal-Split)** komplett um, danach **Schritt 2 (LLM aus dem kritischen Pfad)**. Bevor ich Schritt 3 anfasse, melde ich mich kurz mit Zwischenstand und Bundle-Diff — du entscheidest, ob wir weitergehen oder pausieren.
