@@ -17,6 +17,7 @@ import trackWohnung from "@/assets/music/Wohnung.mp3";
 import trackDsaTavern from "@/assets/music/dsa-tavern.mp3";
 import trackDsaTable from "@/assets/music/dsa-table.mp3";
 import trackLinoleumWaltz from "@/assets/music/the-linoleum-waltz.mp3";
+import trackCornerBooth from "@/assets/music/The_Corner_Booth.mp3";
 
 /**
  * Background music. Plays a playlist of tracks in sequence and
@@ -49,6 +50,7 @@ export const MUSIC_OVERRIDES = {
   dsaTavern: { title: "Tavernen-Stube (DSA)", src: trackDsaTavern } as MusicTrack,
   dsaTable: { title: "The Worn Oak Table (DSA)", src: trackDsaTable } as MusicTrack,
   cafeteria: { title: "The Linoleum Waltz", src: trackLinoleumWaltz } as MusicTrack,
+  pub: { title: "The Corner Booth", src: trackCornerBooth } as MusicTrack,
 };
 export type MusicOverrideId = keyof typeof MUSIC_OVERRIDES;
 const CROSSFADE_SECONDS = 6;
