@@ -79,12 +79,16 @@ export function useToiletWall(active: boolean) {
   return { graffiti, error, write };
 }
 
+// Wand-Fläche (in % der Bühne): links durch Rohr, oben durch Querrohr,
+// rechts durch Wandende, unten durch Bodenkante begrenzt.
+const WALL = { xMin: 24, xMax: 90, yMin: 16, yMax: 76 };
+
 function pickSpot(existing: Graffiti[]): { x: number; y: number } {
-  let best = { x: 50, y: 50 };
+  let best = { x: (WALL.xMin + WALL.xMax) / 2, y: (WALL.yMin + WALL.yMax) / 2 };
   let bestScore = -Infinity;
   for (let i = 0; i < 40; i++) {
-    const cx = 8 + Math.random() * 84;
-    const cy = 10 + Math.random() * 75;
+    const cx = WALL.xMin + Math.random() * (WALL.xMax - WALL.xMin);
+    const cy = WALL.yMin + Math.random() * (WALL.yMax - WALL.yMin);
     let minDist = Infinity;
     for (const g of existing) {
       const dx = g.x - cx;
