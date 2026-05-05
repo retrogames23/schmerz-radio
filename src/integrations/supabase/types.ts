@@ -260,6 +260,32 @@ export type Database = {
         }
         Relationships: []
       }
+      pub_chat_message_owners: {
+        Row: {
+          created_at: string
+          message_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          message_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          message_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pub_chat_message_owners_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: true
+            referencedRelation: "pub_chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pub_chat_messages: {
         Row: {
           created_at: string
@@ -269,7 +295,6 @@ export type Database = {
           seat_index: number | null
           shift_number: number | null
           text: string
-          user_id: string
         }
         Insert: {
           created_at?: string
@@ -279,7 +304,6 @@ export type Database = {
           seat_index?: number | null
           shift_number?: number | null
           text: string
-          user_id: string
         }
         Update: {
           created_at?: string
@@ -289,7 +313,6 @@ export type Database = {
           seat_index?: number | null
           shift_number?: number | null
           text?: string
-          user_id?: string
         }
         Relationships: []
       }
@@ -327,7 +350,6 @@ export type Database = {
           is_anonymous: boolean
           rotation: number
           text: string
-          user_id: string
           x: number
           y: number
         }
@@ -340,7 +362,6 @@ export type Database = {
           is_anonymous?: boolean
           rotation?: number
           text: string
-          user_id: string
           x: number
           y: number
         }
@@ -353,11 +374,36 @@ export type Database = {
           is_anonymous?: boolean
           rotation?: number
           text?: string
-          user_id?: string
           x?: number
           y?: number
         }
         Relationships: []
+      }
+      toilet_graffiti_owners: {
+        Row: {
+          created_at: string
+          graffiti_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          graffiti_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          graffiti_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "toilet_graffiti_owners_graffiti_id_fkey"
+            columns: ["graffiti_id"]
+            isOneToOne: true
+            referencedRelation: "toilet_graffiti"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

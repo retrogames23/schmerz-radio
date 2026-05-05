@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 export interface PubChatMessage {
   id: string;
   createdAt: string;
-  userId: string;
   displayName: string;
   seatIndex: number | null;
   shiftNumber: number | null;
@@ -82,7 +81,6 @@ export function usePubChat(active: boolean) {
     }
     lastSendRef.current = now;
     const { error: e } = await supabase.from("pub_chat_messages").insert({
-      user_id: args.userId,
       display_name: args.displayName,
       seat_index: args.seatIndex,
       shift_number: args.shiftNumber,
@@ -99,7 +97,6 @@ export function usePubChat(active: boolean) {
 function toMsg(row: {
   id: string;
   created_at: string;
-  user_id: string;
   display_name: string;
   seat_index: number | null;
   shift_number: number | null;
@@ -109,7 +106,6 @@ function toMsg(row: {
   return {
     id: row.id,
     createdAt: row.created_at,
-    userId: row.user_id,
     displayName: row.display_name,
     seatIndex: row.seat_index,
     shiftNumber: row.shift_number,

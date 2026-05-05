@@ -75,8 +75,8 @@ export function useToiletWall(active: boolean) {
     } catch { /* ignore */ }
     const since = new Date(now - ONE_GRAFFITI_WINDOW_MS).toISOString();
     const { data: existing, error: qErr } = await supabase
-      .from("toilet_graffiti")
-      .select("id, created_at")
+      .from("toilet_graffiti_owners")
+      .select("graffiti_id, created_at")
       .eq("user_id", args.userId)
       .gte("created_at", since)
       .limit(1);
@@ -93,7 +93,6 @@ export function useToiletWall(active: boolean) {
     // Durchwechselnd statt zufällig: nutzt aktuelle Wandlänge als Basis.
     const colorIndex = (graffiti.length + Math.floor(Math.random() * 2)) % 7;
     const { error: e } = await supabase.from("toilet_graffiti").insert({
-      user_id: args.userId,
       display_name: args.displayName,
       text, x, y, rotation, color_index: colorIndex,
       is_anonymous: args.isAnonymous,
