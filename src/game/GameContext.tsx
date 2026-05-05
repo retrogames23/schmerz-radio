@@ -948,7 +948,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       learnedParagraphs,
       freeChatNpcId,
       isEssentialAssetsLoaded,
-      tvOpen,
       api,
       advanceDialog,
       closeDialog,
