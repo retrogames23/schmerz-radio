@@ -654,113 +654,85 @@ export function GameProvider({ children }: { children: ReactNode }) {
     [dialogId, dialogLineId, api],
   );
 
-  const value: GameContextValue = {
-    scene,
-    previousScene,
-    flags,
-    knowledge,
-    inventory,
-    caption,
-    textOverlay,
-    dialogId,
-    dialogLineId,
-    radioOpen,
-    terminalOpen,
-    terminalBodoMode,
-    terminalMiraMode,
-    keypadOpen,
-    tvOpen,
-    keypadTarget,
-    nodeOpen,
-    pneumaticOpen,
-    radioActive,
-    resonance,
-    ending,
-    burnSequence,
-    cutscene,
-    dsaCreatorOpen,
-    dsaCharacter,
-    dsaAdventureOpen,
-    dsaBeat,
-    dsaSheetOpen,
-    handbookOpen,
-    almanachOpen,
-    idCardOpen,
-    lobbyGateOpen,
-    duelOpen,
-    duelMode,
-    notizbuchOpen,
-    learnedParagraphs,
-    freeChatNpcId,
-    openFreeChat: (npcId: string) => setFreeChatNpcId(npcId),
-    closeFreeChat: () => setFreeChatNpcId(null),
-    isEssentialAssetsLoaded,
-    markEssentialAssetsLoaded: () => {
-      // Idempotent: erst beim ersten Mal den Loader benachrichtigen.
-      setIsEssentialAssetsLoaded((v) => {
-        if (!v) notifyLoaderEssentialAssets();
-        return true;
-      });
-    },
-    closeDsaAdventure: () => setDsaAdventureOpen(false),
-    api,
-    setCaption,
-    closeText: () => {
-      const cb = textOverlayCloseRef.current;
-      textOverlayCloseRef.current = null;
-      setTextOverlay(null);
-      if (cb) cb();
-    },
-    advanceDialog,
-    closeDialog: () => {
-      if (dialogId) {
-        const tree = dialogs[dialogId];
-        tree?.onEnd?.(api);
-      }
-      setDialogId(null);
-      setDialogLineId(null);
-    },
-    closeRadio: () => setRadioOpen(false),
-    closeTerminal: () => {
-      setTerminalOpen(false);
-    },
-    closeKeypad: () => setKeypadOpen(false),
-    closeTelevision: () => setTvOpen(false),
-    closeNode: () => setNodeOpen(false),
-    closePneumatic: () => setPneumaticOpen(false),
-    endBurnSequence: () => setBurnSequence(false),
-    endCutscene: () => setCutscene(null),
-    closeDsaCreator: () => setDsaCreatorOpen(false),
-    openDsaSheet: () => setDsaSheetOpen(true),
-    closeDsaSheet: () => setDsaSheetOpen(false),
-    toggleDsaSheet: () => setDsaSheetOpen((v) => !v),
-    openHandbook: () => setHandbookOpen(true),
-    closeHandbook: () => setHandbookOpen(false),
-    openAlmanach: () => setAlmanachOpen(true),
-    closeAlmanach: () => setAlmanachOpen(false),
-    openIdCard: () => setIdCardOpen(true),
-    closeIdCard: () => setIdCardOpen(false),
-    openLobbyGate: () => setLobbyGateOpen(true),
-    closeLobbyGate: () => setLobbyGateOpen(false),
-    closeDuel: () => setDuelOpen(false),
-    closeNotizbuch: () => setNotizbuchOpen(false),
-    /** Aktueller Fehlversuchs-Zähler der Lobby-Schleuse (für die UI). */
-    getLobbyGateAttempts: () => lobbyGateAttemptsRef.current,
-    bumpLobbyGateAttempts: () => {
-      lobbyGateAttemptsRef.current += 1;
-      return lobbyGateAttemptsRef.current;
-    },
-    resetLobbyGateAttempts: () => {
-      lobbyGateAttemptsRef.current = 0;
-    },
-    setDsaCharacter: (c) => {
-      dsaCharacterRef.current = c;
-      setDsaCharacterState(c);
-    },
-    setRadioActive,
-    bumpResonance: (d) => setResonance((r) => Math.max(0, Math.min(100, r + d))),
-    resetResonance: () => setResonance(0),
-    saveGame: async (slot: number): Promise<SaveSummary> => {
+  // Stabile Action-Identitäten: Alle Setter sind bereits stabil, alle
+  // Refs sind ebenfalls stabil — daher reicht ein einmaliges useMemo
+  // mit leeren Deps. Dadurch behalten Consumer (Overlays, Listener-
+  // Effekte etc.) konstante Callback-Referenzen und re-rendern nicht
+  // bei jedem Tick im Provider.
+  const actions = useMemo(
+    () => ({
+      openFreeChat: (npcId: string) => setFreeChatNpcId(npcId),
+      closeFreeChat: () => setFreeChatNpcId(null),
+      markEssentialAssetsLoaded: () => {
+        setIsEssentialAssetsLoaded((v) => {
+          if (!v) notifyLoaderEssentialAssets();
+          return true;
+        });
+      },
+      closeDsaAdventure: () => setDsaAdventureOpen(false),
+      setCaption,
+      closeText: () => {
+        const cb = textOverlayCloseRef.current;
+        textOverlayCloseRef.current = null;
+        setTextOverlay(null);
+        if (cb) cb();
+      },
+      closeRadio: () => setRadioOpen(false),
+      closeTerminal: () => setTerminalOpen(false),
+      closeKeypad: () => setKeypadOpen(false),
+      closeTelevision: () => setTvOpen(false),
+      closeNode: () => setNodeOpen(false),
+      closePneumatic: () => setPneumaticOpen(false),
+      endBurnSequence: () => setBurnSequence(false),
+      endCutscene: () => setCutscene(null),
+      closeDsaCreator: () => setDsaCreatorOpen(false),
+      openDsaSheet: () => setDsaSheetOpen(true),
+      closeDsaSheet: () => setDsaSheetOpen(false),
+      toggleDsaSheet: () => setDsaSheetOpen((v) => !v),
+      openHandbook: () => setHandbookOpen(true),
+      closeHandbook: () => setHandbookOpen(false),
+      openAlmanach: () => setAlmanachOpen(true),
+      closeAlmanach: () => setAlmanachOpen(false),
+      openIdCard: () => setIdCardOpen(true),
+      closeIdCard: () => setIdCardOpen(false),
+      openLobbyGate: () => setLobbyGateOpen(true),
+      closeLobbyGate: () => setLobbyGateOpen(false),
+      closeDuel: () => setDuelOpen(false),
+      closeNotizbuch: () => setNotizbuchOpen(false),
+      getLobbyGateAttempts: () => lobbyGateAttemptsRef.current,
+      bumpLobbyGateAttempts: () => {
+        lobbyGateAttemptsRef.current += 1;
+        return lobbyGateAttemptsRef.current;
+      },
+      resetLobbyGateAttempts: () => {
+        lobbyGateAttemptsRef.current = 0;
+      },
+      setDsaCharacter: (c: DsaCharacterSummary | null) => {
+        dsaCharacterRef.current = c;
+        setDsaCharacterState(c);
+      },
+      setRadioActive,
+      bumpResonance: (d: number) =>
+        setResonance((r) => Math.max(0, Math.min(100, r + d))),
+      resetResonance: () => setResonance(0),
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  const closeDialog = useCallback(() => {
+    if (dialogId) {
+      const tree = dialogs[dialogId];
+      tree?.onEnd?.(api);
+    }
+    setDialogId(null);
+    setDialogLineId(null);
+  }, [dialogId, api]);
+
+  // Save/Load-Callbacks: stabilisiert via useCallback, damit Save-Menüs
+  // nicht bei jedem State-Tick re-rendern.
+  const saveGame = useCallback(
+    async (slot: number): Promise<SaveSummary> => {
       const u = userRef.current;
       if (!u) throw new Error("Nicht angemeldet.");
       const payload: PersistedState = {
@@ -801,91 +773,192 @@ export function GameProvider({ children }: { children: ReactNode }) {
       if (error) throw new Error(error.message);
       return summary;
     },
-    loadGame: async (slot: number): Promise<boolean> => {
-      const u = userRef.current;
-      if (!u) return false;
-      const { data, error } = await supabase
-        .from("game_saves")
-        .select("payload")
-        .eq("user_id", u.id)
-        .eq("slot", slot + 1)
-        .maybeSingle();
-      if (error || !data) return false;
-      const persisted = data.payload as unknown as PersistedState;
-      setScene(persisted.scene);
-      setFlags(new Set(persisted.flags));
-      setKnowledge(new Set(persisted.knowledge));
-      setInventory(persisted.inventory);
-      setResonance(persisted.resonance);
-      setEnding(persisted.ending);
-      // DSA-Charakter wiederherstellen (oder klar zurücksetzen).
-      if (persisted.dsaCharacter) {
-        // Rückwärtskompatibilität: leMax wurde später eingeführt — alte Saves
-        // bekommen leMax = le als Default, damit Heilung sinnvoll cappen kann.
-        const c = persisted.dsaCharacter;
-        const migrated = {
-          ...c,
-          leMax: typeof (c as { leMax?: number }).leMax === "number" ? (c as { leMax: number }).leMax : c.le,
-        };
-        dsaCharacterRef.current = migrated;
-        setDsaCharacterState(migrated);
-      } else {
-        dsaCharacterRef.current = null;
-        setDsaCharacterState(null);
-      }
-      // Mira lebt jetzt fest auf Etage 4, Philippe auf Etage 5.
-      // Alte Saves werden hart auf dieses neue Schema gemappt.
-      miraFloorsRef.current = [4];
-      philippeFloorRef.current = 5;
-      // (persisted.miraFloors / persisted.miraFloor werden bewusst ignoriert.)
-      void persisted.miraFloors;
-      void persisted.miraFloor;
-      void persisted.philippeFloor;
-      // Reset transient UI
-      setCaption(null);
-      setTextOverlay(null);
-      setDialogId(null);
-      setDialogLineId(null);
-      setRadioOpen(false);
-      setTerminalOpen(false);
-      setKeypadOpen(false);
-      setRadioActive(false);
-      setNodeOpen(false);
-      setDsaCreatorOpen(false);
-      return true;
-    },
-    listSaves: async (): Promise<Array<SaveSummary | null>> => {
-      const u = userRef.current;
-      const out: Array<SaveSummary | null> = Array(NUM_SLOTS).fill(null);
-      if (!u) return out;
-      const { data, error } = await supabase
-        .from("game_saves")
-        .select("slot, scene, inventory_count, flag_count, saved_at")
-        .eq("user_id", u.id);
-      if (error || !data) return out;
-      for (const row of data) {
-        const idx = (row.slot as number) - 1;
-        if (idx < 0 || idx >= NUM_SLOTS) continue;
-        out[idx] = {
-          slot: idx,
-          scene: row.scene as SceneId,
-          savedAt: row.saved_at as string,
-          flagCount: row.flag_count as number,
-          inventoryCount: row.inventory_count as number,
-        };
-      }
-      return out;
-    },
-    deleteSave: async (slot: number): Promise<void> => {
-      const u = userRef.current;
-      if (!u) return;
-      await supabase
-        .from("game_saves")
-        .delete()
-        .eq("user_id", u.id)
-        .eq("slot", slot + 1);
-    },
-  };
+    [],
+  );
+
+  const loadGame = useCallback(async (slot: number): Promise<boolean> => {
+    const u = userRef.current;
+    if (!u) return false;
+    const { data, error } = await supabase
+      .from("game_saves")
+      .select("payload")
+      .eq("user_id", u.id)
+      .eq("slot", slot + 1)
+      .maybeSingle();
+    if (error || !data) return false;
+    const persisted = data.payload as unknown as PersistedState;
+    setScene(persisted.scene);
+    setFlags(new Set(persisted.flags));
+    setKnowledge(new Set(persisted.knowledge));
+    setInventory(persisted.inventory);
+    setResonance(persisted.resonance);
+    setEnding(persisted.ending);
+    if (persisted.dsaCharacter) {
+      const c = persisted.dsaCharacter;
+      const migrated = {
+        ...c,
+        leMax:
+          typeof (c as { leMax?: number }).leMax === "number"
+            ? (c as { leMax: number }).leMax
+            : c.le,
+      };
+      dsaCharacterRef.current = migrated;
+      setDsaCharacterState(migrated);
+    } else {
+      dsaCharacterRef.current = null;
+      setDsaCharacterState(null);
+    }
+    miraFloorsRef.current = [4];
+    philippeFloorRef.current = 5;
+    void persisted.miraFloors;
+    void persisted.miraFloor;
+    void persisted.philippeFloor;
+    setCaption(null);
+    setTextOverlay(null);
+    setDialogId(null);
+    setDialogLineId(null);
+    setRadioOpen(false);
+    setTerminalOpen(false);
+    setKeypadOpen(false);
+    setRadioActive(false);
+    setNodeOpen(false);
+    setDsaCreatorOpen(false);
+    return true;
+  }, []);
+
+  const listSaves = useCallback(async (): Promise<
+    Array<SaveSummary | null>
+  > => {
+    const u = userRef.current;
+    const out: Array<SaveSummary | null> = Array(NUM_SLOTS).fill(null);
+    if (!u) return out;
+    const { data, error } = await supabase
+      .from("game_saves")
+      .select("slot, scene, inventory_count, flag_count, saved_at")
+      .eq("user_id", u.id);
+    if (error || !data) return out;
+    for (const row of data) {
+      const idx = (row.slot as number) - 1;
+      if (idx < 0 || idx >= NUM_SLOTS) continue;
+      out[idx] = {
+        slot: idx,
+        scene: row.scene as SceneId,
+        savedAt: row.saved_at as string,
+        flagCount: row.flag_count as number,
+        inventoryCount: row.inventory_count as number,
+      };
+    }
+    return out;
+  }, []);
+
+  const deleteSave = useCallback(async (slot: number): Promise<void> => {
+    const u = userRef.current;
+    if (!u) return;
+    await supabase
+      .from("game_saves")
+      .delete()
+      .eq("user_id", u.id)
+      .eq("slot", slot + 1);
+  }, []);
+
+  const value = useMemo<GameContextValue>(
+    () => ({
+    scene,
+    previousScene,
+    flags,
+    knowledge,
+    inventory,
+    caption,
+    textOverlay,
+    dialogId,
+    dialogLineId,
+    radioOpen,
+    terminalOpen,
+    terminalBodoMode,
+    terminalMiraMode,
+    keypadOpen,
+    tvOpen,
+    keypadTarget,
+    nodeOpen,
+    pneumaticOpen,
+    radioActive,
+    resonance,
+    ending,
+    burnSequence,
+    cutscene,
+    dsaCreatorOpen,
+    dsaCharacter,
+    dsaAdventureOpen,
+    dsaBeat,
+    dsaSheetOpen,
+    handbookOpen,
+    almanachOpen,
+    idCardOpen,
+    lobbyGateOpen,
+    duelOpen,
+    duelMode,
+    notizbuchOpen,
+    learnedParagraphs,
+    freeChatNpcId,
+      isEssentialAssetsLoaded,
+      api,
+      advanceDialog,
+      closeDialog,
+      saveGame,
+      loadGame,
+      listSaves,
+      deleteSave,
+      ...actions,
+    }),
+    [
+      scene,
+      previousScene,
+      flags,
+      knowledge,
+      inventory,
+      caption,
+      textOverlay,
+      dialogId,
+      dialogLineId,
+      radioOpen,
+      terminalOpen,
+      terminalBodoMode,
+      terminalMiraMode,
+      keypadOpen,
+      tvOpen,
+      nodeOpen,
+      pneumaticOpen,
+      radioActive,
+      resonance,
+      ending,
+      burnSequence,
+      cutscene,
+      dsaCreatorOpen,
+      dsaCharacter,
+      dsaAdventureOpen,
+      dsaBeat,
+      dsaSheetOpen,
+      handbookOpen,
+      almanachOpen,
+      idCardOpen,
+      lobbyGateOpen,
+      duelOpen,
+      duelMode,
+      notizbuchOpen,
+      learnedParagraphs,
+      freeChatNpcId,
+      isEssentialAssetsLoaded,
+      tvOpen,
+      api,
+      advanceDialog,
+      closeDialog,
+      saveGame,
+      loadGame,
+      listSaves,
+      deleteSave,
+      actions,
+    ],
+  );
 
   // expose scenes for components
   return (
