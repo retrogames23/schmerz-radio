@@ -31,7 +31,7 @@ export const RADIO_EXT_TEXT = {
     "Die Wut-Welle verliert die Spur. Trauer wischt sie weg wie Asche.",
     "Mira flucht leise. „Nochmal. Beim nächsten Mal halt sie ruhiger.“",
   ],
-} as const;
+};
 
 /** Ziel-Frequenz des Hidden-Frequency-Rätsels. */
 export const HIDDEN_TARGET_FREQ = 102.7;
