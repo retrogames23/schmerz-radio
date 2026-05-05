@@ -1,5 +1,6 @@
 import pubBg from "@/assets/scene-pub.jpg";
 import pubToiletBg from "@/assets/scene-pub-toilet.jpg";
+import pubVestibuleBg from "@/assets/scene-pub-vestibule.jpg";
 import type { Scene } from "../types";
 
 /**
@@ -10,6 +11,61 @@ import type { Scene } from "../types";
  * zurück in den Verbindungsgang.
  */
 export const pubScenes: Record<string, Scene> = {
+  pubVestibule: {
+    id: "pubVestibule",
+    background: pubVestibuleBg,
+    title: "Vorraum „Zum stillen Funk“",
+    intro:
+      "Ein schmaler Betonkasten. Über der Tür ein Schild, drunter ein Schloss. Rechts in die Wand gebolzt: eine Lautsprecher-Maske aus Bronze, Kupferkabel quellen darunter hervor wie Bart. Etwas öltropft.",
+    hotspots: [
+      {
+        id: "marvSpeak",
+        x: 75,
+        y: 28,
+        w: 18,
+        h: 50,
+        label: "MARV-9 ansprechen",
+        kind: "talk",
+        onUse: (api) => {
+          api.setFlag("metMarv");
+          window.dispatchEvent(
+            new CustomEvent("freechat:open", { detail: { npcId: "marv9" } }),
+          );
+        },
+      },
+      {
+        id: "pubDoor",
+        x: 32,
+        y: 22,
+        w: 22,
+        h: 65,
+        label: "Tür zur Kneipe",
+        kind: "use",
+        onUse: (api) => {
+          if (api.hasFlag("marvUnlocked")) {
+            api.goTo("pub");
+          } else {
+            api.showText([
+              "MARV-9 (aus dem Lautsprecher, müde):",
+              "„… nicht jetzt, Layard. Wir kennen uns kaum. Sag etwas. Oder geh.“",
+              "Der Magnetriegel bleibt zu.",
+            ]);
+          }
+        },
+      },
+      {
+        id: "leaveVestibule",
+        x: 0,
+        y: 0,
+        w: 8,
+        h: 100,
+        label: "Zurück nach draußen",
+        kind: "exit",
+        exitDir: "left",
+        onUse: (api) => api.goTo("elevator"),
+      },
+    ],
+  },
   pub: {
     id: "pub",
     background: pubBg,

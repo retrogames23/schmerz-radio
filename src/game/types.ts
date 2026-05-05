@@ -20,7 +20,8 @@ export type SceneId =
   | "aptMira4601"
   | "kantinenverwaltung3603"
   | "pub"
-  | "pubToilet";
+  | "pubToilet"
+  | "pubVestibule";
 
 export type InventoryItemId =
   | "protocol"
@@ -48,7 +49,9 @@ export type InventoryItemId =
   | "amplifierAntenna"
   | "wartungsDiktat"
   // Bürokratie-Duell — gesammelte Verwaltungs-Paragraphen
-  | "paragraphenNotizbuch";
+  | "paragraphenNotizbuch"
+  // MARV-9 / Kneipenvorraum
+  | "oilCan";
 
 export type KnowledgeFlag =
   | "responsibilityE67"
@@ -283,7 +286,14 @@ export type StoryFlag =
   /** Dr. Okwu hat eine weiche Resonanz-Pause für das Schmerz-Radio verhängt. */
   | "radioOnPause"
   /** Layard hat während der Pause das Radio trotzdem eingeschaltet. */
-  | "cheatedRadioOnPause";
+  | "cheatedRadioOnPause"
+  // ── MARV-9 (Robo-Türsteher Kneipe) ─────────────────────────────
+  /** Layard hat MARV-9 zum ersten Mal vor der Kneipentür angesprochen. */
+  | "metMarv"
+  /** Layard hat MARV mit dem Ölkännchen geölt. */
+  | "marvOiled"
+  /** MARV hat genug Empathie gespürt — die Kneipentür ist offen. */
+  | "marvUnlocked";
 
 export interface InventoryItem {
   id: InventoryItemId;
@@ -424,7 +434,8 @@ export interface DialogLine {
     | "KOWALK"
     | "BRUST"
     | "VOSSBECK"
-    | "BRAM";
+    | "BRAM"
+    | "MARV";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;

@@ -1,92 +1,100 @@
+## Idee — geht problemlos
 
-## Refactoring-Plan: Render-Performance der Spiel-Kernkomponenten
+Wir bauen eine neue Szene **„Kneipenvorraum"** zwischen Aussichtsweg (`elevatorE67`) und `pub`. Vor der Tür steht/hängt **MARV-9**, ein mechanischer Türsteher mit ramponiertem Lautsprechergrill, der über den bestehenden Free-Mode-Chat angesprochen werden kann. Er öffnet erst, wenn Layard ihm im Gespräch ehrlich Empathie zeigt.
 
-Wir gehen iterativ vor — pro Iteration eine Komponente, getestet im Preview, dann die nächste. Dieser Plan beschreibt **Schritt 1 + 2** ausführlich, **Schritt 3–6** als Roadmap.
-
-### Priorisierung (nach Dateigröße & Render-Kosten)
-
-| # | Komponente | LoC | Hauptkosten |
-|---|---|---|---|
-| 1 | `Terminal.tsx` | 2059 | Riesige Datei, viele State-Branches, große statische Datenstrukturen im Render-Scope, Re-Render bei jedem Tastendruck |
-| 2 | LLM-Setup (`webLlmLoader` / `webLlmRuntime`) | – | `@mlc-ai/web-llm` (mehrere MB) wird zwar dynamisch importiert, aber `webLlmRuntime` und `cloudLlmRuntime` werden statisch in `FreeChatOverlay` & `DonationGate` gezogen (die wiederum aus `GameShell` kommen) |
-| 3 | `GameContext` | 902 | Single-Context für ALLES → jeder State-Change rerendert SceneView, Inventory, TopBar, alle Overlays gemeinsam |
-| 4 | `SceneView.tsx` | 415 | Inline-Maps für NPCs/Decals/Hotspots ohne Memoisation, neue Style-Objekte pro Render |
-| 5 | `RadioPanel.tsx` (698) / `Television.tsx` (377) | – | Audio/Video-Hooks ohne Memo |
-| 6 | DSA-Stack (`DsaCharacterCreator` 998, `DsaAdventureScene` 682, `DsaCombatOverlay` 516) | – | Bereits lazy, aber intern stark monolithisch |
+Damit wird die Idee gut in die bestehende Architektur integriert:
+- Free-Mode-Chat existiert bereits (`FreeChatOverlay`, `npcPersonas`, `/api/public/npc-chat`)
+- Persona-System unterstützt `hardFacts`, `secrets`, `worldLore` und kontextabhängige Flags
+- Resonanz/Flag-System ist da — wir nutzen es als „Empathie-Score"
+- Ein neues Inventar-Item knüpft die Mechanik an dein Wunschthema „Inventar besser nutzen"
 
 ---
 
-### Schritt 1 — `Terminal.tsx` aufteilen (jetzt umsetzen)
+## Was passiert im Spiel
 
-**Problem.** Die Komponente bündelt: Filesystem-Logik dreier User (Worag/Bodo/Mira), Adventure-Mini-Spiel, Lotti-Programm, News-Programm, ANSI-Boot-Sequenzen, Tastatur-/Audio-Handling, Versions-Patcher und das eigentliche Terminal-UI. Konstanten und Hilfsfunktionen (z. B. `osVersion`, `applyOsVersion`, `visibleChildren`, `formatLs`, `buildTree`, lange Boot-Sequenzen, Befehlstabellen) liegen im selben Modul wie das React-UI. Bei jedem Tastendruck wird der gesamte Riese neu evaluiert.
+1. Layard kommt am Ende des Gehwegs an, sieht die Kneipentür — und davor MARV-9 mit Messingblende und schlotternder Servo-Klappe.
+2. Beim Anklicken („Tür öffnen") seufzt MARV: *„Bitte. Noch einer. Geh weiter, drinnen ist es genauso traurig wie hier draußen, nur lauter."* — Tür bleibt zu.
+3. Über den Knopf **„Mit MARV-9 sprechen"** öffnet sich der bekannte Free-Chat. MARV lamentiert (Anhalter-Marvin-haft, aber Ostblock-Flair der Welt) über Existenz, Schichtbetrieb, „Schmiernippel der Seele" usw.
+4. Ein versteckter **Empathie-Score** (0–5) zählt Spielerantworten, die echtes Mitgefühl, Anerkennung seiner Lage oder eine eigene melancholische Reflexion zeigen. Beleidigungen oder Drohungen ziehen ab.
+5. Bei Score ≥ 4 bricht MARV emotional ein: *„Du… hast mich gehört. Niemand hört. Geh rein, Layard. Aber sei leise."* — Flag `marvUnlocked` wird gesetzt, Tür ist von nun an offen, Hotspot zur `pub`-Szene aktiv.
+6. Optional: Bei besonders gutem Verlauf gibt MARV als Geschenk eine **„Wartungs-Zugangsmarke"** heraus — ein neues Inventar-Item, das später ein anderes Rätsel löst.
 
-**Vorgehen.**
-1. Reine Helpers in eigene Module ohne JSX:
-   - `src/game/terminal/osVersion.ts` (`osVersion`, `applyOsVersion`)
-   - `src/game/terminal/fsView.ts` (`visibleChildren`, `formatLs`, `buildTree`)
-   - `src/game/terminal/bootSequences.ts` (die langen `BOOT_LINES`-Arrays inkl. `gateway-watch`-Listen)
-   - `src/game/terminal/commands/` — pro Mini-Programm eine Datei (`adventure.ts`, `lotti.ts`, `news.ts` als Re-Exports, plus `centralOs.ts`, `bodoFs.ts`, `miraFs.ts`)
-2. UI in kleinere Komponenten splitten:
-   - `TerminalScreen.tsx` — Output-Render (memoisiert, `React.memo`, Props sind die Lines)
-   - `TerminalInput.tsx` — Input-Feld + onKeyDown (eigene `useState`, kapselt Tipp-Re-Renders weg)
-   - `TerminalChrome.tsx` — Frame, CloseButton, Scanlines
-   - `Terminal.tsx` — bleibt Orchestrator (State + Command-Dispatcher), aber unter ~400 LoC
-3. Memoisation gezielt einsetzen:
-   - `useMemo` für aktiven Filesystem-Root pro User-Mode
-   - `useCallback` für `runCommand`, `appendLine`, `handleKey`
-   - `React.memo` auf `TerminalScreen` mit Props `lines` (nur neu rendern, wenn sich das Array-Ref ändert)
-4. Lange statische Arrays (Boot-Sequenzen, Hilfetexte) als `const` auf Modul-Top-Level — werden nicht mehr pro Render neu erzeugt.
-
-**Erwarteter Effekt.** Tastatureingaben lösen nur noch Re-Render von `TerminalInput` + `TerminalScreen` aus, nicht des ganzen Spiels. Initiales Bundle-Splitting bleibt erhalten (Lazy-Import in `GameShell`).
+### Weitere Inventar-Verzahnung (ohne Aufblähung)
+- Ein **Ölkännchen** (im Werkstattbereich findbar) kann auf MARV angewendet werden → er reagiert sichtlich gerührt („Das hat noch nie jemand für mich getan."), Empathie-Score startet bei 2 statt 0.
+- Aus MARVs Geschenk-Marke wird später ein klassisches Kombi-Rätsel (z. B. mit `paragraphenNotizbuch` für eine Bürokratie-Hürde).
 
 ---
 
-### Schritt 2 — LLM-Setup vom kritischen Pfad nehmen
+## Technisches Design
 
-**Problem.** `GameShell` rendert `<DonationGate />`, das statisch `webLlmLoader` importiert; `FreeChatOverlay` (statisch in `GameShell`) zieht `useLlmRuntime` + `cloudLlmRuntime` mit. Damit landet die LLM-Pipeline im `GameShell`-Bundle, obwohl das Modell selbst (`@mlc-ai/web-llm`) korrekt erst beim Start dynamisch geladen wird.
+### 1. Neue Szene `pubVestibule`
+- `src/game/scenes/pub.ts`: zusätzliche Scene `pubVestibule` mit Hintergrund (neues KI-Bild), Hotspots:
+  - „MARV-9 ansprechen" → öffnet `FreeChatOverlay` für npc `marv9`
+  - „Tür öffnen" → wenn `marvUnlocked` gesetzt: `goTo("pub")`, sonst kurzer Trigger eines MARV-Spruchs
+  - „Ölkännchen benutzen" → InventoryDrop-Target
+  - „Zurück" → `goTo("elevatorE67")`
+- `elevatorE67.ts`: `toPub`-Hotspot zeigt jetzt auf `pubVestibule` statt direkt `pub`.
+- `types.ts`: `SceneId` um `"pubVestibule"` erweitern.
 
-**Vorgehen.**
-1. `FreeChatOverlay` aus dem statischen Importblock von `GameShell` entfernen und über `lazy()` einbinden — analog zu Terminal/HelpOverlay.
-2. `DonationGate` so umbauen, dass `webLlmLoader` nur per `await import()` innerhalb des Effekts gezogen wird, der das Vorladen anstößt. Damit verschwinden `webLlmLoader` und `web-llm`-Typen aus dem GameShell-Chunk.
-3. `useLlmRuntime` als kleinen Wrapper belassen, aber `cloudLlmRuntime` und `webLlmRuntime` jeweils erst beim ersten Senden einer Nachricht importieren (`async function ensureRuntime()` im Hook). Modell-Cascade & WebGPU-Check bleiben unverändert.
-4. Title-Screen-Preload (`Game.tsx`) bleibt — er ruft jetzt `import("./GameShell")` ohne LLM-Ballast.
+### 2. Persona MARV-9
+- Neuer Eintrag `marv9` in `src/game/npcPersonas.ts` mit:
+  - `personality`: melancholisch-lamentierend, leicht passiv-aggressiv, hochgebildet, zitiert „Wartungshandbuch Vol. III" wie Lyrik
+  - `worldLore`: passt sich in den Komplex E67 ein (Schichten, Pneumatik, Schmerz-Radio)
+  - `hardFacts`: Baujahr, Seriennummer, dass er Tür Nr. 4 ist, dass er noch nie eine Pause hatte
+  - `secrets`: erinnert sich an einen Techniker, der ihn gebaut hat und nie wiederkam
+  - `staticDialogIds`: leer (er hat keinen klassischen Dialogbaum, nur ein Initial-Geplänkel)
+- `contextFlags`: `["marvOiled", "marvUnlocked"]` — werden in den Prompt durchgereicht.
 
-**Erwarteter Effekt.** Initiales `GameShell`-Chunk schrumpft spürbar. Erstes Szenenbild erscheint früher; LLM lädt im Hintergrund weiter (Gating über `markEssentialAssetsLoaded` bleibt aktiv).
+### 3. Empathie-Bewertung serverseitig (sicher, nicht spoofbar)
+Damit das Rätsel nicht trivial per Client-Hack lösbar ist, läuft die Bewertung im bestehenden `/api/public/npc-chat`-Endpoint:
+
+- Erweiterung um optionalen Pfad: wenn `npcId === "marv9"`, ruft der Server **nach** der Persona-Antwort ein zweites, kleines Tool-Calling an Lovable AI (`google/gemini-3-flash-preview`) mit strikter JSON-Schema-Function:
+  ```
+  rate_empathy({ delta: -1 | 0 | 1 | 2, reason: string })
+  ```
+  Bewertet wird ausschließlich die letzte User-Nachricht.
+- Server speichert den kumulierten Score in einer neuen Tabelle `marv_state(user_id, empathy_score, unlocked, oiled)` (RLS: nur eigener User lesen, schreiben nur via Service-Role aus Edge Function).
+- Antwort enthält neben `reply` neue Felder `empathyDelta`, `empathyTotal`, `unlocked`. Der Client zeigt ein dezentes Herz-/Servo-Symbol als Feedback.
+- Sobald Score ≥ 4: Server setzt `unlocked = true`. Beim nächsten `usePresence`/Game-Boot wird die Story-Flag `marvUnlocked` aus dieser Tabelle synchronisiert (über kleinen Loader im `GameContext`).
+
+### 4. Inventar-Anbindung
+- Neues Item `oilCan` (Fundort z. B. Wartungsraum 5610 oder Kantinen­verwaltung) in `InventoryItemId`.
+- `pubVestibule`-Hotspot „MARV" akzeptiert `oilCan` als Drop → setzt Flag `marvOiled`, verbraucht Item, gibt eine Cutscene-artige MARV-Reaktion (statisch, kein LLM nötig). Flag fließt in den System-Prompt: *„Layard hat dich geölt — du bist sichtbar berührt."*
+- Optional, neues Item `marvPass` als Belohnung — nur Vergabe, Verwendung kann später definiert werden.
+
+### 5. UI-Kleinigkeiten
+- Im `FreeChatOverlay` für `marv9`: Sprecher-Farbe „Messing/Patina", Avatar mit Servo-Klappen-Icon, optionaler Subtext „Empathie: ▮▮▮▯▯".
+- Standard-Anti-Jailbreak-Schicht greift bereits — keine Änderung nötig.
+
+### Datenfluss
+
+```text
+Spieler --click "Sprechen"--> FreeChatOverlay
+       --POST /api/public/npc-chat (npcId: marv9, ctx: {oiled, unlocked})-->
+Server: buildMarvPrompt() -> LLM (Antwort)
+        -> rate_empathy() -> upsert marv_state
+        <- reply + empathyDelta + unlocked
+Client: zeigt Antwort + Score; bei unlocked -> setFlag("marvUnlocked")
+```
 
 ---
 
-### Schritt 3 — `GameContext` entzerren (geplant)
+## Schritte zur Umsetzung
 
-Aktuell ist alles in einem Context: jede Flag-Änderung rerendert TopBar, Inventory, SceneView, alle Overlays. Plan:
-- Context aufteilen in `GameStateContext` (selten ändernd: scene, flags, knowledge), `OverlayContext` (terminalOpen, helpOpen …) und `InventoryContext`.
-- Alternativ: bestehenden Context lassen, aber Selector-Hook (`useGameSelector`) mit `useSyncExternalStore` einführen, damit Komponenten nur auf benutzte Felder rerendern.
-- `api`-Objekt mit `useMemo` stabilisieren (heute teilweise neu erzeugt).
-
-### Schritt 4 — `SceneView` memoisieren (geplant)
-- `bgFocusStyle`, `imgRect`-Style-Objekte mit `useMemo`.
-- NPC-/Decal-/Hotspot-Listen in eigene `<NpcLayer />`, `<DecalLayer />`, `<HotspotLayer />` mit `React.memo` ausgliedern.
-- `applyOverride`-Closure mit `useCallback`.
-
-### Schritt 5 — `RadioPanel` & `Television` (geplant)
-- Audio-/Video-Logik in eigene Hooks (`useRadioTuner`, `useTvPlayer`) extrahieren.
-- Presentational-Komponenten unter `React.memo`.
-
-### Schritt 6 — DSA-Overlays (geplant)
-- `DsaCharacterCreator` in Step-Komponenten (Volk/Profession/Attribute/Vorteile/Übersicht).
-- `DsaCombatOverlay`: Kampf-Engine als reiner Reducer in `src/game/dsa/combat.ts`, UI dünn drüber.
+1. Neue Tabelle `marv_state` + RLS-Policies (Migration).
+2. `SceneId` + neue Scene `pubVestibule` (+ Hintergrundbild via AI-Gateway).
+3. Persona `marv9` + `buildMarvSystemPrompt()` analog zu `bramPrompt.ts`.
+4. `/api/public/npc-chat` um `marv9`-Pfad inkl. Empathie-Bewertung erweitern.
+5. Item `oilCan` (+ optional `marvPass`) und Drop-Logik im Vestibül.
+6. `FreeChatOverlay`: Score-Anzeige & Unlock-Toast.
+7. `GameContext`: beim Boot `marv_state` laden und Flags synchronisieren.
 
 ---
 
-### Technische Details (für später)
+## Offene Punkte (kann ich beim Bauen entscheiden, sag Bescheid wenn du anders willst)
 
-- **Verträgliche Refactor-Häppchen:** Pro Schritt nur 1 Komponente bzw. 1 Modul-Familie, anschließend Build-Check & manuelle UI-Verifikation (Terminal, Free-Chat, Szenenwechsel).
-- **Keine Verhaltensänderungen:** Befehls-Output, ANSI-Sequenzen, Filesystem-Daten und LLM-Lade-Phasen bleiben byte-identisch.
-- **Tests:** Es gibt im Repo aktuell keine Vitest-Suite für diese Komponenten — wir prüfen visuell und über die bestehenden Story-Cheats (`F1`, Dev-`?dev=1`).
-- **Kein Memoisations-Spam:** `useMemo`/`useCallback` nur dort, wo Kosten oder Identitäts-Stabilität nachweislich helfen (Listen, Style-Objekte, Callbacks an memoisierte Children).
-- **Bundle-Verifikation:** Nach Schritt 2 prüfen wir die `dist/`-Chunk-Größen via Build-Output, um den Effekt zu bestätigen.
+- **Score-Schwelle**: 4/5 oder lieber lockerer (3/5)?
+- **Ölkännchen-Fundort**: Wartungsraum 5610 wäre thematisch stimmig — okay?
+- **MARV-Geschenk** (`marvPass`): jetzt schon einbauen oder erst, wenn wir wissen, welches spätere Rätsel es löst?
 
----
-
-### Was passiert nach Approval
-
-Ich setze **Schritt 1 (Terminal-Split)** komplett um, danach **Schritt 2 (LLM aus dem kritischen Pfad)**. Bevor ich Schritt 3 anfasse, melde ich mich kurz mit Zwischenstand und Bundle-Diff — du entscheidest, ob wir weitergehen oder pausieren.
+Sag mir, ob du so loslegen willst — oder ob du an Persona, Empathie-Mechanik oder Inventar-Anbindung Feinschliff möchtest.
