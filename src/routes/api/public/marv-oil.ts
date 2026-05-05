@@ -40,7 +40,7 @@ export const Route = createFileRoute("/api/public/marv-oil")({
         });
         const { data: existing } = await admin
           .from("marv_state")
-          .select("empathy_score, unlocked, message_count")
+          .select("empathy_score, unlocked, oiled, message_count")
           .eq("user_id", uid)
           .maybeSingle();
         // Ölen erhöht den Empathie-Wert einmalig um +1 (geclampt auf 10).
