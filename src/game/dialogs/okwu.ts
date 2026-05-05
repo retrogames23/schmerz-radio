@@ -96,6 +96,57 @@ export const okwuDialogs: Record<string, DialogTree> = {
       },
     },
   },
+  receptionNoMask: {
+    id: "receptionNoMask",
+    start: "rnm1",
+    lines: {
+      rnm1: {
+        id: "rnm1",
+        speaker: "RECEPTION",
+        text: "Halt — bitte einen Schritt zurück. Sektor E71, Hygienestufe drei. Ohne medizinische Maske kommen Sie hier nicht weiter.",
+        subtext: "Sie hebt eine Hand. Routinegeste, kein Ärger.",
+        next: "rnm2",
+      },
+      rnm2: {
+        id: "rnm2",
+        speaker: "LAYARD",
+        text: "Ich hatte keine. In E67 gibt der Ausgabewagen seit zwei Wochen nur Pampe, keine Masken.",
+        next: "rnm3",
+      },
+      rnm3: {
+        id: "rnm3",
+        speaker: "RECEPTION",
+        text: "Weiß ich. Wir bekommen die Engpassmeldungen, wir geben sie weiter, es passiert nichts. Standardprotokoll.",
+        subtext: "Ein müder, fast komplizenhafter Blick.",
+        next: "rnm4",
+      },
+      rnm4: {
+        id: "rnm4",
+        speaker: "RECEPTION",
+        text: "Inoffiziell: gehen Sie rüber in „Zum stillen Funk“. Der Wirt füllt seinen Kondomautomaten seit Wochen auch mit OP-Masken. Eine Reichsmark das Stück. Fragen Sie nicht, woher.",
+        next: "rnm5",
+      },
+      rnm5: {
+        id: "rnm5",
+        speaker: "RECEPTION",
+        text: "Mit Maske kommen Sie wieder. Vorher nicht. Es tut mir leid.",
+        end: true,
+      },
+    },
+  },
+  receptionNoMaskAgain: {
+    id: "receptionNoMaskAgain",
+    start: "rnma1",
+    lines: {
+      rnma1: {
+        id: "rnma1",
+        speaker: "RECEPTION",
+        text: "Immer noch keine Maske, Herr Worag. Kondomautomat. „Zum stillen Funk“. Reihe drei.",
+        subtext: "Sie sieht nicht mal auf.",
+        end: true,
+      },
+    },
+  },
   okwu1: {
     id: "okwu1",
     start: "ok1",
