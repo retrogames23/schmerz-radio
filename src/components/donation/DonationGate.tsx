@@ -3,7 +3,23 @@ import { onCloudError, onCloudUsage } from "@/llm/cloudLlmRuntime";
 import { useDonationStatus } from "@/hooks/useDonationStatus";
 import { useAuth } from "@/auth/AuthContext";
 import { DonationModal } from "./DonationModal";
-import { isWebGpuAvailable, startLocalLlmLoad } from "@/llm/webLlmLoader";
+
+/**
+ * Lädt den WebLLM-Loader erst bei Bedarf (Soft-Limit erreicht). So
+ * landen weder das Loader-Modul noch die WebLLM-Engine im initialen
+ * GameShell-Bundle.
+ */
+async function preloadLocalLlmInBackground() {
+  try {
+    const mod = await import("@/llm/webLlmLoader");
+    if (!mod.isWebGpuAvailable()) return;
+    void mod.startLocalLlmLoad().catch(() => {
+      /* still ignorieren — UI zeigt es im Free-Chat ggf. nochmal an */
+    });
+  } catch {
+    /* Loader-Modul nicht verfügbar — kein Hindernis. */
+  }
+}
 
 /**
  * Globaler Listener: zeigt das Spenden-Modal bei Soft-Limit (Warnung)
@@ -43,11 +59,7 @@ export function DonationGate() {
         // lokalem LLM gedrängt — also fangen wir JETZT an, das Modell
         // im Hintergrund vorzuladen. Vorher nicht: Spieler, die nie an
         // dieses Limit kommen, müssen die GB-große Datei nie ziehen.
-        if (isWebGpuAvailable()) {
-          void startLocalLlmLoad().catch(() => {
-            /* still ignorieren — UI zeigt es im Free-Chat ggf. nochmal an */
-          });
-        }
+        void preloadLocalLlmInBackground();
       }
     });
   }, [user, shownSoftAt]);
