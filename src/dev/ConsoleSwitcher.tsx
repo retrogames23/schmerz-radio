@@ -112,14 +112,14 @@ export function ConsoleSwitcher() {
         type="button"
         onClick={() => setOpen((o) => !o)}
         title="Dev: Konsolen-Switcher (K)"
-        className="fixed bottom-4 left-16 z-[120] flex h-10 w-10 items-center justify-center rounded-full border border-amber-glow/60 bg-background/80 font-mono-crt text-base text-amber-glow shadow-lg hover:bg-amber-glow/15"
+        className="fixed bottom-4 left-16 z-[9998] flex h-10 w-10 items-center justify-center rounded-full border border-amber-glow/60 bg-background/80 font-mono-crt text-base text-amber-glow shadow-lg hover:bg-amber-glow/15"
       >
         ▣
       </button>
 
       {open && (
         <div
-          className="fixed inset-0 z-[120] flex items-start justify-center bg-black/70 px-4 py-12"
+          className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/70 px-4 py-12"
           onClick={() => setOpen(false)}
         >
           <div
