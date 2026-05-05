@@ -173,6 +173,36 @@ export type Database = {
         }
         Relationships: []
       }
+      marv_state: {
+        Row: {
+          created_at: string
+          empathy_score: number
+          message_count: number
+          oiled: boolean
+          unlocked: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          empathy_score?: number
+          message_count?: number
+          oiled?: boolean
+          unlocked?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          empathy_score?: number
+          message_count?: number
+          oiled?: boolean
+          unlocked?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       npc_gossip: {
         Row: {
           created_at: string
