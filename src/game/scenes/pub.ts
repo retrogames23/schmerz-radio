@@ -20,11 +20,11 @@ export const pubScenes: Record<string, Scene> = {
       // Direkt im Bild anklickbare Barhocker. Lösen über ein
       // CustomEvent das eigentliche Hinsetzen im PubOverlay aus.
       ...[
-        { i: 0, x: 39.5, y: 60.5, w: 5.5, h: 11 },
-        { i: 1, x: 47.5, y: 63.5, w: 6, h: 12 },
-        { i: 2, x: 51, y: 67.5, w: 6.5, h: 13 },
-        { i: 3, x: 54, y: 72, w: 7, h: 14 },
-        { i: 4, x: 58, y: 76, w: 8, h: 16 },
+        { i: 0, x: 49.4, y: 58.4, w: 5, h: 5.6 },
+        { i: 1, x: 51.7, y: 61.8, w: 4.4, h: 6.1 },
+        { i: 2, x: 54.6, y: 65.7, w: 4.1, h: 4.9 },
+        { i: 3, x: 58.6, y: 70, w: 4, h: 4.4 },
+        { i: 4, x: 61.3, y: 75.3, w: 5.6, h: 6.8 },
       ].map((s) => ({
         id: `stool${s.i + 1}`,
         x: s.x,
@@ -41,10 +41,10 @@ export const pubScenes: Record<string, Scene> = {
       })),
       {
         id: "toToilet",
-        x: 33.8,
-        y: 36.2,
-        w: 11,
-        h: 50,
+        x: 34.6,
+        y: 37,
+        w: 8.7,
+        h: 33.5,
         label: "Tür: Toilette",
         kind: "exit",
         exitDir: "left",
