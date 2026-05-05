@@ -218,6 +218,33 @@ function WartungsnotizIcon() {
   );
 }
 
+/** Ölkännchen — kleine zinnerne Kanne mit langem Schnabel. */
+function OilCanIcon() {
+  return (
+    <>
+      {/* Korpus */}
+      <rect x="9" y="10" width="9" height="9" fill={ICON_DK} />
+      <rect x="10" y="11" width="7" height="7" fill={ICON_FG} />
+      <rect x="10" y="11" width="7" height="1" fill={ICON_HI} />
+      {/* Boden */}
+      <rect x="8" y="19" width="11" height="1" fill={ICON_DK} />
+      {/* Deckel */}
+      <rect x="11" y="9" width="3" height="1" fill={ICON_DK} />
+      {/* Schnabel: lange diagonale Tülle nach oben links */}
+      <rect x="7" y="9" width="2" height="2" fill={ICON_DK} />
+      <rect x="5" y="7" width="2" height="2" fill={ICON_DK} />
+      <rect x="3" y="5" width="2" height="2" fill={ICON_DK} />
+      <rect x="2" y="4" width="2" height="2" fill={ICON_FG} />
+      {/* Henkel rechts */}
+      <rect x="18" y="12" width="2" height="1" fill={ICON_DK} />
+      <rect x="20" y="13" width="1" height="3" fill={ICON_DK} />
+      <rect x="18" y="16" width="2" height="1" fill={ICON_DK} />
+      {/* Tropfen */}
+      <rect x="2" y="7" width="1" height="1" fill={ICON_HI} />
+    </>
+  );
+}
+
 /** E67-Bewohner-Ausweis — kleine Plastikkarte mit Lichtbild und Magnetstreifen. */
 function ResidentIdIcon() {
   return (
@@ -379,7 +406,7 @@ const ICON_MAP: Record<InventoryItemId, () => React.ReactElement> = {
   // Bürokratie-Duell — Layards Sammlung gelernter Paragraphen.
   paragraphenNotizbuch: E67HandbookIcon,
   // Ölkännchen für MARV-9 — vorerst geliehenes Notiz-Icon.
-  oilCan: WartungsnotizIcon,
+  oilCan: OilCanIcon,
 };
 
 /* ─── Akt-I-Pflichträtsel: Zusatz-Icons ─────────────────── */
