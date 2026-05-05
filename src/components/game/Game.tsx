@@ -30,6 +30,10 @@ import { PneumaticTubeOverlay } from "./PneumaticTubeOverlay";
 import { ParagraphenNotizbuchOverlay } from "./ParagraphenNotizbuchOverlay";
 import { FreeChatOverlay } from "./FreeChatOverlay";
 import { PubOverlay } from "./PubOverlay";
+import { RoomSwitcher } from "@/dev/RoomSwitcher";
+import { ConsoleSwitcher } from "@/dev/ConsoleSwitcher";
+import { OverlayQAOverlay } from "@/dev/OverlayQAOverlay";
+import { useDevMode } from "@/dev/devMode";
 import { ToiletWallOverlay } from "./ToiletWallOverlay";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useGame } from "@/game/GameContext";
@@ -180,6 +184,7 @@ function GameStage({
     idCardOpen,
     closeIdCard,
   } = useGame();
+  const dev = useDevMode();
 
   // Stabile Handler-Referenzen für die memoizierten Kinder (TopBar etc.).
   const handleOpenPause = useCallback(() => setPauseOpen(true), [setPauseOpen]);
@@ -287,6 +292,9 @@ function GameStage({
         </main>
         <Inventory />
       </div>
+      {dev && <RoomSwitcher />}
+      {dev && <ConsoleSwitcher />}
+      {dev && <OverlayQAOverlay />}
     </MobileStage>
   );
 }

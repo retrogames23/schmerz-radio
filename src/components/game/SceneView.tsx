@@ -4,9 +4,6 @@ import { Hotspot } from "./Hotspot";
 import { FloatingChatter } from "./FloatingChatter";
 import { useDevMode } from "@/dev/devMode";
 import { HotspotEditor } from "@/dev/HotspotEditor";
-import { RoomSwitcher } from "@/dev/RoomSwitcher";
-import { ConsoleSwitcher } from "@/dev/ConsoleSwitcher";
-import { OverlayQAOverlay } from "@/dev/OverlayQAOverlay";
 import { useQA } from "@/dev/overlayQAState";
 import { getOverridesFor } from "@/dev/overlayQAState";
 import { Eye, EyeOff } from "lucide-react";
@@ -345,12 +342,6 @@ export function SceneView() {
             decals={current.decals}
           />
         )}
-
-        {/* Dev-only: Raum-Switcher (?dev=1). Eigener Floating-Button +
-            Tastenkürzel "G". */}
-        {dev && <RoomSwitcher />}
-        {dev && <ConsoleSwitcher />}
-        {dev && <OverlayQAOverlay />}
 
         {/* Hintergrund-Sprechblasen der DSA-Runde im Gemeinschaftsraum */}
         <FloatingChatter enabled={scene === "commonRoomE67"} variant="dsa" />
