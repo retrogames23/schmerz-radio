@@ -151,6 +151,17 @@ export const sectorAct1Scenes: Record<string, Scene> = {
         kind: "talk",
         hiddenWhen: ["metReceptionist"],
         onUse: (api) => {
+          // Ohne medizinische Maske wird Layard freundlich abgewiesen
+          // und auf den Kondomautomaten in „Zum stillen Funk" verwiesen.
+          if (!api.hasFlag("wearingMedMask")) {
+            if (api.hasFlag("receptionRefusedNoMask")) {
+              api.startDialog("receptionNoMaskAgain");
+            } else {
+              api.setFlag("receptionRefusedNoMask");
+              api.startDialog("receptionNoMask");
+            }
+            return;
+          }
           api.setFlag("metReceptionist");
           // Wenn Layard den Übertritt brav gemeldet hat, ist sein Eintritt
           // vorgemerkt. Sonst muss er sich erklären — und sie ist skeptisch.
