@@ -136,7 +136,7 @@ export const communalE67Scenes: Record<string, Scene> = {
         x: 71.7,
         y: 32.2,
         w: 12,
-        h: 37.4,
+        h: 29,
         label: "Herr Brust",
         kind: "talk",
         onUse: (api) => {
@@ -148,9 +148,9 @@ export const communalE67Scenes: Record<string, Scene> = {
       },
       {
         id: "cafeteriaCounter",
-        x: 39.5,
-        y: 56,
-        w: 16.5,
+        x: 56.4,
+        y: 56.2,
+        w: 30.8,
         h: 16,
         label: "Ausgabetheke",
         kind: "look",
@@ -169,8 +169,8 @@ export const communalE67Scenes: Record<string, Scene> = {
       {
         id: "cafeteriaQuittungsblock",
         // Auf dem Tresen, rechts neben dem Schild.
-        x: 54.5,
-        y: 56,
+        x: 45,
+        y: 56.8,
         w: 12,
         h: 14,
         label: "Quittungsblock Schicht B",

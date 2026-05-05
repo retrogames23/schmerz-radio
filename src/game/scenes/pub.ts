@@ -19,8 +19,8 @@ export const pubScenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "toToilet",
-        x: 4,
-        y: 38,
+        x: 33.8,
+        y: 36.2,
         w: 11,
         h: 50,
         label: "Tür: Toilette",
@@ -30,8 +30,8 @@ export const pubScenes: Record<string, Scene> = {
       },
       {
         id: "leavePub",
-        x: 84,
-        y: 38,
+        x: 16.1,
+        y: 27.7,
         w: 12,
         h: 50,
         label: "Hinaus in den Gang",
