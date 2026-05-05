@@ -25,7 +25,6 @@ import { IdCardOverlay } from "./IdCardOverlay";
 import { LobbyGate } from "./LobbyGate";
 import { PneumaticTubeOverlay } from "./PneumaticTubeOverlay";
 import { ParagraphenNotizbuchOverlay } from "./ParagraphenNotizbuchOverlay";
-import { FreeChatOverlay } from "./FreeChatOverlay";
 import { PubOverlay } from "./PubOverlay";
 import { RoomSwitcher } from "@/dev/RoomSwitcher";
 import { ConsoleSwitcher } from "@/dev/ConsoleSwitcher";
@@ -60,6 +59,9 @@ const BureaucracyDuelOverlay = lazy(() =>
   import("./BureaucracyDuelOverlay").then((m) => ({
     default: m.BureaucracyDuelOverlay,
   })),
+);
+const FreeChatOverlay = lazy(() =>
+  import("./FreeChatOverlay").then((m) => ({ default: m.FreeChatOverlay })),
 );
 
 function DsaMusicBridge() {
@@ -214,7 +216,6 @@ function GameStage({
             <LobbyGate />
             <PneumaticTubeOverlay />
             <ParagraphenNotizbuchOverlay />
-            <FreeChatOverlay />
             <PubOverlay />
             <ToiletWallOverlay />
             <Ending />
@@ -238,6 +239,7 @@ function GameStage({
                 />
               )}
               <BureaucracyDuelGate />
+              <FreeChatGate />
             </Suspense>
           </div>
         </main>
