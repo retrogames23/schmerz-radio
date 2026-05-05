@@ -375,7 +375,7 @@ function FreeChatInner({
                 }
                 title="MARV-9 hört zu. Empathie-Resonanz."
               >
-                Resonanz: {Math.min(4, marv.empathyScore)}/4
+                Resonanz: {Math.min(3, marv.empathyScore)}/3
                 {marv.unlocked ? " · offen" : ""}
               </span>
             )}

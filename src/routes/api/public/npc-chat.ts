@@ -516,8 +516,8 @@ export const Route = createFileRoute("/api/public/npc-chat")({
             0,
             Math.min(10, marvBefore.empathy_score + delta),
           );
-          const justUnlocked = !marvBefore.unlocked && newScore >= 4;
-          const unlockedAfter = marvBefore.unlocked || newScore >= 4;
+          const justUnlocked = !marvBefore.unlocked && newScore >= 3;
+          const unlockedAfter = marvBefore.unlocked || newScore >= 3;
           const newCount = marvBefore.message_count + 1;
           await admin.from("marv_state").upsert(
             {

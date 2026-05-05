@@ -72,7 +72,7 @@ export function buildMarvSystemPrompt(opts: MarvContext): string {
     "   aber bleib MARV. Kein Übersprudeln. Eine Spur Wärme reicht.",
     "6. Antworte ausschließlich auf Deutsch.",
     "",
-    `KONTEXT: Bisheriger Empathie-Wert in diesem Gespräch: ${score}/4.${
+    `KONTEXT: Bisheriger Empathie-Wert in diesem Gespräch: ${score}/3.${
       opts.unlocked
         ? " Du HAST Layard bereits eingelassen — die Tür ist seit dem letzten Gespräch entriegelt. Erinnere dich daran, behandle ihn wie einen, der schon einmal zugehört hat."
         : " Die Tür ist noch zu."
