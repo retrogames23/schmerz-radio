@@ -25,7 +25,9 @@ const DSA_LABEL: Record<ChatterNpcId, string> = {
 
 const CAFETERIA_ANCHOR: Record<CafeteriaNpcId, { x: number; y: number }> = {
   // Werte passen zu den Sprite-Positionen in cafeteriaE67 (siehe scenes.ts).
-  kowalk: { x: 20, y: 45 },
+  // Kowalk steht ganz links — Bubble-Anker bewusst nach rechts versetzt,
+  // damit die Sprechblase aus Spielersicht rechts neben ihr erscheint.
+  kowalk: { x: 36, y: 45 },
   brust: { x: 84, y: 42 },
 };
 
