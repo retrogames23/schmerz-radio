@@ -405,6 +405,7 @@ export function PubOverlay() {
             <p className="mt-1 font-mono-crt text-xs text-rust">{err}</p>
           )}
         </div>
+        )}
       </div>
     </div>
   );
