@@ -293,7 +293,9 @@ export type StoryFlag =
   /** Layard hat MARV mit dem Ölkännchen geölt. */
   | "marvOiled"
   /** MARV hat genug Empathie gespürt — die Kneipentür ist offen. */
-  | "marvUnlocked";
+  | "marvUnlocked"
+  /** Layard hat das Ölkännchen aus Serverraum 5610 mitgenommen. */
+  | "tookOilCan";
 
 export interface InventoryItem {
   id: InventoryItemId;
