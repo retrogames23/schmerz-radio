@@ -16,10 +16,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "radio",
-        x: 25.25,
+        x: 20.8,
         y: 52,
-        w: 6.75,
-        h: 19,
+        w: 8.1,
+        h: 13.7,
         label: "Schmerz-Radio",
         kind: "use",
         onUse: (api) => api.openRadio(),
