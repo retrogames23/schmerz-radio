@@ -27,6 +27,7 @@ export function PubOverlay() {
   const [tab, setTab] = useState<Tab>("bar");
   const [barInput, setBarInput] = useState("");
   const [bramInput, setBramInput] = useState("");
+  const [minimized, setMinimized] = useState(false);
   const [bramHistory, setBramHistory] = useState<
     { role: "user" | "assistant"; content: string }[]
   >([]);
@@ -169,8 +170,17 @@ export function PubOverlay() {
 
   const canType = presence.mySeat !== null;
 
+  // Solange noch kein Sitz belegt ist, automatisch das Chat-Fenster
+  // einklappen, damit die Hocker im Hintergrundbild klickbar/sichtbar
+  // bleiben.
+  const collapsed = minimized || presence.mySeat === null;
+
   return (
-    <div className="absolute inset-x-0 bottom-0 z-30 flex max-h-[60%] flex-col border-t border-amber-glow/40 bg-background/95 backdrop-blur-sm">
+    <div
+      className={`absolute inset-x-0 bottom-0 z-30 flex flex-col border-t border-amber-glow/40 bg-background/95 backdrop-blur-sm ${
+        collapsed ? "max-h-[28%]" : "max-h-[60%]"
+      }`}
+    >
       {/* Header */}
       <div className="relative flex items-center justify-between gap-3 border-b border-amber-glow/20 px-4 py-2 pr-12">
         <span className="font-mono-crt text-xs uppercase tracking-widest text-amber-glow">
@@ -188,6 +198,14 @@ export function PubOverlay() {
             onClick={() => setTab("bram")}
             label={`Bram${bramHistory.length > 0 ? ` (${bramHistory.length})` : ""}`}
           />
+          <button
+            type="button"
+            onClick={() => setMinimized((m) => !m)}
+            className="ml-2 rounded-sm border border-amber-glow/40 px-2 py-1 font-mono-crt text-[10px] uppercase tracking-widest text-amber-glow hover:bg-amber-glow/10"
+            title={collapsed ? "Chat-Fenster ausklappen" : "Chat-Fenster einklappen"}
+          >
+            {collapsed ? "▲ Chat" : "▼ Chat"}
+          </button>
           <button
             type="button"
             onClick={() => game.api.goTo("pubToilet")}
@@ -214,7 +232,7 @@ export function PubOverlay() {
 
       <div className="flex flex-1 min-h-0 gap-2 p-3">
         {/* Sitzplätze — links, immer sichtbar */}
-        <div className="flex w-44 shrink-0 flex-col gap-1">
+        <div className={`flex shrink-0 flex-col gap-1 ${collapsed ? "w-full flex-row flex-wrap" : "w-44"}`}>
           {presence.seats.map((occ, i) => {
             const mine = presence.mySeat === i;
             const occupied = !!occ && !mine;
@@ -251,12 +269,15 @@ export function PubOverlay() {
               </button>
             );
           })}
+          {!collapsed && (
           <div className="mt-2 rounded-sm border border-border bg-background/40 p-2 font-mono-crt text-[10px] uppercase tracking-widest text-muted-foreground">
             5 Min ohne Aktion → der Hocker wird frei.
           </div>
+          )}
         </div>
 
         {/* Rechts: aktiver Tab */}
+        {!collapsed && (
         <div className="flex flex-1 min-w-0 flex-col">
           {tab === "bar" && (
             <>
