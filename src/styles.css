@@ -181,6 +181,31 @@
   font-style: normal;
   font-display: swap;
 }
+@font-face {
+  font-family: "Permanent Marker";
+  src: url("https://fonts.gstatic.com/s/permanentmarker/v16/Fh4uPib9Iyv2ucM6pGQMWimMp004La2Cf5b6jlg.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Rubik Wet Paint";
+  src: url("https://fonts.gstatic.com/s/rubikwetpaint/v9/HTx0L20uMDGHgdULcpTF3Oe4d_-F-zz313DuvQ.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Caveat Brush";
+  src: url("https://fonts.gstatic.com/s/caveatbrush/v11/EYq0maZfwr9S9-ETZc3fKXtMW7mT03pdQw.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-graffiti-1 { font-family: "Permanent Marker", "Comic Sans MS", cursive; }
+.font-graffiti-2 { font-family: "Rubik Wet Paint", "Permanent Marker", cursive; }
+.font-graffiti-3 { font-family: "Caveat Brush", "Permanent Marker", cursive; }
 
 .font-mono-crt {
   font-family: var(--font-mono);

@@ -4,7 +4,8 @@ import { CloseButton } from "./CloseButton";
 import { useToiletWall } from "@/multiplayer/useToiletWall";
 import { ensureAuthSession, getDisplayName, getShiftNumber } from "@/multiplayer/identity";
 
-const COLORS = ["#1a1a1a", "#1d3a8a", "#7a1d1d", "#2d5a2d", "#5a3d8a"];
+const COLORS = ["#0a0a0a", "#1a3a8f", "#8a1a1a", "#1f4f1f", "#4a2a7a"];
+const FONTS = ["font-graffiti-1", "font-graffiti-2", "font-graffiti-3"];
 
 export function ToiletWallOverlay() {
   const game = useGame();
@@ -47,12 +48,15 @@ export function ToiletWallOverlay() {
         {wall.graffiti.map((g) => (
           <div
             key={g.id}
-            className="absolute max-w-[28%] font-display text-sm leading-tight"
+            className={`absolute max-w-[30%] leading-none ${FONTS[g.id.charCodeAt(0) % FONTS.length]}`}
             style={{
               left: `${g.x}%`, top: `${g.y}%`,
               transform: `translate(-50%, -50%) rotate(${g.rotation}deg)`,
+              fontSize: `${1.1 + ((g.id.charCodeAt(1) || 0) % 8) * 0.18}rem`,
               color: COLORS[g.colorIndex] ?? COLORS[0],
-              textShadow: "0 0 1px rgba(255,255,255,0.3)",
+              textShadow: "0 1px 0 rgba(0,0,0,0.5), 0 0 4px rgba(0,0,0,0.4)",
+              filter: "url(#) drop-shadow(0 1px 0 rgba(0,0,0,0.4))",
+              mixBlendMode: "multiply",
               opacity: g.isAnonymous ? 0.85 : 1,
             }}
             title={`${g.displayName}${g.isAnonymous ? " · verblasst nach 24h" : ""}`}
