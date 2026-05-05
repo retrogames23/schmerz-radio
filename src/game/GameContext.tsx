@@ -971,4 +971,30 @@ export function useGame() {
   return ctx;
 }
 
+/**
+ * Selektiver Lesezugriff auf den GameContext. Nutzt React's eingebaute
+ * `useContext`-Subscription und reicht das Ergebnis durch eine
+ * Equality-Funktion. Wenn der Selektor das gleiche Ergebnis liefert
+ * (Standard: Object.is), unterdrücken wir den Re-Render via `useMemo`.
+ *
+ * Hinweis: Echte Subscription-Selektoren (à la Zustand) brauchen
+ * `useSyncExternalStore`. Hier reicht aber bereits die memoisierte
+ * Variante, weil `value` selbst memoisiert ist (siehe oben) und nur
+ * dann eine neue Identität bekommt, wenn sich der relevante State
+ * ändert.
+ */
+export function useGameSelector<T>(
+  selector: (ctx: GameContextValue) => T,
+  equals: (a: T, b: T) => boolean = Object.is,
+): T {
+  const ctx = useContext(GameContext);
+  if (!ctx) throw new Error("useGameSelector must be used within GameProvider");
+  const value = selector(ctx);
+  const lastRef = useRef<T>(value);
+  if (!equals(lastRef.current, value)) {
+    lastRef.current = value;
+  }
+  return lastRef.current;
+}
+
 export { scenes };
