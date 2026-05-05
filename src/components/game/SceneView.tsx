@@ -91,6 +91,11 @@ export function SceneView() {
     width: number;
     height: number;
   } | null>(null);
+  // Verhindert ein 1-Frame-Verzerren beim Szenenwechsel: solange das
+  // neue Asset noch keine gültigen naturalWidth/Height hat, bleibt das
+  // <img> unsichtbar. Sobald onLoad (oder der Cache-Hit-Pfad) feuert
+  // und die Geometrie neu berechnet ist, wird es eingeblendet.
+  const [bgReady, setBgReady] = useState(false);
 
   const recomputeImgRect = useCallback(() => {
     const stage = stageRef.current;
@@ -141,12 +146,13 @@ export function SceneView() {
     // WICHTIG: imgRect NICHT auf null zurücksetzen. Sonst fallen Layer
     // und <img> für einen Frame auf das 100%/100%-Stretch-Fallback
     // zurück und das alte Bild wird sichtbar verzerrt, bevor das neue
-    // geladen ist. Stattdessen den alten Rect halten und – sobald das
-    // neue Asset Maße hat – synchron neu berechnen. Bei Cache-Hits
-    // feuert <img>.onLoad nicht erneut, daher der explizite Aufruf.
+    // geladen ist. Stattdessen den alten Rect halten und das neue Bild
+    // erst einblenden, wenn die Maße bekannt und Layer aktualisiert sind.
+    setBgReady(false);
     const img = imgRef.current;
     if (img && img.complete && img.naturalWidth > 0) {
       recomputeImgRect();
+      setBgReady(true);
     }
   }, [backgroundSrc, recomputeImgRect]);
   useEffect(() => {
@@ -269,10 +275,12 @@ export function SceneView() {
           decoding="async"
           onLoad={() => {
             recomputeImgRect();
+            setBgReady(true);
             markEssentialAssetsLoaded();
           }}
           onError={() => markEssentialAssetsLoaded()}
-          className={`pointer-events-none block h-full w-full select-none ${
+          style={{ opacity: bgReady ? 1 : 0 }}
+          className={`pointer-events-none block h-full w-full select-none transition-opacity duration-150 ${
             scene === "corridor56" && flags.has("burnedNode5610")
               ? "corridor-emergency-power"
               : ""
