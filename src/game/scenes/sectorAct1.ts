@@ -154,6 +154,26 @@ export const sectorAct1Scenes: Record<string, Scene> = {
           // Ohne medizinische Maske wird Layard freundlich abgewiesen
           // und auf den Kondomautomaten in „Zum stillen Funk" verwiesen.
           if (!api.hasFlag("wearingMedMask")) {
+            // Hat Layard die Maske im Inventar, setzt er sie jetzt
+            // wortlos auf — die Bänder hinterm Ohr, Plastikgeruch.
+            if (api.hasItem("medMask")) {
+              api.setFlag("wearingMedMask");
+              api.showText(
+                [
+                  "Layard knotet die OP-Maske hinterm Ohr fest.",
+                  "Plastikgeruch, eine Spur Bier. Es genügt.",
+                ],
+                () => {
+                  api.setFlag("metReceptionist");
+                  if (api.hasFlag("reportedExit")) {
+                    api.startDialog("reception");
+                  } else {
+                    api.startDialog("receptionUnannounced");
+                  }
+                },
+              );
+              return;
+            }
             if (api.hasFlag("receptionRefusedNoMask")) {
               api.startDialog("receptionNoMaskAgain");
             } else {
