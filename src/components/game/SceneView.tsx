@@ -138,11 +138,12 @@ export function SceneView() {
   // Wenn das Hintergrundbild wechselt: Rect zurücksetzen, damit kein
   // alter Bildausschnitt für das neue Asset verwendet wird.
   useEffect(() => {
-    setImgRect(null);
-    // Falls das Asset bereits im Browser-Cache liegt, feuert <img>.onLoad
-    // nicht erneut — dann müssen wir die Geometrie selbst nachziehen,
-    // sonst bleibt das Bild im 100%/100%-Fallback und wird verzerrt
-    // (z. B. 16:9-Hallway in einer 4:3-Bühne nach Aufzug-Rückkehr).
+    // WICHTIG: imgRect NICHT auf null zurücksetzen. Sonst fallen Layer
+    // und <img> für einen Frame auf das 100%/100%-Stretch-Fallback
+    // zurück und das alte Bild wird sichtbar verzerrt, bevor das neue
+    // geladen ist. Stattdessen den alten Rect halten und – sobald das
+    // neue Asset Maße hat – synchron neu berechnen. Bei Cache-Hits
+    // feuert <img>.onLoad nicht erneut, daher der explizite Aufruf.
     const img = imgRef.current;
     if (img && img.complete && img.naturalWidth > 0) {
       recomputeImgRect();
