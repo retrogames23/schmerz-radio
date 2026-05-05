@@ -158,13 +158,13 @@ export function OverlayQAOverlay() {
         type="button"
         onClick={() => setOpen((o) => !o)}
         title="Dev: Overlay-QA"
-        className="fixed bottom-4 left-32 z-[120] flex h-10 items-center justify-center rounded-full border border-amber-glow/60 bg-background/80 px-3 font-mono-crt text-xs text-amber-glow shadow-lg hover:bg-amber-glow/15"
+        className="fixed bottom-4 left-32 z-[9998] flex h-10 items-center justify-center rounded-full border border-amber-glow/60 bg-background/80 px-3 font-mono-crt text-xs text-amber-glow shadow-lg hover:bg-amber-glow/15"
       >
         QA {active ? `· ${idx + 1}/${total}` : ""}
       </button>
 
       {open && (
-        <div className="fixed bottom-16 left-4 z-[121] w-[360px] rounded-sm border border-amber-glow/60 bg-background p-3 shadow-[0_0_60px_rgba(0,0,0,0.85)] font-mono-crt text-xs text-foreground">
+        <div className="fixed bottom-16 left-4 z-[9999] w-[360px] rounded-sm border border-amber-glow/60 bg-background p-3 shadow-[0_0_60px_rgba(0,0,0,0.85)] font-mono-crt text-xs text-foreground">
           <div className="mb-2 flex items-center justify-between">
             <div className="text-[10px] uppercase tracking-[0.2em] text-amber-glow">
               Overlay-QA
