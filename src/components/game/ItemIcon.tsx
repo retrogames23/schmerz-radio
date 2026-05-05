@@ -433,6 +433,8 @@ const ICON_MAP: Record<InventoryItemId, () => React.ReactElement> = {
   paragraphenNotizbuch: E67HandbookIcon,
   // Ölkännchen für MARV-9 — vorerst geliehenes Notiz-Icon.
   oilCan: OilCanIcon,
+  // E71-Hygiene: medizinische Maske aus dem Kondomautomaten.
+  medMask: MedMaskIcon,
 };
 
 /* ─── Akt-I-Pflichträtsel: Zusatz-Icons ─────────────────── */
