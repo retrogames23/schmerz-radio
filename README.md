@@ -1,4 +1,4 @@
-# Schmerz-Radio · on 104.6
+# Whisper Quest – Schmerz-Radio on 104.6
 
 A classic cozypunk point-&-click adventure set in Quadrant E67.
 
