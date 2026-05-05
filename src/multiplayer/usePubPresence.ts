@@ -46,6 +46,11 @@ export function usePubPresence(active: boolean): PubPresenceState {
   meRef.current = me;
   const seatRef = useRef<number | null>(null);
   seatRef.current = mySeat;
+  // Zeitstempel der letzten lokalen Sitz-Änderung. Solange der Server
+  // unsere eigene Track-Aktualisierung noch nicht zurückgespiegelt hat,
+  // dürfen ältere Presence-Syncs unseren Sitz nicht überschreiben –
+  // sonst klappt das erste Hinsetzen erst nach mehreren Klicks.
+  const lastLocalChangeRef = useRef(0);
 
   const track = useCallback(async (seatIndex: number | null) => {
     const ch = channelRef.current;
@@ -94,9 +99,17 @@ export function usePubPresence(active: boolean): PubPresenceState {
           if (arr.length > 0) flat.push(arr[0]!);
         }
         setOccupants(flat);
-        // Eigenen Seat synchronisieren (falls anderer Tab uns überschreibt).
+        // Eigenen Seat nur dann aus dem Presence-State übernehmen,
+        // wenn er die jüngste lokale Aktion bereits enthält
+        // (joinedAt >= lastLocalChange). Sonst riskieren wir, dass ein
+        // verspäteter Sync mit altem `seatIndex: null` unseren gerade
+        // gesetzten Sitz wieder löscht.
         const own = flat.find((o) => o.userId === auth.userId);
-        if (own && own.seatIndex !== seatRef.current) {
+        if (
+          own &&
+          own.seatIndex !== seatRef.current &&
+          (own.joinedAt ?? 0) >= lastLocalChangeRef.current
+        ) {
           setMySeat(own.seatIndex);
         }
       });
@@ -132,6 +145,7 @@ export function usePubPresence(active: boolean): PubPresenceState {
       if (taken) return false;
       setMySeat(seatIndex);
       seatRef.current = seatIndex;
+      lastLocalChangeRef.current = Date.now();
       await track(seatIndex);
       return true;
     },
@@ -141,6 +155,7 @@ export function usePubPresence(active: boolean): PubPresenceState {
   const leaveSeat = useCallback(async () => {
     setMySeat(null);
     seatRef.current = null;
+    lastLocalChangeRef.current = Date.now();
     await track(null);
   }, [track]);
 
