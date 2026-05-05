@@ -17,6 +17,28 @@ export const pubScenes: Record<string, Scene> = {
     intro:
       "Niedrige Decke, Nikotinglanz auf den Wänden. Fünf Hocker an einer Theke, dahinter Bram. Hinten links: eine Tür mit dem schief gemalten Wort »Pissoir«.",
     hotspots: [
+      // Direkt im Bild anklickbare Barhocker. Lösen über ein
+      // CustomEvent das eigentliche Hinsetzen im PubOverlay aus.
+      ...[
+        { i: 0, x: 39.5, y: 60.5, w: 5.5, h: 11 },
+        { i: 1, x: 47.5, y: 63.5, w: 6, h: 12 },
+        { i: 2, x: 51, y: 67.5, w: 6.5, h: 13 },
+        { i: 3, x: 54, y: 72, w: 7, h: 14 },
+        { i: 4, x: 58, y: 76, w: 8, h: 16 },
+      ].map((s) => ({
+        id: `stool${s.i + 1}`,
+        x: s.x,
+        y: s.y,
+        w: s.w,
+        h: s.h,
+        label: `Hocker ${s.i + 1}: setzen`,
+        kind: "use" as const,
+        onUse: () => {
+          window.dispatchEvent(
+            new CustomEvent("pub:takeSeat", { detail: { index: s.i } }),
+          );
+        },
+      })),
       {
         id: "toToilet",
         x: 33.8,

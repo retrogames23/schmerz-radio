@@ -68,6 +68,25 @@ export function PubOverlay() {
     }
   }, [sceneActive, presence]);
 
+  // Sitz per Klick auf einen Hocker im Hintergrundbild.
+  useEffect(() => {
+    if (!sceneActive) return;
+    const onTake = (e: Event) => {
+      const detail = (e as CustomEvent<{ index: number }>).detail;
+      if (!detail || typeof detail.index !== "number") return;
+      lastActivityRef.current = Date.now();
+      void presence.takeSeat(detail.index);
+      setMinimized(false);
+    };
+    window.addEventListener("pub:takeSeat", onTake);
+    return () => window.removeEventListener("pub:takeSeat", onTake);
+  }, [sceneActive, presence]);
+
+  // Sobald man tatsächlich sitzt, das Chat-Fenster ausklappen.
+  useEffect(() => {
+    if (presence.mySeat !== null) setMinimized(false);
+  }, [presence.mySeat]);
+
   const lastFiveBar = useMemo<PubChatMessage[]>(
     () => chat.messages.slice(-5),
     [chat.messages],
