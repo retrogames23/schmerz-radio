@@ -18,183 +18,19 @@ import {
   type DsaClass,
   type DsaClassId,
 } from "@/game/dsa/classes";
+import {
+  CLASS_FLAVOR,
+  NEGATIVE_ATTRS,
+  SNIPPY_COMMENTS,
+  balancedAttrsFor,
+  emptyAttrs,
+  pickRandomName,
+  talentsFor,
+  type Geschlecht,
+} from "@/game/dsa/creator/data";
+import { AttrBox, Field } from "./dsa/AttrBox";
 
 type Phase = "class" | "rolling" | "review" | "done";
-
-/** Ein paar typische DSA2-Vornamen je Klasse + Geschlecht — für den
- *  Würfel-Knopf neben dem Namensfeld. */
-const NAME_POOL: Record<DsaClassId, { männlich: string[]; weiblich: string[] }> = {
-  krieger: {
-    männlich: ["Hjalmar von Salzgar", "Edur von Tannstein", "Roban Greifenklau", "Aldred von Eberstamm"],
-    weiblich: ["Sigwine von Salzgar", "Brynja Greifenklau", "Hilde von Tannstein", "Roana von Eberstamm"],
-  },
-  streuner: {
-    männlich: ["Knut Schattenstrich", "Marek Pfennigfuchs", "Dietrich Krummfinger"],
-    weiblich: ["Lisbeth Schattenstrich", "Mara Pfennigfuchs", "Yala Krummfinger"],
-  },
-  magier: {
-    männlich: ["Wendelmir der Genaue", "Halmir vom Drachenstein", "Aldebrand der Stille"],
-    weiblich: ["Wendelmira die Genaue", "Halma vom Drachenstein", "Aldebranda die Stille"],
-  },
-  elf: {
-    männlich: ["Niamhal Silberlied", "Faenor Mondhauch", "Cael Tiefwurzel"],
-    weiblich: ["Niamhuin Silberlied", "Faelin Mondhauch", "Caela Tiefwurzel"],
-  },
-  zwerg: {
-    männlich: ["Angbar, Sohn des Angrosch", "Torin Steinaxt", "Brogar Erzhand"],
-    weiblich: ["Anga, Tochter des Angrosch", "Torina Steinaxt", "Brogina Erzhand"],
-  },
-  gaukler: {
-    männlich: ["Tjelvar mit dem doppelten Gesicht", "Riko Buntfuß", "Faldur Lautenklang"],
-    weiblich: ["Tjelva mit dem doppelten Gesicht", "Rika Buntfuß", "Faldura Lautenklang"],
-  },
-  thorwaler: {
-    männlich: ["Asleif Walfangsohn", "Garm Eisbart", "Sven Sturmhand"],
-    weiblich: ["Asleif Walfangstochter", "Gerda Eisbart", "Svenja Sturmhand"],
-  },
-  druide: {
-    männlich: ["Brandil von der Eiche", "Ailwin Mistelzweig", "Tarvil Hainwacht"],
-    weiblich: ["Brandila von der Eiche", "Ailwina Mistelzweig", "Tarvila Hainwacht"],
-  },
-};
-
-type Geschlecht = "männlich" | "weiblich";
-
-function pickRandomName(cid: DsaClassId, g: Geschlecht): string {
-  const pool = NAME_POOL[cid][g];
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-
-/** Bissige Kommentare nach 10 Re-Rolls — rotieren mit jeder weiteren 10er-Schwelle. */
-const SNIPPY_COMMENTS: { speaker: "BREM" | "YELVA" | "TJARK"; text: string }[] = [
-  { speaker: "BREM", text: "Zehn Würfe. Zehn! Wir sind hier nicht bei der Lotterie." },
-  { speaker: "YELVA", text: "Du weißt schon, dass die Würfel sich nicht ändern, wenn man sie öfter wirft?" },
-  { speaker: "TJARK", text: "Spätestens beim Zwanzigsten erwarte ich eine Bestechung." },
-  { speaker: "BREM", text: "Bei mir hat's beim ersten Mal geklappt. Nur so." },
-  { speaker: "YELVA", text: "Statistisch gesehen … nein, lass es. Würfel einfach." },
-];
-
-/** Flavor-Default-Felder je Klasse — handgeschriebene Persona auf dem Bogen. */
-const CLASS_FLAVOR: Record<
-  DsaClassId,
-  { stand: string; heimat: string; goetter: string; haar: string; augen: string }
-> = {
-  krieger: { stand: "Edelmann", heimat: "Mittelreich, Gareth", goetter: "Rondra · Praios", haar: "dunkelbraun", augen: "graublau" },
-  streuner: { stand: "Bürgerlich", heimat: "Havena, Albernia", goetter: "Phex", haar: "strohblond", augen: "braun" },
-  magier: { stand: "Magier-Adept", heimat: "Akademie zu Punin", goetter: "Hesinde", haar: "schwarz", augen: "grün" },
-  elf: { stand: "Auelf", heimat: "Salamandersteine", goetter: "Pheks · Tairach", haar: "kupferrot", augen: "moosgrün" },
-  zwerg: { stand: "Erzzwerg", heimat: "Xorlosch, Koschberge", goetter: "Angrosch", haar: "rotbraun", augen: "stahlgrau" },
-  gaukler: { stand: "Fahrendes Volk", heimat: "Khunchom, Tulamidenlande", goetter: "Phex · Rahja", haar: "pechschwarz", augen: "haselnuss" },
-  thorwaler: { stand: "Hetfrau", heimat: "Thorwal, Olport", goetter: "Swafnir · Travia", haar: "honigblond", augen: "eisblau" },
-  druide: { stand: "Hain-Druide", heimat: "Salamandersteine", goetter: "Sumu · Tairach", haar: "ergraut", augen: "tief schwarz" },
-};
-
-function emptyAttrs(): Partial<Attrs> {
-  return {};
-}
-
-/**
- * Stellt einen gebalancten Satz Eigenschaftswerte für eine Klasse zusammen.
- * Mindestwerte werden um +1 angehoben (komfortabel), Maximalwerte respektiert,
- * der Rest landet bei einem soliden 11. So erfüllt der Bogen garantiert die
- * Voraussetzungen, ohne übertrieben stark zu wirken.
- */
-function balancedAttrsFor(cls: DsaClass): Attrs {
-  const base: Attrs = { MU: 11, KL: 11, CH: 11, FF: 11, GE: 11, IN: 11, KK: 11 };
-  if (cls.min) {
-    for (const k of Object.keys(cls.min) as Array<keyof Attrs>) {
-      const need = cls.min[k];
-      if (need !== undefined) {
-        base[k] = Math.min(13, need + 1);
-      }
-    }
-  }
-  if (cls.max) {
-    for (const k of Object.keys(cls.max) as Array<keyof Attrs>) {
-      const cap = cls.max[k];
-      if (cap !== undefined && base[k] > cap) {
-        base[k] = cap;
-      }
-    }
-  }
-  return base;
-}
-
-/** Ein Eigenschafts-Kästchen in DSA2-Optik. */
-function AttrBox({
-  attr,
-  finalValue,
-  rolling,
-}: {
-  attr: Attr;
-  finalValue: number | null;
-  rolling: boolean;
-}) {
-  const [shown, setShown] = useState<number | null>(finalValue);
-  const lastFinal = useRef<number | null>(null);
-  const [pulseKey, setPulseKey] = useState(0);
-
-  useEffect(() => {
-    if (rolling) {
-      const interval = window.setInterval(() => {
-        setShown(8 + Math.floor(Math.random() * 6));
-      }, 55);
-      return () => window.clearInterval(interval);
-    }
-    setShown(finalValue);
-    if (finalValue !== null && finalValue !== lastFinal.current) {
-      lastFinal.current = finalValue;
-      setPulseKey((k) => k + 1);
-    }
-  }, [rolling, finalValue]);
-
-  return (
-    <div className="flex min-w-0 flex-col items-center">
-      <div className="dsa-typed hidden w-full truncate text-center text-[8px] uppercase tracking-[0.2em] dsa-ink-faded mb-0.5 sm:block">
-        {ATTR_LABEL[attr]}
-      </div>
-      <div
-        className={`dsa-box-thick flex h-9 w-9 items-center justify-center sm:h-14 sm:w-14 ${
-          rolling ? "bg-amber-100/60" : ""
-        }`}
-      >
-        <span
-          key={pulseKey}
-          className={`font-display text-xl sm:text-3xl dsa-ink ${
-            finalValue !== null && !rolling ? "dsa-value-in" : ""
-          }`}
-        >
-          {shown ?? "—"}
-        </span>
-      </div>
-      <div className="dsa-typed text-[10px] font-bold tracking-widest dsa-ink mt-0.5">
-        {attr}
-      </div>
-    </div>
-  );
-}
-
-/** Kleine beschriftete Linie wie auf dem Originalbogen. */
-function Field({
-  label,
-  value,
-  className = "",
-}: {
-  label: string;
-  value: string;
-  className?: string;
-}) {
-  return (
-    <div className={`flex min-w-0 items-end gap-2 ${className}`}>
-      <span className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded shrink-0">
-        {label}
-      </span>
-      <span className="dsa-rule min-w-0 flex-1 dsa-typed text-sm dsa-ink pb-0.5 truncate">
-        {value || "\u00A0"}
-      </span>
-    </div>
-  );
-}
 
 export function DsaCharacterCreator() {
   const { dsaCreatorOpen, closeDsaCreator, setDsaCharacter, flags, api } =
@@ -601,7 +437,7 @@ export function DsaCharacterCreator() {
                 Negative Eigenschaften
               </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-1 dsa-typed text-[11px] dsa-ink">
-                {["Aberglaube", "Höhenangst", "Goldgier", "Jähzorn", "Neugier", "Raumangst", "Totenangst"].map((n) => (
+                {NEGATIVE_ATTRS.map((n) => (
                   <div key={n} className="flex items-center justify-between border-b border-[rgba(40,25,5,0.35)]">
                     <span>{n}</span>
                     <span className="dsa-ink-faded">3W+4</span>
@@ -614,18 +450,7 @@ export function DsaCharacterCreator() {
                 Talente · Auswahl
               </div>
               <div className="dsa-typed text-[11px] dsa-ink space-y-1">
-                {(chosenClass?.id === "magier" || chosenClass?.id === "druide"
-                  ? ["Stab+5", "Lesen/Schreiben +6", "Sprachen +4", "Pflanzenkunde +3"]
-                  : chosenClass?.id === "streuner" || chosenClass?.id === "gaukler"
-                  ? ["Dolch +5", "Schleichen +6", "Taschendieb +5", "Lügen +4"]
-                  : chosenClass?.id === "elf"
-                  ? ["Bogen +7", "Sinnenschärfe +6", "Wildnisleben +5", "Singen +4"]
-                  : chosenClass?.id === "thorwaler"
-                  ? ["Hiebwaffen +7", "Boote fahren +5", "Zechen +5"]
-                  : chosenClass?.id === "zwerg"
-                  ? ["Hiebwaffen +6", "Mineralogie +5", "Bergbau +5"]
-                  : ["Hiebwaffen +6", "Schild +5", "Reiten +4", "Athletik +4"]
-                ).map((t) => (
+                {talentsFor(chosenClass?.id).map((t) => (
                   <div key={t} className="flex items-center justify-between border-b border-[rgba(40,25,5,0.35)]">
                     <span>{t.split(" ").slice(0, -1).join(" ") || t}</span>
                     <span className="dsa-ink-faded">{t.split(" ").slice(-1)}</span>
