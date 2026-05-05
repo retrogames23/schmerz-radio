@@ -5,6 +5,7 @@ import corridor56Bg from "@/assets/scene-corridor-56.jpg";
 import serverRoom5610Bg from "@/assets/scene-server-room-5610.jpg";
 import miraSprite from "@/assets/npc-mira.png";
 import philippeSprite from "@/assets/npc-philippe.png";
+import oilCanSprite from "@/assets/item-oil-can-scene.png";
 import type { Scene } from "../types";
 
 export const corridorsE67Scenes: Record<string, Scene> = {
@@ -440,6 +441,18 @@ export const corridorsE67Scenes: Record<string, Scene> = {
     title: "Serverraum 5610 — Knoten E67",
     intro:
       "Drei Racks, blinkende LEDs, der Geruch von heißem Lötzinn. In der Ecke: ein einzelnes Wartungsterminal. Hier laufen die Resonanz-Pakete von E67 zusammen, bevor sie an die Leitstelle gehen.",
+    npcs: [
+      {
+        id: "oilCanSprite5610",
+        src: oilCanSprite,
+        x: 47.3,
+        y: 80.2,
+        w: 8,
+        h: 14,
+        alt: "Ölkännchen auf dem Wartungsregal",
+        hiddenWhen: ["tookOilCan"],
+      },
+    ],
     hotspots: [
       {
         id: "nodeTerminal5610",
