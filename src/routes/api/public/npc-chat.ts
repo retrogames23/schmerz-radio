@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { npcPersonas } from "@/game/npcPersonas";
 import { buildSystemPrompt } from "@/game/promptBuilder";
 import { buildBramSystemPrompt } from "@/game/bramPrompt";
+import { buildMarvSystemPrompt, MARV_EMPATHY_RATER_PROMPT } from "@/game/marvPrompt";
 import type { StoryFlag } from "@/game/types";
 import { createClient } from "@supabase/supabase-js";
 
@@ -167,6 +168,28 @@ export const Route = createFileRoute("/api/public/npc-chat")({
         // gelieferten Freitext mehr, der ins LLM wandert.
         const ctxRaw = (b.context ?? {}) as Record<string, unknown>;
         let systemPrompt: string;
+        // MARV-State (nur für npcId === "marv9" befüllt). Wir laden ihn früh,
+        // weil der System-Prompt seinen Kontext braucht.
+        let marvBefore: {
+          empathy_score: number;
+          unlocked: boolean;
+          oiled: boolean;
+          message_count: number;
+        } = { empathy_score: 0, unlocked: false, oiled: false, message_count: 0 };
+        if (npcId === "marv9") {
+          const { data: ms } = await admin
+            .from("marv_state")
+            .select("empathy_score, unlocked, oiled, message_count")
+            .eq("user_id", uid)
+            .maybeSingle();
+          if (ms) marvBefore = ms as typeof marvBefore;
+          systemPrompt = buildMarvSystemPrompt({
+            empathyScore: marvBefore.empathy_score,
+            unlocked: marvBefore.unlocked,
+            oiled: marvBefore.oiled,
+            messageCount: marvBefore.message_count,
+          });
+        } else
         if (npcId === "bram") {
           const seatedCount =
             typeof ctxRaw.seatedCount === "number" ? ctxRaw.seatedCount : 0;
@@ -242,7 +265,7 @@ export const Route = createFileRoute("/api/public/npc-chat")({
         let memoryNote = "";
         let recentMessages: Array<{ role: "user" | "assistant"; content: string }> = [];
         let gossipFacts: string[] = [];
-        try {
+        if (npcId !== "marv9" && npcId !== "bram") try {
           const [memRes, gossipRes] = await Promise.all([
             admin
               .from("npc_memory")
@@ -398,12 +421,132 @@ export const Route = createFileRoute("/api/public/npc-chat")({
         const reply = data.choices?.[0]?.message?.content?.trim() ?? "";
         if (!reply) return json(502, { error: "Leere Antwort." });
 
+        // ── MARV-9: Empathie-Bewertung + State-Update ──────────
+        let marvUpdate:
+          | {
+              empathyScore: number;
+              unlocked: boolean;
+              oiled: boolean;
+              messageCount: number;
+              delta: number;
+              justUnlocked: boolean;
+            }
+          | undefined;
+        if (npcId === "marv9") {
+          let delta = 0;
+          try {
+            const raterResp = await fetch(
+              "https://ai.gateway.lovable.dev/v1/chat/completions",
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${apiKey}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  model: "google/gemini-2.5-flash-lite",
+                  messages: [
+                    { role: "system", content: MARV_EMPATHY_RATER_PROMPT },
+                    {
+                      role: "user",
+                      content: `Letzte Spieler-Nachricht an MARV-9:\n"""${userMessage}"""`,
+                    },
+                  ],
+                  temperature: 0,
+                  max_tokens: 80,
+                  tools: [
+                    {
+                      type: "function",
+                      function: {
+                        name: "rate_empathy",
+                        description:
+                          "Bewertet Empathie der letzten Spieler-Nachricht.",
+                        parameters: {
+                          type: "object",
+                          properties: {
+                            delta: {
+                              type: "integer",
+                              minimum: -1,
+                              maximum: 2,
+                              description: "Empathie-Delta (-1 bis +2).",
+                            },
+                          },
+                          required: ["delta"],
+                          additionalProperties: false,
+                        },
+                      },
+                    },
+                  ],
+                  tool_choice: {
+                    type: "function",
+                    function: { name: "rate_empathy" },
+                  },
+                  stream: false,
+                }),
+              },
+            );
+            if (raterResp.ok) {
+              const rData = (await raterResp.json()) as {
+                choices?: Array<{
+                  message?: {
+                    tool_calls?: Array<{
+                      function?: { name?: string; arguments?: string };
+                    }>;
+                  };
+                }>;
+              };
+              const argStr =
+                rData.choices?.[0]?.message?.tool_calls?.[0]?.function
+                  ?.arguments ?? "";
+              if (argStr) {
+                try {
+                  const parsed = JSON.parse(argStr) as { delta?: unknown };
+                  if (typeof parsed.delta === "number") {
+                    delta = Math.max(-1, Math.min(2, Math.round(parsed.delta)));
+                  }
+                } catch {
+                  /* ignore */
+                }
+              }
+            }
+          } catch (e) {
+            console.warn("marv rater failed", e);
+          }
+          const newScore = Math.max(
+            0,
+            Math.min(10, marvBefore.empathy_score + delta),
+          );
+          const justUnlocked = !marvBefore.unlocked && newScore >= 4;
+          const unlockedAfter = marvBefore.unlocked || newScore >= 4;
+          const newCount = marvBefore.message_count + 1;
+          await admin.from("marv_state").upsert(
+            {
+              user_id: uid,
+              empathy_score: newScore,
+              unlocked: unlockedAfter,
+              oiled: marvBefore.oiled,
+              message_count: newCount,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "user_id" },
+          );
+          marvUpdate = {
+            empathyScore: newScore,
+            unlocked: unlockedAfter,
+            oiled: marvBefore.oiled,
+            messageCount: newCount,
+            delta,
+            justUnlocked,
+          };
+        }
+
         return json(200, {
           reply,
           count: countAfter,
           limit: HARD_LIMIT,
           softLimit: SOFT_LIMIT,
           unlocked: donationUnlocked,
+          marv: marvUpdate,
         });
       },
     },

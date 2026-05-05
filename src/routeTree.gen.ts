@@ -15,6 +15,7 @@ import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as ApiPublicNpcMemoryUpdateRouteImport } from './routes/api/public/npc-memory-update'
 import { Route as ApiPublicNpcChatRouteImport } from './routes/api/public/npc-chat'
+import { Route as ApiPublicMarvOilRouteImport } from './routes/api/public/marv-oil'
 import { Route as ApiPublicDonationCheckoutRouteImport } from './routes/api/public/donation-checkout'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
@@ -49,6 +50,11 @@ const ApiPublicNpcChatRoute = ApiPublicNpcChatRouteImport.update({
   path: '/api/public/npc-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMarvOilRoute = ApiPublicMarvOilRouteImport.update({
+  id: '/api/public/marv-oil',
+  path: '/api/public/marv-oil',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicDonationCheckoutRoute =
   ApiPublicDonationCheckoutRouteImport.update({
     id: '/api/public/donation-checkout',
@@ -67,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
+  '/api/public/marv-oil': typeof ApiPublicMarvOilRoute
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
@@ -77,6 +84,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
+  '/api/public/marv-oil': typeof ApiPublicMarvOilRoute
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
+  '/api/public/marv-oil': typeof ApiPublicMarvOilRoute
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
@@ -100,6 +109,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/tts'
     | '/api/public/donation-checkout'
+    | '/api/public/marv-oil'
     | '/api/public/npc-chat'
     | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
@@ -110,6 +120,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/tts'
     | '/api/public/donation-checkout'
+    | '/api/public/marv-oil'
     | '/api/public/npc-chat'
     | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
@@ -120,6 +131,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/tts'
     | '/api/public/donation-checkout'
+    | '/api/public/marv-oil'
     | '/api/public/npc-chat'
     | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
@@ -131,6 +143,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiTtsRoute: typeof ApiTtsRoute
   ApiPublicDonationCheckoutRoute: typeof ApiPublicDonationCheckoutRoute
+  ApiPublicMarvOilRoute: typeof ApiPublicMarvOilRoute
   ApiPublicNpcChatRoute: typeof ApiPublicNpcChatRoute
   ApiPublicNpcMemoryUpdateRoute: typeof ApiPublicNpcMemoryUpdateRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
@@ -181,6 +194,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicNpcChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/marv-oil': {
+      id: '/api/public/marv-oil'
+      path: '/api/public/marv-oil'
+      fullPath: '/api/public/marv-oil'
+      preLoaderRoute: typeof ApiPublicMarvOilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/donation-checkout': {
       id: '/api/public/donation-checkout'
       path: '/api/public/donation-checkout'
@@ -203,6 +223,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiTtsRoute: ApiTtsRoute,
   ApiPublicDonationCheckoutRoute: ApiPublicDonationCheckoutRoute,
+  ApiPublicMarvOilRoute: ApiPublicMarvOilRoute,
   ApiPublicNpcChatRoute: ApiPublicNpcChatRoute,
   ApiPublicNpcMemoryUpdateRoute: ApiPublicNpcMemoryUpdateRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,

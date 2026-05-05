@@ -595,6 +595,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
     terminalOpen,
   ]);
 
+  // Free-Chat per Custom-Event öffnen (z. B. MARV-9 aus dem Vorraum-Hotspot).
+  useEffect(() => {
+    function onOpen(e: Event) {
+      const detail = (e as CustomEvent).detail as { npcId?: unknown } | null;
+      const id = detail && typeof detail.npcId === "string" ? detail.npcId : "";
+      if (id) setFreeChatNpcId(id);
+    }
+    window.addEventListener("freechat:open", onOpen as EventListener);
+    return () =>
+      window.removeEventListener("freechat:open", onOpen as EventListener);
+  }, []);
+
   const advanceDialog = useCallback(
     (nextId?: string) => {
       if (!dialogId) return;

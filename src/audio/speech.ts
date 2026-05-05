@@ -25,7 +25,8 @@ type Speaker =
   | "KOWALK"
   | "BRUST"
   | "VOSSBECK"
-  | "BRAM";
+  | "BRAM"
+  | "MARV";
 
 
 interface VoiceProfile {
@@ -180,6 +181,16 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
     voiceId: "JBFqnCBsd6RMkjVDRZzb",
     speed: 0.95,
     settings: { stability: 0.6, similarity_boost: 0.8, style: 0.25, use_speaker_boost: true },
+  },
+  MARV: {
+    // MARV-9, mechanischer Türsteher — alte Lautsprecher-Maske, leicht
+    // verzerrt-blecherne Männerstimme. Wir nehmen Daniel (LAYARDs Voice)
+    // als Basis, aber LANGSAMER und mit hoher Stability für müde,
+    // melancholisch-trockene Lesung. Der „blecherne“ Effekt entsteht im
+    // Browser zusätzlich durch den Audio-Filter (siehe playMarvFilter).
+    voiceId: "onwK4e9ZLuTAKqWW03F9",
+    speed: 0.82,
+    settings: { stability: 0.75, similarity_boost: 0.7, style: 0.1, use_speaker_boost: true },
   },
 };
 

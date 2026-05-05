@@ -43,6 +43,25 @@ function emitError(e: CloudErrorEvent) {
   }
 }
 
+export type MarvUpdate = {
+  empathyScore: number;
+  unlocked: boolean;
+  oiled: boolean;
+  messageCount: number;
+  delta: number;
+  justUnlocked: boolean;
+};
+const marvListeners = new Set<(e: MarvUpdate) => void>();
+export function onMarvUpdate(cb: (e: MarvUpdate) => void): () => void {
+  marvListeners.add(cb);
+  return () => marvListeners.delete(cb);
+}
+function emitMarv(e: MarvUpdate) {
+  for (const cb of marvListeners) {
+    try { cb(e); } catch { /* ignore */ }
+  }
+}
+
 /**
  * Cloud-Runtime: schickt den Chat-Verlauf an unsere Server-Route
  * /api/public/npc-chat, die ihrerseits den Lovable AI Gateway anruft.
@@ -132,6 +151,7 @@ export function createCloudRuntime(npcId: string): LlmRuntime {
         limit?: number;
         softLimit?: number;
         unlocked?: boolean;
+        marv?: MarvUpdate;
       };
       if (!data.reply) throw new Error("Leere Antwort vom Server.");
       if (typeof data.limit === "number" && typeof data.softLimit === "number") {
@@ -142,6 +162,7 @@ export function createCloudRuntime(npcId: string): LlmRuntime {
           unlocked: !!data.unlocked,
         });
       }
+      if (data.marv) emitMarv(data.marv);
       return data.reply;
     },
   };
