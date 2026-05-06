@@ -55,14 +55,26 @@ export const Route = createFileRoute("/api/public/donation-checkout")({
           console.error("[donation-checkout] no user in getUser response");
           return json(401, { error: "Ungültige Sitzung (kein User)." });
         }
-        if (!userData.user.email) {
-          console.error("[donation-checkout] user has no email", {
+        let userEmail = userData.user.email ?? null;
+        if (!userEmail) {
+          // Fallback: Email aus profiles nachladen (z. B. wenn JWT-Claim
+          // die Email nicht enthält — passiert bei manchen OAuth-/Refresh-
+          // Pfaden).
+          const { data: prof } = await supabase
+            .from("profiles")
+            .select("email")
+            .eq("user_id", userData.user.id)
+            .maybeSingle();
+          userEmail = prof?.email ?? null;
+          console.warn("[donation-checkout] email fallback from profiles", {
             userId: userData.user.id,
-            isAnon: (userData.user as { is_anonymous?: boolean }).is_anonymous,
+            hasEmail: !!userEmail,
           });
+        }
+        if (!userEmail) {
           return json(401, { error: "Account ohne E-Mail-Adresse." });
         }
-        const user = userData.user;
+        const user = { ...userData.user, email: userEmail };
 
         let body: unknown;
         try {
