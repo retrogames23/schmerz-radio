@@ -41,8 +41,26 @@ export const Route = createFileRoute("/api/public/donation-checkout")({
         });
         const { data: userData, error: userErr } =
           await supabase.auth.getUser(token);
-        if (userErr || !userData.user?.email) {
-          return json(401, { error: "Ungültige Sitzung." });
+        if (userErr) {
+          console.error("[donation-checkout] getUser error", {
+            message: userErr.message,
+            status: (userErr as { status?: number }).status,
+            tokenLen: token.length,
+          });
+          return json(401, {
+            error: `Ungültige Sitzung (auth: ${userErr.message}).`,
+          });
+        }
+        if (!userData.user) {
+          console.error("[donation-checkout] no user in getUser response");
+          return json(401, { error: "Ungültige Sitzung (kein User)." });
+        }
+        if (!userData.user.email) {
+          console.error("[donation-checkout] user has no email", {
+            userId: userData.user.id,
+            isAnon: (userData.user as { is_anonymous?: boolean }).is_anonymous,
+          });
+          return json(401, { error: "Account ohne E-Mail-Adresse." });
         }
         const user = userData.user;
 
