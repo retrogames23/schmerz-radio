@@ -11,8 +11,9 @@ interface Props {
 
 function TopBarImpl({ onOpenPause, onOpenHelp }: Props) {
   const game = useGame();
-  const { scene, radioActive, flags, ending, dsaCharacter, dsaSheetOpen, toggleDsaSheet } = game;
+  const { scene, radioActive, flags, ending, dsaCharacter, dsaSheetOpen, toggleDsaSheet, inventory } = game;
   const inAct2 = flags.has("enteredE71");
+  const hasPainRadio = inventory.some((i) => i.id === "painRadio");
   const music = useMusic();
   const { musicEnabled } = useSettings();
   const currentTrack = music.tracks[music.currentIndex];
@@ -92,7 +93,7 @@ function TopBarImpl({ onOpenPause, onOpenHelp }: Props) {
               <ChevronRight className="h-3 w-3" strokeWidth={2.25} />
             </button>
           </div>}
-          <button
+          {hasPainRadio && <button
             type="button"
             onClick={() => game.api.openRadio()}
             title="Schmerz-Radio öffnen (R)"
@@ -113,7 +114,7 @@ function TopBarImpl({ onOpenPause, onOpenHelp }: Props) {
                 className="ml-0.5 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-amber-glow shadow-[0_0_6px_rgba(255,170,60,0.9)]"
               />
             )}
-          </button>
+          </button>}
           <button
             type="button"
             onClick={() => game.api.openTerminal()}
