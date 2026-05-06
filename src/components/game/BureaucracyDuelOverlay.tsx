@@ -23,7 +23,7 @@ import { CloseButton } from "./CloseButton";
  * um die Vollmacht 4317. Sieg = B3-Ration freigegeben.
  */
 
-type Phase = "round" | "victory" | "defeat";
+type Phase = "round" | "feedback" | "victory" | "defeat";
 
 export function BureaucracyDuelOverlay() {
   const { duelOpen, duelMode, closeDuel, api, learnedParagraphs } = useGame();
@@ -39,6 +39,13 @@ export function BureaucracyDuelOverlay() {
   const [feedback, setFeedback] = useState<string[]>([]);
   const [learnedThisRound, setLearnedThisRound] = useState<string[]>([]);
   const [locked, setLocked] = useState(false);
+  // Index der Antwort, die der Spieler gerade gewählt hat – bleibt während
+  // der Feedback-Phase markiert, damit sichtbar ist, was korrekt war.
+  const [chosenIdx, setChosenIdx] = useState<number | null>(null);
+  // Was nach dem „Weiter“-Klick passieren soll: nächste Runde, Sieg, Niederlage.
+  const [pendingNext, setPendingNext] = useState<
+    "advance" | "victory" | "defeat" | null
+  >(null);
   const [tutorialShown, setTutorialShown] = useState(false);
 
   // Bei jedem Open: passend zum Modus würfeln + Reset.
@@ -52,6 +59,8 @@ export function BureaucracyDuelOverlay() {
     setFeedback([]);
     setLearnedThisRound([]);
     setLocked(false);
+    setChosenIdx(null);
+    setPendingNext(null);
   }, [duelOpen, isEndgame]);
 
   const round = rounds[currentIdx];
@@ -114,6 +123,7 @@ export function BureaucracyDuelOverlay() {
     const counter = counters[idx];
     if (!counter) return;
     setLocked(true);
+    setChosenIdx(idx);
     if (counter.correct) {
       const nextHits = hits + 1;
       setHits(nextHits);
@@ -134,15 +144,9 @@ export function BureaucracyDuelOverlay() {
         if (p) lines.push(DUEL_UI_TEXT.paragraphLearnedToast(p));
       }
       setFeedback(lines);
-      window.setTimeout(() => {
-        const target = isEndgame ? 3 : 2;
-        if (nextHits >= target) {
-          setPhase("victory");
-          setLocked(false);
-        } else {
-          advanceRound();
-        }
-      }, 1800);
+      const target = isEndgame ? 3 : 2;
+      setPendingNext(nextHits >= target ? "victory" : "advance");
+      setPhase("feedback");
     } else {
       const nextMisses = misses + 1;
       setMisses(nextMisses);
@@ -172,14 +176,8 @@ export function BureaucracyDuelOverlay() {
         if (p) lines.push(DUEL_UI_TEXT.paragraphLearnedToast(p));
       }
       setFeedback(lines);
-      window.setTimeout(() => {
-        if (nextMisses >= 3) {
-          setPhase("defeat");
-          setLocked(false);
-        } else {
-          advanceRound();
-        }
-      }, 2200);
+      setPendingNext(nextMisses >= 3 ? "defeat" : "advance");
+      setPhase("feedback");
     }
   }
 
@@ -194,6 +192,23 @@ export function BureaucracyDuelOverlay() {
     setFeedback([]);
     setLearnedThisRound([]);
     setLocked(false);
+    setChosenIdx(null);
+    setPendingNext(null);
+    setPhase("round");
+  }
+
+  function onContinueAfterFeedback() {
+    const next = pendingNext;
+    setPendingNext(null);
+    if (next === "victory") {
+      setPhase("victory");
+      setLocked(false);
+    } else if (next === "defeat") {
+      setPhase("defeat");
+      setLocked(false);
+    } else {
+      advanceRound();
+    }
   }
 
   function onAcceptVictory() {
