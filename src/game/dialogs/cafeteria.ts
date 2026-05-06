@@ -472,10 +472,12 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
           {
             text: "Trainingsfall, ja.",
             next: "bDuelOffer",
+            action: (api) => api.setFlag("knowsVossbeckPath"),
           },
           {
             text: "Verstanden.",
             next: "b0",
+            action: (api) => api.setFlag("knowsVossbeckPath"),
           },
         ],
       },
