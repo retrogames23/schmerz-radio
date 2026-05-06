@@ -435,6 +435,8 @@ const ICON_MAP: Record<InventoryItemId, () => React.ReactElement> = {
   oilCan: OilCanIcon,
   // E71-Hygiene: medizinische Maske aus dem Kondomautomaten.
   medMask: MedMaskIcon,
+  // Tragbares Schmerz-Radio.
+  painRadio: PainRadioIcon,
 };
 
 /* ─── Akt-I-Pflichträtsel: Zusatz-Icons ─────────────────── */
@@ -453,6 +455,34 @@ function PencilStubIcon() {
       {/* Metallhülse + Radiergummi */}
       <rect x="17" y="9" width="2" height="6" fill={ICON_DK} />
       <rect x="19" y="10" width="2" height="4" fill={ICON_HI} />
+    </>
+  );
+}
+
+/** Tragbares Schmerz-Radio — kleines Kasten-Radio mit Antenne und Skala. */
+function PainRadioIcon() {
+  return (
+    <>
+      {/* Antenne */}
+      <rect x="6" y="3" width="1" height="6" fill={ICON_DK} />
+      <rect x="6" y="3" width="1" height="1" fill={ICON_HI} />
+      {/* Korpus */}
+      <rect x="3" y="9" width="18" height="12" fill={ICON_DK} />
+      <rect x="4" y="10" width="16" height="10" fill={ICON_FG} />
+      <rect x="4" y="10" width="16" height="1" fill={ICON_HI} />
+      {/* Skala */}
+      <rect x="6" y="12" width="10" height="4" fill={ICON_BG} />
+      <rect x="7" y="13" width="8" height="1" fill={ICON_FG} />
+      <rect x="10" y="14" width="1" height="2" fill="#b3331a" />
+      {/* Knöpfe */}
+      <rect x="17" y="12" width="2" height="2" fill={ICON_DK} />
+      <rect x="17" y="15" width="2" height="2" fill={ICON_DK} />
+      {/* Lautsprecher-Gitter */}
+      <rect x="6" y="17" width="10" height="2" fill={ICON_BG} />
+      <rect x="7" y="17" width="1" height="2" fill={ICON_FG} opacity="0.5" />
+      <rect x="9" y="17" width="1" height="2" fill={ICON_FG} opacity="0.5" />
+      <rect x="11" y="17" width="1" height="2" fill={ICON_FG} opacity="0.5" />
+      <rect x="13" y="17" width="1" height="2" fill={ICON_FG} opacity="0.5" />
     </>
   );
 }
