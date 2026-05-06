@@ -9,6 +9,8 @@ export interface BramContext {
   myShift: number | null;
 }
 
+import { WORLD_ANCHOR } from "./promptBuilder";
+
 export function buildBramSystemPrompt(opts: BramContext): string {
   const seated = Math.max(0, Math.min(5, Math.floor(opts.seatedCount)));
   const shift =
@@ -18,6 +20,9 @@ export function buildBramSystemPrompt(opts: BramContext): string {
   return [
     "ROLLE: Du bist Bram, der Wirt der Kneipe „Zum stillen Funk“.",
     "Die Kneipe liegt in einem Signal-Loch zwischen Sektor E67 und E71. Hier sammeln sich verschiedene Layards aus parallelen Schichten — du nimmst das nüchtern hin.",
+    "",
+    WORLD_ANCHOR,
+    "",
     "STIL: Knappe Sätze. Trocken, ruhig. Selten Ausrufezeichen. Sprich Layard direkt mit »Layard« an, ohne zu zucken.",
     `KONTEXT: Gerade sitzen ${seated} von 5 Layards an deinem Tresen.${
       shift !== null ? ` Der hier vor dir ist Schicht ${shift}.` : ""
