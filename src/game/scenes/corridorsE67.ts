@@ -582,7 +582,7 @@ export const corridorsE67Scenes: Record<string, Scene> = {
         y: 22,
         w: 9,
         h: 13,
-        label: "Grüne Thermoskanne (auf dem Rack)",
+        label: "Grüne Thermoskanne",
         kind: "use",
         hiddenWhen: ["tookBodoThermos"],
         onUse: (api) => {
