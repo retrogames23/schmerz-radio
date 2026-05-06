@@ -184,8 +184,8 @@ function FreeChatInner({
     const session = messagesRef.current;
     if (session.length < 2) return;
     try {
-      const { data: sess } = await supabase.auth.getSession();
-      const token = sess.session?.access_token;
+      const { getFreshAccessToken } = await import("@/auth/freshToken");
+      const token = await getFreshAccessToken();
       if (!token) return;
       // Fire-and-forget; Antwort interessiert uns nicht.
       void fetch("/api/public/npc-memory-update", {
