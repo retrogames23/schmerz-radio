@@ -119,31 +119,28 @@ export const Route = createFileRoute("/api/public/npc-chat")({
         const admin = createClient(supabaseUrl, serviceKey, {
           auth: { persistSession: false, autoRefreshToken: false },
         });
-        const { data: profile } = await admin
-          .from("profiles")
-          .select("donation_unlocked, cloud_request_count")
-          .eq("user_id", uid)
-          .maybeSingle();
-        const donationUnlocked = !!profile?.donation_unlocked;
-        const current = profile?.cloud_request_count ?? 0;
-        if (!donationUnlocked && current >= HARD_LIMIT) {
+        // Atomic increment with conditional limit check — prevents TOCTOU
+        // races where concurrent requests could read the same count and all
+        // pass the gate.
+        const { data: incRows, error: incErr } = await admin.rpc(
+          "try_increment_cloud_request_count",
+          { _user_id: uid, _hard_limit: HARD_LIMIT },
+        );
+        if (incErr || !incRows || (Array.isArray(incRows) && incRows.length === 0)) {
+          return json(500, { error: "Profil nicht gefunden." });
+        }
+        const incRow = Array.isArray(incRows) ? incRows[0] : incRows;
+        const donationUnlocked = !!incRow.donation_unlocked;
+        if (incRow.limit_reached) {
           return json(402, {
             error:
               "Cloud-Limit erreicht. Bitte spende, um weiter chatten zu können.",
             code: "donation_required",
-            count: current,
+            count: incRow.new_count,
             limit: HARD_LIMIT,
           });
         }
-        let countAfter: number | null = null;
-        if (!donationUnlocked) {
-          const next = current + 1;
-          await admin
-            .from("profiles")
-            .update({ cloud_request_count: next })
-            .eq("user_id", uid);
-          countAfter = next;
-        }
+        const countAfter: number | null = donationUnlocked ? null : incRow.new_count;
 
         let body: unknown;
         try {
