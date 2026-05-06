@@ -265,7 +265,7 @@ export const Route = createFileRoute("/api/public/npc-chat")({
         let memoryNote = "";
         let recentMessages: Array<{ role: "user" | "assistant"; content: string }> = [];
         let gossipFacts: string[] = [];
-        if (npcId !== "marv9" && npcId !== "bram") try {
+        if (npcId !== "bram") try {
           const [memRes, gossipRes] = await Promise.all([
             admin
               .from("npc_memory")
