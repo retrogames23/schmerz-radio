@@ -445,7 +445,6 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         speaker: "BRUST",
         text: "Bewohner Worag. Identität gegengezeichnet. Anliegen?",
         subtext: "Er notiert die Frage, bevor sie beantwortet ist.",
-        sublines: undefined,
         choices: [
           {
             // Kowalk hat Layard hergeschickt — Brust kennt den Pfad.
