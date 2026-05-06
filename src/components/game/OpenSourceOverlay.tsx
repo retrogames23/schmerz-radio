@@ -63,7 +63,7 @@ export function OpenSourceOverlay({ open, onClose }: Props) {
 
         <div className="overflow-y-auto pr-2 font-mono-crt text-sm leading-relaxed text-foreground space-y-5">
           <p className="text-xs leading-relaxed text-muted-foreground">
-            Schmerz-Radio ist ein freies Hobbyprojekt und nutzt zahlreiche
+            Whisper Quest ist ein freies Hobbyprojekt und nutzt zahlreiche
             Open-Source-Komponenten. Der Sourcecode des Spiels selbst steht
             unter der MIT-Lizenz und ist auf GitHub einsehbar.
           </p>
@@ -98,10 +98,10 @@ export function OpenSourceOverlay({ open, onClose }: Props) {
               Creative Commons BY-SA 4.0
             </a>
             <div className="text-xs text-muted-foreground mt-1">
-              Alle eigens für Schmerz-Radio erstellten Bilder, Musikstücke,
-              Cursor und Story-Texte stehen unter CC BY-SA 4.0 — frei nutz-,
-              veränder- und weitergabbar bei Namensnennung („Stephan Dörner /
-              Schmerz-Radio") und unter gleicher Lizenz. Details siehe
+                Alle eigens für Whisper Quest erstellten Bilder, Musikstücke,
+                Cursor und Story-Texte stehen unter CC BY-SA 4.0 — frei nutz-,
+                veränder- und weitergabbar bei Namensnennung („Stephan Dörner /
+                Whisper Quest") und unter gleicher Lizenz. Details siehe
               <code className="ml-1">LICENSE-ASSETS</code> im Repository.
             </div>
           </div>
