@@ -678,6 +678,32 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       },
     },
   },
+  // Layard kennt den Vorgang noch gar nicht — Vossbeck schickt ihn weg,
+  // ohne überhaupt aufzuschauen.
+  vossbeckNoBusiness: {
+    id: "vossbeckNoBusiness",
+    start: "n0",
+    lines: {
+      n0: {
+        id: "n0",
+        speaker: "SYSTEM",
+        text: "[ Vossbeck blättert weiter, ohne den Bleistift abzulegen. ]",
+        next: "n1",
+      },
+      n1: {
+        id: "n1",
+        speaker: "VOSSBECK",
+        text: "Fallnummer?",
+        next: "n2",
+      },
+      n2: {
+        id: "n2",
+        speaker: "VOSSBECK",
+        text: "Sie haben keine. Was wollen Sie dann hier? Ich habe zu tun.",
+        end: true,
+      },
+    },
+  },
   tjarkSmalltalk: {
     id: "tjarkSmalltalk",
     start: "t0",
