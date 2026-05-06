@@ -41,6 +41,13 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             hiddenWhen: ["gotTillaTransferInfo"],
           },
           {
+            // Recap-Choice: Kowalk nimmt Layard die Last, sich den Pfad zu merken.
+            text: "Was war nochmal der Weg?",
+            next: "kRecap",
+            requires: ["knowsVossbeckPath"],
+            hiddenWhen: ["vossbeckSummoned", "gotB3Ration"],
+          },
+          {
             text: "Ich wollte mich nur umsehen.",
             next: "kSmall1",
           },
@@ -412,6 +419,13 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kAuthLater",
         speaker: "KOWALK",
         text: "Tun Sie das. Aber heute Abend ist Schichtwechsel.",
+        next: "k0",
+      },
+      kRecap: {
+        id: "kRecap",
+        speaker: "KOWALK",
+        text: "Brust. Trainingsfall. Drei in Folge. Dann Vossbeck. — Den Rest mache ich von hier aus, Worag.",
+        subtext: "Sie sagt es ruhig. Wie jemand, der einen Tresen schon viele Bewohner überstehen sehen hat.",
         next: "k0",
       },
       kBye: {
