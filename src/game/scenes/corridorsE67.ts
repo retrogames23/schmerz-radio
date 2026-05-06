@@ -6,6 +6,7 @@ import serverRoom5610Bg from "@/assets/scene-server-room-5610.jpg";
 import miraSprite from "@/assets/npc-mira.png";
 import philippeSprite from "@/assets/npc-philippe.png";
 import oilCanSprite from "@/assets/item-oil-can-scene.png";
+import bodoThermosSprite from "@/assets/sprite-bodo-thermos.png";
 import type { Scene } from "../types";
 
 export const corridorsE67Scenes: Record<string, Scene> = {
@@ -451,6 +452,17 @@ export const corridorsE67Scenes: Record<string, Scene> = {
         h: 28,
         alt: "Ölkännchen auf dem Wartungsregal",
         hiddenWhen: ["tookOilCan"],
+      },
+      {
+        id: "bodoThermosSprite5610",
+        src: bodoThermosSprite,
+        x: 30,
+        y: 22,
+        w: 9,
+        h: 13,
+        alt: "Grüne Thermoskanne auf dem Rack",
+        requires: ["bodoGaveWartungskarte"],
+        hiddenWhen: ["tookBodoThermos"],
       },
     ],
     hotspots: [
