@@ -223,7 +223,7 @@ export function Inventory() {
                     <button
                       key={item.id}
                       type="button"
-                      title={item.name}
+                      title={`${item.name} — ${item.description}`}
                       onPointerDown={(e) => {
                         if (isCoarse) {
                           // Mobile: zuerst prüfen, ob ein Tap-Target-Drop fällig ist.
@@ -257,6 +257,17 @@ export function Inventory() {
                       }`}
                     >
                       <ItemIcon id={item.id} size={28} title={item.name} />
+                      {/* Custom Hover-Tooltip mit Kurzinfo zum Item. */}
+                      <span
+                        className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 hidden w-44 -translate-x-1/2 rounded-sm border border-amber-glow/60 bg-background/95 px-2 py-1.5 text-left font-mono-crt text-[10px] leading-snug text-amber-glow/90 shadow-[0_4px_18px_rgba(0,0,0,0.7)] group-hover:block"
+                      >
+                        <span className="block font-display text-[10px] uppercase tracking-[0.15em] text-amber-glow">
+                          {item.name}
+                        </span>
+                        <span className="mt-0.5 block text-muted-foreground normal-case tracking-normal">
+                          {item.description}
+                        </span>
+                      </span>
                     </button>
                   );
                 })}
