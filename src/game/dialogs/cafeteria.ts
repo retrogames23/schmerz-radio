@@ -290,7 +290,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         text: "Aber Vossbeck redet nur mit Leuten, die Paragraphen können. Brust trainiert die Bewohner manchmal — fiktive Kantinenfälle. Wer ihn dreimal in Folge schlägt, gilt als satisfaktionsfähig. Wer das nicht ist, läuft bei Vossbeck gegen eine Wand.",
         choices: [
           {
-            text: "Verstanden. Ich rede mit Brust.",
+            text: "Verstanden. Ich übe mit Brust.",
             next: "k0",
             action: (api) => api.setFlag("knowsVossbeckPath"),
           },
