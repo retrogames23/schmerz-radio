@@ -240,17 +240,55 @@ export const HINT_QUESTS: HintQuest[] = [
     ],
   },
 
-  // 13) Quittung 4317 fälschen (Pflicht — Insa liefert Code erst danach)
+  // 13a) Insa-Auftrag zu Kowalk in die Kantine bringen
   {
-    id: "act1.quittung4317",
-    title: "Quittung 4317 fälschen",
+    id: "act1.kowalkBrief",
+    title: "Insas Auftrag bei Kowalk abgeben",
     priority: 13,
-    isActive: (a) => a.hasFlag("insaGaveTransferTask"),
+    isActive: (a) =>
+      a.hasFlag("insaGaveTransferTask") &&
+      !a.hasFlag("gotTillaTransferInfo"),
+    isResolved: (a) => a.hasFlag("gotTillaTransferInfo"),
+    hints: [
+      "Insa hat dir einen Akten-Auftrag gegeben — »4317-K«. Bring die Sache zu jemandem, der die Akten der Kantine kennt.",
+      "Frau Kowalk steht hinter dem Tresen der Kantine 3602, im Korridor 36 (Etage 3). Sie weiß, was 4317-K bedeutet.",
+      "Geh in den Aufzug, fahr ins 3. OG, geh durch Korridor 36 in die Kantine 3602 (Tür 3602) und sprich Frau Kowalk an. Wähl die Option mit »Insas Auftrag — Quittung 4317-K für Tilla«.",
+    ],
+  },
+  // 13b) Vossbeck soll Vorgang 4317 freigeben (oder Forgery-Pfad)
+  {
+    id: "act1.stamp4317",
+    title: "Vorgang 4317 freibekommen",
+    priority: 13,
+    isActive: (a) =>
+      a.hasFlag("gotTillaTransferInfo") &&
+      !a.hasFlag("forgedQuittung4317") &&
+      !a.hasFlag("kowalkOfferedForgery"),
+    isResolved: (a) =>
+      a.hasFlag("forgedQuittung4317") ||
+      a.hasFlag("kowalkOfferedForgery") ||
+      a.hasFlag("duelEndgameWon"),
+    hints: [
+      "Kowalk kann Tillas 4317-K nicht abschicken, solange der Stamm-Vorgang 4317 nicht freigegeben ist. Den hat ein einziger Mann auf der Etage.",
+      "Oberinspektor Vossbeck sitzt direkt nebenan in Tür 3603. Er nimmt nur Bewohner an, die paragraphenfest sind — Brust trainiert dich am Tresen der Kantine vorher.",
+      "Geh in der Kantine zu Brust am Tresen, wähl »Trainingsfall« und gewinn drei in Folge. Dann tritt Vossbeck heraus — geh nebenan in 3603 und schlag ihn im Endduell.",
+    ],
+  },
+  // 13c) Quittung 4317-K abschicken
+  {
+    id: "act1.send4317K",
+    title: "Quittung 4317-K abschicken",
+    priority: 13,
+    isActive: (a) =>
+      (a.hasFlag("duelEndgameWon") ||
+        a.hasFlag("kowalkOfferedForgery") ||
+        a.hasFlag("forgedQuittung4317")) &&
+      !a.hasItem("tillaTransfer"),
     isResolved: (a) => a.hasItem("tillaTransfer"),
     hints: [
-      "Insa hat dir einen Auftrag gegeben, dessen Nummer dir noch nichts sagt. Frag jemanden, der die Akten kennt.",
-      "Du brauchst drei Bauteile für eine Quittung 4317: Bleistiftstummel (auf Bodos Tisch in Wohnung 2612, neben dem CRT-Terminal), Quittungsbogen blanko (vom Quittungsblock auf dem Kantinentresen E67, Tür 3602 in Korridor 36) und die Original-Vollmacht 4317 für Philippes B3-Ration (gibt dir Philippe selbst — er steht je nach Tageslage im Korridor seiner Etage oder ist in seiner Wohnung anzutreffen; Klingelknopf neben Tür 3601 hilft, ihn zu finden).",
-      "Reib im Inventar mit dem Bleistift über die Vollmacht 4317 → Siegelabdruck. Kombiniere Siegelabdruck + Quittungsbogen blanko zur fertigen Quittung 4317 und schick sie über die Pneumatik-Rohrpost in der Kantine E67 (Korridor 36) ab.",
+      "Du musst zurück zu Frau Kowalk in der Kantine 3602. Sie weiß, wie es weitergeht.",
+      "Wenn Vossbeck gestempelt hat: Kowalk macht 4317-K direkt fertig — du musst nur das Gespräch mit ihr eröffnen. Wenn nicht: bring Bleistiftstummel (Bodos Tisch in 2612), einen Quittungsblanko (vom Block am Kantinentresen) und den Siegelabdruck (im Inventar Bleistift × Vollmacht 4317) zu Kowalk.",
+      "Sprich Kowalk an. Übergib die Quittung — und schick sie selbst über die Pneumatik-Rohrpost im selben Raum ab (Empfänger E70-K, Code 4317-K). Dann wartet die Antwort am Rohr.",
     ],
   },
 
@@ -311,7 +349,7 @@ export const HINT_QUESTS: HintQuest[] = [
   // ── Optional: Vollmacht B3 für Philippe ──────────────────────────
   {
     id: "act1.b3Authorization",
-    title: "Vollmacht B3 für Philippe (optional)",
+    title: "B3-Ration für Philippe (optional)",
     priority: 50,
     isActive: (a) => a.hasFlag("philippeAskedFavor"),
     isResolved: (a) =>
@@ -320,9 +358,9 @@ export const HINT_QUESTS: HintQuest[] = [
       a.hasFlag("duelEndgameWon") ||
       a.hasFlag("refusedB3Favor"),
     hints: [
-      "Philippe hat dich um etwas gebeten, das mit Verwaltung und einer Unterschrift zu tun hat.",
-      "Die B3-Ration läuft in der Kantine 3602 über Oberinspektor Vossbeck. Frau Kowalk erklärt dir den Weg — sprich sie zuerst an.",
-      "Reihenfolge: Kowalk erklärt 4317, dann Brust am Tresen drei Trainingsfälle in Folge gewinnen, erst dann lässt Vossbeck dich an den Vorgang.",
+      "Philippe hat dich um eine B3-Ration gebeten. In der Kantine läuft das über Vorgang 4317 — denselben, den du für Tillas Akte sowieso brauchst.",
+      "Wenn du Vossbecks Endduell um 4317 gewinnst, gibt er die B3 automatisch mit frei — kein zweiter Weg nötig.",
+      "Spiel den kritischen Pfad: Brust → drei Trainingsfälle in Folge → Vossbeck nebenan in 3603 schlagen. Mit dem Sieg liegt die B3-Dose mit auf dem Tresen.",
     ],
   },
   {

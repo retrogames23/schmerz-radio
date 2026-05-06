@@ -13,6 +13,14 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
           "Sie hat die Liste nicht angesehen. Sie kennt die Leute auf E67.",
         choices: [
           {
+            // Nach Vossbeck-Sieg: Tillas 4317-K kann legitim raus. Kowalk
+            // schickt sie selbst, sobald Layard Bescheid gibt.
+            text: "[ Vossbeck hat 4317 freigegeben. Können wir Tillas 4317-K rausschicken? ]",
+            next: "kStampedTilla1",
+            requires: ["duelEndgameWon", "insaGaveTransferTask"],
+            hiddenWhen: ["forgedQuittung4317", "receivedTillaTransfer"],
+          },
+          {
             // Notausgang nach drei Niederlagen bei Vossbeck — Kowalk
             // tritt von sich aus an Layard heran, wenn er noch nicht
             // mit ihr darüber gesprochen hat.
@@ -26,7 +34,17 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             text: "[ Wegen der Quittung 4317-K. Wie kommen wir da raus? ]",
             next: "kForgeRecap",
             requires: ["kowalkOfferedForgery"],
-            hiddenWhen: ["usedForgeryRoute"],
+            hiddenWhen: ["usedForgeryRoute", "forgedQuittung4317"],
+          },
+          {
+            // Übergabe an Kowalk. Sichtbar, sobald Layard den
+            // Siegelabdruck gezogen hat (= er hatte zwingend Bleistift
+            // UND Quittungsblanko). Damit ist die Bedingung implizit
+            // "alle drei Sachen da".
+            text: "[ Hier — Bleistift, Quittungsblanko und der Siegelabdruck. ]",
+            next: "kForgeHandover1",
+            requires: ["kowalkOfferedForgery", "extractedSiegelAbdruck"],
+            hiddenWhen: ["forgedQuittung4317"],
           },
           {
             text: "Ich habe eine Vollmacht. Vier-Drei-Eins-Sieben.",
@@ -217,22 +235,22 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kForge4: {
         id: "kForge4",
         speaker: "KOWALK",
-        text: "Sie brauchen drei Sachen. Erstens einen Quittungsblanko — nehmen Sie sich einen vom Block hier. Zweitens den Trockensiegel-Abdruck »Schicht A« von Philippes Vollmacht 4317. Bleistift drüber, Carbon-Papier — Sie werden's sehen.",
+        text: "Sie brauchen drei kleine Sachen. Bringen Sie mir die — den Rest mache ich hier hinter der Theke. Niemand sieht's, niemand fragt.",
         next: "kForge5",
       },
       kForge5: {
         id: "kForge5",
         speaker: "KOWALK",
-        text: "Und drittens das Original von Aushang sieben Punkt eins, 1991. Hängt in E71. Holen Sie das mit. Stegmann lässt das durchgehen, der weiß, was die Welt aushält.",
+        text: "Erstens: einen Quittungsblanko. Nehmen Sie sich einen vom Block hier. Zweitens: einen Bleistiftstummel — irgendeinen weichen, alten. Bei Bodo in 2612 liegt einer.",
         next: "kForge6",
       },
       kForge6: {
         id: "kForge6",
         speaker: "KOWALK",
-        text: "Wenn Sie alles haben: zusammensetzen — Bodos Terminal kann das, er hat noch die alten Vorlagen — und dann ans linke Pneumatikrohr. Ich frage nicht, wie sie zustande kam.",
+        text: "Drittens: den Trockensiegel-Abdruck »Schicht A«. Den reiben Sie mit dem Bleistift im Inventar von Philippes Vollmacht 4317 ab — Carbon-Papier drauf, ein paar Striche, fertig.",
         choices: [
           {
-            text: "Verstanden. Danke, Frau Kowalk.",
+            text: "Verstanden. Ich besorge die drei Sachen.",
             action: (api) => {
               api.setFlag("kowalkOfferedForgery");
             },
@@ -243,7 +261,84 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kForgeRecap: {
         id: "kForgeRecap",
         speaker: "KOWALK",
-        text: "Quittungsblanko. Trockensiegel-Abdruck von Philippes 4317. Original Aushang 7.1 aus E71. Bei Bodo zusammensetzen. Linkes Rohr. — Mehr sage ich nicht, Worag.",
+        text: "Bleistiftstummel, Quittungsblanko, Trockensiegel-Abdruck von Philippes 4317. Bringen Sie mir die drei. Den Rest mache ich. — Mehr sage ich nicht, Worag.",
+        end: true,
+      },
+      // ── Handover: Layard übergibt die drei Forgery-Zutaten ───────
+      kForgeHandover1: {
+        id: "kForgeHandover1",
+        speaker: "SYSTEM",
+        text: "[ Layard schiebt drei Sachen über den Tresen: den Bleistiftstummel, einen frischen Quittungsblanko, das dünne Papier mit dem Siegelabdruck. ]",
+        next: "kForgeHandover2",
+      },
+      kForgeHandover2: {
+        id: "kForgeHandover2",
+        speaker: "KOWALK",
+        text: "Gut. Stellen Sie sich kurz so, dass Brust den Tresen nicht sieht.",
+        subtext: "Sie greift den Bogen, hält ihn flach, legt das Abdruckpapier darüber, fährt mit dem Bleistift einmal nach.",
+        next: "kForgeHandover3",
+      },
+      kForgeHandover3: {
+        id: "kForgeHandover3",
+        speaker: "KOWALK",
+        text: "Schicht B. Code 4317-K. Empfänger E70-K. — Sieht aus, als wäre sie nie etwas anderes gewesen als echt.",
+        subtext: "Sie reicht Layard die fertige Quittung. Bleistift und Reibpapier verschwinden gleich mit unter ihrem Tuch.",
+        choices: [
+          {
+            text: "[ Quittung annehmen ]",
+            action: (api) => {
+              api.setFlag("forgedQuittung4317");
+              api.setFlag("usedForgeryRoute");
+              api.addItem({
+                id: "quittungForged4317",
+                name: "Quittung 4317-K (Schicht B, fertig)",
+                description:
+                  "Hellblauer Carbon-Quittungsbogen, akkurat ausgefüllt: »QUITTUNG / SCHICHT B / KOPIE FÜR E70 / CODE 4317-K«. Trockensiegel-Abdruck Schicht A in der oberen Ecke. Frau Kowalk hat sie hinter der Theke fertig gemacht. Sieht aus, als wäre sie nie etwas anderes gewesen als echt.",
+              });
+            },
+            next: "kForgeHandover4",
+          },
+        ],
+      },
+      kForgeHandover4: {
+        id: "kForgeHandover4",
+        speaker: "KOWALK",
+        text: "Linkes Rohr. Ziel E70-K. Schicken Sie sie selbst ab — ich war nicht dabei.",
+        end: true,
+      },
+      // ── Legitimer Pfad nach Vossbeck-Sieg ─────────────────────────
+      kStampedTilla1: {
+        id: "kStampedTilla1",
+        speaker: "KOWALK",
+        text: "4317 freigegeben. — Dann kann 4317-K raus.",
+        subtext: "Sie sagt es ohne Triumph. Eher wie jemand, der einen Eintrag von einer langen Liste streichen darf.",
+        next: "kStampedTilla2",
+      },
+      kStampedTilla2: {
+        id: "kStampedTilla2",
+        speaker: "KOWALK",
+        text: "Hier. Schicht-B-Quittungsbogen, Code 4317-K, Empfänger E70-K. Ich gegenzeichne — Brust, schau weg.",
+        subtext: "Sie schreibt drei Zeilen, ohne den Stift abzusetzen.",
+        choices: [
+          {
+            text: "[ Quittung annehmen ]",
+            action: (api) => {
+              api.setFlag("forgedQuittung4317");
+              api.addItem({
+                id: "quittungForged4317",
+                name: "Quittung 4317-K (Schicht B, fertig)",
+                description:
+                  "Hellblauer Carbon-Quittungsbogen, akkurat ausgefüllt: »QUITTUNG / SCHICHT B / KOPIE FÜR E70 / CODE 4317-K«. Frau Kowalk hat gegengezeichnet — sauber, mit Vossbecks frischer Freigabe im Rücken.",
+              });
+            },
+            next: "kStampedTilla3",
+          },
+        ],
+      },
+      kStampedTilla3: {
+        id: "kStampedTilla3",
+        speaker: "KOWALK",
+        text: "Linkes Rohr. Ziel E70-K. Schicken Sie sie selbst ab. — Antwort kommt zurück hier.",
         end: true,
       },
       // Vollmacht-Pfad ──────────────────────────────────────
