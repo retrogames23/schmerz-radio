@@ -461,7 +461,7 @@ export const corridorsE67Scenes: Record<string, Scene> = {
         w: 9,
         h: 13,
         alt: "Grüne Thermoskanne auf dem Rack",
-        visibleWhen: ["bodoGaveWartungskarte"],
+        requires: ["bodoGaveWartungskarte"],
         hiddenWhen: ["tookBodoThermos"],
       },
     ],
