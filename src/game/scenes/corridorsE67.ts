@@ -18,6 +18,9 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       !api.hasFlag("metPhilippeBefore")
         ? corridor36PhilippeBg
         : corridor36Bg,
+    // Asset ist ~2.36:1 — auf 16:9-Bühnen würden sonst Tür 3601 und der
+    // Aufzug am Rand abgeschnitten. „contain" zeigt das Bild immer ganz.
+    bgFit: "contain",
     title: "Korridor 36 — Verwaltung und Versorgung",
     intro:
       "Andere Beleuchtung als zuhause. Sterilere Türen. Vor einer davon — 3601 — ein handgeschriebenes Schild. Aus 3602 zieht warm und ranzig ein Geruch nach Mensa-Pampe und Bohnerwachs.",

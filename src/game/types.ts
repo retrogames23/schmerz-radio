@@ -384,6 +384,14 @@ export interface Scene {
    * originX/Y: Zoom-Mittelpunkt in Prozent (0..100), bezogen auf das Bild.
    */
   bgFocus?: { scale: number; originX: number; originY: number };
+  /**
+   * Bild-Anpassung an die Bühne. "cover" (Default) füllt die Bühne
+   * komplett und schneidet ggf. Über­lapp ab — passend für 16:9-nahe
+   * Assets. "contain" zeigt das Bild immer vollständig (mit Letterbox),
+   * nötig für sehr breite oder schmale Asset-Formate, deren Ränder
+   * sonst auf vielen Monitoren weggeschnitten würden.
+   */
+  bgFit?: "cover" | "contain";
 }
 
 /**

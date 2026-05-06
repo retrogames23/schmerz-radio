@@ -108,9 +108,19 @@ export function SceneView() {
     if (!sw || !sh || !nw || !nh) return;
     const stageRatio = sw / sh;
     const imgRatio = nw / nh;
+    const fit = current.bgFit ?? "cover";
     let width: number;
     let height: number;
-    if (imgRatio >= stageRatio) {
+    if (fit === "contain") {
+      // Bild immer vollständig zeigen — Letterbox/Pillarbox am Rand.
+      if (imgRatio >= stageRatio) {
+        width = sw;
+        height = sw / imgRatio;
+      } else {
+        height = sh;
+        width = sh * imgRatio;
+      }
+    } else if (imgRatio >= stageRatio) {
       // Bild ist breiter als Bühne → Höhe füllt, Breite überlappt links/rechts.
       height = sh;
       width = sh * imgRatio;
@@ -125,7 +135,7 @@ export function SceneView() {
       width,
       height,
     });
-  }, []);
+  }, [current.bgFit]);
 
   useEffect(() => {
     recomputeImgRect();
