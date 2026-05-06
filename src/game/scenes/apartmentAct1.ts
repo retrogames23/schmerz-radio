@@ -5,6 +5,7 @@ import hallway2615SealedBg from "@/assets/scene-hallway-2615-sealed.jpg";
 import apt2613Bg from "@/assets/scene-apt-2613.jpg";
 import apt2612BgEmpty from "@/assets/scene-apt-2612.jpg";
 import apt2612BgBodo from "@/assets/scene-apt-2612-bodo.jpg";
+import pencilStubSprite from "@/assets/sprite-pencil-stub.png";
 import type { Scene } from "../types";
 
 export const apartmentAct1Scenes: Record<string, Scene> = {
@@ -463,6 +464,19 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
     title: "Wohnung 2612 — Bodo Marschke",
     intro:
       "Warmes Lampenlicht. Es riecht nach altem Kraut, das jemand „Tee“ nennt. Bodo sitzt tief im Sessel, die Katze hat den vorderen Platz auf der Decke längst für sich beansprucht.",
+    npcs: [
+      {
+        id: "pencilStubSprite2612",
+        src: pencilStubSprite,
+        x: 49.6,
+        y: 48.1,
+        w: 7,
+        h: 6,
+        alt: "Bleistiftstummel auf Bodos Tisch",
+        requires: ["noticedTransferCode"],
+        hiddenWhen: ["tookPencilStub"],
+      },
+    ],
     hotspots: [
       {
         id: "bodoNpc",
