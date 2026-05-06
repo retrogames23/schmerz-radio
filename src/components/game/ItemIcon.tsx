@@ -507,6 +507,43 @@ function SiegelAbdruckIcon() {
   );
 }
 
+/** Paragraphen-Notizbuch — schmales Notizbuch mit deutlichem §-Symbol. */
+function ParagraphenNotizbuchIcon() {
+  return (
+    <>
+      {/* Buchrücken (links, dunkel, mit Bindung) */}
+      <rect x="4" y="3" width="3" height="18" fill={ICON_BG} />
+      <rect x="5" y="5" width="1" height="1" fill={ICON_HI} />
+      <rect x="5" y="9" width="1" height="1" fill={ICON_HI} />
+      <rect x="5" y="13" width="1" height="1" fill={ICON_HI} />
+      <rect x="5" y="17" width="1" height="1" fill={ICON_HI} />
+      {/* Cover (Karton) */}
+      <rect x="7" y="3" width="13" height="18" fill={ICON_DK} />
+      <rect x="8" y="4" width="11" height="16" fill={ICON_FG} />
+      <rect x="8" y="4" width="11" height="1" fill={ICON_HI} />
+      {/* §-Symbol, mittig auf dem Cover */}
+      {/* Oberer Bogen */}
+      <rect x="12" y="7"  width="4" height="1" fill={ICON_BG} />
+      <rect x="11" y="8"  width="1" height="1" fill={ICON_BG} />
+      <rect x="15" y="8"  width="1" height="1" fill={ICON_BG} />
+      <rect x="12" y="9"  width="3" height="1" fill={ICON_BG} />
+      {/* Mittelschwung */}
+      <rect x="13" y="10" width="1" height="1" fill={ICON_BG} />
+      <rect x="14" y="11" width="1" height="1" fill={ICON_BG} />
+      <rect x="13" y="12" width="1" height="1" fill={ICON_BG} />
+      <rect x="12" y="13" width="1" height="1" fill={ICON_BG} />
+      {/* Unterer Bogen */}
+      <rect x="11" y="14" width="4" height="1" fill={ICON_BG} />
+      <rect x="11" y="15" width="1" height="1" fill={ICON_BG} />
+      <rect x="15" y="15" width="1" height="1" fill={ICON_BG} />
+      <rect x="11" y="16" width="4" height="1" fill={ICON_BG} />
+      {/* Schräge Punkte (typisch §) */}
+      <rect x="17" y="6" width="1" height="1" fill={ICON_BG} />
+      <rect x="10" y="17" width="1" height="1" fill={ICON_BG} />
+    </>
+  );
+}
+
 /** Aushang 7.1 — vergilbtes Faksimile. */
 function Aushang71Icon() {
   return (
