@@ -249,9 +249,8 @@ export const HINT_QUESTS: HintQuest[] = [
     isResolved: (a) => a.hasItem("tillaTransfer"),
     hints: [
       "Insa hat dir einen Auftrag gegeben, dessen Nummer dir noch nichts sagt. Frag jemanden, der die Akten kennt.",
-      "Du brauchst eine korrekt aussehende Quittung 4317. Drei Bauteile sind nötig: ein leerer Vordruck, ein Siegelabdruck und eine Vorlage (Original-Vollmacht) aus E71.",
-      "Bleistiftstummel: liegt auf Bodos Tisch in seiner Wohnung (neben dem CRT-Terminal). Quittungsbogen blanko: vom Quittungsblock auf dem Tresen der Kantine E67 (Korridor 36). Original-Vollmacht 4317: holt Philippe in E71/Korridor 15 hervor — bring ihm zuerst, was er verlangt.",
-      "Reib dann mit dem Bleistift im Inventar über die Vollmacht 4317 → Siegelabdruck. Kombiniere Siegelabdruck + Quittungsbogen blanko zur fertigen Quittung 4317 und schick sie über die Pneumatik-Rohrpost in der Kantine E67 (Korridor 36) ab.",
+      "Du brauchst drei Bauteile für eine Quittung 4317: Bleistiftstummel (auf Bodos Tisch in seiner Wohnung, neben dem Terminal), Quittungsbogen blanko (vom Quittungsblock auf dem Kantinentresen E67, Korridor 36) und die Original-Vollmacht 4317 (gibt Philippe in E71/Korridor 15 heraus, wenn du ihm bringst, was er verlangt).",
+      "Reib im Inventar mit dem Bleistift über die Vollmacht 4317 → Siegelabdruck. Kombiniere Siegelabdruck + Quittungsbogen blanko zur fertigen Quittung 4317 und schick sie über die Pneumatik-Rohrpost in der Kantine E67 (Korridor 36) ab.",
     ],
   },
 
