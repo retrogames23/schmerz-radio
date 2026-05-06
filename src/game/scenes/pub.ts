@@ -1,6 +1,7 @@
 import pubBg from "@/assets/scene-pub.jpg";
 import pubToiletBg from "@/assets/scene-pub-toilet.jpg";
 import pubVestibuleBg from "@/assets/scene-pub-vestibule.jpg";
+import condomAutomatSprite from "@/assets/sprite-condom-automat.png";
 import type { Scene } from "../types";
 
 /**
@@ -107,14 +108,46 @@ export const pubScenes: Record<string, Scene> = {
         onUse: (api) => api.goTo("pubToilet"),
       },
       {
-        // Mintgrüner Kondomautomat an der Wand zwischen Toilettentür
-        // und dem Theken-Block. Versorgt seit Wochen halb E67 mit OP-
-        // Masken — die Empfangsdame in E71 schickt Layard explizit her.
+        id: "leavePub",
+        x: 16.1,
+        y: 27.7,
+        w: 12,
+        h: 50,
+        label: "Hinaus in den Gang",
+        kind: "exit",
+        exitDir: "right",
+        onUse: (api) => api.goTo("passage"),
+      },
+    ],
+  },
+  pubToilet: {
+    id: "pubToilet",
+    background: pubToiletBg,
+    title: "Toilette — „Zum stillen Funk“",
+    intro:
+      "Eine Wand voller Schichten: Stift auf Stift, Layard auf Layard. Hier hat jeder seine Spur hinterlassen.",
+    npcs: [
+      {
+        id: "condomAutomatSprite",
+        src: condomAutomatSprite,
+        x: 8.5,
+        y: 8,
+        w: 7,
+        h: 26,
+        alt: "Mintgrüner Kondomautomat an der Wand",
+      },
+    ],
+    hotspots: [
+      // Klickfläche für „zurück" liegt unsichtbar am rechten Rand;
+      // die Wand selbst und das Eingabefeld liegen im <ToiletWallOverlay/>.
+      {
+        // Mintgrüner Kondomautomat — versorgt seit Wochen halb E67 mit OP-
+        // Masken. Die Empfangsdame in E71 schickt Layard explizit her.
         id: "condomAutomat",
-        x: 44,
-        y: 41,
-        w: 5.5,
-        h: 16,
+        x: 8.5,
+        y: 8,
+        w: 7,
+        h: 26,
         label: "Kondomautomat",
         kind: "use",
         onUse: (api) => {
@@ -144,32 +177,10 @@ export const pubScenes: Record<string, Scene> = {
         },
       },
       {
-        id: "leavePub",
-        x: 16.1,
-        y: 27.7,
-        w: 12,
-        h: 50,
-        label: "Hinaus in den Gang",
-        kind: "exit",
-        exitDir: "right",
-        onUse: (api) => api.goTo("passage"),
-      },
-    ],
-  },
-  pubToilet: {
-    id: "pubToilet",
-    background: pubToiletBg,
-    title: "Toilette — „Zum stillen Funk“",
-    intro:
-      "Eine Wand voller Schichten: Stift auf Stift, Layard auf Layard. Hier hat jeder seine Spur hinterlassen.",
-    hotspots: [
-      // Klickfläche für „zurück" liegt unsichtbar am rechten Rand;
-      // die Wand selbst und das Eingabefeld liegen im <ToiletWallOverlay/>.
-      {
         id: "leaveToilet",
-        x: 0,
-        y: 0,
-        w: 6,
+        x: 92,
+        y: 15,
+        w: 8,
         h: 100,
         label: "Zurück in die Kneipe",
         kind: "exit",
