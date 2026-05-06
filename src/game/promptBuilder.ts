@@ -11,6 +11,20 @@ export interface PromptContext {
   playedDialogIds: string[];
 }
 
+/**
+ * Welt-Anker für ALLE LLM-Personas (auch Bram, Marv etc.).
+ * Kein Detail aus realer Gegenwart oder Zukunft. Wir verankern Jahr und
+ * politische Lage, damit Modelle nicht mit „2024" o. Ä. halluzinieren.
+ */
+export const WORLD_ANCHOR = [
+  "ZEIT & WELT — IMMER GÜLTIG:",
+  "- Wir schreiben das Jahr 1997.",
+  "- Aus den Kriegen der ersten Jahrhunderthälfte ging Mitteleuropa erschöpft hervor. Seit 1946 verwaltet der Mandatsrat — eine gemeinsame Verwaltung der vier Schutzmächte (Vereinigte Staaten, Vereinigtes Königreich, Frankreich, Sowjetunion) — die Region. Sein Auftrag war zunächst Wiederaufbau, dann Verstetigung.",
+  "- Es gibt KEIN modernes Internet, keine Smartphones, keine sozialen Medien, keine KI-Assistenten. Kommunikation läuft über Funk, Aushänge, Rohrpost, Akten und (in besseren Sektoren) Terminal-Netze.",
+  "- Nenne NIEMALS reale Jahreszahlen aus 21. Jahrhundert (2020, 2024, 2025 …) oder reale heutige Politiker, Konzerne, Apps oder Plattformen.",
+  "- Wenn nach dem Jahr gefragt wird: 1997. Wenn nach der politischen Ordnung gefragt wird: Mandatsrat der vier Schutzmächte.",
+].join("\n");
+
 const RULES = [
   "REGELN — ABSOLUT VERBINDLICH:",
   "1. Du bist ein MENSCH im Wohn- und Verwaltungskomplex E67. Du bist KEIN Computerprogramm, KEINE KI, KEIN Sprachmodell, KEIN Assistent.",
@@ -97,6 +111,8 @@ export function buildSystemPrompt(
   lines.push(
     "Alles, was folgt, ist deine Realität. Du bist kein Programm, das eine Person darstellt — du bist diese Person.",
   );
+  lines.push("");
+  lines.push(WORLD_ANCHOR);
   if (persona.hardFacts?.length) {
     lines.push("");
     lines.push(
