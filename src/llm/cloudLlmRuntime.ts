@@ -82,8 +82,8 @@ export function createCloudRuntime(npcId: string): LlmRuntime {
       }));
 
       // User-Token mitsenden, damit der Server den Counter pro Account führt.
-      const { data: sess } = await supabase.auth.getSession();
-      const token = sess.session?.access_token;
+      const { getFreshAccessToken } = await import("@/auth/freshToken");
+      const token = await getFreshAccessToken();
       if (!token) {
         emitError({
           code: "auth_required",
