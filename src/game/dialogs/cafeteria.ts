@@ -37,12 +37,13 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             hiddenWhen: ["usedForgeryRoute", "forgedQuittung4317"],
           },
           {
-            // Übergabe der drei Forgery-Zutaten direkt an Kowalk.
-            // Immer sichtbar nach Forgery-Briefing — der Handover-Knoten
-            // prüft, ob alle drei Items wirklich da sind.
+            // Übergabe an Kowalk. Sichtbar, sobald Layard den
+            // Siegelabdruck gezogen hat (= er hatte zwingend Bleistift
+            // UND Quittungsblanko). Damit ist die Bedingung implizit
+            // "alle drei Sachen da".
             text: "[ Hier — Bleistift, Quittungsblanko und der Siegelabdruck. ]",
             next: "kForgeHandover1",
-            requires: ["kowalkOfferedForgery"],
+            requires: ["kowalkOfferedForgery", "extractedSiegelAbdruck"],
             hiddenWhen: ["forgedQuittung4317"],
           },
           {
@@ -267,19 +268,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kForgeHandover1: {
         id: "kForgeHandover1",
         speaker: "SYSTEM",
-        text: "[ Layard greift in die Aktentasche. ]",
-        next: "kForgeCheck",
-      },
-      // Prüfknoten: hat Layard wirklich alle drei Sachen?
-      kForgeCheck: {
-        id: "kForgeCheck",
-        speaker: "SYSTEM",
-        text: "[ Bleistiftstummel? Quittungsblanko? Siegelabdruck? ]",
-        // Wenn alle drei vorhanden → weiter zur Übergabe; sonst → Kowalk hakt nach.
-        requires: ["pencilStub" as never], // Platzhalter, wird unten via line-skip nicht genutzt
+        text: "[ Layard schiebt drei Sachen über den Tresen: den Bleistiftstummel, einen frischen Quittungsblanko, das dünne Papier mit dem Siegelabdruck. ]",
         next: "kForgeHandover2",
-        hiddenWhen: [],
-        choices: undefined,
       },
       kForgeHandover2: {
         id: "kForgeHandover2",
@@ -297,9 +287,6 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
           {
             text: "[ Quittung annehmen ]",
             action: (api) => {
-              api.removeItem("siegelAbdruck");
-              api.removeItem("quittungBlankoB");
-              // Bleistift bleibt — Layard nutzt ihn ggf. später noch.
               api.setFlag("forgedQuittung4317");
               api.setFlag("usedForgeryRoute");
               api.addItem({
