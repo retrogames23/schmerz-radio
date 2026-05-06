@@ -53,7 +53,9 @@ export type InventoryItemId =
   // MARV-9 / Kneipenvorraum
   | "oilCan"
   // E71-Hygienevorschrift / Kondomautomat in „Zum stillen Funk"
-  | "medMask";
+  | "medMask"
+  // Tragbares Schmerz-Radio aus Layards Wohnung (Akt I)
+  | "painRadio";
 
 export type KnowledgeFlag =
   | "responsibilityE67"
