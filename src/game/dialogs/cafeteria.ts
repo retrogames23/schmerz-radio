@@ -445,7 +445,15 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         speaker: "BRUST",
         text: "Bewohner Worag. Identität gegengezeichnet. Anliegen?",
         subtext: "Er notiert die Frage, bevor sie beantwortet ist.",
+        sublines: undefined,
         choices: [
+          {
+            // Kowalk hat Layard hergeschickt — Brust kennt den Pfad.
+            text: "Frau Kowalk hat mich geschickt. Trainingsfall.",
+            next: "bDuelOffer",
+            requires: ["knowsVossbeckPath"],
+            hiddenWhen: ["duelStarted", "vossbeckSummoned", "gotB3Ration"],
+          },
           {
             text: "Ich habe eine Vollmacht. 4317.",
             next: "bAuth1",
