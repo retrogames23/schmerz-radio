@@ -41,6 +41,13 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             hiddenWhen: ["gotTillaTransferInfo"],
           },
           {
+            // Recap-Choice: Kowalk nimmt Layard die Last, sich den Pfad zu merken.
+            text: "Was war nochmal der Weg?",
+            next: "kRecap",
+            requires: ["knowsVossbeckPath"],
+            hiddenWhen: ["vossbeckSummoned", "gotB3Ration"],
+          },
+          {
             text: "Ich wollte mich nur umsehen.",
             next: "kSmall1",
           },
@@ -158,6 +165,19 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kInsa6",
         speaker: "KOWALK",
         text: "Heißt für Sie: Sie brauchen jemanden, der die 4317 jetzt freigibt. Vossbeck. Sitzt nebenan, Tür 3603, Kantinenverwaltung. Sonst läuft hier gar nichts.",
+        next: "kInsa6b",
+      },
+      kInsa6b: {
+        id: "kInsa6b",
+        speaker: "KOWALK",
+        text: "Keine Angst, Worag — Sie müssen sich das nicht alles merken. Vossbeck hat den Vorgang auf dem Tisch. Sie müssen nur zu ihm durchkommen.",
+        subtext: "Sie sagt es, ohne den Tresen-Lappen aus der Hand zu legen. Es klingt, als hätte sie den Satz schon öfter zu jemandem gesagt.",
+        next: "kInsa6c",
+      },
+      kInsa6c: {
+        id: "kInsa6c",
+        speaker: "KOWALK",
+        text: "Und durchkommen heißt: erst Brust. Trainingsfall. Drei in Folge. Vossbeck nimmt nur Bewohner an, die paragraphenfest sind. — Den Rest mache ich von hier aus.",
         choices: [
           {
             text: "Verstanden. Ich rede mit Vossbeck.",
@@ -165,6 +185,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
               api.setFlag("gotTillaTransferInfo");
               api.setFlag("learnedMarteauPhilippeLink");
               api.setFlag("needsMarteauAuthForTilla");
+              api.setFlag("knowsVossbeckPath");
             },
             next: "k0",
           },
@@ -276,7 +297,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         text: "Aber Vossbeck redet nur mit Leuten, die Paragraphen können. Brust trainiert die Bewohner manchmal — fiktive Kantinenfälle. Wer ihn dreimal in Folge schlägt, gilt als satisfaktionsfähig. Wer das nicht ist, läuft bei Vossbeck gegen eine Wand.",
         choices: [
           {
-            text: "Verstanden. Ich rede mit Brust.",
+            text: "Verstanden. Ich übe mit Brust.",
             next: "k0",
             action: (api) => api.setFlag("knowsVossbeckPath"),
           },
@@ -400,6 +421,13 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         text: "Tun Sie das. Aber heute Abend ist Schichtwechsel.",
         next: "k0",
       },
+      kRecap: {
+        id: "kRecap",
+        speaker: "KOWALK",
+        text: "Brust. Trainingsfall. Drei in Folge. Dann Vossbeck. — Den Rest mache ich von hier aus, Worag.",
+        subtext: "Sie sagt es ruhig. Wie jemand, der einen Tresen schon viele Bewohner überstehen sehen hat.",
+        next: "k0",
+      },
       kBye: {
         id: "kBye",
         speaker: "KOWALK",
@@ -418,6 +446,13 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         text: "Bewohner Worag. Identität gegengezeichnet. Anliegen?",
         subtext: "Er notiert die Frage, bevor sie beantwortet ist.",
         choices: [
+          {
+            // Kowalk hat Layard hergeschickt — Brust kennt den Pfad.
+            text: "Frau Kowalk hat mich geschickt. Trainingsfall.",
+            next: "bDuelOffer",
+            requires: ["knowsVossbeckPath"],
+            hiddenWhen: ["duelStarted", "vossbeckSummoned", "gotB3Ration"],
+          },
           {
             text: "Ich habe eine Vollmacht. 4317.",
             next: "bAuth1",
@@ -675,13 +710,26 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       u1: {
         id: "u1",
         speaker: "VOSSBECK",
-        text: "Fallnummer?",
+        text: "Fallnummer.",
         next: "u2",
       },
       u2: {
         id: "u2",
         speaker: "VOSSBECK",
-        text: "Sie haben keine. Was wollen Sie dann hier? Ich habe zu tun.",
+        text: "Vier-Drei-Eins-Sieben. Vorgang Vollmacht 4317. Bewohner Worag. — Habe ich auf dem Tisch.",
+        subtext: "Er sagt es, ohne aufzusehen. Der Bleistift bleibt senkrecht.",
+        next: "u3",
+      },
+      u3: {
+        id: "u3",
+        speaker: "VOSSBECK",
+        text: "Trainingssiege bei Herrn Brust: keine dokumentiert. Ich verhandle nicht mit Bewohnern, die nicht satisfaktionsfähig sind.",
+        next: "u4",
+      },
+      u4: {
+        id: "u4",
+        speaker: "VOSSBECK",
+        text: "Drei in Folge bei Brust. Dann reden wir. Vorher nicht. — Tür ist da.",
         end: true,
       },
     },

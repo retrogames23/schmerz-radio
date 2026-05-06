@@ -1,53 +1,69 @@
-# Masken-Rätsel: E71-Empfang ↔ Kondomautomat in der Kneipe
+## Problem
 
-## Zielbild
-Layard kommt in der E71-Lobby an. Die Empfangsdame lässt ihn ohne medizinische Maske nicht weiter Richtung Korridor 15. Sie gibt den Tipp: der Kondomautomat in „Zum stillen Funk" bestückt seit der letzten Lieferknappheit auch OP-Masken. Layard muss in die Kneipe, am Automaten eine Maske ziehen, sie aufsetzen und damit zurück zum Empfang.
+Der Vossbeck-Strang fühlt sich anstrengend und unklar an:
 
-Damit ergibt sich erstmals ein zwingender narrativer Grund, die Kneipe zu betreten — bisher ist sie reiner Sozial-Knoten.
+1. **Vossbeck-Abweisung passt nicht zum Spielzustand.** `vossbeckNoBusiness` (vor Kowalk-Erklärung) und `vossbeckUnready` (nach Kowalk, vor Brust-Sieg) sagen aktuell exakt denselben Text: *„Fallnummer? Sie haben keine. Was wollen Sie dann hier?“* Sobald Layard mit Kowalk über 4317 gesprochen hat, **hat** er eine Fallnummer — der Satz ist dann falsch und gibt keine Richtung.
+2. **Kein Hinweis auf Brust.** Es wird dem Spieler in dem Moment, in dem er bei Vossbeck abgewiesen wird, nicht gesagt, dass er für ein Gespräch mit Vossbeck erst drei Trainingsfälle bei Brust gewinnen muss.
+3. **Kowalk wirkt wie noch ein Hindernis.** Sie erklärt 4317-K, Schicht-A-Logik, Marteau-Verbindung, Pneumatik-Regeln — viel Text, viele Nummern, kein freundlicher Boden. Spieler haben das Gefühl, sich Verwaltungswissen merken zu müssen.
+4. **Allgemeiner Spielfluss-Check.** Brust-Trainingsoption ist hinter `knowsVossbeckPath` versteckt, was an sich gut ist — aber Brust selbst stupst Layard nicht aktiv in Richtung Training, wenn Layard ohne Vollmacht reinkommt.
 
-## Schritte
+## Ziel
 
-### 1. Neues Item `medMask`
-- In `src/game/types.ts` `InventoryItemId` um `"medMask"` ergänzen.
-- In `src/components/game/ItemIcon.tsx` ein simples Pixel-Art-SVG (rechteckige OP-Maske mit zwei Bändern) als `MedMaskIcon` ergänzen und im Switch verdrahten.
-- Lokalisierter Name: „Medizinische Maske" — Beschreibung: „OP-Maske aus dem Automaten im 'stillen Funk'. Riecht leicht nach Plastik und Bier."
+Der Spieler soll nach dem Kowalk-Gespräch klar wissen: **„Ich brauche Brust → drei Trainingsfälle → dann Vossbeck.“** Kowalk soll dabei spürbar auf Layards Seite stehen und ihn entlasten („Sie müssen sich das nicht merken“). Der Vossbeck-Auftritt vor dem Brust-Sieg soll diesen Pfad bestätigen, nicht verwirren.
 
-### 2. Neue Story-Flags
-In `src/game/types.ts` zu `StoryFlag` hinzufügen:
-- `receptionRefusedNoMask` — Empfangsdame hat einmalig auf Maskenpflicht hingewiesen.
-- `wearingMedMask` — Maske aufgesetzt (wird beim „Verwenden" des Items am Empfang oder über Inventar gesetzt).
-- `tookMedMaskFromAutomat` — Automat hat bereits eine Maske ausgegeben (Re-Use blockieren / Folgeklicks erzählen Variantentext).
+## Änderungen
 
-### 3. Empfangs-Logik (`src/game/scenes/sectorAct1.ts`, `e71Lobby`)
-- Hotspot `receptionist`:
-  - Wenn `wearingMedMask` → bestehender Pfad `reception` / `receptionUnannounced` (setzt `metReceptionist`) bleibt.
-  - Sonst → neuer Dialog `receptionNoMask` (siehe unten). Setzt `receptionRefusedNoMask`, **nicht** `metReceptionist`.
-  - `hiddenWhen: ["metReceptionist"]` bleibt — ohne Maske bleibt der Hotspot also klickbar.
-- Hotspot `toCorridor15`:
-  - `requires: ["metReceptionist"]` bleibt (greift indirekt, weil `metReceptionist` jetzt nur mit Maske gesetzt wird).
+### 1. `vossbeckUnready` (nach Kowalk-Gespräch, vor 3 Brust-Siegen) klar umschreiben
 
-### 4. Neuer Dialog `receptionNoMask` in `src/game/dialogs/okwu.ts`
-Kurzer Tree (4–6 Lines): Empfangsdame stoppt Layard freundlich-bestimmt, verweist auf Hygienevorschrift Medizin-Track, erklärt Lieferengpass bei OP-Masken in E67, nennt den Kondomautomat in „Zum stillen Funk" als pragmatische Notlösung („… der Wirt füllt da seit zwei Wochen auch Masken nach. Fragen Sie nicht, woher."). Setzt `receptionRefusedNoMask`. Variante mit Anspielung „Sie waren schon mal hier" wenn `receptionRefusedNoMask` bereits gesetzt.
+Aktuell identisch zu `vossbeckNoBusiness`. Neu: Vossbeck **kennt** den Vorgang 4317, weist aber wegen fehlender Satisfaktionsfähigkeit ab — und nennt Brust beim Namen.
 
-### 5. Kondomautomat in der Kneipe (`src/game/scenes/pub.ts`, Szene `pub`)
-- Neuer Hotspot `condomAutomat`:
-  - Position: an der Wand neben/zwischen Toilettentür und Ausgang (genaue Koordinaten beim Implementieren am Hintergrundbild abgreifen, Größenordnung ~6×14).
-  - `kind: "use"`, Label „Kondomautomat".
-  - Verhalten:
-    - Erstes `use`: kurze Beschreibung („Automat, mintgrün, drei Reihen. Reihe 1: Kondome. Reihe 2: Pfefferminz. Reihe 3: handgeschriebener Aufkleber 'OP-MASKE — 1 RM'."). Wirft eine `medMask` ins Inventar, setzt `tookMedMaskFromAutomat`.
-    - Folgeklick (Flag gesetzt): Variantentext, kein zweites Item.
-  - Sichtbar nur wenn `metReceptionist` noch nicht gesetzt **oder** Layard noch keine Maske hat → sonst nur Look-Text, damit der Knoten optisch erhalten bleibt.
+Beispiel-Tonalität (Vossbeck, knapp, ohne aufzuschauen):
+- *„Fallnummer.“* — *„4317.“*
+- *„Vorgang Vollmacht 4317. Bewohner Worag. — Habe ich auf dem Tisch.“*
+- *„Trainingssiege bei Herrn Brust: keine dokumentiert. Ich verhandle nicht mit Bewohnern, die nicht satisfaktionsfähig sind. — Drei in Folge bei Brust. Dann reden wir.“*
 
-### 6. Maske aufsetzen
-Zwei UX-Pfade, wir bauen den einfachen:
-- Hotspot `receptionist` zusätzlich als Drop-Target für `medMask` (über `acceptItems`-Mechanik der bestehenden Hotspots — falls vorhanden, sonst Inventar-Item bekommt eine `onUse`-Handler, der in `e71Lobby` und überall ab dort `wearingMedMask` setzt und Item entfernt).
-- Konkrete Wahl beim Implementieren nach Sichtung der Combine/Use-API in `src/game/combine.ts`. Default: Inventar-Item „Verwenden" aus `e71Lobby` heraus → setzt Flag, entfernt Item, kurzer Text „Layard knotet die Bänder hinterm Ohr. Plastikgeruch.".
+`vossbeckNoBusiness` (Layard war noch nicht bei Kowalk) bleibt der schroffe „Fallnummer? Sie haben keine.“-Brush-off.
 
-### 7. Bestehende Spielstände
-- Spieler, die `metReceptionist` schon gesetzt haben (alte Saves, vor diesem Patch in E71 angekommen), bleiben unangetastet — das Rätsel wirkt nur für neue Durchgänge bzw. wer noch nicht durch war. Kein Migrationscode nötig.
+### 2. Kowalk als guter Geist — Last vom Spieler nehmen
+
+Im `kInsa`-Strang (Erklärung 4317-K) und `kAuth`-Strang (Vossbeck-Pfad) zwei kurze entlastende Einwürfe einbauen, ohne die Lore zu kappen:
+
+- Nach `kInsa6` / vor dem Bestätigungs-Choice: Kowalk legt sanft nach, z. B. *„Keine Angst, Worag — Sie müssen sich das nicht alles merken. Vossbeck hat den Vorgang. Sie müssen nur zu ihm durchkommen.“*
+- In `kAuth8` (sie erklärt Vossbeck + satisfaktionsfähig): zweite Choice-Beschriftung freundlicher und klarer auf Brust gemünzt: *„Verstanden. Ich übe mit Brust.“* statt *„Ich rede mit Brust.“* — und Kowalk antwortet kurz beruhigend: *„Brust beißt nicht. Er liest nur viel.“*
+- Wenn Layard nach erfolgter Kowalk-Erklärung erneut Kowalk anspricht und noch keine Brust-Siege hat: optionale neue Hilfs-Zeile (Choice in `k0` mit `requires: ["knowsVossbeckPath"]`, `hiddenWhen: ["vossbeckSummoned","gotB3Ration"]`): *„Was war nochmal der Weg?“* → Kowalk fasst in einem Satz zusammen: *„Brust. Trainingsfall. Drei in Folge. Dann Vossbeck. Den Rest mache ich von hier aus.“*
+
+### 3. Brust schiebt aktiv an, sobald Layard den Pfad kennt
+
+`cafeteriaBrust` → `b0`: wenn `knowsVossbeckPath && !vossbeckSummoned && !duelStarted`, soll Brust bei der allgemeinen Anrede freundlicher (für Brust-Verhältnisse) auf den Trainingsfall verweisen. Eine kurze System-/Brust-Zeile reicht: *„Frau Kowalk hat Sie geschickt. Trainingsfall steht für Sie bereit, sobald Sie wollen.“* Damit wird die Trainings-Choice nicht nur sichtbar, sondern aktiv angeboten.
+
+### 4. Hint-Texte anpassen
+
+`act1.b3Authorization` und `act1.bureaucracyDuel` so umformulieren, dass die Reihenfolge **Kowalk-Erklärung → Brust-Training → Vossbeck** als ein Satz lesbar wird. Der dritte (lösende) Hinweis nennt explizit: „Geh zurück in die Kantine, sprich Brust an und wähle ‚Trainingsfall‘. Drei in Folge gewinnen — dann nimmt Vossbeck dich an.“
+
+Außerdem ein neuer früher Hint, sobald `knowsVossbeckPath && !duelOffered`: *„Kowalk hat dir den Weg erklärt. Der nächste Schritt ist nicht Vossbeck, sondern Brust — am Tresen rechts.“*
+
+### 5. Spielbarkeits-Pass über die Quest (kein Mechanik-Umbau)
+
+Nur Text/Trigger-Tuning, keine neue Logik:
+
+- Sicherstellen, dass die `kInsa`-Choice nach der Bestätigung nicht in einem Loop endet, der den Spieler zwingt, dieselben langen 4317-K-Lore-Zeilen erneut zu lesen.
+- Im Notizbuch / `Hint`-Tray prüfen, dass nach `gotTillaTransferInfo` der nächste Hint sofort auf „Brust → Training“ zeigt, nicht auf „Vossbeck“.
+- Doppelte Vossbeck-Erwähnungen (Brust nennt ihn in `bAuth2` + `bAuth3`, Kowalk in `kAuth7` + `kAuth8` + `kInsa6`) leicht straffen, damit der Name nicht fünfmal hintereinander fällt.
+
+## Was nicht geändert wird
+
+- Mechanik des Bürokratie-Duells, Paragraphen-System, `bureaucracyDuel.ts`.
+- Die Lore (4317, Schicht A, Marteau-Verbindung, Tilla-Quittung) bleibt; nur Tonalität & Zwischenzeilen werden weicher.
+- Der Endgame-Auftritt von Vossbeck (`v0`–`v6`) bleibt unangetastet.
 
 ## Technische Notizen
-- Combine-/Item-Use-Mechanik: vor Implementierung kurz `src/game/combine.ts` und Inventory-Use-Pfad prüfen, um den minimalinvasiven Hook zu wählen.
-- Hotspot-Koordinaten für den Automaten werden beim Implementieren am Hintergrundbild `scene-pub.jpg` justiert (analog zu vorhandenen Hocker-Hotspots).
-- Dialog-IDs `rnm1…rnmN` analog zu bestehender Konvention im File.
-- Keine Datenbank-/Backend-Änderungen, kein neues Asset zwingend nötig (Maske als reiner Inventar-Pixel-Icon, der Automat nutzt das vorhandene Hintergrundbild).
+
+- **Datei: `src/game/dialogs/cafeteria.ts`**
+  - `vossbeckUnready.lines` neu schreiben (Vossbeck kennt 4317, verlangt Brust-Siege).
+  - `cafeteriaKowalk`: zwei beruhigende Zeilen in `kInsa6` und `kAuth8` einfügen, neue `k0`-Choice „Was war nochmal der Weg?“ als Recap, gegated auf `knowsVossbeckPath`.
+  - `cafeteriaBrust.b0`: kurze Anschub-Zeile bei `knowsVossbeckPath && !duelStarted`.
+- **Datei: `src/game/hints.ts`**
+  - Hints für `act1.b3Authorization` und `act1.bureaucracyDuel` umformulieren.
+  - Optional ein neuer Eintrag „Brust antrainieren“ mit Priority zwischen 50 und 51, gegated auf `knowsVossbeckPath && !duelOffered`.
+- **Keine Änderungen** an `bureaucracyDuel.ts`, `BureaucracyDuelOverlay.tsx`, `kantinenverwaltung3603.ts` (Routing bleibt: ohne `knowsVossbeckPath` → `vossbeckNoBusiness`, sonst ohne `vossbeckSummoned` → `vossbeckUnready`, sonst → `cafeteriaVossbeck`).
+- Keine neuen Flags nötig — bestehende `knowsVossbeckPath`, `vossbeckSummoned`, `duelOffered`, `duelStarted`, `gotTillaTransferInfo` reichen aus.

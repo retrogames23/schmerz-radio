@@ -321,8 +321,8 @@ export const HINT_QUESTS: HintQuest[] = [
       a.hasFlag("refusedB3Favor"),
     hints: [
       "Philippe hat dich um etwas gebeten, das mit Verwaltung und einer Unterschrift zu tun hat.",
-      "Die B3-Ration wird in der Kantine 3602 ausgegeben — aber nur über den amtierenden Bürokratiemeister Vossbeck. Brust und Kowalk dürfen nicht.",
-      "Vossbeck nimmt nur Vorgänge von paragraphenfesten Bewohnern an. Trainier mit Brust: drei Trainingsfälle in Folge gewinnen, dann tritt Vossbeck heran.",
+      "Die B3-Ration läuft in der Kantine 3602 über Oberinspektor Vossbeck. Frau Kowalk erklärt dir den Weg — sprich sie zuerst an.",
+      "Reihenfolge: Kowalk erklärt 4317, dann Brust am Tresen drei Trainingsfälle in Folge gewinnen, erst dann lässt Vossbeck dich an den Vorgang.",
     ],
   },
   {
@@ -330,17 +330,16 @@ export const HINT_QUESTS: HintQuest[] = [
     title: "Bürokratie-Duell — Trainingsfälle gegen Brust",
     priority: 51,
     isActive: (a) =>
-      a.hasFlag("philippeAskedFavor") &&
-      a.hasFlag("metBrust") &&
-      a.hasFlag("duelOffered"),
+      a.hasFlag("knowsVossbeckPath"),
     isResolved: (a) =>
+      a.hasFlag("vossbeckSummoned") ||
       a.hasFlag("duelEndgameWon") ||
       a.hasFlag("gotB3Ration") ||
       a.hasFlag("refusedB3Favor"),
     hints: [
-      "Brust trainiert Bewohner: fiktive Kantinenfälle. Jeder Fall lehrt dich neue Paragraphen — sie landen in deinem Notizbuch (Inventar-Item).",
-      "Im Duell sind nur Antworten anwählbar, deren Paragraph du bereits gelernt hast. Verlierst du, lernst du den korrekten Konter trotzdem von Brust.",
-      "Drei Trainingsfälle in Folge gewinnen — dann tritt Oberinspektor Vossbeck aus dem Hintergrund hervor und nimmt deinen echten Vorgang (Vollmacht 4317) an.",
+      "Kowalk hat dir den Weg erklärt. Der nächste Schritt ist nicht Vossbeck, sondern Brust — am Tresen rechts in der Kantine 3602.",
+      "Sprich Brust an und wähle „Trainingsfall“. Jeder Fall lehrt dich Paragraphen fürs Notizbuch; verlierst du, lernst du den Konter trotzdem.",
+      "Geh in die Kantine 3602, sprich Brust an, wähle „Trainingsfall“ und gewinn drei in Folge — dann nimmt Vossbeck dich nebenan in 3603 an.",
     ],
   },
   {
