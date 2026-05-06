@@ -306,6 +306,7 @@ export type StoryFlag =
   | "marvUnlocked"
   /** Layard hat das Ölkännchen aus Serverraum 5610 mitgenommen. */
   | "tookOilCan"
+  | "tookBodoThermos"
   // ── E71-Hygiene / Maskenrätsel ─────────────────────────────────
   /** Empfangsdame hat einmalig auf die Maskenpflicht hingewiesen. */
   | "receptionRefusedNoMask"
