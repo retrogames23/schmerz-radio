@@ -1,4 +1,4 @@
-# LORE — Schmerz-Radio
+# LORE — WHISPER·QUEST 
 
 **Status:** Wahrheitsquelle. Bei Konflikten zwischen Code, Dialogen und diesem
 Dokument hat **dieses Dokument** Vorrang. Änderungen hier müssen bewusst und
@@ -16,7 +16,7 @@ nicht aggressiv, nicht heroisch. Verwaltung als Klang. „Cozypunk".
 
 Am 21. Januar 1924 stirbt Lenin. In unserer Zeitlinie setzt sich Stalin im
 innerparteilichen Machtkampf durch und führt die UdSSR in Zwangskollektivierung,
-Großen Terror und Gulag-System. In der Welt von Schmerz-Radio gewinnt
+Großen Terror und Gulag-System. In der Welt von WHISPER·QUEST gewinnt
 **Nikolai Bucharin**, der Vertreter des „weichen", marktverträglichen
 Sozialismus.
 
@@ -237,7 +237,7 @@ gesehen hat. Das ist die Perspektive, aus der die Welt im Spiel sichtbar wird.
 Nur Lore-relevante Eckdaten. Tonfall, Verhaltensregeln und exakte Stimme
 stehen weiterhin in `src/game/npcPersonas.ts`.
 
-- **Layard** — Spielerfigur. Zustellbeamter im Quadranten E67. Empfindet zu
+- **Layard** — Spielerfigur. Autor im Quadranten E67. Empfindet zu
   wenig. Hört Schmerz-Radio.
 - **Insa Bauerfeind** — Leitstellen-Disponentin Sektor 28. Höflich,
   bestimmend, kennt die Paragraphen besser als die Verfasser.
