@@ -150,7 +150,7 @@ export const insaDialogs: Record<string, DialogTree> = {
       idNet3: {
         id: "idNet3",
         speaker: "STEGMANN",
-        text: "Hier ist die technische Unterstützung des Zentralen Netzes, Stegmann am Apparat. — Sie haben den Ausgang nicht gemeldet. Standardprotokoll, Herr Worag. Beim nächsten Mal bitte zuerst melden. Was brauchen Sie?",
+        text: "Hier ist die technische Unterstützung des Zentralen Netzes, Stegmann am Apparat. — Bauerfeind hat Sie wegen einer Netzstörung durchgestellt. Error-Nummer, bitte. Und in einem Satz: Was wollten Sie übers Netz erledigen, bevor es klemmte?",
         next: "idNet4",
       },
       idNet4: {
