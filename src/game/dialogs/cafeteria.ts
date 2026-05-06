@@ -278,10 +278,12 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
           {
             text: "Verstanden. Ich rede mit Brust.",
             next: "k0",
+            action: (api) => api.setFlag("knowsVossbeckPath"),
           },
           {
             text: "Vergessen Sie’s. Komme später wieder.",
             next: "kAuthLater",
+            action: (api) => api.setFlag("knowsVossbeckPath"),
           },
         ],
       },
