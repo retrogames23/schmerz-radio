@@ -26,6 +26,10 @@ export const kantinenverwaltung3603Scenes: Record<string, Scene> = {
         label: "Oberinspektor Vossbeck",
         kind: "talk",
         onUse: (api) => {
+          if (!api.hasFlag("knowsVossbeckPath")) {
+            api.startDialog("vossbeckNoBusiness");
+            return;
+          }
           if (!api.hasFlag("vossbeckSummoned")) {
             api.startDialog("vossbeckUnready");
             return;
