@@ -24,6 +24,7 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
         h: 13.7,
         label: "Schmerz-Radio",
         kind: "use",
+        hiddenWhen: ["tookPainRadio"],
         onUse: (api) => {
           if (!api.hasFlag("tookPainRadio")) {
             api.setFlag("tookPainRadio");
