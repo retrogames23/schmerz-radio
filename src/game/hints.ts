@@ -287,9 +287,7 @@ export const HINT_QUESTS: HintQuest[] = [
     isResolved: (a) => a.hasItem("tillaTransfer"),
     hints: [
       "Du musst zurück zu Frau Kowalk in der Kantine 3602. Sie weiß, wie es weitergeht.",
-      // Stufe 2 verzweigt nach Pfad:
-      ((): string => "")() ||
-        "Wenn Vossbeck gestempelt hat: Kowalk macht 4317-K direkt fertig — du musst nur das Gespräch mit ihr eröffnen. Wenn nicht: bring Bleistiftstummel (Bodos Tisch in 2612), einen Quittungsblanko (vom Block am Kantinentresen) und den Siegelabdruck (im Inventar Bleistift × Vollmacht 4317) zu Kowalk.",
+      "Wenn Vossbeck gestempelt hat: Kowalk macht 4317-K direkt fertig — du musst nur das Gespräch mit ihr eröffnen. Wenn nicht: bring Bleistiftstummel (Bodos Tisch in 2612), einen Quittungsblanko (vom Block am Kantinentresen) und den Siegelabdruck (im Inventar Bleistift × Vollmacht 4317) zu Kowalk.",
       "Sprich Kowalk an. Übergib die Quittung — und schick sie selbst über die Pneumatik-Rohrpost im selben Raum ab (Empfänger E70-K, Code 4317-K). Dann wartet die Antwort am Rohr.",
     ],
   },
