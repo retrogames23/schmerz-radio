@@ -210,7 +210,13 @@ export function RadioPanel() {
   // Doorbell trigger
   useEffect(() => {
     if (flags.has("burnedNode5610")) return;
-    if (freq === 104.6 && volume >= 0.99 && !flags.has("doorbellRang")) {
+    // Erst klingeln, wenn die Resonanz tatsächlich überlastet (≥100 %).
+    if (
+      freq === 104.6 &&
+      volume >= 0.99 &&
+      resonance >= 100 &&
+      !flags.has("doorbellRang")
+    ) {
       const t = setTimeout(() => {
         api.setFlag("doorbellRang");
         setRadioActive(true);
@@ -247,7 +253,7 @@ export function RadioPanel() {
       }, 900);
       return () => clearTimeout(t);
     }
-  }, [freq, volume, flags, api, setRadioActive, resetResonance, closeRadio, sfxVolume, scene]);
+  }, [freq, volume, resonance, flags, api, setRadioActive, resetResonance, closeRadio, sfxVolume, scene]);
 
   // E71 Frequenzsperre
   const inE71 =
@@ -310,6 +316,7 @@ export function RadioPanel() {
     [burned, freq],
   );
   const onAngel = freq === 104.6 && !burned;
+  const overloading = resonance >= 85 && onAngel;
 
   if (!radioOpen) return null;
 
@@ -324,7 +331,12 @@ export function RadioPanel() {
 
   return (
     <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/80 px-4">
-      <div className="fade-in relative w-full max-w-2xl rounded-sm border border-amber-glow/50 bg-background p-6 shadow-[0_0_60px_rgba(0,0,0,0.8)]">
+      <div
+        className={`fade-in relative w-full max-w-2xl rounded-sm border border-amber-glow/50 bg-background p-6 shadow-[0_0_60px_rgba(0,0,0,0.8)] ${
+          overloading ? "resonance-overload" : ""
+        }`}
+      >
+        {overloading && <div className="resonance-red-flicker" aria-hidden />}
         <CloseButton
           onClick={handleClose}
           label="Radio schließen"
