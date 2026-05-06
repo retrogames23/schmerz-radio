@@ -1,69 +1,102 @@
-## Problem
 
-Der Vossbeck-Strang fühlt sich anstrengend und unklar an:
+# Kantinen-Quest streamlinen
 
-1. **Vossbeck-Abweisung passt nicht zum Spielzustand.** `vossbeckNoBusiness` (vor Kowalk-Erklärung) und `vossbeckUnready` (nach Kowalk, vor Brust-Sieg) sagen aktuell exakt denselben Text: *„Fallnummer? Sie haben keine. Was wollen Sie dann hier?“* Sobald Layard mit Kowalk über 4317 gesprochen hat, **hat** er eine Fallnummer — der Satz ist dann falsch und gibt keine Richtung.
-2. **Kein Hinweis auf Brust.** Es wird dem Spieler in dem Moment, in dem er bei Vossbeck abgewiesen wird, nicht gesagt, dass er für ein Gespräch mit Vossbeck erst drei Trainingsfälle bei Brust gewinnen muss.
-3. **Kowalk wirkt wie noch ein Hindernis.** Sie erklärt 4317-K, Schicht-A-Logik, Marteau-Verbindung, Pneumatik-Regeln — viel Text, viele Nummern, kein freundlicher Boden. Spieler haben das Gefühl, sich Verwaltungswissen merken zu müssen.
-4. **Allgemeiner Spielfluss-Check.** Brust-Trainingsoption ist hinter `knowsVossbeckPath` versteckt, was an sich gut ist — aber Brust selbst stupst Layard nicht aktiv in Richtung Training, wenn Layard ohne Vollmacht reinkommt.
+## Was momentan verwirrt
 
-## Ziel
+Wer in der Kantine steht, jongliert vier verschachtelte Stränge gleichzeitig:
 
-Der Spieler soll nach dem Kowalk-Gespräch klar wissen: **„Ich brauche Brust → drei Trainingsfälle → dann Vossbeck.“** Kowalk soll dabei spürbar auf Layards Seite stehen und ihn entlasten („Sie müssen sich das nicht merken“). Der Vossbeck-Auftritt vor dem Brust-Sieg soll diesen Pfad bestätigen, nicht verwirren.
+1. **Insa-Auftrag**: „Quittung 4317-K für Tilla“ — kritischer Pfad.
+2. **Philippe-Gefallen**: B3-Ration besorgen, dafür Vollmacht 4317 — optional.
+3. **Vossbeck-Pfad**: Brust-Trainingsfälle → Bürokratie-Duell.
+4. **Forgery-Pfad**: Fallback nach drei Niederlagen, mit *vier* Zutaten (Bleistift, Quittungsblanko, Siegelabdruck, Original-Aushang E71) und einem Bastelschritt an Bodos Terminal.
 
-## Änderungen
+Die beiden Aktennummern **4317** (Philippe/Marteau) und **4317-K** (Tilla) heißen fast gleich, hängen mechanisch zusammen, werden aber in zwei verschiedenen Dialogen erklärt. Dazu kommt: Der Spieler erfährt erst *nach* dem Duell-Verlust, dass es überhaupt eine Notlösung gibt — und die führt plötzlich quer durch den Sektor (E71, Bodo).
 
-### 1. `vossbeckUnready` (nach Kowalk-Gespräch, vor 3 Brust-Siegen) klar umschreiben
+Ergebnis: Man weiß weder, warum man gerade duelliert, noch warum man auf einmal einen Aushang holen soll.
 
-Aktuell identisch zu `vossbeckNoBusiness`. Neu: Vossbeck **kennt** den Vorgang 4317, weist aber wegen fehlender Satisfaktionsfähigkeit ab — und nennt Brust beim Namen.
+## Designziele
 
-Beispiel-Tonalität (Vossbeck, knapp, ohne aufzuschauen):
-- *„Fallnummer.“* — *„4317.“*
-- *„Vorgang Vollmacht 4317. Bewohner Worag. — Habe ich auf dem Tisch.“*
-- *„Trainingssiege bei Herrn Brust: keine dokumentiert. Ich verhandle nicht mit Bewohnern, die nicht satisfaktionsfähig sind. — Drei in Folge bei Brust. Dann reden wir.“*
+- **Ein aktuelles Ziel zur Zeit.** Im Tipp-System wie im Spielablauf.
+- **„Warum tue ich das?“ jederzeit aus dem Kontext beantwortbar** — ohne LORE.md zu lesen.
+- **Bürokratiewahnsinn bleibt erlebbar**, aber als Komik, nicht als Hausaufgabe.
+- **Kein Spielfortschritt hängt am Verstehen der Aktennummern.** Die Nummern dürfen kryptisch klingen, das *Vorgehen* muss klar sein.
 
-`vossbeckNoBusiness` (Layard war noch nicht bei Kowalk) bleibt der schroffe „Fallnummer? Sie haben keine.“-Brush-off.
+## Vorschlag: Die zwei Stränge sauber trennen und stapeln
 
-### 2. Kowalk als guter Geist — Last vom Spieler nehmen
+### Strang A — Tilla (kritischer Pfad, Insa)
 
-Im `kInsa`-Strang (Erklärung 4317-K) und `kAuth`-Strang (Vossbeck-Pfad) zwei kurze entlastende Einwürfe einbauen, ohne die Lore zu kappen:
+Reihenfolge wird linear erzwungen, jeder Schritt erklärt sich aus dem Vorhergehenden:
 
-- Nach `kInsa6` / vor dem Bestätigungs-Choice: Kowalk legt sanft nach, z. B. *„Keine Angst, Worag — Sie müssen sich das nicht alles merken. Vossbeck hat den Vorgang. Sie müssen nur zu ihm durchkommen.“*
-- In `kAuth8` (sie erklärt Vossbeck + satisfaktionsfähig): zweite Choice-Beschriftung freundlicher und klarer auf Brust gemünzt: *„Verstanden. Ich übe mit Brust.“* statt *„Ich rede mit Brust.“* — und Kowalk antwortet kurz beruhigend: *„Brust beißt nicht. Er liest nur viel.“*
-- Wenn Layard nach erfolgter Kowalk-Erklärung erneut Kowalk anspricht und noch keine Brust-Siege hat: optionale neue Hilfs-Zeile (Choice in `k0` mit `requires: ["knowsVossbeckPath"]`, `hiddenWhen: ["vossbeckSummoned","gotB3Ration"]`): *„Was war nochmal der Weg?“* → Kowalk fasst in einem Satz zusammen: *„Brust. Trainingsfall. Drei in Folge. Dann Vossbeck. Den Rest mache ich von hier aus.“*
+```text
+Insa: "Bring Quittung 4317-K rüber zu Frau Kowalk in der Kantine."
+   ↓
+Kowalk: "4317-K geht nur durch, wenn Stamm-Vorgang 4317 freigegeben ist.
+         Den hat Vossbeck. Nebenan, Tür 3603."
+   ↓
+Vossbeck (durch Brust gefiltert): Bürokratie-Duell.
+   ↓ gewonnen                            ↓ dreimal verloren
+Vossbeck stempelt 4317.            Kowalk: "Lassen Sie mich das regeln."
+                                   → Forgery-Pfad (siehe unten, vereinfacht)
+   ↓
+Kowalk schickt 4317-K per Rohrpost. Tillas Transferbogen kommt zurück.
+```
 
-### 3. Brust schiebt aktiv an, sobald Layard den Pfad kennt
+Jeder dieser Knoten hat im Dialog **einen einzigen** „Was ist gerade dran?“-Satz, den Kowalk/Brust am Anfang des Dialogs sagen, wenn der Spieler zurückkommt.
 
-`cafeteriaBrust` → `b0`: wenn `knowsVossbeckPath && !vossbeckSummoned && !duelStarted`, soll Brust bei der allgemeinen Anrede freundlicher (für Brust-Verhältnisse) auf den Trainingsfall verweisen. Eine kurze System-/Brust-Zeile reicht: *„Frau Kowalk hat Sie geschickt. Trainingsfall steht für Sie bereit, sobald Sie wollen.“* Damit wird die Trainings-Choice nicht nur sichtbar, sondern aktiv angeboten.
+### Strang B — Philippes B3-Ration (optional, separat ausgespielt)
 
-### 4. Hint-Texte anpassen
+Aktuell teilt sich Strang B den ganzen Vossbeck-Apparat mit Strang A — das ist ein Großteil der Verwirrung. Vorschlag:
 
-`act1.b3Authorization` und `act1.bureaucracyDuel` so umformulieren, dass die Reihenfolge **Kowalk-Erklärung → Brust-Training → Vossbeck** als ein Satz lesbar wird. Der dritte (lösende) Hinweis nennt explizit: „Geh zurück in die Kantine, sprich Brust an und wähle ‚Trainingsfall‘. Drei in Folge gewinnen — dann nimmt Vossbeck dich an.“
+- Wenn Strang A bereits gewonnen ist (4317 gestempelt), **gibt der gestempelte Vorgang automatisch B3 frei**. Kowalk drückt Layard die Dose über die Theke: „Marteau hat heute Glück, Sie haben den Vorgang sowieso freigemacht.“
+- Wenn Strang A noch offen ist und Spieler trotzdem mit Vollmacht von Philippe kommt → bisheriger Pfad bleibt, ist aber als „nettes Extra“ erkennbar, nicht als Pflichtaufgabe.
 
-Außerdem ein neuer früher Hint, sobald `knowsVossbeckPath && !duelOffered`: *„Kowalk hat dir den Weg erklärt. Der nächste Schritt ist nicht Vossbeck, sondern Brust — am Tresen rechts.“*
+Dadurch wird Philippes B3 zu einer **Belohnung** für den kritischen Pfad, nicht zu einer parallelen Pflicht. Kein Spieler muss zwei Mal duellieren.
 
-### 5. Spielbarkeits-Pass über die Quest (kein Mechanik-Umbau)
+### Forgery-Pfad — radikal vereinfachen
 
-Nur Text/Trigger-Tuning, keine neue Logik:
+Aktuell: 4 Zutaten, 2 Orte, 1 fremdes Terminal. Vorschlag:
 
-- Sicherstellen, dass die `kInsa`-Choice nach der Bestätigung nicht in einem Loop endet, der den Spieler zwingt, dieselben langen 4317-K-Lore-Zeilen erneut zu lesen.
-- Im Notizbuch / `Hint`-Tray prüfen, dass nach `gotTillaTransferInfo` der nächste Hint sofort auf „Brust → Training“ zeigt, nicht auf „Vossbeck“.
-- Doppelte Vossbeck-Erwähnungen (Brust nennt ihn in `bAuth2` + `bAuth3`, Kowalk in `kAuth7` + `kAuth8` + `kInsa6`) leicht straffen, damit der Name nicht fünfmal hintereinander fällt.
+- **Streichen**: „Original-Aushang 7.1 aus E71“. Das war der Hauptauslöser des Frusts und narrativ ohnehin wackelig.
+- **Streichen**: Bastelschritt an Bodos Terminal. Kowalk macht das selbst hinter der Theke.
+- **Bleibt** (2 Zutaten, 1 Ort):
+  - Bleistiftstummel (Bodos Tisch, 2612)
+  - Quittungsblanko (Kantinentresen, holt Spieler im Dialog mit)
+  - Siegelabdruck nimmt der Spieler im Inventar von Philippes Vollmacht 4317 ab.
+- Kowalk sagt explizit: „Geben Sie mir die drei Sachen, ich schicke das ab. Niemand fragt nach.“
+- Übergabe via Inventar-Drag oder Dialog-Choice „[ Sachen übergeben ]“.
 
-## Was nicht geändert wird
+Das hält das Forgery-Gefühl (es ist eine Fälschung, sie wird heimlich gemacht), nimmt aber die Schnitzeljagd raus.
 
-- Mechanik des Bürokratie-Duells, Paragraphen-System, `bureaucracyDuel.ts`.
-- Die Lore (4317, Schicht A, Marteau-Verbindung, Tilla-Quittung) bleibt; nur Tonalität & Zwischenzeilen werden weicher.
-- Der Endgame-Auftritt von Vossbeck (`v0`–`v6`) bleibt unangetastet.
+### Aktennummern entdramatisieren
 
-## Technische Notizen
+- Im UI/Tipps konsequent **„Tillas Transfer“** und **„Philippes Vollmacht“** statt 4317 / 4317-K verwenden.
+- In Dialogen dürfen die Nummern fallen — als Geräusch der Bürokratie.
+- Inventar-Items entsprechend benennen, damit Spieler beim Hovern sieht, wofür der Zettel gut ist.
 
-- **Datei: `src/game/dialogs/cafeteria.ts`**
-  - `vossbeckUnready.lines` neu schreiben (Vossbeck kennt 4317, verlangt Brust-Siege).
-  - `cafeteriaKowalk`: zwei beruhigende Zeilen in `kInsa6` und `kAuth8` einfügen, neue `k0`-Choice „Was war nochmal der Weg?“ als Recap, gegated auf `knowsVossbeckPath`.
-  - `cafeteriaBrust.b0`: kurze Anschub-Zeile bei `knowsVossbeckPath && !duelStarted`.
-- **Datei: `src/game/hints.ts`**
-  - Hints für `act1.b3Authorization` und `act1.bureaucracyDuel` umformulieren.
-  - Optional ein neuer Eintrag „Brust antrainieren“ mit Priority zwischen 50 und 51, gegated auf `knowsVossbeckPath && !duelOffered`.
-- **Keine Änderungen** an `bureaucracyDuel.ts`, `BureaucracyDuelOverlay.tsx`, `kantinenverwaltung3603.ts` (Routing bleibt: ohne `knowsVossbeckPath` → `vossbeckNoBusiness`, sonst ohne `vossbeckSummoned` → `vossbeckUnready`, sonst → `cafeteriaVossbeck`).
-- Keine neuen Flags nötig — bestehende `knowsVossbeckPath`, `vossbeckSummoned`, `duelOffered`, `duelStarted`, `gotTillaTransferInfo` reichen aus.
+## Tipps-System (`hints.ts`) anpassen
+
+Die kritisch-Pfad-Quest `act1.quittung4317` wird in **drei kleine, sequenzielle** Quests aufgeteilt, von denen immer nur eine gleichzeitig „aktiv“ ist:
+
+1. **`act1.kowalkBrief`** — „Bring Insas Auftrag zu Kowalk“ (aktiv: `insaGaveTransferTask`, gelöst: `gotTillaTransferInfo`).
+   Tipp 3 nennt nur: Aufzug ins 3. OG, Korridor 36, Kantine 3602, mit Frau Kowalk reden.
+2. **`act1.stamp4317`** — „Vossbeck soll 4317 stempeln“ (aktiv: `knowsVossbeckPath`, gelöst: `duelEndgameWon || kowalkOfferedForgery`).
+   Verweist auf bestehende Sub-Quests `bureaucracyDuel` / `vossbeckEndgame`.
+3. **`act1.send4317K`** — „Quittung 4317-K abschicken“ (aktiv: Stempel oder Forgery-OK, gelöst: `hasItem('tillaTransfer')`).
+   Nach Forgery: Tipp 3 sagt nur „Bleistiftstummel + Quittungsblanko + Siegelabdruck Kowalk übergeben“ — kein E71, kein Bodo-Terminal.
+
+Die optionale `act1.b3Authorization` wird umformuliert: „Wenn du Vossbecks Stempel hast, holt Kowalk automatisch die B3-Ration für Philippe nach. Optional vorher: direkt mit Philippe sprechen.“
+
+## Technische Skizze (für später)
+
+- **Dialoge**: `cafeteriaKowalk` bekommt einen neuen Eingangs-Recap-Knoten, der je nach Flag-Stand genau einen Satz Ziel ausspricht (`kRecapDynamic`).
+- **Forgery**: Nodes `kForge4`/`kForge5`/`kForge6` werden auf eine Choice „[ Bleistift, Blanko und Siegelabdruck übergeben ]“ kollabiert mit `requires: ['hasPencilStub','hasBlankoQuittung','hasSealRubbing']`. Terminal-Code in `Terminal.tsx` (1646–1696) für die Forgery-Kombination wird entfernt; statt dessen setzt der Übergabe-Knoten `usedForgeryRoute` und `addItem('tillaTransfer', …)` direkt.
+- **B3 als Belohnung**: In `BureaucracyDuelOverlay.tsx` setzt der Sieg zusätzlich `gotB3Ration` und addet die `b3Ration` in Layards Inventar (mit kurzem Floater „Kowalk drückt dir die Dose in die Hand.“).
+- **Hints**: `act1.quittung4317` wird in drei neue Einträge gesplittet, alte Quest-ID bleibt für Save-Kompatibilität, wird aber nie mehr `isActive`.
+- **Items/Flags**: `tillaTransfer` und `b3Ration` bestehen weiter; `gotB3Authorization` wird optional aber nicht mehr benötigt für Tilla.
+
+## Was bleibt unverändert
+
+- Bürokratie-Duell-Mechanik selbst (haben wir gerade gestreamlined).
+- Insas Auftrag-Dialog.
+- Philippes Charakter und Smalltalk-Notizen.
+- Kowalks Tonfall, ihre Tochter-Geschichte, Brusts Paragraphen-Pedanterie.
