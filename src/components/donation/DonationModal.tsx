@@ -43,7 +43,8 @@ export function DonationModal({
   const validAmount = amountCents >= 300 && amountCents <= 100_000;
 
   const handleDonate = async () => {
-    if (!user) {
+    const isAnon = (user as { is_anonymous?: boolean } | null)?.is_anonymous;
+    if (!user || isAnon || !user.email) {
       setAuthOpen(true);
       return;
     }
