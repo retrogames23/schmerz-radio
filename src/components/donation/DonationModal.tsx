@@ -194,7 +194,9 @@ export function DonationModal({
         >
           {busy
             ? "…"
-            : !user
+            : !user ||
+                (user as { is_anonymous?: boolean }).is_anonymous ||
+                !user.email
               ? "Anmelden & spenden"
               : `${(amountCents / 100).toLocaleString("de-DE", { minimumFractionDigits: amountCents % 100 ? 2 : 0 })} € spenden`}
         </button>
