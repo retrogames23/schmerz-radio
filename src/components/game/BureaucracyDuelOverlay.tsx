@@ -348,14 +348,14 @@ export function BureaucracyDuelOverlay() {
 
         {/* Mimik */}
         <div className="mt-4 rounded-sm border border-amber-glow/20 bg-black/30 px-3 py-2 font-mono-crt text-[12px] italic text-amber-glow/70">
-          {phase === "round"
+          {phase === "round" || phase === "feedback"
             ? moodTextMap[moodKey]
             : phase === "victory"
               ? moodTextMap.crumbling
               : moodTextMap.triumphant}
         </div>
 
-        {phase === "round" && (
+        {(phase === "round" || phase === "feedback") && (
           <>
             {/* Eröffnung */}
             <div className="mt-3 rounded-sm border-l-2 border-amber-glow/60 bg-black/30 px-3 py-2 font-mono-crt text-sm leading-relaxed">
@@ -383,16 +383,37 @@ export function BureaucracyDuelOverlay() {
               <div className="mt-2 grid gap-2">
                 {counters.map((c, i) => {
                   const para = getParagraph(c.paragraphId);
+                  const reveal = phase === "feedback";
+                  const isChosen = chosenIdx === i;
+                  const isCorrect = c.correct;
+                  let stateClasses =
+                    "border-amber-glow/30 bg-black/40 text-amber-glow/90 hover:border-amber-glow hover:bg-amber-glow/10";
+                  if (reveal) {
+                    if (isCorrect) {
+                      stateClasses =
+                        "border-emerald-400/70 bg-emerald-400/15 text-emerald-100";
+                    } else if (isChosen) {
+                      stateClasses =
+                        "border-red-400/70 bg-red-500/15 text-red-100";
+                    } else {
+                      stateClasses =
+                        "border-amber-glow/15 bg-black/30 text-amber-glow/40";
+                    }
+                  }
                   return (
                     <button
                       key={i}
                       type="button"
-                      disabled={locked}
+                      disabled={locked || phase === "feedback"}
                       onClick={() => onChoose(i)}
                       title={para?.shortLabel}
-                      className="group w-full rounded-sm border border-amber-glow/30 bg-black/40 px-3 py-2 text-left font-mono-crt text-sm leading-snug text-amber-glow/90 transition hover:border-amber-glow hover:bg-amber-glow/10 disabled:cursor-not-allowed disabled:opacity-40"
+                      className={`group w-full rounded-sm border px-3 py-2 text-left font-mono-crt text-sm leading-snug transition disabled:cursor-not-allowed ${stateClasses}`}
                     >
-                      <div className="leading-snug">{c.text}</div>
+                      <div className="leading-snug">
+                        {reveal && isCorrect && "✓ "}
+                        {reveal && isChosen && !isCorrect && "✗ "}
+                        {c.text}
+                      </div>
                     </button>
                   );
                 })}
@@ -407,7 +428,7 @@ export function BureaucracyDuelOverlay() {
               </div>
             )}
 
-            <div className="mt-3 flex justify-end">
+            <div className="mt-3 flex items-center justify-between gap-2">
               <button
                 type="button"
                 onClick={onAbort}
@@ -415,6 +436,16 @@ export function BureaucracyDuelOverlay() {
               >
                 {DUEL_UI_TEXT.abortLabel}
               </button>
+              {phase === "feedback" && (
+                <button
+                  type="button"
+                  onClick={onContinueAfterFeedback}
+                  className="rounded-sm border border-amber-glow/60 bg-amber-glow/15 px-4 py-1.5 font-display text-[11px] uppercase tracking-widest text-amber-glow hover:bg-amber-glow/25"
+                  autoFocus
+                >
+                  Weiter ▸
+                </button>
+              )}
             </div>
           </>
         )}
