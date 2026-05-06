@@ -559,6 +559,34 @@ export const corridorsE67Scenes: Record<string, Scene> = {
           ]);
         },
       },
+      // Bodos vergessene grüne Thermoskanne — liegt auf einem der
+      // warmen Racks, gut sichtbar. Nur relevant, wenn Bodo den
+      // Auftrag erteilt hat (Wartungskarte ausgehändigt).
+      {
+        id: "bodoThermosPickup5610",
+        x: 30,
+        y: 22,
+        w: 9,
+        h: 13,
+        label: "Grüne Thermoskanne (auf dem Rack)",
+        kind: "use",
+        hiddenWhen: ["tookBodoThermos"],
+        visibleWhen: ["bodoGaveWartungskarte"],
+        onUse: (api) => {
+          api.setFlag("tookBodoThermos");
+          api.addItem({
+            id: "bodoThermos",
+            name: "Grüne Thermoskanne",
+            description:
+              "Bodos vergessene Thermoskanne. Mattgrün, eine ordentliche Delle an der Seite, der Schraubdeckel klemmt. Innen riecht es noch schwach nach Karton-Tee.",
+          });
+          api.showText([
+            "Auf einem der warmen Racks, halb hinter einem Patchkabel-Wirrwarr,",
+            "steht eine grüne Thermoskanne. Mit Delle. Genau wie Bodo gesagt hat.",
+            "[ Thermoskanne eingesteckt. ]",
+          ]);
+        },
+      },
     ],
   },
 };
