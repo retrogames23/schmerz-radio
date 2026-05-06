@@ -134,7 +134,7 @@ export function DonationModal({
             </>
           ) : (
             <p>
-              Schmerz-Radio läuft auf einem Lovable-Server und Cloud-KI. Mit
+               Whisper Quest läuft auf einem Lovable-Server und Cloud-KI. Mit
               einer Spende schaltest du unbegrenzten Cloud-Chat für deinen
               Account frei und hilfst, dass das Projekt online bleibt.
             </p>
