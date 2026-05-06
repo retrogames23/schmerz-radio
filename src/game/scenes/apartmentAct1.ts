@@ -1,4 +1,5 @@
 import apartmentBg from "@/assets/scene-apartment.jpg";
+import apartmentNoRadioBg from "@/assets/scene-apartment-no-radio.jpg";
 import hallwayBg from "@/assets/scene-hallway.jpg";
 import hallway2615SealedBg from "@/assets/scene-hallway-2615-sealed.jpg";
 import apt2613Bg from "@/assets/scene-apt-2613.jpg";
@@ -9,7 +10,8 @@ import type { Scene } from "../types";
 export const apartmentAct1Scenes: Record<string, Scene> = {
   apartment: {
     id: "apartment",
-    background: apartmentBg,
+    background: (api) =>
+      api.hasFlag("tookPainRadio") ? apartmentNoRadioBg : apartmentBg,
     title: "Wohnung 2611 — Quadrant E67",
     intro:
       "Layard. Ein-Zimmer-Wohnung, Quadrant E67. Auf dem Tisch: das Schmerz-Radio. Heute hat er Urlaub. Heute will er weiter — tiefer. Stell die Frequenz auf 104,6 und dreh die Lautstärke voll auf.",
@@ -22,7 +24,24 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
         h: 13.7,
         label: "Schmerz-Radio",
         kind: "use",
-        onUse: (api) => api.openRadio(),
+        onUse: (api) => {
+          if (!api.hasFlag("tookPainRadio")) {
+            api.setFlag("tookPainRadio");
+            api.addItem({
+              id: "painRadio",
+              name: "Schmerz-Radio",
+              description:
+                "Ein kleines tragbares Resonanz-Radio mit Bernstein-Skala und kurzer Teleskop-Antenne. Layards einziger verlässlicher Empfänger. Steckt jetzt in der Innentasche seines Mantels.",
+            });
+            api.showText([
+              "Layard hebt das Schmerz-Radio vom Tisch und steckt es ein.",
+              "Solange er es bei sich trägt, ist die Skala nur einen Griff entfernt.",
+              "[ Schmerz-Radio eingesteckt. ]",
+            ]);
+            return;
+          }
+          api.openRadio();
+        },
       },
       {
         id: "terminal",
