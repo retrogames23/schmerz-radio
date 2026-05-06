@@ -62,8 +62,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
         h: 22,
         label: "Telefon",
         kind: "use",
-        // Only available after Layard saw the empty office on floor 3.
-        requires: ["sawEmptyOffice"],
+        // Only available after Layard saw the empty office on floor 3
+        // AND has the Einsatzprotokoll in der Tasche — sonst gibt es
+        // gar keinen Anlass, die Leitstelle anzurufen.
+        requires: ["sawEmptyOffice", "protocolReceived"],
         hiddenWhen: ["calledInsaAfterE71"],
         onUse: (api) => {
           // Höchste Priorität: Layard ist aus E71 zurück und hat das

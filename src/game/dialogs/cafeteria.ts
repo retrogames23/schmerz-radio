@@ -660,6 +660,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
   },
   // Vossbeck winkt jeden Bewohner ab, der sich nicht vorher bei Brust
   // qualifiziert hat — Tür 3603 ist offen, der Vorgang aber nicht.
+  // Solange Layard noch keinen freigegebenen Vorgang hat (drei Trainingssiege
+  // bei Brust → vossbeckSummoned), winkt Vossbeck ihn ohne Federlesens ab.
   vossbeckUnready: {
     id: "vossbeckUnready",
     start: "u0",
@@ -667,13 +669,19 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       u0: {
         id: "u0",
         speaker: "SYSTEM",
-        text: "[ Vossbeck blättert weiter, ohne aufzuschauen. ]",
+        text: "[ Vossbeck blättert weiter, ohne den Bleistift abzulegen. ]",
         next: "u1",
       },
       u1: {
         id: "u1",
         speaker: "VOSSBECK",
-        text: "Ohne dokumentierte Trainingssiege bei Herrn Brust nehme ich keine Vorgänge an. Bewohner Worag — drei in Folge. Dann reden wir.",
+        text: "Fallnummer?",
+        next: "u2",
+      },
+      u2: {
+        id: "u2",
+        speaker: "VOSSBECK",
+        text: "Sie haben keine. Was wollen Sie dann hier? Ich habe zu tun.",
         end: true,
       },
     },
