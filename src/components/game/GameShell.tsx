@@ -24,6 +24,7 @@ import type { HelpTab } from "./HelpOverlay";
 import { IdCardOverlay } from "./IdCardOverlay";
 import { LobbyGate } from "./LobbyGate";
 import { PneumaticTubeOverlay } from "./PneumaticTubeOverlay";
+import { CondomAutomatOverlay } from "./CondomAutomatOverlay";
 import { ParagraphenNotizbuchOverlay } from "./ParagraphenNotizbuchOverlay";
 import { PubOverlay } from "./PubOverlay";
 import { RoomSwitcher } from "@/dev/RoomSwitcher";
@@ -215,6 +216,7 @@ function GameStage({
             <IdCardOverlay open={idCardOpen} onClose={closeIdCard} />
             <LobbyGate />
             <PneumaticTubeOverlay />
+            <CondomAutomatOverlay />
             <ParagraphenNotizbuchOverlay />
             <PubOverlay />
             <ToiletWallOverlay />
