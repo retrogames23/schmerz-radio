@@ -57,7 +57,13 @@ export type InventoryItemId =
   // Tragbares Schmerz-Radio aus Layards Wohnung (Akt I)
   | "painRadio"
   // Bodos vergessene grüne Thermoskanne aus Tech-Knoten 5610
-  | "bodoThermos";
+  | "bodoThermos"
+  // Reichswährung — zählbar (count > 1).
+  | "reichsmark"
+  // Pfefferminzkaugummi aus dem Kondomautomaten („Zum stillen Funk").
+  | "peppermint"
+  // Kondom aus dem Kondomautomaten („Zum stillen Funk").
+  | "condom";
 
 export type KnowledgeFlag =
   | "responsibilityE67"
