@@ -12,14 +12,11 @@ interface Props {
 function TopBarImpl({ onOpenPause, onOpenHelp }: Props) {
   const game = useGame();
   const { scene, radioActive, flags, ending, dsaCharacter, dsaSheetOpen, toggleDsaSheet, inventory } = game;
-  const inAct2 = flags.has("enteredE71");
   const hasPainRadio = inventory.some((i) => i.id === "painRadio");
   const music = useMusic();
   const { musicEnabled } = useSettings();
   const currentTrack = music.tracks[music.currentIndex];
 
-  // Kurze Einblendung beim Übergang: AKT I → AKT II.
-  const [showActBanner, setShowActBanner] = useState(false);
   // Vollbild-Status (Desktop). Synchronisiert mit der Browser-API,
   // damit ESC-Verlassen den Button korrekt zurücksetzt.
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -39,15 +36,6 @@ function TopBarImpl({ onOpenPause, onOpenHelp }: Props) {
       // Browser hat Vollbild verweigert – stillschweigend ignorieren.
     }
   };
-  useEffect(() => {
-    if (!inAct2) return;
-    const seen = sessionStorage.getItem("act2-banner-seen");
-    if (seen) return;
-    sessionStorage.setItem("act2-banner-seen", "1");
-    setShowActBanner(true);
-    const t = setTimeout(() => setShowActBanner(false), 4500);
-    return () => clearTimeout(t);
-  }, [inAct2]);
 
   return (
     <>
@@ -188,21 +176,6 @@ function TopBarImpl({ onOpenPause, onOpenHelp }: Props) {
         </div>
       </div>
     </header>
-    {showActBanner && (
-      <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center">
-        <div className="fade-in rounded-sm border border-amber-glow/60 bg-background/90 px-10 py-6 text-center shadow-[0_0_60px_rgba(0,0,0,0.85)]">
-          <div className="font-mono-crt text-xs uppercase tracking-[0.5em] text-muted-foreground">
-            Akt II
-          </div>
-          <div className="mt-2 font-display text-3xl uppercase tracking-[0.3em] text-amber-glow amber-glow">
-            Die Außenwelt
-          </div>
-          <div className="mt-2 font-mono-crt text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            E67 verlassen
-          </div>
-        </div>
-      </div>
-    )}
     </>
   );
 }
