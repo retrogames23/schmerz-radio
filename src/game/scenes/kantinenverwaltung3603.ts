@@ -31,7 +31,14 @@ export const kantinenverwaltung3603Scenes: Record<string, Scene> = {
             return;
           }
           if (!api.hasFlag("vossbeckSummoned")) {
-            api.startDialog("vossbeckUnready");
+            const streak = api.getBrustWinStreak();
+            api.startDialog(
+              streak >= 2
+                ? "vossbeckUnreadyTwo"
+                : streak === 1
+                  ? "vossbeckUnreadyOne"
+                  : "vossbeckUnready",
+            );
             return;
           }
           api.startDialog("cafeteriaVossbeck");
