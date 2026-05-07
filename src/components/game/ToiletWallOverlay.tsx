@@ -56,6 +56,17 @@ export function ToiletWallOverlay() {
       </button>
       {/* Wand mit Graffiti */}
       <div className="relative flex-1 overflow-hidden">
+        {/* Klickfläche für den auf die Wand gemalten Kondomautomaten
+            (links neben der Wand, oberhalb des Spiegels). Öffnet das
+            Automaten-Overlay. */}
+        <button
+          type="button"
+          onClick={() => game.api.openCondomAutomat()}
+          aria-label="Kondomautomat"
+          title="Kondomautomat"
+          className="absolute z-[1] cursor-pointer"
+          style={{ left: "24%", top: "14%", width: "14%", height: "40%" }}
+        />
         {wall.graffiti.map((g) => (
           <div
             key={g.id}
