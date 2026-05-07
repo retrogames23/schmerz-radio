@@ -275,10 +275,10 @@ export const TRAINING_ROUNDS: DuelRound[] = [
     opening:
       "Bewohner Worag. Fiktiver Fall: Bewohner X holt B3 in Schicht B mit Vollmacht aus Schicht A. Aushang vier Punkt zwei vom 14. März 1996 ist eindeutig. Schicht A gilt nicht in Schicht B.",
     counters: [
-      { text: "Aushang sieben Punkt eins von 1991 hebt das auf — gleichwertige Gegenzeichnung.", paragraphId: "p7-1" },
-      { text: "Hausordnung §1a — Übersagung, also gilt der jüngere.", paragraphId: "p1a" },
-      { text: "Vollmachtsordnung §12 — die Vollmacht ist erloschen.", paragraphId: "p12" },
-      { text: "Generalvorbehalt §99 — die Verwaltung entscheidet.", paragraphId: "p99" },
+      { text: "Aushang 7.1 (1991): Gegenzeichnungen aus Nachbarschichten sind gleichwertig — und nie widerrufen. Schicht A bindet also auch in Schicht B.", paragraphId: "p7-1" },
+      { text: "Hausordnung §1a: Bei Überlagerung gilt der jüngere Aushang — folglich Brusts 4.2.", paragraphId: "p1a" },
+      { text: "Vollmachtsordnung §12: Vollmachten erlöschen mit Schichtende — die Schicht-A-Vollmacht ist also tot.", paragraphId: "p12" },
+      { text: "Generalvorbehalt §99: Verwaltung entscheidet in Zweifelsfällen — also gegen den Bewohner.", paragraphId: "p99" },
     ],
     onHit:
       "Aushang sieben Punkt eins ist tatsächlich nie ausdrücklich widerrufen worden. Das ist … korrekt.",
@@ -293,10 +293,10 @@ export const TRAINING_ROUNDS: DuelRound[] = [
     opening:
       "Nächster fiktiver Fall. Hausordnung §1a: Bei Überlagerung gilt der jüngere Aushang. Punkt. Damit wäre vier Punkt zwei der einzig gültige.",
     counters: [
-      { text: "Aushang sieben Punkt eins von 1991 — älter, aber gültig.", paragraphId: "p7-1" },
-      { text: "§1a, zweiter Halbsatz: nur, wenn der ältere im Wortlaut widerrufen wurde.", paragraphId: "p1a-w" },
-      { text: "Schichtordnung §3 Abs. 4 — Übergabezeit.", paragraphId: "p3-4" },
-      { text: "Identitätsordnung §2 — Gegenzeichnung.", paragraphId: "p2-1" },
+      { text: "Aushang 7.1 (1991): gleichwertige Gegenzeichnung aus Nachbarschicht — älter, aber nie widerrufen.", paragraphId: "p7-1" },
+      { text: "§1a, zweiter Halbsatz: Übersagung gilt nur, wenn der ältere im Wortlaut widerrufen wurde — das Wort fehlt in 4.2.", paragraphId: "p1a-w" },
+      { text: "Schichtordnung §3 Abs. 4: Übergabezeit, Vorgänge dürfen schichtübergreifend abgeschlossen werden.", paragraphId: "p3-4" },
+      { text: "Identitätsordnung §2: Gegenzeichnung nur in derselben Schicht und im selben Sektor zulässig.", paragraphId: "p2-1" },
     ],
     onHit:
       "»…sofern der ältere im Wortlaut widerrufen wurde.« Korrekt zitiert. Das Wort »widerrufen« kommt im neuen Aushang nicht vor.",
@@ -311,10 +311,10 @@ export const TRAINING_ROUNDS: DuelRound[] = [
     opening:
       "Fiktiver Fall: Bewohnerin Y reicht in Schicht B einen Vorgang ein, den Schicht A angefangen hat. Schichtordnung §3 Abs. 4 — nahtlose Übergabe — gilt nur für die Bediensteten, nicht für Bewohnervorgänge.",
     counters: [
-      { text: "§3 Abs. 4 lit. b — mündliche Verweigerung gilt nicht als Einrede.", paragraphId: "p3-4b" },
-      { text: "Aushang sieben Punkt eins von 1991.", paragraphId: "p7-1" },
-      { text: "Vollmachtsordnung §12 Abs. 2 — Bewohner-Vollmacht.", paragraphId: "p12-2" },
-      { text: "Identitätsordnung §2 — Gegenzeichnung.", paragraphId: "p2-1" },
+      { text: "Schichtordnung §3 Abs. 4 lit. b: Schichtfremde Vorgänge sind fortzuführen — eine bloße mündliche Verweigerung ist keine Einrede.", paragraphId: "p3-4b" },
+      { text: "Aushang 7.1 (1991): gleichwertige Gegenzeichnung aus Nachbarschichten, nie widerrufen.", paragraphId: "p7-1" },
+      { text: "Vollmachtsordnung §12 Abs. 2: Bewohner-Vollmachten überleben den Schichtwechsel.", paragraphId: "p12-2" },
+      { text: "Identitätsordnung §2: Gegenzeichnung nur in derselben Schicht und im selben Sektor.", paragraphId: "p2-1" },
     ],
     onHit:
       "§3 Abs. 4 lit. b. Sie haben Recht — eine bloße mündliche Verweigerung genügt nicht. Es bräuchte eine schriftliche Einrede.",
@@ -329,10 +329,10 @@ export const TRAINING_ROUNDS: DuelRound[] = [
     opening:
       "Fiktiver Fall: Vollmacht ausgestellt um 11:55, eingelöst um 12:05. Schichtwechsel zwölf Uhr. Vollmachtsordnung §12: erloschen.",
     counters: [
-      { text: "§12 Abs. 2 — Bewohner-Vollmachten überleben Schichtwechsel.", paragraphId: "p12-2" },
-      { text: "Aushang sieben Punkt eins.", paragraphId: "p7-1" },
-      { text: "§3 Abs. 4 — nahtlose Übergabe.", paragraphId: "p3-4" },
-      { text: "Generalvorbehalt §99.", paragraphId: "p99" },
+      { text: "Vollmachtsordnung §12 Abs. 2: Bewohner-Vollmachten gelten bis zur Einlösung — maßgeblich ist das Ausstellungsdatum, nicht die Uhrzeit.", paragraphId: "p12-2" },
+      { text: "Aushang 7.1 (1991): gleichwertige Gegenzeichnung aus Nachbarschicht.", paragraphId: "p7-1" },
+      { text: "Schichtordnung §3 Abs. 4: Übergabezeit, Vorgänge dürfen schichtübergreifend abgeschlossen werden.", paragraphId: "p3-4" },
+      { text: "Generalvorbehalt §99: Verwaltung entscheidet in Zweifelsfällen — auch über die Uhrzeit.", paragraphId: "p99" },
     ],
     onHit:
       "§12 Abs. 2. — »Maßgeblich ist das Ausstellungsdatum, nicht der Einlösezeitpunkt.« Das ist … unbestreitbar.",
@@ -347,10 +347,10 @@ export const TRAINING_ROUNDS: DuelRound[] = [
     opening:
       "Fiktiver Fall: Gegenzeichnung aus Sektor E68 für einen E67-Bewohner. Identitätsordnung §2: nur dieselbe Schicht UND derselbe Sektor.",
     counters: [
-      { text: "§2 Abs. 3 — Personalmangel-Klausel, sektorbenachbarte Stelle.", paragraphId: "p2-3" },
-      { text: "Aushang sieben Punkt eins von 1991.", paragraphId: "p7-1" },
-      { text: "Vollmachtsordnung §12 Abs. 2.", paragraphId: "p12-2" },
-      { text: "Schichtordnung §3 Abs. 4 lit. b.", paragraphId: "p3-4b" },
+      { text: "Identitätsordnung §2 Abs. 3: Bei Personalmangel darf — und muss — eine sektorbenachbarte Stelle gegenzeichnen.", paragraphId: "p2-3" },
+      { text: "Aushang 7.1 (1991): gleichwertige Gegenzeichnung aus Nachbarschichten, nie widerrufen.", paragraphId: "p7-1" },
+      { text: "Vollmachtsordnung §12 Abs. 2: Bewohner-Vollmachten überleben Schichtwechsel.", paragraphId: "p12-2" },
+      { text: "Schichtordnung §3 Abs. 4 lit. b: Mündliche Verweigerung zählt nicht als Einrede.", paragraphId: "p3-4b" },
     ],
     onHit:
       "§2 Abs. 3. Bei Personalmangel ist die Annahme nicht verweigerbar. Sie zitieren es richtig.",
@@ -369,10 +369,10 @@ export const ENDGAME_ROUNDS: DuelRound[] = [
     opening:
       "Worag. Vollmacht 4317. Marteau. Schicht A. Heute Schicht B. Aushang vier Punkt zwei untersagt. Ich bestätige Brusts Entscheidung.",
     counters: [
-      { text: "Aushang sieben Punkt eins von 1991 — gleichwertige Gegenzeichnung, nie widerrufen.", paragraphId: "p7-1" },
-      { text: "Hausordnung §1a.", paragraphId: "p1a" },
-      { text: "Vollmachtsordnung §12.", paragraphId: "p12" },
-      { text: "Identitätsordnung §2.", paragraphId: "p2-1" },
+      { text: "Aushang 7.1 (1991): Gegenzeichnungen aus Nachbarschichten sind gleichwertig — und nie widerrufen. Marteaus Schicht-A-Zeichnung trägt also.", paragraphId: "p7-1" },
+      { text: "Hausordnung §1a: Bei Überlagerung gilt der jüngere Aushang — also 4.2.", paragraphId: "p1a" },
+      { text: "Vollmachtsordnung §12: Vollmachten erlöschen mit Schichtende — Marteaus Vollmacht ist tot.", paragraphId: "p12" },
+      { text: "Identitätsordnung §2: Gegenzeichnung nur in derselben Schicht und im selben Sektor.", paragraphId: "p2-1" },
     ],
     onHit:
       "Hm. Aushang 7.1. Tatsächlich nicht widerrufen. — Das nehme ich auf. Weiter.",
@@ -386,10 +386,10 @@ export const ENDGAME_ROUNDS: DuelRound[] = [
     opening:
       "Marteau hat in Schicht A unterzeichnet. Schicht A endete um zwölf Uhr. Vollmachtsordnung §12: erloschen. Daran ändert auch ein alter Aushang nichts.",
     counters: [
-      { text: "Vollmachtsordnung §12 Abs. 2 — maßgeblich ist das Ausstellungsdatum.", paragraphId: "p12-2" },
-      { text: "Aushang sieben Punkt eins.", paragraphId: "p7-1" },
-      { text: "§1a Wortlaut-Klausel.", paragraphId: "p1a-w" },
-      { text: "Schichtordnung §3 Abs. 4.", paragraphId: "p3-4" },
+      { text: "Vollmachtsordnung §12 Abs. 2: Bewohner-Vollmachten gelten bis zur Einlösung — maßgeblich ist das Ausstellungsdatum, nicht das Schichtende.", paragraphId: "p12-2" },
+      { text: "Aushang 7.1 (1991): gleichwertige Gegenzeichnung aus Nachbarschicht.", paragraphId: "p7-1" },
+      { text: "Hausordnung §1a, Wortlaut-Klausel: Übersagung nur bei ausdrücklichem Widerruf — sagt nichts über Vollmachten.", paragraphId: "p1a-w" },
+      { text: "Schichtordnung §3 Abs. 4: Übergabezeit, Vorgänge laufen schichtübergreifend.", paragraphId: "p3-4" },
     ],
     onHit:
       "§12 Abs. 2. — Lex specialis. Sie haben mich an meiner eigenen Wand erwischt, Worag.",
@@ -403,10 +403,10 @@ export const ENDGAME_ROUNDS: DuelRound[] = [
     opening:
       "Genug der Spezialnormen. Verwaltungsrahmenordnung §99: Generalvorbehalt. In Zweifelsfällen entscheidet die Verwaltung. Heißt: ich. Ration verweigert.",
     counters: [
-      { text: "§99 Erläuterung — kein Zweifelsfall, wenn Spezialnorm vorliegt.", paragraphId: "p99-z" },
-      { text: "Aushang sieben Punkt eins.", paragraphId: "p7-1" },
-      { text: "§1a Wortlaut-Klausel.", paragraphId: "p1a-w" },
-      { text: "Vollmachtsordnung §12 Abs. 2.", paragraphId: "p12-2" },
+      { text: "§99 Erläuterung: Ein Zweifelsfall liegt nur bei Lücken vor — hier greifen 7.1, §1a Wortlaut und §12 Abs. 2. Kein §99.", paragraphId: "p99-z" },
+      { text: "Aushang 7.1 (1991): gleichwertige Gegenzeichnung aus Nachbarschicht — schlägt aber keinen Generalvorbehalt.", paragraphId: "p7-1" },
+      { text: "Hausordnung §1a, Wortlaut-Klausel: Übersagung nur bei ausdrücklichem Widerruf.", paragraphId: "p1a-w" },
+      { text: "Vollmachtsordnung §12 Abs. 2: Bewohner-Vollmachten überleben Schichtwechsel.", paragraphId: "p12-2" },
     ],
     onHit:
       "(Lange Pause.) Sie zitieren die Erläuterung zu §99. Korrekt. Ein Zweifelsfall liegt nicht vor — wir haben Spezialnormen. Sie haben § 7.1, § 1a Wortlaut, § 12 Abs. 2 ins Feld geführt. Das genügt.",
@@ -496,8 +496,12 @@ export function buildRoundCounters(
   for (const f of fictionalPool) {
     if (picked.length >= TARGET) break;
     if (usedIds.has(f.id)) continue;
+    // Format konsistent zu echten Optionen: »<shortLabel>: <inhalt>«
+    const inhalt = f.fullText
+      .replace(/^[^:]+:\s*»?/, "")
+      .replace(/«\.?$/, "");
     picked.push({
-      text: f.fullText.replace(/^[^:]+:\s*»?/, "").replace(/«\.?$/, ""),
+      text: `${f.shortLabel}: ${inhalt}`,
       paragraphId: f.id,
       correct: false,
     });
