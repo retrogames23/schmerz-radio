@@ -91,8 +91,20 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
             // Pflicht: Layard muss die Tilla-Frage geklärt haben (Transferbogen
             // aus der Rohrpost). Sonst bricht Insa ab.
             if (!api.hasFlag("receivedTillaTransfer")) {
-              api.startDialog("insaWaitingForTransfer");
-              return;
+              if (api.hasFlag("sentForgedQuittung")) {
+                // Fallback: Quittung ist raus, aber die Antwort wurde
+                // nie aktiv aus dem Rohr geholt. Bogen direkt nachreichen.
+                api.setFlag("receivedTillaTransfer");
+                api.addItem({
+                  id: "tillaTransfer",
+                  name: "Transferbogen E70-K → 70-2244",
+                  description:
+                    "Eingehende Rohrpost-Hülse, beantwortet eine Quittung 4317-K. Inhalt: ein Transferbogen — Patientin Tilla Kowalk, von E70-K verlegt an Heim Lothenau, neue Bewohnernummer 70-2244. Stempel »ÜBERFÜHRUNG STILL«. Datum 06.11.1997.",
+                });
+              } else {
+                api.startDialog("insaWaitingForTransfer");
+                return;
+              }
             }
             api.setFlag("calledForCode");
             api.startDialog("insa2");
@@ -105,8 +117,18 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
           ) {
             // Standardweg: Layard hat brav gemeldet → direkt zum Code.
             if (!api.hasFlag("receivedTillaTransfer")) {
-              api.startDialog("insaWaitingForTransfer");
-              return;
+              if (api.hasFlag("sentForgedQuittung")) {
+                api.setFlag("receivedTillaTransfer");
+                api.addItem({
+                  id: "tillaTransfer",
+                  name: "Transferbogen E70-K → 70-2244",
+                  description:
+                    "Eingehende Rohrpost-Hülse, beantwortet eine Quittung 4317-K. Inhalt: ein Transferbogen — Patientin Tilla Kowalk, von E70-K verlegt an Heim Lothenau, neue Bewohnernummer 70-2244. Stempel »ÜBERFÜHRUNG STILL«. Datum 06.11.1997.",
+                });
+              } else {
+                api.startDialog("insaWaitingForTransfer");
+                return;
+              }
             }
             api.setFlag("calledForCode");
             api.startDialog("insa2");

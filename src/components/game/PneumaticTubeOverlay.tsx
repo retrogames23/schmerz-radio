@@ -54,8 +54,29 @@ export function PneumaticTubeOverlay() {
         "Ein leises Saugen, dann das vertraute Klacken. Der Schlitten",
         "verschwindet im Messing. Das rote Lämpchen oben blinkt jetzt grün.",
         "Irgendwo zwei Etagen tiefer wird gerade etwas entgegengenommen.",
-        "[ Quittung 4317-K abgeschickt. Auf Antwort warten — am Rohr. ]",
+        "[ Quittung 4317-K abgeschickt. ]",
       ]);
+      // Antwort kommt direkt zurück — sonst übersehen Spieler:innen
+      // leicht, dass sie das Rohr ein zweites Mal anklicken müssten,
+      // und stehen mit Insa fest, die auf den Transferbogen wartet.
+      if (!api.hasFlag("receivedTillaTransfer")) {
+        setTimeout(() => {
+          api.setFlag("receivedTillaTransfer");
+          api.addItem({
+            id: "tillaTransfer",
+            name: "Transferbogen E70-K → 70-2244",
+            description:
+              "Eingehende Rohrpost-Hülse, beantwortet eine Quittung 4317-K. Inhalt: ein Transferbogen — Patientin Tilla Kowalk, von E70-K verlegt an Heim Lothenau, neue Bewohnernummer 70-2244. Stempel »ÜBERFÜHRUNG STILL«. Datum 06.11.1997.",
+          });
+          api.showText([
+            "Kaum eine Minute später klackt es im Rohr. Eine Hülse landet im Auffangkorb.",
+            "Aufkleber: »EINGANG · QUITTUNG 4317-K · BEANTWORTET«.",
+            "Drinnen: ein Transferbogen. Eine Bewohnernummer. Ein Heim.",
+            "Tilla.",
+            "[ Transferbogen 70-2244 eingesteckt. Ruf Insa zurück. ]",
+          ]);
+        }, 1200);
+      }
     }, 80);
   };
 
