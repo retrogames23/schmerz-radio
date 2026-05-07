@@ -226,10 +226,10 @@ export const sectorAct1Scenes: Record<string, Scene> = {
         y: 31.8,
         w: 6.8,
         h: 41.4,
-        label: "Aufzug zurück nach E67",
+        label: "Ausgang Gebäude E71",
         kind: "exit",
-        // Rückweg in den Aufzug ist immer offen.
-        onUse: (api) => api.goTo("elevator"),
+        // Rückweg führt zurück durch die Passage nach E67.
+        onUse: (api) => api.goTo("passage"),
       },
       {
         id: "toCorridor15",
