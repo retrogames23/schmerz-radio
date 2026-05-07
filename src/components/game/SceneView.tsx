@@ -350,14 +350,14 @@ export function SceneView() {
         {scene === "cafeteriaE67" && (
           <div
             className="pointer-events-none absolute z-20"
-            style={{ left: "49.2%", top: "20.8%", width: "2.2%", height: "5.2%" }}
+            style={{ left: "46%", top: "17%", width: "8.5%", height: "13%" }}
             aria-hidden
           >
             <div
               className={`h-full w-full rounded-full ${
                 flags.has("sentForgedQuittung")
-                  ? "bg-green-400/90 shadow-[0_0_14px_4px_rgba(74,222,128,0.85)]"
-                  : "bg-red-500/90 shadow-[0_0_14px_4px_rgba(239,68,68,0.85)]"
+                  ? "bg-green-400 shadow-[0_0_36px_18px_rgba(74,222,128,0.95)]"
+                  : "opacity-0"
               }`}
             />
           </div>
