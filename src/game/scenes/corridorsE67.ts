@@ -151,8 +151,8 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "miraSpot46",
-        x: 42,
-        y: 34.1,
+        x: 40.5,
+        y: 26.9,
         w: 10.5,
         h: 55,
         label: "Junge Frau an der Wand",
@@ -233,8 +233,8 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "door4603Look",
-        x: 56.6,
-        y: 33.5,
+        x: 51.2,
+        y: 33.2,
         w: 6,
         h: 38,
         label: "Tür 4603",
@@ -247,10 +247,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       {
         id: "back46",
         // Aufzug am Ende des Korridors (verlaufende Flucht).
-        x: 55,
-        y: 38,
-        w: 12,
-        h: 38,
+        x: 31,
+        y: 75.1,
+        w: 53.6,
+        h: 17.1,
         label: "Zurück zum Aufzug",
         kind: "exit",
         onUse: (api) => api.goTo("elevator"),
