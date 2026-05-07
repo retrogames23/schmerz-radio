@@ -110,7 +110,7 @@ export const okwuDialogs: Record<string, DialogTree> = {
       rnm2: {
         id: "rnm2",
         speaker: "LAYARD",
-        text: "Ich hatte keine. In E67 gibt der Ausgabewagen seit zwei Wochen nur Pampe, keine Masken.",
+        text: "Ich habe keine. In E67 gibt der Ausgabewagen seit zwei Wochen nur Pampe, keine Masken.",
         next: "rnm3",
       },
       rnm3: {
