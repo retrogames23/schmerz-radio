@@ -127,19 +127,9 @@ export const pubScenes: Record<string, Scene> = {
       "Eine Wand voller Schichten: Stift auf Stift, Layard auf Layard. Hier hat jeder seine Spur hinterlassen.",
     hotspots: [
       // Klickfläche für „zurück" liegt unsichtbar am rechten Rand;
-      // die Wand selbst und das Eingabefeld liegen im <ToiletWallOverlay/>.
-      {
-        // Mintgrüner Kondomautomat — versorgt seit Wochen halb E67 mit OP-
-        // Masken. Die Empfangsdame in E71 schickt Layard explizit her.
-        id: "condomAutomat",
-        x: 24,
-        y: 14,
-        w: 14,
-        h: 40,
-        label: "Kondomautomat",
-        kind: "use",
-        onUse: (api) => api.openCondomAutomat(),
-      },
+      // die Wand, das Eingabefeld und die Klickfläche für den auf die
+      // Wand gemalten Kondomautomaten liegen alle im <ToiletWallOverlay/>
+      // (das die ganze Szene überdeckt und sonst Hotspots schluckt).
       {
         id: "leaveToilet",
         x: 92,
