@@ -108,7 +108,9 @@ export function useToiletWall(active: boolean) {
 // rechts durch Wandende, unten durch Bodenkante begrenzt.
 // Wand: links neben Rohr (~22 %) bis vor die Türlaibung (~85 %),
 // oben unter Querrohr, unten überm Bodenfliesenrand.
-const WALL = { xMin: 26, xMax: 84, yMin: 18, yMax: 72 };
+// Linker Bereich (xMin < 40) ist für den auf die Wand gemalten
+// Kondomautomaten reserviert — dort dürfen keine Graffiti erscheinen.
+const WALL = { xMin: 40, xMax: 84, yMin: 18, yMax: 72 };
 
 function pickSpot(existing: Graffiti[]): { x: number; y: number } {
   let best = { x: (WALL.xMin + WALL.xMax) / 2, y: (WALL.yMin + WALL.yMax) / 2 };
