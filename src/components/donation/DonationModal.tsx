@@ -71,7 +71,16 @@ export function DonationModal({
       }
       const data = (await resp.json()) as { url?: string };
       if (!data.url) throw new Error("Keine Checkout-URL erhalten.");
-      window.location.href = data.url;
+      // Checkout in neuem Tab öffnen, damit der laufende Spielzustand
+      // (Szene, Inventar, Flags) im Original-Tab erhalten bleibt.
+      const opened = window.open(data.url, "_blank", "noopener,noreferrer");
+      if (!opened) {
+        // Pop-up blockiert → als Fallback im selben Tab navigieren.
+        window.location.href = data.url;
+        return;
+      }
+      setBusy(false);
+      onClose();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
       setBusy(false);
