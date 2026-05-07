@@ -115,8 +115,8 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       {
         id: "miraSprite46",
         src: miraSprite,
-        x: 39,
-        y: 22.8,
+        x: 37,
+        y: 18.4,
         w: 19.4,
         h: 70.8,
         alt: "Junge Frau, an die Wand gelehnt",
