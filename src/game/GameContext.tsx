@@ -45,6 +45,8 @@ interface GameState {
   nodeOpen: boolean;
   /** Pneumatik-Rohrpost-Overlay in der Kantine 3602. */
   pneumaticOpen: boolean;
+  /** Kondomautomat-Overlay in der Kneipen-Toilette. */
+  condomAutomatOpen: boolean;
   radioActive: boolean; // tuned to 104.6, providing subtext
   resonance: number; // 0–100
   ending: boolean;
@@ -94,6 +96,7 @@ interface GameContextValue extends GameState {
   closeTelevision: () => void;
   closeNode: () => void;
   closePneumatic: () => void;
+  closeCondomAutomat: () => void;
   endBurnSequence: () => void;
   endCutscene: () => void;
   closeDsaCreator: () => void;
@@ -196,6 +199,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const keypadTarget = "sectorDoor" as const;
   const [nodeOpen, setNodeOpen] = useState(false);
   const [pneumaticOpen, setPneumaticOpen] = useState(false);
+  const [condomAutomatOpen, setCondomAutomatOpen] = useState(false);
   const [radioActive, setRadioActive] = useState(false);
   const [tvOpen, setTvOpen] = useState(false);
   const [resonance, setResonance] = useState(0);
@@ -401,6 +405,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setRadioOpen(false);
         setTerminalOpen(false);
         setPneumaticOpen(true);
+      },
+      openCondomAutomat: () => {
+        setRadioOpen(false);
+        setTerminalOpen(false);
+        setCondomAutomatOpen(true);
       },
       openBureaucracyDuel: (mode = "training") => {
         setRadioOpen(false);
@@ -695,6 +704,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       closeTelevision: () => setTvOpen(false),
       closeNode: () => setNodeOpen(false),
       closePneumatic: () => setPneumaticOpen(false),
+      closeCondomAutomat: () => setCondomAutomatOpen(false),
       endBurnSequence: () => setBurnSequence(false),
       endCutscene: () => setCutscene(null),
       closeDsaCreator: () => setDsaCreatorOpen(false),
@@ -893,6 +903,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     keypadTarget,
     nodeOpen,
     pneumaticOpen,
+    condomAutomatOpen,
     radioActive,
     resonance,
     ending,
@@ -940,6 +951,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       tvOpen,
       nodeOpen,
       pneumaticOpen,
+      condomAutomatOpen,
       radioActive,
       resonance,
       ending,
