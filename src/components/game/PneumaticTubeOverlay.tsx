@@ -47,6 +47,8 @@ export function PneumaticTubeOverlay() {
       return;
     }
     api.setFlag("sentForgedQuittung");
+    // Quittung ist abgeschickt — verschwindet aus der Aktentasche.
+    api.removeItem("quittungForged4317");
     closePneumatic();
     setTimeout(() => {
       api.showText([

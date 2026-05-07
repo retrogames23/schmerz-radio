@@ -397,6 +397,9 @@ export const corridorsE67Scenes: Record<string, Scene> = {
           if (api.hasItem("wartungsnotiz5610")) {
             api.setFlag("serverRoom5610Open");
             api.setFlag("saw5610Door");
+            // Karte hat ihren Zweck erfüllt — Layard steckt sie nicht
+            // wieder ein, sie verschwindet aus dem Inventar.
+            api.removeItem("wartungsnotiz5610");
             api.showText(
               [
                 "Layard hält die abgegriffene Wartungskarte an den Leser.",
