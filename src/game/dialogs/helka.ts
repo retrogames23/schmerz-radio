@@ -84,6 +84,50 @@ export const helkaDialogs: Record<string, DialogTree> = {
         id: "hs6",
         speaker: "HELKA",
         text: "Privat. Auf meinem Rechner. Sie hat einen Namen, aber den behalte ich für mich. Wer mir lange genug zuhört, kommt vielleicht selbst drauf.",
+        choices: [
+          {
+            text: "[ Pfefferminz anbieten ]",
+            requires: ["tookPeppermintFromAutomat"],
+            hiddenWhen: ["showedHelkaPeppermint"],
+            next: "helkaMint1",
+            action: (api) => {
+              api.setFlag("showedHelkaPeppermint");
+            },
+          },
+          {
+            text: "[ Kondom rüberreichen ]",
+            requires: ["tookCondomFromAutomat"],
+            hiddenWhen: ["showedHelkaCondom"],
+            next: "helkaCondom1",
+            action: (api) => {
+              api.setFlag("showedHelkaCondom");
+            },
+          },
+          { text: "[ Beenden ]" },
+        ],
+      },
+      helkaMint1: {
+        id: "helkaMint1",
+        speaker: "LAYARD",
+        text: "Möchten Sie? Aus dem Automaten im stillen Funk. Verstaubt, aber Pfefferminz hält ewig.",
+        next: "helkaMint2",
+      },
+      helkaMint2: {
+        id: "helkaMint2",
+        speaker: "HELKA",
+        text: "Pfefferminz. Auch so ein Wort, das selten geworden ist. Behalten Sie's, Herr Worag. Mein Tee verträgt sich nicht mit Drogen aus Volkseigenem Betrieb.",
+        end: true,
+      },
+      helkaCondom1: {
+        id: "helkaCondom1",
+        speaker: "LAYARD",
+        text: "Frau Vint — ein kleines Gastgeschenk. Bitte nicht einsortieren.",
+        next: "helkaCondom2",
+      },
+      helkaCondom2: {
+        id: "helkaCondom2",
+        speaker: "HELKA",
+        text: "Sie sind unverschämt, Herr Worag. Steckt's wieder ein. — Aber merken Sie sich: 1979, vor der Schließung, lief in der Bibliothek mal ein Aushang. ›Hygiene ist Bürgersinn.‹ Es hat niemand verstanden, was sie meinten.",
         end: true,
       },
     },
