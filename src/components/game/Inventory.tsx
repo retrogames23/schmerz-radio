@@ -259,6 +259,11 @@ export function Inventory() {
                       }`}
                     >
                       <ItemIcon id={item.id} size={28} title={item.name} />
+                      {(item.count ?? 1) > 1 && (
+                        <span className="pointer-events-none absolute -bottom-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-sm border border-amber-glow bg-background px-1 font-mono-crt text-[10px] leading-none text-amber-glow">
+                          {item.count}
+                        </span>
+                      )}
                       {/* Custom Hover-Tooltip mit Kurzinfo zum Item. */}
                       <span
                         className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 hidden w-44 -translate-x-1/2 rounded-sm border border-amber-glow/60 bg-background/95 px-2 py-1.5 text-left font-mono-crt text-[10px] leading-snug text-amber-glow/90 shadow-[0_4px_18px_rgba(0,0,0,0.7)] group-hover:block"
