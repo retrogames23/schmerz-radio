@@ -350,7 +350,7 @@ export function SceneView() {
         {scene === "cafeteriaE67" && (
           <div
             className="pointer-events-none absolute z-20"
-            style={{ left: "46.5%", top: "18%", width: "8%", height: "12%" }}
+            style={{ left: "46%", top: "17%", width: "8.5%", height: "13%" }}
             aria-hidden
           >
             <div
