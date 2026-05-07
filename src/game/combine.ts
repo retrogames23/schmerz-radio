@@ -490,6 +490,22 @@ export function combineItem(
         ctx.api.setFlag("sectorDoorOpen");
       }
     }
+    // Spezialfall: Fertige Quittung 4317-K auf die Pneumatik-Rohrpost
+    // gezogen → Versand-Overlay öffnen (statt Lakonisch-Fallback).
+    if (
+      ctx.targetId === "cafeteriaPneumaticTube" &&
+      itemId === "quittungForged4317"
+    ) {
+      if (ctx.api.hasFlag("sentForgedQuittung")) {
+        ctx.api.showText([
+          "Layard hält die Hülse schon in der Hand. Sie ist längst",
+          "abgeschickt — jetzt heißt es: warten, bis Antwort kommt.",
+        ]);
+        return;
+      }
+      ctx.api.openPneumaticTube();
+      return;
+    }
     // Spezialfall: Verstärker-Antenne an Mira (in jeder Mira-Szene).
     // Setzt das Flag, das das Resonanz-Duell im Schmerz-Radio scharf
     // schaltet. Item bleibt im Inventar — narrativ ist die Antenne
