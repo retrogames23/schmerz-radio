@@ -1,5 +1,6 @@
 import commonRoomBg from "@/assets/scene-common-room.jpg";
 import cafeteriaBg from "@/assets/scene-cafeteria-e67.jpg";
+import cafeteriaGreenBg from "@/assets/scene-cafeteria-e67-green.jpg";
 import aptMira4601Bg from "@/assets/scene-apt-mira-4601.jpg";
 import type { Scene } from "../types";
 
@@ -111,7 +112,8 @@ export const communalE67Scenes: Record<string, Scene> = {
   },
   cafeteriaE67: {
     id: "cafeteriaE67",
-    background: cafeteriaBg,
+    background: (api) =>
+      api.hasFlag("sentForgedQuittung") ? cafeteriaGreenBg : cafeteriaBg,
     title: "Kantine 3602 — Nährstoffausgabe E67",
     intro:
       "Hinter der Theke zwei Kittel. Auf dem Boden ein Streifen, der einmal weiß war, jetzt eine Spur Anstellen markiert. Im Rohr über dem Tresen blinkt rot ein Licht, das niemand quittiert.",
