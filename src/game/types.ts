@@ -518,6 +518,8 @@ export interface GameApi {
   openNode5610: () => void;
   /** Pneumatik-Rohrpost-Overlay in der Kantine 3602. */
   openPneumaticTube: () => void;
+  /** Kondomautomat-Overlay in der Kneipen-Toilette. */
+  openCondomAutomat: () => void;
   /**
    * Bürokratie-Duell am Brust-Tresen (Akt I, Kantine 3602). Öffnet das
    * Overlay und startet einen frischen Versuch. `mode` steuert, ob es
