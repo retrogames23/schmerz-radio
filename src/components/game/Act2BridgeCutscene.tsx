@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/game/GameContext";
-import { ACT2_BRIDGE_BEATS, ACT2_BRIDGE_UI_TEXT } from "@/game/cutscenes";
+import {
+  ACT2_BRIDGE_BEATS,
+  ACT2_BRIDGE_MIRA_BEATS,
+  ACT2_BRIDGE_UI_TEXT,
+  type Act2BridgeBeat,
+} from "@/game/cutscenes";
 import { getHintsUsedCount, HINTS_UI_TEXT } from "@/game/hints";
+import {
+  computeMiraEndState,
+  persistMiraEndState,
+} from "@/game/miraState";
 
 /**
  * Schmale Bridge-Cutscene für den Akt-II-Einstieg.
@@ -23,12 +32,27 @@ export function Act2BridgeCutscene() {
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(true);
   const finishedRef = useRef(false);
+  // Mira-State wird beim Start der Bridge einmal berechnet und persistiert,
+  // damit Akt II danach nur noch ein einziges Flag lesen muss.
+  const [beats, setBeats] = useState<readonly Act2BridgeBeat[]>(ACT2_BRIDGE_BEATS);
   // Snapshot der Tipp-Nutzung beim Start der Bridge — soll während der
   // Cutscene nicht mehr ändern (der Spieler kann hier nichts mehr lesen).
   const [hintsUsed, setHintsUsed] = useState(0);
   useEffect(() => {
-    if (active) setHintsUsed(getHintsUsedCount());
-  }, [active]);
+    if (!active) return;
+    setHintsUsed(getHintsUsedCount());
+    const state = computeMiraEndState(api);
+    persistMiraEndState(api, state);
+    // Spiegel-Beat passend zum State direkt vor dem Okwu-Sprechzimmer
+    // einfügen (Index 7 = "E71 · Sprechzimmer 1532 · später").
+    const mirror = ACT2_BRIDGE_MIRA_BEATS[state];
+    const composed: Act2BridgeBeat[] = [
+      ...ACT2_BRIDGE_BEATS.slice(0, 7),
+      mirror,
+      ...ACT2_BRIDGE_BEATS.slice(7),
+    ];
+    setBeats(composed);
+  }, [active, api]);
 
   // Reset, sobald die Cutscene wieder geschlossen wird.
   useEffect(() => {
@@ -41,8 +65,8 @@ export function Act2BridgeCutscene() {
   // Auto-Advance pro Beat: 3.4s Sockel + 1.6s pro Zeile.
   useEffect(() => {
     if (!active) return;
-    if (idx >= ACT2_BRIDGE_BEATS.length) return;
-    const beat = ACT2_BRIDGE_BEATS[idx];
+    if (idx >= beats.length) return;
+    const beat = beats[idx];
     const hold = 3400 + beat.lines.length * 1600;
     const t = window.setTimeout(() => {
       // Kurzer Crossfade zwischen den Tafeln.
@@ -56,7 +80,7 @@ export function Act2BridgeCutscene() {
       return () => window.clearTimeout(t2);
     }, hold);
     return () => window.clearTimeout(t);
-  }, [active, idx]);
+  }, [active, idx, beats]);
 
   const finish = () => {
     if (finishedRef.current) return;
@@ -71,10 +95,10 @@ export function Act2BridgeCutscene() {
   // Wenn alle Beats durch sind, beenden.
   useEffect(() => {
     if (!active) return;
-    if (idx < ACT2_BRIDGE_BEATS.length) return;
+    if (idx < beats.length) return;
     finish();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, idx]);
+  }, [active, idx, beats]);
 
   // Esc / Enter überspringen die Cutscene.
   useEffect(() => {
@@ -91,10 +115,10 @@ export function Act2BridgeCutscene() {
   }, [active]);
 
   if (!active) return null;
-  if (idx >= ACT2_BRIDGE_BEATS.length) return null;
+  if (idx >= beats.length) return null;
 
-  const beat = ACT2_BRIDGE_BEATS[idx];
-  const isLastBeat = idx === ACT2_BRIDGE_BEATS.length - 1;
+  const beat = beats[idx];
+  const isLastBeat = idx === beats.length - 1;
 
   // Sehr dezenter Style-Wechsel: schwarz + leichter Farbschimmer am Rand.
   const accentClass =

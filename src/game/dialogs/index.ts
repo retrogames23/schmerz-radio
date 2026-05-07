@@ -8,6 +8,7 @@ import { mikaelDialogs } from "./mikael";
 import { helkaDialogs } from "./helka";
 import { ennisDialogs } from "./ennis";
 import { cafeteriaDialogs } from "./cafeteria";
+import { vossbeckAct2Dialogs } from "./vossbeckAct2";
 import { miscDialogs } from "./misc";
 
 export const dialogs: Record<string, DialogTree> = {
@@ -20,5 +21,6 @@ export const dialogs: Record<string, DialogTree> = {
   ...helkaDialogs,
   ...ennisDialogs,
   ...cafeteriaDialogs,
+  ...vossbeckAct2Dialogs,
   ...miscDialogs,
 };

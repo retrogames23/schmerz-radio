@@ -314,6 +314,47 @@ export const ACT2_BRIDGE_BEATS: Act2BridgeBeat[] = [
   },
 ] as const;
 
+/**
+ * Zusätzlicher Spiegel-Beat im Brücken-Cutscene, der den Mira-State
+ * sichtbar macht, ohne neues Bildmaterial zu brauchen. Wird zwischen den
+ * Leitstellen-Beats und Dr. Okwu eingeschoben.
+ */
+export const ACT2_BRIDGE_MIRA_BEATS: Record<
+  "friendly" | "neutral" | "skeptical",
+  Act2BridgeBeat
+> = {
+  friendly: {
+    header: "Korridor 46 · 4601",
+    style: "amber",
+    lines: [
+      "Auf dem Rückweg geht Layard an Tür 4601 vorbei.",
+      "Sie steht einen Spalt offen. Auf dem Boden ein Schlüssel,",
+      "dazu ein Zettel: „Falls du was brauchst — klopf zweimal.“",
+      "Er klopft nicht. Heute nicht. Aber er weiß jetzt, wo.",
+    ],
+  },
+  neutral: {
+    header: "Korridor 46 · 4601",
+    style: "black",
+    lines: [
+      "Auf dem Rückweg geht Layard an Tür 4601 vorbei.",
+      "Verschlossen. Unter der Tür ein Stück Papier,",
+      "darauf ein durchgestrichenes Ohr. Sonst nichts.",
+      "Er hebt es nicht auf.",
+    ],
+  },
+  skeptical: {
+    header: "Korridor 46 · 4601",
+    style: "clinical",
+    lines: [
+      "Auf dem Rückweg geht Layard an Tür 4601 vorbei.",
+      "Ein behördlicher Aushang klebt auf dem Holz:",
+      "„WOHNUNG GERÄUMT — TRANSFER E91. Rückfragen: Quadrant.“",
+      "Layard liest es zweimal. Er glaubt es nicht.",
+    ],
+  },
+};
+
 /** Statische UI-Texte für die Bridge-Cutscene (i18n-vorbereitet). */
 export const ACT2_BRIDGE_UI_TEXT = {
   /** Button im Ending, der Akt II startet. */

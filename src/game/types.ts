@@ -299,6 +299,12 @@ export type StoryFlag =
   | "act2Started"
   /** Akt-II-Bridge-Cutscene wurde komplett abgespielt. */
   | "act2BridgeSeen"
+  // Drei kanonische Mira-States für Akt II. Werden beim Übergang in
+  // Akt II einmalig anhand der Akt-I-Flags berechnet und sind ab dort
+  // die alleinige Wahrheitsquelle für Mira-Logik im zweiten Akt.
+  | "miraEndFriendly"
+  | "miraEndNeutral"
+  | "miraEndSkeptical"
   /** Dr. Okwu hat eine weiche Resonanz-Pause für das Schmerz-Radio verhängt. */
   | "radioOnPause"
   /** Layard hat während der Pause das Radio trotzdem eingeschaltet. */

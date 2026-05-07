@@ -1,5 +1,6 @@
 import kantinenverwaltungBg from "@/assets/scene-kantinenverwaltung-3603.jpg";
 import type { Scene } from "../types";
+import { getMiraEndState } from "../miraState";
 
 /**
  * Raum 3603 — Kantinenverwaltung E67. Eigenes Hinterzimmer von
@@ -38,6 +39,18 @@ export const kantinenverwaltung3603Scenes: Record<string, Scene> = {
                 : streak === 1
                   ? "vossbeckUnreadyOne"
                   : "vossbeckUnready",
+            );
+            return;
+          }
+          // Akt II: Vossbecks Persona hängt am Mira-State.
+          if (api.hasFlag("act2Started") && api.hasFlag("duelEndgameWon")) {
+            const state = getMiraEndState(api);
+            api.startDialog(
+              state === "friendly"
+                ? "vossbeckAct2Friendly"
+                : state === "skeptical"
+                  ? "vossbeckAct2Skeptical"
+                  : "vossbeckAct2Neutral",
             );
             return;
           }
