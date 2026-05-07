@@ -246,10 +246,11 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "back46",
-        x: 20,
-        y: 92,
-        w: 60,
-        h: 7,
+        // Aufzug am Ende des Korridors (verlaufende Flucht).
+        x: 55,
+        y: 38,
+        w: 12,
+        h: 38,
         label: "Zurück zum Aufzug",
         kind: "exit",
         onUse: (api) => api.goTo("elevator"),
