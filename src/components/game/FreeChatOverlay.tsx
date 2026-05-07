@@ -172,9 +172,14 @@ function FreeChatInner({
         delta: 0,
         justUnlocked: false,
       });
+      // Wenn die Tür laut DB schon offen ist, Flag im Spielstand setzen,
+      // falls der lokale Save älter ist und das Flag fehlt.
+      if (data.unlocked) {
+        try { game.api.setFlag("marvUnlocked"); } catch { /* ignore */ }
+      }
     })();
     return () => { cancelled = true; };
-  }, [isMarv, userId]);
+  }, [isMarv, userId, game]);
 
   async function persistMemory() {
     if (persistedRef.current) return;
