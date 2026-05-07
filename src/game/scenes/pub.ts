@@ -1,7 +1,6 @@
 import pubBg from "@/assets/scene-pub.jpg";
 import pubToiletBg from "@/assets/scene-pub-toilet.jpg";
 import pubVestibuleBg from "@/assets/scene-pub-vestibule.jpg";
-import condomAutomatSprite from "@/assets/sprite-condom-automat.png";
 import type { Scene } from "../types";
 
 /**
@@ -126,17 +125,6 @@ export const pubScenes: Record<string, Scene> = {
     title: "Toilette — „Zum stillen Funk“",
     intro:
       "Eine Wand voller Schichten: Stift auf Stift, Layard auf Layard. Hier hat jeder seine Spur hinterlassen.",
-    npcs: [
-      {
-        id: "condomAutomatSprite",
-        src: condomAutomatSprite,
-        x: 8.5,
-        y: 8,
-        w: 7,
-        h: 26,
-        alt: "Mintgrüner Kondomautomat an der Wand",
-      },
-    ],
     hotspots: [
       // Klickfläche für „zurück" liegt unsichtbar am rechten Rand;
       // die Wand selbst und das Eingabefeld liegen im <ToiletWallOverlay/>.
@@ -144,37 +132,13 @@ export const pubScenes: Record<string, Scene> = {
         // Mintgrüner Kondomautomat — versorgt seit Wochen halb E67 mit OP-
         // Masken. Die Empfangsdame in E71 schickt Layard explizit her.
         id: "condomAutomat",
-        x: 8.5,
-        y: 8,
-        w: 7,
-        h: 26,
+        x: 24,
+        y: 14,
+        w: 14,
+        h: 40,
         label: "Kondomautomat",
         kind: "use",
-        onUse: (api) => {
-          if (api.hasFlag("tookMedMaskFromAutomat") || api.hasItem("medMask")) {
-            api.showText([
-              "Reihe drei ist leer — Layard hat sich seine Maske schon",
-              "gezogen. Reihe eins und zwei stehen weiter geduldig",
-              "ihren Mann.",
-            ]);
-            return;
-          }
-          api.addItem({
-            id: "medMask",
-            name: "Medizinische Maske",
-            description:
-              "OP-Maske aus dem Kondomautomaten im „stillen Funk“. Riecht leicht nach Plastik und Bier. Reicht, um in E71 durchgewunken zu werden.",
-          });
-          api.setFlag("tookMedMaskFromAutomat");
-          api.showText([
-            "Mintgrüner Automat, drei Reihen.",
-            "Reihe 1: Kondome (drei Sorten, eine fehlt).",
-            "Reihe 2: Pfefferminzkaugummi.",
-            "Reihe 3: handgeschriebener Aufkleber „OP-MASKE — 1 RM“.",
-            "Layard wirft eine Reichsmark ein, dreht den Knopf von Reihe 3.",
-            "Es klackt, eine zellophanverpackte Maske fällt in die Schublade.",
-          ]);
-        },
+        onUse: (api) => api.openCondomAutomat(),
       },
       {
         id: "leaveToilet",
