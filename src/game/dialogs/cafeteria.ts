@@ -815,22 +815,10 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         subtext: "Er sagt es, ohne aufzusehen. Der Bleistift bleibt senkrecht.",
         next: "u3",
       },
-      u3none: {
-        id: "u3none",
+      u3: {
+        id: "u3",
         speaker: "VOSSBECK",
         text: "Trainingssiege bei Herrn Brust: keine dokumentiert — Sie brauchen drei. Ich verhandle nicht mit Bewohnern, die nicht satisfaktionsfähig sind.",
-        next: "u4",
-      },
-      u3one: {
-        id: "u3one",
-        speaker: "VOSSBECK",
-        text: "Trainingssiege bei Herrn Brust: einen dokumentiert — Sie brauchen drei. Ich verhandle nicht mit Bewohnern, die nicht satisfaktionsfähig sind.",
-        next: "u4",
-      },
-      u3two: {
-        id: "u3two",
-        speaker: "VOSSBECK",
-        text: "Trainingssiege bei Herrn Brust: zwei dokumentiert — Sie brauchen drei. Ich verhandle nicht mit Bewohnern, die nicht satisfaktionsfähig sind.",
         next: "u4",
       },
       u4: {
