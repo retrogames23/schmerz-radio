@@ -344,6 +344,25 @@ export function SceneView() {
           variant="cafeteria"
         />
 
+        {/* Pneumatik-Lämpchen über dem Tresen — rot, bis Layard
+            die gefälschte Quittung 4317-K abgeschickt hat. Danach
+            leuchtet es grün, wie im Versandtext angekündigt. */}
+        {scene === "cafeteriaE67" && (
+          <div
+            className="pointer-events-none absolute z-20"
+            style={{ left: "49.2%", top: "20.8%", width: "2.2%", height: "5.2%" }}
+            aria-hidden
+          >
+            <div
+              className={`h-full w-full rounded-full ${
+                flags.has("sentForgedQuittung")
+                  ? "bg-green-400/90 shadow-[0_0_14px_4px_rgba(74,222,128,0.85)]"
+                  : "bg-red-500/90 shadow-[0_0_14px_4px_rgba(239,68,68,0.85)]"
+              }`}
+            />
+          </div>
+        )}
+
         {/* Amber vignette when radio is active */}
         {radioActive && <div className="amber-vignette" />}
 
