@@ -47,9 +47,7 @@ export const Route = createFileRoute("/api/public/donation-checkout")({
             status: (userErr as { status?: number }).status,
             tokenLen: token.length,
           });
-          return json(401, {
-            error: `Ungültige Sitzung (auth: ${userErr.message}).`,
-          });
+          return json(401, { error: "Ungültige Sitzung." });
         }
         if (!userData.user) {
           console.error("[donation-checkout] no user in getUser response");
