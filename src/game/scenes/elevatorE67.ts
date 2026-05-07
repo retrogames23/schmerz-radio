@@ -194,8 +194,8 @@ export const elevatorE67Scenes: Record<string, Scene> = {
         id: "commonRoomDoor",
         // Schmale Tür links neben dem Empfangstresen (unterer Bildbereich,
         // damit es nicht mit den anderen Hotspots kollidiert).
-        x: 10.8,
-        y: 3.4,
+        x: -0.1,
+        y: 2.3,
         w: 6,
         h: 89.6,
         label: "Tür: Gemeinschaftsraum",
