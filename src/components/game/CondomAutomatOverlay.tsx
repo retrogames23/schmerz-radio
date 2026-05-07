@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useGame } from "@/game/GameContext";
 import { CloseButton } from "./CloseButton";
+import type { InventoryItem, StoryFlag } from "@/game/types";
 
 /**
  * Kondomautomat-Overlay in der Toilette von „Zum stillen Funk".
@@ -21,23 +22,74 @@ export function CondomAutomatOverlay() {
 
   if (!condomAutomatOpen) return null;
 
-  const alreadyTook =
-    api.hasFlag("tookMedMaskFromAutomat") || api.hasItem("medMask");
+  const money = api.getItemCount("reichsmark");
+  const broke = money < 1;
 
-  const buyMask = () => {
-    if (alreadyTook) return;
-    api.addItem({
-      id: "medMask",
-      name: "Medizinische Maske",
-      description:
-        "OP-Maske aus dem Kondomautomaten im „stillen Funk“. Riecht leicht nach Plastik und Bier. Reicht, um in E71 durchgewunken zu werden.",
-    });
-    api.setFlag("tookMedMaskFromAutomat");
+  type Row = {
+    rowNumber: 1 | 2 | 3;
+    title: string;
+    subtitle: string;
+    flag: StoryFlag;
+    item: InventoryItem;
+    klackText: string;
+  };
+
+  const rows: Row[] = [
+    {
+      rowNumber: 1,
+      title: "Reihe 1 — Kondom",
+      subtitle: "Drei Sorten, eine Sorte fehlt.",
+      flag: "tookCondomFromAutomat",
+      item: {
+        id: "condom",
+        name: "Kondom",
+        description:
+          "Zellophanverpackt, brauner Aufdruck »ELASTIC FORTUNA — Volkseigener Betrieb für Hygieneartikel«. Aus dem Automaten im „stillen Funk“. Liegt unbenutzt in Layards Manteltasche.",
+      },
+      klackText:
+        "Es klackt, ein zellophanverpacktes Kondom fällt in die Schublade.",
+    },
+    {
+      rowNumber: 2,
+      title: "Reihe 2 — Pfefferminzkaugummi",
+      subtitle: "Verstaubte Schachteln. Steht seit Wochen.",
+      flag: "tookPeppermintFromAutomat",
+      item: {
+        id: "peppermint",
+        name: "Pfefferminzkaugummi",
+        description:
+          "Eine verstaubte Schachtel aus dem Automaten im „stillen Funk“. Drei Streifen, papiertrocken. Hilft vielleicht gegen den Bier-Atem im Vorraum.",
+      },
+      klackText:
+        "Es klackt, eine verstaubte Schachtel Pfefferminz fällt in die Schublade.",
+    },
+    {
+      rowNumber: 3,
+      title: "Reihe 3 — OP-Maske",
+      subtitle: "Handgeschriebener Aufkleber: »OP-MASKE — 1 RM«.",
+      flag: "tookMedMaskFromAutomat",
+      item: {
+        id: "medMask",
+        name: "Medizinische Maske",
+        description:
+          "OP-Maske aus dem Kondomautomaten im „stillen Funk“. Riecht leicht nach Plastik und Bier. Reicht, um in E71 durchgewunken zu werden.",
+      },
+      klackText:
+        "Es klackt, eine zellophanverpackte Maske fällt in die Schublade.",
+    },
+  ];
+
+  const buy = (row: Row) => {
+    const taken = api.hasFlag(row.flag) || api.hasItem(row.item.id);
+    if (taken || broke) return;
+    api.removeItem("reichsmark", 1);
+    api.addItem(row.item);
+    api.setFlag(row.flag);
     closeCondomAutomat();
     setTimeout(() => {
       api.showText([
-        "Layard wirft eine Reichsmark ein, dreht den Knopf von Reihe 3.",
-        "Es klackt, eine zellophanverpackte Maske fällt in die Schublade.",
+        `Layard wirft eine Reichsmark ein, dreht den Knopf von Reihe ${row.rowNumber}.`,
+        row.klackText,
       ]);
     }, 80);
   };
@@ -66,45 +118,50 @@ export function CondomAutomatOverlay() {
           Reihe wählen
         </h2>
         <p className="mt-2 font-mono-crt text-xs leading-relaxed text-emerald-200/80">
-          Drei Reihen, drei Knöpfe. Eine Reichsmark pro Zug.
+          Drei Reihen, drei Knöpfe. Eine Reichsmark pro Zug.{" "}
+          <span className="text-emerald-300/70">
+            (Münzfach: {money} RM)
+          </span>
         </p>
 
         <ul className="mt-4 space-y-2 font-mono-crt text-sm">
-          <li className="rounded-sm border border-emerald-500/30 bg-black/30 px-3 py-2">
-            <div className="text-emerald-200/90">Reihe 1 — Kondome</div>
-            <div className="text-[11px] text-emerald-200/50">
-              Drei Sorten, eine Sorte fehlt.
-            </div>
-          </li>
-          <li className="rounded-sm border border-emerald-500/30 bg-black/30 px-3 py-2">
-            <div className="text-emerald-200/90">Reihe 2 — Pfefferminzkaugummi</div>
-            <div className="text-[11px] text-emerald-200/50">
-              Verstaubte Schachteln. Steht seit Wochen.
-            </div>
-          </li>
-          <li
-            className={`rounded-sm border px-3 py-2 ${
-              alreadyTook
-                ? "border-emerald-500/20 bg-black/20 opacity-60"
-                : "border-emerald-400/60 bg-emerald-500/10"
-            }`}
-          >
-            <div className="text-emerald-100">
-              Reihe 3 — OP-Maske{" "}
-              <span className="text-[11px] text-emerald-300/70">· 1 RM</span>
-            </div>
-            <div className="text-[11px] text-emerald-200/60">
-              Handgeschriebener Aufkleber: »OP-MASKE — 1 RM«.
-            </div>
-            <button
-              type="button"
-              onClick={buyMask}
-              disabled={alreadyTook}
-              className="mt-2 w-full rounded-sm border border-emerald-400/60 bg-emerald-500/15 px-3 py-1.5 font-display text-xs uppercase tracking-widest text-emerald-100 hover:bg-emerald-500/25 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {alreadyTook ? "▸ Reihe 3 ist leer" : "▸ Knopf von Reihe 3 drücken"}
-            </button>
-          </li>
+          {rows.map((row) => {
+            const taken =
+              api.hasFlag(row.flag) || api.hasItem(row.item.id);
+            const disabled = taken || broke;
+            return (
+              <li
+                key={row.rowNumber}
+                className={`rounded-sm border px-3 py-2 ${
+                  disabled
+                    ? "border-emerald-500/20 bg-black/20 opacity-60"
+                    : "border-emerald-400/60 bg-emerald-500/10"
+                }`}
+              >
+                <div className="text-emerald-100">
+                  {row.title}{" "}
+                  <span className="text-[11px] text-emerald-300/70">
+                    · 1 RM
+                  </span>
+                </div>
+                <div className="text-[11px] text-emerald-200/60">
+                  {row.subtitle}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => buy(row)}
+                  disabled={disabled}
+                  className="mt-2 w-full rounded-sm border border-emerald-400/60 bg-emerald-500/15 px-3 py-1.5 font-display text-xs uppercase tracking-widest text-emerald-100 hover:bg-emerald-500/25 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {taken
+                    ? `▸ Reihe ${row.rowNumber} ist leer`
+                    : broke
+                      ? "▸ Keine Reichsmark mehr"
+                      : `▸ Knopf von Reihe ${row.rowNumber} drücken`}
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>
