@@ -489,6 +489,8 @@ export function combineItem(
       if (!ctx.api.hasFlag("sectorDoorOpen")) {
         ctx.api.setFlag("sectorDoorOpen");
       }
+      // Code ist eingegeben — der Zettel wird nicht mehr gebraucht.
+      ctx.api.removeItem("exitCode");
     }
     // Spezialfall: Fertige Quittung 4317-K auf die Pneumatik-Rohrpost
     // gezogen → Versand-Overlay öffnen (statt Lakonisch-Fallback).
