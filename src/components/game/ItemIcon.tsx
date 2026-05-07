@@ -468,6 +468,9 @@ const ICON_MAP: Record<InventoryItemId, () => React.ReactElement> = {
   painRadio: PainRadioIcon,
   // Bodos vergessene grüne Thermoskanne (Tech-Knoten 5610).
   bodoThermos: BodoThermosIcon,
+  reichsmark: ReichsmarkIcon,
+  peppermint: PeppermintIcon,
+  condom: CondomIcon,
 };
 
 /* ─── Akt-I-Pflichträtsel: Zusatz-Icons ─────────────────── */
