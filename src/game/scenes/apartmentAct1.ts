@@ -14,8 +14,27 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
     background: (api) =>
       api.hasFlag("tookPainRadio") ? apartmentNoRadioBg : apartmentBg,
     title: "Wohnung 2611 — Quadrant E67",
-    intro:
-      "Layard. Ein-Zimmer-Wohnung, Quadrant E67. Auf dem Tisch: das Schmerz-Radio. Heute hat er Urlaub. Heute will er weiter — tiefer. Stell die Frequenz auf 104,6 und dreh die Lautstärke voll auf.",
+    intro: (api) => {
+      // Akt II — nach der Bridge-Cutscene wacht Layard hier wieder auf.
+      // Die Akt-I-Eröffnung passt nicht mehr: das Radio ist auf Pause,
+      // und Insa hat ihn eingeladen.
+      if (api.hasFlag("act2Started") && !api.hasFlag("insaAct2BriefingDone")) {
+        const friendly = api.hasFlag("miraEndFriendly");
+        const skeptical = api.hasFlag("miraEndSkeptical");
+        const mira = friendly
+          ? "Auf dem Boden vor seiner Tür: ein zusammengefalteter Zettel von Mira — er hat ihn gestern Abend nicht aufgehoben."
+          : skeptical
+            ? "Auf dem Boden vor seiner Tür: ein behördlicher Aushang. Räumung 4601. Layard liest ihn nicht noch einmal."
+            : "Im Korridor draußen: Schritte, die nicht stehen bleiben.";
+        return [
+          "Layard wacht ohne Wecker auf. Das Schmerz-Radio steht still.",
+          "Sieben Tage Pause — Dr. Okwu hat darum gebeten, nicht es verordnet.",
+          "Auf dem Tisch: ein Zettel in Insas Handschrift. „Vorbeikommen, wenn Sie wach sind. Tür 4602.“",
+          mira,
+        ].join(" ");
+      }
+      return "Layard. Ein-Zimmer-Wohnung, Quadrant E67. Auf dem Tisch: das Schmerz-Radio. Heute hat er Urlaub. Heute will er weiter — tiefer. Stell die Frequenz auf 104,6 und dreh die Lautstärke voll auf.";
+    },
     hotspots: [
       {
         id: "radio",
