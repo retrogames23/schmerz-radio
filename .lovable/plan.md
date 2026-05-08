@@ -1,108 +1,104 @@
-# Mira-Strang ausbauen — Akt-I-Ausgang & Akt-II-Helferpfade
+# Akt II · Eröffnung — „Die Akte 1978"
 
-## Kernidee
+## Korrektur zu Punkt 1: Leitstelle in einen freien Raum auf 4
 
-Akt I endet mit drei klar lesbaren Mira-States. In Akt II hat jeder State einen eigenen Lösungsweg für die Pflichträtsel; alle Rätsel bleiben in jedem State lösbar. Wer sich gegen Mira gestellt hat, kann **Vossbeck** als unwahrscheinlichen Verbündeten gewinnen — mit Preis. Layard darf jederzeit umschwenken: auch im skeptischen Pfad steht der Weg zurück zu Mira offen, solange er sie überhaupt findet.
+Aufzug bleibt unangetastet. Korridor 46 hat **Tür 4602** und **Tür 4603** ohne Inhalt — wir setzen die **Leitstelle E67** hinter Tür **4602** (gleicher Korridor wie Mira, schöner Kontrast: zwei Pole desselben Flurs). Spieler kommt regulär: Aufzug → 4 → Korridor 46 → Tür 4602.
 
----
+Vorteil: Keine neue Etage, kein neuer Aufzug-Knopf, kein neues Asset für die Aufzug-Anzeige. Nur **eine** neue Szene `leitstelleE67` mit einem neuen Hintergrundbild.
 
-## 1) Drei Mira-States am Akt-I-Ende
+## Korrektur zu Punkt 2: Was Layard wirklich antreibt
 
-Berechnet beim Übergang `act2Started` aus vorhandenen Akt-I-Flags und persistiert als ein einziges Flag (`miraEndFriendly` / `miraEndNeutral` / `miraEndSkeptical`):
+„Quittung Schicht C zu Frau Kowalk tragen" ist Akt I in einer anderen Etage. Wir greifen den Plan vom 02.05. (`C+D+E`) wieder auf:
 
-| State | Bedingung |
-|---|---|
-| **friendly** | `miraSentAnger` (Verstärker geliefert, gemeinsame Sendung) |
-| **neutral** | Alles dazwischen — inklusive „nie mit Mira gesprochen" und „Flugblatt abgelehnt, aber nicht abweisend" |
-| **skeptical** | `miraSystemic` **oder** `miraTrustWithheld` (Layard hat Mira aktiv abgewiesen oder die Vertrauensprobe verloren) |
+- **C** Insas „Anliegen" als Türöffner
+- **D** Resonanz-Pause als innerer Druck (existiert bereits via `radioOnPause`)
+- **E** Eine konkrete Person, an der Layard die Verantwortungslosigkeit zum ersten Mal *sieht*
+- plus die **Marteau-Spur** als Layards *eigene* Frage
 
-Spiegel im Brücken-Cutscene-Beat (eine zusätzliche Tafel, kein neues Asset):
-- friendly: Tür 4601 angelehnt, Schlüssel + Zettel.
-- neutral: 4601 verschlossen, durchgestrichenes Ohr aus Papier unter der Tür.
-- skeptical: Aushang „WOHNUNG GERÄUMT — TRANSFER E91"; Layard glaubt es nicht.
+Layards Ziel ab Akt II ist also nicht „Botengang erledigen", sondern eine Doppelfrage:
 
-**Rückkehr-Option:** Auch im `skeptical`-Pfad bleibt die Tür 4601 später erreichbar, wenn Layard hartnäckig ist (siehe Rätsel B-Pfad „Mira nachträglich finden"). Der State wird dann auf `neutral` zurückgesetzt — `friendly` ist ohne Akt-I-Sendung nicht mehr erreichbar.
+> **„Warum fühle ich, wie ich fühle — und warum macht das Sektor 28 zu einem medizinischen Problem statt zu einer Frage?"**
 
----
+Die offizielle Antwort lautet „Resonanz-Hygiene, sieben Tage Pause". Layards eigene Antwort entsteht aus dem, was Insa ihm in dieser Szene unter den Tisch schiebt: einer **Akte aus dem Jahr 1978**.
 
-## 2) Akt-II-Pflichträtsel mit drei Lösungswegen
+## Die Eröffnungs-Szene Schritt für Schritt
 
-### Rätsel A — „Quittung Schicht C"
+### 1. Wohnung 2611 — kurzer Wiedereinstieg
 
-Vossbeck verlangt für die endgültige Freigabe von Vorgang 4317 eine Schicht-C-Quittung mit Stempel **und** Funkbestätigung von außerhalb von E67.
+Akt-II-Intro-Zeile (eine, je Mira-State leicht eingefärbt). Keine neuen Hotspots. Auf dem Tisch liegt **kein** Botengang-Vordruck — stattdessen ein einzelner Satz im Intro: „Insa hat gesagt: vorbeikommen, wenn du wach bist. 4602."
 
-| State | Lösungsweg |
-|---|---|
-| friendly | Mira sendet die Bestätigung von ihrem Piratensender. Layard liefert nur das leere Funkprotokoll. |
-| neutral | Mira hilft gegen Vorleistung — Layard muss vorher Bodos Wartungs-Funk wieder aktivieren (Item-Combine, kleiner Umweg). |
-| skeptical | Vossbeck stellt einen §-99-Selbst-Generalvorbehalt aus. Formal lückenlos, macht Vossbeck aber erpressbar — und er erinnert Layard daran (relevant in Rätsel C). |
+### 2. Korridor 46 → Tür 4602
 
-Ergebnis-Item ist in allen Fällen `quittungSchichtC`.
+Die bislang stumme Tür 4602 bekommt jetzt ein Schild „**Leitstelle E67 · Disposition · Zutritt nur mit Anliegen**" und führt in die neue Szene. Vorher bleibt sie unverändert stumm.
 
-### Rätsel B — „Archiv 5710"
+### 3. Neue Szene `leitstelleE67`
 
-Layard muss in das Akten-Archiv 5710, in dem die Original-Vollmacht liegt.
+**Background:** `scene-leitstelle-e67.jpg` im Stil der bestehenden Korridorbilder (1990er-Behörde, Linoleum, Resopal, drei Tischapparate, Schrankwand mit Hängeregistratur, eine Tür hinten als „nicht für dich").
 
-| State | Lösungsweg |
-|---|---|
-| friendly | Mira gibt einen Wartungs-Bypass-Code (sie war heimlich auf 57 unterwegs). |
-| neutral | Layard beantragt eine neue Wartungskarte über Bodo — länger, kein Mira-Kontakt nötig. |
-| skeptical | Vossbeck schließt persönlich auf (Generalschlüssel). Nebenwirkung: Vossbeck merkt sich, was Layard sucht. |
+**Hotspots:**
 
-**Mira nachträglich finden (skeptical → neutral):** Statt Vossbeck kann Layard auf 57 einen Hinweis aufschnappen, der ihn zurück zu 4601 führt — Mira ist doch da, der Aushang war fingiert. Sie hilft dann auf dem `neutral`-Niveau (Bypass-Code gegen kleine Vorleistung). State flipt auf `neutral`. Dieser Pfad ist absichtlich versteckt — wer ihn übersieht, läuft sauber den Vossbeck-Pfad zu Ende.
+- **Insa Bauerfeind** (`talk`, zentral) — startet `insaAct2InPerson`.
+- **Schrankwand mit Hängeregistratur** (`look`) — „Hier liegt mehr ungelesene Welt als in der Sektor-Bibliothek."
+- **Drei Tischapparate** (`look`) — „Einer klingelt nie. Insa sagt, er ist die direkte Leitung in einen Raum, in dem niemand mehr sitzt." (erster Hint auf den „leeren Stuhl" / Sektorleitung-Vakanz aus Strang E).
+- **Aushang „Resonanz-Hygiene"** (`look`) — verankert Okwus Pause räumlich.
+- **Tür raus** (`exit`) — zurück Korridor 46.
 
-### Rätsel C — Endspiel-Hebel (grobe Skizze)
+### 4. Neuer Dialog `insaAct2InPerson` — der Drehpunkt (sechs Beats)
 
-**Setup.** Layard steht mit Vollmacht (4317) und Quittung (Schicht C) vor der finalen Einreichung. Die Frage ist nicht mehr, *ob* Philippe seine B3-Ration kriegt, sondern **mit welcher Wirkung** der Vorgang öffentlich wird. Drei Bühnen, drei Kosten:
+Layard kommt nicht mit einem Auftrag raus, sondern mit **einer Frage und einer Akte**.
 
-**friendly — „Live-Schaltung"**
-- Layard reicht den Vorgang in der Leitstelle E67 ein, während Mira parallel von 4601 aus auf 104,0 sendet: Wut + Trauer überlagert. Insa hört es im selben Moment, in dem sie unterschreiben soll.
-- Mechanik: Layard öffnet das Schmerz-Radio, hält die Frequenz wie beim Verstärker-Rätsel; nach erfolgreicher Sendung wird der Einreich-Knopf in der Leitstelle freigegeben.
-- Kosten: Mira riskiert, dass ihr Sender geortet wird. Im Ending: Mira ist „verlegt" worden, Layard kennt ihre neue Etage nicht.
-- Wirkung: Lautes Ende. Andere Bewohner drehen das Radio leiser; die Verwaltung muss reagieren.
+1. **Begrüßung** — Insa schiebt einen zweiten Becher rüber. „Ich habe Sie mir größer vorgestellt. — Setzen Sie sich. Wir haben eine Stunde."
+2. **Pause kurz registriert** — Insa: „Adaeze hat mir Bescheid gegeben, dass Sie sieben Tage pausieren sollen. Ich frage nicht nach." Keine Komplizenschaft, nur Hintergrund — damit Insa Layard keine Funkprotokolle aufhalst.
+3. **Layards Frage** — Spieler-Wahl aus drei Zeilen, alle mit demselben Ausgang:
+   - „Warum bin ich so, wie ich bin?"
+   - „Warum ist das ein Krankheitsbild und keine Frage?"
+   - „Wer hat das Schmerz-Radio eigentlich erfunden — und warum?"
+   Insa: „Ich habe gehofft, Sie fragen das. Sonst hätte ich es Ihnen aufgedrängt."
+4. **Die Akte 1978** — Insa öffnet eine Schublade und reicht Layard eine dünne, vergilbte Mappe: **„Resonanz-Überlastung 1978 · Quadrant E12 · Hörer N. Sertl · Gutachten: C. Marteau."** „Vor zwanzig Jahren hat schon einmal jemand das gehört, was Sie hören. Marteau war damals als Berater geladen. Das Gutachten fehlt. Im Archiv 5710 steht nur der Aktendeckel. Den Inhalt hat *jemand* mitgenommen — und nirgends notiert, *wer*."
+5. **Mira-State-Splitter** (eine Zeile):
+   - friendly: „Ihre Bekannte aus dem 4. — die kennt vielleicht den Weg in 5710 ohne Stempel."
+   - neutral: keine Erwähnung.
+   - skeptical: „Sie werden 5710 nicht über mich öffnen. Ich kenne nur einen, der das kann, und Sie mögen ihn nicht."
+6. **Abschied — Layards eigenes Ziel ist gesetzt** — Insa: „Ich gebe Ihnen keinen Auftrag, Herr Worag. Ich gebe Ihnen die Genehmigung, etwas zu suchen, was offiziell niemand verloren hat."
 
-**neutral — „Saubere Akte"**
-- Layard reicht den Vorgang nüchtern ein. Kein Funk, kein Skandal. Insa nickt, ablegen, fertig.
-- Mechanik: Einfacher Klick auf den Einreich-Hotspot in der Leitstelle, sobald Quittung + Vollmacht beide im Inventar sind.
-- Kosten: keine sichtbaren. Im Ending: niemand außer Philippe merkt, was passiert ist.
-- Wirkung: Ein Mensch gerettet, das System unverändert.
+Items am Ende: **„Akte 1978 · N. Sertl"** (neu, Inventar). Flags: `insaAct2BriefingDone`, `marteauTrailOpened`.
 
-**skeptical — „Vossbecks Preis"**
-- Vor der Einreichung steht Vossbeck mit einem zweiten Vorgang im Korridor: **Brust 2904 — Versetzung in den Lärm-Quadranten**. Vossbecks Bedingung für den §-99-Hebel aus Rätsel A: Layard zeichnet beide Vorgänge gleichzeitig gegen.
-- Mechanik: Im finalen Einreich-Overlay liegen zwei Mappen vor Layard. Erst wenn er beide stempelt, wird die Vollmacht 4317 wirksam. Brust nicht zu unterschreiben heißt: Vollmacht zerfällt.
-- **Letzte-Chance-Weiche:** Wer 4601 nochmal aufsucht *und* dort jetzt jemanden antrifft (siehe Rätsel B Mira-Nachzug), kann statt Vossbecks Doppel-Stempel den `neutral`-Weg wählen. Vossbeck ist beleidigt — kein Schaden für Layard, aber Brust bleibt im Lärm-Quadranten verschont und Vossbecks §-99-Erlass wird zurückgezogen, was eine alternative Quittung verlangt (kurzer Umweg über Bodo, derselbe wie im neutralen Rätsel A).
-- Kosten: Brust fällt — oder Layard zieht den Schwanz ein und macht es leise.
-- Wirkung: Stärkstes moralisches Ending. Im Outro spielt eine kurze Tafel mit Brust am neuen Arbeitsplatz; Layard hört sie aus der Ferne im Radio.
+### 5. Was die Akte konkret in Akt II auslöst
 
-**Ending-Tafeln.** Die bestehende `Ending.tsx` bekommt drei Varianten an die Akt-II-Outro angehängt — keine neue Engine, nur drei zusätzliche Beat-Sets im Stil von `ACT2_BRIDGE_BEATS`.
+- Layards **stehender Inventar-Begleiter** für ganz Akt II — wie das Protokoll in Akt I, aber selbst gewählt.
+- **Schlüssel zum Bedeutungswandel von Rätsel B (Archiv 5710)**: Der Akteninhalt liegt dort. 5710 hat damit einen *eigenen* Grund, nicht nur „Vossbeck verlangt Vollmacht".
+- Macht Mikael / Vossbeck / die Quittungs-Mechanik in Akt II zu Hindernissen auf Layards eigenem Weg. Rätsel A bleibt im Plan, wird aber narrativ umgehängt: Layard braucht den Schicht-C-Stempel, weil **damit** das Archiv 5710 zugänglich wird.
+- Strang **E** (verschwundener Nachbar) hängt sich später an: der, der das Gutachten 1978 mitgenommen hat, ist mit hoher Wahrscheinlichkeit dieselbe Person, deren Akte heute leer ist.
 
----
+### 6. Hint-Einträge
 
-## 3) Vossbeck als Akt-II-Persona
+Zwei neue Einträge in `src/game/hints.ts`:
 
-Nach Sieg im Bürokratie-Duell wird `vossbeckAvailableAct2` gesetzt. Hinterzimmer 3603 reagiert dann je nach Mira-State unterschiedlich:
+- **„Akt II — Insa in der Leitstelle"** · aktiv `act2Started && !insaAct2BriefingDone` · Stufen: „Insa hat dich eingeladen. 4602." → „Aufzug → 4. Etage → Tür 4602." → „Sprich Insa direkt an."
+- **„Die Akte 1978"** · aktiv mit `marteauTrailOpened` · bleibt offen bis zur späteren Marteau-Auflösung — Layards Goal-Marker für ganz Akt II.
 
-- friendly: kühl-respektvoll, hilft nicht aktiv.
-- neutral: pragmatisch, Tipps gegen kleine Gefälligkeiten.
-- skeptical: aktiv hilfsbereit — verlangt im Finale die Brust-Mappe.
+## Was in diesem Loop NICHT passiert
 
-Neue Datei `src/game/dialogs/vossbeckAct2.ts`, Persona-Eintrag in `npcPersonas.ts` erweitert.
+- Kein Botengang zu Frau Kowalk in 3602.
+- Kein neuer Aufzug-Knopf, keine neue Etage.
+- Kein Vossbeck-Akt-II-Auftritt, kein Mira-Akt-II-Besuch.
+- Kein Inhalt der Akte selbst (nur Aktendeckel + Insas Worte) — der Inhalt ist Loot von 5710 in Rätsel B.
+- Keine Änderung an Rätsel-A/B/C-Mechanik. Nur die *Bedeutung* von B verschiebt sich.
 
----
+## Technische Umrisse
 
-## 4) Lösbarkeit & Hints
+- `src/game/types.ts`: neue Flags `insaAct2BriefingDone`, `marteauTrailOpened`. Neues Item `akte1978Sertl` in `InventoryItemId`.
+- `src/game/scenes/corridorsE67.ts`: Tür 4602 bekommt Label „Leitstelle E67" und `onUse: api.goTo("leitstelleE67")` (sichtbar erst bei `act2Started`).
+- `src/game/scenes/leitstelleE67.ts` *(neu)*: Szene mit fünf Hotspots. In `scenes/index.ts` registrieren.
+- `src/assets/scene-leitstelle-e67.jpg` *(neu, generiert)*.
+- `src/game/scenes/apartmentAct1.ts`: `intro` zur Funktion `(api) => string` machen, Akt-II-Variante mit Mira-Tönung, Verweis „4602".
+- `src/game/dialogs/insa.ts`: neuer Dialog `insaAct2InPerson` mit den sechs Beats; im letzten Knoten `addItem("akte1978Sertl")` + Flags.
+- `src/game/hints.ts`: zwei neue Einträge.
+- Item-Registry: Eintrag für `akte1978Sertl` (Icon-Reuse aus vorhandenen Akten-Items).
+- `src/components/game/RadioPanel.tsx`: keine Änderung.
 
-- Jedes Pflichträtsel hat zwei garantierte Wege: Mira-Pfad **und** Eigen-/Vossbeck-Pfad. Der „Mira-nachträglich"-Pfad ist Bonus, kein Pflichtweg.
-- `src/game/hints.ts` bekommt drei Akt-II-Hint-Quests: `act2.miraHelp`, `act2.vossbeckHelp`, `act2.solitary` — sichtbar je nach State.
+## Offene Fragen
 
----
-
-## 5) Umsetzungs-Phasen
-
-1. State-Verfestigung + Brücken-Spiegel-Beat (klein, sofort lesbarer Effekt).
-2. Vossbeck Akt II (mittel, neue Dialog-Datei, kein neues Asset).
-3. Rätsel A (Quittung Schicht C) inkl. drei Wege.
-4. Rätsel B (Archiv 5710) inkl. „Mira nachträglich"-Bonus-Weg.
-5. Rätsel C inkl. drei Ending-Tafeln.
-
-Phasen 1+2 lohnen sich auch isoliert, weil sie Akt II sofort persönlicher machen.
+1. **Akte 1978 — Vorname von „N. Sertl" ausschreiben oder als Initialen lassen?** (Initialen wirken aktenrealistischer; ausgeschriebener Name macht die spätere Verknüpfung mit Strang E leichter.)
+2. **Layards Frage in Beat 3 — alle drei Optionen anbieten oder eine vorgeben?** (Drei Optionen geben Wahlgefühl, führen aber zum selben Punkt.)
+3. **Der „nie klingelnde dritte Apparat" — schon konkret als „direkte Leitung zur Sektorleitung 28" benennen** (klare Vorbereitung von Strang E) oder vage halten?

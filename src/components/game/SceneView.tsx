@@ -383,16 +383,23 @@ export function SceneView() {
                 {current.title}
               </div>
             </button>
-            {current.intro && (
-              <button
-                type="button"
-                onClick={() => setShowIntro(false)}
-                className="fade-in pointer-events-auto mx-auto max-w-2xl cursor-pointer rounded-sm bg-background/85 px-4 py-2 text-left font-display text-sm leading-relaxed text-muted-foreground sm:text-base"
-                aria-label="Weiter"
-              >
-                {current.intro}
-              </button>
-            )}
+            {(() => {
+              const introText =
+                typeof current.intro === "function"
+                  ? current.intro(api)
+                  : current.intro;
+              if (!introText) return null;
+              return (
+                <button
+                  type="button"
+                  onClick={() => setShowIntro(false)}
+                  className="fade-in pointer-events-auto mx-auto max-w-2xl cursor-pointer rounded-sm bg-background/85 px-4 py-2 text-left font-display text-sm leading-relaxed text-muted-foreground sm:text-base"
+                  aria-label="Weiter"
+                >
+                  {introText}
+                </button>
+              );
+            })()}
           </div>
         )}
       </div>

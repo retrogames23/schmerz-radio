@@ -394,6 +394,34 @@ export const HINT_QUESTS: HintQuest[] = [
     ],
   },
 
+  // ════════════════════════════════════════════════════════════════
+  // AKT II — kritischer Pfad (Eröffnung)
+  // ════════════════════════════════════════════════════════════════
+  {
+    id: "act2.visitInsa",
+    title: "Akt II — Insa in der Leitstelle besuchen",
+    priority: 20,
+    isActive: (a) => a.hasFlag("act2Started") && !a.hasFlag("insaAct2BriefingDone"),
+    isResolved: (a) => a.hasFlag("insaAct2BriefingDone"),
+    hints: [
+      "Insa hat dich eingeladen — auf einem Zettel steht eine Türnummer.",
+      "Tür 4602. Wohnetage. Nimm den Aufzug auf die 4 und geh in den Korridor 46.",
+      "Geh in 2611 zur Wohnungstür, fahr mit dem Aufzug auf Etage 4, geh durch Korridor 46 zur Tür 4602 (gegenüber von Mira) und sprich Insa direkt an.",
+    ],
+  },
+  {
+    id: "act2.akte1978",
+    title: "Akte 1978 — Marteaus verschwundenes Gutachten",
+    priority: 21,
+    isActive: (a) => a.hasFlag("marteauTrailOpened"),
+    isResolved: () => false,
+    hints: [
+      "Insa hat dir eine alte Mappe in die Hand gedrückt. Der Inhalt fehlt — er liegt im Archiv 5710.",
+      "Layards eigenes Ziel für Akt II: herausfinden, was Marteau 1978 über N. Sertl geschrieben hat. 5710 ist nicht ohne Vollmacht zu öffnen.",
+      "Mehr Wege ergeben sich erst, wenn du in Akt II weitergespielt hast — die Akte ist dein roter Faden, kein einzelner Klick.",
+    ],
+  },
+
   // ── Optional: Mira (Vertrauenspfad) ──────────────────────────────
   {
     id: "act1.miraTrust",

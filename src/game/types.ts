@@ -19,6 +19,7 @@ export type SceneId =
   | "cafeteriaE67"
   | "aptMira4601"
   | "kantinenverwaltung3603"
+  | "leitstelleE67"
   | "pub"
   | "pubToilet"
   | "pubVestibule";
@@ -63,7 +64,9 @@ export type InventoryItemId =
   // Pfefferminzkaugummi aus dem Kondomautomaten („Zum stillen Funk").
   | "peppermint"
   // Kondom aus dem Kondomautomaten („Zum stillen Funk").
-  | "condom";
+  | "condom"
+  // Akt II — die alte Akte, die Insa Layard persönlich überreicht.
+  | "akte1978Sertl";
 
 export type KnowledgeFlag =
   | "responsibilityE67"
@@ -334,7 +337,12 @@ export type StoryFlag =
   | "showedHelkaPeppermint"
   | "showedHelkaCondom"
   | "showedEnnisPeppermint"
-  | "showedEnnisCondom";
+  | "showedEnnisCondom"
+  // ── Akt II · Leitstelle (erste persönliche Begegnung mit Insa) ──
+  /** Layard hat Insa in der Leitstelle E67 (Tür 4602) persönlich getroffen. */
+  | "insaAct2BriefingDone"
+  /** Layard hat von der Akte 1978 erfahren und sie eingesteckt. */
+  | "marteauTrailOpened";
 
 export interface InventoryItem {
   id: InventoryItemId;
@@ -385,7 +393,7 @@ export interface Scene {
    */
   background: string | ((api: GameApi) => string);
   title: string;
-  intro?: string;
+  intro?: string | ((api: GameApi) => string);
   hotspots: Hotspot[];
   /** Optional sichtbare Figuren / Sprites, die über dem Hintergrund liegen. */
   npcs?: NpcSprite[];
