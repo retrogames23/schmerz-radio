@@ -825,4 +825,153 @@ export const insaDialogs: Record<string, DialogTree> = {
       },
     },
   },
+  // ── Akt II · Erste persönliche Begegnung in der Leitstelle (4602) ──
+  insaAct2InPerson: {
+    id: "insaAct2InPerson",
+    start: "ip1",
+    onEnd: (api) => {
+      api.setFlag("insaAct2BriefingDone");
+      api.setFlag("marteauTrailOpened");
+      if (!api.hasItem("akte1978Sertl")) {
+        api.addItem({
+          id: "akte1978Sertl",
+          name: "Akte 1978 · N. Sertl",
+          description:
+            "Eine dünne, vergilbte Mappe. Aufdruck: »Resonanz-Überlastung 1978 · Quadrant E12 · Hörer N. Sertl · Gutachten: C. Marteau«. Die Mappe enthält nur einen Aktendeckel — der Inhalt fehlt. Insa sagt: liegt im Archiv 5710. Wenn er noch da ist.",
+        });
+      }
+    },
+    lines: {
+      ip1: {
+        id: "ip1",
+        speaker: "SYSTEM",
+        text: "[ Insa schiebt einen zweiten Becher über den Tisch. Drei Apparate. Zwei davon abgehoben. Sie sieht ihn an — keine Vermittlungs-Stimme jetzt. ]",
+        next: "ip2",
+      },
+      ip2: {
+        id: "ip2",
+        speaker: "INSA",
+        text: "Worag. Setzen Sie sich. Ich habe Sie mir größer vorgestellt.",
+        subtext: "Es ist kein Witz. Eher eine Notiz.",
+        next: "ip3",
+      },
+      ip3: {
+        id: "ip3",
+        speaker: "INSA",
+        text: "Adaeze hat mir Bescheid gegeben, dass Sie sieben Tage pausieren sollen. Ich frage nicht nach.",
+        subtext: "Sie sagt das, damit er weiß, dass sie es weiß — nicht, damit er antwortet.",
+        next: "ip4",
+      },
+      ip4: {
+        id: "ip4",
+        speaker: "INSA",
+        text: "Was haben Sie auf dem Herzen, Herr Worag? Ich habe eine Stunde, bevor das Pult mich wieder zurückruft.",
+        choices: [
+          {
+            text: "Warum bin ich so, wie ich bin?",
+            next: "ip5",
+          },
+          {
+            text: "Warum ist das hier ein Krankheitsbild — und keine Frage?",
+            next: "ip5",
+          },
+          {
+            text: "Wer hat das Schmerz-Radio eigentlich erfunden — und warum?",
+            next: "ip5",
+          },
+        ],
+      },
+      ip5: {
+        id: "ip5",
+        speaker: "INSA",
+        text: "Ich habe gehofft, Sie fragen so etwas. Sonst hätte ich es Ihnen aufgedrängt.",
+        next: "ip6",
+      },
+      ip6: {
+        id: "ip6",
+        speaker: "SYSTEM",
+        text: "[ Sie öffnet eine Schublade ohne Beschriftung. Holt eine dünne, vergilbte Mappe heraus. Schiebt sie über den Tisch. ]",
+        next: "ip7",
+      },
+      ip7: {
+        id: "ip7",
+        speaker: "INSA",
+        text: "1978. Quadrant E12. Hörer Nikolaus Sertl — vielleicht auch Nora, in den Akten steht nur N. Resonanz-Überlastung. Gutachten von einem externen Berater: C. Marteau.",
+        subtext: "Marteau. Layard kennt den Namen. Aus einem ganz anderen Mund.",
+        next: "ip8",
+      },
+      ip8: {
+        id: "ip8",
+        speaker: "INSA",
+        text: "Vor zwanzig Jahren hat schon einmal jemand das gehört, was Sie heute hören. Marteau hat aufgeschrieben, was er davon hielt. Das Gutachten ist verschwunden.",
+        next: "ip9",
+      },
+      ip9: {
+        id: "ip9",
+        speaker: "INSA",
+        text: "Im Archiv 5710 steht nur der Aktendeckel im Regal. Den Inhalt hat jemand mitgenommen. Nirgends notiert, wer. Niemand vermisst ihn — außer mir, und jetzt vielleicht Ihnen.",
+        subtext: "»Vielleicht Ihnen.« — Sie wirft ihm einen langen, ruhigen Blick zu.",
+        next: "ip10friendly",
+      },
+      // Mira-State-Splitter — eine Zeile, der Rest läuft identisch.
+      ip10friendly: {
+        id: "ip10friendly",
+        speaker: "INSA",
+        text: "Ihre Bekannte aus dem 4. — die kennt vielleicht den Weg in 5710, ohne dass jemand einen Stempel sieht. Falls Sie noch mit ihr reden.",
+        requires: ["miraEndFriendly"],
+        next: "ip11",
+      },
+      ip10skeptical: {
+        id: "ip10skeptical",
+        speaker: "INSA",
+        text: "Sie werden 5710 nicht über mich öffnen. Ich kenne nur einen, der das kann. Sie mögen ihn nicht. Er Sie auch nicht.",
+        requires: ["miraEndSkeptical"],
+        next: "ip11",
+      },
+      ip11: {
+        id: "ip11",
+        speaker: "LAYARD",
+        text: "Warum geben Sie mir das?",
+        next: "ip12",
+      },
+      ip12: {
+        id: "ip12",
+        speaker: "INSA",
+        text: "Weil ich Ihnen keinen Auftrag geben kann, Herr Worag. Ich gebe Ihnen die Genehmigung, etwas zu suchen, was offiziell niemand verloren hat.",
+        subtext: "Sie sagt »Genehmigung«, als hätte sie das Wort gerade erfunden.",
+        next: "ip13",
+      },
+      ip13: {
+        id: "ip13",
+        speaker: "INSA",
+        text: "Den Tee schaffen Sie nicht mehr — er ist zu heiß und Sie zu nervös. Trinken Sie ihn drüben. Und sagen Sie mir, wenn Sie etwas finden. Auch wenn Sie nichts finden.",
+        next: "ip14",
+      },
+      ip14: {
+        id: "ip14",
+        speaker: "SYSTEM",
+        text: "[ Layard nimmt die Mappe. Sie ist leichter, als er gedacht hat. ]",
+        end: true,
+      },
+    },
+  },
+  insaAct2InPersonAfter: {
+    id: "insaAct2InPersonAfter",
+    start: "ipa1",
+    lines: {
+      ipa1: {
+        id: "ipa1",
+        speaker: "INSA",
+        text: "Worag. — Wenn Sie nichts Neues haben, lassen Sie mich an die drei Hörer hier. Es klingelt sonst gleich.",
+        subtext: "Sie meint es nicht unfreundlich. Aber sie meint es.",
+        next: "ipa2",
+      },
+      ipa2: {
+        id: "ipa2",
+        speaker: "INSA",
+        text: "Die Mappe haben Sie. Den Rest finden nur Sie. Auf Wiederhören.",
+        end: true,
+      },
+    },
+  },
 };
