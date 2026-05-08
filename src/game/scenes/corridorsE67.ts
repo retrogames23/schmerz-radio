@@ -226,10 +226,23 @@ export const corridorsE67Scenes: Record<string, Scene> = {
         h: 66,
         label: "Tür 4602",
         kind: "look",
+        hiddenWhen: ["act2Started"],
         onUse: (api) =>
           api.showText([
             "Tür 4602. Verschlossen. Hinter der Tür: leises Radiorauschen, keine Stimme.",
           ]),
+      },
+      {
+        id: "door4602Leitstelle",
+        x: 84.9,
+        y: 22.1,
+        w: 10.5,
+        h: 66,
+        label: "Tür 4602 — Leitstelle E67 · Disposition",
+        kind: "exit",
+        exitDir: "right",
+        requires: ["act2Started"],
+        onUse: (api) => api.goTo("leitstelleE67"),
       },
       {
         id: "door4603Look",
