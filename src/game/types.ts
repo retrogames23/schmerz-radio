@@ -393,7 +393,7 @@ export interface Scene {
    */
   background: string | ((api: GameApi) => string);
   title: string;
-  intro?: string;
+  intro?: string | ((api: GameApi) => string);
   hotspots: Hotspot[];
   /** Optional sichtbare Figuren / Sprites, die über dem Hintergrund liegen. */
   npcs?: NpcSprite[];
