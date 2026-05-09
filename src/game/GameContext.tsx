@@ -8,7 +8,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { dialogs } from "./dialogs";
 import { getDialog } from "./dialogs/lookup";
 import { scenes } from "./scenes";
 import { supabase } from "@/integrations/supabase/client";
