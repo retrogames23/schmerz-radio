@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { dialogs } from "./dialogs";
+import { getDialog } from "./dialogs/lookup";
 import { scenes } from "./scenes";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/auth/AuthContext";
@@ -357,7 +358,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setTextOverlay(lines);
       },
       startDialog: (id) => {
-        const tree = dialogs[id];
+        const tree = getDialog(id);
         if (!tree) return;
         // Resolve to the first visible line — auto-skip start lines whose
         // requires/hiddenWhen do not match current flags.
@@ -653,7 +654,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const advanceDialog = useCallback(
     (nextId?: string) => {
       if (!dialogId) return;
-      const tree = dialogs[dialogId];
+      const tree = getDialog(dialogId);
       if (!tree) return;
       // Resolve a target line, auto-skipping lines whose requires/hiddenWhen
       // conditions are not met. Jumps along `next` until a visible line is
@@ -778,7 +779,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const closeDialog = useCallback(() => {
     if (dialogId) {
-      const tree = dialogs[dialogId];
+      const tree = getDialog(dialogId);
       tree?.onEnd?.(api);
     }
     setDialogId(null);
