@@ -1,11 +1,19 @@
 import { useEffect } from "react";
 import { useGame } from "@/game/GameContext";
-import { dialogs } from "@/game/dialogs";
+import { getDialog } from "@/game/dialogs/lookup";
 import { useSettings } from "@/audio/SettingsContext";
 import { speak, stopSpeech } from "@/audio/speech";
 import { CloseButton } from "./CloseButton";
 import { getPersona, getPersonaBySpeaker } from "@/game/npcPersonas";
 import { useCoarsePointer } from "@/hooks/useCoarsePointer";
+import { useDevMode } from "@/dev/devMode";
+import {
+  useEditActive,
+  useDialogPatchTick,
+  setField,
+  pushOp,
+  clearLineFields,
+} from "@/dev/dialogPatchState";
 
 export function DialogOverlay() {
   const {
@@ -19,13 +27,22 @@ export function DialogOverlay() {
   } = useGame();
   const { ttsEnabled } = useSettings();
   const isCoarsePointer = useCoarsePointer();
+  const dev = useDevMode();
+  const editActive = useEditActive();
+  useDialogPatchTick();
+  const editing = dev && editActive;
 
-  const tree = dialogId ? dialogs[dialogId] : null;
+  const tree = dialogId ? (getDialog(dialogId) ?? null) : null;
   const line = tree && dialogLineId ? tree.lines[dialogLineId] : null;
 
   // Speak the line whenever it changes
   useEffect(() => {
     if (!line) {
+      stopSpeech();
+      return;
+    }
+    if (editing) {
+      // Im Edit-Modus keine TTS — sonst quatscht's bei jedem Tastenanschlag.
       stopSpeech();
       return;
     }
@@ -35,11 +52,12 @@ export function DialogOverlay() {
     }
     speak(line.speaker, line.text);
     return () => stopSpeech();
-  }, [line, ttsEnabled]);
+  }, [line, ttsEnabled, editing]);
 
   // Tastatur: Space/Enter → weiter (wenn keine Auswahl ansteht)
   useEffect(() => {
     if (!line) return;
+    if (editing) return;
     const hasChoices =
       (line.choices?.filter((c) => {
         if (c.requiresRadio && !radioActive) return false;
@@ -56,7 +74,7 @@ export function DialogOverlay() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [line, radioActive, advanceDialog]);
+  }, [line, radioActive, advanceDialog, editing]);
 
   if (!line || !tree) return null;
 
@@ -88,6 +106,7 @@ export function DialogOverlay() {
 
   const handleAdvance = () => {
     if (!canAdvance) return;
+    if (editing) return;
     advanceDialog();
   };
 
