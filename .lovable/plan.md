@@ -1,104 +1,87 @@
-# Akt II · Eröffnung — „Die Akte 1978"
+## Ziel
 
-## Korrektur zu Punkt 1: Leitstelle in einen freien Raum auf 4
+Im Dev-Mode (`?dev=1`) wird das laufende `DialogOverlay` zum In-Place-Editor — analog zur Overlay-QA für Hotspots. Layard spielt normal weiter, kann aber jede sichtbare Dialogzeile direkt umschreiben, ihren Sprecher wechseln, sie in 2/3 Teile splitten oder mit der vorherigen Zeile zusammenführen. Ein Knopf „Report kopieren" baut aus allen Änderungen einen strukturierten Commit-Block für den Chat.
 
-Aufzug bleibt unangetastet. Korridor 46 hat **Tür 4602** und **Tür 4603** ohne Inhalt — wir setzen die **Leitstelle E67** hinter Tür **4602** (gleicher Korridor wie Mira, schöner Kontrast: zwei Pole desselben Flurs). Spieler kommt regulär: Aufzug → 4 → Korridor 46 → Tür 4602.
+## Verhalten
 
-Vorteil: Keine neue Etage, kein neuer Aufzug-Knopf, kein neues Asset für die Aufzug-Anzeige. Nur **eine** neue Szene `leitstelleE67` mit einem neuen Hintergrundbild.
+1. **Aktivierung**
+   - Nur sichtbar bei `?dev=1` (bestehendes `useDevMode`).
+   - Neuer Floating-Button „DLG" links neben dem QA-Button mit Toggle „Dialog-Edit an/aus" + Override-Counter.
+   - Solange Dialog-Edit aktiv ist, läuft das Spiel normal weiter — der Editor wird einfach in jedes geöffnete `DialogOverlay` eingeblendet.
 
-## Korrektur zu Punkt 2: Was Layard wirklich antreibt
+2. **Inline-Editor im DialogOverlay**
+   Wenn Dialog-Edit aktiv ist und ein Dialog läuft, bekommt das Bubble-Element zusätzliche Controls:
+   - Sprecher-Pille → Dropdown (Liste aus `DialogLine.speaker`-Union).
+   - Haupttext → `contenteditable`-Block. Speichern beim Blur oder Cmd/Ctrl+Enter.
+   - Subtext (Schmerz-Radio) → eigenes Feld unter dem Haupttext, immer sichtbar (Placeholder „— kein Subtext —").
+   - Choice-Buttons → Text inline editierbar. Logik (`next`, `action`) bleibt unangetastet.
+   - Mini-Toolbar oben rechts in der Bubble:
+     - `↶ Original` — Override für diese Zeile zurücksetzen.
+     - `✂ 1/2`, `✂ 1/3`, `✂ 2/3` — Split an relativer Position. Der Cursor in `contenteditable` hat Vorrang: wenn der User eine Caret-Position gesetzt hat, splittet `✂ hier` an dieser Stelle.
+     - `⨯ Merge ↑` — diese Zeile in die vorherige zurückführen (nur, wenn die vorherige eine reine `next`-Kette ist, also keine `choices`).
+     - `＋ Zeile danach` — leere Zeile einschieben.
 
-„Quittung Schicht C zu Frau Kowalk tragen" ist Akt I in einer anderen Etage. Wir greifen den Plan vom 02.05. (`C+D+E`) wieder auf:
+3. **Split / Merge — Persistenz-Modell**
+   Echte Bearbeitung von `dialogs.ts` zur Laufzeit ist nicht möglich, daher arbeitet der Editor mit einer **Patch-Schicht über `dialogs`**:
+   - Ein neues `dialogPatchState.ts` hält je `dialogId` ein Patch-Objekt:
+     ```
+     {
+       fields: { [lineId]: { text?, subtext?, speaker?, choices?: { [idx]: { text } } } },
+       ops: Array<
+         | { kind: "split", at: lineId, parts: string[] }            // text-fragmente
+         | { kind: "merge", from: lineId, into: lineId }
+         | { kind: "insertAfter", after: lineId, text, speaker }
+       >
+     }
+     ```
+   - `getPatchedDialogTree(id)` rekonstruiert eine `DialogTree`-Kopie:
+     - wendet erst `ops` in Reihenfolge an (neue Line-IDs `__split_<orig>_1`, `__split_<orig>_2`, … / `__ins_<n>`); rewired `next` der Vorgängerzeile auf den ersten Split-Teil und `next` des letzten Teils auf das ursprüngliche `next`/`end`.
+     - überschreibt dann `fields` (text/subtext/speaker/choice-text). `next`, `requires`, `action`, `onEnd`, `end` bleiben unangetastet.
+   - `DialogOverlay` ruft statt `dialogs[dialogId]` ab sofort `getPatchedDialogTree(dialogId)`. In allen anderen Codepfaden (Spiel-Logik) bleibt es bei `dialogs[…]`.
+   - Persistenz in `localStorage` unter `e67.dialogPatches`, ein Schlüssel pro Dialog. Überlebt Reload.
 
-- **C** Insas „Anliegen" als Türöffner
-- **D** Resonanz-Pause als innerer Druck (existiert bereits via `radioOnPause`)
-- **E** Eine konkrete Person, an der Layard die Verantwortungslosigkeit zum ersten Mal *sieht*
-- plus die **Marteau-Spur** als Layards *eigene* Frage
+4. **Report kopieren**
+   Sammelt alle Patches und baut einen Markdown-Block, den der User in den Chat zurückgibt. Zwei Sektionen:
+   - **YAML-Block** (kompatibel mit `scripts/import-dialogs.mjs`) für reine Text-/Subtext-/Speaker-/Choice-Text-Änderungen — kann der User notfalls auch selbst per `node scripts/import-dialogs.mjs` einspielen.
+   - **Strukturelle Änderungen** (Splits, Merges, Inserts) als menschenlesbare Anweisungen pro Dialog mit Vorher/Nachher-Auflistung der Lines + neuem `next`-Routing. Diese wendet der Chat-Agent als Code-Edit auf `src/game/dialogs/<datei>.ts` an. Format z.B.:
+     ```
+     ### insaAct2InPerson
+     SPLIT line `i2_intro` (1/3 + 2/3):
+       i2_intro          → "Setzen Sie sich. Ich habe Ihre Akte gelesen."
+       i2_intro__split_2 → "Sieben Tage Pause. Ich frage nicht nach. Adaeze entscheidet das."
+       Routing: i2_intro.next = i2_intro__split_2 ; i2_intro__split_2.next = i2_choice
+     MERGE `i2_filler` → `i2_intro` (text angehängt, line entfernt).
+     ```
+   - Der Header zählt: `N Dialoge · X Felder · Y Splits · Z Merges`.
+   - Reset-Button („alle Dialog-Patches verwerfen") wie im Overlay-QA.
 
-Layards Ziel ab Akt II ist also nicht „Botengang erledigen", sondern eine Doppelfrage:
+5. **Was bewusst nicht im Editor erscheint**
+   - `next`, `requires`, `hiddenWhen`, `action`, `onEnd`, `requiresRadio` — bleibt Code, weil Spiellogik. Editor zeigt diese Felder als read-only Chips (`→ next: i2_choice`, `🔒 requires: act2Started`), damit der User Kontext hat, aber nicht versehentlich Routing zerlegt.
+   - Anlegen ganz neuer Dialogbäume oder Verbinden zweier Bäume — außerhalb des Scopes.
 
-> **„Warum fühle ich, wie ich fühle — und warum macht das Sektor 28 zu einem medizinischen Problem statt zu einer Frage?"**
+## Technische Änderungen
 
-Die offizielle Antwort lautet „Resonanz-Hygiene, sieben Tage Pause". Layards eigene Antwort entsteht aus dem, was Insa ihm in dieser Szene unter den Tisch schiebt: einer **Akte aus dem Jahr 1978**.
+| Datei | Änderung |
+|---|---|
+| `src/dev/dialogPatchState.ts` (neu) | Patch-Datenmodell, localStorage-IO, `getPatchedDialogTree`, kleine Hooks (`useDialogPatches`, `usePatchedTree`). |
+| `src/dev/DialogEditOverlay.tsx` (neu) | Floating-Button + Toolbar-Panel (Toggle, Override-Count, „Report", „Report kopieren", „Reset"). |
+| `src/components/game/DialogOverlay.tsx` | Bei aktivem Dialog-Edit: Bubble-Inhalte als Editier-Felder rendern, Mini-Toolbar (Split/Merge/Reset) einblenden, Schreibvorgänge an `dialogPatchState` weiterreichen. `dialogs[dialogId]` durch `getPatchedDialogTree(dialogId)` ersetzen. Im Edit-Modus: Klick aufs Backdrop löst kein „weiter" mehr aus, Tastatur-Listener pausieren. |
+| `src/components/game/GameShell.tsx` | `<DialogEditOverlay />` einhängen (analog zu `OverlayQAOverlay`), gegated mit `useDevMode()`. |
+| `src/dev/devMode.ts` | unverändert. |
 
-## Die Eröffnungs-Szene Schritt für Schritt
+Keine Änderungen an `dialogs/*.ts`, `types.ts`, `scripts/import-dialogs.mjs`. Der bestehende YAML-Roundtrip funktioniert weiterhin und wird vom Report mitgenutzt.
 
-### 1. Wohnung 2611 — kurzer Wiedereinstieg
+## Risiken / Edge-Cases
 
-Akt-II-Intro-Zeile (eine, je Mira-State leicht eingefärbt). Keine neuen Hotspots. Auf dem Tisch liegt **kein** Botengang-Vordruck — stattdessen ein einzelner Satz im Intro: „Insa hat gesagt: vorbeikommen, wenn du wach bist. 4602."
+- **Splits an Choice-Zeilen**: erlaubt, der letzte Split-Teil erbt die Choices, alle früheren bekommen `next` auf den nächsten Teil.
+- **Merge bei Choice-Vorgänger**: deaktiviert, Button greyed out mit Tooltip „Vorgänger hat Auswahl — bitte erst Choices auflösen."
+- **Subtext nur bei aktiver Schmerz-Radio-Sicht** — im Editor immer editierbar, Vorschau-Hinweis „(nur sichtbar bei Radio an)".
+- **Performance**: Patch-Anwendung ist O(Lines pro Tree), pro Frame trivial.
 
-### 2. Korridor 46 → Tür 4602
+## Akzeptanz
 
-Die bislang stumme Tür 4602 bekommt jetzt ein Schild „**Leitstelle E67 · Disposition · Zutritt nur mit Anliegen**" und führt in die neue Szene. Vorher bleibt sie unverändert stumm.
-
-### 3. Neue Szene `leitstelleE67`
-
-**Background:** `scene-leitstelle-e67.jpg` im Stil der bestehenden Korridorbilder (1990er-Behörde, Linoleum, Resopal, drei Tischapparate, Schrankwand mit Hängeregistratur, eine Tür hinten als „nicht für dich").
-
-**Hotspots:**
-
-- **Insa Bauerfeind** (`talk`, zentral) — startet `insaAct2InPerson`.
-- **Schrankwand mit Hängeregistratur** (`look`) — „Hier liegt mehr ungelesene Welt als in der Sektor-Bibliothek."
-- **Drei Tischapparate** (`look`) — „Einer klingelt nie. Insa sagt, er ist die direkte Leitung in einen Raum, in dem niemand mehr sitzt." (erster Hint auf den „leeren Stuhl" / Sektorleitung-Vakanz aus Strang E).
-- **Aushang „Resonanz-Hygiene"** (`look`) — verankert Okwus Pause räumlich.
-- **Tür raus** (`exit`) — zurück Korridor 46.
-
-### 4. Neuer Dialog `insaAct2InPerson` — der Drehpunkt (sechs Beats)
-
-Layard kommt nicht mit einem Auftrag raus, sondern mit **einer Frage und einer Akte**.
-
-1. **Begrüßung** — Insa schiebt einen zweiten Becher rüber. „Ich habe Sie mir größer vorgestellt. — Setzen Sie sich. Wir haben eine Stunde."
-2. **Pause kurz registriert** — Insa: „Adaeze hat mir Bescheid gegeben, dass Sie sieben Tage pausieren sollen. Ich frage nicht nach." Keine Komplizenschaft, nur Hintergrund — damit Insa Layard keine Funkprotokolle aufhalst.
-3. **Layards Frage** — Spieler-Wahl aus drei Zeilen, alle mit demselben Ausgang:
-   - „Warum bin ich so, wie ich bin?"
-   - „Warum ist das ein Krankheitsbild und keine Frage?"
-   - „Wer hat das Schmerz-Radio eigentlich erfunden — und warum?"
-   Insa: „Ich habe gehofft, Sie fragen das. Sonst hätte ich es Ihnen aufgedrängt."
-4. **Die Akte 1978** — Insa öffnet eine Schublade und reicht Layard eine dünne, vergilbte Mappe: **„Resonanz-Überlastung 1978 · Quadrant E12 · Hörer N. Sertl · Gutachten: C. Marteau."** „Vor zwanzig Jahren hat schon einmal jemand das gehört, was Sie hören. Marteau war damals als Berater geladen. Das Gutachten fehlt. Im Archiv 5710 steht nur der Aktendeckel. Den Inhalt hat *jemand* mitgenommen — und nirgends notiert, *wer*."
-5. **Mira-State-Splitter** (eine Zeile):
-   - friendly: „Ihre Bekannte aus dem 4. — die kennt vielleicht den Weg in 5710 ohne Stempel."
-   - neutral: keine Erwähnung.
-   - skeptical: „Sie werden 5710 nicht über mich öffnen. Ich kenne nur einen, der das kann, und Sie mögen ihn nicht."
-6. **Abschied — Layards eigenes Ziel ist gesetzt** — Insa: „Ich gebe Ihnen keinen Auftrag, Herr Worag. Ich gebe Ihnen die Genehmigung, etwas zu suchen, was offiziell niemand verloren hat."
-
-Items am Ende: **„Akte 1978 · N. Sertl"** (neu, Inventar). Flags: `insaAct2BriefingDone`, `marteauTrailOpened`.
-
-### 5. Was die Akte konkret in Akt II auslöst
-
-- Layards **stehender Inventar-Begleiter** für ganz Akt II — wie das Protokoll in Akt I, aber selbst gewählt.
-- **Schlüssel zum Bedeutungswandel von Rätsel B (Archiv 5710)**: Der Akteninhalt liegt dort. 5710 hat damit einen *eigenen* Grund, nicht nur „Vossbeck verlangt Vollmacht".
-- Macht Mikael / Vossbeck / die Quittungs-Mechanik in Akt II zu Hindernissen auf Layards eigenem Weg. Rätsel A bleibt im Plan, wird aber narrativ umgehängt: Layard braucht den Schicht-C-Stempel, weil **damit** das Archiv 5710 zugänglich wird.
-- Strang **E** (verschwundener Nachbar) hängt sich später an: der, der das Gutachten 1978 mitgenommen hat, ist mit hoher Wahrscheinlichkeit dieselbe Person, deren Akte heute leer ist.
-
-### 6. Hint-Einträge
-
-Zwei neue Einträge in `src/game/hints.ts`:
-
-- **„Akt II — Insa in der Leitstelle"** · aktiv `act2Started && !insaAct2BriefingDone` · Stufen: „Insa hat dich eingeladen. 4602." → „Aufzug → 4. Etage → Tür 4602." → „Sprich Insa direkt an."
-- **„Die Akte 1978"** · aktiv mit `marteauTrailOpened` · bleibt offen bis zur späteren Marteau-Auflösung — Layards Goal-Marker für ganz Akt II.
-
-## Was in diesem Loop NICHT passiert
-
-- Kein Botengang zu Frau Kowalk in 3602.
-- Kein neuer Aufzug-Knopf, keine neue Etage.
-- Kein Vossbeck-Akt-II-Auftritt, kein Mira-Akt-II-Besuch.
-- Kein Inhalt der Akte selbst (nur Aktendeckel + Insas Worte) — der Inhalt ist Loot von 5710 in Rätsel B.
-- Keine Änderung an Rätsel-A/B/C-Mechanik. Nur die *Bedeutung* von B verschiebt sich.
-
-## Technische Umrisse
-
-- `src/game/types.ts`: neue Flags `insaAct2BriefingDone`, `marteauTrailOpened`. Neues Item `akte1978Sertl` in `InventoryItemId`.
-- `src/game/scenes/corridorsE67.ts`: Tür 4602 bekommt Label „Leitstelle E67" und `onUse: api.goTo("leitstelleE67")` (sichtbar erst bei `act2Started`).
-- `src/game/scenes/leitstelleE67.ts` *(neu)*: Szene mit fünf Hotspots. In `scenes/index.ts` registrieren.
-- `src/assets/scene-leitstelle-e67.jpg` *(neu, generiert)*.
-- `src/game/scenes/apartmentAct1.ts`: `intro` zur Funktion `(api) => string` machen, Akt-II-Variante mit Mira-Tönung, Verweis „4602".
-- `src/game/dialogs/insa.ts`: neuer Dialog `insaAct2InPerson` mit den sechs Beats; im letzten Knoten `addItem("akte1978Sertl")` + Flags.
-- `src/game/hints.ts`: zwei neue Einträge.
-- Item-Registry: Eintrag für `akte1978Sertl` (Icon-Reuse aus vorhandenen Akten-Items).
-- `src/components/game/RadioPanel.tsx`: keine Änderung.
-
-## Offene Fragen
-
-1. **Akte 1978 — Vorname von „N. Sertl" ausschreiben oder als Initialen lassen?** (Initialen wirken aktenrealistischer; ausgeschriebener Name macht die spätere Verknüpfung mit Strang E leichter.)
-2. **Layards Frage in Beat 3 — alle drei Optionen anbieten oder eine vorgeben?** (Drei Optionen geben Wahlgefühl, führen aber zum selben Punkt.)
-3. **Der „nie klingelnde dritte Apparat" — schon konkret als „direkte Leitung zur Sektorleitung 28" benennen** (klare Vorbereitung von Strang E) oder vage halten?
+1. Mit `?dev=1` erscheint Button „DLG". Toggle aktiviert Edit-Modus.
+2. Beim Sprechen mit Insa kann Layard mitten im Dialog Text ändern, splitten, mergen — die Änderungen wirken sofort beim nächsten Klick „Weiter".
+3. Patches überleben Reload.
+4. „Report kopieren" legt einen Markdown-Block in der Zwischenablage ab, der YAML-Edits + strukturierte Split/Merge-Anweisungen enthält.
+5. Spiel ohne `?dev=1` zeigt keinerlei Editor-UI und verhält sich identisch zur jetzigen Version.
