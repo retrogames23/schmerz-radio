@@ -364,40 +364,39 @@ export function DialogOverlay() {
                 </button>
               </span>
             </div>
-            <div
+            <textarea
+              key={`text:${line.id}`}
               data-dlg-edit-text
-              contentEditable
-              suppressContentEditableWarning
+              defaultValue={line.text}
+              rows={Math.max(2, Math.ceil(line.text.length / 70))}
               onBlur={(e) => {
                 if (!dialogId) return;
-                const v = (e.currentTarget.textContent ?? "").trim();
+                const v = e.currentTarget.value.trim();
                 if (v !== line.text) setField(dialogId, line.id, { text: v });
               }}
               onKeyDown={(e) => {
                 if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-                  (e.target as HTMLElement).blur();
+                  (e.currentTarget as HTMLTextAreaElement).blur();
                 }
               }}
-              className="rounded-sm border border-dashed border-amber-glow/40 px-2 py-1 font-display text-lg leading-relaxed text-foreground outline-none focus:border-amber-glow"
-            >
-              {line.text}
-            </div>
+              className="w-full resize-y rounded-sm border border-dashed border-amber-glow/40 bg-background/60 px-2 py-1 font-display text-lg leading-relaxed text-foreground outline-none focus:border-amber-glow"
+            />
             <div className="mt-2 text-[10px] uppercase tracking-widest text-amber-glow/60">
               Subtext (Schmerz-Radio)
             </div>
-            <div
-              contentEditable
-              suppressContentEditableWarning
+            <textarea
+              key={`sub:${line.id}`}
+              defaultValue={line.subtext ?? ""}
+              rows={2}
+              placeholder="— kein Subtext —"
               onBlur={(e) => {
                 if (!dialogId) return;
-                const v = (e.currentTarget.textContent ?? "").trim();
+                const v = e.currentTarget.value.trim();
                 if (v !== (line.subtext ?? ""))
                   setField(dialogId, line.id, { subtext: v });
               }}
-              className="min-h-[1.6em] rounded-sm border border-dashed border-amber-glow/30 px-2 py-1 font-mono-crt text-base italic text-amber-glow/80 outline-none focus:border-amber-glow"
-            >
-              {line.subtext ?? ""}
-            </div>
+              className="w-full resize-y rounded-sm border border-dashed border-amber-glow/30 bg-background/60 px-2 py-1 font-mono-crt text-base italic text-amber-glow/80 outline-none focus:border-amber-glow"
+            />
           </div>
         ) : (
           <>
@@ -430,22 +429,20 @@ export function DialogOverlay() {
                   ▸
                 </span>
                 {editing ? (
-                  <span
-                    contentEditable
-                    suppressContentEditableWarning
+                  <input
+                    key={`ch:${line.id}:${i}`}
+                    defaultValue={choice.text}
                     onClick={(e) => e.stopPropagation()}
                     onBlur={(e) => {
                       if (!dialogId) return;
-                      const v = (e.currentTarget.textContent ?? "").trim();
+                      const v = e.currentTarget.value.trim();
                       if (v !== choice.text)
                         setField(dialogId, line.id, {
                           choices: { [i]: { text: v } },
                         });
                     }}
-                    className="flex-1 outline-none"
-                  >
-                    {choice.text}
-                  </span>
+                    className="flex-1 bg-transparent outline-none"
+                  />
                 ) : (
                   <span>{choice.text}</span>
                 )}
