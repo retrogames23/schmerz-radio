@@ -136,17 +136,27 @@ export function DialogOverlay() {
     if (!line || !dialogId) return;
     const text = line.text ?? "";
     if (text.length < 4) return;
-    // Caret-Position in einem optionalen contenteditable-Block bevorzugen,
-    // sonst auf Whitespace nahe `Math.round(text.length * ratio)` schneiden.
-    const sel = window.getSelection();
+    // Caret im Editor-Textarea bevorzugen, sonst nahe `text.length * ratio`
+    // auf Wortgrenze schneiden.
+    const ta = document.querySelector<HTMLTextAreaElement>(
+      "textarea[data-dlg-edit-text]",
+    );
     let cut = -1;
-    if (sel && sel.rangeCount > 0 && (sel.anchorNode as HTMLElement | null)) {
-      const node = sel.anchorNode!;
-      // Nur respektieren, wenn der Cursor in unserem Editor-Block sitzt.
-      const host = (node.parentElement?.closest?.("[data-dlg-edit-text]") ??
-        null) as HTMLElement | null;
-      if (host && sel.anchorOffset > 0 && sel.anchorOffset < text.length) {
-        cut = sel.anchorOffset;
+    if (ta && document.activeElement === ta) {
+      const pos = ta.selectionStart ?? -1;
+      const liveText = ta.value;
+      if (pos > 0 && pos < liveText.length) {
+        // Wenn der User im Textarea editiert hat, vor dem Split den
+        // aktuellen Stand als Field-Override sichern.
+        if (liveText !== text) {
+          setField(dialogId, line.id, { text: liveText });
+        }
+        const a = liveText.slice(0, pos).trimEnd();
+        const b = liveText.slice(pos).trimStart();
+        if (a && b) {
+          pushOp(dialogId, { kind: "split", at: line.id, parts: [a, b] });
+          return;
+        }
       }
     }
     if (cut < 0) {
