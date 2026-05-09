@@ -110,6 +110,77 @@ export function DialogOverlay() {
     advanceDialog();
   };
 
+  // Liste der erlaubten Sprecher — synchron mit DialogLine["speaker"] in types.ts.
+  const SPEAKERS: string[] = [
+    "LAYARD","INSA","PHILIPPE","SANITÄTER","SYSTEM","RADIO","MIKAEL",
+    "RECEPTION","MIRA","BODO","HELKA","ENNIS","STEGMANN","OKWU","TJARK",
+    "BREM","YELVA","KOWALK","BRUST","VOSSBECK","BRAM","MARV",
+  ];
+
+  // Vorgängerzeile finden (für „Merge ↑").
+  const prevId = (() => {
+    if (!editing || !line) return null;
+    const candidates: string[] = [];
+    for (const k of Object.keys(tree.lines)) {
+      const l = tree.lines[k];
+      if (l.id === line.id) continue;
+      if (l.next === line.id) candidates.push(l.id);
+    }
+    if (candidates.length !== 1) return null;
+    const prev = tree.lines[candidates[0]];
+    if (prev.choices && prev.choices.length > 0) return null;
+    return prev.id;
+  })();
+
+  const handleSplit = (ratio: number) => {
+    if (!line || !dialogId) return;
+    const text = line.text ?? "";
+    if (text.length < 4) return;
+    // Caret-Position in einem optionalen contenteditable-Block bevorzugen,
+    // sonst auf Whitespace nahe `Math.round(text.length * ratio)` schneiden.
+    const sel = window.getSelection();
+    let cut = -1;
+    if (sel && sel.rangeCount > 0 && (sel.anchorNode as HTMLElement | null)) {
+      const node = sel.anchorNode!;
+      // Nur respektieren, wenn der Cursor in unserem Editor-Block sitzt.
+      const host = (node.parentElement?.closest?.("[data-dlg-edit-text]") ??
+        null) as HTMLElement | null;
+      if (host && sel.anchorOffset > 0 && sel.anchorOffset < text.length) {
+        cut = sel.anchorOffset;
+      }
+    }
+    if (cut < 0) {
+      const target = Math.max(1, Math.min(text.length - 1, Math.round(text.length * ratio)));
+      // Suche nächstgelegene Wortgrenze.
+      const fwd = text.indexOf(" ", target);
+      const bwd = text.lastIndexOf(" ", target);
+      cut = fwd === -1 ? bwd : (bwd === -1 ? fwd : (Math.abs(fwd - target) < Math.abs(target - bwd) ? fwd : bwd));
+      if (cut <= 0 || cut >= text.length) cut = target;
+    }
+    const a = text.slice(0, cut).trimEnd();
+    const b = text.slice(cut).trimStart();
+    if (!a || !b) return;
+    pushOp(dialogId, { kind: "split", at: line.id, parts: [a, b] });
+  };
+
+  const handleMerge = () => {
+    if (!line || !dialogId || !prevId) return;
+    pushOp(dialogId, { kind: "merge", from: line.id, into: prevId });
+    // Nach dem Merge ist die aktuelle LineId weg → zur Vorgängerzeile springen.
+    advanceDialog(prevId);
+  };
+
+  const handleInsertAfter = () => {
+    if (!line || !dialogId) return;
+    if (line.choices && line.choices.length > 0) return;
+    pushOp(dialogId, {
+      kind: "insertAfter",
+      after: line.id,
+      text: "…",
+      speaker: line.speaker,
+    });
+  };
+
   // Manche NPCs stehen am linken oder rechten Bildrand. Damit die
   // Sprechblase sie nicht verdeckt, richten wir sie pro Sprecher aus.
   // KOWALK steht in der Kantine links → Bubble nach rechts.
