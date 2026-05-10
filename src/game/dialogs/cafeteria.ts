@@ -53,7 +53,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             hiddenWhen: ["gotB3Ration"],
           },
           {
-            text: "[ Insas Auftrag ] Insa hat mich geschickt. Quittung 4317-K — Transferbogen für Ihre Tochter.",
+            text: "Frau Kowalk — Vorgang 4317. Auf meiner Adresse hängt ein Block. Insa sagt, Sie kennen die Akte.",
             next: "kInsa1",
             requires: ["insaGaveTransferTask"],
             hiddenWhen: ["gotTillaTransferInfo"],
