@@ -777,14 +777,14 @@ export const insaDialogs: Record<string, DialogTree> = {
       iw2: {
         id: "iw2",
         speaker: "INSA",
-        text: "Worag. Bevor Sie fragen — der Code liegt fertig. Aber ich gebe ihn heute nicht raus, solange auf meinem Tisch noch ein offener Vorgang aus E67 liegt.",
-        subtext: "Sie sagt das ruhig. Es ist keine Drohung. Es ist eine Reihenfolge.",
+        text: "Worag. Bevor Sie fragen — der Code liegt fertig. Aber Ihr Datensatz hat einen Vorgangsblock. Stamm Vier-Drei-Eins-Sieben, mitverknüpft an Ihrer Adresse. Solange der offen ist, gibt das Pult keinen Code raus.",
+        subtext: "Sie sagt das ruhig. Es ist keine Drohung. Es ist eine Reihenfolge im System.",
         next: "iw3",
       },
       iw3: {
         id: "iw3",
         speaker: "INSA",
-        text: "Frau Kowalks Tochter. 4317-K. Ich brauche eine saubere Antwort von E70-K — Transferbogen, Bewohnernummer, Heim. Sie wissen, wie das geht: Ausgabestelle, Quittung Schicht B, Rohrpost.",
+        text: "Praktisch: am Vorgang hängt Frau Kowalks Tochter — 4317-K. Solange diese Quittung nicht durch ist, bleibt der Stamm offen. Sie wissen, wie das geht: Ausgabestelle, Quittung Schicht B, Rohrpost.",
         next: "iw3b",
       },
       iw3b: {
@@ -797,13 +797,13 @@ export const insaDialogs: Record<string, DialogTree> = {
       iw3c: {
         id: "iw3c",
         speaker: "INSA",
-        text: "Eins noch, Worag: 4317-K hängt am Stamm-Vorgang 4317. E70-K nimmt die Quittung nur an, wenn die Stamm-Vollmacht frisch gegengezeichnet ist. Wer das gerade entscheidet, sagt Ihnen Frau Kowalk. Es wird Ihnen nicht gefallen.",
+        text: "Eins noch, Worag: E70-K nimmt die Quittung nur an, wenn die Stamm-Vollmacht frisch gegengezeichnet ist. Wer das gerade entscheidet, sagt Ihnen Frau Kowalk. Es wird Ihnen nicht gefallen.",
         next: "iw4",
       },
       iw4: {
         id: "iw4",
         speaker: "INSA",
-        text: "Sobald der Bogen bei Ihnen aus dem Rohr fällt, rufen Sie mich noch einmal an. Dann bekommen Sie Ihren Code. Auf Wiederhören, Worag.",
+        text: "Sobald der Bogen bei Ihnen aus dem Rohr fällt, ist Ihr Status sauber. Dann rufen Sie mich noch einmal an — Code kommt ins Postfach. Auf Wiederhören, Worag.",
         end: true,
       },
     },
