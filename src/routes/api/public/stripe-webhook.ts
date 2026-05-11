@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import { sendTransactionalEmailServer } from "@/lib/email/sendTransactional.server";
 
 /**
  * Stripe Webhook: empfängt `checkout.session.completed`,
@@ -104,6 +105,28 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
         if (profErr) {
           console.error("stripe-webhook: profile update failed", profErr);
           return json(500, { error: "Profile update failed" });
+        }
+
+        // Bestätigungsmail (best effort — keine 500, falls Mailversand klemmt,
+        // sonst würde Stripe den Webhook erneut zustellen und doppelt freischalten).
+        if (email) {
+          try {
+            const amountFormatted = new Intl.NumberFormat("de-DE", {
+              style: "currency",
+              currency: currency.toUpperCase(),
+            }).format((amount ?? 0) / 100);
+            const result = await sendTransactionalEmailServer(admin, {
+              templateName: "donation-confirmation",
+              recipientEmail: email,
+              idempotencyKey: `donation-confirm-${session.id}`,
+              templateData: { amountFormatted },
+            });
+            if (!result.success) {
+              console.warn("stripe-webhook: donation email not sent", result);
+            }
+          } catch (e) {
+            console.error("stripe-webhook: donation email error", e);
+          }
         }
 
         return json(200, { received: true });
