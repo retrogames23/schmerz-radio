@@ -184,8 +184,8 @@ export const HINT_QUESTS: HintQuest[] = [
     isResolved: (a) => a.hasFlag("sawEmptyOffice"),
     hints: [
       "Auf Etage 3 sollst du jemanden treffen — du musst sein Büro suchen.",
-      "Geh den Korridor 36 ab, bis du an die richtige Bürotür kommst. Du musst dort klingeln, auch wenn niemand öffnet.",
-      "Geh im Korridor 36 zum Büro des Abschnittsverantwortlichen, klingele dort an der Tür und bestätige, dass das Büro leer ist.",
+      "Geh den Korridor 36 ab, bis du an Tür 3601 kommst — dort hängt ein Aushang.",
+      "Geh im Korridor 36 zu Tür 3601 und lies den Aushang. Das genügt; klingeln ist möglich, aber nicht nötig.",
     ],
   },
 
@@ -207,7 +207,7 @@ export const HINT_QUESTS: HintQuest[] = [
   // 11) Insa anrufen → Vorgangs-Status klären, Code anfragen
   {
     id: "act1.callInsaFor5610",
-    title: "Insa anrufen — Code für die Sektor-Tür",
+    title: "Insa anrufen — was den Code blockiert",
     priority: 11,
     isActive: (a) =>
       a.hasFlag("sawEmptyOffice") &&
@@ -226,7 +226,7 @@ export const HINT_QUESTS: HintQuest[] = [
   {
     id: "act1.serverRoom5610",
     title: "Serverraum 5610 — Spur des Schmerz-Radios",
-    priority: 24,
+    priority: 65,
     isActive: (a) =>
       a.hasFlag("saw5610Door") &&
       !a.hasFlag("tappedNode5610") &&
@@ -358,8 +358,8 @@ export const HINT_QUESTS: HintQuest[] = [
       a.hasFlag("refusedB3Favor"),
     hints: [
       "Philippe hat dich um eine B3-Ration gebeten. In der Kantine läuft das über Vorgang 4317 — denselben, den du für Tillas Akte sowieso brauchst.",
-      "Wenn du Vossbecks Endduell um 4317 gewinnst, gibt er die B3 automatisch mit frei — kein zweiter Weg nötig.",
-      "Spiel den kritischen Pfad: Brust → drei Trainingsfälle in Folge → Vossbeck nebenan in 3603 schlagen. Mit dem Sieg liegt die B3-Dose mit auf dem Tresen.",
+      "Du brauchst keinen zweiten Weg: gewinnst du das Endduell um 4317 (Tillas Quittung), gibt Vossbeck die B3 automatisch mit frei.",
+      "Spiel den 4317-Hauptpfad: Brust am Tresen → drei Trainingsfälle in Folge → Vossbeck nebenan in 3603 schlagen. Mit dem Sieg liegt die B3-Dose neben Tillas Quittung auf dem Tresen.",
     ],
   },
   {
@@ -432,7 +432,7 @@ export const HINT_QUESTS: HintQuest[] = [
     hints: [
       "Mira testet dich, ohne es zu sagen. Es geht weniger darum, was du tust, sondern was du dabei abschaltest.",
       "Sie hat dir ein Manifest dagelassen. Lies es — und überlege, was es bedeuten würde, das Schmerz-Radio bewusst stummzuschalten.",
-      "Lies Miras Manifest in deinem Inventar, schalte das Radio im Radio-Panel aus und lass es mindestens eine Minute aus, bevor du sie wieder aufsuchst.",
+      "Lies Miras Manifest in deinem Inventar, schalte das Radio im Radio-Panel aus, lass es mindestens eine Minute aus — und sprich Mira danach in 4601 erneut an. Erst das Gespräch entscheidet die Probe.",
     ],
   },
 
