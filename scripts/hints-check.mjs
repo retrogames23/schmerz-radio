@@ -34,10 +34,21 @@ const ALL_SRC = SRC_FILES
 
 const typesText = readFileSync(ROOT + "src/game/types.ts", "utf8");
 
+// Comments in types.ts contain stray ASCII " (German quotation marks
+// are written as „..." which uses a regular ASCII close quote). Strip
+// all line- and block-comments before regex parsing so literal-extraction
+// doesn't get out of sync.
+function stripComments(src) {
+  return src
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/[^\n]*/g, "");
+}
+const typesClean = stripComments(typesText);
+
 // ── Bekannte Flags & Items aus types.ts extrahieren ───────────────
 function extractUnion(name) {
   const re = new RegExp(`export type ${name}\\s*=\\s*([^;]+);`, "m");
-  const m = typesText.match(re);
+  const m = typesClean.match(re);
   if (!m) return new Set();
   return new Set(
     [...m[1].matchAll(/"([^"]+)"/g)].map((x) => x[1]),
