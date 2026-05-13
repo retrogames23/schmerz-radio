@@ -1,0 +1,12 @@
+# WHISPER·QUEST
+
+> Kostenloses klassisches Cozypunk-Point-&-Click-Adventure im Browser. Ein dystopisch-gemütliches 2D-Grafik-Adventure über bürokratische Erstarrung und das heimliche Begehren nach echtem Erleben. Spielbar unter https://whisperquest.app
+
+## Pages
+
+- [Startseite / Spiel](/): Das Spiel direkt im Browser starten.
+- [E-Mail abbestellen](/unsubscribe): Newsletter- und Transaktions-Mails abbestellen.
+
+## Sitemap
+
+- [sitemap.xml](/sitemap.xml)

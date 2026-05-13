@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-const SITE = "https://schmerz-radio.com";
+const SITE = "https://whisperquest.app";
 const lastmod = new Date().toISOString().slice(0, 10);
 
 const urls = [
   { loc: `${SITE}/`, changefreq: "monthly", priority: "1.0" },
+  { loc: `${SITE}/unsubscribe`, changefreq: "yearly", priority: "0.1" },
 ];
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>

@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /lovable/
 
-Sitemap: https://schmerz-radio.com/sitemap.xml
+Sitemap: https://whisperquest.app/sitemap.xml
