@@ -148,6 +148,20 @@ export function DialogEditOverlay() {
       lines.push("## showText-Edits (api.showText-Overlays)");
       for (const k of textKeys) {
         const p = textAll[k];
+        const lengthChanged = p.replacement.length !== p.original.length;
+        if (lengthChanged) {
+          lines.push("");
+          lines.push(
+            `### showText \`${k}\` (Struktur geändert: ${p.original.length} → ${p.replacement.length} Zeilen)`,
+          );
+          lines.push("- vorher:");
+          for (const s of p.original)
+            lines.push(`  - ${JSON.stringify(s)}`);
+          lines.push("- nachher:");
+          for (const s of p.replacement)
+            lines.push(`  - ${JSON.stringify(s)}`);
+          continue;
+        }
         const dirty = p.replacement
           .map((r, i) => (r !== p.original[i] ? i : -1))
           .filter((i) => i >= 0);

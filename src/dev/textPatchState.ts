@@ -89,16 +89,21 @@ export function setTextLine(
   index: number,
   value: string,
 ) {
-  if (index < 0 || index >= original.length) return;
   const all = readAll();
   const k = hashTextLines(original);
   const cur =
     all[k] ?? { original: [...original], replacement: [...original] };
-  if (cur.replacement.length !== original.length) {
-    cur.replacement = [...original];
-  }
+  if (index < 0 || index >= cur.replacement.length) return;
   cur.replacement[index] = value;
-  // Wenn Replacement wieder identisch zum Original ist, Eintrag entfernen.
+  persistOrDelete(all, k, cur, original);
+}
+
+function persistOrDelete(
+  all: AllTextPatches,
+  k: string,
+  cur: TextPatch,
+  original: string[],
+) {
   if (
     cur.replacement.length === original.length &&
     cur.replacement.every((s, i) => s === original[i])
@@ -110,11 +115,46 @@ export function setTextLine(
   writeAll(all);
 }
 
+/** Verschmilzt Zeile `index` mit `index+1` (Trennzeichen ` `). */
+export function mergeTextLine(original: string[], index: number) {
+  const all = readAll();
+  const k = hashTextLines(original);
+  const cur =
+    all[k] ?? { original: [...original], replacement: [...original] };
+  if (index < 0 || index >= cur.replacement.length - 1) return;
+  const merged = [
+    cur.replacement[index],
+    cur.replacement[index + 1],
+  ]
+    .filter((s) => s && s.trim().length > 0)
+    .join(" ");
+  cur.replacement.splice(index, 2, merged);
+  persistOrDelete(all, k, cur, original);
+}
+
+/** Splittet Zeile `index` an Cursor-Position `pos`. */
+export function splitTextLine(
+  original: string[],
+  index: number,
+  pos: number,
+) {
+  const all = readAll();
+  const k = hashTextLines(original);
+  const cur =
+    all[k] ?? { original: [...original], replacement: [...original] };
+  if (index < 0 || index >= cur.replacement.length) return;
+  const line = cur.replacement[index] ?? "";
+  const cut = Math.max(0, Math.min(line.length, pos));
+  const left = line.slice(0, cut).trimEnd();
+  const right = line.slice(cut).trimStart();
+  cur.replacement.splice(index, 1, left, right);
+  persistOrDelete(all, k, cur, original);
+}
+
 /** Wendet Patch an, falls vorhanden. Sonst Original. */
 export function applyTextPatch(original: string[]): string[] {
   const p = getTextPatch(original);
   if (!p) return original;
-  if (p.replacement.length !== original.length) return original;
   return p.replacement;
 }
 
@@ -124,8 +164,12 @@ export function textPatchStats(all: AllTextPatches = readAll()) {
   for (const k of Object.keys(all)) {
     const p = all[k];
     let dirty = 0;
-    for (let i = 0; i < p.replacement.length; i++) {
-      if (p.replacement[i] !== p.original[i]) dirty += 1;
+    if (p.replacement.length !== p.original.length) {
+      dirty = Math.max(p.replacement.length, p.original.length);
+    } else {
+      for (let i = 0; i < p.replacement.length; i++) {
+        if (p.replacement[i] !== p.original[i]) dirty += 1;
+      }
     }
     if (dirty > 0) {
       entries += 1;

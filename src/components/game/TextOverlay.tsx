@@ -11,6 +11,8 @@ import {
   useTextPatchTick,
   clearTextPatch,
   getTextPatch,
+  mergeTextLine,
+  splitTextLine,
 } from "@/dev/textPatchState";
 
 export function TextOverlay() {
@@ -52,6 +54,18 @@ export function TextOverlay() {
     else setIdx((i) => i + 1);
   };
 
+  const onMergeNext = () => {
+    if (safeIdx >= displayed.length - 1) return;
+    mergeTextLine(textOverlay, safeIdx);
+  };
+  const onSplitHere = () => {
+    const ta = document.getElementById(
+      "showtext-edit-textarea",
+    ) as HTMLTextAreaElement | null;
+    const pos = ta?.selectionStart ?? Math.floor(current.length / 2);
+    splitTextLine(textOverlay, safeIdx, pos);
+  };
+
   return (
     <div
       className="absolute inset-0 z-40 flex cursor-pointer items-end justify-center bg-black/60 px-6 pb-24 text-left"
@@ -78,6 +92,7 @@ export function TextOverlay() {
             </span>
           </div>
           <textarea
+            id="showtext-edit-textarea"
             value={current}
             onChange={(e) => setTextLine(textOverlay, safeIdx, e.target.value)}
             rows={Math.max(3, Math.ceil(current.length / 60))}
@@ -102,6 +117,23 @@ export function TextOverlay() {
                 className="rounded-sm border border-amber-glow/40 px-2 py-1 hover:bg-amber-glow/10 disabled:opacity-40"
               >
                 ▸
+              </button>
+              <button
+                type="button"
+                onClick={onMergeNext}
+                disabled={isLast}
+                title="Mit nächster Zeile verbinden"
+                className="rounded-sm border border-amber-glow/40 px-2 py-1 hover:bg-amber-glow/10 disabled:opacity-40"
+              >
+                ⇩ Merge
+              </button>
+              <button
+                type="button"
+                onClick={onSplitHere}
+                title="An Cursor-Position splitten"
+                className="rounded-sm border border-amber-glow/40 px-2 py-1 hover:bg-amber-glow/10"
+              >
+                ✂ Split
               </button>
             </div>
             <div className="flex gap-2">
