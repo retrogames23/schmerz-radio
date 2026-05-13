@@ -91,7 +91,7 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
         kind: "look",
         onUse: (api) =>
           api.showText([
-            "Drei Reihen 3,5"-Disketten in beschrifteten Ordnern.",
+            "Drei Reihen 3,5-Zoll-Disketten in beschrifteten Ordnern.",
             "»SPIELE / US-IMPORT«, »WB 1.3 SYSTEM«, »DEMO-SCENE 91-92«.",
             "Eine Diskette steht heraus: »FastWeb · BOOTBAR · NICHT MITNEHMEN«.",
           ]),
