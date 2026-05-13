@@ -73,13 +73,13 @@ export function TextOverlay() {
           <div className="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-amber-glow">
             <span>showText · Edit</span>
             <span>
-              {idx + 1} / {displayed.length}
+              {safeIdx + 1} / {displayed.length}
               {patched ? " · ✎" : ""}
             </span>
           </div>
           <textarea
             value={current}
-            onChange={(e) => setTextLine(textOverlay, idx, e.target.value)}
+            onChange={(e) => setTextLine(textOverlay, safeIdx, e.target.value)}
             rows={Math.max(3, Math.ceil(current.length / 60))}
             className="w-full resize-y rounded-sm border border-amber-glow/40 bg-black/60 p-2 font-mono-crt text-sm text-foreground"
           />
