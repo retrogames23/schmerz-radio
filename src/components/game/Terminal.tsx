@@ -328,7 +328,7 @@ export function Terminal() {
   const bodoMode = remoteMode
     ? remoteMode === "bodo"
     : !miraMode && localBodoMode;
-  const userName = miraMode ? "root" : bodoMode ? "bodo" : "worag";
+  const userName = miraMode ? "root" : bodoMode ? "bodo" : "layard";
   // Beide Maschinen hängen am Sektor-Netz E67 — der Hostname ist
   // konsistent „e67“, nur der Benutzer wechselt. In einer Remote-Sitzung
   // zeigt der Prompt zusätzlich den Zielhost (z. B. `worag@bodo:~$`).
@@ -348,7 +348,7 @@ export function Terminal() {
     ? "/home/mira"
     : bodoMode
       ? "/home/bodo"
-      : "/home/worag";
+      : "/home/layard";
   // ── Filesystem-Adapter: leiten je nach Modus auf den jeweiligen Baum.
   // Damit bleibt der Rest der Komponente unverändert lesbar; alle
   // resolvePath/pathString-Aufrufe greifen automatisch auf den richtigen
@@ -546,7 +546,7 @@ export function Terminal() {
         setSuperuser(true);
         setLines((prev) => [
           ...prev,
-          { text: `worag@centralos:~$ ${raw}`, kind: "in" },
+          { text: `layard@centralos:~$ ${raw}`, kind: "in" },
           { text: ">> [DEBUG] superuser-mode aktiviert.", kind: "system" },
           { text: ">> telnet umgeht ab jetzt jede Authentifizierung.", kind: "out" },
           { text: "", kind: "out" },
@@ -840,14 +840,14 @@ export function Terminal() {
       }
     } else if (cmd === "adventure" || cmd === "./adventure.bin" || cmd === "adventure.bin") {
       if (bodoMode) {
-        // Worags Textadventure liegt in /home/worag — nicht auf Bodos Maschine.
+        // Layards Textadventure liegt in /home/layard — nicht auf Bodos Maschine.
         newLines.push(
           {
             text: "bash: adventure: Befehl nicht gefunden.",
             kind: "out",
           },
           {
-            text: "(»adventure.bin« liegt im /home/worag — andere Maschine.)",
+            text: "(»adventure.bin« liegt im /home/layard — andere Maschine.)",
             kind: "out",
           },
         );
@@ -1230,11 +1230,11 @@ export function Terminal() {
       if (!node || node.type !== "dir") {
         newLines.push({ text: "ls: aktuelles Verzeichnis ungültig.", kind: "out" });
       } else {
-        const hideHomeName = miraMode ? null : bodoMode ? "worag" : "bodo";
+        const hideHomeName = miraMode ? null : bodoMode ? "layard" : "bodo";
         newLines.push({ text: `Inhalt von ${pathString(cwd)}:`, kind: "system" });
         let kids = visibleChildren(node, showAll, (f) => flags.has(f));
         // /home zeigt jeweils nur das eigene Heimatverzeichnis — Sektor-
-        // Privatsphäre. Layard sieht bodo dort nicht, Bodo nicht worag.
+        // Privatsphäre. Layard sieht bodo dort nicht, Bodo nicht layard.
         if (pathString(cwd) === "/home" && hideHomeName) {
           kids = kids.filter((c) => c.name !== hideHomeName);
         }
@@ -1242,7 +1242,7 @@ export function Terminal() {
       }
     } else if (head === "cd") {
       const target = args[0] ?? "";
-      const hideHomeName = miraMode ? null : bodoMode ? "worag" : "bodo";
+      const hideHomeName = miraMode ? null : bodoMode ? "layard" : "bodo";
       const isHiddenHome = (parts: string[]) =>
         hideHomeName !== null &&
         parts.length >= 2 &&
@@ -1286,7 +1286,7 @@ export function Terminal() {
         const segments = target.split("/").filter(Boolean);
         const base = target.startsWith("/") ? [] : [...cwd];
         const fullParts = [...base, ...segments];
-        const hideHomeName = miraMode ? null : bodoMode ? "worag" : "bodo";
+        const hideHomeName = miraMode ? null : bodoMode ? "layard" : "bodo";
         const isHiddenHome =
           hideHomeName !== null &&
           fullParts.length >= 2 &&
@@ -1409,8 +1409,8 @@ export function Terminal() {
         { text: "   23 root        2.1  1.8  /usr/bin/carrier-daemon --keepalive", kind: "out" },
         { text: "   41 leitstelle  0.3  0.5  /opt/leitstelle-tools/trace --ping", kind: "out" },
         { text: "   88 root        0.1  0.2  /usr/bin/centralos --rotate-logs", kind: "out" },
-        { text: "  142 worag       0.0  0.1  -sh", kind: "out" },
-        { text: "  143 worag       0.5  0.3  /home/worag/adventure.bin (idle)", kind: "out" },
+        { text: "  142 layard      0.0  0.1  -sh", kind: "out" },
+        { text: "  143 layard      0.5  0.3  /home/layard/adventure.bin (idle)", kind: "out" },
         { text: "  201 root        0.0  0.1  [resonance-feedback]", kind: "out" },
         { text: "  ???   ?           ?    ?  [???]", kind: "out" },
       );
@@ -1453,10 +1453,10 @@ export function Terminal() {
         newLines.push({ text: out.join(" "), kind: "out" });
       }
     } else if (head === "whoami") {
-      newLines.push({ text: "worag", kind: "out" });
+      newLines.push({ text: "layard", kind: "out" });
     } else if (head === "id") {
       newLines.push({
-        text: "uid=2611(worag) gid=100(bewohner) groups=100(bewohner),104(radio-rx)",
+        text: "uid=2611(layard) gid=100(bewohner) groups=100(bewohner),104(radio-rx)",
         kind: "out",
       });
     } else if (head === "date") {
@@ -1481,7 +1481,7 @@ export function Terminal() {
       newLines.push({ text: args.join(" "), kind: "out" });
     } else if (head === "sudo") {
       newLines.push({
-        text: "sudo: worag ist nicht in der sudoers-Datei. Dieser Vorfall wird gemeldet.",
+        text: "sudo: layard ist nicht in der sudoers-Datei. Dieser Vorfall wird gemeldet.",
         kind: "out",
       });
     } else if (head === "man") {
@@ -1571,7 +1571,7 @@ export function Terminal() {
             },
             {
               text:
-                "       Account 'worag' nicht in Gruppe 'hausmeister'.",
+                "       Account 'layard' nicht in Gruppe 'hausmeister'.",
               kind: "out",
             },
             {
