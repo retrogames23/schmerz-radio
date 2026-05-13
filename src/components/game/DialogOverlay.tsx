@@ -134,12 +134,12 @@ export function DialogOverlay() {
     return prev.id;
   })();
 
-  const handleSplit = (ratio: number) => {
+  const handleSplit = () => {
     if (!line || !dialogId) return;
     const text = line.text ?? "";
     if (text.length < 4) return;
-    // Caret im Editor-Textarea bevorzugen, sonst nahe `text.length * ratio`
-    // auf Wortgrenze schneiden.
+    // Caret im Editor-Textarea bevorzugen, sonst Mitte des Textes
+    // auf nächster Wortgrenze.
     const ta = document.querySelector<HTMLTextAreaElement>(
       "textarea[data-dlg-edit-text]",
     );
@@ -162,7 +162,7 @@ export function DialogOverlay() {
       }
     }
     if (cut < 0) {
-      const target = Math.max(1, Math.min(text.length - 1, Math.round(text.length * ratio)));
+      const target = Math.max(1, Math.min(text.length - 1, Math.round(text.length / 2)));
       // Suche nächstgelegene Wortgrenze.
       const fwd = text.indexOf(" ", target);
       const bwd = text.lastIndexOf(" ", target);
@@ -330,27 +330,11 @@ export function DialogOverlay() {
                 </button>
                 <button
                   type="button"
-                  title="An Caret bzw. bei 1/2 splitten"
-                  onClick={() => handleSplit(0.5)}
+                  title="An Cursor-Position splitten (sonst Mitte)"
+                  onClick={handleSplit}
                   className="rounded-sm border border-amber-glow/40 px-1 hover:bg-amber-glow/10"
                 >
-                  ✂ 1/2
-                </button>
-                <button
-                  type="button"
-                  title="Bei 1/3 splitten"
-                  onClick={() => handleSplit(1 / 3)}
-                  className="rounded-sm border border-amber-glow/40 px-1 hover:bg-amber-glow/10"
-                >
-                  ✂ 1/3
-                </button>
-                <button
-                  type="button"
-                  title="Bei 2/3 splitten"
-                  onClick={() => handleSplit(2 / 3)}
-                  className="rounded-sm border border-amber-glow/40 px-1 hover:bg-amber-glow/10"
-                >
-                  ✂ 2/3
+                  ✂ Split
                 </button>
                 <button
                   type="button"
