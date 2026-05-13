@@ -164,8 +164,12 @@ export function textPatchStats(all: AllTextPatches = readAll()) {
   for (const k of Object.keys(all)) {
     const p = all[k];
     let dirty = 0;
-    for (let i = 0; i < p.replacement.length; i++) {
-      if (p.replacement[i] !== p.original[i]) dirty += 1;
+    if (p.replacement.length !== p.original.length) {
+      dirty = Math.max(p.replacement.length, p.original.length);
+    } else {
+      for (let i = 0; i < p.replacement.length; i++) {
+        if (p.replacement[i] !== p.original[i]) dirty += 1;
+      }
     }
     if (dirty > 0) {
       entries += 1;
