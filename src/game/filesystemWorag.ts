@@ -27,11 +27,11 @@ export interface FsDir {
 
 export type FsNode = FsFile | FsDir;
 
-export const HOME_PATH_WORAG: string[] = ["home", "worag"];
+export const HOME_PATH_WORAG: string[] = ["home", "layard"];
 
 const HOME_WORAG: FsDir = {
   type: "dir",
-  name: "worag",
+  name: "layard",
   desc: "Persönliches Verzeichnis — Worag, L.",
   children: [
     {
@@ -795,11 +795,11 @@ const SYSTEM_DIR_WORAG: FsDir = {
       content: [
         "── audit.log [Auszug, automatisch generiert] ──",
         "",
-        "1997-11-06 09:14:02  USER worag  KEYPRESS volume--",
+        "1997-11-06 09:14:02  USER layard KEYPRESS volume--",
         "1997-11-06 09:14:03  ALERT carrier-attenuation",
         "1997-11-06 09:14:03  AUTODIAL leitstelle/001",
         "1997-11-06 09:14:11  CALL ANSWERED [BAUERFEIND, I.]",
-        "1997-11-06 09:14:42  USER worag  RESTORE volume",
+        "1997-11-06 09:14:42  USER layard RESTORE volume",
         "1997-11-06 09:14:42  ALERT cleared",
         "",
         "── Hinweis: Eintrag wird in 30 Tagen rotiert. ──",
@@ -854,7 +854,7 @@ export const FILESYSTEM_WORAG: FsDir = {
           content: [
             "# /etc/passwd — Auszug",
             "root:x:0:0:CentralOS:/root:/bin/sh",
-            "worag:x:2611:100:Worag, L.:/home/worag:/bin/sh",
+            "layard:x:2611:100:Worag, L.:/home/layard:/bin/sh",
             "leitstelle:x:1:1:Leitstelle 001:/var/leitstelle:/bin/false",
           ],
         },
@@ -973,7 +973,7 @@ export const FILESYSTEM_WORAG: FsDir = {
                 "── carrier.log ────────────────────────────────",
                 "1997-11-06 06:00:00  carrier UP    104.600 MHz",
                 "1997-11-06 06:00:01  duty_cycle    100%",
-                "1997-11-06 09:14:02  user worag    volume--",
+                "1997-11-06 09:14:02  user layard   volume--",
                 "1997-11-06 09:14:03  carrier       attenuation",
                 "1997-11-06 09:14:11  leitstelle    ACK",
                 "── Ende ───────────────────────────────────────",
@@ -1001,8 +1001,8 @@ export const FILESYSTEM_WORAG: FsDir = {
               date: "06.11.1997",
               content: [
                 "── auth.log ───────────────────────────────────",
-                "1997-11-06 05:58:11  login worag        OK",
-                "1997-11-06 06:02:44  sudo  worag        DENIED",
+                "1997-11-06 05:58:11  login layard       OK",
+                "1997-11-06 06:02:44  sudo  layard       DENIED",
                 "1997-11-06 07:21:09  login leitstelle   OK (remote)",
                 "1997-11-06 07:21:11  cmd   leitstelle   tail /var/log/carrier.log",
                 "1997-11-06 09:14:11  call  leitstelle/001  ANSWERED",
@@ -1047,7 +1047,7 @@ export const FILESYSTEM_WORAG: FsDir = {
           children: [
             {
               type: "file",
-              name: "worag",
+                  name: "layard",
               kind: "mail",
               size: 80,
               date: "—",
