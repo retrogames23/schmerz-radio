@@ -38,8 +38,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "radio",
-        x: 20.8,
-        y: 52,
+        x: 10,
+        y: 47.6,
         w: 8.1,
         h: 13.7,
         label: "Schmerz-Radio",
@@ -66,8 +66,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "terminal",
-        x: 29.75,
-        y: 38,
+        x: 24.1,
+        y: 34.4,
         w: 13.5,
         h: 28,
         label: "CentralOS Terminal",
@@ -76,8 +76,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "phoneApt",
-        x: 70.8,
-        y: 30,
+        x: 76.2,
+        y: 33,
         w: 6.7,
         h: 22,
         label: "Telefon",
@@ -149,8 +149,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "bed",
-        x: 36.6,
-        y: 50,
+        x: 48.6,
+        y: 56.7,
         w: 32.6,
         h: 28,
         label: "Bett",
@@ -165,9 +165,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
         // Wandregal über dem Bett. Enthält das einzige Buch, das Layard
         // wirklich gelesen hat: den „Quadranten-Almanach 1997".
         id: "bookshelf",
-        x: 41,
-        y: 30,
-        w: 15,
+        x: 60.1,
+        y: 21.7,
+        w: 16,
         h: 12,
         label: "Wandregal",
         kind: "use",
@@ -190,10 +190,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "b2",
-        x: 29.75,
-        y: 73,
-        w: 15.75,
-        h: 22,
+        x: 25.2,
+        y: 72.3,
+        w: 12.8,
+        h: 17.8,
         label: "B2-Ration",
         kind: "look",
         onUse: (api) =>
@@ -208,9 +208,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "window",
         // Fenster mit grünem Schein, Bildmitte etwas nach rechts.
-        x: 50.75,
-        y: 18,
-        w: 12.75,
+        x: 42.5,
+        y: 11.6,
+        w: 12.8,
         h: 37,
         label: "Fenster",
         kind: "look",
@@ -223,9 +223,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "door",
-        x: 81.6,
-        y: 4.1,
-        w: 10.7,
+        x: 86.7,
+        y: 4.2,
+        w: 13.1,
         h: 92,
         label: "Wohnungstür",
         kind: "exit",
