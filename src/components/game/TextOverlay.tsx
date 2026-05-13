@@ -38,8 +38,13 @@ export function TextOverlay() {
 
   if (!textOverlay) return null;
   const displayed = applyTextPatch(textOverlay);
-  const current = displayed[idx];
-  const isLast = idx >= displayed.length - 1;
+  // idx wird per Effect zurückgesetzt, wenn sich `textOverlay` ändert —
+  // beim ersten Render mit neuem Overlay kann idx aber noch zu groß sein.
+  // Wir clampen, damit `current` nie undefined ist und die Edit-Textarea
+  // nicht auf `undefined.length` crasht.
+  const safeIdx = Math.min(idx, displayed.length - 1);
+  const current = displayed[safeIdx] ?? "";
+  const isLast = safeIdx >= displayed.length - 1;
   const patched = !!getTextPatch(textOverlay);
 
   const advance = () => {
@@ -68,13 +73,13 @@ export function TextOverlay() {
           <div className="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-amber-glow">
             <span>showText · Edit</span>
             <span>
-              {idx + 1} / {displayed.length}
+              {safeIdx + 1} / {displayed.length}
               {patched ? " · ✎" : ""}
             </span>
           </div>
           <textarea
             value={current}
-            onChange={(e) => setTextLine(textOverlay, idx, e.target.value)}
+            onChange={(e) => setTextLine(textOverlay, safeIdx, e.target.value)}
             rows={Math.max(3, Math.ceil(current.length / 60))}
             className="w-full resize-y rounded-sm border border-amber-glow/40 bg-black/60 p-2 font-mono-crt text-sm text-foreground"
           />
@@ -134,7 +139,7 @@ export function TextOverlay() {
         </p>
         <div className="mt-3 flex items-center justify-between text-xs uppercase tracking-widest text-muted-foreground">
           <span>
-            {idx + 1} / {displayed.length}
+            {safeIdx + 1} / {displayed.length}
           </span>
           <span className="amber-glow">{isLast ? "▣ Schließen" : "▸ Weiter"}</span>
         </div>
