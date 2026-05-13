@@ -14,6 +14,26 @@ export const Route = createFileRoute("/unsubscribe")({
   validateSearch: (s: Record<string, unknown>) => ({
     token: typeof s.token === "string" ? s.token : "",
   }),
+  head: () => ({
+    meta: [
+      { title: "E-Mail abbestellen – WHISPER·QUEST" },
+      {
+        name: "description",
+        content:
+          "Bestätige hier die Abmeldung von WHISPER·QUEST-E-Mails über deinen persönlichen Abmelde-Link.",
+      },
+      { name: "robots", content: "noindex, follow" },
+      { property: "og:title", content: "E-Mail abbestellen – WHISPER·QUEST" },
+      {
+        property: "og:description",
+        content: "Abmeldung von WHISPER·QUEST-E-Mails bestätigen.",
+      },
+      { property: "og:url", content: "https://whisperquest.app/unsubscribe" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://whisperquest.app/unsubscribe" },
+    ],
+  }),
   component: UnsubscribePage,
 });
 
