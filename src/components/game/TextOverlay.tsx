@@ -99,15 +99,24 @@ export function TextOverlay() {
                 ▸
               </button>
             </div>
-            {patched && (
+            <div className="flex gap-2">
+              {patched && (
+                <button
+                  type="button"
+                  onClick={() => clearTextPatch(textOverlay)}
+                  className="rounded-sm border border-red-500/40 px-2 py-1 text-red-300 hover:bg-red-500/10"
+                >
+                  Reset
+                </button>
+              )}
               <button
                 type="button"
-                onClick={() => clearTextPatch(textOverlay)}
-                className="rounded-sm border border-red-500/40 px-2 py-1 text-red-300 hover:bg-red-500/10"
+                onClick={advance}
+                className="rounded-sm border border-amber-glow/60 px-3 py-1 text-amber-glow hover:bg-amber-glow/10"
               >
-                Reset
+                {isLast ? "▣ Schließen" : "▸ Weiter"}
               </button>
-            )}
+            </div>
           </div>
         </div>
       ) : (

@@ -106,6 +106,8 @@ export function DialogOverlay() {
 
   const handleAdvance = () => {
     if (!canAdvance) return;
+    // Im Edit-Modus advancen wir nicht über den Backdrop-Klick — sonst
+    // springt der Dialog beim Klicken neben dem Textarea weg.
     if (editing) return;
     advanceDialog();
   };
@@ -428,7 +430,6 @@ export function DialogOverlay() {
                 key={i}
                 type="button"
                 onClick={() => {
-                  if (editing) return;
                   choice.action?.(api);
                   if (choice.next) advanceDialog(choice.next);
                   else advanceDialog();
@@ -461,8 +462,8 @@ export function DialogOverlay() {
           ) : (
             <button
               type="button"
-              onClick={() => {
-                if (editing) return;
+              onClick={(e) => {
+                e.stopPropagation();
                 advanceDialog();
               }}
               className="self-end rounded-sm border border-amber-glow/40 px-3 py-1 text-xs uppercase tracking-widest text-amber-glow hover:bg-amber-glow/10"
