@@ -225,9 +225,9 @@ export function RadioPanel() {
         const isHome = scene === "apartment";
         api.showText(
           [
-            ">> SCHMERZ-RADIO 104,6 — ENGEL-TRAUER",
-            "Eine Stimme, die nichts sagt. Nur trauert.",
-            "Fragmente: „... Zimmer ... Wand ... nicht aufhören ...“",
+            "Heute ist da wieder dieses tiefe Gefühl auf dieser Frequenz, das ihn nicht loslässt. Layard dreht die Gefühlslautstärke auf Maximum. Ein abgrundtiefer Schmerz, da er klar empfangbar ist, von ganz besonderer Reinheit. Sehr ausdifferenziert.\n",
+            "Ob da jemand über sein verlorenes Kind trauert? Es musste eine ganz besondere Trauer sein. Es wird schwärzer, vielleicht doch zu viel? Nein, da ist noch etwas anderes, hinter dem Schmerz. Warum fühlt sich diese Trauer so schön an? Er hatte den Verdacht schon länger: Wenn ein Gefühl besonders intensiv ist, dann trägt es immer auch Fetzen anderer Gefühle mit sich. ",
+            "Normalerweise kommt nicht viel mit bei Schmerz und Trauer, das Gefühl überlagert alles. Dieses Gefühl aber – er taufte es spontan Engel-Trauer auf 104,6 – transportierte etwas mit. Ehrfurcht. Trost. Weisheit über das Leben. Wer auch immer dieses Gefühl sendet, er sollte diese Person treffen, schießt es Layard durch den Kopf. ",
           ],
           () => {
             playDoorbell(0.7 * sfxVolume);
@@ -235,7 +235,7 @@ export function RadioPanel() {
               api.showText(
                 [
                   "*KLINGEL-KLINGEL*",
-                  "Jemand ist an Layards Wohnungstür.",
+                  "Es klingelt an der Tür. Layard beendet die Übertragung, indem er beide Hände ruckartig von der Metallstange entfernt. Wer könnte das sein? Normalerweise klingelt niemand bei Layard, zumindest nicht unangekündigt. Die Post wird in der Postbox ausgeliefert, mit der alle E-Quadranten vor vier Jahren ausgestattet wurden. ",
                 ],
                 () => {
                   api.setFlag("metPhilippe");

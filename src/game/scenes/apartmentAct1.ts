@@ -56,8 +56,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
             });
             api.showText([
               "Layard hebt das Schmerz-Radio vom Tisch und steckt es ein.",
-              "Solange er es bei sich trägt, ist die Skala nur einen Griff entfernt.",
-              "[ Schmerz-Radio eingesteckt. ]",
+              "Früher hatte Layard wenige Gefühle gehabt. Wahrscheinlich waren es meistens Gedanken gewesen – und dann überwiegend negative. Das Gefühl, das er noch am besten kannte, am klarsten trennen konnte von dem Klumpen seines Inneren, war Angst.",
+              "Als er vor fünf Jahren das alte, längst aus der Mode gekommene Schmerz-Radio auf dem Dachboden seiner Mutter gefunden hatte, änderte sich das. Schmerz war anders. Schmerz war tief, traurige Schönheit – das Gefühl den Schmerz der anderen zu spüren war für ihn berauschender als das Excelsior, das er einmal ausprobiert hatte. Es machte Spaß, das Schmerz-Radio machte traurig, ehrfürchtig – die intensiven Gefühle der anderen war das Tor zu einem inneren Universum.",
             ]);
             return;
           }
