@@ -10,6 +10,12 @@ import {
 } from "./dialogPatchState";
 import { dialogs } from "@/game/dialogs";
 import { applyPatch } from "./dialogPatchState";
+import {
+  clearAllTextPatches,
+  getAllTextPatches,
+  textPatchStats,
+  useTextPatchTick,
+} from "./textPatchState";
 
 /**
  * Dev-only Inline-Dialog-Editor.
@@ -22,12 +28,15 @@ import { applyPatch } from "./dialogPatchState";
  */
 export function DialogEditOverlay() {
   useDialogPatchTick();
+  useTextPatchTick();
   const editing = useEditActive();
   const [open, setOpen] = useState(false);
   const [showReport, setShowReport] = useState(false);
 
   const all = getAllPatches();
   const stats = patchStats(all);
+  const textAll = getAllTextPatches();
+  const tStats = textPatchStats(textAll);
 
   const buildReport = () => {
     const lines: string[] = [];
@@ -130,6 +139,29 @@ export function DialogEditOverlay() {
     if (anyStruct) lines.push(...structOut);
 
     if (!anyYaml && !anyStruct) lines.push("_(keine Änderungen)_");
+
+    // showText-Edits: pro Eintrag Original → Replacement, damit man im
+    // Quellcode per Search-Replace patchen kann.
+    const textKeys = Object.keys(textAll);
+    if (textKeys.length > 0) {
+      lines.push("");
+      lines.push("## showText-Edits (api.showText-Overlays)");
+      for (const k of textKeys) {
+        const p = textAll[k];
+        const dirty = p.replacement
+          .map((r, i) => (r !== p.original[i] ? i : -1))
+          .filter((i) => i >= 0);
+        if (dirty.length === 0) continue;
+        lines.push("");
+        lines.push(`### showText \`${k}\` (${dirty.length} geänderte Zeile(n))`);
+        for (const i of dirty) {
+          lines.push(`- Zeile ${i + 1}:`);
+          lines.push(`  - vorher:  ${JSON.stringify(p.original[i])}`);
+          lines.push(`  - nachher: ${JSON.stringify(p.replacement[i])}`);
+        }
+      }
+    }
+
     return lines.join("\n");
   };
 
@@ -142,7 +174,7 @@ export function DialogEditOverlay() {
   };
 
   const total =
-    stats.fields + stats.splits + stats.merges + stats.inserts;
+    stats.fields + stats.splits + stats.merges + stats.inserts + tStats.lines;
 
   return (
     <>
@@ -186,7 +218,7 @@ export function DialogEditOverlay() {
             </button>
             <span className="text-[10px] text-muted-foreground">
               {stats.trees} Dialoge · {stats.fields}F · {stats.splits}S ·{" "}
-              {stats.merges}M · {stats.inserts}I
+              {stats.merges}M · {stats.inserts}I · {tStats.lines}T
             </span>
           </div>
 
@@ -210,6 +242,7 @@ export function DialogEditOverlay() {
               onClick={() => {
                 if (!confirm("Alle Dialog-Patches verwerfen?")) return;
                 clearAllPatches();
+                clearAllTextPatches();
               }}
               className="ml-auto rounded-sm border border-red-500/40 px-2 py-1 text-red-300 hover:bg-red-500/10"
             >
