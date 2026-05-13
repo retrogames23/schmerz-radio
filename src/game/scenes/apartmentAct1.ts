@@ -374,8 +374,7 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
           api.showText([
             "Klopf. Klopf. Klopf.",
             "Regelmäßig. Aber nicht mechanisch.",
-            "Layard legt die Hand an den Beton. Er fühlt es im Handballen,",
-            "bevor er es im Ohr hört.",
+            "Layard legt die Hand an den Beton. Er fühlt es im Handballen, bevor er es im Ohr hört.",
             "„Hallo?! Jemand da?“ — Das Klopfen geht im selben Rhythmus weiter.",
           ]);
         },
