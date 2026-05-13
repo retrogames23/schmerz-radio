@@ -38,8 +38,13 @@ export function TextOverlay() {
 
   if (!textOverlay) return null;
   const displayed = applyTextPatch(textOverlay);
-  const current = displayed[idx];
-  const isLast = idx >= displayed.length - 1;
+  // idx wird per Effect zurückgesetzt, wenn sich `textOverlay` ändert —
+  // beim ersten Render mit neuem Overlay kann idx aber noch zu groß sein.
+  // Wir clampen, damit `current` nie undefined ist und die Edit-Textarea
+  // nicht auf `undefined.length` crasht.
+  const safeIdx = Math.min(idx, displayed.length - 1);
+  const current = displayed[safeIdx] ?? "";
+  const isLast = safeIdx >= displayed.length - 1;
   const patched = !!getTextPatch(textOverlay);
 
   const advance = () => {
