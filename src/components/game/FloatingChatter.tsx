@@ -5,6 +5,10 @@ import {
   CAFETERIA_CHATTER_TOPICS,
   type CafeteriaNpcId,
 } from "../../game/cafeteriaChatter";
+import {
+  E71_NERDS_CHATTER_TOPICS,
+  type E71NerdNpcId,
+} from "../../game/e71NerdsChatter";
 
 /**
  * Position einer Sprechblase je NPC, in % der Szene.
@@ -36,7 +40,20 @@ const CAFETERIA_LABEL: Record<CafeteriaNpcId, string> = {
   brust: "Herr Brust",
 };
 
-type AnyNpcId = ChatterNpcId | CafeteriaNpcId;
+const E71_ANCHOR: Record<E71NerdNpcId, { x: number; y: number }> = {
+  // Werte passen zu den Hotspot-Positionen in commonRoomE71.
+  detlef: { x: 21, y: 38 },
+  sigi: { x: 44, y: 32 },
+  ruven: { x: 85, y: 30 },
+};
+
+const E71_LABEL: Record<E71NerdNpcId, string> = {
+  detlef: "Detlef",
+  sigi: "Sigi",
+  ruven: "Ruven",
+};
+
+type AnyNpcId = ChatterNpcId | CafeteriaNpcId | E71NerdNpcId;
 
 interface ChatterTopicLike {
   id: string;
@@ -59,6 +76,12 @@ const CAFETERIA_CONFIG: ChatterConfig = {
   topics: CAFETERIA_CHATTER_TOPICS as unknown as ReadonlyArray<ChatterTopicLike>,
   anchors: CAFETERIA_ANCHOR as Record<string, { x: number; y: number }>,
   labels: CAFETERIA_LABEL as Record<string, string>,
+};
+
+const E71_CONFIG: ChatterConfig = {
+  topics: E71_NERDS_CHATTER_TOPICS as unknown as ReadonlyArray<ChatterTopicLike>,
+  anchors: E71_ANCHOR as Record<string, { x: number; y: number }>,
+  labels: E71_LABEL as Record<string, string>,
 };
 
 interface ActiveBubble {
@@ -93,7 +116,7 @@ export function FloatingChatter({
   variant = "dsa",
 }: {
   enabled: boolean;
-  variant?: "dsa" | "cafeteria";
+  variant?: "dsa" | "cafeteria" | "e71Nerds";
 }) {
   const { dialogId, dsaCreatorOpen } = useGame();
   const [bubble, setBubble] = useState<ActiveBubble | null>(null);
@@ -101,7 +124,12 @@ export function FloatingChatter({
   const seqRef = useRef(0);
 
   const isActive = enabled && !dialogId && !dsaCreatorOpen;
-  const config = variant === "cafeteria" ? CAFETERIA_CONFIG : DSA_CONFIG;
+  const config =
+    variant === "cafeteria"
+      ? CAFETERIA_CONFIG
+      : variant === "e71Nerds"
+        ? E71_CONFIG
+        : DSA_CONFIG;
 
   useEffect(() => {
     if (!isActive) {
