@@ -131,9 +131,9 @@ export const Route = createFileRoute("/api/public/donation-checkout")({
                   currency: "eur",
                   unit_amount: amount,
                   product_data: {
-                    name: "Schmerz-Radio Spende",
+                    name: "Schmerz-Radio Unterstützung",
                     description:
-                      "Spende für Schmerz-Radio. Schaltet unbegrenzten Cloud-KI-Chat frei.",
+                      "Freiwilliger Beitrag zur Unterstützung von Schmerz-Radio. Schaltet unbegrenzten Cloud-KI-Chat frei.",
                   },
                 },
               },

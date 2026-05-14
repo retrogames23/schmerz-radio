@@ -134,7 +134,7 @@ export const Route = createFileRoute("/api/public/npc-chat")({
         if (incRow.limit_reached) {
           return json(402, {
             error:
-              "Cloud-Limit erreicht. Bitte spende, um weiter chatten zu können.",
+              "Cloud-Limit erreicht. Bitte unterstütze das Projekt, um weiter chatten zu können.",
             code: "donation_required",
             count: incRow.new_count,
             limit: HARD_LIMIT,

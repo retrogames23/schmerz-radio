@@ -122,7 +122,7 @@ export function DonationModal({
                 und die fließt aus meiner Tasche, nicht aus Werbung.
               </p>
               <p>
-                Mit einer einmaligen Spende schaltest du{" "}
+                Mit einer einmaligen Unterstützung schaltest du{" "}
                 <span className="text-amber-glow">unbegrenzten Cloud-Chat</span>{" "}
                 für deinen Account frei. Lokal weiterspielen geht jederzeit
                 kostenlos.
@@ -133,8 +133,8 @@ export function DonationModal({
               <p>
                 Schon{" "}
                 <span className="text-amber-glow">{count ?? 30}</span> Cloud-
-                Antworten verbraucht. Wenn dir das Spiel gefällt: Eine kleine
-                Spende deckt die laufenden KI-Kosten und schaltet unbegrenzten
+                Antworten verbraucht. Wenn dir das Spiel gefällt: Ein kleiner
+                Beitrag deckt die laufenden KI-Kosten und schaltet unbegrenzten
                 Chat frei.
               </p>
               <p className="text-xs text-muted-foreground">
@@ -144,7 +144,7 @@ export function DonationModal({
           ) : (
             <p>
                Whisper Quest läuft auf einem Lovable-Server und Cloud-KI. Mit
-              einer Spende schaltest du unbegrenzten Cloud-Chat für deinen
+              einem Beitrag schaltest du unbegrenzten Cloud-Chat für deinen
               Account frei und hilfst, dass das Projekt online bleibt.
             </p>
           )}
@@ -206,8 +206,8 @@ export function DonationModal({
             : !user ||
                 (user as { is_anonymous?: boolean }).is_anonymous ||
                 !user.email
-              ? "Anmelden & spenden"
-              : `${(amountCents / 100).toLocaleString("de-DE", { minimumFractionDigits: amountCents % 100 ? 2 : 0 })} € spenden`}
+              ? "Anmelden & unterstützen"
+              : `${(amountCents / 100).toLocaleString("de-DE", { minimumFractionDigits: amountCents % 100 ? 2 : 0 })} € beitragen`}
         </button>
 
         {variant === "hard" && (
@@ -231,7 +231,7 @@ export function DonationModal({
             rel="noopener noreferrer"
             className="font-mono-crt text-[10px] uppercase tracking-[0.25em] text-muted-foreground underline-offset-4 hover:text-amber-glow hover:underline"
           >
-            Ohne Anmeldung spenden – ohne Code für unbegrenzte Chats
+            Ohne Anmeldung unterstützen – ohne Code für unbegrenzte Chats
           </a>
         </div>
       </div>

@@ -23,11 +23,11 @@ const DonationConfirmationEmail = ({
     <Preview>Danke für deine Unterstützung von {SITE_NAME}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Danke für deine Spende</Heading>
+        <Heading style={h1}>Danke für deine Unterstützung</Heading>
         <Text style={text}>
           {amountFormatted
-            ? `Deine Spende über ${amountFormatted} ist bei uns angekommen.`
-            : "Deine Spende ist bei uns angekommen."}{" "}
+            ? `Dein Beitrag über ${amountFormatted} ist bei uns angekommen.`
+            : "Dein Beitrag ist bei uns angekommen."}{" "}
           Dein Account ist ab sofort für unbegrenzte Cloud-Chats mit den NPCs
           freigeschaltet — einfach wie gewohnt einloggen und weiterspielen.
         </Text>
@@ -43,8 +43,8 @@ const DonationConfirmationEmail = ({
 
 export const template = {
   component: DonationConfirmationEmail,
-  subject: "Danke für deine Spende an WHISPER·QUEST",
-  displayName: "Spendenbestätigung",
+  subject: "Danke für deine Unterstützung von WHISPER·QUEST",
+  displayName: "Unterstützungsbestätigung",
   previewData: { amountFormatted: "5,00 €" },
 } satisfies TemplateEntry;
 

@@ -140,7 +140,7 @@ export function createCloudRuntime(npcId: string): LlmRuntime {
             emitError({ code: "donation_required", message: err });
           }
           throw new Error(
-            err || "Cloud-Limit erreicht. Bitte spenden, um weiter zu chatten.",
+            err || "Cloud-Limit erreicht. Bitte unterstützen, um weiter zu chatten.",
           );
         }
         throw new Error(err);

@@ -44,8 +44,8 @@ export function ImpressumOverlay({ open, onClose }: Props) {
             >
               lovable.dev
             </a>{" "}
-            und der Cloud-AI-Chats zu finanzieren, nehme ich gerne Spenden
-            entgegen.
+            und der Cloud-AI-Chats zu decken, freue ich mich über freiwillige
+            Unterstützungsbeiträge.
           </p>
         </div>
       </div>
