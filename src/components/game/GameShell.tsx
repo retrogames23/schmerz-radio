@@ -196,6 +196,7 @@ function GameStage({
   const consoleOpen =
     terminalOpen || nodeOpen || dsaCreatorOpen || dsaAdventureOpen;
   return (
+    <>
     <MobileStage uprightOnPortrait={consoleOpen}>
       <div className="flex h-screen flex-col overflow-hidden bg-bureaucracy mobile-stage-host">
         <TopBar
@@ -250,11 +251,12 @@ function GameStage({
         </main>
         <Inventory />
       </div>
+    </MobileStage>
       {dev && <RoomSwitcher />}
       {dev && <ConsoleSwitcher />}
       {dev && <OverlayQAOverlay />}
       {dev && <DialogEditOverlay />}
-    </MobileStage>
+    </>
   );
 }
 
