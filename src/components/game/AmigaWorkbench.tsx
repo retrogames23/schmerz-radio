@@ -140,15 +140,28 @@ export function AmigaWorkbench() {
           <span>FastWeb v0.9</span>
         </div>
 
-        {/* Desktop-Icons (links) */}
+        {/* Desktop-Icons — Amiga-typisch rechts, vertikal mittig */}
         {!browserOpen && (
-          <div style={{ position: "absolute", top: 40, left: 16, color: "#fff" }}>
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              right: "8%",
+              transform: "translateY(-50%)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 18,
+              color: "#fff",
+            }}
+          >
             <DesktopIcon
               label="FastWeb"
+              icon={<GlobeIcon />}
               onOpen={() => setBrowserOpen(true)}
             />
-            <DesktopIcon label="WB_2.0" onOpen={() => {}} />
-            <DesktopIcon label="Trashcan" onOpen={() => {}} />
+            <DesktopIcon label="WB_2.0" icon={<DiskIcon />} onOpen={() => {}} />
+            <DesktopIcon label="Trashcan" icon={<TrashIcon />} onOpen={() => {}} />
           </div>
         )}
 
@@ -240,31 +253,101 @@ export function AmigaWorkbench() {
   );
 }
 
-function DesktopIcon({ label, onOpen }: { label: string; onOpen: () => void }) {
+function DesktopIcon({
+  label,
+  icon,
+  onOpen,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  onOpen: () => void;
+}) {
   return (
-    <div
-      onDoubleClick={onOpen}
+    <button
+      type="button"
       onClick={onOpen}
+      onDoubleClick={onOpen}
       style={{
-        width: 80,
-        marginBottom: 16,
+        width: 84,
         textAlign: "center",
         cursor: "pointer",
         userSelect: "none",
+        background: "transparent",
+        border: "none",
+        padding: 0,
+        color: "#fff",
+        touchAction: "manipulation",
+        WebkitTapHighlightColor: "rgba(255,255,255,0.2)",
       }}
     >
       <div
         style={{
           width: 56,
-          height: 40,
-          background: "#fff",
+          height: 44,
+          background: "#ffffff",
           border: "2px solid #000",
+          boxShadow: "2px 2px 0 #000",
           margin: "0 auto 4px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
-      />
-      <div style={{ background: "#000099", color: "#fff", fontSize: 11, padding: "0 4px" }}>
+      >
+        {icon}
+      </div>
+      <div
+        style={{
+          background: "#000099",
+          color: "#fff",
+          fontSize: 11,
+          padding: "0 6px",
+          display: "inline-block",
+        }}
+      >
         {label}
       </div>
-    </div>
+    </button>
+  );
+}
+
+function GlobeIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden>
+      <circle cx="16" cy="16" r="12" fill="#0055aa" stroke="#000" strokeWidth="2" />
+      <ellipse cx="16" cy="16" rx="6" ry="12" fill="none" stroke="#000" strokeWidth="1.5" />
+      <line x1="4" y1="16" x2="28" y2="16" stroke="#000" strokeWidth="1.5" />
+      <line x1="16" y1="4" x2="16" y2="28" stroke="#000" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function DiskIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden>
+      <rect x="4" y="4" width="24" height="24" fill="#000" />
+      <rect x="4" y="4" width="24" height="24" fill="#aaaaaa" stroke="#000" strokeWidth="2" />
+      {/* Shutter */}
+      <rect x="10" y="6" width="14" height="9" fill="#dddddd" stroke="#000" strokeWidth="1.5" />
+      <rect x="14" y="6" width="3" height="9" fill="#000" />
+      {/* Label */}
+      <rect x="8" y="17" width="18" height="9" fill="#ffffff" stroke="#000" strokeWidth="1.5" />
+      <line x1="10" y1="20" x2="24" y2="20" stroke="#666" strokeWidth="1" />
+      <line x1="10" y1="23" x2="20" y2="23" stroke="#666" strokeWidth="1" />
+    </svg>
+  );
+}
+
+function TrashIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden>
+      {/* Lid */}
+      <rect x="6" y="7" width="20" height="3" fill="#ffffff" stroke="#000" strokeWidth="1.5" />
+      <rect x="13" y="4" width="6" height="3" fill="#ffffff" stroke="#000" strokeWidth="1.5" />
+      {/* Body */}
+      <path d="M8 10 L24 10 L22 28 L10 28 Z" fill="#ffffff" stroke="#000" strokeWidth="1.5" />
+      <line x1="13" y1="13" x2="13" y2="25" stroke="#000" strokeWidth="1.2" />
+      <line x1="16" y1="13" x2="16" y2="25" stroke="#000" strokeWidth="1.2" />
+      <line x1="19" y1="13" x2="19" y2="25" stroke="#000" strokeWidth="1.2" />
+    </svg>
   );
 }
