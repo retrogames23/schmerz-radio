@@ -755,10 +755,10 @@ function WindowFrame({
 }) {
   // FastWeb fills most of the screen; drawers are smaller
   const style: React.CSSProperties = isFastWeb
-    ? { position: "absolute", top: 40, left: "4%", right: "4%", bottom: 24, zIndex: z }
+    ? { position: "absolute", top: 26, left: "3%", right: "3%", bottom: 12, zIndex: z }
     : {
         position: "absolute",
-        top: 50 + offset,
+        top: 40 + offset,
         left: `calc(2% + ${offset}px)`,
         width: "min(420px, 70%)",
         height: "min(320px, 60%)",
@@ -767,34 +767,63 @@ function WindowFrame({
 
   return (
     <div
-      style={{ ...style, background: "#aaaaaa", border: "2px solid #000", boxShadow: "3px 3px 0 #000", display: "flex", flexDirection: "column" }}
+      style={{ ...style, background: WB_GREY, ...BEVEL_OUT, display: "flex", flexDirection: "column", fontFamily: WB_FONT }}
       onMouseDown={onFocus}
       onTouchStart={onFocus}
     >
-      <div style={{ background: "#000099", color: "#fff", padding: "2px 4px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12, borderBottom: "1px solid #000" }}>
+      {/* WB 2.x Titelbar: links Close-Gadget, Stripes-Hintergrund, rechts Depth/Zoom-Gadgets */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "stretch",
+          height: 18,
+          borderBottom: `1px solid ${WB_BLACK}`,
+          background: TITLEBAR_STRIPES,
+        }}
+      >
+        {/* Close-Gadget (Quadrat mit Punkt) */}
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); onClose(); }}
           aria-label="Schließen"
           style={{
-            width: 22, height: 18,
-            background: "#aaaaaa",
-            border: "1px solid #000",
-            color: "#000",
-            fontFamily: "monospace",
-            fontWeight: "bold",
-            fontSize: 14,
-            lineHeight: "16px",
-            cursor: "pointer",
+            width: 20, height: 18,
+            background: WB_GREY,
+            ...BEVEL_OUT,
             padding: 0,
-            marginRight: 6,
+            margin: 0,
+            cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
             touchAction: "manipulation",
-            WebkitTapHighlightColor: "rgba(255,255,255,0.3)",
+            WebkitTapHighlightColor: "rgba(0,0,0,0.3)",
           }}
         >
-          ×
+          <span style={{ width: 6, height: 6, background: WB_BLACK, display: "block" }} />
         </button>
-        <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            paddingLeft: 6,
+            paddingRight: 6,
+            fontSize: 12,
+            color: WB_BLACK,
+            background: WB_GREY,
+            margin: "0 2px",
+            overflow: "hidden",
+          }}
+        >
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
+        </div>
+        {/* Zoom-Gadget */}
+        <div style={{ width: 20, height: 18, background: WB_GREY, ...BEVEL_OUT, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ width: 10, height: 8, border: `1px solid ${WB_BLACK}`, background: WB_WHITE }} />
+        </div>
+        {/* Depth-Gadget */}
+        <div style={{ width: 20, height: 18, background: WB_GREY, ...BEVEL_OUT, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ width: 10, height: 8, border: `1px solid ${WB_BLACK}`, background: WB_GREY_LIGHT, boxShadow: `2px 2px 0 ${WB_WHITE} inset` }} />
+        </div>
       </div>
       <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>{children}</div>
     </div>
@@ -813,79 +842,114 @@ function DesktopIcon({ label, icon, onOpen }: { label: string; icon: ReactNode; 
       onDoubleClick={onOpen}
       style={{
         width: 84, textAlign: "center", cursor: "pointer", userSelect: "none",
-        background: "transparent", border: "none", padding: 0, color: "#fff",
+        background: "transparent", border: "none", padding: 0, color: WB_BLACK,
         touchAction: "manipulation",
-        WebkitTapHighlightColor: "rgba(255,255,255,0.2)",
+        WebkitTapHighlightColor: "rgba(0,0,0,0.2)",
+        fontFamily: WB_FONT,
       }}
     >
       <div style={{ width: 56, height: 44, margin: "0 auto 4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
         {icon}
       </div>
-      <div style={{ background: "#000099", color: "#fff", fontSize: 11, padding: "0 6px", display: "inline-block" }}>
+      <div style={{ color: WB_BLACK, fontSize: 11, padding: "1px 4px", display: "inline-block", background: "transparent", textShadow: `1px 1px 0 ${WB_WHITE}` }}>
         {label}
       </div>
     </button>
   );
 }
 
-function GlobeIcon() {
+function ToolIcon() {
+  // WB-typisches "Tool"-Icon: gerahmtes Rechteck mit Inhalt
   return (
-    <svg width="36" height="32" viewBox="0 0 36 32" aria-hidden>
-      <rect x="2" y="3" width="32" height="22" fill="#dddddd" stroke="#000" strokeWidth="1.5" />
-      <rect x="4" y="5" width="28" height="18" fill="#0055aa" />
-      <circle cx="18" cy="14" r="7" fill="#0099ff" stroke="#fff" strokeWidth="1" />
-      <ellipse cx="18" cy="14" rx="3" ry="7" fill="none" stroke="#fff" strokeWidth="0.8" />
-      <line x1="11" y1="14" x2="25" y2="14" stroke="#fff" strokeWidth="0.8" />
-      <rect x="10" y="25" width="16" height="3" fill="#999" stroke="#000" strokeWidth="1" />
-      <rect x="6" y="28" width="24" height="2" fill="#777" stroke="#000" strokeWidth="1" />
+    <svg width="40" height="32" viewBox="0 0 40 32" aria-hidden shapeRendering="crispEdges">
+      {/* Outer raised box */}
+      <rect x="1" y="3" width="38" height="26" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="2" y="4" width="36" height="2" fill={WB_WHITE} />
+      <rect x="2" y="4" width="2" height="24" fill={WB_WHITE} />
+      <rect x="2" y="26" width="36" height="2" fill={WB_BLACK} />
+      <rect x="36" y="4" width="2" height="24" fill={WB_BLACK} />
+      {/* "screen" patch */}
+      <rect x="6" y="9" width="28" height="14" fill={WB_GREY} />
+      <rect x="9" y="12" width="22" height="2" fill={WB_BLACK} />
+      <rect x="9" y="16" width="16" height="2" fill={WB_BLACK} />
+      <rect x="9" y="20" width="20" height="2" fill={WB_BLACK} />
     </svg>
   );
 }
 
-function DiskIcon({ color = "#dddddd" }: { color?: string }) {
+function DiskIcon() {
+  // 3,5"-Diskette wie in WB 2.x: weißes Floppy mit Shutter, "//" Label
   return (
-    <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden>
-      <rect x="3" y="3" width="30" height="30" fill={color} stroke="#000" strokeWidth="1.8" />
-      <rect x="10" y="5" width="16" height="11" fill="#888" stroke="#000" strokeWidth="1.2" />
-      <rect x="15" y="5" width="3" height="11" fill="#000" />
-      <rect x="8" y="19" width="20" height="11" fill="#fff" stroke="#000" strokeWidth="1.2" />
-      <line x1="10" y1="22" x2="26" y2="22" stroke="#666" strokeWidth="0.8" />
-      <line x1="10" y1="25" x2="22" y2="25" stroke="#666" strokeWidth="0.8" />
-      <line x1="10" y1="28" x2="24" y2="28" stroke="#666" strokeWidth="0.8" />
+    <svg width="36" height="40" viewBox="0 0 36 40" aria-hidden shapeRendering="crispEdges">
+      {/* Floppy body */}
+      <rect x="2" y="2" width="32" height="36" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      {/* Metal shutter */}
+      <rect x="9" y="3" width="18" height="12" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="17" y="4" width="3" height="10" fill={WB_BLACK} />
+      {/* Label area */}
+      <rect x="6" y="19" width="24" height="16" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      {/* "//" mark inside label (WB-typisch) */}
+      <line x1="11" y1="31" x2="17" y2="22" stroke={WB_BLACK} strokeWidth="2" />
+      <line x1="16" y1="31" x2="22" y2="22" stroke={WB_BLACK} strokeWidth="2" />
+    </svg>
+  );
+}
+
+function RamDiskIcon() {
+  return (
+    <svg width="36" height="40" viewBox="0 0 36 40" aria-hidden shapeRendering="crispEdges">
+      <rect x="2" y="2" width="32" height="36" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="9" y="3" width="18" height="12" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="17" y="4" width="3" height="10" fill={WB_BLACK} />
+      <rect x="6" y="19" width="24" height="16" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      {/* Chip-Pins als RAM-Hinweis */}
+      <rect x="11" y="24" width="14" height="6" fill={WB_GREY} stroke={WB_BLACK} strokeWidth="1" />
+      <line x1="13" y1="30" x2="13" y2="33" stroke={WB_BLACK} strokeWidth="1" />
+      <line x1="18" y1="30" x2="18" y2="33" stroke={WB_BLACK} strokeWidth="1" />
+      <line x1="23" y1="30" x2="23" y2="33" stroke={WB_BLACK} strokeWidth="1" />
     </svg>
   );
 }
 
 function TrashIcon() {
   return (
-    <svg width="32" height="36" viewBox="0 0 32 36" aria-hidden>
-      <ellipse cx="16" cy="9" rx="11" ry="3" fill="#cccccc" stroke="#000" strokeWidth="1.5" />
-      <path d="M5 9 L8 33 L24 33 L27 9" fill="#dddddd" stroke="#000" strokeWidth="1.5" />
-      <line x1="11" y1="13" x2="12" y2="30" stroke="#000" strokeWidth="1" />
-      <line x1="16" y1="13" x2="16" y2="30" stroke="#000" strokeWidth="1" />
-      <line x1="21" y1="13" x2="20" y2="30" stroke="#000" strokeWidth="1" />
+    <svg width="32" height="38" viewBox="0 0 32 38" aria-hidden shapeRendering="crispEdges">
+      {/* Lid */}
+      <ellipse cx="16" cy="8" rx="12" ry="3" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="13" y="3" width="6" height="3" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      {/* Body */}
+      <path d="M5 9 L8 35 L24 35 L27 9" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      <line x1="11" y1="13" x2="12" y2="32" stroke={WB_BLACK} strokeWidth="1" />
+      <line x1="16" y1="13" x2="16" y2="32" stroke={WB_BLACK} strokeWidth="1" />
+      <line x1="21" y1="13" x2="20" y2="32" stroke={WB_BLACK} strokeWidth="1" />
     </svg>
   );
 }
 
 function DrawerIcon() {
+  // WB-Schublade: Karteikasten mit Reiter
   return (
-    <svg width="48" height="32" viewBox="0 0 48 32" aria-hidden>
-      <path d="M2 8 L18 8 L22 12 L46 12 L46 28 L2 28 Z" fill="#cccccc" stroke="#000" strokeWidth="1.5" />
-      <line x1="2" y1="14" x2="46" y2="14" stroke="#000" strokeWidth="1" />
+    <svg width="48" height="36" viewBox="0 0 48 36" aria-hidden shapeRendering="crispEdges">
+      {/* Tab */}
+      <rect x="6" y="4" width="14" height="5" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      {/* Box */}
+      <rect x="2" y="9" width="44" height="22" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      {/* Inner bevel */}
+      <rect x="5" y="12" width="38" height="16" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      <line x1="5" y1="20" x2="43" y2="20" stroke={WB_BLACK} strokeWidth="1" />
     </svg>
   );
 }
 
 function DocIcon() {
   return (
-    <svg width="28" height="34" viewBox="0 0 28 34" aria-hidden>
-      <path d="M3 2 L19 2 L25 8 L25 32 L3 32 Z" fill="#ffffff" stroke="#000" strokeWidth="1.5" />
-      <path d="M19 2 L19 8 L25 8" fill="#dddddd" stroke="#000" strokeWidth="1.2" />
-      <line x1="6" y1="14" x2="22" y2="14" stroke="#000" strokeWidth="0.8" />
-      <line x1="6" y1="18" x2="22" y2="18" stroke="#000" strokeWidth="0.8" />
-      <line x1="6" y1="22" x2="22" y2="22" stroke="#000" strokeWidth="0.8" />
-      <line x1="6" y1="26" x2="18" y2="26" stroke="#000" strokeWidth="0.8" />
+    <svg width="28" height="36" viewBox="0 0 28 36" aria-hidden shapeRendering="crispEdges">
+      <path d="M3 2 L19 2 L25 8 L25 33 L3 33 Z" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      <path d="M19 2 L19 8 L25 8" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <line x1="6" y1="14" x2="22" y2="14" stroke={WB_BLACK} strokeWidth="1" />
+      <line x1="6" y1="18" x2="22" y2="18" stroke={WB_BLACK} strokeWidth="1" />
+      <line x1="6" y1="22" x2="22" y2="22" stroke={WB_BLACK} strokeWidth="1" />
+      <line x1="6" y1="26" x2="18" y2="26" stroke={WB_BLACK} strokeWidth="1" />
     </svg>
   );
 }
