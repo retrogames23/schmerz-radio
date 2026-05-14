@@ -441,10 +441,10 @@ const nextId = () => `w${++WIN_ID}`;
 // WORKBENCH 2.x DESIGN TOKENS
 // ============================================================
 
-// Klassische Workbench-2.x-Palette (4 Farben, „grayscheme")
-const WB_GREY = "#a0a0a0";        // Desktop / Fenster-Background
-const WB_GREY_LIGHT = "#cccccc";  // Bevel hell
-const WB_BLUE = "#5566aa";        // Akzent-Blau (Titelbar-Streifen)
+// Klassische Workbench-Palette (Release-3-Look, 4 Farben)
+const WB_GREY = "#a8a8a8";        // Desktop / Fenster-Background
+const WB_GREY_LIGHT = "#c8c8c8";  // Bevel hell
+const WB_BLUE = "#4f6cbd";        // Aktive Titelbar (solides Blau)
 const WB_WHITE = "#ffffff";
 const WB_BLACK = "#000000";
 const WB_FONT = '"Courier New", "Topaz-8", monospace';
@@ -462,10 +462,6 @@ const BEVEL_IN: React.CSSProperties = {
   borderRight: `2px solid ${WB_WHITE}`,
   borderBottom: `2px solid ${WB_WHITE}`,
 };
-
-// Titelbar-Streifen (typisch WB 2.x): horizontale dünne Linien
-const TITLEBAR_STRIPES =
-  `repeating-linear-gradient(to bottom, ${WB_BLUE} 0 1px, ${WB_GREY_LIGHT} 1px 2px)`;
 
 function ScreenTitleBar() {
   return (
@@ -771,61 +767,63 @@ function WindowFrame({
       onMouseDown={onFocus}
       onTouchStart={onFocus}
     >
-      {/* WB 2.x Titelbar: links Close-Gadget, Stripes-Hintergrund, rechts Depth/Zoom-Gadgets */}
+      {/* WB-Titelbar: solides Blau, weißer Text, links Close, rechts Zoom + Depth */}
       <div
         style={{
           display: "flex",
           alignItems: "stretch",
           height: 18,
           borderBottom: `1px solid ${WB_BLACK}`,
-          background: TITLEBAR_STRIPES,
+          background: WB_BLUE,
+          color: WB_WHITE,
         }}
       >
-        {/* Close-Gadget (Quadrat mit Punkt) */}
+        {/* Close-Gadget */}
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); onClose(); }}
           aria-label="Schließen"
           style={{
-            width: 20, height: 18,
-            background: WB_GREY,
-            ...BEVEL_OUT,
-            padding: 0,
-            margin: 0,
-            cursor: "pointer",
+            width: 20, height: 18, background: WB_GREY, ...BEVEL_OUT,
+            padding: 0, margin: 0, cursor: "pointer",
             display: "flex", alignItems: "center", justifyContent: "center",
-            touchAction: "manipulation",
-            WebkitTapHighlightColor: "rgba(0,0,0,0.3)",
+            touchAction: "manipulation", WebkitTapHighlightColor: "rgba(0,0,0,0.3)",
           }}
         >
           <span style={{ width: 6, height: 6, background: WB_BLACK, display: "block" }} />
         </button>
         <div
           style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            paddingLeft: 6,
-            paddingRight: 6,
-            fontSize: 12,
-            color: WB_BLACK,
-            background: WB_GREY,
-            margin: "0 2px",
-            overflow: "hidden",
+            flex: 1, display: "flex", alignItems: "center",
+            paddingLeft: 8, paddingRight: 8, fontSize: 12,
+            color: WB_WHITE, overflow: "hidden",
           }}
         >
           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
         </div>
-        {/* Zoom-Gadget */}
+        {/* Zoom-Gadget (kleines + großes Rechteck) */}
         <div style={{ width: 20, height: 18, background: WB_GREY, ...BEVEL_OUT, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ width: 10, height: 8, border: `1px solid ${WB_BLACK}`, background: WB_WHITE }} />
+          <svg width="14" height="10" viewBox="0 0 14 10" shapeRendering="crispEdges">
+            <rect x="0" y="0" width="14" height="10" fill="none" stroke={WB_BLACK} strokeWidth="1" />
+            <rect x="0" y="0" width="6" height="5" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+          </svg>
         </div>
-        {/* Depth-Gadget */}
+        {/* Depth-Gadget (zwei überlappende Rechtecke) */}
         <div style={{ width: 20, height: 18, background: WB_GREY, ...BEVEL_OUT, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ width: 10, height: 8, border: `1px solid ${WB_BLACK}`, background: WB_GREY_LIGHT, boxShadow: `2px 2px 0 ${WB_WHITE} inset` }} />
+          <svg width="14" height="10" viewBox="0 0 14 10" shapeRendering="crispEdges">
+            <rect x="3" y="0" width="11" height="7" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+            <rect x="0" y="3" width="11" height="7" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+          </svg>
         </div>
       </div>
-      <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>{children}</div>
+      {/* Inhalt + Scrollbar-Rinnen rechts und unten (rein dekorativ, WB-typisch) */}
+      <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+        <div style={{ flex: 1, minHeight: 0, display: "flex" }}>
+          <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>{children}</div>
+          <ScrollGutter vertical />
+        </div>
+        <ScrollGutter />
+      </div>
     </div>
   );
 }
@@ -851,10 +849,47 @@ function DesktopIcon({ label, icon, onOpen }: { label: string; icon: ReactNode; 
       <div style={{ width: 56, height: 44, margin: "0 auto 4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
         {icon}
       </div>
-      <div style={{ color: WB_BLACK, fontSize: 11, padding: "1px 4px", display: "inline-block", background: "transparent", textShadow: `1px 1px 0 ${WB_WHITE}` }}>
+      <div style={{ color: WB_BLACK, fontSize: 11, padding: 0, display: "inline-block", background: "transparent" }}>
         {label}
       </div>
     </button>
+  );
+}
+
+// Scrollbar-Rinne (dekorativ, WB-typisch — Pfeile am Ende, Knubbel in der Mitte)
+function ScrollGutter({ vertical }: { vertical?: boolean }) {
+  const size = 14;
+  if (vertical) {
+    return (
+      <div style={{ width: size, background: WB_GREY, borderLeft: `1px solid ${WB_BLACK}`, display: "flex", flexDirection: "column" }}>
+        <div style={{ flex: 1, background: WB_GREY_LIGHT, ...BEVEL_IN, margin: 1 }} />
+        <ArrowGadget dir="up" />
+        <ArrowGadget dir="down" />
+      </div>
+    );
+  }
+  return (
+    <div style={{ height: size, background: WB_GREY, borderTop: `1px solid ${WB_BLACK}`, display: "flex" }}>
+      <div style={{ flex: 1, background: WB_GREY_LIGHT, ...BEVEL_IN, margin: 1 }} />
+      <ArrowGadget dir="left" />
+      <ArrowGadget dir="right" />
+      <div style={{ width: 14, background: WB_GREY, ...BEVEL_OUT }} />
+    </div>
+  );
+}
+
+function ArrowGadget({ dir }: { dir: "up" | "down" | "left" | "right" }) {
+  const ch = dir === "up" ? "▲" : dir === "down" ? "▼" : dir === "left" ? "◀" : "▶";
+  return (
+    <div
+      style={{
+        width: 14, height: 14, background: WB_GREY, ...BEVEL_OUT,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: 8, color: WB_BLACK, lineHeight: 1,
+      }}
+    >
+      {ch}
+    </div>
   );
 }
 
