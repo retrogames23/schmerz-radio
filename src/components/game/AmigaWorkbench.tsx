@@ -466,8 +466,7 @@ const BEVEL_IN: React.CSSProperties = {
 // Klassische WB-Titelbar-Streifen (horizontale 1px-Linien)
 const TITLEBAR_STRIPES_ACTIVE =
   `repeating-linear-gradient(0deg, ${WB_BLUE} 0px, ${WB_BLUE} 1px, ${WB_WHITE} 1px, ${WB_WHITE} 2px)`;
-const TITLEBAR_STRIPES_INACTIVE =
-  `repeating-linear-gradient(0deg, ${WB_GREY} 0px, ${WB_GREY} 1px, ${WB_WHITE} 1px, ${WB_WHITE} 2px)`;
+// (Inactive-Variante bei Bedarf später ergänzen)
 
 function ScreenTitleBar() {
   return (
