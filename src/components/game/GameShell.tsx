@@ -75,6 +75,7 @@ function DsaMusicBridge() {
     const inDsa = scene === "commonRoomE67" || dsaAdventureOpen;
     const inCafeteria = scene === "cafeteriaE67";
     const inPub = scene === "pub" || scene === "pubToilet";
+    const inE71Nerds = scene === "commonRoomE71";
     setOverride(
       inTavern
         ? "dsaTavern"
@@ -84,7 +85,9 @@ function DsaMusicBridge() {
             ? "cafeteria"
             : inPub
               ? "pub"
-              : null,
+              : inE71Nerds
+                ? "e71Nerds"
+                : null,
     );
   }, [scene, dsaAdventureOpen, dsaBeat, setOverride]);
   return null;
