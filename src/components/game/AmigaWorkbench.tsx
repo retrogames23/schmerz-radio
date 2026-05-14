@@ -70,7 +70,11 @@ const SITES = {
     title: "Gästebuch",
     body: (
       <div style={{ background: "#ffccff", color: "#330033", padding: 8, fontFamily: "Comic Sans MS, sans-serif" }}>
-        <marquee>★彡 Willkommen im Gästebuch! Trag dich ein! 彡★</marquee>
+        <div className="amiga-marquee" style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
+          <span style={{ display: "inline-block", animation: "amigaMarquee 12s linear infinite" }}>
+            ★彡 Willkommen im Gästebuch! Trag dich ein! 彡★
+          </span>
+        </div>
         <p>--- ZakMcKracken_92 (CA): „Geile Page, weiter so!!!"</p>
         <p>--- amiga4ever (NRW): „grüße aus dem westen :)"</p>
         <p>--- ??? (?): „wenn ihr das hier lest, hört das radio nicht weg."</p>
@@ -229,7 +233,7 @@ export function AmigaWorkbench() {
         )}
 
         <div style={{ position: "absolute", top: 4, right: 8, zIndex: 10 }}>
-          <CloseButton onClose={closeAmigaWorkbench} />
+          <CloseButton onClick={closeAmigaWorkbench} />
         </div>
       </div>
     </div>

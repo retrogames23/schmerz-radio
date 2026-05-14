@@ -1,7 +1,4 @@
-// TODO(asset): bis das eigene Hintergrundbild generiert ist, recyceln wir
-// das DSA-Gemeinschaftsraum-Asset als Platzhalter. Erst nach „Go"
-// durch ein E71-spezifisches 16:9-Bild ersetzen.
-import commonRoomE71Bg from "@/assets/scene-common-room.jpg";
+import commonRoomE71Bg from "@/assets/scene-common-room-e71.jpg";
 import type { Scene } from "../types";
 
 /**

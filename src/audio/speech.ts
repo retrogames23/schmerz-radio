@@ -195,6 +195,25 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
     speed: 0.82,
     settings: { stability: 0.75, similarity_boost: 0.7, style: 0.1, use_speaker_boost: true },
   },
+  // ── E71-Nerds (Gemeinschaftsraum 1530) ──
+  DETLEF: {
+    // Detlef am Amiga — leicht nasal, fokussiert.
+    voiceId: "IKne3meq5aSn9XLyUdCD", // Charlie
+    speed: 0.98,
+    settings: { stability: 0.5, similarity_boost: 0.8, style: 0.25, use_speaker_boost: true },
+  },
+  SIGI: {
+    // Sigi auf dem Sofa — entspannt, breiter.
+    voiceId: "nPczCjzI2devNBz1zQrb", // Brian
+    speed: 0.94,
+    settings: { stability: 0.55, similarity_boost: 0.8, style: 0.2, use_speaker_boost: true },
+  },
+  RUVEN: {
+    // Ruven am Regal — jünger, schnell.
+    voiceId: "TX3LPaxmHKxFdv7VOQHJ", // Liam
+    speed: 1.0,
+    settings: { stability: 0.45, similarity_boost: 0.8, style: 0.3, use_speaker_boost: true },
+  },
 };
 
 /** Currently playing audio element — cancelled before each new line. */
