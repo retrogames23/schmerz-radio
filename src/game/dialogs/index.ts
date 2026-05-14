@@ -10,6 +10,7 @@ import { ennisDialogs } from "./ennis";
 import { cafeteriaDialogs } from "./cafeteria";
 import { vossbeckAct2Dialogs } from "./vossbeckAct2";
 import { miscDialogs } from "./misc";
+import { e71NerdsDialogs } from "./e71Nerds";
 
 export const dialogs: Record<string, DialogTree> = {
   ...philippeDialogs,
@@ -23,4 +24,5 @@ export const dialogs: Record<string, DialogTree> = {
   ...cafeteriaDialogs,
   ...vossbeckAct2Dialogs,
   ...miscDialogs,
+  ...e71NerdsDialogs,
 };

@@ -249,8 +249,26 @@ export const sectorAct1Scenes: Record<string, Scene> = {
     background: corridor15Bg,
     title: "Korridor 15 — Sektor E71",
     intro:
-      "Spiegelblanker Linoleum. Eine Neonröhre flackert. Rechts an der Wand: eine Tür, schräg überklebt mit gelbem Siegelband. Am Ende des Korridors, in der Fluchtachse: eine Tür mit einem matten roten Status-Licht. Zimmer 1534.",
+      "Spiegelblanker Linoleum. Eine Neonröhre flackert. Rechts an der Wand: eine Tür, schräg überklebt mit gelbem Siegelband. Am Ende des Korridors, in der Fluchtachse: eine Tür mit einem matten roten Status-Licht. Zimmer 1534. Halbrechts, schmal eingelassen: Tür 1530, einen Spalt offen — von drinnen Stimmen, jung, durcheinander.",
     hotspots: [
+      {
+        id: "door1530",
+        // Schmale Tür halbrechts (zwischen sealedDoor1531 und door1534).
+        // Liegt visuell zwischen den beiden — Klickfeld bewusst klein, damit
+        // sich nichts mit dem Quarantäne-Türfeld überschneidet.
+        x: 60,
+        y: 28,
+        w: 8,
+        h: 50,
+        label: "Tür 1530 — Gemeinschaftsraum",
+        kind: "exit",
+        onUse: (api) => {
+          if (!api.hasFlag("enteredCommonRoomE71")) {
+            api.setFlag("enteredCommonRoomE71");
+          }
+          api.goTo("commonRoomE71");
+        },
+      },
       {
         id: "sealedDoor1531",
         // Versiegelte Tür rechts vorne, mit gelbem Quarantäne-Band.

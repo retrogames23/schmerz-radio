@@ -22,7 +22,8 @@ export type SceneId =
   | "leitstelleE67"
   | "pub"
   | "pubToilet"
-  | "pubVestibule";
+  | "pubVestibule"
+  | "commonRoomE71";
 
 export type InventoryItemId =
   | "protocol"
@@ -342,7 +343,26 @@ export type StoryFlag =
   /** Layard hat Insa in der Leitstelle E67 (Tür 4602) persönlich getroffen. */
   | "insaAct2BriefingDone"
   /** Layard hat von der Akte 1978 erfahren und sie eingesteckt. */
-  | "marteauTrailOpened";
+  | "marteauTrailOpened"
+  // ── E71 Gemeinschaftsraum (Tür 1530) — Home-Computer-Nerds & Amiga ──
+  /** Layard hat den Gemeinschaftsraum hinter Tür 1530 zum ersten Mal betreten. */
+  | "enteredCommonRoomE71"
+  /** Hat mit dem ersten Nerd (Detlef) gesprochen. */
+  | "metE71Nerd1"
+  /** Hat mit dem zweiten Nerd (Sigi) gesprochen. */
+  | "metE71Nerd2"
+  /** Hat mit dem dritten Nerd (Ruven) gesprochen. */
+  | "metE71Nerd3"
+  /** Layard hat das Quiz angefangen (mind. einmal). */
+  | "e71QuizStarted"
+  /** Layard hat das Quiz bestanden — der Amiga ist freigegeben. */
+  | "e71QuizPassed"
+  /** Transient: jeweilige Quiz-Antwort war richtig (wird pro Versuch zurückgesetzt). */
+  | "e71QuizQ1Right"
+  | "e71QuizQ2Right"
+  | "e71QuizQ3Right"
+  | "e71QuizQ4Right"
+  | "e71QuizQ5Right";
 
 export interface InventoryItem {
   id: InventoryItemId;
@@ -494,7 +514,10 @@ export interface DialogLine {
     | "BRUST"
     | "VOSSBECK"
     | "BRAM"
-    | "MARV";
+    | "MARV"
+    | "DETLEF"
+    | "SIGI"
+    | "RUVEN";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;
@@ -512,6 +535,8 @@ export interface DialogTree {
   id: string;
   start: string;
   lines: Record<string, DialogLine>;
+  /** Optional callback fired when the dialog tree opens. */
+  onStart?: (api: GameApi) => void;
   /** Optional callback fired exactly once when the dialog tree closes. */
   onEnd?: (api: GameApi) => void;
   /**
@@ -547,6 +572,8 @@ export interface GameApi {
   openRadio: () => void;
   openKeypad: (target?: KeypadTarget) => void;
   openTelevision: () => void;
+  /** Amiga-Workbench-Overlay (Gemeinschaftsraum E71) öffnen. */
+  openAmigaWorkbench: () => void;
   /** Quadranten-Almanach (Lese-Overlay) öffnen. */
   openAlmanach: () => void;
   /** Wartungsterminal hinter Tür 5610 (eigenes UI, kein CentralOS). */

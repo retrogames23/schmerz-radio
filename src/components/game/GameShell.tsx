@@ -12,6 +12,7 @@ import { DialogOverlay } from "./DialogOverlay";
 import { RadioPanel } from "./RadioPanel";
 import { Keypad } from "./Keypad";
 import { Television } from "./Television";
+import { AmigaWorkbench } from "./AmigaWorkbench";
 import { NodeTerminal } from "./NodeTerminal";
 import { BurnSequence } from "./BurnSequence";
 import { ParamedicsCutscene } from "./ParamedicsCutscene";
@@ -209,6 +210,7 @@ function GameStage({
             <RadioPanel />
             <Keypad />
             <Television />
+            <AmigaWorkbench />
             <NodeTerminal />
             <BurnSequence />
             <ParamedicsCutscene />

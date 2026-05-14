@@ -39,6 +39,8 @@ interface GameState {
   terminalMiraMode: boolean;
   keypadOpen: boolean;
   tvOpen: boolean;
+  /** Amiga-Workbench-Overlay (Gemeinschaftsraum E71) sichtbar. */
+  amigaWorkbenchOpen: boolean;
   /** Welche Tür wird gerade am Keypad geprüft. */
   keypadTarget: "sectorDoor";
   /** Wartungsterminal hinter Tür 5610 sichtbar. */
@@ -94,6 +96,7 @@ interface GameContextValue extends GameState {
   closeTerminal: () => void;
   closeKeypad: () => void;
   closeTelevision: () => void;
+  closeAmigaWorkbench: () => void;
   closeNode: () => void;
   closePneumatic: () => void;
   closeCondomAutomat: () => void;
@@ -202,6 +205,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [condomAutomatOpen, setCondomAutomatOpen] = useState(false);
   const [radioActive, setRadioActive] = useState(false);
   const [tvOpen, setTvOpen] = useState(false);
+  const [amigaWorkbenchOpen, setAmigaWorkbenchOpen] = useState(false);
   const [resonance, setResonance] = useState(0);
   const [ending, setEnding] = useState(false);
   const [burnSequence, setBurnSequence] = useState<boolean>(false);
@@ -420,6 +424,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setRadioOpen(false);
         setTerminalOpen(false);
         setTvOpen(true);
+      },
+      openAmigaWorkbench: () => {
+        setRadioOpen(false);
+        setTerminalOpen(false);
+        setTvOpen(false);
+        setAmigaWorkbenchOpen(true);
       },
       openNode5610: () => {
         setRadioOpen(false);
@@ -736,6 +746,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       closeTerminal: () => setTerminalOpen(false),
       closeKeypad: () => setKeypadOpen(false),
       closeTelevision: () => setTvOpen(false),
+      closeAmigaWorkbench: () => setAmigaWorkbenchOpen(false),
       closeNode: () => setNodeOpen(false),
       closePneumatic: () => setPneumaticOpen(false),
       closeCondomAutomat: () => setCondomAutomatOpen(false),
@@ -934,6 +945,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     terminalMiraMode,
     keypadOpen,
     tvOpen,
+    amigaWorkbenchOpen,
     keypadTarget,
     nodeOpen,
     pneumaticOpen,
@@ -983,6 +995,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       terminalMiraMode,
       keypadOpen,
       tvOpen,
+      amigaWorkbenchOpen,
       nodeOpen,
       pneumaticOpen,
       condomAutomatOpen,
