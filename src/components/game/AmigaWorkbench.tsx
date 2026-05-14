@@ -1474,7 +1474,7 @@ function AmigaShell() {
         printMulti(
           `Mounted disks:\n` +
           `  Unit  Size      Used     Free   Full   Errs   Status   Name\n` +
-          `  DF0:  880K      ${Math.round(WORKBENCH_DISK.children.length * 8)}K     852K   3%      0   Read/Write   SYS [Workbench2.1]\n` +
+          `  DF0:  880K      28K      852K   3%      0   Read/Write   SYS [Workbench2.1]\n` +
           `  DF1:  880K      24K      856K   3%      0   Read/Write   FASTWEB\n` +
           `  RAM:  ----      0K       ----   0%      0   Read/Write   Ram Disk`
         );
