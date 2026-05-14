@@ -757,12 +757,13 @@ function ToolbarButton({ onClick, disabled, children }: { onClick: () => void; d
 // ============================================================
 
 function WindowFrame({
-  title, z, offset, isFastWeb, onClose, onFocus, children,
+  title, z, offset, isFastWeb, isShell, onClose, onFocus, children,
 }: {
   title: string;
   z: number;
   offset: number;
   isFastWeb: boolean;
+  isShell?: boolean;
   onClose: () => void;
   onFocus: () => void;
   children: ReactNode;
@@ -796,6 +797,8 @@ function WindowFrame({
   // FastWeb fills most of the screen; drawers are smaller
   const baseStyle: React.CSSProperties = isFastWeb
     ? { position: "absolute", top: 26, left: "3%", right: "3%", bottom: 12, zIndex: z }
+    : isShell
+    ? { position: "absolute", top: 60, left: "8%", width: "min(560px, 80%)", height: "min(360px, 65%)", zIndex: z }
     : {
         position: "absolute",
         top: 40 + offset,
