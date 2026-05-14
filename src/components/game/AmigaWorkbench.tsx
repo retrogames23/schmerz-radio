@@ -434,7 +434,8 @@ So  20:00  Musik bis Sendeschluss`}</pre>
 type WindowState =
   | { kind: "drawer"; id: string; node: FileNode & { kind: "drawer" } }
   | { kind: "file"; id: string; name: string; content: ReactNode }
-  | { kind: "fastweb"; id: string };
+  | { kind: "fastweb"; id: string }
+  | { kind: "shell"; id: string };
 
 let WIN_ID = 0;
 const nextId = () => `w${++WIN_ID}`;
@@ -521,6 +522,11 @@ export function AmigaWorkbench() {
     setWindows((w) => [...w, { kind: "fastweb", id }]);
     setZOrder((z) => [...z, id]);
   };
+  const openShell = () => {
+    const id = nextId();
+    setWindows((w) => [...w, { kind: "shell", id }]);
+    setZOrder((z) => [...z, id]);
+  };
   const closeWindow = (id: string) => {
     setWindows((w) => w.filter((x) => x.id !== id));
     setZOrder((z) => z.filter((x) => x !== id));
@@ -529,6 +535,7 @@ export function AmigaWorkbench() {
   const handleNodeOpen = (node: FileNode) => {
     if (node.kind === "drawer") openDrawer(node);
     else if (node.kind === "tool" && node.onOpen === "fastweb") openFastWeb();
+    else if (node.kind === "tool" && node.onOpen === "shell") openShell();
     else if (node.kind === "file") openFile(node.name, node.content);
   };
 
@@ -564,6 +571,7 @@ export function AmigaWorkbench() {
             onOpen={() => openDrawer(FASTWEB_DISK as FileNode & { kind: "drawer" })}
           />
           <DesktopIcon label="Ram Disk" icon={<RamDiskIcon />} onOpen={() => openFile("Ram Disk", <em>(leer · 0% full)</em>)} />
+          <DesktopIcon label="Shell" icon={<ShellIcon />} onOpen={openShell} />
           <DesktopIcon label="Trashcan" icon={<TrashIcon />} onOpen={() => openFile("Trashcan", <em>(leer)</em>)} />
         </div>
 
@@ -577,11 +585,13 @@ export function AmigaWorkbench() {
               title={
                 w.kind === "drawer" ? `${w.node.name}:` :
                 w.kind === "file" ? w.name :
+                w.kind === "shell" ? "AmigaShell" :
                 "FastWeb"
               }
               z={10 + z}
               offset={offset}
               isFastWeb={w.kind === "fastweb"}
+              isShell={w.kind === "shell"}
               onFocus={() => focus(w.id)}
               onClose={() => closeWindow(w.id)}
             >
@@ -594,6 +604,7 @@ export function AmigaWorkbench() {
                 </div>
               )}
               {w.kind === "fastweb" && <FastWebBrowser />}
+              {w.kind === "shell" && <AmigaShell />}
             </WindowFrame>
           );
         })}
