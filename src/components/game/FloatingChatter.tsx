@@ -185,10 +185,10 @@ export function FloatingChatter({
   const label = config.labels[bubble.npc] ?? bubble.npc;
 
   // Sprechblase ist max. 260 px breit und um -50 % horizontal verschoben,
-  // ragt also je nach Anker links/rechts aus dem Bild heraus. Wir klemmen
-  // den effektiven Anker so, dass eine ~150 px breite Halb-Bubble immer
-  // innerhalb der Szene bleibt (Annahme: Szene ≥ 600 px breit ⇒ ~25 %).
-  const clampedX = Math.min(78, Math.max(22, anchor.x));
+  // ragt also je nach Anker links/rechts aus dem Bild heraus. Auf Mobile
+  // (rotierte Stage, schmale Szene) muss der Anker stärker eingeklemmt
+  // werden, sonst wird die Blase links/rechts angeschnitten.
+  const clampedX = Math.min(72, Math.max(28, anchor.x));
 
   return (
     <div

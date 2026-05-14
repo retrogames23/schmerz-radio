@@ -69,6 +69,11 @@ const consoles: ConsoleEntry[] = [
     title: "Bürokratie-Duell",
     open: ({ api }) => api.openBureaucracyDuel(),
   },
+  {
+    id: "amiga-workbench",
+    title: "Amiga · Workbench + FastWeb (E71)",
+    open: ({ api }) => api.openAmigaWorkbench(),
+  },
 ];
 
 /**
