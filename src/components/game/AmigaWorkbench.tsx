@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import { useGame } from "@/game/GameContext";
 import { CloseButton } from "./CloseButton";
 
@@ -444,7 +444,7 @@ const nextId = () => `w${++WIN_ID}`;
 // Klassische Workbench-Palette (Release-3-Look, 4 Farben)
 const WB_GREY = "#a8a8a8";        // Desktop / Fenster-Background
 const WB_GREY_LIGHT = "#c8c8c8";  // Bevel hell
-const WB_BLUE = "#4f6cbd";        // Aktive Titelbar (solides Blau)
+const WB_BLUE = "#5566aa";        // Aktive Titelbar (Streifen-Basis)
 const WB_WHITE = "#ffffff";
 const WB_BLACK = "#000000";
 const WB_FONT = '"Courier New", "Topaz-8", monospace';
@@ -462,6 +462,12 @@ const BEVEL_IN: React.CSSProperties = {
   borderRight: `2px solid ${WB_WHITE}`,
   borderBottom: `2px solid ${WB_WHITE}`,
 };
+
+// Klassische WB-Titelbar-Streifen (horizontale 1px-Linien)
+const TITLEBAR_STRIPES_ACTIVE =
+  `repeating-linear-gradient(0deg, ${WB_BLUE} 0px, ${WB_BLUE} 1px, ${WB_WHITE} 1px, ${WB_WHITE} 2px)`;
+const TITLEBAR_STRIPES_INACTIVE =
+  `repeating-linear-gradient(0deg, ${WB_GREY} 0px, ${WB_GREY} 1px, ${WB_WHITE} 1px, ${WB_WHITE} 2px)`;
 
 function ScreenTitleBar() {
   return (
