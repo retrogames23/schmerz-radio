@@ -441,10 +441,10 @@ const nextId = () => `w${++WIN_ID}`;
 // WORKBENCH 2.x DESIGN TOKENS
 // ============================================================
 
-// Klassische Workbench-2.x-Palette (4 Farben, „grayscheme")
-const WB_GREY = "#a0a0a0";        // Desktop / Fenster-Background
-const WB_GREY_LIGHT = "#cccccc";  // Bevel hell
-const WB_BLUE = "#5566aa";        // Akzent-Blau (Titelbar-Streifen)
+// Klassische Workbench-Palette (Release-3-Look, 4 Farben)
+const WB_GREY = "#a8a8a8";        // Desktop / Fenster-Background
+const WB_GREY_LIGHT = "#c8c8c8";  // Bevel hell
+const WB_BLUE = "#4f6cbd";        // Aktive Titelbar (solides Blau)
 const WB_WHITE = "#ffffff";
 const WB_BLACK = "#000000";
 const WB_FONT = '"Courier New", "Topaz-8", monospace';
@@ -462,10 +462,6 @@ const BEVEL_IN: React.CSSProperties = {
   borderRight: `2px solid ${WB_WHITE}`,
   borderBottom: `2px solid ${WB_WHITE}`,
 };
-
-// Titelbar-Streifen (typisch WB 2.x): horizontale dünne Linien
-const TITLEBAR_STRIPES =
-  `repeating-linear-gradient(to bottom, ${WB_BLUE} 0 1px, ${WB_GREY_LIGHT} 1px 2px)`;
 
 function ScreenTitleBar() {
   return (
