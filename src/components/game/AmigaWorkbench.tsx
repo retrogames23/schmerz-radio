@@ -17,7 +17,7 @@ import { CloseButton } from "./CloseButton";
 type FileNode =
   | { kind: "file"; name: string; size: number; content: ReactNode }
   | { kind: "drawer"; name: string; children: FileNode[] }
-  | { kind: "tool"; name: string; size: number; onOpen: "fastweb" };
+  | { kind: "tool"; name: string; size: number; onOpen: "fastweb" | "shell" };
 
 const README_TXT = (
   <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{`Workbench 2.0 — Schmerz-Edition (Build 39.106)
@@ -69,6 +69,8 @@ const WORKBENCH_DISK: FileNode = {
       kind: "drawer",
       name: "System",
       children: [
+        { kind: "tool", name: "Shell", size: 4216, onOpen: "shell" },
+        { kind: "tool", name: "CLI", size: 3892, onOpen: "shell" },
         { kind: "file", name: "Format", size: 7244, content: <em>(Binary tool — kann Disketten formatieren)</em> },
         { kind: "file", name: "DiskCopy", size: 9120, content: <em>(Binary tool — kopiert Disketten)</em> },
         { kind: "file", name: "FixFonts", size: 3344, content: <em>(Binary tool)</em> },
@@ -432,7 +434,8 @@ So  20:00  Musik bis Sendeschluss`}</pre>
 type WindowState =
   | { kind: "drawer"; id: string; node: FileNode & { kind: "drawer" } }
   | { kind: "file"; id: string; name: string; content: ReactNode }
-  | { kind: "fastweb"; id: string };
+  | { kind: "fastweb"; id: string }
+  | { kind: "shell"; id: string };
 
 let WIN_ID = 0;
 const nextId = () => `w${++WIN_ID}`;
@@ -519,6 +522,11 @@ export function AmigaWorkbench() {
     setWindows((w) => [...w, { kind: "fastweb", id }]);
     setZOrder((z) => [...z, id]);
   };
+  const openShell = () => {
+    const id = nextId();
+    setWindows((w) => [...w, { kind: "shell", id }]);
+    setZOrder((z) => [...z, id]);
+  };
   const closeWindow = (id: string) => {
     setWindows((w) => w.filter((x) => x.id !== id));
     setZOrder((z) => z.filter((x) => x !== id));
@@ -527,6 +535,7 @@ export function AmigaWorkbench() {
   const handleNodeOpen = (node: FileNode) => {
     if (node.kind === "drawer") openDrawer(node);
     else if (node.kind === "tool" && node.onOpen === "fastweb") openFastWeb();
+    else if (node.kind === "tool" && node.onOpen === "shell") openShell();
     else if (node.kind === "file") openFile(node.name, node.content);
   };
 
@@ -562,6 +571,7 @@ export function AmigaWorkbench() {
             onOpen={() => openDrawer(FASTWEB_DISK as FileNode & { kind: "drawer" })}
           />
           <DesktopIcon label="Ram Disk" icon={<RamDiskIcon />} onOpen={() => openFile("Ram Disk", <em>(leer · 0% full)</em>)} />
+          <DesktopIcon label="Shell" icon={<ShellIcon />} onOpen={openShell} />
           <DesktopIcon label="Trashcan" icon={<TrashIcon />} onOpen={() => openFile("Trashcan", <em>(leer)</em>)} />
         </div>
 
@@ -575,11 +585,13 @@ export function AmigaWorkbench() {
               title={
                 w.kind === "drawer" ? `${w.node.name}:` :
                 w.kind === "file" ? w.name :
+                w.kind === "shell" ? "AmigaShell" :
                 "FastWeb"
               }
               z={10 + z}
               offset={offset}
               isFastWeb={w.kind === "fastweb"}
+              isShell={w.kind === "shell"}
               onFocus={() => focus(w.id)}
               onClose={() => closeWindow(w.id)}
             >
@@ -592,6 +604,7 @@ export function AmigaWorkbench() {
                 </div>
               )}
               {w.kind === "fastweb" && <FastWebBrowser />}
+              {w.kind === "shell" && <AmigaShell />}
             </WindowFrame>
           );
         })}
@@ -625,10 +638,7 @@ function DrawerView({ node, onOpen }: { node: FileNode & { kind: "drawer" }; onO
 }
 
 function FileIcon({ node, onOpen }: { node: FileNode; onOpen: () => void }) {
-  const icon =
-    node.kind === "drawer" ? <DrawerIcon /> :
-    node.kind === "tool" ? <ToolIcon /> :
-    <DocIcon />;
+  const icon = pickIcon(node);
   return (
     <button
       type="button"
@@ -744,12 +754,13 @@ function ToolbarButton({ onClick, disabled, children }: { onClick: () => void; d
 // ============================================================
 
 function WindowFrame({
-  title, z, offset, isFastWeb, onClose, onFocus, children,
+  title, z, offset, isFastWeb, isShell, onClose, onFocus, children,
 }: {
   title: string;
   z: number;
   offset: number;
   isFastWeb: boolean;
+  isShell?: boolean;
   onClose: () => void;
   onFocus: () => void;
   children: ReactNode;
@@ -783,6 +794,8 @@ function WindowFrame({
   // FastWeb fills most of the screen; drawers are smaller
   const baseStyle: React.CSSProperties = isFastWeb
     ? { position: "absolute", top: 26, left: "3%", right: "3%", bottom: 12, zIndex: z }
+    : isShell
+    ? { position: "absolute", top: 60, left: "8%", width: "min(560px, 80%)", height: "min(360px, 65%)", zIndex: z }
     : {
         position: "absolute",
         top: 40 + offset,
@@ -1030,5 +1043,564 @@ function DocIcon() {
       <line x1="6" y1="22" x2="22" y2="22" stroke={WB_BLACK} strokeWidth="1" />
       <line x1="6" y1="26" x2="18" y2="26" stroke={WB_BLACK} strokeWidth="1" />
     </svg>
+  );
+}
+
+// ============================================================
+// NAMED ICONS (WB 2.1-Look — System / Utilities / Prefs / Tools)
+// ============================================================
+
+function ShellIcon() {
+  // Schwarzes CRT mit Prompt "1>"
+  return (
+    <svg width="40" height="32" viewBox="0 0 40 32" aria-hidden shapeRendering="crispEdges">
+      <rect x="1" y="2" width="38" height="26" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="2" y="3" width="36" height="2" fill={WB_WHITE} />
+      <rect x="2" y="3" width="2" height="22" fill={WB_WHITE} />
+      <rect x="2" y="25" width="36" height="2" fill={WB_BLACK} />
+      <rect x="36" y="3" width="2" height="22" fill={WB_BLACK} />
+      <rect x="6" y="7" width="28" height="16" fill={WB_BLACK} />
+      <text x="9" y="18" fontFamily="monospace" fontSize="9" fill={WB_WHITE}>1&gt;_</text>
+    </svg>
+  );
+}
+
+function PointerPrefsIcon() {
+  return (
+    <svg width="40" height="32" viewBox="0 0 40 32" aria-hidden shapeRendering="crispEdges">
+      <rect x="1" y="2" width="38" height="26" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="6" y="6" width="28" height="18" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      {/* Mauszeiger als Pixelgrafik */}
+      <rect x="14" y="9" width="2" height="2" fill={WB_BLACK} />
+      <rect x="14" y="11" width="4" height="2" fill={WB_BLACK} />
+      <rect x="14" y="13" width="6" height="2" fill={WB_BLACK} />
+      <rect x="14" y="15" width="8" height="2" fill={WB_BLACK} />
+      <rect x="14" y="17" width="4" height="2" fill={WB_BLACK} />
+      <rect x="18" y="17" width="2" height="4" fill={WB_BLACK} />
+    </svg>
+  );
+}
+
+function PalettePrefsIcon() {
+  // 4 Farbflächen wie das WB Palette-Tool
+  const colors = [WB_BLUE, "#ff8800", WB_WHITE, WB_BLACK];
+  return (
+    <svg width="40" height="32" viewBox="0 0 40 32" aria-hidden shapeRendering="crispEdges">
+      <rect x="1" y="2" width="38" height="26" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      {colors.map((c, i) => (
+        <rect key={i} x={5 + i * 8} y={7} width="7" height="16" fill={c} stroke={WB_BLACK} strokeWidth="1" />
+      ))}
+    </svg>
+  );
+}
+
+function SerialPrefsIcon() {
+  // Stecker-Symbol: Rechteck mit Pin-Reihen
+  return (
+    <svg width="40" height="32" viewBox="0 0 40 32" aria-hidden shapeRendering="crispEdges">
+      <rect x="1" y="2" width="38" height="26" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="8" y="8" width="24" height="14" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      {[0,1,2,3,4].map((i) => <rect key={i} x={11 + i * 4} y={11} width="2" height="2" fill={WB_BLACK} />)}
+      {[0,1,2,3].map((i) => <rect key={i} x={13 + i * 4} y={15} width="2" height="2" fill={WB_BLACK} />)}
+    </svg>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden shapeRendering="crispEdges">
+      <circle cx="18" cy="18" r="15" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      <line x1="18" y1="18" x2="18" y2="7" stroke={WB_BLACK} strokeWidth="2" />
+      <line x1="18" y1="18" x2="26" y2="18" stroke={WB_BLACK} strokeWidth="2" />
+      <circle cx="18" cy="18" r="2" fill={WB_BLACK} />
+      {[0,3,6,9].map((h) => {
+        const a = (h / 12) * Math.PI * 2 - Math.PI / 2;
+        const x = 18 + Math.cos(a) * 13;
+        const y = 18 + Math.sin(a) * 13;
+        return <rect key={h} x={x - 1} y={y - 1} width="2" height="2" fill={WB_BLACK} />;
+      })}
+    </svg>
+  );
+}
+
+function CalculatorIcon() {
+  return (
+    <svg width="36" height="40" viewBox="0 0 36 40" aria-hidden shapeRendering="crispEdges">
+      <rect x="2" y="2" width="32" height="36" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="6" y="6" width="24" height="8" fill={WB_BLACK} />
+      <text x="27" y="13" textAnchor="end" fontFamily="monospace" fontSize="7" fill="#0f0">12345</text>
+      {[0,1,2].map((r) => [0,1,2,3].map((c) => (
+        <rect key={`${r}-${c}`} x={6 + c * 6} y={18 + r * 6} width="5" height="5" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      )))}
+    </svg>
+  );
+}
+
+function MoreIcon() {
+  // Text-Pager: Dokument mit Lupe-Effekt (gestapelte Linien)
+  return (
+    <svg width="36" height="40" viewBox="0 0 36 40" aria-hidden shapeRendering="crispEdges">
+      <rect x="3" y="3" width="26" height="32" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      {[8,12,16,20,24,28].map((y) => <line key={y} x1="6" y1={y} x2="26" y2={y} stroke={WB_BLACK} strokeWidth="1" />)}
+      <text x="22" y="38" fontFamily="monospace" fontSize="8" fill={WB_BLACK}>»</text>
+    </svg>
+  );
+}
+
+function FormatIcon() {
+  return (
+    <svg width="36" height="40" viewBox="0 0 36 40" aria-hidden shapeRendering="crispEdges">
+      <rect x="2" y="2" width="32" height="36" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="9" y="3" width="18" height="12" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="6" y="19" width="24" height="16" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <text x="18" y="30" textAnchor="middle" fontFamily="monospace" fontSize="8" fill={WB_BLACK}>FMT</text>
+    </svg>
+  );
+}
+
+function DiskCopyIcon() {
+  return (
+    <svg width="40" height="36" viewBox="0 0 40 36" aria-hidden shapeRendering="crispEdges">
+      <rect x="14" y="2" width="22" height="30" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="2" y="6" width="22" height="28" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="6" y="10" width="14" height="8" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+    </svg>
+  );
+}
+
+function FontsIcon() {
+  return (
+    <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden shapeRendering="crispEdges">
+      <rect x="2" y="2" width="32" height="32" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      <text x="18" y="26" textAnchor="middle" fontFamily="serif" fontSize="22" fill={WB_BLACK}>Aa</text>
+    </svg>
+  );
+}
+
+function GearDrawerIcon() {
+  // Drawer mit Zahnrad (System)
+  return (
+    <svg width="48" height="36" viewBox="0 0 48 36" aria-hidden shapeRendering="crispEdges">
+      <rect x="6" y="4" width="14" height="5" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="2" y="9" width="44" height="22" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="5" y="12" width="38" height="16" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      <circle cx="24" cy="20" r="5" fill="none" stroke={WB_BLACK} strokeWidth="1" />
+      <circle cx="24" cy="20" r="2" fill={WB_BLACK} />
+      {[0,1,2,3,4,5,6,7].map((i) => {
+        const a = (i / 8) * Math.PI * 2;
+        const x = 24 + Math.cos(a) * 7;
+        const y = 20 + Math.sin(a) * 7;
+        return <rect key={i} x={x - 1} y={y - 1} width="2" height="2" fill={WB_BLACK} />;
+      })}
+    </svg>
+  );
+}
+
+function ToolsDrawerIcon() {
+  // Drawer mit Schraubenschlüssel (Utilities)
+  return (
+    <svg width="48" height="36" viewBox="0 0 48 36" aria-hidden shapeRendering="crispEdges">
+      <rect x="6" y="4" width="14" height="5" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="2" y="9" width="44" height="22" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="5" y="12" width="38" height="16" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      <line x1="14" y1="26" x2="32" y2="14" stroke={WB_BLACK} strokeWidth="2" />
+      <rect x="11" y="22" width="6" height="6" fill={WB_BLACK} />
+      <rect x="29" y="11" width="6" height="6" fill={WB_BLACK} />
+    </svg>
+  );
+}
+
+function PrefsDrawerIcon() {
+  // Drawer mit Schiebereglern (Prefs)
+  return (
+    <svg width="48" height="36" viewBox="0 0 48 36" aria-hidden shapeRendering="crispEdges">
+      <rect x="6" y="4" width="14" height="5" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="2" y="9" width="44" height="22" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="5" y="12" width="38" height="16" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      {[15, 20, 25].map((y, i) => (
+        <g key={y}>
+          <line x1="9" y1={y} x2="39" y2={y} stroke={WB_BLACK} strokeWidth="1" />
+          <rect x={12 + i * 8} y={y - 2} width="4" height="4" fill={WB_BLACK} />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+function CacheDrawerIcon() {
+  return (
+    <svg width="48" height="36" viewBox="0 0 48 36" aria-hidden shapeRendering="crispEdges">
+      <rect x="6" y="4" width="14" height="5" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="2" y="9" width="44" height="22" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="5" y="12" width="38" height="16" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      <text x="24" y="24" textAnchor="middle" fontFamily="monospace" fontSize="9" fill={WB_BLACK}>$$$</text>
+    </svg>
+  );
+}
+
+function BookmarksDrawerIcon() {
+  return (
+    <svg width="48" height="36" viewBox="0 0 48 36" aria-hidden shapeRendering="crispEdges">
+      <rect x="6" y="4" width="14" height="5" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="2" y="9" width="44" height="22" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="5" y="12" width="38" height="16" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      <path d="M20 13 L28 13 L28 25 L24 22 L20 25 Z" fill="#cc2222" stroke={WB_BLACK} strokeWidth="1" />
+    </svg>
+  );
+}
+
+function DownloadsDrawerIcon() {
+  return (
+    <svg width="48" height="36" viewBox="0 0 48 36" aria-hidden shapeRendering="crispEdges">
+      <rect x="6" y="4" width="14" height="5" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="2" y="9" width="44" height="22" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="5" y="12" width="38" height="16" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
+      <line x1="24" y1="14" x2="24" y2="22" stroke={WB_BLACK} strokeWidth="2" />
+      <path d="M20 19 L24 24 L28 19" fill="none" stroke={WB_BLACK} strokeWidth="2" />
+    </svg>
+  );
+}
+
+function FastWebToolIcon() {
+  return (
+    <svg width="40" height="36" viewBox="0 0 40 36" aria-hidden shapeRendering="crispEdges">
+      <rect x="1" y="2" width="38" height="30" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <circle cx="20" cy="17" r="11" fill={WB_BLUE} stroke={WB_BLACK} strokeWidth="1" />
+      <ellipse cx="20" cy="17" rx="11" ry="4" fill="none" stroke={WB_WHITE} strokeWidth="1" />
+      <line x1="9" y1="17" x2="31" y2="17" stroke={WB_WHITE} strokeWidth="1" />
+      <line x1="20" y1="6" x2="20" y2="28" stroke={WB_WHITE} strokeWidth="1" />
+    </svg>
+  );
+}
+
+function ArchiveIcon() {
+  return (
+    <svg width="36" height="40" viewBox="0 0 36 40" aria-hidden shapeRendering="crispEdges">
+      <rect x="3" y="3" width="26" height="32" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      {[8,14,20,26].map((y) => <line key={y} x1="3" y1={y} x2="29" y2={y} stroke={WB_BLACK} strokeWidth="1" />)}
+      <rect x="13" y="6" width="6" height="4" fill={WB_BLACK} />
+    </svg>
+  );
+}
+
+function pickIcon(node: FileNode): ReactNode {
+  if (node.kind === "tool") {
+    if (node.onOpen === "shell") return <ShellIcon />;
+    if (node.onOpen === "fastweb") return <FastWebToolIcon />;
+    return <ToolIcon />;
+  }
+  if (node.kind === "drawer") {
+    switch (node.name) {
+      case "System": return <GearDrawerIcon />;
+      case "Utilities": return <ToolsDrawerIcon />;
+      case "Prefs": return <PrefsDrawerIcon />;
+      case "Cache": return <CacheDrawerIcon />;
+      case "Bookmarks": return <BookmarksDrawerIcon />;
+      case "Downloads": return <DownloadsDrawerIcon />;
+      default: return <DrawerIcon />;
+    }
+  }
+  // file
+  switch (node.name) {
+    case "Pointer": return <PointerPrefsIcon />;
+    case "Palette": return <PalettePrefsIcon />;
+    case "Serial": return <SerialPrefsIcon />;
+    case "Clock": return <ClockIcon />;
+    case "Calculator": return <CalculatorIcon />;
+    case "More": return <MoreIcon />;
+    case "Format": return <FormatIcon />;
+    case "DiskCopy": return <DiskCopyIcon />;
+    case "FixFonts": return <FontsIcon />;
+    default:
+      if (/\.(lha|adf|zip)$/i.test(node.name)) return <ArchiveIcon />;
+      return <DocIcon />;
+  }
+}
+
+// ============================================================
+// AMIGA SHELL (CLI)
+// ============================================================
+
+function extractText(node: ReactNode): string {
+  if (node == null || typeof node === "boolean") return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(extractText).join("");
+  if (typeof node === "object" && "props" in (node as object)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const props = (node as any).props;
+    if (props && "children" in props) return extractText(props.children);
+  }
+  return "";
+}
+
+type Volumes = Record<string, FileNode & { kind: "drawer" }>;
+
+const VOLUMES: Volumes = {
+  // Workbench-Disk wird im Shell als SYS: gemountet
+  "SYS": WORKBENCH_DISK as FileNode & { kind: "drawer" },
+  "Workbench2.1": WORKBENCH_DISK as FileNode & { kind: "drawer" },
+  "FASTWEB": FASTWEB_DISK as FileNode & { kind: "drawer" },
+  "FastWeb": FASTWEB_DISK as FileNode & { kind: "drawer" },
+  "RAM": { kind: "drawer", name: "Ram Disk", children: [] },
+};
+
+type Cwd = { volume: string; path: string[] }; // path = subdirs inside volume
+
+function cwdToString(cwd: Cwd): string {
+  return cwd.path.length === 0 ? `${cwd.volume}:` : `${cwd.volume}:${cwd.path.join("/")}`;
+}
+
+function resolvePath(cwd: Cwd, raw: string): Cwd | null {
+  const arg = raw.trim();
+  let volume = cwd.volume;
+  let parts: string[] = [...cwd.path];
+
+  // Volume:rest  -> absolute relativ zum Volume
+  const colon = arg.indexOf(":");
+  let rest = arg;
+  if (colon >= 0) {
+    volume = arg.slice(0, colon);
+    if (volume === "") return null;
+    if (!VOLUMES[volume]) return null;
+    parts = [];
+    rest = arg.slice(colon + 1);
+  }
+
+  // "/" oder "//" am Anfang = parent(s)
+  while (rest.startsWith("/")) {
+    parts.pop();
+    rest = rest.slice(1);
+  }
+  if (rest.length === 0) return { volume, path: parts };
+  for (const seg of rest.split("/")) {
+    if (seg === "" || seg === ".") continue;
+    if (seg === "..") { parts.pop(); continue; }
+    parts.push(seg);
+  }
+  return { volume, path: parts };
+}
+
+function getDrawer(cwd: Cwd): (FileNode & { kind: "drawer" }) | null {
+  let cur: FileNode & { kind: "drawer" } = VOLUMES[cwd.volume];
+  if (!cur) return null;
+  for (const seg of cwd.path) {
+    const found = cur.children.find(
+      (c) => c.name.toLowerCase() === seg.toLowerCase() && c.kind === "drawer",
+    );
+    if (!found || found.kind !== "drawer") return null;
+    cur = found;
+  }
+  return cur;
+}
+
+function getNode(cwd: Cwd, name: string): FileNode | null {
+  const target = resolvePath(cwd, name);
+  if (!target) return null;
+  const parent: Cwd = { volume: target.volume, path: target.path.slice(0, -1) };
+  const last = target.path[target.path.length - 1];
+  if (!last) {
+    const d = getDrawer(target);
+    return d ?? null;
+  }
+  const drawer = getDrawer(parent);
+  if (!drawer) return null;
+  return drawer.children.find((c) => c.name.toLowerCase() === last.toLowerCase()) ?? null;
+}
+
+const SHELL_BANNER = `AmigaDOS 2.1 — KS 37.175 / WB 38.36
+Copyright (c) 1985-1992 Commodore-Amiga, Inc. All Rights Reserved.
+
+Type HELP for a list of commands.`;
+
+const HELP_TEXT = `Built-in commands:
+ DIR [path]         List drawer contents (long form)
+ LIST [path]        Like DIR, with sizes
+ CD [path]          Change current directory
+ TYPE <file>        Print a file
+ MORE <file>        Page a file (here: same as TYPE)
+ INFO               Show mounted volumes
+ ASSIGN             Show logical assigns
+ ECHO <text>        Print text
+ CLS                Clear screen
+ PROMPT             Show current path
+ HELP               This text
+ ENDCLI / QUIT      Close shell window`;
+
+function AmigaShell() {
+  const [cwd, setCwd] = useState<Cwd>({ volume: "SYS", path: [] });
+  const [lines, setLines] = useState<string[]>([SHELL_BANNER, ""]);
+  const [input, setInput] = useState("");
+  const [history, setHistory] = useState<string[]>([]);
+  const [hIdx, setHIdx] = useState<number>(-1);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [lines]);
+
+  const print = (s: string) => setLines((ls) => [...ls, s]);
+  const printMulti = (s: string) => setLines((ls) => [...ls, ...s.split("\n")]);
+
+  function run(rawCmd: string) {
+    const prompt = `${cwdToString(cwd)}> ${rawCmd}`;
+    setLines((ls) => [...ls, prompt]);
+    if (rawCmd.trim() === "") return;
+    setHistory((h) => [...h, rawCmd]);
+    setHIdx(-1);
+
+    const parts = rawCmd.trim().split(/\s+/);
+    const cmd = parts[0].toLowerCase();
+    const args = parts.slice(1);
+    const arg = args.join(" ");
+
+    switch (cmd) {
+      case "help":
+      case "?":
+        printMulti(HELP_TEXT);
+        break;
+      case "cls":
+      case "clear":
+        setLines([]);
+        break;
+      case "echo":
+        print(arg);
+        break;
+      case "prompt":
+      case "pwd":
+        print(cwdToString(cwd));
+        break;
+      case "info":
+        printMulti(
+          `Mounted disks:\n` +
+          `  Unit  Size      Used     Free   Full   Errs   Status   Name\n` +
+          `  DF0:  880K      28K      852K   3%      0   Read/Write   SYS [Workbench2.1]\n` +
+          `  DF1:  880K      24K      856K   3%      0   Read/Write   FASTWEB\n` +
+          `  RAM:  ----      0K       ----   0%      0   Read/Write   Ram Disk`
+        );
+        break;
+      case "assign":
+        printMulti(
+          `LIBS       SYS:Libs\n` +
+          `FONTS      SYS:Fonts\n` +
+          `C          SYS:C\n` +
+          `S          SYS:S\n` +
+          `FastWeb    FASTWEB:`
+        );
+        break;
+      case "cd": {
+        if (!arg) { print(cwdToString(cwd)); break; }
+        const t = resolvePath(cwd, arg);
+        if (!t) { print(`${arg}: object not found`); break; }
+        const d = getDrawer(t);
+        if (!d) { print(`${arg}: object not found or not a directory`); break; }
+        setCwd(t);
+        break;
+      }
+      case "dir":
+      case "list": {
+        const target = arg ? resolvePath(cwd, arg) : cwd;
+        if (!target) { print(`${arg}: object not found`); break; }
+        const d = getDrawer(target);
+        if (!d) { print(`${arg}: not a directory`); break; }
+        const drawers = d.children.filter((c) => c.kind === "drawer");
+        const files = d.children.filter((c) => c.kind !== "drawer");
+        if (cmd === "dir") {
+          // Klassisches DIR: Drawer als "Name (dir)", Dateien einfach
+          drawers.forEach((c) => print(`  ${c.name} (dir)`));
+          files.forEach((c) => print(`  ${c.name}`));
+        } else {
+          // LIST: Spalten Name / Größe / Schutz / Datum
+          drawers.forEach((c) => print(`  ${c.name.padEnd(22)}     Drawer  ----rwed  14-Jun-97 22:00:00`));
+          files.forEach((c) => {
+            const size = c.kind === "file" || c.kind === "tool" ? c.size : 0;
+            print(`  ${c.name.padEnd(22)}  ${String(size).padStart(7)} ----rwed  14-Jun-97 22:00:00`);
+          });
+          print(`  ${d.children.length} files - ${Math.ceil(files.reduce((s,c) => s + (c.kind === "file" || c.kind === "tool" ? c.size : 0), 0) / 1024)}K bytes used`);
+        }
+        break;
+      }
+      case "type":
+      case "more": {
+        if (!arg) { print(`${cmd.toUpperCase()}: file name required`); break; }
+        const node = getNode(cwd, arg);
+        if (!node) { print(`${arg}: object not found`); break; }
+        if (node.kind === "drawer") { print(`${arg}: is a directory`); break; }
+        if (node.kind === "tool") { print(`${arg}: executable file (use it from Workbench)`); break; }
+        const text = extractText(node.content).trim();
+        if (!text) { print(`${arg}: (binary or empty)`); break; }
+        printMulti(text);
+        break;
+      }
+      case "endcli":
+      case "quit":
+      case "exit":
+        print(`Process 1 ending`);
+        break;
+      case "loadwb":
+      case "setpatch":
+      case "addbuffers":
+      case "fastmemfirst":
+      case "version":
+        print(`${cmd}: ok`);
+        break;
+      default:
+        print(`${cmd}: Unknown command`);
+    }
+  }
+
+  function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      run(input);
+      setInput("");
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (history.length === 0) return;
+      const next = hIdx < 0 ? history.length - 1 : Math.max(0, hIdx - 1);
+      setHIdx(next);
+      setInput(history[next] ?? "");
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (hIdx < 0) return;
+      const next = hIdx + 1;
+      if (next >= history.length) { setHIdx(-1); setInput(""); }
+      else { setHIdx(next); setInput(history[next]); }
+    }
+  }
+
+  return (
+    <div
+      onClick={() => inputRef.current?.focus()}
+      style={{
+        background: WB_WHITE, color: WB_BLUE,
+        height: "100%", width: "100%",
+        fontFamily: '"Topaz-8", "Courier New", monospace',
+        fontSize: 13, lineHeight: 1.25,
+        display: "flex", flexDirection: "column",
+      }}
+    >
+      <div ref={scrollRef} style={{ flex: 1, overflow: "auto", padding: 6, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+        {lines.map((l, i) => (
+          <div key={i}>{l || "\u00A0"}</div>
+        ))}
+        <div style={{ display: "flex", alignItems: "baseline" }}>
+          <span>{cwdToString(cwd)}&gt;&nbsp;</span>
+          <input
+            ref={inputRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={onKeyDown}
+            autoFocus
+            spellCheck={false}
+            style={{
+              flex: 1, background: "transparent", color: WB_BLUE,
+              border: "none", outline: "none",
+              fontFamily: 'inherit', fontSize: 'inherit',
+              caretColor: WB_BLUE,
+            }}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
