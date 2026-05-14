@@ -481,46 +481,34 @@ export function AmigaWorkbench() {
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80">
       <div
         className="relative h-full w-full overflow-hidden"
-        style={{ background: "#0055aa", fontFamily: "monospace" }}
+        style={{ background: WB_GREY, fontFamily: WB_FONT, color: "#000", imageRendering: "pixelated" }}
       >
-        {/* Workbench-Titelleiste */}
-        <div
-          style={{
-            background: "#aaaaaa",
-            borderBottom: "2px solid #000",
-            padding: "2px 8px",
-            display: "flex",
-            justifyContent: "space-between",
-            color: "#000",
-            fontSize: 13,
-          }}
-        >
-          <span>Workbench 2.0 — 1MB Chip · 4MB Fast</span>
-          <span>FastWeb v0.9</span>
-        </div>
+        {/* Screen-Titelbar (WB 2.x): grau, schwarzer Text, Memory-Anzeige */}
+        <ScreenTitleBar />
 
         {/* Desktop-Disk-Icons (rechts, vertikal) */}
         <div
           style={{
             position: "absolute",
-            top: 50,
-            right: "4%",
+            top: 36,
+            right: 16,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: 18,
+            gap: 14,
           }}
         >
           <DesktopIcon
-            label="Workbench2.0"
-            icon={<DiskIcon color="#dddddd" />}
+            label="Workbench2.1"
+            icon={<DiskIcon />}
             onOpen={() => openDrawer(WORKBENCH_DISK as FileNode & { kind: "drawer" })}
           />
           <DesktopIcon
             label="FastWeb"
-            icon={<DiskIcon color="#88ccff" />}
+            icon={<DiskIcon />}
             onOpen={() => openDrawer(FASTWEB_DISK as FileNode & { kind: "drawer" })}
           />
+          <DesktopIcon label="Ram Disk" icon={<RamDiskIcon />} onOpen={() => openFile("Ram Disk", <em>(leer · 0% full)</em>)} />
           <DesktopIcon label="Trashcan" icon={<TrashIcon />} onOpen={() => openFile("Trashcan", <em>(leer)</em>)} />
         </div>
 
