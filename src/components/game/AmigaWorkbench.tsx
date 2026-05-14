@@ -69,6 +69,8 @@ const WORKBENCH_DISK: FileNode = {
       kind: "drawer",
       name: "System",
       children: [
+        { kind: "tool", name: "Shell", size: 4216, onOpen: "shell" },
+        { kind: "tool", name: "CLI", size: 3892, onOpen: "shell" },
         { kind: "file", name: "Format", size: 7244, content: <em>(Binary tool — kann Disketten formatieren)</em> },
         { kind: "file", name: "DiskCopy", size: 9120, content: <em>(Binary tool — kopiert Disketten)</em> },
         { kind: "file", name: "FixFonts", size: 3344, content: <em>(Binary tool)</em> },
