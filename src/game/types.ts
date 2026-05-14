@@ -356,7 +356,13 @@ export type StoryFlag =
   /** Layard hat das Quiz angefangen (mind. einmal). */
   | "e71QuizStarted"
   /** Layard hat das Quiz bestanden — der Amiga ist freigegeben. */
-  | "e71QuizPassed";
+  | "e71QuizPassed"
+  /** Transient: jeweilige Quiz-Antwort war richtig (wird pro Versuch zurückgesetzt). */
+  | "e71QuizQ1Right"
+  | "e71QuizQ2Right"
+  | "e71QuizQ3Right"
+  | "e71QuizQ4Right"
+  | "e71QuizQ5Right";
 
 export interface InventoryItem {
   id: InventoryItemId;
@@ -508,7 +514,10 @@ export interface DialogLine {
     | "BRUST"
     | "VOSSBECK"
     | "BRAM"
-    | "MARV";
+    | "MARV"
+    | "DETLEF"
+    | "SIGI"
+    | "RUVEN";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;
@@ -526,6 +535,8 @@ export interface DialogTree {
   id: string;
   start: string;
   lines: Record<string, DialogLine>;
+  /** Optional callback fired when the dialog tree opens. */
+  onStart?: (api: GameApi) => void;
   /** Optional callback fired exactly once when the dialog tree closes. */
   onEnd?: (api: GameApi) => void;
   /**
