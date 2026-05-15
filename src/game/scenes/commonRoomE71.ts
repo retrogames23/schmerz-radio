@@ -31,10 +31,10 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
       {
         id: "nerdSigi",
         // Mittiger Nerd, hinten beim Sofa.
-        x: 36,
-        y: 32,
-        w: 16,
-        h: 50,
+        x: 67.4,
+        y: 34.2,
+        w: 10.4,
+        h: 27.5,
         label: "Sigi (auf dem Sofa)",
         kind: "talk",
         onUse: (api) => api.startDialog("e71NerdSigi"),
@@ -42,8 +42,8 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
       {
         id: "nerdRuven",
         // Rechter Nerd, lehnt am Regal.
-        x: 78,
-        y: 30,
+        x: 77.6,
+        y: 11.5,
         w: 14,
         h: 55,
         label: "Ruven (am Regal)",
@@ -53,8 +53,8 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
       {
         id: "amigaCrt",
         // CRT-Monitor mittig.
-        x: 44,
-        y: 50,
+        x: 27.9,
+        y: 52.9,
         w: 18,
         h: 24,
         label: "Amiga · Workbench",
@@ -99,8 +99,8 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
       {
         id: "usMagazine",
         // US-Magazin auf dem Sofa-Tisch.
-        x: 60,
-        y: 78,
+        x: 60.6,
+        y: 50.4,
         w: 12,
         h: 12,
         label: "US-Computer-Magazin",
@@ -114,7 +114,7 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
       },
       {
         id: "back1530",
-        x: 86,
+        x: 91.2,
         y: 8,
         w: 14,
         h: 90,

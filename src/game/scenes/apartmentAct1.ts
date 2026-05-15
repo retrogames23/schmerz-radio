@@ -38,8 +38,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "radio",
-        x: 10,
-        y: 47.6,
+        x: 17.3,
+        y: 48.4,
         w: 8.1,
         h: 13.7,
         label: "Schmerz-Radio",
@@ -66,8 +66,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "terminal",
-        x: 24.1,
-        y: 34.4,
+        x: 28.6,
+        y: 35.6,
         w: 13.5,
         h: 28,
         label: "CentralOS Terminal",
@@ -76,8 +76,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "phoneApt",
-        x: 76.2,
-        y: 33,
+        x: 70.9,
+        y: 32.8,
         w: 6.7,
         h: 22,
         label: "Telefon",
@@ -165,8 +165,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
         // Wandregal über dem Bett. Enthält das einzige Buch, das Layard
         // wirklich gelesen hat: den „Quadranten-Almanach 1997".
         id: "bookshelf",
-        x: 60.1,
-        y: 21.7,
+        x: 57.6,
+        y: 15.9,
         w: 16,
         h: 12,
         label: "Wandregal",
@@ -190,8 +190,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "b2",
-        x: 25.2,
-        y: 72.3,
+        x: 28.6,
+        y: 77.1,
         w: 12.8,
         h: 17.8,
         label: "B2-Ration",
@@ -223,7 +223,7 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "door",
-        x: 86.7,
+        x: 78.9,
         y: 4.2,
         w: 13.1,
         h: 92,
@@ -382,10 +382,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       // Nach Akt 1: ruhige Wand zur (jetzt versiegelten) 2615.
       {
         id: "wallAfter",
-        x: 29,
-        y: 8,
-        w: 28.5,
-        h: 50,
+        x: 28.8,
+        y: 13.2,
+        w: 32.6,
+        h: 57.3,
         label: "Wand zur 2615 (still)",
         kind: "look",
         requires: ["doorBrokenOpen"],
@@ -714,7 +714,7 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
         // Wohnungstür rechts neben dem Telefon-/Schreibtischbereich.
         x: 83.7,
         y: 4.1,
-        w: 12,
+        w: 16.3,
         h: 80,
         label: "Zurück in den Korridor",
         kind: "exit",

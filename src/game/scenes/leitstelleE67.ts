@@ -21,10 +21,10 @@ export const leitstelleE67Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "insaInPerson",
-        x: 32,
-        y: 38,
-        w: 36,
-        h: 50,
+        x: 39.9,
+        y: 30.1,
+        w: 19.9,
+        h: 42.5,
         label: "Insa Bauerfeind",
         kind: "talk",
         onUse: (api) => {
@@ -37,8 +37,8 @@ export const leitstelleE67Scenes: Record<string, Scene> = {
       },
       {
         id: "registratur",
-        x: 28,
-        y: 27,
+        x: 17.7,
+        y: 15.5,
         w: 34,
         h: 45,
         label: "Schrankwand · Hängeregistratur",
@@ -53,8 +53,8 @@ export const leitstelleE67Scenes: Record<string, Scene> = {
       },
       {
         id: "phones",
-        x: 22,
-        y: 70,
+        x: 7,
+        y: 69.3,
         w: 38,
         h: 18,
         label: "Drei Tischapparate",
@@ -85,9 +85,9 @@ export const leitstelleE67Scenes: Record<string, Scene> = {
       },
       {
         id: "aushangResonanz",
-        x: 90,
+        x: 82.9,
         y: 12,
-        w: 9,
+        w: 16.1,
         h: 30,
         label: "Aushang „Resonanz-Hygiene“",
         kind: "look",
@@ -101,8 +101,8 @@ export const leitstelleE67Scenes: Record<string, Scene> = {
       },
       {
         id: "back4602",
-        x: 53,
-        y: 24,
+        x: 54.8,
+        y: 13.4,
         w: 14,
         h: 56,
         label: "Zurück in den Korridor",

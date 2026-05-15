@@ -256,9 +256,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
         // Schmale Tür halbrechts (zwischen sealedDoor1531 und door1534).
         // Liegt visuell zwischen den beiden — Klickfeld bewusst klein, damit
         // sich nichts mit dem Quarantäne-Türfeld überschneidet.
-        x: 60,
+        x: 62.8,
         y: 28,
-        w: 8,
+        w: 5.2,
         h: 50,
         label: "Tür 1530 — Gemeinschaftsraum",
         kind: "exit",

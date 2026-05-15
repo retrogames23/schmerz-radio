@@ -4,6 +4,7 @@ import { useToiletWall } from "@/multiplayer/useToiletWall";
 import { ArrowLeft } from "lucide-react";
 import { ensureAuthSession, getDisplayName, getShiftNumber } from "@/multiplayer/identity";
 import { useDonationStatus } from "@/hooks/useDonationStatus";
+import { useQA } from "@/dev/overlayQAState";
 
 // Helle Spraydosen-Farben, durchwechselnd: rot, grün, blau, gelb, weiß, magenta, orange
 const COLORS = ["#e63946", "#3ddc84", "#3a86ff", "#ffd60a", "#f5f5f5", "#ff5fb0", "#ff7a1a"];
@@ -14,11 +15,16 @@ export function ToiletWallOverlay() {
   const active = game.scene === "pubToilet";
   const wall = useToiletWall(active);
   const donation = useDonationStatus();
+  const qa = useQA();
   const [input, setInput] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   if (!active) return null;
+  // Während die Dev-Overlay-QA läuft, blendet sich das Toiletten-
+  // Overlay komplett aus, damit der HotspotEditor an die darunter
+  // liegenden Hotspots herankommt (Drag/Resize).
+  if (qa.active || qa.editorForced) return null;
 
   async function onWrite() {
     setBusy(true);
