@@ -21,6 +21,10 @@ export const miscDialogs: Record<string, DialogTree> = {
         id: "eo3",
         speaker: "LAYARD",
         text: "Was soll ich jetzt tun? Ich rufe die Leitstelle wieder an.",
+        // Nur sinnvoll, wenn Layard schon das Einsatzprotokoll hat —
+        // sonst hat er gar keinen Anlass, die Leitstelle anzurufen.
+        // Ohne Protokoll endet der Dialog nach eo2 (Schild lesen reicht).
+        requires: ["protocolReceived"],
         end: true,
       },
     },
