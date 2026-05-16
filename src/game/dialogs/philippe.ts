@@ -490,7 +490,7 @@ export const philippeDialogs: Record<string, DialogTree> = {
       pd0: {
         id: "pd0",
         speaker: "SYSTEM",
-        text: "[ Am Ende des Korridors, dicht am vergitterten Fenster: Philippe. Er sieht hinaus, ohne wirklich hinzusehen. ]",
+        text: "[ Am Ende des Korridors, dicht am vergitterten Fenster: ein Mann, Anfang 40. Er kommt dir bekannt vor und sieht hinaus, ohne wirklich hinzusehen. ]",
         hiddenWhen: ["metPhilippeBefore"],
         next: "pd2",
       },

@@ -43,8 +43,8 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       {
         id: "officeDoor",
         // Tür 3601 — links außen.
-        x: 4.4,
-        y: 31.7,
+        x: 4.8,
+        y: 29.6,
         w: 14,
         h: 45.4,
         label: "Tür 3601 — Abschnittsverantwortlicher E67",
@@ -79,8 +79,8 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       {
         id: "officeBell",
         // Brass-Klingelknopf an der Wand zwischen Tür 3601 und 3602.
-        x: 20.1,
-        y: 48,
+        x: 21,
+        y: 46.4,
         w: 3.1,
         h: 6.2,
         label: "Klingelknopf",

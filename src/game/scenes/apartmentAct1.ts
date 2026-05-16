@@ -225,7 +225,7 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
         id: "door",
         x: 78.9,
         y: 4.2,
-        w: 13.1,
+        w: 18.9,
         h: 92,
         label: "Wohnungstür",
         kind: "exit",
@@ -362,8 +362,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       {
         id: "wall",
         // Mittlere Betonwand zwischen Telefon und Philippe.
-        x: 29,
-        y: 8,
+        x: 29.5,
+        y: 15,
         w: 28.5,
         h: 50,
         label: "Wand mit Klopfen (zur 2615)",
