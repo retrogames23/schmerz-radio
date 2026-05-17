@@ -425,7 +425,7 @@ const HOME_BODO: FsDir = {
         "      sanitäter informieren bei vorfall.",
         "",
         "4601  mira, 16. komplex-kind, hier geboren.",
-        "      vater ilan (3804) — trafo-unfall 2021,",
+      "      vater ilan (3804) — trafo-unfall 1992,",
         "      schacht 56. mutter yael lebt in E54.",
         "      onkel roald (4604) ist die bezugsperson.",
         "      flyer im korridor, nicht meine baustelle.",

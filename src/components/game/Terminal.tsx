@@ -220,7 +220,7 @@ function findHost(query: string): NetHost | null {
  * weder das Lotti-Programm noch die Hausmeister-Wartungsbefehle, noch
  * Hinweise wie „nur 2611". Auf Bodos Konsole bleibt alles sichtbar.
  */
-function buildHelpLines(bodoMode: boolean): Line[] {
+function buildHelpLines(bodoMode: boolean, miraMode = false): Line[] {
   const lines: Line[] = [
     { text: "VERFÜGBARE BEFEHLE:", kind: "system" },
     { text: "  help          — Diese Liste anzeigen", kind: "out" },
@@ -249,6 +249,11 @@ function buildHelpLines(bodoMode: boolean): Line[] {
       { text: "WARTUNG (nur Hausmeister):", kind: "system" },
       { text: "  maint list                — offene Wartungsanfragen anzeigen", kind: "out" },
       { text: "  maint cancel <id>         — Anfrage stornieren", kind: "out" },
+      { text: "", kind: "out" },
+    );
+  } else if (miraMode) {
+    lines.push(
+      { text: "  news          — Quadranten-Bote (Textbrowser, ZENTRAL.NETZ)", kind: "out" },
       { text: "", kind: "out" },
     );
   } else {
@@ -800,7 +805,7 @@ export function Terminal() {
     }
 
     if (cmd === "help") {
-      newLines.push(...buildHelpLines(bodoMode));
+      newLines.push(...buildHelpLines(bodoMode, miraMode));
       // Hausmeister-Werkstatt: Macro »forge« taucht nur dann in der Hilfe
       // auf, wenn Layard wirklich anfangen kann, eine Quittung zu bauen
       // (Aushang 7.1 herausgelöst).
@@ -839,7 +844,7 @@ export function Terminal() {
         );
       }
     } else if (cmd === "adventure" || cmd === "./adventure.bin" || cmd === "adventure.bin") {
-      if (bodoMode) {
+      if (bodoMode || miraMode) {
         // Layards Textadventure liegt in /home/layard — nicht auf Bodos Maschine.
         newLines.push(
           {
