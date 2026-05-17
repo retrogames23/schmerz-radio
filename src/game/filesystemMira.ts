@@ -226,7 +226,7 @@ const HOME_MIRA: FsDir = {
         "── nicht teilen. NIEMALS. ────────────────────",
         "",
         "kopie aus der komplex-akte, schicht 56,",
-        "vorgang 2021-04-19. ich war 11.",
+        "vorgang 1992-04-19. ich war 11.",
         "",
         "  »menschliches versagen. opfer ilan,",
         "   sektor-elektriker E67-3804, 39 jahre.",
