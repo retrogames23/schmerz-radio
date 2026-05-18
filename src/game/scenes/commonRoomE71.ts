@@ -61,19 +61,21 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
         kind: "use",
         onUse: (api) => {
           if (!api.hasFlag("e71QuizPassed")) {
-            // Solange das Quiz nicht bestanden ist, bleibt Detlef Türsteher.
-            const heardAll =
-              api.hasFlag("metE71Nerd1") &&
-              api.hasFlag("metE71Nerd2") &&
+            // Sobald Layard mit irgendeinem der drei geredet hat, lässt
+            // Detlef ihn ans Quiz. Die Quizfakten streuen die Nerds als
+            // Chatter im Hintergrund ein — nicht im Pflichtdialog.
+            const spokeToAny =
+              api.hasFlag("metE71Nerd1") ||
+              api.hasFlag("metE71Nerd2") ||
               api.hasFlag("metE71Nerd3");
-            if (heardAll) {
+            if (spokeToAny) {
               api.startDialog("e71Quiz");
               return;
             }
             api.showText([
               "Detlef schiebt sich vor die Tastatur, ohne ruppig zu werden.",
-              "„Hör erst mal zu, was wir hier so reden. Dann frag uns. Dann sehen wir weiter.“",
-              "(Mit allen drei Nerds reden, dann nochmal an den Amiga.)",
+              "„Sag erst mal Hallo. Dann sehen wir weiter.“",
+              "(Mit einem der drei reden, dann nochmal an den Amiga.)",
             ]);
             return;
           }
