@@ -393,6 +393,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
           cursor = candidate.next;
         }
         if (!cursor) return;
+        tree.onStart?.(api);
         setDialogId(id);
         setDialogLineId(cursor);
       },
