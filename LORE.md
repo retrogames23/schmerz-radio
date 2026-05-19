@@ -223,6 +223,13 @@ gesehen hat. Das ist die Perspektive, aus der die Welt im Spiel sichtbar wird.
 - **Begriffsklärung:** „Resonanz", „Resonanz-Hygiene", „Resonanz-Überlastung"
   beziehen sich auf das **persönliche emotionale Gleichgewicht** der Hörer.
   Es gibt **keine** staatliche Resonanz-Infrastruktur.
+- **Verschwörungstheorie (lore-intern bekannt, nicht bestätigt):** Einzelne
+  Bewohner — am lautesten Mira (E67/4601) — sind überzeugt, die Verwaltung
+  habe die Frequenz heimlich kapert und nutze sie zur Befriedung. Diese
+  Annahme ist innerhalb der Lore **nicht bestätigt**; sie wird als Miras
+  persönliche Lesart der Welt erzählt, motiviert durch den unaufgeklärten
+  Tod ihres Vaters im Schacht 56 (1992). Dialoge, Manifeste und LLM-Prompts
+  müssen das als Vermutung ausweisen, nicht als Tatsache.
 
 ### Andere Bastler-Hobbys (kanonfähig, frei erweiterbar)
 - **Rohrpost-Modellnetze:** Privatpersonen bauen in alten Kellern
