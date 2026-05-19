@@ -331,12 +331,12 @@ export const e71NerdsDialogs: Record<string, DialogTree> = {
         text: "Reicht. Setz dich. Linke Maustaste klickt, rechte Maustaste öffnet Menüs am oberen Bildschirmrand. Und Finger weg vom Diskettenfach.",
         requires: ["e71QuizPassed"],
         next: "q_fail",
-        end: true,
       },
       q_fail: {
         id: "q_fail",
         speaker: "DETLEF",
         text: "Nicht ganz. Hör nochmal eine Runde zu, dann probier's wieder. Ist kein Drama.",
+        hiddenWhen: ["e71QuizPassed"],
         end: true,
       },
     },
