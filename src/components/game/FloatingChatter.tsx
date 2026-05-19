@@ -188,7 +188,7 @@ export function FloatingChatter({
   // ragt also je nach Anker links/rechts aus dem Bild heraus. Auf Mobile
   // (rotierte Stage, schmale Szene) muss der Anker stärker eingeklemmt
   // werden, sonst wird die Blase links/rechts angeschnitten.
-  const clampedX = Math.min(72, Math.max(28, anchor.x));
+  const clampedX = Math.min(64, Math.max(36, anchor.x));
 
   return (
     <div
