@@ -9,7 +9,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       mi1: {
         id: "mi1",
         speaker: "SYSTEM",
-        text: "[ An der Wand lehnt eine junge Frau. Sechzehn, vielleicht siebzehn. Kein Empfänger im Ohr. Sie sieht Layard direkt an. ]",
+        text: "[ An der Wand lehnt eine junge Frau. Sechzehn, vielleicht siebzehn. Kein Schmerz-Radio in der Tasche, kein Bernstein-Knopf im Ohr. Sie sieht Layard direkt an. ]",
         next: "mi2",
       },
       mi2: {
@@ -79,7 +79,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       miraOpen1: {
         id: "miraOpen1",
         speaker: "MIRA",
-        text: "Frag dich mal, warum 104,6 deinen Schmerz lindert und nicht den Grund dafür wegnimmt. Ein gutes Mittel würde das Problem lösen — nicht dich an das Problem gewöhnen.",
+        text: "Frag dich mal, warum 104,6 deinen Schmerz lindert und nicht den Grund dafür wegnimmt. Ein gutes Mittel würde das Problem lösen — nicht dich an das Problem gewöhnen. Ich glaube, das ist kein Zufall. Beweisen kann ich's nicht.",
         choices: [
           { text: "Sprich weiter.", next: "miraOpen2" },
           {
@@ -91,7 +91,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       miraOpen2: {
         id: "miraOpen2",
         speaker: "MIRA",
-        text: "Die Frequenz ist eine Leine. Lang genug, dass du dich frei fühlst. Kurz genug, dass du nicht aus dem Quadranten läufst.",
+        text: "Meine These: Die Frequenz ist eine Leine. Lang genug, dass du dich frei fühlst. Kurz genug, dass du nicht aus dem Quadranten läufst. Vielleicht spinne ich. Aber zu viele Dinge passen zu gut zusammen — angefangen bei meinem Vater.",
         choices: [
           { text: "Und wer hält das andere Ende?", next: "miraOpen4" },
           { text: "Hübsches Bild. Mehr nicht.", next: "miraDeferDry" },
@@ -101,7 +101,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       miraOpen4: {
         id: "miraOpen4",
         speaker: "MIRA",
-        text: "Genau die Frage. Und die Antwort steht hier drauf.",
+        text: "Genau die Frage. Ich hab eine Vermutung. Steht hier drauf.",
         next: "miraOpen5",
       },
       miraOpen5: {
@@ -148,7 +148,7 @@ export const miraDialogs: Record<string, DialogTree> = {
                 id: "flyer",
                 name: "Flugblatt",
                 description:
-                  "LAUSCHT IHR? Die Frequenz, die euch trägt, wurde nicht gefunden. Sie wurde gebaut. Wer hat sie eingestellt? Wer dreht sie lauter, wenn ihr leiser werdet? Fragt nicht eure Leitstelle. Fragt euch selbst. — Z.K.S.",
+                  "LAUSCHT IHR? Wir vermuten: die Frequenz, die euch trägt, wurde nicht gefunden, sondern gebaut. Wir können's nicht beweisen. Aber fragt euch selbst: wer dreht sie lauter, wenn ihr leiser werdet? Nicht eure Leitstelle. Vielleicht niemand. Vielleicht doch jemand. — Z.K.S.",
               });
               api.setKnowledge("frequencyControl");
             },
@@ -288,7 +288,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       mrOpen1: {
         id: "mrOpen1",
         speaker: "MIRA",
-        text: "Frag dich mal, warum 104,6 deinen Schmerz lindert und nicht den Grund dafür wegnimmt. Ein gutes Mittel würde das Problem lösen — nicht dich an das Problem gewöhnen.",
+        text: "Frag dich mal, warum 104,6 deinen Schmerz lindert und nicht den Grund dafür wegnimmt. Ein gutes Mittel würde das Problem lösen — nicht dich an das Problem gewöhnen. Ich glaube, das ist kein Zufall. Beweisen kann ich's nicht.",
         choices: [
           { text: "Sprich weiter.", next: "mrOpen2" },
           { text: "Das ist mir jetzt zu groß. Lass gut sein.", next: "mrOpenDefer" },
@@ -297,7 +297,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       mrOpen2: {
         id: "mrOpen2",
         speaker: "MIRA",
-        text: "Du drehst sie auf, weil du etwas spüren willst, was dir im eigenen Leben fehlt. Und während du hörst, sendest du selbst — leise, unbewusst. Genau das wollen sie.",
+        text: "Du drehst sie auf, weil du etwas spüren willst, was dir im eigenen Leben fehlt. Und während du hörst, sendest du selbst — leise, unbewusst. Ich denke: genau das wollen sie. Ich weiß, das klingt nach Theorie. Ist es auch.",
         choices: [
           { text: "Wer ist „sie“?", next: "mrOpen3" },
           { text: "Reicht. Ich muss weiter.", next: "mrOpenDefer" },
@@ -306,7 +306,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       mrOpen3: {
         id: "mrOpen3",
         speaker: "MIRA",
-        text: "Niemand mit Namen. Eine Verwaltung, die gelernt hat, dass ruhige Bürger billiger sind als zufriedene. Und die Antwort steht hier drauf.",
+        text: "Niemand mit Namen — vielleicht auch niemand überhaupt. Aber wenn da jemand ist, dann eine Verwaltung, die irgendwann gemerkt hat, dass ruhige Bürger billiger sind als zufriedene. Meine Vermutung steht hier drauf.",
         next: "mrOpen4",
       },
       mrOpen4: {
@@ -340,7 +340,7 @@ export const miraDialogs: Record<string, DialogTree> = {
                 id: "flyer",
                 name: "Flugblatt",
                 description:
-                  "LAUSCHT IHR? Die Frequenz, die euch trägt, wurde nicht gefunden. Sie wurde gebaut. Wer hat sie eingestellt? Wer dreht sie lauter, wenn ihr leiser werdet? Fragt nicht eure Leitstelle. Fragt euch selbst. — Z.K.S.",
+                  "LAUSCHT IHR? Wir vermuten: die Frequenz, die euch trägt, wurde nicht gefunden, sondern gebaut. Wir können's nicht beweisen. Aber fragt euch selbst: wer dreht sie lauter, wenn ihr leiser werdet? Nicht eure Leitstelle. Vielleicht niemand. Vielleicht doch jemand. — Z.K.S.",
               });
               api.setKnowledge("frequencyControl");
             },
@@ -385,7 +385,7 @@ export const miraDialogs: Record<string, DialogTree> = {
                 id: "flyer",
                 name: "Flugblatt",
                 description:
-                  "LAUSCHT IHR? Die Frequenz, die euch trägt, wurde nicht gefunden. Sie wurde gebaut. Wer hat sie eingestellt? Wer dreht sie lauter, wenn ihr leiser werdet? Fragt nicht eure Leitstelle. Fragt euch selbst. — Z.K.S.",
+                  "LAUSCHT IHR? Wir vermuten: die Frequenz, die euch trägt, wurde nicht gefunden, sondern gebaut. Wir können's nicht beweisen. Aber fragt euch selbst: wer dreht sie lauter, wenn ihr leiser werdet? Nicht eure Leitstelle. Vielleicht niemand. Vielleicht doch jemand. — Z.K.S.",
               });
               api.setKnowledge("frequencyControl");
             },
@@ -418,21 +418,21 @@ export const miraDialogs: Record<string, DialogTree> = {
       ma2: {
         id: "ma2",
         speaker: "MIRA",
-        text: "Hör zu. Eine Sache noch. Auf 56 ist eine Tür. 5610. Steht „Technik“ dran. Ist sie aber nicht. Nicht nur.",
+        text: "Hör zu. Eine Sache noch. Auf 56 ist eine Tür. 5610. Steht „Technik“ dran. Ich glaube, das stimmt nur halb.",
         hiddenWhen: ["saw5610Door"],
         next: "ma3",
       },
       ma3: {
         id: "ma3",
         speaker: "MIRA",
-        text: "Hinter der Tür sitzt ein Knoten. Da läuft dein eigenes Schmerz-Radio durch, bevor es zu jemand anderem geht. 104,6 — du hörst sie nicht. Du bist sie. Gefiltert.",
+        text: "Hinter der Tür sitzt ein Knoten. Meine Vermutung: da läuft das, was hier oben auf 104,6 unterwegs ist, durch — bevor es zu jemand anderem geht. Wenn ich recht habe, hörst du dich da selbst. Gefiltert. Wenn ich falsch liege, ist es ein Trafo-Kasten.",
         hiddenWhen: ["saw5610Door"],
         next: "ma4",
       },
       ma4: {
         id: "ma4",
         speaker: "MIRA",
-        text: "Wenn du den Knoten findest, hörst du, woher die Sendung wirklich kommt — und wohin sie geht. Mehr sage ich nicht. Geh.",
+        text: "Geh hin. Schau dir's an. Sag mir, was du gesehen hast. Ich kann mich auch täuschen. Mehr sage ich nicht. Geh.",
         hiddenWhen: ["saw5610Door"],
         next: "maAck",
         end: true,
@@ -611,7 +611,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       ma3: {
         id: "ma3",
         speaker: "MIRA",
-        text: "Aber Trauer ist seit 91 fest belegt. Mein Sender allein reicht nicht. Ich brauche eine Verstärker-Antenne, die mein Signal über das alte legt — wenigstens für ein paar Minuten.",
+        text: "Aber auf dem Trauer-Band sendet seit 91 jeden Abend eine alte Frau aus 5612. Ihr eigener Bastler-Sender, ihre eigene Trauer. Mein Sender allein kommt nicht gegen sie an. Ich brauche eine Verstärker-Antenne, die mein Signal für ein paar Minuten über ihres legt — länger nicht, mehr nicht.",
         next: "ma4",
       },
       ma4: {
