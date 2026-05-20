@@ -349,6 +349,11 @@ chip_in_disco.mod     22 KB   ★★★`}</pre>
           </div>
         ),
       };
+    case "chat.fastweb.us":
+      return {
+        title: "chat.fastweb.us · #amiga-zone",
+        body: <FastWebChatRoom />,
+      };
     case "weltzeit.us":
       return {
         title: "Weltzeit",
@@ -701,7 +706,7 @@ function FastWebBrowser() {
         {/* Bookmarks */}
         <div style={{ width: 140, background: "#bbb", borderRight: "2px solid #000", padding: 4, fontSize: 11, color: "#000", overflow: "auto" }}>
           <div style={{ fontWeight: "bold", marginBottom: 4 }}>Bookmarks</div>
-          {(["start.fastweb.us","amiga-zone.us","freie-presse.us","gaestebuch.fastweb.us","weltzeit.us","radio.untergrund.us"] as SiteKey[]).map((url) => (
+          {(["start.fastweb.us","amiga-zone.us","freie-presse.us","gaestebuch.fastweb.us","chat.fastweb.us","weltzeit.us","radio.untergrund.us"] as SiteKey[]).map((url) => (
             <button
               key={url}
               type="button"
