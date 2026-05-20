@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, type ReactNode } from "react";
 import { useGame } from "@/game/GameContext";
 import { CloseButton } from "./CloseButton";
+import { FastWebChatRoom } from "./fastweb/ChatRoom";
 
 /**
  * Amiga-Workbench-Overlay (Gemeinschaftsraum E71, Tür 1530).
@@ -154,6 +155,7 @@ type SiteKey =
   | "freie-presse.us/quarantaene"
   | "freie-presse.us/frequenz"
   | "gaestebuch.fastweb.us"
+  | "chat.fastweb.us"
   | "weltzeit.us"
   | "weltzeit.us/wechselkurse"
   | "radio.untergrund.us"
@@ -189,6 +191,7 @@ function siteBody(key: SiteKey, go: (s: SiteKey) => void): { title: string; body
               <li><FastLink to="amiga-zone.us" onGo={go}>amiga-zone.us</FastLink> — alles für den 500er, 1200er, 4000er</li>
               <li><FastLink to="freie-presse.us" onGo={go}>freie-presse.us</FastLink> — Mitteleuropa-Beobachter</li>
               <li><FastLink to="gaestebuch.fastweb.us" onGo={go}>gaestebuch.fastweb.us</FastLink> — sag Hallo!</li>
+              <li><FastLink to="chat.fastweb.us" onGo={go}>chat.fastweb.us</FastLink> — #amiga-zone, live mit anderen Surfern quatschen</li>
               <li><FastLink to="weltzeit.us" onGo={go}>weltzeit.us</FastLink> — Uhrzeit, Wetter, Kurse</li>
               <li><FastLink to="radio.untergrund.us" onGo={go}>radio.untergrund.us</FastLink> — Frequenzen außerhalb des Sektornetzes</li>
             </ul>
