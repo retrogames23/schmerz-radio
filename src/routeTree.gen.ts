@@ -19,6 +19,7 @@ import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/
 import { Route as ApiPublicNpcMemoryUpdateRouteImport } from './routes/api/public/npc-memory-update'
 import { Route as ApiPublicNpcChatRouteImport } from './routes/api/public/npc-chat'
 import { Route as ApiPublicMarvOilRouteImport } from './routes/api/public/marv-oil'
+import { Route as ApiPublicFastwebChatRouteImport } from './routes/api/public/fastweb-chat'
 import { Route as ApiPublicDonationCheckoutRouteImport } from './routes/api/public/donation-checkout'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -75,6 +76,11 @@ const ApiPublicMarvOilRoute = ApiPublicMarvOilRouteImport.update({
   path: '/api/public/marv-oil',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicFastwebChatRoute = ApiPublicFastwebChatRouteImport.update({
+  id: '/api/public/fastweb-chat',
+  path: '/api/public/fastweb-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicDonationCheckoutRoute =
   ApiPublicDonationCheckoutRouteImport.update({
     id: '/api/public/donation-checkout',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/api/tts': typeof ApiTtsRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
+  '/api/public/fastweb-chat': typeof ApiPublicFastwebChatRoute
   '/api/public/marv-oil': typeof ApiPublicMarvOilRoute
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/api/tts': typeof ApiTtsRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
+  '/api/public/fastweb-chat': typeof ApiPublicFastwebChatRoute
   '/api/public/marv-oil': typeof ApiPublicMarvOilRoute
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/api/tts': typeof ApiTtsRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
+  '/api/public/fastweb-chat': typeof ApiPublicFastwebChatRoute
   '/api/public/marv-oil': typeof ApiPublicMarvOilRoute
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/api/tts'
     | '/email/unsubscribe'
     | '/api/public/donation-checkout'
+    | '/api/public/fastweb-chat'
     | '/api/public/marv-oil'
     | '/api/public/npc-chat'
     | '/api/public/npc-memory-update'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/api/tts'
     | '/email/unsubscribe'
     | '/api/public/donation-checkout'
+    | '/api/public/fastweb-chat'
     | '/api/public/marv-oil'
     | '/api/public/npc-chat'
     | '/api/public/npc-memory-update'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/api/tts'
     | '/email/unsubscribe'
     | '/api/public/donation-checkout'
+    | '/api/public/fastweb-chat'
     | '/api/public/marv-oil'
     | '/api/public/npc-chat'
     | '/api/public/npc-memory-update'
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   ApiTtsRoute: typeof ApiTtsRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ApiPublicDonationCheckoutRoute: typeof ApiPublicDonationCheckoutRoute
+  ApiPublicFastwebChatRoute: typeof ApiPublicFastwebChatRoute
   ApiPublicMarvOilRoute: typeof ApiPublicMarvOilRoute
   ApiPublicNpcChatRoute: typeof ApiPublicNpcChatRoute
   ApiPublicNpcMemoryUpdateRoute: typeof ApiPublicNpcMemoryUpdateRoute
@@ -289,6 +302,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMarvOilRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/fastweb-chat': {
+      id: '/api/public/fastweb-chat'
+      path: '/api/public/fastweb-chat'
+      fullPath: '/api/public/fastweb-chat'
+      preLoaderRoute: typeof ApiPublicFastwebChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/donation-checkout': {
       id: '/api/public/donation-checkout'
       path: '/api/public/donation-checkout'
@@ -327,6 +347,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiTtsRoute: ApiTtsRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ApiPublicDonationCheckoutRoute: ApiPublicDonationCheckoutRoute,
+  ApiPublicFastwebChatRoute: ApiPublicFastwebChatRoute,
   ApiPublicMarvOilRoute: ApiPublicMarvOilRoute,
   ApiPublicNpcChatRoute: ApiPublicNpcChatRoute,
   ApiPublicNpcMemoryUpdateRoute: ApiPublicNpcMemoryUpdateRoute,
@@ -339,12 +360,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
