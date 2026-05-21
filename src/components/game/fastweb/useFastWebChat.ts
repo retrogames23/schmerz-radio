@@ -195,10 +195,6 @@ export function useFastWebChat(active: boolean): FastWebChatApi {
       setBusy(true);
       try {
         const token = await getFreshAccessToken();
-        if (!token) {
-          setError("Bitte melde dich an, um den Chat zu nutzen.");
-          return;
-        }
         // Historie: nur sichtbare persona/player-Zeilen
         const history = s.messages
           .filter((m) => m.kind !== "system")
@@ -215,7 +211,7 @@ export function useFastWebChat(active: boolean): FastWebChatApi {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
           body: JSON.stringify({
             history,
