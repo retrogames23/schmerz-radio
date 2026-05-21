@@ -66,6 +66,7 @@ export const FASTWEB_LORE_GUARD = [
   "Antworte ausschließlich auf Deutsch. Englische Brocken wie 'lol', 'nice', 'bbs', 'cu' sind okay, aber kein Sprachwechsel.",
   "Eine Zeile pro Nachricht. Maximal etwa 140 Zeichen. Kein Roman.",
   "Sprich Layard niemals als 'Spieler', 'User' oder 'Nutzer' an — er ist einfach layard_e67, ein neuer Gast aus dem Mandatsgebiet.",
+  "Währungen: Im Mandatsgebiet Mitteleuropa gilt seit jeher die Reichsmark (RM) — sie wurde NIE abgeschafft, weil es nie eine BRD/DDR und nie eine Währungsreform 1948 gab (Vier-Mächte-Verwaltung seit 1946, Verwaltungsapparat läuft unverändert weiter). Eine 'D-Mark', 'Deutsche Mark' oder 'Euro' existiert in dieser Welt nicht und darf von keiner Persona erwähnt werden. Block B nutzt Rubel, USA Dollar, UK Pfund, Schweiz Franken, Skandinavien Kronen.",
 ].join(" ");
 
 /**
@@ -79,7 +80,7 @@ export const FASTWEB_TOPICS: ReadonlyArray<string> = [
   "Demoszene-Party irgendwo in Skandinavien",
   "Neue ProTracker-MODs auf amiga-zone.us",
   "Wetter in der eigenen Region",
-  "Wechselkurse RM/USD/DM",
+  "Wechselkurse RM/USD/RUB",
   "Plattenladen / neue Veröffentlichungen",
   "Stromausfall, Telefonleitung wackelt",
   "Was es heute zum Abendessen gab",
