@@ -109,10 +109,13 @@ export const Route = createFileRoute("/lovable/email/transactional/send")({
         const template = TEMPLATES[templateName]
 
         if (!template) {
-          console.error('Template not found in registry', { templateName })
+          console.error('Template not found in registry', {
+            templateName,
+            available: Object.keys(TEMPLATES),
+          })
           return Response.json(
             {
-              error: `Template '${templateName}' not found. Available: ${Object.keys(TEMPLATES).join(', ')}`,
+              error: `Template '${templateName}' not found`,
             },
             { status: 404 }
           )
