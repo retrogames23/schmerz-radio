@@ -85,47 +85,52 @@ export const Route = createFileRoute("/api/public/fastweb-chat")({
           "unknown";
         if (rateLimited(ip)) return json(429, { error: "Rate limit exceeded" });
 
-        // Auth + Donation-Gate
+        // Auth + Donation-Gate (optional — Gäste dürfen mitchatten, dann
+        // greift nur das IP-Rate-Limit oben)
         const supabaseUrl = process.env.SUPABASE_URL;
         const supabasePub = process.env.SUPABASE_PUBLISHABLE_KEY;
         const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-        if (!supabaseUrl || !supabasePub || !serviceKey) {
-          return json(500, { error: "Auth nicht konfiguriert." });
-        }
         const authHeader = request.headers.get("authorization") ?? "";
         const userToken = authHeader.replace(/^Bearer\s+/i, "");
-        if (!userToken) return json(401, { error: "Anmeldung erforderlich." });
 
-        const userClient = createClient(supabaseUrl, supabasePub, {
-          global: { headers: { Authorization: `Bearer ${userToken}` } },
-          auth: { persistSession: false, autoRefreshToken: false },
-        });
-        const { data: u, error: authErr } = await userClient.auth.getUser(userToken);
-        const uid = u?.user?.id;
-        if (authErr || !uid) return json(401, { error: "Ungültiges Token." });
-
-        const admin = createClient(supabaseUrl, serviceKey, {
-          auth: { persistSession: false, autoRefreshToken: false },
-        });
-        const { data: incRows, error: incErr } = await admin.rpc(
-          "try_increment_cloud_request_count",
-          { _user_id: uid, _hard_limit: HARD_LIMIT },
-        );
-        if (incErr || !incRows || (Array.isArray(incRows) && incRows.length === 0)) {
-          return json(500, { error: "Profil nicht gefunden." });
-        }
-        const incRow = Array.isArray(incRows) ? incRows[0] : incRows;
-        const donationUnlocked = !!incRow.donation_unlocked;
-        if (incRow.limit_reached) {
-          return json(402, {
-            error:
-              "Cloud-Limit erreicht. Bitte unterstütze das Projekt, um weiter chatten zu können.",
-            code: "donation_required",
-            count: incRow.new_count,
-            limit: HARD_LIMIT,
+        let donationUnlocked = false;
+        let countAfter: number | null = null;
+        if (userToken && supabaseUrl && supabasePub && serviceKey) {
+          const userClient = createClient(supabaseUrl, supabasePub, {
+            global: { headers: { Authorization: `Bearer ${userToken}` } },
+            auth: { persistSession: false, autoRefreshToken: false },
           });
+          const { data: u, error: authErr } =
+            await userClient.auth.getUser(userToken);
+          const uid = u?.user?.id;
+          if (!authErr && uid) {
+            const admin = createClient(supabaseUrl, serviceKey, {
+              auth: { persistSession: false, autoRefreshToken: false },
+            });
+            const { data: incRows, error: incErr } = await admin.rpc(
+              "try_increment_cloud_request_count",
+              { _user_id: uid, _hard_limit: HARD_LIMIT },
+            );
+            if (
+              !incErr &&
+              incRows &&
+              !(Array.isArray(incRows) && incRows.length === 0)
+            ) {
+              const incRow = Array.isArray(incRows) ? incRows[0] : incRows;
+              donationUnlocked = !!incRow.donation_unlocked;
+              if (incRow.limit_reached) {
+                return json(402, {
+                  error:
+                    "Cloud-Limit erreicht. Bitte unterstütze das Projekt, um weiter chatten zu können.",
+                  code: "donation_required",
+                  count: incRow.new_count,
+                  limit: HARD_LIMIT,
+                });
+              }
+              countAfter = donationUnlocked ? null : incRow.new_count;
+            }
+          }
         }
-        const countAfter: number | null = donationUnlocked ? null : incRow.new_count;
 
         // Body validieren
         let body: unknown;
