@@ -75,7 +75,7 @@ export function FastWebChatRoom() {
         <span style={{ color: chat.sleeping ? "#ff8" : "#9f9" }}>
           {chat.sleeping
             ? `[ Raum schläft — noch ~${chat.sleepingUntil ? fmtCountdown(chat.sleepingUntil) : "?"} ]`
-            : `[ ${chat.count} / ${chat.cap} Nachrichten ]`}
+            : ""}
         </span>
       </div>
 
@@ -92,8 +92,8 @@ export function FastWebChatRoom() {
       >
         {chat.messages.length === 0 && (
           <div style={{ color: "#5a5" }}>
-            (Raum ist still. Schreib was, oder warte einen Moment — die Personas
-            quatschen meist von alleine los.)
+            (Raum ist still. Schreib was, oder warte einen Moment — die anderen
+            user quatschen meist von alleine los.)
           </div>
         )}
         {chat.messages.map((m) => {
