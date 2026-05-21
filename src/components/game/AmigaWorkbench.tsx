@@ -377,12 +377,13 @@ Tokio           23:14   Regen      14°C`}</pre>
         body: (
           <div style={{ fontFamily: "monospace", padding: 8 }}>
             <h3 style={{ marginTop: 0 }}>Wechselkurse (informell)</h3>
-            <pre style={{ margin: 0 }}>{`1 USD          = 1.62 DM
-1 USD          = 25 RM (offiziell, Mandat)
+            <pre style={{ margin: 0 }}>{`1 USD          = 25 RM (offiziell, Mandat)
 1 USD          = 88 RM (Schwarzmarkt)
-1 GBP          = 2.71 DM
+1 GBP          = 41 RM
+1 CHF          = 18 RM
+1 SEK          = 3.2 RM
+1 RUB          = 0.42 RM (Block B, offiziell)
 1 JPY          = 0.013 USD
-1 ECU          = 1.94 DM
 
 Hinweis: Kurse für das Mandatsgebiet sind
 nicht Teil des Sektornetzes und nicht
