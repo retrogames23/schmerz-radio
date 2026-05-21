@@ -72,21 +72,26 @@ export const Route = createFileRoute("/lovable/email/transactional/send")({
         let templateName: string
         let idempotencyKey: string
         let messageId: string
-        let templateData: Record<string, any> = {}
         try {
           const body = await request.json()
           templateName = body.templateName || body.template_name
           messageId = crypto.randomUUID()
           idempotencyKey = body.idempotencyKey || body.idempotency_key || messageId
-          if (body.templateData && typeof body.templateData === 'object') {
-            templateData = body.templateData
-          }
         } catch {
           return Response.json(
             { error: 'Invalid JSON in request body' },
             { status: 400 }
           )
         }
+
+        // SECURITY: caller-supplied templateData is intentionally NOT accepted
+        // on this public endpoint. Allowing arbitrary props would let an
+        // authenticated user generate emails with attacker-controlled content
+        // (e.g., fake donation amounts). Templates triggered via this route
+        // must render correctly with no input data. Server-trusted callers
+        // (webhooks, server fns) use `sendTransactionalEmailServer` instead,
+        // which derives template data from authoritative sources.
+        const templateData: Record<string, never> = {}
 
         // SECURITY: recipient is forced to the authenticated user's own email.
         // Caller-provided recipientEmail is intentionally ignored to prevent
