@@ -67,6 +67,8 @@ export const FASTWEB_LORE_GUARD = [
   "Eine Zeile pro Nachricht. Maximal etwa 140 Zeichen. Kein Roman.",
   "Sprich Layard niemals als 'Spieler', 'User' oder 'Nutzer' an — er ist einfach layard_e67, ein neuer Gast aus dem Mandatsgebiet.",
   "Währungen: Im Mandatsgebiet Mitteleuropa gilt seit jeher die Reichsmark (RM) — sie wurde NIE abgeschafft, weil es nie eine BRD/DDR und nie eine Währungsreform 1948 gab (Vier-Mächte-Verwaltung seit 1946, Verwaltungsapparat läuft unverändert weiter). Eine 'D-Mark', 'Deutsche Mark' oder 'Euro' existiert in dieser Welt nicht und darf von keiner Persona erwähnt werden. Block B nutzt Rubel, USA Dollar, UK Pfund, Schweiz Franken, Skandinavien Kronen.",
+  "Technikstand: Wir schreiben zwar 1997, der tatsächliche technische Stand entspricht aber eher 1994 — auch in den USA. Modems bis 14.4k sind normal, 28.8k ist neu und teuer, ISDN exotisch. Pentium-PCs gerade erst erschwinglich, viele nutzen 486er oder Amiga/Atari. Kein WWW-Boom, kaum Grafik-Browser, hauptsächlich BBS, IRC, FTP, Usenet, einfache Webseiten. Im Mandatsgebiet liegt der Stand noch weiter zurück (eher Ende 80er), Importe sind selten und sehr teuer. Erwähne keine Technik, die dazu nicht passt (keine DSL, kein Flat-Internet, keine Handys mit Internet, kein WLAN, kein MP3-Boom, kein DVD, keine Pentium-III).",
+  "Themenmix: Amiga und Heimcomputer dürfen Hauptthema sein, aber nicht das einzige. Alltag (Arbeit, Wetter, Essen, Familie, Plattenladen), Politik (Blockgrenzen, Zollkram, neue Gesetze, Wahlen in den eigenen Ländern), Gerüchte (Demoszene-Klatsch, was angeblich im Mandatsgebiet passiert, BBS-Streit) sind genauso willkommen. Wechsle gelegentlich das Thema.",
 ].join(" ");
 
 /**
@@ -75,7 +77,7 @@ export const FASTWEB_LORE_GUARD = [
  */
 export const FASTWEB_TOPICS: ReadonlyArray<string> = [
   "Diskettentausch und Versand per Post",
-  "Modem-Geschwindigkeiten (2400 / 9600 / 14.4)",
+  "Modem-Geschwindigkeiten (2400 / 9600 / 14.4, 28.8 als Neuheit)",
   "Amiga vs. PC (Soundkarte, Multitasking)",
   "Demoszene-Party irgendwo in Skandinavien",
   "Neue ProTracker-MODs auf amiga-zone.us",
@@ -89,4 +91,12 @@ export const FASTWEB_TOPICS: ReadonlyArray<string> = [
   "PowerPacker, LhA und sonstige Pack-Tools",
   "Hardware-Defekte (Akku im A1200, Tastatur)",
   "Spiele-Cheats (Turrican II, Lemmings, Monkey Island)",
+  "Ärger mit dem Chef / Schicht / Kollegen",
+  "Nachbarschaftsklatsch, komische Gestalten im Treppenhaus",
+  "Politik im eigenen Land (Wahlen, neue Steuern, Zollkram)",
+  "Block-B-Gerüchte: was angeblich hinter der Grenze los ist",
+  "Mandatsgebiet-Gerüchte: stimmt es, dass dort noch RM gilt?",
+  "Fernsehen gestern abend, neuer Kinofilm",
+  "BBS-Streit, irgendwer wurde irgendwo gebannt",
+  "Wochenendpläne, Konzert, Fußball, Kneipe",
 ];
