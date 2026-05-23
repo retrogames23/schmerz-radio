@@ -99,6 +99,13 @@ export const mikaelDialogs: Record<string, DialogTree> = {
         speaker: "MIKAEL",
         text: "Ja. Das tut sie manchmal.",
         subtext: "Kein Vorwurf. Er hat sich daran gewöhnt. Sie sich auch.",
+        next: "mr12b",
+      },
+      mr12b: {
+        id: "mr12b",
+        speaker: "MIKAEL",
+        text: "Das ist nicht das erste Mal, dass jemand mit so einer Kapsel hier steht. In den Siebzigern hat einer namens Marteau aufgeschrieben, was Hörer wie Sie hören. Niemand wollte es lesen.",
+        subtext: "Er sagt es beiläufig, fast zu sich. Als sei der Name nicht für Layard bestimmt — aber er ist es doch.",
         next: "mr13",
       },
       mr13: {
