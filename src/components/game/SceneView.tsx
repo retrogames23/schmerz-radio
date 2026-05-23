@@ -9,6 +9,12 @@ import { Eye, EyeOff } from "lucide-react";
 import { NpcLayer } from "./scene/NpcLayer";
 import { DecalLayer } from "./scene/DecalLayer";
 import { HotspotLayer } from "./scene/HotspotLayer";
+import { useEditActive } from "@/dev/dialogPatchState";
+import {
+  applyTextPatch,
+  setTextLine,
+  useTextPatchTick,
+} from "@/dev/textPatchState";
 
 export function SceneView() {
   const {
@@ -52,6 +58,10 @@ export function SceneView() {
   // Rahmen und Label eingeblendet. Beim Loslassen wieder ausgeblendet.
   // Tastatureingaben in Eingabefeldern (Terminal etc.) werden ignoriert.
   const [revealHotspots, setRevealHotspots] = useState(false);
+  const dev = useDevMode();
+  const editActive = useEditActive();
+  useTextPatchTick();
+  const editing = dev && editActive;
   // Touch-Geräte haben keine Leertaste — wir blenden stattdessen einen
   // kleinen Augen-Button ein, mit dem man die Hotspot-Rahmen umschaltet.
   const [isTouch, setIsTouch] = useState(false);
@@ -378,22 +388,65 @@ export function SceneView() {
           // clicks on hotspots underneath (e.g. elevator buttons). Only the
           // title/intro panels themselves are clickable to dismiss.
           <div className="pointer-events-none absolute inset-x-0 top-6 z-30 flex flex-col items-center gap-2 px-4 text-center">
-            <button
-              type="button"
-              onClick={() => setShowIntro(false)}
-              className="fade-in pointer-events-auto inline-block cursor-pointer rounded-sm bg-background/85 px-4 py-2"
-              aria-label="Weiter"
-            >
-              <div className="font-display text-2xl text-foreground text-shadow-hard">
-                {current.title}
-              </div>
-            </button>
+            {(() => {
+              const titleArr = [current.title];
+              const shownTitle = applyTextPatch(titleArr)[0] ?? current.title;
+              if (editing) {
+                return (
+                  <div
+                    className="fade-in pointer-events-auto inline-block rounded-sm bg-background/85 px-4 py-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <textarea
+                      value={shownTitle}
+                      onChange={(e) =>
+                        setTextLine(titleArr, 0, e.target.value)
+                      }
+                      rows={1}
+                      className="w-[32rem] max-w-full resize-y rounded-sm border border-amber-glow/40 bg-black/60 p-1 text-center font-display text-2xl text-foreground"
+                    />
+                  </div>
+                );
+              }
+              return (
+                <button
+                  type="button"
+                  onClick={() => setShowIntro(false)}
+                  className="fade-in pointer-events-auto inline-block cursor-pointer rounded-sm bg-background/85 px-4 py-2"
+                  aria-label="Weiter"
+                >
+                  <div className="font-display text-2xl text-foreground text-shadow-hard">
+                    {shownTitle}
+                  </div>
+                </button>
+              );
+            })()}
             {(() => {
               const introText =
                 typeof current.intro === "function"
                   ? current.intro(api)
                   : current.intro;
               if (!introText) return null;
+              const introArr = [introText];
+              const shownIntro =
+                applyTextPatch(introArr)[0] ?? introText;
+              if (editing) {
+                return (
+                  <div
+                    className="fade-in pointer-events-auto mx-auto max-w-2xl rounded-sm bg-background/85 px-4 py-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <textarea
+                      value={shownIntro}
+                      onChange={(e) =>
+                        setTextLine(introArr, 0, e.target.value)
+                      }
+                      rows={Math.max(2, Math.ceil(shownIntro.length / 60))}
+                      className="w-full resize-y rounded-sm border border-amber-glow/40 bg-black/60 p-2 text-left font-display text-sm leading-relaxed text-muted-foreground sm:text-base"
+                    />
+                  </div>
+                );
+              }
               return (
                 <button
                   type="button"
@@ -401,7 +454,7 @@ export function SceneView() {
                   className="fade-in pointer-events-auto mx-auto max-w-2xl cursor-pointer rounded-sm bg-background/85 px-4 py-2 text-left font-display text-sm leading-relaxed text-muted-foreground sm:text-base"
                   aria-label="Weiter"
                 >
-                  {introText}
+                  {shownIntro}
                 </button>
               );
             })()}
