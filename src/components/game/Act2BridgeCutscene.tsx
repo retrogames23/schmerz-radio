@@ -158,7 +158,7 @@ export function Act2BridgeCutscene() {
   return (
     <div
       className={`absolute inset-0 z-[60] flex flex-col items-center justify-center bg-black px-6 text-center before:pointer-events-none before:absolute before:inset-0 before:content-[''] ${accentClass}`}
-      onClick={finish}
+      onClick={editing ? undefined : finish}
       role="presentation"
     >
       {visible && (
