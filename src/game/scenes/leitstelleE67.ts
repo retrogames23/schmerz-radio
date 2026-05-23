@@ -3,8 +3,10 @@ import type { Scene } from "../types";
 
 /**
  * Leitstelle E67 — kleines Disposition-Büro hinter Tür 4602 in Korridor 46.
- * Erste persönliche Begegnung mit Insa Bauerfeind. Wird in Akt II betreten,
- * sobald Layard durch die Bridge-Cutscene aufgewacht ist.
+ * Zweiter Besuch bei Insa Bauerfeind. Den ersten (Kapsel-Übergabe, Tee,
+ * Einladung „kommen Sie morgen vorbei") hat die Akt-II-Bridge-Cutscene
+ * bereits abgehandelt. Hier kommt Layard freiwillig zurück — mit den
+ * Namen, die Mikael und Okwu beiläufig fallen gelassen haben.
  *
  * Die Szene enthält bewusst keinen Schicht-Botengang. Layard verlässt sie
  * mit einer Frage und einem Item: der „Akte 1978 · N. Sertl · Gutachten

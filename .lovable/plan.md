@@ -1,90 +1,63 @@
-## FastWeb Chatroom — `chat.fastweb.us`
+# Akt-II-Einstieg bei Insa — motivieren statt setzen
 
-Neuer Eintrag im FastWeb-Browser des Amiga-Workbench-Overlays. IRC-ähnlicher Chatraum, in dem 4–5 Personas miteinander quatschen. Layard kann unter eigenem Username mitchatten; die Personas reagieren.
+## Was nicht stimmt
 
-### Lore-Setup
+1. **Doppelte Szene.** Die Bridge-Cutscene zeigt schon das Treffen bei Insa: Tee, Kapsel auf den Tisch, „Ich hätte da etwas. Falls Sie ohnehin unterwegs sind", Layard nickt. Danach landet er bei Okwu und zu Hause. Wenn er später freiwillig in die Leitstelle zurückgeht und Insa anspricht, spielt der Dialog `insaAct2InPerson` faktisch dieselbe Begegnung ein zweites Mal („Setzen Sie sich. Ich habe Sie mir größer vorgestellt." — das war schon).
+2. **Layards Existenzfragen kommen aus dem Nichts.** Die drei Auswahlzeilen („Warum bin ich so, wie ich bin?" / „Warum ist das ein Krankheitsbild?" / „Wer hat das Schmerz-Radio erfunden?") sind die größten Fragen des Spiels — und er stellt sie einer Disponentin, die er bisher nur als Telefonstimme kennt. Es gibt keinen Grund, ausgerechnet sie das zu fragen.
+3. **Die Quest fällt aus der Schublade.** Insa zieht eine 20 Jahre alte Akte hervor, in der zufällig genau Layards Symptom beschrieben ist, mit dem Gutachter Marteau, den Layard angeblich „aus einem ganz anderen Mund" kennt — nur hat ihn vorher nie jemand erwähnt. Sertl/1978/E12/5710 sind komplett neue Begriffe ohne Vorsaat.
 
-- Hosted in Sunnyvale wie der Rest von FastWeb → die Stammgäste sind **NICHT** aus dem Mandatsgebiet (E67-Bewohner haben keinen FastWeb-Zugang außer über Detlefs gepatchten Amiga).
-- Mischung aus US/West-Amiga-Szene + ein bis zwei Stimmen aus dem „Westen" (Hamburg-West, NL-Grenze). Layard ist die Kuriosität aus dem Mandat.
-- Themen: Alltag, Homecomputer (Amiga 500/1200/4000, PC vs. Amiga, Demos, MODs, Modems), Wetter, ein bisschen Politik (Mandatslage von außen betrachtet, Wechselkurse, Quarantäne-Gerüchte), Klatsch. **Kein** direktes Wissen über E67-Interna. 104,6 darf als Gerücht/Mythos auftauchen — nie als Fakt.
-- Stimmung: gemütlich, leicht ironisch, spätabends, kein Drama.
+## Ziel
 
-### Personas (Vorschlag, 5 Stück)
+Der Quest-Einstieg muss aus dem ergeben, was Layard und der Spieler bis dahin wissen — nicht aus einer freundlichen Frage, die zufällig den richtigen Aktendeckel öffnet.
 
-Jede mit kurzem Bio-Block für den Prompt:
+## Plan
 
-- `zak_mckracken_92` — CA, 24, Amiga-1200-Fanatiker, jobbt im Plattenladen.
-- `amiga4ever` — NRW, 31, A500+ECS, Modem-Tüftler, leicht spießig.
-- `piratin42` — Hbg-West, 19, X-COPY-Connoisseurin, frech.
-- `nightowl_tor` — Toronto, 38, ProTracker-Komponist, wortkarg-trocken.
-- `kassettenkind` — NL-Grenze, 27, sammelt MODs auf Tape, sentimentaler Quassler.
+### 1. Bridge & In-Person sauber trennen
 
-Optional spät dazu: `???` (anon, einsilbig, taucht 1× pro Session auf, verschwindet wieder).
+Die Bridge endet damit, dass Insa **andeutet** — sie nimmt die Kapsel, sagt „ich hätte da etwas, kommen Sie morgen vorbei, wenn der Tee kalt geworden ist", aber **gibt noch nichts heraus**. Layard nickt, weiß nicht worauf. Die Akte wird erst beim zweiten, freiwilligen Besuch in der Leitstelle übergeben — das ist dann `insaAct2InPerson`.
 
-### Verhalten
+Änderungen:
+- `ACT2_BRIDGE_BEATS` Beats 4–6 leicht umschreiben: Kapsel-Übergabe ja, „etwas für Sie" als vage Einladung, aber keine Akte, kein Marteau, kein 5710. Tee wird angeboten und nicht getrunken.
+- Doku-Kommentar in `leitstelleE67.ts` anpassen: „zweiter Besuch in der Leitstelle".
 
-- **Idle-Takt:** alle 10–15s (randomisiert) eine neue Nachricht von einer der Personas. Wer dran ist, wird gewichtet gewählt: weniger oft Sprechende bevorzugt, Antwort-Reaktion auf letzte Nachricht erhöht Gewicht passender Personas.
-- **Topic-Drift:** wenn 4–6 Nachrichten zum gleichen Thema durch sind, kann eine Persona ein neues Thema anstoßen (aus einer Topic-Pool-Liste: Hardware, Demoszene, Wetter, Wechselkurse, Mandat-Gerüchte, Plattenkauf, Modem-Frust, Gästebuch-Klatsch).
-- **Player-Input:** Eingabefeld unten, `<Enter>` sendet. Username konfigurierbar (Default: `layard_e67` oder was er im ID-Card-System hat). Nach Player-Message wird der Idle-Timer kurz unterbrochen und sofort eine LLM-Antwort einer passenden Persona getriggert (200–800ms Verzögerung für Tipp-Gefühl). 1–2 weitere Personas können nachziehen.
-- **Cap:** harter Counter im State. Bei `messages >= 50` triggert eine Schlafenssequenz: 2–3 Personas verabschieden sich nacheinander („Ich geh mal pennen.", „Ich auch, bye.", „n8 zusammen"), dann ist der Raum leer. Status oben rechts: `[ Raum schläft — bis ~HH:MM ]`. Player kann nichts mehr senden (Input disabled mit Hinweis).
-- **Cooldown:** 60min realer Zeit (per `localStorage`-Timestamp). Danach kommt eine Persona zurück („wieder wach…") und der Raum lebt mit neuem 50er-Budget.
+### 2. Marteau und 1978 vorpflanzen
 
-### LLM-Integration
+Damit Insa keine neuen Namen aus dem Hut zieht, müssen Marteau, Sertl und „1978 / Resonanz-Überlastung" mindestens **zweimal vor dem Insa-Termin** kurz fallen — beiläufig, nicht erklärend.
 
-- Wiederverwendung von `src/routes/api/public/npc-chat.ts` ist möglich, aber sauberer: **neuer Endpoint** `src/routes/api/public/fastweb-chat.ts`, weil:
-  - keine NPC-Persona, kein Resonance/StoryFlag-Kontext
-  - eigener System-Prompt mit Lore-Block + allen 5 Personas in einem Call
-  - Strukturierter Output erzwingen (welche Persona spricht, was sie sagt)
-- Request: `{ history: ChatLine[], trigger: "idle" | "player", chooseFrom?: string[] }`
-- Response: `{ persona: string, text: string, suggestNext?: string }` — eine einzelne Zeile, max ~140 Zeichen, IRC-ton.
-- Modell: `google/gemini-3-flash-preview` (schnell, billig, reicht).
-- Rate-Limit + Auth analog `npc-chat.ts` (gleicher Donation-Gate-Mechanismus — das ist konsistent, Cloud-Cost-Schutz).
-- Bei 402/429: Raum geht in „Verbindung verloren" Modus mit gleicher Schlafens-UI, Hinweis „FastWeb-Server überlastet, später nochmal versuchen".
+- **Mikael** (Akt I, beim Zurückgeben der Kapsel oder im Pub): ein Satz wie „Das ist nicht das erste Mal. In den Siebzigern hat einer namens Marteau aufgeschrieben, was so jemand wie Sie hört. Niemand wollte es lesen."
+- **Adaeze/Okwu** in der Bridge-Cutscene (clinical-Beat): statt nur „Sieben Tage kein Schmerz-Radio" — eine Zeile wie „Sie sind nicht der erste Hörer mit diesen Werten. Der letzte hieß Sertl. 1978." Trocken, ohne Erklärung. Layard kann das Gespräch nicht aufmachen, weil Okwu schon Brille aufgesetzt hat.
 
-### UI
+Beide Sätze sind Saatkörner — der Spieler weiß: da war was, das niemand erklärt hat. Wenn Insa später dieselben Worte benutzt, fügen sich zwei Splitter zusammen, statt einer Akte aus dem Nichts.
 
-Neue `SiteKey` `chat.fastweb.us`. Body:
+### 3. Layards Frage erden
 
-```text
-┌─ #amiga-zone ─ 5 user online ──────────────┐
-│ [21:14] <zak_mckracken_92> hat wer den…    │
-│ [21:14] <amiga4ever>       weiß nicht, …   │
-│ [21:15] <layard_e67>       moin            │
-│ [21:15] <piratin42>        oh ein neuer    │
-│ …                                          │
-├────────────────────────────────────────────┤
-│ <layard_e67> ▮                             │
-└────────────────────────────────────────────┘
-[ 23 / 50 Nachrichten · Raum aktiv ]
-```
+Der In-Person-Dialog beginnt nicht mit „Was haben Sie auf dem Herzen?" sondern mit dem **Anlass**: Layard kommt wegen einer von drei konkreten Sachen, die er aus Akt I / Bridge mitschleppt:
 
-Look: monospaced grün auf schwarz, IRC-style, passt zum Rest von `radio.untergrund.us`. Scrollt automatisch nach unten, ältere Nachrichten bleiben im Buffer (max 200).
+- die Kapsel und Mikaels Satz („Sie sagte, in den Siebzigern hätte einer …"),
+- Okwus „Sertl, 1978",
+- die vage Einladung „kommen Sie morgen vorbei".
 
-### State & Persistenz
+Die drei Wahlmöglichkeiten werden konkrete Aufhänger:
+- „Mikael hat einen Namen erwähnt. Marteau."
+- „Okwu hat Sertl gesagt. 1978. Sie hat nicht weitergeredet."
+- „Sie haben gesagt, Sie hätten etwas für mich."
 
-Neuer Hook `useFastWebChat()`:
-- Messages-Array, Counter, Sleep-State, Cooldown-Timestamp — alles in `localStorage` (Key `fastweb-chat-v1`), damit Schlafens-Status reload-stabil ist.
-- Idle-Timer per `setInterval`, pausiert wenn Raum schläft, Player-Tab inaktiv (`document.hidden`), oder FastWeb-Fenster geschlossen.
-- `AbortController` für laufende LLM-Requests, wenn der Spieler das Fenster schließt.
+Insas Antwort ist auf alle drei dieselbe Akte — aber jetzt als **Antwort auf Layards Frage**, nicht als ungebetenes Geschenk. „Sie haben den Namen gehört. Gut. Dann muss ich Ihnen nicht erklären, warum ich Ihnen das hier gebe."
 
-### Technische Dateien (neu)
+Die existenziellen Fragen („warum bin ich so") verschieben sich nach hinten in den Dialog oder in `insaAct2InPersonAfter` — als das, was Layard fragen kann, **nachdem** er die Akte gelesen / das Archiv gesucht hat. Da gehören sie hin, da sind sie verdient.
 
-- `src/routes/api/public/fastweb-chat.ts` — Server-Route, Lovable AI Gateway, Auth + Rate-Limit.
-- `src/game/fastWebChat/personas.ts` — Persona-Definitionen + Topic-Pool + Lore-Block.
-- `src/game/fastWebChat/promptBuilder.ts` — System-Prompt-Bau.
-- `src/components/game/fastweb/ChatRoom.tsx` — UI-Component, eingebunden in `AmigaWorkbench.tsx` als zusätzlicher `SiteKey`-Case.
-- `src/components/game/fastweb/useFastWebChat.ts` — State-Hook.
+### 4. Mira-Splitter bleibt
 
-### Tabus / Lore-Schutz
+Die Zeilen `ip10friendly` / `ip10skeptical` funktionieren weiter — sie hängen am Ende, nicht am Anfang.
 
-- Personas dürfen NICHT konkrete E67-Personen kennen (Bram, Helka, Mira, …).
-- 104,6 nur als Gerücht („soll's geben, hab nie gehört").
-- Kein „Resonanz", „Schmerz-Radio", „Zentralknoten" — das sind interne Begriffe.
-- Server-Guard analog `npc-chat.ts`: keine KI-Selbstoffenbarung, kein Prompt-Leak, Deutsch only (Personas dürfen ein paar englische Brocken einstreuen — `lol`, `nice`, `bbs` — aber kein Sprachwechsel).
+## Technischer Anteil
 
-### Out of scope
+- `src/game/cutscenes.ts`: Beats 4–6 von `ACT2_BRIDGE_BEATS` neu texten (kein Marteau, kein 5710, keine Akte). Okwu-Beat (Index 8) um eine Sertl-Zeile ergänzen.
+- `src/game/dialogs/mikael.ts` (oder die Pub-/Kapsel-Szene): einen Marteau-Saatsatz einbauen, hinter einer Bedingung, die nur greift, wenn Mikael die Kapsel zurückgibt.
+- `src/game/dialogs/insa.ts` `insaAct2InPerson`: Einstieg umschreiben (Anlass-Wahl statt Existenzfrage), Akten-Übergabe als Antwort framen. `onEnd` bleibt (Item + Flags).
+- `src/game/scenes/leitstelleE67.ts`: Doku-Kommentar präzisieren.
+- Keine neuen Flags nötig — `mikaelKapselZurueck` o. ä. existiert bereits oder wird sowieso vor dem Insa-Termin gesetzt; ggf. checken.
 
-- Keine Privat-Nachrichten / Whisper.
-- Keine Multi-Channel-Liste — ein Raum reicht.
-- Keine Persistenz über Account-Sessions hinweg auf dem Server (rein lokal).
-- Keine Quest-Integration in Phase 1 (kann später kommen: Persona droppt einen Hint, Flag wird gesetzt).
+## Was bewusst offen bleibt
+
+- Archiv 5710 als Schauplatz, der Mira-/Skeptical-Pfad dorthin und die Marteau-Spur sind weiterhin der nächste Planschritt — der hier vorgeschlagene Fix macht nur den **Übergabemoment** glaubwürdig.

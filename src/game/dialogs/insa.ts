@@ -828,38 +828,38 @@ export const insaDialogs: Record<string, DialogTree> = {
       ip1: {
         id: "ip1",
         speaker: "SYSTEM",
-        text: "[ Insa schiebt einen zweiten Becher über den Tisch. Drei Apparate. Zwei davon abgehoben. Sie sieht ihn an — keine Vermittlungs-Stimme jetzt. ]",
+        text: "[ Layard ist wiedergekommen, wie sie ihn gebeten hat. Insa schiebt einen zweiten Becher über den Tisch. Drei Apparate. Zwei davon abgehoben. Sie sieht ihn an — keine Vermittlungs-Stimme jetzt. ]",
         next: "ip2",
       },
       ip2: {
         id: "ip2",
         speaker: "INSA",
-        text: "Worag. Setzen Sie sich. Ich habe Sie mir größer vorgestellt.",
-        subtext: "Es ist kein Witz. Eher eine Notiz.",
+        text: "Worag. Sie sind gekommen. Gut.",
+        subtext: "Sie sagt es, als wäre das nicht selbstverständlich gewesen.",
         next: "ip3",
       },
       ip3: {
         id: "ip3",
         speaker: "INSA",
-        text: "Adaeze hat mir Bescheid gegeben, dass Sie sieben Tage pausieren sollen. Ich frage nicht nach.",
+        text: "Adaeze hat mir gesagt, dass Sie sieben Tage pausieren sollen. Ich frage nicht nach.",
         subtext: "Sie sagt das, damit er weiß, dass sie es weiß — nicht, damit er antwortet.",
         next: "ip4",
       },
       ip4: {
         id: "ip4",
         speaker: "INSA",
-        text: "Was haben Sie auf dem Herzen, Herr Worag? Ich habe eine Stunde, bevor das Pult mich wieder zurückruft.",
+        text: "Sie haben mir gestern nichts gefragt. Heute haben Sie eine Stunde, bevor das Pult mich zurückruft. Warum sind Sie hier?",
         choices: [
           {
-            text: "Warum bin ich so, wie ich bin?",
+            text: "Mikael hat einen Namen erwähnt. Marteau.",
             next: "ip5",
           },
           {
-            text: "Warum ist das hier ein Krankheitsbild — und keine Frage?",
+            text: "Okwu hat Sertl gesagt. 1978. Und dann nicht weitergeredet.",
             next: "ip5",
           },
           {
-            text: "Wer hat das Schmerz-Radio eigentlich erfunden — und warum?",
+            text: "Sie haben gesagt, Sie hätten etwas, das nicht ans Telefon gehört.",
             next: "ip5",
           },
         ],
@@ -867,7 +867,7 @@ export const insaDialogs: Record<string, DialogTree> = {
       ip5: {
         id: "ip5",
         speaker: "INSA",
-        text: "Ich habe gehofft, Sie fragen so etwas. Sonst hätte ich es Ihnen aufgedrängt.",
+        text: "Gut. Dann muss ich Ihnen weniger erklären, als ich befürchtet habe.",
         next: "ip6",
       },
       ip6: {
@@ -880,7 +880,7 @@ export const insaDialogs: Record<string, DialogTree> = {
         id: "ip7",
         speaker: "INSA",
         text: "1978. Quadrant E12. Hörer Nikolaus Sertl — vielleicht auch Nora, in den Akten steht nur N. Resonanz-Überlastung. Gutachten von einem externen Berater: C. Marteau.",
-        subtext: "Marteau. Layard kennt den Namen. Aus einem ganz anderen Mund.",
+        subtext: "Sertl. Marteau. Zwei Namen, die heute schon einmal gefallen sind. Jetzt liegen sie zusammen auf demselben Aktendeckel.",
         next: "ip8",
       },
       ip8: {
@@ -945,8 +945,28 @@ export const insaDialogs: Record<string, DialogTree> = {
       ipa1: {
         id: "ipa1",
         speaker: "INSA",
-        text: "Worag. — Wenn Sie nichts Neues haben, lassen Sie mich an die drei Hörer hier. Es klingelt sonst gleich.",
+        text: "Worag. Sie haben die Mappe. Wenn Sie nichts Neues haben, lassen Sie mich an die drei Hörer hier — es klingelt sonst gleich.",
         subtext: "Sie meint es nicht unfreundlich. Aber sie meint es.",
+        choices: [
+          {
+            text: "Eine Frage noch. — Warum bin ich so, wie ich bin?",
+            next: "ipaQ",
+          },
+          {
+            text: "Warum ist das hier ein Krankheitsbild — und keine Frage?",
+            next: "ipaQ",
+          },
+          {
+            text: "Nichts Neues. Ich gehe weiter.",
+            next: "ipa2",
+          },
+        ],
+      },
+      ipaQ: {
+        id: "ipaQ",
+        speaker: "INSA",
+        text: "Die Antwort steht nicht bei mir. Sie steht — vielleicht — in dem, was im Aktendeckel nicht mehr drinliegt. Bringen Sie mir, was Sie finden. Dann reden wir darüber.",
+        subtext: "Es ist keine Ausflucht. Sie meint genau das.",
         next: "ipa2",
       },
       ipa2: {
