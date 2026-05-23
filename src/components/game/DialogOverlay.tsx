@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useGame } from "@/game/GameContext";
 import { getDialog } from "@/game/dialogs/lookup";
 import { useSettings } from "@/audio/SettingsContext";
@@ -14,6 +14,7 @@ import {
   pushOp,
   clearLineFields,
 } from "@/dev/dialogPatchState";
+import { useDevStep } from "@/dev/devPlaybackState";
 
 export function DialogOverlay() {
   const {
@@ -34,6 +35,40 @@ export function DialogOverlay() {
 
   const tree = dialogId ? (getDialog(dialogId) ?? null) : null;
   const line = tree && dialogLineId ? tree.lines[dialogLineId] : null;
+
+  // Dev-Rewind: kleine lokale History pro Dialog-Tree. Push bei jedem
+  // Zeilenwechsel; bei „Schritt zurück" Pop & advanceDialog(prevId).
+  const histRef = useRef<{ tree: string | null; ids: string[] }>({
+    tree: null,
+    ids: [],
+  });
+  useEffect(() => {
+    const h = histRef.current;
+    if (!dialogId) {
+      h.tree = null;
+      h.ids = [];
+      return;
+    }
+    if (h.tree !== dialogId) {
+      h.tree = dialogId;
+      h.ids = [];
+    }
+    if (dialogLineId && h.ids[h.ids.length - 1] !== dialogLineId) {
+      h.ids.push(dialogLineId);
+    }
+  }, [dialogId, dialogLineId]);
+  useDevStep((dir) => {
+    if (!dialogId) return;
+    if (dir === -1) {
+      const h = histRef.current;
+      if (h.ids.length < 2) return;
+      h.ids.pop(); // current
+      const prev = h.ids.pop(); // wird vom Effect direkt wieder gepusht
+      if (prev) advanceDialog(prev);
+    } else {
+      advanceDialog();
+    }
+  });
 
   // Speak the line whenever it changes
   useEffect(() => {

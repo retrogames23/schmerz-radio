@@ -14,6 +14,7 @@ import {
   mergeTextLine,
   splitTextLine,
 } from "@/dev/textPatchState";
+import { usePaused, useDevStep } from "@/dev/devPlaybackState";
 
 export function TextOverlay() {
   const { textOverlay, closeText } = useGame();
@@ -22,6 +23,8 @@ export function TextOverlay() {
   const editActive = useEditActive();
   useTextPatchTick();
   const editing = dev && editActive;
+  const pausedRaw = usePaused();
+  const paused = dev && pausedRaw;
 
   useEffect(() => {
     setIdx(0);
@@ -30,13 +33,25 @@ export function TextOverlay() {
   useEffect(() => {
     if (!textOverlay) return;
     if (editing) return; // im Edit-Modus nicht automatisch weiterspringen
+    if (paused) return; // Dev-Pause friert auch das Auto-Advance ein
     const isLast = idx >= textOverlay.length - 1;
     const t = setTimeout(() => {
       if (isLast) closeText();
       else setIdx((i) => i + 1);
     }, 20000);
     return () => clearTimeout(t);
-  }, [textOverlay, idx, closeText, editing]);
+  }, [textOverlay, idx, closeText, editing, paused]);
+
+  // Dev: Schritt zurück / vor über das Wiedergabe-Panel.
+  useDevStep((dir) => {
+    if (!textOverlay) return;
+    if (dir === -1) setIdx((i) => Math.max(0, i - 1));
+    else {
+      const isLast = idx >= textOverlay.length - 1;
+      if (isLast) closeText();
+      else setIdx((i) => i + 1);
+    }
+  });
 
   if (!textOverlay) return null;
   const displayed = applyTextPatch(textOverlay);

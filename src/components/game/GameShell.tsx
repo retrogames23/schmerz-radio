@@ -32,6 +32,7 @@ import { RoomSwitcher } from "@/dev/RoomSwitcher";
 import { ConsoleSwitcher } from "@/dev/ConsoleSwitcher";
 import { OverlayQAOverlay } from "@/dev/OverlayQAOverlay";
 import { DialogEditOverlay } from "@/dev/DialogEditOverlay";
+import { DevPlaybackPanel } from "@/dev/DevPlaybackPanel";
 import { useDevMode } from "@/dev/devMode";
 import { ToiletWallOverlay } from "./ToiletWallOverlay";
 import { useMusic } from "@/audio/MusicPlayer";
@@ -259,6 +260,7 @@ function GameStage({
       {dev && <ConsoleSwitcher />}
       {dev && <OverlayQAOverlay />}
       {dev && <DialogEditOverlay />}
+      {dev && <DevPlaybackPanel />}
     </>
   );
 }
