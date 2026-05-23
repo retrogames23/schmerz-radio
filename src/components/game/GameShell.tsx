@@ -260,6 +260,7 @@ function GameStage({
       {dev && <ConsoleSwitcher />}
       {dev && <OverlayQAOverlay />}
       {dev && <DialogEditOverlay />}
+      {dev && <DevPlaybackPanel />}
     </>
   );
 }
