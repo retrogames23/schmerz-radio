@@ -945,8 +945,28 @@ export const insaDialogs: Record<string, DialogTree> = {
       ipa1: {
         id: "ipa1",
         speaker: "INSA",
-        text: "Worag. — Wenn Sie nichts Neues haben, lassen Sie mich an die drei Hörer hier. Es klingelt sonst gleich.",
+        text: "Worag. Sie haben die Mappe. Wenn Sie nichts Neues haben, lassen Sie mich an die drei Hörer hier — es klingelt sonst gleich.",
         subtext: "Sie meint es nicht unfreundlich. Aber sie meint es.",
+        choices: [
+          {
+            text: "Eine Frage noch. — Warum bin ich so, wie ich bin?",
+            next: "ipaQ",
+          },
+          {
+            text: "Warum ist das hier ein Krankheitsbild — und keine Frage?",
+            next: "ipaQ",
+          },
+          {
+            text: "Nichts Neues. Ich gehe weiter.",
+            next: "ipa2",
+          },
+        ],
+      },
+      ipaQ: {
+        id: "ipaQ",
+        speaker: "INSA",
+        text: "Die Antwort steht nicht bei mir. Sie steht — vielleicht — in dem, was im Aktendeckel nicht mehr drinliegt. Bringen Sie mir, was Sie finden. Dann reden wir darüber.",
+        subtext: "Es ist keine Ausflucht. Sie meint genau das.",
         next: "ipa2",
       },
       ipa2: {
