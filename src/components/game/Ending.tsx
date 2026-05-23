@@ -12,6 +12,16 @@ import {
 } from "@/game/cutscenes";
 import { getHintsUsedCount, HINTS_UI_TEXT } from "@/game/hints";
 import { DonationModal } from "@/components/donation/DonationModal";
+import { useDevMode } from "@/dev/devMode";
+import { useEditActive } from "@/dev/dialogPatchState";
+import {
+  applyTextPatch,
+  setTextLine,
+  useTextPatchTick,
+  clearTextPatch,
+  getTextPatch,
+} from "@/dev/textPatchState";
+import { usePaused, useDevStep } from "@/dev/devPlaybackState";
 
 export function Ending() {
   const { ending, api } = useGame();
@@ -20,6 +30,11 @@ export function Ending() {
   const [idx, setIdx] = useState(0);
   const [donationOpen, setDonationOpen] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const dev = useDevMode();
+  const editActiveRaw = useEditActive();
+  const editing = dev && editActiveRaw;
+  const paused = dev && usePaused();
+  useTextPatchTick();
 
   // Zähle, mit wie vielen verschiedenen Personen Layard tatsächlich
   // gesprochen hat. Reine Sicht-/Schild-Begegnungen zählen nicht — es
@@ -94,17 +109,27 @@ export function Ending() {
   useEffect(() => {
     if (!ending) return;
     if (idx >= frames.length) return;
+    if (editing) return;
+    if (paused) return;
     // Längere Tafeln länger halten, damit der Leser nachkommt.
     const lines = frames[idx]?.length ?? 0;
     const hold = 3800 + lines * 1700;
     const t = setTimeout(() => setIdx((i) => i + 1), hold);
     return () => clearTimeout(t);
-  }, [ending, frames, idx]);
+  }, [ending, frames, idx, editing, paused]);
+
+  useDevStep((dir) => {
+    if (!ending) return;
+    if (dir === -1) setIdx((i) => Math.max(0, i - 1));
+    else setIdx((i) => Math.min(frames.length, i + 1));
+  });
 
   if (!ending) return null;
 
   const done = idx >= frames.length;
   const current = !done ? frames[idx] : null;
+  const displayedLines = current ? applyTextPatch(current) : null;
+  const patched = !!(current && getTextPatch(current));
   // Snapshot beim Erreichen des End-Screens — danach soll die Zahl nicht
   // mehr wandern, falls der Spieler im Hintergrund noch das Hilfe-Overlay
   // öffnet (kann er hier ohnehin nicht).
@@ -114,14 +139,45 @@ export function Ending() {
     <div className="absolute inset-0 z-[60] flex flex-col items-center justify-center bg-black px-6 text-center">
       {current && (
         <div key={idx} className="slow-fade-in mx-auto max-w-2xl space-y-4">
-          {current.map((line, i) => (
-            <p
-              key={i}
-              className="font-display text-lg text-foreground sm:text-xl"
-            >
-              {line}
-            </p>
-          ))}
+          {editing ? (
+            <div className="space-y-2 text-left">
+              <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-amber-glow">
+                <span>
+                  Outro · Tafel {idx + 1} / {frames.length}
+                  {patched ? " · ✎" : ""}
+                </span>
+                {patched && current && (
+                  <button
+                    type="button"
+                    onClick={() => clearTextPatch(current)}
+                    className="rounded-sm border border-red-500/40 px-2 py-1 text-red-300 hover:bg-red-500/10"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+              {(displayedLines ?? []).map((line, i) => (
+                <textarea
+                  key={i}
+                  value={line}
+                  onChange={(e) =>
+                    current && setTextLine(current, i, e.target.value)
+                  }
+                  rows={Math.max(2, Math.ceil(line.length / 60))}
+                  className="w-full resize-y rounded-sm border border-amber-glow/40 bg-black/60 p-2 font-display text-base text-foreground"
+                />
+              ))}
+            </div>
+          ) : (
+            (displayedLines ?? []).map((line, i) => (
+              <p
+                key={i}
+                className="font-display text-lg text-foreground sm:text-xl"
+              >
+                {line}
+              </p>
+            ))
+          )}
         </div>
       )}
 
