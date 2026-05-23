@@ -23,7 +23,8 @@ export function TextOverlay() {
   const editActive = useEditActive();
   useTextPatchTick();
   const editing = dev && editActive;
-  const paused = dev && usePaused();
+  const pausedRaw = usePaused();
+  const paused = dev && pausedRaw;
 
   useEffect(() => {
     setIdx(0);
