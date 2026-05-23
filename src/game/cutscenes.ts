@@ -264,15 +264,15 @@ export const ACT2_BRIDGE_BEATS: Act2BridgeBeat[] = [
       "„Ich nehm sie. Aber nicht für die Akte. Für mich.“",
       "Sie schiebt sie in eine Schublade, die nicht beschriftet ist.",
       "„Da liegen noch ein paar mehr. Manche seit Jahren.“",
-      "Der Tee dampft. Niemand greift danach.",
+      "Der Tee dampft. Keiner von beiden greift danach.",
     ],
   },
   {
     style: "amber",
     lines: [
-      "„Worag — ich hätte da etwas. Falls Sie ohnehin unterwegs sind.“",
-      "Sie sagt es leise. Wie zu jemandem, von dem sie nicht erwartet,",
-      "dass er ja sagt. Und doch wartet sie auf die Antwort.",
+      "„Worag — kommen Sie morgen noch einmal vorbei. Wenn der Tee kalt ist.“",
+      "Sie sagt es leise, ohne zu erklären, worum es geht.",
+      "„Ich hätte etwas, das ich Ihnen nicht am Telefon sagen kann.“",
       "Layard nickt, bevor er weiß, worauf.",
     ],
   },
@@ -298,8 +298,9 @@ export const ACT2_BRIDGE_BEATS: Act2BridgeBeat[] = [
     style: "clinical",
     lines: [
       "„In sieben Tagen sind Sie wieder hier. Dann reden wir noch mal.“",
-      "Sie schiebt die Brille zurück auf die Nase, lächelt knapp.",
-      "„Bis dahin: hören Sie auf das, was ohnehin schon laut genug ist.“",
+      "Sie schiebt die Brille zurück auf die Nase, hält kurz inne.",
+      "„Sie sind nicht der erste Hörer mit diesen Werten, Herr Worag.“",
+      "„Der letzte hieß Sertl. 1978. — Mehr sage ich heute nicht dazu.“",
     ],
   },
   {
