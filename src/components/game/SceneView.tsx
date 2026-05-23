@@ -74,7 +74,6 @@ export function SceneView() {
     mq.addEventListener?.("change", update);
     return () => mq.removeEventListener?.("change", update);
   }, []);
-  const dev = useDevMode();
   const qa = useQA();
   // Persistente Editor-Overrides (localStorage) — bei jedem QA-Tick neu
   // gelesen, damit Drag/Resize sofort sichtbar wird.
