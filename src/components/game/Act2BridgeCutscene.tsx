@@ -11,6 +11,16 @@ import {
   computeMiraEndState,
   persistMiraEndState,
 } from "@/game/miraState";
+import { useDevMode } from "@/dev/devMode";
+import { useEditActive } from "@/dev/dialogPatchState";
+import {
+  applyTextPatch,
+  setTextLine,
+  useTextPatchTick,
+  clearTextPatch,
+  getTextPatch,
+} from "@/dev/textPatchState";
+import { usePaused, useDevStep } from "@/dev/devPlaybackState";
 
 /**
  * Schmale Bridge-Cutscene für den Akt-II-Einstieg.
@@ -28,6 +38,11 @@ import {
 export function Act2BridgeCutscene() {
   const { cutscene, endCutscene, api } = useGame();
   const active = cutscene === "act2Bridge";
+  const dev = useDevMode();
+  const editActiveRaw = useEditActive();
+  const editing = dev && editActiveRaw;
+  const paused = dev && usePaused();
+  useTextPatchTick();
 
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -66,6 +81,8 @@ export function Act2BridgeCutscene() {
   useEffect(() => {
     if (!active) return;
     if (idx >= beats.length) return;
+    if (editing) return; // im Edit-Modus nicht weiterspringen
+    if (paused) return; // Dev-Pause friert die Bridge ein
     const beat = beats[idx];
     const hold = 3400 + beat.lines.length * 1600;
     const t = window.setTimeout(() => {
@@ -80,7 +97,15 @@ export function Act2BridgeCutscene() {
       return () => window.clearTimeout(t2);
     }, hold);
     return () => window.clearTimeout(t);
-  }, [active, idx, beats]);
+  }, [active, idx, beats, editing, paused]);
+
+  // Dev: Schritt zurück / vor über das Wiedergabe-Panel.
+  useDevStep((dir) => {
+    if (!active) return;
+    if (dir === -1) setIdx((i) => Math.max(0, i - 1));
+    else setIdx((i) => Math.min(beats.length, i + 1));
+    setVisible(true);
+  });
 
   const finish = () => {
     if (finishedRef.current) return;
@@ -119,6 +144,8 @@ export function Act2BridgeCutscene() {
 
   const beat = beats[idx];
   const isLastBeat = idx === beats.length - 1;
+  const displayedLines = applyTextPatch(beat.lines);
+  const patched = !!getTextPatch(beat.lines);
 
   // Sehr dezenter Style-Wechsel: schwarz + leichter Farbschimmer am Rand.
   const accentClass =
@@ -141,14 +168,46 @@ export function Act2BridgeCutscene() {
               {beat.header}
             </div>
           )}
-          {beat.lines.map((line, i) => (
-            <p
-              key={i}
-              className="font-display text-lg text-foreground sm:text-xl"
+          {editing ? (
+            <div
+              className="space-y-2 text-left"
+              onClick={(e) => e.stopPropagation()}
             >
-              {line}
-            </p>
-          ))}
+              <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-amber-glow">
+                <span>
+                  Bridge · Beat {idx + 1} / {beats.length}
+                  {patched ? " · ✎" : ""}
+                </span>
+                {patched && (
+                  <button
+                    type="button"
+                    onClick={() => clearTextPatch(beat.lines)}
+                    className="rounded-sm border border-red-500/40 px-2 py-1 text-red-300 hover:bg-red-500/10"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+              {displayedLines.map((line, i) => (
+                <textarea
+                  key={i}
+                  value={line}
+                  onChange={(e) => setTextLine(beat.lines, i, e.target.value)}
+                  rows={Math.max(2, Math.ceil(line.length / 60))}
+                  className="w-full resize-y rounded-sm border border-amber-glow/40 bg-black/60 p-2 font-display text-base text-foreground"
+                />
+              ))}
+            </div>
+          ) : (
+            displayedLines.map((line, i) => (
+              <p
+                key={i}
+                className="font-display text-lg text-foreground sm:text-xl"
+              >
+                {line}
+              </p>
+            ))
+          )}
         </div>
       )}
       <div className="absolute bottom-6 left-0 right-0 text-center font-mono-crt text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60">
