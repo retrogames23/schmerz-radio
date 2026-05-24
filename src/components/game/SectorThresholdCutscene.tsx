@@ -1,20 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useGame } from "@/game/GameContext";
-import {
-  SECTOR_THRESHOLD_BEATS,
-  SECTOR_THRESHOLD_UI_TEXT,
-} from "@/game/cutscenes";
-import { useDevMode } from "@/dev/devMode";
-import { useEditActive } from "@/dev/dialogPatchState";
-import {
-  applyTextPatch,
-  setTextLine,
-  useTextPatchTick,
-  clearTextPatch,
-  getTextPatch,
-} from "@/dev/textPatchState";
+import { SECTOR_THRESHOLD_BEATS } from "@/game/cutscenes";
 import { usePaused, useDevStep } from "@/dev/devPlaybackState";
+import { useDevMode } from "@/dev/devMode";
 import { useMusic } from "@/audio/MusicPlayer";
 import beat1 from "@/assets/cutscene-sector-1.jpg";
 import beat2 from "@/assets/cutscene-sector-2.jpg";
@@ -22,49 +11,47 @@ import beat3 from "@/assets/cutscene-sector-3.jpg";
 import beat4 from "@/assets/cutscene-sector-4.jpg";
 
 /**
- * Visuelle Ken-Burns-Bilder pro Beat. Reihenfolge entspricht
- * `SECTOR_THRESHOLD_BEATS` aus `cutscenes.ts`.
- *  1) Layard erstarrt vor der offenen Schleusentür.
- *  2) Closeup — innerer Monolog: Wer bin ich?
- *  3) Wider shot — Tür offen, Blick in die Gasse, Zögern.
- *  4) Schritt durch die Tür hinaus in die Abendkälte.
+ * Cutscene an der Schleuse zwischen E67-Lobby und Verbindungsgang.
+ * Ablauf an die Sanitäter-Cutscene angelehnt: pro Beat ein Vollbild mit
+ * dezenter Ken-Burns-Bewegung, darunter ein Untertitel-Balken, der Zeile
+ * für Zeile vorrückt. Klick / Enter / Esc steuert manuell.
  */
 const BEAT_IMAGES = [beat1, beat2, beat3, beat4];
-const BEAT_PANS: Array<{ from: string; to: string; scaleFrom: number; scaleTo: number }> = [
-  // Sanftes Eindringen auf das erstarrte Gesicht.
-  { from: "52% 55%", to: "48% 50%", scaleFrom: 1.04, scaleTo: 1.12 },
-  // Stilles Atmen am Closeup.
-  { from: "50% 45%", to: "50% 50%", scaleFrom: 1.06, scaleTo: 1.14 },
-  // Blick vom Türrahmen die Gasse hinunter.
-  { from: "65% 55%", to: "45% 50%", scaleFrom: 1.02, scaleTo: 1.10 },
-  // Folgt Layard sanft durch die Tür hinaus.
-  { from: "50% 60%", to: "50% 45%", scaleFrom: 1.05, scaleTo: 1.14 },
-];
 
 /**
- * Cutscene an der Schleuse zwischen E67-Lobby und Verbindungsgang.
- * Wird ausgelöst, wenn Layard das erste Mal nach Entriegelung der Schleusentür
- * den Türen-Hotspot anklickt. Endet mit `api.goTo("passage")`.
- *
- * Optisch parallel zu `Act2BridgeCutscene` (schwarze Tafeln, Phosphor-Header,
- * Crossfade) — und damit anschlussfähig an die Anmutung von `sectorDoor` und
- * `passage`. Während der Cutscene läuft der Override-Track „The City Forgets".
+ * Pro Beat: Start- und Ziel-Transform (Ken-Burns). Werte sind
+ * Translationen in % der eigenen Bildgröße + Skalierung.
  */
+const BEAT_CAMERA: Array<{
+  scale: [number, number];
+  pan: [number, number, number, number]; // x0, y0, x1, y1
+}> = [
+  { scale: [1.04, 1.12], pan: [2, 1, -2, -1] }, // erstarrt vor der Tür
+  { scale: [1.06, 1.14], pan: [0, 1, 0, -1] }, // Closeup
+  { scale: [1.02, 1.10], pan: [4, 0, -4, 0] }, // Blick in die Gasse
+  { scale: [1.05, 1.16], pan: [0, 2, 0, -2] }, // Schritt hinaus
+];
+
+const CROSSFADE_MS = 600;
+
+function holdFor(text: string): number {
+  return Math.max(2600, Math.min(7000, Math.round(text.length * 62 + 900)));
+}
+
 export function SectorThresholdCutscene() {
   const { cutscene, endCutscene, api } = useGame();
   const active = cutscene === "sectorThreshold";
   const dev = useDevMode();
-  const editActiveRaw = useEditActive();
-  const editing = dev && editActiveRaw;
   const paused = dev && usePaused();
-  useTextPatchTick();
   const { setOverride } = useMusic();
 
   const beats = SECTOR_THRESHOLD_BEATS;
-  const [idx, setIdx] = useState(0);
+  const [beatIdx, setBeatIdx] = useState(0);
+  const [lineIdx, setLineIdx] = useState(-1);
+  const [visible, setVisible] = useState(true);
   const finishedRef = useRef(false);
 
-  // Override-Musik nur, solange die Cutscene aktiv ist.
+  // Override-Musik nur während die Cutscene aktiv ist.
   useEffect(() => {
     if (!active) return;
     setOverride("sectorThreshold");
@@ -74,32 +61,11 @@ export function SectorThresholdCutscene() {
   // Reset bei Schließen.
   useEffect(() => {
     if (active) return;
-    setIdx(0);
+    setBeatIdx(0);
+    setLineIdx(-1);
+    setVisible(true);
     finishedRef.current = false;
   }, [active]);
-
-  // Auto-Advance pro Beat: 4.0 s Sockel + 2.2 s pro Zeile (Bilder
-  // brauchen etwas Atem, damit der Ken-Burns wirkt und der Text
-  // ruhig gelesen werden kann).
-  useEffect(() => {
-    if (!active) return;
-    if (idx >= beats.length) return;
-    if (editing) return;
-    if (paused) return;
-    const beat = beats[idx];
-    const hold = 4000 + beat.lines.length * 2200;
-    const t = window.setTimeout(() => {
-      setIdx((i) => i + 1);
-    }, hold);
-    return () => window.clearTimeout(t);
-  }, [active, idx, beats, editing, paused]);
-
-  // Dev: Schritt zurück / vor.
-  useDevStep((dir) => {
-    if (!active) return;
-    if (dir === -1) setIdx((i) => Math.max(0, i - 1));
-    else setIdx((i) => Math.min(beats.length, i + 1));
-  });
 
   const finish = () => {
     if (finishedRef.current) return;
@@ -111,138 +77,236 @@ export function SectorThresholdCutscene() {
     api.goTo("passage");
   };
 
-  // Cutscene beenden, wenn alle Beats durch sind.
+  // Manuelles Vorrücken: nächste Untertitel-Zeile oder nächster Beat.
+  const advance = () => {
+    const beat = beats[beatIdx];
+    if (!beat) return;
+    if (lineIdx < beat.lines.length - 1) {
+      setLineIdx((i) => i + 1);
+      return;
+    }
+    // letzte Zeile dieses Beats — auf nächsten Beat wechseln (mit Crossfade).
+    if (beatIdx >= beats.length - 1) {
+      finish();
+      return;
+    }
+    setVisible(false);
+    window.setTimeout(() => {
+      setBeatIdx((b) => b + 1);
+      setLineIdx(-1);
+      setVisible(true);
+    }, CROSSFADE_MS / 2);
+  };
+
+  // Auto-Advance: nach Lead-In erste Zeile zeigen, danach Zeile für Zeile
+  // weiterspringen, am Ende des letzten Beats finish().
   useEffect(() => {
     if (!active) return;
-    if (idx < beats.length) return;
-    finish();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, idx, beats]);
+    if (paused) return;
+    const beat = beats[beatIdx];
+    if (!beat) return;
 
-  // Esc / Enter überspringen.
+    // Lead-In: erste Zeile nach 700 ms einblenden.
+    if (lineIdx === -1) {
+      const t = window.setTimeout(() => setLineIdx(0), 700);
+      return () => window.clearTimeout(t);
+    }
+
+    const line = beat.lines[lineIdx];
+    if (!line) return;
+    const t = window.setTimeout(() => {
+      if (lineIdx < beat.lines.length - 1) {
+        setLineIdx((i) => i + 1);
+      } else if (beatIdx < beats.length - 1) {
+        setVisible(false);
+        const t2 = window.setTimeout(() => {
+          setBeatIdx((b) => b + 1);
+          setLineIdx(-1);
+          setVisible(true);
+        }, CROSSFADE_MS / 2);
+        // Cleanup über äußeres Cleanup mit erfasst.
+        return () => window.clearTimeout(t2);
+      } else {
+        finish();
+      }
+    }, holdFor(line));
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, paused, beatIdx, lineIdx, beats]);
+
+  // Dev: Schritt zurück / vor.
+  useDevStep((dir) => {
+    if (!active) return;
+    const beat = beats[beatIdx];
+    if (!beat) return;
+    if (dir === 1) {
+      advance();
+      return;
+    }
+    // Schritt zurück: eine Zeile zurück, ggf. auf vorherigen Beat (letzte Zeile).
+    if (lineIdx > 0) {
+      setLineIdx((i) => i - 1);
+    } else if (beatIdx > 0) {
+      const prev = beats[beatIdx - 1];
+      setVisible(false);
+      window.setTimeout(() => {
+        setBeatIdx((b) => b - 1);
+        setLineIdx(prev.lines.length - 1);
+        setVisible(true);
+      }, CROSSFADE_MS / 2);
+    }
+  });
+
+  // Esc / Enter / Leertaste: Esc überspringt, Enter/Leertaste rückt vor.
   useEffect(() => {
     if (!active) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" || e.key === "Enter") {
+      if (e.key === "Escape") {
         e.preventDefault();
         finish();
+      } else if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        advance();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active]);
+  }, [active, beatIdx, lineIdx]);
 
   if (!active) return null;
-  if (idx >= beats.length) return null;
 
-  const beat = beats[idx];
-  const displayedLines = applyTextPatch(beat.lines);
-  const patched = !!getTextPatch(beat.lines);
-  const image = BEAT_IMAGES[idx] ?? BEAT_IMAGES[BEAT_IMAGES.length - 1];
-  const pan = BEAT_PANS[idx] ?? BEAT_PANS[BEAT_PANS.length - 1];
-  // Sockel + lineare Annäherung wie im Auto-Advance, damit die
-  // Ken-Burns-Bewegung den Beat ausfüllt.
-  const panDurationMs = 4000 + beat.lines.length * 2200;
+  const beat = beats[beatIdx];
+  const image = BEAT_IMAGES[beatIdx] ?? BEAT_IMAGES[BEAT_IMAGES.length - 1];
+  const cam = BEAT_CAMERA[beatIdx] ?? BEAT_CAMERA[BEAT_CAMERA.length - 1];
+  const currentLine = lineIdx >= 0 ? beat.lines[lineIdx] : null;
+  const beatKey = `beat-${beatIdx}`;
+
+  // Gesamt-Beat-Dauer für Ken-Burns-Spring.
+  const beatDurationSec = Math.max(
+    5,
+    (700 + beat.lines.reduce((s, l) => s + holdFor(l), 0)) / 1000,
+  );
 
   return (
     <div
-      className="absolute inset-0 z-[60] overflow-hidden bg-black"
-      onClick={editing ? undefined : () => setIdx((i) => i + 1)}
+      className="fixed inset-0 z-[200] flex flex-col bg-black"
+      onClick={advance}
       role="presentation"
     >
-      {/* Bild-Layer mit Crossfade + Ken-Burns */}
-      <AnimatePresence>
-        <motion.div
-          key={idx}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="absolute inset-0"
-        >
-          <motion.div
-            initial={{
-              scale: pan.scaleFrom,
-              transformOrigin: pan.from,
-            }}
-            animate={{
-              scale: pan.scaleTo,
-              transformOrigin: pan.to,
-            }}
-            transition={{ duration: panDurationMs / 1000, ease: "linear" }}
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${image})` }}
-          />
-          {/* Vignette + sanfter Untertitel-Verlauf nach unten. */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-          <div className="pointer-events-none absolute inset-0 [box-shadow:inset_0_0_180px_60px_rgba(0,0,0,0.65)]" />
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Header (Ort/Zeit) */}
-      {beat.header && (
-        <div className="absolute left-0 right-0 top-6 text-center font-mono-crt text-xs uppercase tracking-[0.4em] text-amber-glow/80 amber-glow">
-          {beat.header}
-        </div>
-      )}
-
-      {/* Untertitel-Block */}
-      <div className="absolute inset-x-0 bottom-16 flex justify-center px-6">
-        <div className="mx-auto w-full max-w-3xl space-y-3 text-center">
-          {editing ? (
-            <div
-              className="space-y-2 text-left"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-amber-glow">
-                <span>
-                  Schleuse · Beat {idx + 1} / {beats.length}
-                  {patched ? " · ✎" : ""}
-                </span>
-                {patched && (
-                  <button
-                    type="button"
-                    onClick={() => clearTextPatch(beat.lines)}
-                    className="rounded-sm border border-red-500/40 px-2 py-1 text-red-300 hover:bg-red-500/10"
-                  >
-                    Reset
-                  </button>
-                )}
-              </div>
-              {displayedLines.map((line, i) => (
-                <textarea
-                  key={i}
-                  value={line}
-                  onChange={(e) => setTextLine(beat.lines, i, e.target.value)}
-                  rows={Math.max(2, Math.ceil(line.length / 60))}
-                  className="w-full resize-y rounded-sm border border-amber-glow/40 bg-black/60 p-2 font-display text-base text-foreground"
-                />
-              ))}
-            </div>
-          ) : (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
-              className="space-y-2"
-            >
-              {displayedLines.map((line, i) => (
-                <p
-                  key={i}
-                  className="font-display text-base text-foreground/95 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] sm:text-lg md:text-xl"
-                >
-                  {line}
-                </p>
-              ))}
-            </motion.div>
+      {/* Bild-Bühne */}
+      <div className="relative flex-1 overflow-hidden">
+        <AnimatePresence mode="wait">
+          {visible && (
+            <motion.img
+              key={beatKey}
+              src={image}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+              initial={{
+                opacity: 0,
+                scale: cam.scale[0],
+                x: `${cam.pan[0]}%`,
+                y: `${cam.pan[1]}%`,
+              }}
+              animate={{
+                opacity: 1,
+                scale: cam.scale[1],
+                x: `${cam.pan[2]}%`,
+                y: `${cam.pan[3]}%`,
+              }}
+              exit={{ opacity: 0 }}
+              transition={{
+                opacity: { duration: CROSSFADE_MS / 1000, ease: "easeOut" },
+                scale: {
+                  type: "spring",
+                  damping: 40,
+                  stiffness: 18,
+                  mass: 1.5,
+                  duration: beatDurationSec,
+                },
+                x: {
+                  type: "spring",
+                  damping: 40,
+                  stiffness: 18,
+                  mass: 1.5,
+                  duration: beatDurationSec,
+                },
+                y: {
+                  type: "spring",
+                  damping: 40,
+                  stiffness: 18,
+                  mass: 1.5,
+                  duration: beatDurationSec,
+                },
+              }}
+            />
           )}
-        </div>
+        </AnimatePresence>
+
+        {/* CRT-Vignette */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%)",
+          }}
+        />
+        {/* Scanlines */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-25 mix-blend-overlay"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(0deg, rgba(0,0,0,0.6) 0px, rgba(0,0,0,0.6) 1px, transparent 1px, transparent 3px)",
+          }}
+        />
+
+        {/* Header (Ort) — leise oben links, analog zur Paramedics-Atmosphäre. */}
+        {beat.header && (
+          <div className="absolute left-4 top-4 font-mono-crt text-[10px] uppercase tracking-[0.3em] text-amber-glow/70 amber-glow">
+            {beat.header}
+          </div>
+        )}
+
+        {/* Skip-Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            finish();
+          }}
+          className="absolute right-4 top-4 rounded border border-amber-glow/40 bg-black/50 px-3 py-1.5 font-mono-crt text-xs text-amber-glow/80 transition-colors hover:bg-black/70 hover:text-amber-glow"
+        >
+          Überspringen ⏵⏵
+        </button>
       </div>
 
-      <div className="absolute bottom-6 left-0 right-0 text-center font-mono-crt text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60">
-        {SECTOR_THRESHOLD_UI_TEXT.skipHint}
+      {/* Untertitel-Box */}
+      <div className="relative h-[28%] min-h-[140px] border-t border-amber-glow/20 bg-black/85 px-6 py-5 sm:px-10">
+        <AnimatePresence mode="wait">
+          {currentLine && (
+            <motion.div
+              key={`${beatIdx}-${lineIdx}`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.28, ease: "easeOut" }}
+              className="mx-auto flex max-w-3xl flex-col gap-2"
+            >
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.08, duration: 0.22 }}
+                className="font-mono-crt text-xs uppercase tracking-[0.3em] text-amber-glow/60"
+              >
+                —
+              </motion.div>
+              <div className="font-mono-crt text-base italic text-amber-glow/85 sm:text-lg">
+                {currentLine}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
