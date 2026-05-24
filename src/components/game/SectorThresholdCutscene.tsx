@@ -35,11 +35,11 @@ const BEAT_CAMERA: Array<{
 const CROSSFADE_MS = 600;
 
 function holdFor(text: string): number {
-  return Math.max(2600, Math.min(7000, Math.round(text.length * 62 + 900)));
+  return Math.max(4200, Math.min(11000, Math.round(text.length * 92 + 1500)));
 }
 
 export function SectorThresholdCutscene() {
-  const { cutscene, endCutscene, api } = useGame();
+  const { cutscene, endCutscene, api, scene } = useGame();
   const active = cutscene === "sectorThreshold";
   const dev = useDevMode();
   const paused = dev && usePaused();
@@ -50,13 +50,31 @@ export function SectorThresholdCutscene() {
   const [lineIdx, setLineIdx] = useState(-1);
   const [visible, setVisible] = useState(true);
   const finishedRef = useRef(false);
+  // Markiert, dass die Cutscene zu Ende geführt wurde und der
+  // City-Forgets-Track jetzt noch in „passage" ausläuft. Verlässt der
+  // Spieler diesen Raum, wird der Override sofort gelöscht.
+  const songStillPlayingRef = useRef(false);
 
   // Override-Musik nur während die Cutscene aktiv ist.
   useEffect(() => {
     if (!active) return;
-    setOverride("sectorThreshold");
-    return () => setOverride(null);
+    songStillPlayingRef.current = false;
+    setOverride("sectorThreshold", { playOnce: true });
+    // Beim Unmount/Deaktivieren der Cutscene NICHT direkt clearen —
+    // der Song soll in „passage" auslaufen. Aufräumen passiert über
+    // Auto-End (MusicPlayer) oder Raumwechsel (Effekt unten).
   }, [active, setOverride]);
+
+  // Wenn der Spieler „passage" verlässt, bevor der Track ausgelaufen
+  // ist, Override sofort beenden → reguläre Playlist + Song-Switcher
+  // kehren zurück.
+  useEffect(() => {
+    if (!songStillPlayingRef.current) return;
+    if (scene !== "passage") {
+      setOverride(null);
+      songStillPlayingRef.current = false;
+    }
+  }, [scene, setOverride]);
 
   // Reset bei Schließen.
   useEffect(() => {
@@ -72,7 +90,10 @@ export function SectorThresholdCutscene() {
     finishedRef.current = true;
     if (!api.hasFlag("sectorThresholdSeen")) api.setFlag("sectorThresholdSeen");
     if (!api.hasFlag("feetWontMove")) api.setFlag("feetWontMove");
-    setOverride(null);
+    // Override NICHT clearen — „The City Forgets" soll im Raum
+    // „passage" zu Ende spielen. MusicPlayer löst den Override beim
+    // tatsächlichen Song-Ende automatisch auf (playOnce).
+    songStillPlayingRef.current = true;
     endCutscene();
     api.goTo("passage");
   };
