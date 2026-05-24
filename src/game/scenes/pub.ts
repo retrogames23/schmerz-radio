@@ -62,7 +62,7 @@ export const pubScenes: Record<string, Scene> = {
         label: "Zurück nach draußen",
         kind: "exit",
         exitDir: "left",
-        onUse: (api) => api.goTo("elevator"),
+        onUse: (api) => api.goTo("passage"),
       },
     ],
   },
