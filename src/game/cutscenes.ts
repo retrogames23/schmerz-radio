@@ -372,3 +372,55 @@ export const ACT2_BRIDGE_UI_TEXT = {
   radioPauseContinue: "Trotzdem einschalten",
   radioPauseAbort: "Lieber lassen",
 } as const;
+
+// ─── Sektor-Schwelle-Cutscene (Klick auf entriegelte Schleuse) ───────
+
+/**
+ * Vier Tafeln in der Anmutung der Bridge-Cutscene: Layard steht vor der
+ * offenen Schleusentür, ringt sich innerlich durch und tritt am Ende
+ * tatsächlich hindurch. Ersetzt den früheren `feetWontMove`-Inline-Text.
+ */
+export const SECTOR_THRESHOLD_BEATS: Act2BridgeBeat[] = [
+  {
+    header: "Sektor 28 · Schleuse · E67",
+    style: "black",
+    lines: [
+      "Und obwohl er intensiv daran denkt, durch die schwere Eisentüre zu gehen,",
+      "raus aus E67 … seine Füße bewegen sich nicht.",
+    ],
+  },
+  {
+    style: "amber",
+    lines: [
+      "Wer bin ich, fragt sich Layard. Warum gehorcht mein Körper meinen Gedanken nicht?",
+      "Vielleicht stimmt etwas nicht mit mir selbst. Die Beziehung zu ihm. Dieses Universum.",
+      "Er hat es sich lange nicht mehr angesehen. Dabei ist er doch so neugierig.",
+      "Vielleicht, denkt er, lassen sich die Schichten des inneren Klumpens, der sich um seine Gefühle gelegt hat, abtragen.",
+      "Dafür sollte er sie sich anschauen. Gründlich und furchtlos. Wie ein Krieger in Babylon.",
+      "Woher kommt jetzt dieses Bild?",
+    ],
+  },
+  {
+    style: "amber",
+    lines: [
+      "Was, so überlegt sich Layard, wenn ich dieses Protokoll nicht abliefere? Was ändert sich?",
+      "Würde er bestraft werden?",
+      "Die Idee, Freiheit zu besitzen, Handlungsfreiheit, hat fast etwas Verbotenes.",
+      "Andererseits: E71. Eine andere Welt. Ein Abenteuer? Ein Grund, den Quadranten zu verlassen. Eine Aufgabe.",
+    ],
+  },
+  {
+    header: "Sektor 28 · Schleuse · jenseits",
+    style: "black",
+    lines: [
+      "Seine Füße setzen sich in Bewegung. Layards Körper gehorcht ihm.",
+      "Das Öffnen der Tür, die milde Abendkälte auf der Haut —",
+      "— das fühlt sich fast nach Freiheit an.",
+    ],
+  },
+];
+
+/** Statische UI-Texte für die Sektor-Schwelle-Cutscene. */
+export const SECTOR_THRESHOLD_UI_TEXT = {
+  skipHint: "Esc / Enter überspringt · Klick · weiter",
+} as const;
