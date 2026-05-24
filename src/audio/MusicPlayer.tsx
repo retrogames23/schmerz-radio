@@ -88,7 +88,10 @@ interface MusicCtx {
    * Override löst sich danach automatisch (zurück zur regulären
    * Playlist). Ohne diese Option läuft der Track in Schleife.
    */
-  setOverride: (id: MusicOverrideId | null, opts?: { playOnce?: boolean }) => void;
+  setOverride: (
+    id: MusicOverrideId | null,
+    opts?: { playOnce?: boolean; force?: boolean },
+  ) => void;
   /** Aktuell laufender Override (oder null). UI nutzt das z. B., um den Song-Switcher auszublenden. */
   activeOverride: MusicOverrideId | null;
 }
@@ -119,6 +122,9 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   const externallyPausedRef = useRef(false);
   const overrideRef = useRef<MusicOverrideId | null>(null);
   const overridePlayOnceRef = useRef(false);
+  // Override spielt auch dann, wenn die Hintergrundmusik in den
+  // Einstellungen ausgeschaltet ist (z. B. für Cutscene-Musik).
+  const overrideForceRef = useRef(false);
   const [activeOverride, setActiveOverride] = useState<MusicOverrideId | null>(null);
   const savedIndexRef = useRef<number | null>(null);
 
@@ -167,7 +173,9 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     if (musicEnabled) {
       startPlayback();
     } else {
-      stopPlayback();
+      // Ausgeschaltete Hintergrundmusik: Forced Overrides (z. B.
+      // Cutscene-Musik) dürfen weiterlaufen.
+      if (!overrideForceRef.current) stopPlayback();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [musicEnabled]);
@@ -207,7 +215,10 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   function ensureWatcher() {
     if (watchTimerRef.current) return;
     watchTimerRef.current = window.setInterval(() => {
-      if (!enabledRef.current) return;
+      // Standard: Watcher pausiert bei ausgeschalteter Musik.
+      // Forced Override (Cutscene) läuft trotzdem und muss überwacht
+      // werden, damit `playOnce` sich sauber auflöst.
+      if (!enabledRef.current && !overrideForceRef.current) return;
       if (fadeTimerRef.current) return; // already crossfading
       const active = activeRef.current === "a" ? aRef.current : bRef.current;
       if (!active || !active.duration || isNaN(active.duration)) return;
@@ -350,7 +361,10 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     }, FADE_TICK_MS);
   }
 
-  function setOverrideInternal(id: MusicOverrideId | null, opts?: { playOnce?: boolean }) {
+  function setOverrideInternal(
+    id: MusicOverrideId | null,
+    opts?: { playOnce?: boolean; force?: boolean },
+  ) {
     if (overrideRef.current === id && !opts) return;
     if (id) {
       // Wechsel auf Override: Playlist-Position merken.
@@ -359,16 +373,49 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
       }
       overrideRef.current = id;
       overridePlayOnceRef.current = !!opts?.playOnce;
+      overrideForceRef.current = !!opts?.force;
       setActiveOverride(id);
-      if (!enabledRef.current) return; // Musik aus → erst beim Aktivieren übernehmen
+      if (!enabledRef.current && !opts?.force) return; // Musik aus → erst beim Aktivieren übernehmen
       crossfadeToSrc(MUSIC_OVERRIDES[id].src);
       ensureWatcher();
     } else {
+      const wasForced = overrideForceRef.current;
       // Zurück auf reguläre Playlist.
       overrideRef.current = null;
       overridePlayOnceRef.current = false;
+      overrideForceRef.current = false;
       setActiveOverride(null);
-      if (!enabledRef.current) return;
+      if (!enabledRef.current) {
+        // Musik ist aus. Wenn der Override forciert lief, sauber
+        // ausblenden statt hart abzubrechen.
+        if (wasForced) {
+          const active = activeRef.current === "a" ? aRef.current : bRef.current;
+          if (active && !active.paused) {
+            const startVol = active.volume;
+            const steps = Math.max(1, Math.floor((MANUAL_FADE_SECONDS * 1000) / FADE_TICK_MS));
+            let step = 0;
+            if (fadeTimerRef.current) window.clearInterval(fadeTimerRef.current);
+            fadeTimerRef.current = window.setInterval(() => {
+              step += 1;
+              const t = Math.min(1, step / steps);
+              active.volume = clamp(startVol * (1 - t));
+              if (t >= 1) {
+                active.pause();
+                active.currentTime = 0;
+                if (fadeTimerRef.current) {
+                  window.clearInterval(fadeTimerRef.current);
+                  fadeTimerRef.current = null;
+                }
+                if (watchTimerRef.current) {
+                  window.clearInterval(watchTimerRef.current);
+                  watchTimerRef.current = null;
+                }
+              }
+            }, FADE_TICK_MS);
+          }
+        }
+        return;
+      }
       const restoreIndex = savedIndexRef.current ?? indexRef.current;
       indexRef.current = restoreIndex;
       setCurrentIndex(restoreIndex);
@@ -378,7 +425,7 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   }
 
   const setOverride = useCallback(
-    (id: MusicOverrideId | null, opts?: { playOnce?: boolean }) => {
+    (id: MusicOverrideId | null, opts?: { playOnce?: boolean; force?: boolean }) => {
       setOverrideInternal(id, opts);
     },
     [],
