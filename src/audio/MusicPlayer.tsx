@@ -83,8 +83,14 @@ interface MusicCtx {
    * Aktiviert einen Override-Track (z. B. Tavernen-Musik). Wird
    * crossfaded und in Schleife abgespielt, bis `clearOverride()`
    * aufgerufen wird. Wirkt nur, wenn Musik aktiviert ist.
+   *
+   * Optional `playOnce`: Track läuft einmal komplett durch und der
+   * Override löst sich danach automatisch (zurück zur regulären
+   * Playlist). Ohne diese Option läuft der Track in Schleife.
    */
-  setOverride: (id: MusicOverrideId | null) => void;
+  setOverride: (id: MusicOverrideId | null, opts?: { playOnce?: boolean }) => void;
+  /** Aktuell laufender Override (oder null). UI nutzt das z. B., um den Song-Switcher auszublenden. */
+  activeOverride: MusicOverrideId | null;
 }
 
 const MusicContext = createContext<MusicCtx | null>(null);
@@ -112,6 +118,8 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   const duckRef = useRef(1);
   const externallyPausedRef = useRef(false);
   const overrideRef = useRef<MusicOverrideId | null>(null);
+  const overridePlayOnceRef = useRef(false);
+  const [activeOverride, setActiveOverride] = useState<MusicOverrideId | null>(null);
   const savedIndexRef = useRef<number | null>(null);
 
   // Keep refs in sync so timers always read fresh values.
@@ -205,12 +213,16 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
       if (!active || !active.duration || isNaN(active.duration)) return;
       const remaining = active.duration - active.currentTime;
       if (overrideRef.current) {
-        // Override-Track: vollständig durchlaufen lassen und erst am
-        // tatsächlichen Ende zurück an den Anfang loopen, damit z. B.
-        // das Kantinen-Lied nicht früh abgeschnitten wird.
+        // Override-Track: vollständig durchlaufen lassen. Bei `playOnce`
+        // löst sich der Override am Ende des Tracks automatisch und die
+        // reguläre Playlist übernimmt wieder; sonst wird geloopt.
         if (remaining <= 0.1 && !active.paused) {
-          active.currentTime = 0;
-          void active.play().catch(() => {});
+          if (overridePlayOnceRef.current) {
+            setOverrideInternal(null);
+          } else {
+            active.currentTime = 0;
+            void active.play().catch(() => {});
+          }
         }
         return;
       }
@@ -338,20 +350,24 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     }, FADE_TICK_MS);
   }
 
-  const setOverride = useCallback((id: MusicOverrideId | null) => {
-    if (overrideRef.current === id) return;
+  function setOverrideInternal(id: MusicOverrideId | null, opts?: { playOnce?: boolean }) {
+    if (overrideRef.current === id && !opts) return;
     if (id) {
       // Wechsel auf Override: Playlist-Position merken.
       if (overrideRef.current === null) {
         savedIndexRef.current = indexRef.current;
       }
       overrideRef.current = id;
+      overridePlayOnceRef.current = !!opts?.playOnce;
+      setActiveOverride(id);
       if (!enabledRef.current) return; // Musik aus → erst beim Aktivieren übernehmen
       crossfadeToSrc(MUSIC_OVERRIDES[id].src);
       ensureWatcher();
     } else {
       // Zurück auf reguläre Playlist.
       overrideRef.current = null;
+      overridePlayOnceRef.current = false;
+      setActiveOverride(null);
       if (!enabledRef.current) return;
       const restoreIndex = savedIndexRef.current ?? indexRef.current;
       indexRef.current = restoreIndex;
@@ -359,7 +375,14 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
       crossfadeToSrc(pickTrack(restoreIndex));
       ensureWatcher();
     }
-  }, []);
+  }
+
+  const setOverride = useCallback(
+    (id: MusicOverrideId | null, opts?: { playOnce?: boolean }) => {
+      setOverrideInternal(id, opts);
+    },
+    [],
+  );
 
   const next = useCallback(() => {
     playIndex(indexRef.current + 1);
@@ -370,8 +393,8 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   }, [playIndex]);
 
   const value = useMemo<MusicCtx>(
-    () => ({ tracks: PLAYLIST, currentIndex, next, prev, playIndex, setDuck, pause, resume, setOverride }),
-    [currentIndex, next, prev, playIndex, setDuck, pause, resume, setOverride],
+    () => ({ tracks: PLAYLIST, currentIndex, next, prev, playIndex, setDuck, pause, resume, setOverride, activeOverride }),
+    [currentIndex, next, prev, playIndex, setDuck, pause, resume, setOverride, activeOverride],
   );
 
   return <MusicContext.Provider value={value}>{children}</MusicContext.Provider>;
