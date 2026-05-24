@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useGame } from "@/game/GameContext";
 import {
   SECTOR_THRESHOLD_BEATS,
@@ -15,6 +16,30 @@ import {
 } from "@/dev/textPatchState";
 import { usePaused, useDevStep } from "@/dev/devPlaybackState";
 import { useMusic } from "@/audio/MusicPlayer";
+import beat1 from "@/assets/cutscene-sector-1.jpg";
+import beat2 from "@/assets/cutscene-sector-2.jpg";
+import beat3 from "@/assets/cutscene-sector-3.jpg";
+import beat4 from "@/assets/cutscene-sector-4.jpg";
+
+/**
+ * Visuelle Ken-Burns-Bilder pro Beat. Reihenfolge entspricht
+ * `SECTOR_THRESHOLD_BEATS` aus `cutscenes.ts`.
+ *  1) Layard erstarrt vor der offenen Schleusentür.
+ *  2) Closeup — innerer Monolog: Wer bin ich?
+ *  3) Wider shot — Tür offen, Blick in die Gasse, Zögern.
+ *  4) Schritt durch die Tür hinaus in die Abendkälte.
+ */
+const BEAT_IMAGES = [beat1, beat2, beat3, beat4];
+const BEAT_PANS: Array<{ from: string; to: string; scaleFrom: number; scaleTo: number }> = [
+  // Sanftes Eindringen auf das erstarrte Gesicht.
+  { from: "52% 55%", to: "48% 50%", scaleFrom: 1.04, scaleTo: 1.12 },
+  // Stilles Atmen am Closeup.
+  { from: "50% 45%", to: "50% 50%", scaleFrom: 1.06, scaleTo: 1.14 },
+  // Blick vom Türrahmen die Gasse hinunter.
+  { from: "65% 55%", to: "45% 50%", scaleFrom: 1.02, scaleTo: 1.10 },
+  // Folgt Layard sanft durch die Tür hinaus.
+  { from: "50% 60%", to: "50% 45%", scaleFrom: 1.05, scaleTo: 1.14 },
+];
 
 /**
  * Cutscene an der Schleuse zwischen E67-Lobby und Verbindungsgang.
@@ -37,7 +62,6 @@ export function SectorThresholdCutscene() {
 
   const beats = SECTOR_THRESHOLD_BEATS;
   const [idx, setIdx] = useState(0);
-  const [visible, setVisible] = useState(true);
   const finishedRef = useRef(false);
 
   // Override-Musik nur, solange die Cutscene aktiv ist.
@@ -51,25 +75,21 @@ export function SectorThresholdCutscene() {
   useEffect(() => {
     if (active) return;
     setIdx(0);
-    setVisible(true);
     finishedRef.current = false;
   }, [active]);
 
-  // Auto-Advance pro Beat: 3.4 s Sockel + 1.6 s pro Zeile.
+  // Auto-Advance pro Beat: 4.0 s Sockel + 2.2 s pro Zeile (Bilder
+  // brauchen etwas Atem, damit der Ken-Burns wirkt und der Text
+  // ruhig gelesen werden kann).
   useEffect(() => {
     if (!active) return;
     if (idx >= beats.length) return;
     if (editing) return;
     if (paused) return;
     const beat = beats[idx];
-    const hold = 3400 + beat.lines.length * 1600;
+    const hold = 4000 + beat.lines.length * 2200;
     const t = window.setTimeout(() => {
-      setVisible(false);
-      const t2 = window.setTimeout(() => {
-        setIdx((i) => i + 1);
-        setVisible(true);
-      }, 350);
-      return () => window.clearTimeout(t2);
+      setIdx((i) => i + 1);
     }, hold);
     return () => window.clearTimeout(t);
   }, [active, idx, beats, editing, paused]);
@@ -79,7 +99,6 @@ export function SectorThresholdCutscene() {
     if (!active) return;
     if (dir === -1) setIdx((i) => Math.max(0, i - 1));
     else setIdx((i) => Math.min(beats.length, i + 1));
-    setVisible(true);
   });
 
   const finish = () => {
@@ -120,27 +139,57 @@ export function SectorThresholdCutscene() {
   const beat = beats[idx];
   const displayedLines = applyTextPatch(beat.lines);
   const patched = !!getTextPatch(beat.lines);
-
-  const accentClass =
-    beat.style === "amber"
-      ? "before:bg-amber-glow/[0.04]"
-      : beat.style === "clinical"
-        ? "before:bg-foreground/[0.03]"
-        : "before:bg-transparent";
+  const image = BEAT_IMAGES[idx] ?? BEAT_IMAGES[BEAT_IMAGES.length - 1];
+  const pan = BEAT_PANS[idx] ?? BEAT_PANS[BEAT_PANS.length - 1];
+  // Sockel + lineare Annäherung wie im Auto-Advance, damit die
+  // Ken-Burns-Bewegung den Beat ausfüllt.
+  const panDurationMs = 4000 + beat.lines.length * 2200;
 
   return (
     <div
-      className={`absolute inset-0 z-[60] flex flex-col items-center justify-center bg-black px-6 text-center before:pointer-events-none before:absolute before:inset-0 before:content-[''] ${accentClass}`}
+      className="absolute inset-0 z-[60] overflow-hidden bg-black"
       onClick={editing ? undefined : () => setIdx((i) => i + 1)}
       role="presentation"
     >
-      {visible && (
-        <div key={idx} className="slow-fade-in mx-auto max-w-2xl space-y-4">
-          {beat.header && (
-            <div className="mb-6 font-mono-crt text-xs uppercase tracking-[0.4em] text-amber-glow/70 amber-glow">
-              {beat.header}
-            </div>
-          )}
+      {/* Bild-Layer mit Crossfade + Ken-Burns */}
+      <AnimatePresence>
+        <motion.div
+          key={idx}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          className="absolute inset-0"
+        >
+          <motion.div
+            initial={{
+              scale: pan.scaleFrom,
+              transformOrigin: pan.from,
+            }}
+            animate={{
+              scale: pan.scaleTo,
+              transformOrigin: pan.to,
+            }}
+            transition={{ duration: panDurationMs / 1000, ease: "linear" }}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${image})` }}
+          />
+          {/* Vignette + sanfter Untertitel-Verlauf nach unten. */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+          <div className="pointer-events-none absolute inset-0 [box-shadow:inset_0_0_180px_60px_rgba(0,0,0,0.65)]" />
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Header (Ort/Zeit) */}
+      {beat.header && (
+        <div className="absolute left-0 right-0 top-6 text-center font-mono-crt text-xs uppercase tracking-[0.4em] text-amber-glow/80 amber-glow">
+          {beat.header}
+        </div>
+      )}
+
+      {/* Untertitel-Block */}
+      <div className="absolute inset-x-0 bottom-16 flex justify-center px-6">
+        <div className="mx-auto w-full max-w-3xl space-y-3 text-center">
           {editing ? (
             <div
               className="space-y-2 text-left"
@@ -172,17 +221,26 @@ export function SectorThresholdCutscene() {
               ))}
             </div>
           ) : (
-            displayedLines.map((line, i) => (
-              <p
-                key={i}
-                className="font-display text-lg text-foreground sm:text-xl"
-              >
-                {line}
-              </p>
-            ))
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
+              className="space-y-2"
+            >
+              {displayedLines.map((line, i) => (
+                <p
+                  key={i}
+                  className="font-display text-base text-foreground/95 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] sm:text-lg md:text-xl"
+                >
+                  {line}
+                </p>
+              ))}
+            </motion.div>
           )}
         </div>
-      )}
+      </div>
+
       <div className="absolute bottom-6 left-0 right-0 text-center font-mono-crt text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60">
         {SECTOR_THRESHOLD_UI_TEXT.skipHint}
       </div>
