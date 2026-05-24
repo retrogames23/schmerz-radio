@@ -75,17 +75,8 @@ export const sectorAct1Scenes: Record<string, Scene> = {
         kind: "exit",
         requires: ["sectorDoorOpen"],
         onUse: (api) => {
-          if (!api.hasFlag("feetWontMove")) {
-            api.setFlag("feetWontMove");
-            api.showText([
-              "Layard denkt intensiv daran, einen Schritt zu machen.",
-              "Aus der Lobby. Durch die Schleuse. Aus E67 hinaus.",
-              "Seine Füße bewegen sich nicht.",
-              "Im Hinterkopf: das amber-grüne Glühen der Frequenz 104,6.",
-              "Sie ist nicht mehr im Radio. Sie ist in ihm.",
-              "Er zwingt das rechte Bein. Es geht. Schwer. Mechanisch.",
-              "Wie eine Tür, deren Scharniere seit Jahren niemand geölt hat.",
-            ]);
+          if (!api.hasFlag("sectorThresholdSeen")) {
+            api.startCutscene("sectorThreshold");
           } else {
             api.goTo("passage");
           }
