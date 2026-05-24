@@ -59,7 +59,7 @@ export function SectorThresholdCutscene() {
   useEffect(() => {
     if (!active) return;
     songStillPlayingRef.current = false;
-    setOverride("sectorThreshold", { playOnce: true });
+    setOverride("sectorThreshold", { playOnce: true, force: true });
     // Beim Unmount/Deaktivieren der Cutscene NICHT direkt clearen —
     // der Song soll in „passage" auslaufen. Aufräumen passiert über
     // Auto-End (MusicPlayer) oder Raumwechsel (Effekt unten).
