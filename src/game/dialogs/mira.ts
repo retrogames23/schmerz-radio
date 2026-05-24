@@ -9,7 +9,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       mi1: {
         id: "mi1",
         speaker: "SYSTEM",
-        text: "[ An der Wand lehnt eine junge Frau. Sechzehn, vielleicht siebzehn. Kein Schmerz-Radio in der Tasche, kein Bernstein-Knopf im Ohr. Sie sieht Layard direkt an. ]",
+        text: "[ An der Wand lehnt eine junge Frau. Sechzehn, vielleicht siebzehn. Sie sieht Layard direkt an. ]",
         next: "mi2",
       },
       mi2: {
@@ -46,7 +46,7 @@ export const miraDialogs: Record<string, DialogTree> = {
         id: "mi4",
         speaker: "MIRA",
         text: "Andere Etagen ansehen. — Weißt du, wie selten das jemand macht? Die meisten bleiben in ihrem Quadranten, bis sie transferiert werden. Du nicht.",
-        subtext: "Sie hat das schon oft gesagt. Sie wartet darauf, wie er reagiert.",
+        subtext: "Sie wartet auf deine Reaktion.",
         hiddenWhen: ["sawEmptyOffice"],
         next: "mi4b",
         choices: [
@@ -125,7 +125,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       miraOpen7: {
         id: "miraOpen7",
         speaker: "MIRA",
-        text: "Lies es allein. Nicht im Terminal. Niemals im Terminal. Z.K.S.",
+        text: "Lies es allein. Z.K.S.",
         next: "miraOpen8",
       },
       miraOpen8: {
