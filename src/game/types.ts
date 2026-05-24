@@ -107,6 +107,7 @@ export type StoryFlag =
   | "troubleReported"
   | "sectorDoorOpen"
   | "feetWontMove"
+  | "sectorThresholdSeen"
   | "elevatorTaken"
   | "enteredE71"
   | "metReceptionist"
