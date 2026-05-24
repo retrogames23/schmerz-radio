@@ -1,63 +1,69 @@
-# Akt-II-Einstieg bei Insa — motivieren statt setzen
-
-## Was nicht stimmt
-
-1. **Doppelte Szene.** Die Bridge-Cutscene zeigt schon das Treffen bei Insa: Tee, Kapsel auf den Tisch, „Ich hätte da etwas. Falls Sie ohnehin unterwegs sind", Layard nickt. Danach landet er bei Okwu und zu Hause. Wenn er später freiwillig in die Leitstelle zurückgeht und Insa anspricht, spielt der Dialog `insaAct2InPerson` faktisch dieselbe Begegnung ein zweites Mal („Setzen Sie sich. Ich habe Sie mir größer vorgestellt." — das war schon).
-2. **Layards Existenzfragen kommen aus dem Nichts.** Die drei Auswahlzeilen („Warum bin ich so, wie ich bin?" / „Warum ist das ein Krankheitsbild?" / „Wer hat das Schmerz-Radio erfunden?") sind die größten Fragen des Spiels — und er stellt sie einer Disponentin, die er bisher nur als Telefonstimme kennt. Es gibt keinen Grund, ausgerechnet sie das zu fragen.
-3. **Die Quest fällt aus der Schublade.** Insa zieht eine 20 Jahre alte Akte hervor, in der zufällig genau Layards Symptom beschrieben ist, mit dem Gutachter Marteau, den Layard angeblich „aus einem ganz anderen Mund" kennt — nur hat ihn vorher nie jemand erwähnt. Sertl/1978/E12/5710 sind komplett neue Begriffe ohne Vorsaat.
-
 ## Ziel
 
-Der Quest-Einstieg muss aus dem ergeben, was Layard und der Spieler bis dahin wissen — nicht aus einer freundlichen Frage, die zufällig den richtigen Aktendeckel öffnet.
+Wenn Layard in `sectorDoor` die entriegelte Schleuse anklickt, statt der heutigen 7-zeiligen Inline-Tafel (`feetWontMove`) eine vollwertige Cutscene im Stil der bestehenden `Act2BridgeCutscene` zeigen — schwarze Tafeln, Phosphor-Header, optisch kongruent zu `sectorDoor` / `passage` und Layards bisheriger Innenstimme. Während der Cutscene spielt der angehängte Track *The City Forgets*. Am Ende: Cutscene endet, `feetWontMove` + neue Marker-Flag gesetzt, Spieler landet in `passage`.
 
-## Plan
+## Inhalt (4 Tafeln, Präsens, leicht gekürzt aus der Vorlage)
 
-### 1. Bridge & In-Person sauber trennen
+```text
+Beat 1  · header "Sektor 28 · Schleuse · E67"  · style black
+  "Und obwohl er intensiv daran denkt, durch die schwere Eisentüre zu gehen,
+   raus aus E67 … seine Füße bewegen sich nicht."
 
-Die Bridge endet damit, dass Insa **andeutet** — sie nimmt die Kapsel, sagt „ich hätte da etwas, kommen Sie morgen vorbei, wenn der Tee kalt geworden ist", aber **gibt noch nichts heraus**. Layard nickt, weiß nicht worauf. Die Akte wird erst beim zweiten, freiwilligen Besuch in der Leitstelle übergeben — das ist dann `insaAct2InPerson`.
+Beat 2  · style amber
+  "Wer bin ich, fragt sich Layard. Warum gehorcht mein Körper meinen Gedanken nicht?"
+  "Vielleicht stimmt etwas nicht mit mir selbst. Die Beziehung zu ihm. Dieses Universum."
+  "Er hat es sich lange nicht mehr angesehen. Dabei war er doch so neugierig."
+  "Vielleicht, denkt er, lassen sich die Schichten des inneren Klumpens, der sich um
+   seine Gefühle gelegt hat, abtragen. Dafür sollte er sie sich anschauen. Gründlich
+   und furchtlos. Wie ein Krieger in Babylon. Woher kommt jetzt dieses Bild?"
 
-Änderungen:
-- `ACT2_BRIDGE_BEATS` Beats 4–6 leicht umschreiben: Kapsel-Übergabe ja, „etwas für Sie" als vage Einladung, aber keine Akte, kein Marteau, kein 5710. Tee wird angeboten und nicht getrunken.
-- Doku-Kommentar in `leitstelleE67.ts` anpassen: „zweiter Besuch in der Leitstelle".
+Beat 3  · style amber
+  "Was, so überlegt sich Layard, wenn ich dieses Protokoll nicht abliefere?
+   Was ändert sich? Würde er bestraft werden?"
+  "Die Idee, Freiheit zu besitzen, Handlungsfreiheit, hat fast etwas Verbotenes."
+  "Andererseits: E71. Eine andere Welt. Ein Abenteuer? Ein Grund, den Quadranten
+   zu verlassen. Eine Aufgabe."
 
-### 2. Marteau und 1978 vorpflanzen
+Beat 4  · header "Sektor 28 · Schleuse · jenseits"  · style black
+  "Seine Füße setzen sich in Bewegung. Layards Körper gehorcht ihm."
+  "Das Öffnen der Tür, die milde Abendkälte auf der Haut —"
+  "— das fühlt sich fast nach Freiheit an."
+```
 
-Damit Insa keine neuen Namen aus dem Hut zieht, müssen Marteau, Sertl und „1978 / Resonanz-Überlastung" mindestens **zweimal vor dem Insa-Termin** kurz fallen — beiläufig, nicht erklärend.
+Sprache durchgängig Präsens (Memory-Regel `mem://preferences/tense.md`).
 
-- **Mikael** (Akt I, beim Zurückgeben der Kapsel oder im Pub): ein Satz wie „Das ist nicht das erste Mal. In den Siebzigern hat einer namens Marteau aufgeschrieben, was so jemand wie Sie hört. Niemand wollte es lesen."
-- **Adaeze/Okwu** in der Bridge-Cutscene (clinical-Beat): statt nur „Sieben Tage kein Schmerz-Radio" — eine Zeile wie „Sie sind nicht der erste Hörer mit diesen Werten. Der letzte hieß Sertl. 1978." Trocken, ohne Erklärung. Layard kann das Gespräch nicht aufmachen, weil Okwu schon Brille aufgesetzt hat.
+## Umsetzung (Code)
 
-Beide Sätze sind Saatkörner — der Spieler weiß: da war was, das niemand erklärt hat. Wenn Insa später dieselben Worte benutzt, fügen sich zwei Splitter zusammen, statt einer Akte aus dem Nichts.
+1. **Asset**
+   `src/assets/music/The_City_Forgets.mp3` (Kopie der hochgeladenen Datei).
 
-### 3. Layards Frage erden
+2. **Cutscene-Typ + Daten** (`src/game/types.ts`, `src/game/cutscenes.ts`)
+   - `CutsceneId` um `"sectorThreshold"` erweitern.
+   - In `cutscenes.ts` neuen Export `SECTOR_THRESHOLD_BEATS: Act2BridgeBeat[]` (gleiche `Act2BridgeBeat`-Shape wiederverwenden) + `SECTOR_THRESHOLD_UI_TEXT.skipHint = "Enter / Klick · weiter · Esc · überspringen"`.
 
-Der In-Person-Dialog beginnt nicht mit „Was haben Sie auf dem Herzen?" sondern mit dem **Anlass**: Layard kommt wegen einer von drei konkreten Sachen, die er aus Akt I / Bridge mitschleppt:
+3. **Komponente** `src/components/game/SectorThresholdCutscene.tsx`
+   - Strukturell parallel zu `Act2BridgeCutscene`: Idx-State, Auto-Advance (Sockel 3.4 s + 1.6 s/Zeile), Crossfade, Click/Esc/Enter überspringt, Dev-Edit-Modus + Dev-Pause + `useDevStep` analog eingehängt (Konsistenz mit Wiedergabe-Panel der letzten Iterationen).
+   - `finish()` setzt Flags `sectorThresholdSeen` und (für bestehende Logik) `feetWontMove`, ruft `endCutscene()` und `api.goTo("passage")`.
+   - **Musik:** bei `active === true` einmalig `useMusic().setOverride("sectorThreshold")`; bei `finish()` `setOverride(null)`. Override wird in `MusicPlayer` registriert (siehe 4).
 
-- die Kapsel und Mikaels Satz („Sie sagte, in den Siebzigern hätte einer …"),
-- Okwus „Sertl, 1978",
-- die vage Einladung „kommen Sie morgen vorbei".
+4. **Music-Override** (`src/audio/MusicPlayer.tsx`)
+   - Import `trackCityForgets from "@/assets/music/The_City_Forgets.mp3"`.
+   - In `MUSIC_OVERRIDES` Eintrag `sectorThreshold: { title: "The City Forgets", src: trackCityForgets }` ergänzen — kein Playlist-Eintrag, ausschließlich Override für die Cutscene.
 
-Die drei Wahlmöglichkeiten werden konkrete Aufhänger:
-- „Mikael hat einen Namen erwähnt. Marteau."
-- „Okwu hat Sertl gesagt. 1978. Sie hat nicht weitergeredet."
-- „Sie haben gesagt, Sie hätten etwas für mich."
+5. **Hotspot in `src/game/scenes/sectorAct1.ts`**
+   - `toPassage.onUse` ersetzen durch:
+     ```ts
+     if (!api.hasFlag("sectorThresholdSeen")) api.startCutscene("sectorThreshold");
+     else api.goTo("passage");
+     ```
+   - Das alte `feetWontMove`-Inline-Text-Branch entfällt; `feetWontMove` wird durch die Cutscene gesetzt, damit abhängige Logik unverändert weiterläuft.
 
-Insas Antwort ist auf alle drei dieselbe Akte — aber jetzt als **Antwort auf Layards Frage**, nicht als ungebetenes Geschenk. „Sie haben den Namen gehört. Gut. Dann muss ich Ihnen nicht erklären, warum ich Ihnen das hier gebe."
+6. **Mount** in `src/components/game/GameShell.tsx` neben `Act2BridgeCutscene` (`<SectorThresholdCutscene />`).
 
-Die existenziellen Fragen („warum bin ich so") verschieben sich nach hinten in den Dialog oder in `insaAct2InPersonAfter` — als das, was Layard fragen kann, **nachdem** er die Akte gelesen / das Archiv gesucht hat. Da gehören sie hin, da sind sie verdient.
+7. **Dev-RoomSwitcher** (`src/dev/RoomSwitcher.tsx`)
+   - In der `cutscenes`-Liste ergänzen: `{ id: "sectorThreshold", title: "Cutscene · Schleuse E67 → Passage" }`.
 
-### 4. Mira-Splitter bleibt
+## Was bleibt unverändert
 
-Die Zeilen `ip10friendly` / `ip10skeptical` funktionieren weiter — sie hängen am Ende, nicht am Anfang.
-
-## Technischer Anteil
-
-- `src/game/cutscenes.ts`: Beats 4–6 von `ACT2_BRIDGE_BEATS` neu texten (kein Marteau, kein 5710, keine Akte). Okwu-Beat (Index 8) um eine Sertl-Zeile ergänzen.
-- `src/game/dialogs/mikael.ts` (oder die Pub-/Kapsel-Szene): einen Marteau-Saatsatz einbauen, hinter einer Bedingung, die nur greift, wenn Mikael die Kapsel zurückgibt.
-- `src/game/dialogs/insa.ts` `insaAct2InPerson`: Einstieg umschreiben (Anlass-Wahl statt Existenzfrage), Akten-Übergabe als Antwort framen. `onEnd` bleibt (Item + Flags).
-- `src/game/scenes/leitstelleE67.ts`: Doku-Kommentar präzisieren.
-- Keine neuen Flags nötig — `mikaelKapselZurueck` o. ä. existiert bereits oder wird sowieso vor dem Insa-Termin gesetzt; ggf. checken.
-
-## Was bewusst offen bleibt
-
-- Archiv 5710 als Schauplatz, der Mira-/Skeptical-Pfad dorthin und die Marteau-Spur sind weiterhin der nächste Planschritt — der hier vorgeschlagene Fix macht nur den **Übergabemoment** glaubwürdig.
+- `passage`-Szene, alle übrigen Hotspots in `sectorDoor`, Insa-Anruf-Logik, Akt-II-Bridge.
+- Keine neuen Bild-Assets — Optik kommt aus dem schon etablierten schwarzen Tafel-Stil mit Amber/Phosphor-Header, derselbe Codepfad den `passage`/`sectorDoor` ästhetisch flankiert.

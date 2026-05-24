@@ -20,6 +20,7 @@ import trackDsaTable from "@/assets/music/dsa-table.mp3";
 import trackLinoleumWaltz from "@/assets/music/the-linoleum-waltz.mp3";
 import trackCornerBooth from "@/assets/music/The_Corner_Booth.mp3";
 import trackVictorySpire from "@/assets/music/victory-over-the-spire.mp3";
+import trackCityForgets from "@/assets/music/The_City_Forgets.mp3";
 
 /**
  * Background music. Plays a playlist of tracks in sequence and
@@ -55,6 +56,7 @@ export const MUSIC_OVERRIDES = {
   cafeteria: { title: "The Linoleum Waltz", src: trackLinoleumWaltz } as MusicTrack,
   pub: { title: "The Corner Booth", src: trackCornerBooth } as MusicTrack,
   e71Nerds: { title: "Victory over the Spire", src: trackVictorySpire } as MusicTrack,
+  sectorThreshold: { title: "The City Forgets", src: trackCityForgets } as MusicTrack,
 };
 export type MusicOverrideId = keyof typeof MUSIC_OVERRIDES;
 const CROSSFADE_SECONDS = 6;
