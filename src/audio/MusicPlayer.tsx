@@ -14,6 +14,7 @@ import trackMidnight from "@/assets/midnight-at-the-loading-bay.mp3";
 import trackSunrise from "@/assets/music/Before_the_Sunrise.mp3";
 import trackSteelRain from "@/assets/music/Steel_Rain_at_Midnight.mp3";
 import trackWohnung from "@/assets/music/Wohnung.mp3";
+import trackThreeOClock from "@/assets/music/Three_O_Clock_Skyline.mp3";
 import trackDsaTavern from "@/assets/music/dsa-tavern.mp3";
 import trackDsaTable from "@/assets/music/dsa-table.mp3";
 import trackLinoleumWaltz from "@/assets/music/the-linoleum-waltz.mp3";
@@ -39,6 +40,7 @@ const PLAYLIST: MusicTrack[] = [
   { title: "Before the Sunrise", src: trackSunrise },
   { title: "Steel Rain at Midnight", src: trackSteelRain },
   { title: "Wohnung", src: trackWohnung },
+  { title: "Three O'Clock Skyline", src: trackThreeOClock },
 ];
 
 /**
