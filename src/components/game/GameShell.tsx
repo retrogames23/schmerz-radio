@@ -71,27 +71,30 @@ const FreeChatOverlay = lazy(() =>
 
 function DsaMusicBridge() {
   const { scene, dsaAdventureOpen, dsaBeat } = useGame();
-  const { setOverride } = useMusic();
+  const { setOverride, activeOverride } = useMusic();
   useEffect(() => {
     const inTavern = dsaAdventureOpen && !!dsaBeat && dsaBeat.startsWith("s2");
     const inDsa = scene === "commonRoomE67" || dsaAdventureOpen;
     const inCafeteria = scene === "cafeteriaE67";
     const inPub = scene === "pub" || scene === "pubToilet";
     const inE71Nerds = scene === "commonRoomE71";
-    setOverride(
-      inTavern
-        ? "dsaTavern"
-        : inDsa
-          ? "dsaTable"
-          : inCafeteria
-            ? "cafeteria"
-            : inPub
-              ? "pub"
-              : inE71Nerds
-                ? "e71Nerds"
-                : null,
-    );
-  }, [scene, dsaAdventureOpen, dsaBeat, setOverride]);
+    const target = inTavern
+      ? "dsaTavern"
+      : inDsa
+        ? "dsaTable"
+        : inCafeteria
+          ? "cafeteria"
+          : inPub
+            ? "pub"
+            : inE71Nerds
+              ? "e71Nerds"
+              : null;
+    // „sectorThreshold" ist ein Play-Once-Override, der sich selbst auflöst,
+    // sobald der Song zu Ende ist. Bis dahin nicht überschreiben — sonst
+    // würde z. B. der Wechsel in „passage" (target=null) den Song abbrechen.
+    if (activeOverride === "sectorThreshold" && target === null) return;
+    setOverride(target);
+  }, [scene, dsaAdventureOpen, dsaBeat, setOverride, activeOverride]);
   return null;
 }
 
