@@ -75,7 +75,7 @@ export type KnowledgeFlag =
   | "frequencyControl";
 
 /** Identifier einer narrativen Cutscene. */
-export type CutsceneId = "paramedics" | "act2Bridge";
+export type CutsceneId = "paramedics" | "act2Bridge" | "sectorThreshold";
 
 export type StoryFlag =
   | "radioTunedTo1046"
