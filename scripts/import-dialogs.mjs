@@ -17,8 +17,9 @@
 import { Project, SyntaxKind, QuoteKind } from "ts-morph";
 import YAML from "yaml";
 import { readFileSync } from "node:fs";
+import { readdirSync } from "node:fs";
 
-const SRC = "src/game/dialogs.ts";
+const SRC_DIR = "src/game/dialogs";
 const inPath = process.argv[2];
 if (!inPath) {
   console.error("Usage: node scripts/import-dialogs.mjs <dialogs.yaml>");
@@ -36,29 +37,38 @@ const project = new Project({
   tsConfigFilePath: "tsconfig.json",
   manipulationSettings: { quoteKind: QuoteKind.Double },
 });
-const sf = project.addSourceFileAtPath(SRC);
 
-const dialogsVar = sf
-  .getVariableDeclarations()
-  .find((v) => v.getName() === "dialogs");
-if (!dialogsVar) {
-  console.error("Could not find `dialogs` export in", SRC);
-  process.exit(1);
-}
-const dialogsObj = dialogsVar.getInitializerIfKindOrThrow(
-  SyntaxKind.ObjectLiteralExpression,
-);
+// Load all dialog source files (split by NPC / location).
+const sourceFiles = readdirSync(SRC_DIR)
+  .filter((f) => f.endsWith(".ts") && f !== "index.ts" && f !== "_helpers.ts" && f !== "lookup.ts")
+  .map((f) => project.addSourceFileAtPath(`${SRC_DIR}/${f}`));
 
+const touchedFiles = new Set();
+
+/**
+ * Find a dialog tree by name across all dialog files. Trees live as object
+ * literal values inside a record variable like `export const philippeDialogs:
+ * Record<string, DialogTree> = { philippeInCorridor56: { ... }, ... }`.
+ */
 function findTree(name) {
-  const prop = dialogsObj
-    .getProperties()
-    .find(
-      (p) =>
-        p.getKind() === SyntaxKind.PropertyAssignment &&
-        p.getName().replace(/['"]/g, "") === name,
-    );
-  if (!prop) return null;
-  return prop.getInitializerIfKindOrThrow(SyntaxKind.ObjectLiteralExpression);
+  for (const sf of sourceFiles) {
+    for (const v of sf.getVariableDeclarations()) {
+      const init = v.getInitializer();
+      if (!init || init.getKind() !== SyntaxKind.ObjectLiteralExpression) continue;
+      const prop = init
+        .getProperties()
+        .find(
+          (p) =>
+            p.getKind() === SyntaxKind.PropertyAssignment &&
+            p.getName().replace(/['"]/g, "") === name,
+        );
+      if (prop) {
+        touchedFiles.add(sf);
+        return prop.getInitializerIfKindOrThrow(SyntaxKind.ObjectLiteralExpression);
+      }
+    }
+  }
+  return null;
 }
 
 function findLine(treeObj, lineId) {
@@ -200,7 +210,7 @@ for (const tree of data) {
   if (treeTouched) stats.treesUpdated++;
 }
 
-sf.saveSync();
+for (const sf of touchedFiles) sf.saveSync();
 
 console.log(
   `✓ Re-Import abgeschlossen: ${stats.treesUpdated} Bäume, ${stats.linesUpdated} Zeilen, ${stats.fieldsChanged} Felder geändert.`,
