@@ -45,8 +45,8 @@ export const corridorsE67Scenes: Record<string, Scene> = {
         // Tür 3601 — links außen.
         x: 4.8,
         y: 29.6,
-        w: 14,
-        h: 45.4,
+        w: 15,
+        h: 56.7,
         label: "Tür 3601 — Abschnittsverantwortlicher E67",
         kind: "talk",
         onUse: (api) => {
