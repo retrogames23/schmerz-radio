@@ -49,7 +49,7 @@ const DsaCharacterCreator = lazy(() =>
   })),
 );
 const DsaAdventureScene = lazy(() =>
-  import("./DsaAdventureScene").then((m) => ({ default: m.DsaAdventureScene })),
+  import("./DsaLlmAdventureScene").then((m) => ({ default: m.DsaLlmAdventureScene })),
 );
 const HandbookOverlay = lazy(() =>
   import("./HandbookOverlay").then((m) => ({ default: m.HandbookOverlay })),
