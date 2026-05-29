@@ -47,6 +47,45 @@ export type Database = {
         }
         Relationships: []
       }
+      dsa_llm_adventures: {
+        Row: {
+          character_snapshot: Json
+          created_at: string
+          current_image_tag: string
+          messages: Json
+          offtopic_streak: number
+          setting: string
+          status: string
+          summary: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          character_snapshot: Json
+          created_at?: string
+          current_image_tag?: string
+          messages?: Json
+          offtopic_streak?: number
+          setting: string
+          status?: string
+          summary?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          character_snapshot?: Json
+          created_at?: string
+          current_image_tag?: string
+          messages?: Json
+          offtopic_streak?: number
+          setting?: string
+          status?: string
+          summary?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
