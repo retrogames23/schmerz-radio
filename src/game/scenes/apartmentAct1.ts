@@ -127,6 +127,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
                 description:
                   "Eingehende Rohrpost-Hülse, beantwortet eine Quittung 4317-K. Inhalt: ein Transferbogen — Patientin Tilla Kowalk, von E70-K verlegt an Heim Lothenau, neue Bewohnernummer 70-2244. Stempel »ÜBERFÜHRUNG STILL«. Datum 06.11.1997.",
               });
+              // Nachziehen: Auf den Hauptpfaden setzt Insa diesen Auftrag
+              // explizit. Hier wurde er übersprungen — ohne das Flag bleibt
+              // Kowalks Kantinen-Strang (kInsa1 → knowsVossbeckPath) tot.
+              api.setFlag("insaGaveTransferTask");
               api.setFlag("calledForCode");
               api.startDialog("insa2");
             } else {
