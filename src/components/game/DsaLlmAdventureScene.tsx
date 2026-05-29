@@ -24,8 +24,6 @@ import {
   type Combatant,
   type CombatResult,
 } from "@/game/dsa/combat";
-import { supabase } from "@/integrations/supabase/client";
-
 /**
  * LLM-Tafelrunde im Gemeinschaftsraum E67. Ersetzt das alte gescriptete
  * `DsaAdventureScene`. Drei Modi:
@@ -633,6 +631,3 @@ function EndBanner({
     </div>
   );
 }
-
-// supabase wird über den auth-Helper genutzt; explizite Referenz, damit Tree-Shaking nicht jammert.
-void supabase;
