@@ -1001,6 +1001,7 @@ export function Terminal() {
           { text: "Wie besprochen. Ich habe den Code extra für Sie geändert.", kind: "out" },
           { text: "Sie kennen das Datum. Tippen Sie es am Keypad ein —", kind: "out" },
           { text: "ohne Punkte. Acht Ziffern.", kind: "out" },
+          { text: "(Es steht auf dem Bogen, den Sie heute bekommen haben.)", kind: "out" },
           { text: "I. B.", kind: "out" },
           { text: "── Ende ──────────────────────────────", kind: "system" },
         );

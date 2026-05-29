@@ -1,69 +1,37 @@
-## Ziel
+## Befund
 
-Wenn Layard in `sectorDoor` die entriegelte Schleuse anklickt, statt der heutigen 7-zeiligen Inline-Tafel (`feetWontMove`) eine vollwertige Cutscene im Stil der bestehenden `Act2BridgeCutscene` zeigen — schwarze Tafeln, Phosphor-Header, optisch kongruent zu `sectorDoor` / `passage` und Layards bisheriger Innenstimme. Während der Cutscene spielt der angehängte Track *The City Forgets*. Am Ende: Cutscene endet, `feetWontMove` + neue Marker-Flag gesetzt, Spieler landet in `passage`.
-
-## Inhalt (4 Tafeln, Präsens, leicht gekürzt aus der Vorlage)
+Es gibt im `phoneApt`-Hotspot (`src/game/scenes/apartmentAct1.ts`, Zeilen 100–147) einen Fallback-Zweig, der genau dein beobachtetes Symptom erklärt:
 
 ```text
-Beat 1  · header "Sektor 28 · Schleuse · E67"  · style black
-  "Und obwohl er intensiv daran denkt, durch die schwere Eisentüre zu gehen,
-   raus aus E67 … seine Füße bewegen sich nicht."
-
-Beat 2  · style amber
-  "Wer bin ich, fragt sich Layard. Warum gehorcht mein Körper meinen Gedanken nicht?"
-  "Vielleicht stimmt etwas nicht mit mir selbst. Die Beziehung zu ihm. Dieses Universum."
-  "Er hat es sich lange nicht mehr angesehen. Dabei war er doch so neugierig."
-  "Vielleicht, denkt er, lassen sich die Schichten des inneren Klumpens, der sich um
-   seine Gefühle gelegt hat, abtragen. Dafür sollte er sie sich anschauen. Gründlich
-   und furchtlos. Wie ein Krieger in Babylon. Woher kommt jetzt dieses Bild?"
-
-Beat 3  · style amber
-  "Was, so überlegt sich Layard, wenn ich dieses Protokoll nicht abliefere?
-   Was ändert sich? Würde er bestraft werden?"
-  "Die Idee, Freiheit zu besitzen, Handlungsfreiheit, hat fast etwas Verbotenes."
-  "Andererseits: E71. Eine andere Welt. Ein Abenteuer? Ein Grund, den Quadranten
-   zu verlassen. Eine Aufgabe."
-
-Beat 4  · header "Sektor 28 · Schleuse · jenseits"  · style black
-  "Seine Füße setzen sich in Bewegung. Layards Körper gehorcht ihm."
-  "Das Öffnen der Tür, die milde Abendkälte auf der Haut —"
-  "— das fühlt sich fast nach Freiheit an."
+sentForgedQuittung  &&  !receivedTillaTransfer
+  → setFlag("receivedTillaTransfer")
+  → addItem("tillaTransfer")
+  → setFlag("calledForCode")     ← Code-Mail erscheint
+  → startDialog("insa2")
 ```
 
-Sprache durchgängig Präsens (Memory-Regel `mem://preferences/tense.md`).
+Dieser Zweig setzt **nicht** `insaGaveTransferTask`. Genau dieses Flag ist aber Voraussetzung für Kowalks `kInsa1`-Choice in der Kantine (`src/game/dialogs/cafeteria.ts`). Ohne `kInsa1` läuft die Kette `kInsa6c → knowsVossbeckPath` nie an — und ohne `knowsVossbeckPath` sind sowohl die Brust-Trainingsfälle als auch Vossbecks Hinterzimmer (3603) tot. Der einzige Reserveweg wäre `gotB3Authorization` über Philippe.
 
-## Umsetzung (Code)
+Genauer Hergang, der zu deinem Spielstand passt:
+1. Du gehst den Bodo-/Quittungs-Pfad statt Insa zweimal anzurufen.
+2. Die gefälschte Quittung wandert ins Rohr → `sentForgedQuittung` gesetzt.
+3. Beim nächsten Telefonat schlägt der obige Fallback an, gibt dir Transferbogen + Code-Mail in einem Rutsch.
+4. `insaGaveTransferTask` wurde nie gesetzt → Kantinen-Quest (Kowalk → Brust → Vossbeck) bleibt komplett unerreichbar.
 
-1. **Asset**
-   `src/assets/music/The_City_Forgets.mp3` (Kopie der hochgeladenen Datei).
+## Fix
 
-2. **Cutscene-Typ + Daten** (`src/game/types.ts`, `src/game/cutscenes.ts`)
-   - `CutsceneId` um `"sectorThreshold"` erweitern.
-   - In `cutscenes.ts` neuen Export `SECTOR_THRESHOLD_BEATS: Act2BridgeBeat[]` (gleiche `Act2BridgeBeat`-Shape wiederverwenden) + `SECTOR_THRESHOLD_UI_TEXT.skipHint = "Enter / Klick · weiter · Esc · überspringen"`.
+In `src/game/scenes/apartmentAct1.ts`, im Fallback-Zweig (~Zeile 120–131), vor dem `setFlag("calledForCode")` zusätzlich `api.setFlag("insaGaveTransferTask")` setzen. Damit bleibt Kowalks `kInsa1` immer erreichbar, egal über welchen Weg `receivedTillaTransfer` gesetzt wurde.
 
-3. **Komponente** `src/components/game/SectorThresholdCutscene.tsx`
-   - Strukturell parallel zu `Act2BridgeCutscene`: Idx-State, Auto-Advance (Sockel 3.4 s + 1.6 s/Zeile), Crossfade, Click/Esc/Enter überspringt, Dev-Edit-Modus + Dev-Pause + `useDevStep` analog eingehängt (Konsistenz mit Wiedergabe-Panel der letzten Iterationen).
-   - `finish()` setzt Flags `sectorThresholdSeen` und (für bestehende Logik) `feetWontMove`, ruft `endCutscene()` und `api.goTo("passage")`.
-   - **Musik:** bei `active === true` einmalig `useMusic().setOverride("sectorThreshold")`; bei `finish()` `setOverride(null)`. Override wird in `MusicPlayer` registriert (siehe 4).
+## Bonus (optional, in selber Änderung)
 
-4. **Music-Override** (`src/audio/MusicPlayer.tsx`)
-   - Import `trackCityForgets from "@/assets/music/The_City_Forgets.mp3"`.
-   - In `MUSIC_OVERRIDES` Eintrag `sectorThreshold: { title: "The City Forgets", src: trackCityForgets }` ergänzen — kein Playlist-Eintrag, ausschließlich Override für die Cutscene.
+UX-Stolperstein in der Mail 003 (`src/components/game/Terminal.tsx`, Zeilen 998–1004): Der Text sagt „Sie kennen das Datum" und nennt es nicht. Wer das Telefonat länger her hat, steht am Keypad und rät. Vorschlag: Eine dezente Zeile ergänzen, die das Datum nicht direkt nennt, aber klarer auf den Transferbogen verweist (z. B. „Das Datum steht auf dem Bogen, den Sie heute erhalten haben."). So bleibt das Rätsel intakt, aber der Lookup ist eindeutig.
 
-5. **Hotspot in `src/game/scenes/sectorAct1.ts`**
-   - `toPassage.onUse` ersetzen durch:
-     ```ts
-     if (!api.hasFlag("sectorThresholdSeen")) api.startCutscene("sectorThreshold");
-     else api.goTo("passage");
-     ```
-   - Das alte `feetWontMove`-Inline-Text-Branch entfällt; `feetWontMove` wird durch die Cutscene gesetzt, damit abhängige Logik unverändert weiterläuft.
+## Was ich NICHT anfasse
 
-6. **Mount** in `src/components/game/GameShell.tsx` neben `Act2BridgeCutscene` (`<SectorThresholdCutscene />`).
+- Die Hauptpfade (`insa2`, `insaDispatch`) setzen `insaGaveTransferTask` bereits korrekt — kein Eingriff.
+- Keine Änderung an Keypad-Logik, Codes oder Vossbeck-Gates.
 
-7. **Dev-RoomSwitcher** (`src/dev/RoomSwitcher.tsx`)
-   - In der `cutscenes`-Liste ergänzen: `{ id: "sectorThreshold", title: "Cutscene · Schleuse E67 → Passage" }`.
+## Verifikation
 
-## Was bleibt unverändert
-
-- `passage`-Szene, alle übrigen Hotspots in `sectorDoor`, Insa-Anruf-Logik, Akt-II-Bridge.
-- Keine neuen Bild-Assets — Optik kommt aus dem schon etablierten schwarzen Tafel-Stil mit Amber/Phosphor-Header, derselbe Codepfad den `passage`/`sectorDoor` ästhetisch flankiert.
+- Quick-Check via Dev-Playback: Forged-Quittung-Pfad → Telefonat → in Kantine prüfen, dass Kowalks `kInsa1` und danach Brust-Trainingschoice erscheinen.
+- Standardpfad (Insa zweimal anrufen) muss unverändert funktionieren — der neue Flag-Set ist additiv und idempotent.
