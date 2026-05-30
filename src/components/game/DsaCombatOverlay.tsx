@@ -119,7 +119,7 @@ export function DsaCombatOverlay({
 
         <div className="dsa-adventure-header shrink-0 px-5 sm:px-6 pt-5 pb-3 border-b-2 border-[rgba(30,18,8,0.85)]">
           <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold">
-            Kampf · DSA 2 · Tjark würfelt
+            Kampf · DSA 3 · Tjark würfelt
           </div>
           <div className="mt-1 flex items-baseline justify-between gap-3">
             <h2 className="font-display text-2xl sm:text-3xl dsa-ink font-extrabold">

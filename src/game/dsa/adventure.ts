@@ -1575,7 +1575,7 @@ export function pickEnding(
 }
 
 /**
- * Würfelt eine vereinfachte Eigenschaftsprobe (3W6, statt 3W20 nach DSA1/2,
+ * Würfelt eine vereinfachte Eigenschaftsprobe (3W6, statt 3W20 nach DSA3,
  * da unsere Eigenschaften nur 8..14 sind). Erfolg, wenn die Summe der drei
  * Würfel ≤ Eigenschaftswert + Modifikator. Gibt die einzelnen Würfel und
  * das Ergebnis zurück.

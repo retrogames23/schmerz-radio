@@ -93,7 +93,7 @@ export const communalE67Scenes: Record<string, Scene> = {
         kind: "look",
         onUse: (api) =>
           api.showText([
-            "„Das Schwarze Auge“, zweite Edition. Eselsohren, Kaffeeflecken,",
+            "„Das Schwarze Auge“, dritte Edition. Eselsohren, Kaffeeflecken,",
             "mit Bleistift annotiert: „Praxisregel — KEINE Charaktertode in der Anreise.“",
           ]),
       },
