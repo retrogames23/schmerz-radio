@@ -11,7 +11,79 @@ import {
 } from "@/components/dsa-standalone/slotStorage";
 import type { DsaCharacterSummary } from "@/game/types";
 
+const CANONICAL = "https://whisperquest.app/dsa";
+const TITLE = "DSA-Soloabenteuer mit KI-Meister – kostenlos online spielen";
+const DESCRIPTION =
+  "Spiele DSA-Soloabenteuer (Das Schwarze Auge) online mit KI-Spielleiter Tjark. Helden würfeln, Pen-&-Paper-Tafelrunde in Aventurien, drei Speicherplätze – kostenlos im Browser, ohne Download.";
+
+const FAQS: Array<{ q: string; a: string }> = [
+  {
+    q: "Was ist ein DSA-Soloabenteuer?",
+    a: "Ein DSA-Soloabenteuer ist eine Pen-&-Paper-Runde im Schwarzen Auge, die du allein spielst. Statt einer menschlichen Spielleitung erzählt hier der KI-Meister Tjark die Szene, würfelt für die NPCs und reagiert auf deine Entscheidungen. Eine Sitzung dauert rund eine Stunde.",
+  },
+  {
+    q: "Brauche ich DSA-Regelkenntnisse, um zu spielen?",
+    a: "Nein. Du würfelst deinen Helden in wenigen Klicks, der KI-Meister erklärt die Welt und führt dich durch Proben, Kampf und Dialoge. Wer das Schwarze Auge kennt, fühlt sich sofort heimisch; alle anderen lernen es nebenbei.",
+  },
+  {
+    q: "Kostet das DSA-Online-Abenteuer etwas?",
+    a: "Nein. Die DSA-Tafelrunde auf WhisperQuest ist kostenlos im Browser spielbar. Ohne Anmeldung bleibt dein Held lokal in diesem Browser, mit Login synchronisieren wir deine drei Speicherplätze.",
+  },
+  {
+    q: "In welcher Epoche Aventuriens spielt das Abenteuer?",
+    a: "Im 20. Hal nach Hal — Reichsbehüter Brin verteidigt das Mittelreich gegen den Dritten Orkensturm. Eine klassische Phase der DSA-Geschichte mit Intrigen, Schwertkampf und Magie.",
+  },
+];
+
 export const Route = createFileRoute("/dsa/")({
+  head: () => ({
+    meta: [
+      { title: TITLE },
+      { name: "description", content: DESCRIPTION },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESCRIPTION },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: CANONICAL },
+      { property: "og:site_name", content: "WhisperQuest" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: TITLE },
+      { name: "twitter:description", content: DESCRIPTION },
+    ],
+    links: [{ rel: "canonical", href: CANONICAL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "VideoGame",
+          name: "DSA-Soloabenteuer mit KI-Meister",
+          alternateName: "Das Schwarze Auge – Solo-Tafelrunde",
+          url: CANONICAL,
+          description: DESCRIPTION,
+          inLanguage: "de",
+          applicationCategory: "Game",
+          genre: ["Pen & Paper", "Rollenspiel", "Fantasy"],
+          gamePlatform: "Web Browser",
+          operatingSystem: "Any",
+          playMode: "SinglePlayer",
+          author: { "@type": "Organization", name: "WhisperQuest" },
+          offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQS.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
+      },
+    ],
+  }),
   component: DsaLanding,
 });
 
@@ -51,7 +123,9 @@ function DsaLanding() {
             <div className="text-[10px] uppercase tracking-[0.3em] opacity-60">
               WhisperQuest
             </div>
-            <h1 className="font-serif text-xl sm:text-2xl">Die Tafelrunde</h1>
+            <h1 className="font-serif text-xl sm:text-2xl">
+              DSA-Soloabenteuer mit KI-Meister
+            </h1>
           </div>
           <div className="text-xs">
             {loading ? null : user ? (
@@ -83,10 +157,12 @@ function DsaLanding() {
       {/* Pitch */}
       <section className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 text-center">
         <p className="font-serif text-base sm:text-lg leading-relaxed text-[#f1e6c8]/90">
-          Würfle einen Helden, wähle ein Abenteuer und spiel eine Stunde
-          klassische Tafelrunde mit dem KI-Meister Tjark. Aventurien im 20.
-          Hal — Reichsbehüter Brin verteidigt das Reich gegen den Dritten
-          Orkensturm. Dein Tisch, dein Held, dein Bogen.
+          Spiele <strong>Das Schwarze Auge</strong> als Soloabenteuer im
+          Browser. Würfle deinen Helden, wähle ein Setting und erlebe rund
+          eine Stunde klassische Pen-&-Paper-Tafelrunde mit dem KI-Meister
+          Tjark. Aventurien im 20. Hal — Reichsbehüter Brin verteidigt das
+          Mittelreich gegen den Dritten Orkensturm. Dein Tisch, dein Held,
+          dein Bogen.
         </p>
         {!user && (
           <p className="mt-4 text-xs uppercase tracking-wider opacity-60">
@@ -114,6 +190,23 @@ function DsaLanding() {
       </section>
 
       {/* Footer */}
+      {/* FAQ — SEO + nützlicher Kontext für Neulinge */}
+      <section className="mx-auto max-w-3xl px-4 pb-12 sm:px-6">
+        <h2 className="mb-4 text-xs uppercase tracking-[0.3em] opacity-70">
+          Häufige Fragen
+        </h2>
+        <dl className="space-y-5">
+          {FAQS.map((f) => (
+            <div key={f.q}>
+              <dt className="font-serif text-base text-[#f1e6c8]">{f.q}</dt>
+              <dd className="mt-1 text-sm leading-relaxed text-[#f1e6c8]/80">
+                {f.a}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
       <footer className="border-t border-[#3a2c1a] py-4 text-center text-[10px] uppercase tracking-wider opacity-60">
         <Link to="/" className="hover:opacity-100">
           Zum Stammspiel

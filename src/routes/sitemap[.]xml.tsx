@@ -5,6 +5,7 @@ const lastmod = new Date().toISOString().slice(0, 10);
 
 const urls = [
   { loc: `${SITE}/`, changefreq: "monthly", priority: "1.0" },
+  { loc: `${SITE}/dsa`, changefreq: "weekly", priority: "0.9" },
   { loc: `${SITE}/unsubscribe`, changefreq: "yearly", priority: "0.1" },
 ];
 
