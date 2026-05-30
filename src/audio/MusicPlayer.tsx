@@ -151,14 +151,16 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   }, [musicEnabled]);
 
   // Auf veröffentlichter Domain kann ein alter Spielstand die Musik auf
-  // "aus" gespeichert haben; im Standalone-DSA gibt es sonst keinen Regler,
-  // der sie wieder einschaltet. Nur für /dsa/* einmalig reparieren.
+  // "aus" oder 0 Lautstärke gespeichert haben; im Standalone-DSA gibt es
+  // sonst keinen Regler, der sie wieder einschaltet. Nur für /dsa/* reparieren.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (musicEnabled) return;
     if (!window.location.pathname.startsWith("/dsa")) return;
-    set({ musicEnabled: true });
-  }, [musicEnabled, set]);
+    const patch: { musicEnabled?: boolean; musicVolume?: number } = {};
+    if (!musicEnabled) patch.musicEnabled = true;
+    if (musicVolume < 0.08) patch.musicVolume = 0.45;
+    if (patch.musicEnabled !== undefined || patch.musicVolume !== undefined) set(patch);
+  }, [musicEnabled, musicVolume, set]);
   useEffect(() => {
     volumeRef.current = musicVolume;
   }, [musicVolume]);
