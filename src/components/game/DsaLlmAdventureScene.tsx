@@ -479,6 +479,21 @@ export function DsaLlmAdventureScene() {
                   <PlayerTurn key={t.id} text={t.text} name={dsaCharacter.name} />
                 ),
               )}
+              {pendingCombat && !busy && (
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCombat(pendingCombat);
+                      setPendingCombat(null);
+                    }}
+                    className="inline-flex items-center gap-2 rounded border-2 border-[#6b1a0e] bg-[#6b1a0e] px-4 py-2.5 text-sm font-bold uppercase tracking-wider text-[#f1e6c8] shadow-[0_2px_0_rgba(0,0,0,0.35)] hover:-translate-y-px transition-transform"
+                  >
+                    <Swords className="h-4 w-4" strokeWidth={2.5} />
+                    Die Waffen ziehen!
+                  </button>
+                </div>
+              )}
               {busy && (
                 <div className="flex items-center gap-2 italic text-[#2a1f10]/70 font-serif">
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -511,15 +526,19 @@ export function DsaLlmAdventureScene() {
                         void handleSend();
                       }
                     }}
-                    placeholder={`Was tut ${dsaCharacter.name}? (Enter = senden)`}
+                    placeholder={
+                      pendingCombat
+                        ? "Ein Kampf bahnt sich an — zieh die Waffen, um fortzufahren."
+                        : `Was tut ${dsaCharacter.name}? (Enter = senden)`
+                    }
                     rows={2}
-                    disabled={busy}
+                    disabled={busy || !!pendingCombat}
                     className="flex-1 resize-none rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 font-sans text-base leading-relaxed text-[#2a1f10] placeholder:text-[#2a1f10]/40 focus:outline-none focus:ring-2 focus:ring-[#3a2c1a]/40 disabled:opacity-50"
                   />
                   <button
                     type="button"
                     onClick={() => void handleSend()}
-                    disabled={busy || !composerText.trim()}
+                    disabled={busy || !composerText.trim() || !!pendingCombat}
                     className="inline-flex items-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10] disabled:opacity-50"
                   >
                     <Send className="h-3.5 w-3.5" strokeWidth={2.5} />
