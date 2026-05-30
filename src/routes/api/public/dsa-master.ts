@@ -376,25 +376,34 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             { role: "assistant", content: result.reply },
           ];
           const imgTag = parsed.sceneTag ?? setting.openingTag;
-          const { error: upErr } = await admin
-            .from("dsa_llm_adventures")
-            .upsert(
-              {
-                user_id: uid,
-                anon_id: anonId,
-                session_id: sessionId,
-                setting: settingId,
-                character_snapshot: characterSnap as unknown as Record<string, unknown>,
-                messages: initialMessages as unknown as Record<string, unknown>[],
-                summary: "",
-                current_image_tag: imgTag,
-                status: "active" as AdventureStatus,
-                offtopic_streak: 0,
-              },
-              { onConflict: uid ? "user_id,session_id" : "anon_id,session_id" },
-            );
-          if (upErr) {
-            console.error("dsa-master upsert failed", upErr);
+          const savePayload = {
+            user_id: uid,
+            anon_id: anonId,
+            session_id: sessionId,
+            setting: settingId,
+            character_snapshot: characterSnap as unknown as Record<string, unknown>,
+            messages: initialMessages as unknown as Record<string, unknown>[],
+            summary: "",
+            current_image_tag: imgTag,
+            status: "active" as AdventureStatus,
+            offtopic_streak: 0,
+          };
+          const existingQ = admin.from("dsa_llm_adventures").select("id");
+          const { data: existingRow, error: existingErr } = await (uid
+            ? existingQ.eq("user_id", uid)
+            : existingQ.eq("anon_id", anonId!)
+          )
+            .eq("session_id", sessionId)
+            .limit(1)
+            .maybeSingle();
+          const { error: upErr } = existingRow?.id
+            ? await admin
+                .from("dsa_llm_adventures")
+                .update(savePayload)
+                .eq("id", existingRow.id)
+            : await admin.from("dsa_llm_adventures").insert(savePayload);
+          if (existingErr || upErr) {
+            console.error("dsa-master save failed", existingErr ?? upErr);
             return json(500, { error: "Speichern fehlgeschlagen." });
           }
           return json(200, {
