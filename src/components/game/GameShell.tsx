@@ -7,6 +7,7 @@ import { SceneView } from "./SceneView";
 import { TopBar } from "./TopBar";
 import { Inventory, DragCursorLayer } from "./Inventory";
 import { ActiveItemBanner } from "./ActiveItemBanner";
+import { FocusSheet } from "./mobile/FocusSheet";
 import { TextOverlay } from "./TextOverlay";
 import { DialogOverlay } from "./DialogOverlay";
 import { RadioPanel } from "./RadioPanel";
@@ -123,6 +124,7 @@ export default function GameShell() {
             />
             <DragCursorLayer />
             <ActiveItemBanner />
+            <FocusSheet />
             <DonationGate />
           </InventoryDragProvider>
         </GameProvider>
