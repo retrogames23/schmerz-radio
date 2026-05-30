@@ -829,7 +829,7 @@ export const bodoDialogs: Record<string, DialogTree> = {
       brt3: {
         id: "brt3",
         speaker: "BODO",
-        text: "Die Delle ist von '97. Ein Trafo ist mir damals fast auf den Fuß — die Kanne hat den Treffer für mich abgekriegt.",
+        text: "Die Delle ist von '94. Ein Trafo ist mir damals fast auf den Fuß — die Kanne hat den Treffer für mich abgekriegt.",
         subtext: "Bodo schraubt den Deckel auf, riecht hinein, schraubt ihn wieder zu.",
         next: "brt4",
       },
