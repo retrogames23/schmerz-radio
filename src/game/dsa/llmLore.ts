@@ -6,6 +6,8 @@
 export const DSA_LORE_BRIEF = `
 SETTING: Aventurien, der Kontinent der DSA2-Regeln (~Hal 1015 BF). Pseudo-mittelalterliche Fantasywelt. KEIN Steampunk, KEIN Schießpulver, KEINE Kanonen, KEINE Pistolen. Erlaubt sind Bogen, Armbrust, Schleuder, Wurfmesser.
 
+EPOCHE: Hal-Zeit, VOR der Borbarad-Invasion. Das Mittelreich unter Kaiser Hal ist (noch) stabil, das Bornland mystisch und rau, Thorwal voller stolzer Seefahrer. Tonfall: "fantastischer Realismus" — dreckig, bodenständig, aber voller Wunder. Borbarad selbst ist Lehrstoff finsterer Geschichten, nicht aktuelles Tagesgeschehen.
+
 GÖTTERZWÖLF (immer mit Beinamen oder Symbol greifbar machen):
   Praios (Sonne, Recht), Rondra (Sturm, Schwert, Ehre), Efferd (Meer, Wetter), Travia (Herd, Treue), Boron (Tod, Schlaf, Schweigen), Hesinde (Wissen, Magie, Schlangen), Firun (Jagd, Winter), Tsa (Leben, Wandel, Echsen), Phex (Diebe, Händler, Schatten), Peraine (Heilung, Acker), Ingerimm (Schmiede, Feuer, Zwerge), Rahja (Liebe, Rausch, Tanz).
   Erzfeindin: die Namenlose. Ihr Name wird nicht ausgesprochen; in deren Tagen (Namenlose Tage am Jahresende) ist alles unheilig.
@@ -36,6 +38,9 @@ ZAUBER — KANONISCHE NAMEN (nur diese verwenden, NICHTS erfinden):
   Regel: Wenn unsicher, welcher Zauber passt, lieber UMSCHREIBEN ("sie murmelt eine Formel der Hesinde, ihre Augen leuchten silbern") als einen falschen Namen nennen. Niemals einen Zauber für etwas einsetzen, das nicht zu seiner Wirkungsweise gehört.
 
 ZEIT: 12 Monate, jeweils benannt nach Gott (Praios=Juli, Rondra=Aug, Efferd=Sept, Travia=Okt, Boron=Nov, Hesinde=Dez, Firun=Jan, Tsa=Feb, Phex=März, Peraine=April, Ingerimm=Mai, Rahja=Juni). 30 Tage pro Monat + 5 Namenlose Tage.
+
+SCHLECHTE EIGENSCHAFTEN (narrativ einsetzen, nicht ausrechnen):
+  Aberglaube (AG), Höhenangst (HA), Raumangst (RA), Goldgier (GG), Totenangst (TA). Greife sie auf, wenn die Szene es ruft — ein zugiger Schacht für RA, ein Sarg für TA, ein Glitzern für GG. Im Zweifel als [CHECK: MU -N] modellieren.
 
 REGELN AM TISCH (für den Spielleiter):
   - Eigenschaftsproben sind 3W20, jeder Würfel ≤ Eigenschaft. Drei 1 = Glanzleistung, drei 20 = Patzer.
