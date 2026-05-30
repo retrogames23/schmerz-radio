@@ -77,7 +77,7 @@ export function BureaucracyDuelOverlay() {
     setTutorialShown(true);
     api.setFlag("duelTutorialShown");
     setFeedback([
-      "KOWALK (halblaut): „Worag — du hast noch nicht viele Paragraphen. Wähl irgendwas. Brust korrigiert dich, und dann hast du einen mehr.“",
+      "KOWALK (halblaut): „Worag — dein Phrasenbuch ist noch dünn. Wähl irgendwas. Brust korrigiert dich, dann hast du einen Konter mehr.“",
     ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duelOpen, isEndgame]);
@@ -220,7 +220,7 @@ export function BureaucracyDuelOverlay() {
         id: "b3Ration",
         name: "B3-Ration",
         description:
-          "Eine grau-amber lackierte Konservendose, Etikett »B3 — KOMPENSATIONSRATION«. Vossbeck hat sie freigegeben — Argument für Argument, Paragraph für Paragraph. Es war fast schön anzusehen.",
+          "Eine grau-amber lackierte Konservendose, Etikett »B3 — KOMPENSATIONSRATION«. Vossbeck hat sie freigegeben — Phrase um Phrase, Floskel um Floskel. Es war fast schön anzusehen.",
       });
       closeDuel();
       setTimeout(() => {
@@ -243,7 +243,7 @@ export function BureaucracyDuelOverlay() {
               "„Drei in Folge, Bewohner Worg. Das ist … selten.“",
               "Aus dem Hintergrund tritt eine Gestalt mit grauem Aktendeckel:",
               "„Oberinspektor Vossbeck. Bewohnervertretung E67, Bürokratiemeisterschaft.“",
-              "„Wenn Sie meinen, einen echten Vorgang führen zu können — kommen Sie zu mir.“",
+              "„Wenn Sie meinen, einen echten Vorgang führen zu können — kommen Sie zu mir. Tür 3603. Vor neunzehn Uhr. Nach neunzehn Uhr bin ich auch dort, aber dann ist es offiziell nicht mehr ich.“",
             ]
           : DUEL_UI_TEXT.trainingVictoryLines;
       closeDuel();

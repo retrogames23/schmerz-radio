@@ -270,7 +270,7 @@ export const HINT_QUESTS: HintQuest[] = [
       a.hasFlag("duelEndgameWon"),
     hints: [
       "Kowalk kann Tillas 4317-K nicht abschicken, solange der Stamm-Vorgang 4317 nicht freigegeben ist. Den hat ein einziger Mann auf der Etage.",
-      "Oberinspektor Vossbeck sitzt direkt nebenan in Tür 3603. Er nimmt nur Bewohner an, die paragraphenfest sind — Brust trainiert dich am Tresen der Kantine vorher.",
+      "Oberinspektor Vossbeck sitzt direkt nebenan in Tür 3603. Er verhandelt nur mit Bewohnern, die im Behörden-Ton schlagfertig sind — Brust trainiert dich am Tresen der Kantine vorher.",
       "Geh in der Kantine zu Brust am Tresen, wähl »Trainingsfall« und gewinn drei in Folge. Dann tritt Vossbeck heraus — geh nebenan in 3603 und schlag ihn im Endduell.",
     ],
   },
@@ -375,7 +375,7 @@ export const HINT_QUESTS: HintQuest[] = [
       a.hasFlag("refusedB3Favor"),
     hints: [
       "Kowalk hat dir den Weg erklärt. Der nächste Schritt ist nicht Vossbeck, sondern Brust — am Tresen rechts in der Kantine 3602.",
-      "Sprich Brust an und wähle „Trainingsfall“. Jeder Fall lehrt dich Paragraphen fürs Notizbuch; verlierst du, lernst du den Konter trotzdem.",
+      "Sprich Brust an und wähle „Trainingsfall“. Jeder Trainingsfall ergänzt dein Phrasenbuch — verlierst du, lernst du den Konter trotzdem (Brust nennt ihn dir selbst).",
       "Geh in die Kantine 3602, sprich Brust an, wähle „Trainingsfall“ und gewinn drei in Folge — dann nimmt Vossbeck dich nebenan in 3603 an.",
     ],
   },
