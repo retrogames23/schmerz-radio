@@ -94,6 +94,7 @@ export function DsaLlmAdventureScene() {
   const [error, setError] = useState<string | null>(null);
   const [combat, setCombat] = useState<CombatBridge | null>(null);
   const [endState, setEndState] = useState<AdventureStatus | null>(null);
+  const [imageZoomed, setImageZoomed] = useState(false);
   const turnIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -402,14 +403,19 @@ export function DsaLlmAdventureScene() {
         {mode.kind === "play" && (
           <>
             {imgSrc && (
-              <div className="shrink-0 relative w-full bg-black/80">
+              <button
+                type="button"
+                onClick={() => setImageZoomed(true)}
+                title="Bild vergrößern"
+                className="shrink-0 relative w-full bg-black/80 cursor-zoom-in focus:outline-none"
+              >
                 <img
                   src={imgSrc}
                   alt="Szene"
                   loading="lazy"
                   className="w-full h-32 sm:h-48 object-cover opacity-90"
                 />
-              </div>
+              </button>
             )}
 
             <div
