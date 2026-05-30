@@ -44,6 +44,7 @@ import imgGraveyard from "@/assets/dsa/dsa-graveyard.jpg";
 import imgShipDeck from "@/assets/dsa/dsa-ship-deck.jpg";
 import imgHarbor from "@/assets/dsa/dsa-harbor.jpg";
 import imgNpcPriest from "@/assets/dsa/dsa-npc-priest.jpg";
+import imgNpcTjark from "@/assets/dsa/dsa-npc-tjark.jpg";
 import imgAftermathAlley from "@/assets/dsa/dsa-aftermath-alley.jpg";
 import imgAftermathTavern from "@/assets/dsa/dsa-aftermath-tavern.jpg";
 import imgAftermathForest from "@/assets/dsa/dsa-aftermath-forest.jpg";
