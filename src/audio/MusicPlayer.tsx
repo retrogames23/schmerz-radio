@@ -119,7 +119,7 @@ export function useMusic() {
 }
 
 export function MusicPlayer({ children }: { children?: ReactNode }) {
-  const { musicEnabled, musicVolume } = useSettings();
+  const { musicEnabled, musicVolume, set } = useSettings();
 
   // Two audio elements so we can crossfade between them.
   const aRef = useRef<HTMLAudioElement | null>(null);
@@ -149,6 +149,16 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   useEffect(() => {
     enabledRef.current = musicEnabled;
   }, [musicEnabled]);
+
+  // Auf veröffentlichter Domain kann ein alter Spielstand die Musik auf
+  // "aus" gespeichert haben; im Standalone-DSA gibt es sonst keinen Regler,
+  // der sie wieder einschaltet. Nur für /dsa/* einmalig reparieren.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (musicEnabled) return;
+    if (!window.location.pathname.startsWith("/dsa")) return;
+    set({ musicEnabled: true });
+  }, [musicEnabled, set]);
   useEffect(() => {
     volumeRef.current = musicVolume;
   }, [musicVolume]);
