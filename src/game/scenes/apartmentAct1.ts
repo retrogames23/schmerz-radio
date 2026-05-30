@@ -167,7 +167,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         // Wandregal über dem Bett. Enthält das einzige Buch, das Layard
-        // wirklich gelesen hat: den „Quadranten-Almanach 1997".
+        // wirklich gelesen hat: den „Quadranten-Almanach 1997". Daneben
+        // steht die alte „Kantinenverordnung — Sammelausgabe", die
+        // Layard einmalig einstecken kann.
         id: "bookshelf",
         x: 57.6,
         y: 15.9,
@@ -176,11 +178,22 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
         label: "Wandregal",
         kind: "use",
         onUse: (api) => {
+          // Kantinenverordnung beim ersten Aufschlagen mit einsacken.
+          if (!api.hasFlag("tookKantinenverordnung")) {
+            api.setFlag("tookKantinenverordnung");
+            api.addItem({
+              id: "kantinenverordnung",
+              name: "Kantinenverordnung",
+              description:
+                "Ein dickes, in graues Leinen gebundenes Buch. „Kantinenverordnung — Sammelausgabe“. Aushänge, Hausordnung, Schicht- und Vollmachtsklauseln, eng beschrieben. Auf dem Vorsatzblatt, in winziger Handschrift: »Wer das ganz liest, hat schon verloren.«",
+            });
+          }
           if (!api.hasFlag("openedAlmanach")) {
             api.setFlag("openedAlmanach");
             api.showText(
               [
                 "Auf dem Wandregal: ein paar Aktenordner, ein leerer Vinyl-Schuber,",
+                "die graue „Kantinenverordnung — Sammelausgabe“ (Layard zieht sie heraus, steckt sie ein),",
                 "und — ganz links — der „Quadranten-Almanach 1997“.",
                 "Bewohner-Ausgabe, zerlesen. Layard schlägt ihn auf.",
               ],

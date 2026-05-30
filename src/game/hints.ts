@@ -389,7 +389,7 @@ export const HINT_QUESTS: HintQuest[] = [
     hints: [
       "Vossbeck sitzt nebenan in der Kantinenverwaltung — Tür 3603 im Korridor 36, direkt neben der Kantine. Er führt das Endduell um Philippes Vollmacht 4317.",
       "Drei Treffer in Folge — und die B3-Ration wird freigegeben. Drei Fehler — und der Vorgang ist verloren.",
-      "Vossbeck spielt §99 (Generalvorbehalt). Den schlägst du nur mit der §99-Erläuterung — also vorher das passende Trainingsspiel gegen Brust durchspielen.",
+      "Vossbecks Phrasen sind neu formuliert, treffen aber dieselben Muster wie Brusts (Tradition, Stapel-Bluff, Vorgesetzten-Drohung). Die Konter aus dem Training passen sinngemäß — wer dort fleißig war, hat sie im Phrasenbuch.",
     ],
   },
 

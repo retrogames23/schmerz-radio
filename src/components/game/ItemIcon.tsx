@@ -460,6 +460,8 @@ const ICON_MAP: Record<InventoryItemId, () => React.ReactElement> = {
   wartungsDiktat: WartungsnotizIcon,
   // Bürokratie-Duell — Layards Sammlung gelernter Paragraphen.
   paragraphenNotizbuch: ParagraphenNotizbuchIcon,
+  // Kantinenverordnung — dickes Buch im Bücherschrank (rein dekorativ).
+  kantinenverordnung: ParagraphenNotizbuchIcon,
   // Ölkännchen für MARV-9 — vorerst geliehenes Notiz-Icon.
   oilCan: OilCanIcon,
   // E71-Hygiene: medizinische Maske aus dem Kondomautomaten.

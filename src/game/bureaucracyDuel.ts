@@ -185,7 +185,7 @@ export const COUNTERS: Record<string, Counter> = {
     text: "Wunderbar. Dann füllen Sie sie doch eben aus.",
     beats: ["p-formsache"],
     learnHint:
-      "Wer „Formsache" sagt, kann sie auch selbst erledigen. Punkt.",
+      "Wer „Formsache“ sagt, kann sie auch selbst erledigen. Punkt.",
   },
   "c-vorgesetzte": {
     id: "c-vorgesetzte",
@@ -211,7 +211,7 @@ export const COUNTERS: Record<string, Counter> = {
     text: "Gut. Bringen Sie bis dahin Ihren Stempel auf Vordermann.",
     beats: [],
     learnHint:
-      "Gegen Vertröstungen auf „nächste Woche". Verschiebt die Bringschuld zurück.",
+      "Gegen Vertröstungen auf „nächste Woche“. Verschiebt die Bringschuld zurück.",
   },
 };
 
@@ -369,7 +369,7 @@ export const TRAINING_ROUNDS: DuelRound[] = [
       "(Brust greift unwillkürlich nach dem Formularblock. Hält inne.) Das war jetzt … ungeschickt von mir.",
     onMiss:
       "Sie hätten geantwortet: »Wunderbar. Dann füllen Sie sie doch eben aus.« — Das hätte gesessen. Schreiben Sie's auf.",
-    kowalkAside: "Wer „Formsache" sagt, hat sie schon verloren.",
+    kowalkAside: "Wer „Formsache“ sagt, hat sie schon verloren.",
   },
   {
     id: "training-vorgesetzte",

@@ -1,24 +1,23 @@
 import { useMemo } from "react";
 import { useGame } from "@/game/GameContext";
-import { PARAGRAPHS } from "@/game/bureaucracyDuel";
+import { COUNTERS, PHRASES } from "@/game/bureaucracyDuel";
 import { CloseButton } from "./CloseButton";
 
 /**
- * Paragraphen-Notizbuch (Akt I, Bürokratie-Duell).
+ * Phrasenbuch (Akt I, Bürokratie-Duell).
  *
- * Ein einfaches Lese-Overlay: listet alle Paragraphen, die Layard im
- * Bürokratie-Duell gelernt hat. Quereinstieg ins Inventar-Item öffnet
- * dieses Overlay.
+ * Layards handgeschriebene Sammlung schlagfertiger Konter — jede Zeile
+ * ein Spruch, mit Lernhinweis am Rand und einer Liste der Phrasen, die
+ * der Konter humorvoll erledigt. Der Datei-/Hook-Name bleibt aus
+ * Kompatibilitätsgründen „Paragraphen-…“; der Inhalt ist jetzt das
+ * Phrasenbuch.
  */
 export function ParagraphenNotizbuchOverlay() {
   const { notizbuchOpen, closeNotizbuch, learnedParagraphs } = useGame();
 
-  // Sortierte Anzeige in Korpus-Reihenfolge, gefiltert auf gelernte.
-  // useMemo, damit sich die Liste nicht bei jedem Caption-/Game-State-Tick
-  // neu aufbaut, sondern nur bei tatsächlicher Änderung der gelernten Set.
   const ordered = useMemo(
     () =>
-      Object.values(PARAGRAPHS).filter((p) => learnedParagraphs.has(p.id)),
+      Object.values(COUNTERS).filter((c) => learnedParagraphs.has(c.id)),
     [learnedParagraphs],
   );
 
@@ -28,58 +27,56 @@ export function ParagraphenNotizbuchOverlay() {
     <div
       className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 px-3 py-4"
       role="dialog"
-      aria-label="Paragraphen-Notizbuch"
+      aria-label="Phrasenbuch"
     >
       <div className="relative w-full max-w-2xl rounded-sm border-2 border-amber-glow/60 bg-[#1f1505] p-5 text-amber-glow shadow-[0_20px_80px_rgba(0,0,0,0.7)]">
         <CloseButton
           onClick={closeNotizbuch}
           tone="amber"
-          label="Notizbuch schließen"
+          label="Phrasenbuch schließen"
           className="absolute right-2 top-2"
         />
         <div className="font-display text-xs uppercase tracking-[0.3em] text-amber-glow/70">
-          Paragraphen-Notizbuch
+          Phrasenbuch
         </div>
         <p className="mt-2 font-mono-crt text-xs leading-relaxed text-amber-glow/80">
-          Layards handgeschriebene Sammlung: jede Klausel, jeder Aushang, jede
-          Übersagung — nummeriert, datiert, mit Konter-Hinweis am Rand. Was
-          hier nicht steht, kann er im Duell nicht zitieren.
+          Layards handgeschriebene Sammlung schlagfertiger Konter. Was hier
+          nicht steht, kann er im Duell nicht aus der Hüfte zitieren.
         </p>
 
         <div className="mt-4 max-h-[60vh] space-y-3 overflow-y-auto pr-1">
           {ordered.length === 0 && (
             <div className="rounded-sm border border-amber-glow/20 bg-black/30 px-3 py-4 font-mono-crt text-sm italic text-amber-glow/60">
-              Noch leer. Layard hat noch keinen Paragraphen gelernt. Im
-              Bürokratie-Duell an Brusts Tresen werden die ersten Einträge
-              entstehen.
+              Noch leer. Layard hat noch keinen Konter gelernt. Im
+              Phrasen-Dreschen an Brusts Tresen entstehen die ersten Einträge.
             </div>
           )}
-          {ordered.map((p) => {
-            const counters = p.beatenBy
-              .map((id) => PARAGRAPHS[id]?.shortLabel)
+          {ordered.map((c) => {
+            const phrasesHit = c.beats
+              .map((id) => PHRASES[id]?.shortLabel)
               .filter(Boolean);
             return (
               <div
-                key={p.id}
+                key={c.id}
                 className="rounded-sm border border-amber-glow/30 bg-black/30 px-3 py-2 font-mono-crt text-[12px] leading-relaxed"
               >
                 <div className="font-display text-sm uppercase tracking-wider text-amber-glow">
-                  {p.shortLabel}
+                  {c.shortLabel}
                 </div>
-                <div className="mt-1 text-amber-glow/85">{p.fullText}</div>
-                {p.learnHint && (
+                <div className="mt-1 text-amber-glow/85">»{c.text}«</div>
+                {c.learnHint && (
                   <div className="mt-1 italic text-amber-glow/60">
-                    Notiz am Rand: {p.learnHint}
+                    Notiz am Rand: {c.learnHint}
                   </div>
                 )}
-                {counters.length > 0 && (
+                {phrasesHit.length > 0 && (
                   <div className="mt-1 text-[11px] uppercase tracking-wider text-amber-glow/55">
-                    Wird geschlagen von: {counters.join(" · ")}
+                    Schlägt: {phrasesHit.join(" · ")}
                   </div>
                 )}
-                {counters.length === 0 && (
+                {phrasesHit.length === 0 && (
                   <div className="mt-1 text-[11px] uppercase tracking-wider text-amber-glow/55">
-                    Letztes Wort — kein bekannter Konter.
+                    Linkischer Eigenversuch — schlägt keine bekannte Phrase.
                   </div>
                 )}
               </div>
