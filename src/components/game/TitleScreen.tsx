@@ -238,6 +238,7 @@ export function TitleScreen({ onStart }: Props) {
 
       <ImpressumOverlay open={impressumOpen} onClose={() => setImpressumOpen(false)} />
       <OpenSourceOverlay open={ossOpen} onClose={() => setOssOpen(false)} />
+      <CreditsOverlay open={creditsOpen} onClose={() => setCreditsOpen(false)} />
       <DonationModal
         open={donationOpen}
         onClose={() => setDonationOpen(false)}
