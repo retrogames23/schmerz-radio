@@ -770,4 +770,58 @@ export const bodoDialogs: Record<string, DialogTree> = {
       },
     },
   },
+  // ── Layard bringt Bodo seine vergessene Thermoskanne zurück.
+  //    Wird vom bodoNpc-Hotspot ausgelöst (sobald die Kanne im
+  //    Inventar liegt) oder von der Combine-Logik (Kanne auf Bodo
+  //    gezogen). Entfernt das Item und setzt `gaveBodoThermos`.
+  bodoReturnThermos: {
+    id: "bodoReturnThermos",
+    start: "brt1",
+    onEnd: (api) => {
+      api.removeItem("bodoThermos");
+      api.setFlag("gaveBodoThermos");
+    },
+    lines: {
+      brt1: {
+        id: "brt1",
+        speaker: "LAYARD",
+        text: "Bodo — die hier hat im Tech-Knoten gestanden. Grün, mit Delle. Wie bestellt.",
+        subtext: "Layard stellt die Thermoskanne behutsam auf den Tisch.",
+        next: "brt2",
+      },
+      brt2: {
+        id: "brt2",
+        speaker: "BODO",
+        text: "Da ist sie ja. Ich dachte schon, die hätt' jemand für eine Vase gehalten.",
+        subtext: "Er nimmt sie hoch, dreht sie einmal in der Hand. Klopft beiläufig gegen die Delle.",
+        next: "brt3",
+      },
+      brt3: {
+        id: "brt3",
+        speaker: "BODO",
+        text: "Die Delle ist von '07. Ein Trafo ist mir damals fast auf den Fuß — die Kanne hat den Treffer für mich abgekriegt.",
+        subtext: "Bodo schraubt den Deckel auf, riecht hinein, schraubt ihn wieder zu.",
+        next: "brt4",
+      },
+      brt4: {
+        id: "brt4",
+        speaker: "BODO",
+        text: "Riecht noch nach Tee von gestern. Lotti wird das mögen — sie schläft besser, wenn's hier irgendwo nach Karton riecht.",
+        next: "brt5",
+      },
+      brt5: {
+        id: "brt5",
+        speaker: "LAYARD",
+        text: "Gern geschehen.",
+        next: "brt6",
+      },
+      brt6: {
+        id: "brt6",
+        speaker: "BODO",
+        text: "Schon gut, Worag. Wer Kannen wiederbringt, dem schuldet man nichts — außer einem Nicken. Nehmen Sie meins.",
+        subtext: "Er nickt einmal. Knapp, aber er meint es.",
+        end: true,
+      },
+    },
+  },
 };
