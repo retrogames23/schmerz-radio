@@ -385,18 +385,39 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             }
             newTurn = { role: "user", content: text };
           } else {
-            const victory = !!b.victory;
+            const outcomeRaw = typeof b.outcome === "string" ? b.outcome : (b.victory ? "victory" : "defeat_consequence");
+            const outcome =
+              outcomeRaw === "victory" || outcomeRaw === "aborted" || outcomeRaw === "defeat_consequence"
+                ? outcomeRaw
+                : "defeat_consequence";
             const heroLe = typeof b.heroLe === "number" ? Math.max(0, Math.round(b.heroLe)) : 0;
             const heroLeMax =
               typeof b.heroLeMax === "number" ? Math.max(1, Math.round(b.heroLeMax)) : 1;
+            const wounds = typeof b.wounds === "number" ? Math.max(0, Math.min(3, Math.round(b.wounds))) : 0;
             const fallen = Array.isArray(b.fallen)
               ? (b.fallen as unknown[])
                   .filter((x): x is string => typeof x === "string")
                   .slice(0, 6)
               : [];
+            const kindRaw = typeof b.consequenceKind === "string" ? b.consequenceKind : "";
+            const kind = ["capture", "robbery", "wound", "timeloss"].includes(kindRaw) ? kindRaw : "";
+            const attrLowered =
+              typeof b.attrLowered === "string" && /^(MU|KL|CH|FF|GE|IN|KK)$/.test(b.attrLowered)
+                ? b.attrLowered
+                : "";
+            const parts = [
+              `outcome=${outcome}`,
+              `hero_le=${heroLe}/${heroLeMax}`,
+              `wounds=${wounds}`,
+              `fallen=[${fallen.join(", ")}]`,
+            ];
+            if (outcome === "defeat_consequence" && kind) parts.push(`kind=${kind}`);
+            if (outcome === "defeat_consequence" && kind === "wound" && attrLowered) {
+              parts.push(`attr_lowered=${attrLowered}`);
+            }
             newTurn = {
               role: "user",
-              content: `[COMBAT_RESULT] victory=${victory} hero_le=${heroLe}/${heroLeMax} fallen=[${fallen.join(", ")}]`,
+              content: `[COMBAT_RESULT] ${parts.join(" ")}`,
             };
           }
 
