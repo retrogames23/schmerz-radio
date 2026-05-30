@@ -218,10 +218,7 @@ export const Route = createFileRoute("/api/public/npc-chat")({
           systemPrompt = buildBramSystemPrompt({ seatedCount, myShift });
         } else {
           const persona = npcPersonas[npcId];
-          const sceneTitle =
-            typeof ctxRaw.sceneTitle === "string"
-              ? ctxRaw.sceneTitle.slice(0, 120)
-              : "";
+          const sceneTitle = sanitizePromptField(ctxRaw.sceneTitle, 120);
           const resonance =
             typeof ctxRaw.resonance === "number" &&
             Number.isFinite(ctxRaw.resonance)
