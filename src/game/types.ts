@@ -85,6 +85,7 @@ export type StoryFlag =
   | "tookPainRadio"
   | "doorbellRang"
   | "openedAlmanach"
+ | "tookKantinenverordnung"
   | "metPhilippe"
   | "metPhilippeBefore"
   | "knockingHeard"
