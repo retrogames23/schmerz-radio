@@ -151,7 +151,37 @@ export const bodoDialogs: Record<string, DialogTree> = {
             text: "Sie haben vorhin von Trägersignalen geredet — gibt es da Frequenzen außerhalb der Skala?",
             next: "bodoHiddenFreq1",
           },
+          {
+            text: "Kowalk sagt, Sie haben Brust mal im Phrasen-Duell kleingekriegt. Wie?",
+            requires: ["kowalkHintedBodoHelka"],
+            hiddenWhen: ["learnedAttackVorgesetzten"],
+            next: "bodoTeachAttack1",
+          },
           { text: "[ Beenden ]" },
+        ],
+      },
+      bodoTeachAttack1: {
+        id: "bodoTeachAttack1",
+        speaker: "BODO",
+        text: "Brust? — Ja. Einmal. Vor zwei Jahren. Wegen Lottis Wassermarke. Er wollte mich mit »ich muss das erst meinem Vorgesetzten vorlegen« abwimmeln.",
+        next: "bodoTeachAttack2",
+      },
+      bodoTeachAttack2: {
+        id: "bodoTeachAttack2",
+        speaker: "BODO",
+        text: "Der Trick, Worag: nicht zurückzucken. Sagen Sie: »Holen Sie doch bitte gleich Ihren Vorgesetzten. Ich warte hier — ich habe Zeit.« Punkt. Ohne Lächeln.",
+        subtext: "Er sagt es ganz nüchtern. Als hätte er den Satz seitdem hundertmal weitergegeben.",
+        next: "bodoTeachAttack3",
+      },
+      bodoTeachAttack3: {
+        id: "bodoTeachAttack3",
+        speaker: "BODO",
+        text: "Niemand will den Vorgesetzten wirklich holen. Auch Brust nicht. Auch Vossbeck nicht. Schreiben Sie sich das ins Phrasenbuch.",
+        choices: [
+          {
+            text: "[ »Holen Sie Ihren Vorgesetzten« ins Phrasenbuch übernehmen ]",
+            action: (api) => api.setFlag("learnedAttackVorgesetzten"),
+          },
         ],
       },
       // Hinweis 1/3 für die Hidden Frequency 102,7 — Bodo nennt das Band.

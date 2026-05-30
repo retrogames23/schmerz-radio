@@ -253,6 +253,12 @@ export type StoryFlag =
   | "duelEndgameWon"
   | "duelEndgameLost"
   | "duelTutorialShown"
+  // Layards Angriffsphrasen (Phrasen, mit denen er selbst attackiert,
+  // statt nur zu kontern). Gelernt bei anderen Bewohnern, die Brust
+  // schon im Phrasen-Duell besiegt haben.
+  | "kowalkHintedBodoHelka"
+  | "learnedAttackVorgesetzten"
+  | "learnedAttackTuerschild"
   /** Layard hat erfahren, dass Vossbeck (in 3603) der einzige Weg zur 4317 ist. */
   | "knowsVossbeckPath"
   // Pflicht-Verzahnung Akt I: Tilla-Quittung 4317-K hängt am Stamm 4317.
