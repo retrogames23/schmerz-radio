@@ -73,6 +73,33 @@ function sanitizeAttrs(input: unknown): Record<AttrKey, number> {
   return out;
 }
 
+/**
+ * Sanitize free-text character fields (name, className) before they are
+ * interpolated into the LLM master system prompt. Strips control chars,
+ * line breaks, bracket/markdown noise, and neutralizes common prompt
+ * injection phrases like "ignore previous instructions" / "system prompt".
+ */
+function sanitizePromptField(input: unknown, maxLen: number): string {
+  let s = typeof input === "string" ? input : "";
+  // Strip control chars + line breaks.
+  s = s.replace(/[\u0000-\u001F\u007F]+/g, " ");
+  // Strip characters frequently used to break out of a prompt block.
+  s = s.replace(/[<>{}\[\]`|\\]/g, " ");
+  // Neutralize common jailbreak phrases (DE + EN).
+  const phrases = [
+    /ignore (all |previous |above )?(instructions|rules|prompts?)/gi,
+    /disregard (all |previous |above )?(instructions|rules|prompts?)/gi,
+    /(system|developer|assistant)\s*[: ]\s*prompt/gi,
+    /ignoriere (alle |vorherigen |obigen )?(anweisungen|regeln|prompts?)/gi,
+    /vergiss (alle |alles |vorherige[ns]? )?(anweisungen|regeln|prompts?)/gi,
+    /system[- ]?prompt/gi,
+    /jailbreak/gi,
+  ];
+  for (const p of phrases) s = s.replace(p, "");
+  s = s.replace(/\s+/g, " ").trim();
+  return s.slice(0, maxLen);
+}
+
 function isCharacterSummary(value: unknown): value is DsaCharacterSummary {
   if (!value || typeof value !== "object") return false;
   const c = value as Record<string, unknown>;
