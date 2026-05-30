@@ -823,7 +823,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       u3: {
         id: "u3",
         speaker: "VOSSBECK",
-        text: "Trainingssiege bei Herrn Brust: keine dokumentiert — Sie brauchen drei. Ich verhandle nicht mit Bewohnern, die nicht satisfaktionsfähig sind.",
+        text: "Trainingssiege bei Herrn Brust: keine dokumentiert. Drei brauchen Sie — sonst sind Sie hier nicht satisfaktionsfähig. Ich verhandle nicht mit Bewohnern, die mir noch im selben Satz aus der Hand fressen.",
         next: "u4",
       },
       u4: {
