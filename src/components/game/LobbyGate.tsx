@@ -207,10 +207,7 @@ export function LobbyGate() {
 
   if (!lobbyGateOpen) return null;
 
-  const displaySlots = Array.from(
-    { length: LOBBY_LEN },
-    (_, i) => code[i] ?? "",
-  );
+  const displaySlots = Array.from({ length: LOBBY_LEN }, (_, i) => code[i] ?? "");
 
   const ledClass =
     status === "ok"
@@ -258,9 +255,7 @@ export function LobbyGate() {
 
         {/* Kopfzeile */}
         <div className="mb-3 flex items-center gap-2">
-          <span
-            className={`h-2.5 w-2.5 rounded-full transition-all ${ledClass}`}
-          />
+          <span className={`h-2.5 w-2.5 rounded-full transition-all ${ledClass}`} />
           <span className="font-mono-crt text-[0.65rem] uppercase tracking-[0.3em] text-amber-glow/80">
             Lobby-Schleuse · E67 · Tagesmodus
           </span>
@@ -332,11 +327,7 @@ export function LobbyGate() {
         {/* Tastatur 1–9 */}
         <div className="grid grid-cols-3 gap-2">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-            <KeypadButton
-              key={n}
-              onClick={() => pressDigit(String(n))}
-              disabled={!cardSlotted}
-            >
+            <KeypadButton key={n} onClick={() => pressDigit(String(n))} disabled={!cardSlotted}>
               {n}
             </KeypadButton>
           ))}
@@ -348,10 +339,7 @@ export function LobbyGate() {
           >
             <Delete className="h-5 w-5" />
           </KeypadButton>
-          <KeypadButton
-            onClick={() => pressDigit("0")}
-            disabled={!cardSlotted}
-          >
+          <KeypadButton onClick={() => pressDigit("0")} disabled={!cardSlotted}>
             0
           </KeypadButton>
           <KeypadButton onClick={submit} variant="ok" ariaLabel="Bestätigen">
@@ -375,13 +363,7 @@ interface BtnProps {
   ariaLabel?: string;
 }
 
-function KeypadButton({
-  children,
-  onClick,
-  variant = "default",
-  disabled,
-  ariaLabel,
-}: BtnProps) {
+function KeypadButton({ children, onClick, variant = "default", disabled, ariaLabel }: BtnProps) {
   const base =
     "flex h-12 items-center justify-center rounded-sm border-2 font-mono-crt text-lg uppercase transition-all active:translate-y-[1px] active:shadow-none disabled:opacity-40 disabled:cursor-not-allowed";
   const palette =
