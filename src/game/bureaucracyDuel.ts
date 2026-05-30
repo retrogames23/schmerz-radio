@@ -28,6 +28,15 @@
 
 export type DuelMode = "training" | "endgame";
 
+/**
+ * Welcher Runden-Typ. „opponentAttacks" = der klassische Monkey-Island-
+ * Move: Brust/Vossbeck wirft eine Phrase, Layard kontert. „layardAttacks"
+ * = der Konter-Spieß umgedreht: Layard wirft eine Phrase (aus seinem
+ * Phrasenbuch — bei Bodo oder Helka gelernt), der Gegner versucht zu
+ * kontern. Wenn der Gegner die Phrase nicht kennt → Treffer für Layard.
+ */
+export type RoundKind = "opponentAttacks" | "layardAttacks";
+
 /** Eine Behörden-Phrase, mit der ein Gegner angreift. */
 export interface Phrase {
   /** Eindeutige ID, z.B. "p-immer-so". */
@@ -66,6 +75,8 @@ export interface DuelCounter {
 
 export interface DuelRound {
   id: string;
+  /** Default: "opponentAttacks" (Brust/Vossbeck wirft, Layard kontert). */
+  kind?: RoundKind;
   /** Wer eröffnet die Runde — Brust (Training) oder Vossbeck (Endgame). */
   opponent: "brust" | "vossbeck";
   /** Phrase, mit der der Gegner angreift. */
