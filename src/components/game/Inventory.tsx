@@ -260,8 +260,8 @@ export function Inventory() {
                             : "border-border hover:border-amber-glow/70 hover:bg-amber-glow/10"
                       }`}
                     >
-                      <ItemIcon id={item.id} size={28} title={item.name} />
-                      {(item.count ?? 1) > 1 && (
+                      <ItemIcon id={item.id} size={28} title={item.name} count={item.count} />
+                      {(item.count ?? 1) > 1 && item.id !== "reichsmark" && (
                         <span className="pointer-events-none absolute -bottom-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-sm border border-amber-glow bg-background px-1 font-mono-crt text-[10px] leading-none text-amber-glow">
                           {item.count}
                         </span>

@@ -14,6 +14,8 @@ interface Props {
   /** CSS-pixel-Größe der Render-Box. */
   size?: number;
   title?: string;
+  /** Stück-Zahl im Inventar — derzeit nur von reichsmark visuell genutzt. */
+  count?: number;
 }
 
 const ICON_BG = "#1a1410"; // dunkles Innenleben
@@ -663,7 +665,14 @@ function TillaTransferIcon() {
   );
 }
 
-function ItemIconImpl({ id, className, size = 24, title }: Props) {
+function ItemIconImpl({ id, className, size = 24, title, count }: Props) {
+  if (id === "reichsmark") {
+    return (
+      <Frame size={size} className={className} title={title}>
+        <ReichsmarkIcon count={count ?? 3} />
+      </Frame>
+    );
+  }
   const Render = ICON_MAP[id];
   if (!Render) return null;
   return (
@@ -673,31 +682,39 @@ function ItemIconImpl({ id, className, size = 24, title }: Props) {
   );
 }
 
-/** Reichsmark — kleiner Münzstapel aus Aluminiumbronze. */
-function ReichsmarkIcon() {
+/** Reichsmark — Münzen aus Aluminiumbronze. Anzahl spiegelt den Bestand (1–3). */
+function ReichsmarkIcon({ count = 3 }: { count?: number } = {}) {
   const COIN_DK = "#7a4f1c";
   const COIN_FG = "#d49a3a";
   const COIN_HI = "#fce8b8";
-  return (
-    <>
-      {/* Untere Münze */}
-      <rect x="4" y="17" width="16" height="3" fill={COIN_DK} />
-      <rect x="5" y="18" width="14" height="2" fill={COIN_FG} />
-      <rect x="5" y="18" width="14" height="1" fill={COIN_HI} opacity="0.6" />
-      {/* Mittlere Münze */}
-      <rect x="4" y="13" width="16" height="3" fill={COIN_DK} />
-      <rect x="5" y="14" width="14" height="2" fill={COIN_FG} />
-      <rect x="5" y="14" width="14" height="1" fill={COIN_HI} opacity="0.6" />
-      {/* Obere Münze (mit Stern/Symbol) */}
-      <rect x="4" y="6" width="16" height="6" fill={COIN_DK} />
-      <rect x="5" y="7" width="14" height="4" fill={COIN_FG} />
-      <rect x="5" y="7" width="14" height="1" fill={COIN_HI} />
-      {/* RM-Symbol als zwei kleine Klötze */}
-      <rect x="9" y="8" width="2" height="2" fill={ICON_BG} />
-      <rect x="13" y="8" width="2" height="2" fill={ICON_BG} />
-      <rect x="11" y="9" width="2" height="1" fill={ICON_BG} />
-    </>
+  // Einzelne Münze, ca. 8x8 Pixel mit "RM"-Punkt in der Mitte.
+  const coin = (cx: number, key: string) => (
+    <g key={key}>
+      {/* Außenring (dunkel) */}
+      <rect x={cx - 4} y={9} width={8} height={1} fill={COIN_DK} />
+      <rect x={cx - 4} y={15} width={8} height={1} fill={COIN_DK} />
+      <rect x={cx - 5} y={10} width={1} height={5} fill={COIN_DK} />
+      <rect x={cx + 4} y={10} width={1} height={5} fill={COIN_DK} />
+      {/* Münzfläche */}
+      <rect x={cx - 4} y={10} width={8} height={5} fill={COIN_FG} />
+      {/* Highlight oben */}
+      <rect x={cx - 4} y={10} width={8} height={1} fill={COIN_HI} opacity="0.7" />
+      <rect x={cx - 4} y={11} width={2} height={1} fill={COIN_HI} opacity="0.4" />
+      {/* RM-Punkt mittig */}
+      <rect x={cx - 1} y={12} width={2} height={2} fill={ICON_BG} />
+      {/* Schatten unten */}
+      <rect x={cx - 4} y={14} width={8} height={1} fill={COIN_DK} opacity="0.5" />
+    </g>
   );
+  const n = Math.max(0, Math.min(3, count));
+  // Positionen je nach Anzahl: zentriert, leichte Überlappung wirkt wie Stapel.
+  const positions: Record<number, number[]> = {
+    0: [],
+    1: [12],
+    2: [8, 16],
+    3: [6, 12, 18],
+  };
+  return <>{positions[n].map((cx, i) => coin(cx, `c${i}`))}</>;
 }
 
 /** Pfefferminzkaugummi — Schachtel mit Streifenmuster. */
