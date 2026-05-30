@@ -26,7 +26,7 @@ export const CHATTER_TOPICS: ReadonlyArray<ChatterTopic> = [
     lines: [
       { npc: "brem", text: "Wenn wir endlich vier wären, könnten wir die Borbarad-Kampagne anfangen." },
       { npc: "tjark", text: "Du willst die Borbarad-Kampagne nicht. Glaub mir." },
-      { npc: "yelva", text: "Doch. Aber Brem will Borbarad nur, weil er rote Augen mag." },
+      { npc: "yelva", text: "Doch. Aber Brem will Borbarad nur wegen der Dämonenbeschwörungen." },
       { npc: "brem", text: "Stimmt nicht. Ich mag auch lila." },
     ],
   },
