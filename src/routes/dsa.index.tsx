@@ -123,7 +123,9 @@ function DsaLanding() {
             <div className="text-[10px] uppercase tracking-[0.3em] opacity-60">
               WhisperQuest
             </div>
-            <h1 className="font-serif text-xl sm:text-2xl">Die Tafelrunde</h1>
+            <h1 className="font-serif text-xl sm:text-2xl">
+              DSA-Soloabenteuer mit KI-Meister
+            </h1>
           </div>
           <div className="text-xs">
             {loading ? null : user ? (
@@ -155,10 +157,12 @@ function DsaLanding() {
       {/* Pitch */}
       <section className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 text-center">
         <p className="font-serif text-base sm:text-lg leading-relaxed text-[#f1e6c8]/90">
-          Würfle einen Helden, wähle ein Abenteuer und spiel eine Stunde
-          klassische Tafelrunde mit dem KI-Meister Tjark. Aventurien im 20.
-          Hal — Reichsbehüter Brin verteidigt das Reich gegen den Dritten
-          Orkensturm. Dein Tisch, dein Held, dein Bogen.
+          Spiele <strong>Das Schwarze Auge</strong> als Soloabenteuer im
+          Browser. Würfle deinen Helden, wähle ein Setting und erlebe rund
+          eine Stunde klassische Pen-&-Paper-Tafelrunde mit dem KI-Meister
+          Tjark. Aventurien im 20. Hal — Reichsbehüter Brin verteidigt das
+          Mittelreich gegen den Dritten Orkensturm. Dein Tisch, dein Held,
+          dein Bogen.
         </p>
         {!user && (
           <p className="mt-4 text-xs uppercase tracking-wider opacity-60">
@@ -186,6 +190,23 @@ function DsaLanding() {
       </section>
 
       {/* Footer */}
+      {/* FAQ — SEO + nützlicher Kontext für Neulinge */}
+      <section className="mx-auto max-w-3xl px-4 pb-12 sm:px-6">
+        <h2 className="mb-4 text-xs uppercase tracking-[0.3em] opacity-70">
+          Häufige Fragen
+        </h2>
+        <dl className="space-y-5">
+          {FAQS.map((f) => (
+            <div key={f.q}>
+              <dt className="font-serif text-base text-[#f1e6c8]">{f.q}</dt>
+              <dd className="mt-1 text-sm leading-relaxed text-[#f1e6c8]/80">
+                {f.a}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
       <footer className="border-t border-[#3a2c1a] py-4 text-center text-[10px] uppercase tracking-wider opacity-60">
         <Link to="/" className="hover:opacity-100">
           Zum Stammspiel
