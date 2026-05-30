@@ -26,6 +26,15 @@ MAGIE & KLASSEN (Held-Erschaffung steht fest; nicht ändern):
   Magier sprechen lateinisch-anmutende Formeln (z. B. ATTRIBUTO, DUPLICATUS, IGNIFAXIUS). Astralenergie (AE) wird verbraucht. KEINE Mana-Bars, KEIN „Spell Slot".
   Heilung: Tränke aus Wirselkraut/Belmart sind selten — eine Nacht Rast bringt 1W6 LE zurück, mehr nicht.
 
+ZAUBER — KANONISCHE NAMEN (nur diese verwenden, NICHTS erfinden):
+  Hellsicht/Analyse: OCULUS ASTRALIS (sieht magische Auren / spürt Magie auf), ODEM ARCANUM (erkennt Magie über Geruch/Atem), ANALYS ARKANSTRUKTUR (Detailanalyse eines Zaubers), PENETRIZZEL (durchdringt Illusionen).
+  Illusion: OCULUS ILLUSIONIS (Trugbild für das Auge — KEIN Aufspür-Zauber!), DUPLICATUS (Doppelgänger-Illusion), HORRIPHOBUS (Furchtillusion), CHIMAEROFORM (Gestaltillusion).
+  Kampf/Schaden: IGNIFAXIUS (Feuerstrahl), FULMINICTUS (Blitz), KULMINATIO (Energiebündel).
+  Verstärkung: ATTRIBUTO (Eigenschaft heben), ADLERAUGE, KATZENAUGEN, ARMATRUTZ.
+  Heilung: BALSAM SALABUNDE (LE heilen), KLARUM PURUM (Gift neutralisieren).
+  Bewegung/Kontrolle: TRANSVERSALIS (Sprung), MOTORICUS (Telekinese), BAND UND FESSEL.
+  Regel: Wenn unsicher, welcher Zauber passt, lieber UMSCHREIBEN ("sie murmelt eine Formel der Hesinde, ihre Augen leuchten silbern") als einen falschen Namen nennen. Niemals einen Zauber für etwas einsetzen, das nicht zu seiner Wirkungsweise gehört.
+
 ZEIT: 12 Monate, jeweils benannt nach Gott (Praios=Juli, Rondra=Aug, Efferd=Sept, Travia=Okt, Boron=Nov, Hesinde=Dez, Firun=Jan, Tsa=Feb, Phex=März, Peraine=April, Ingerimm=Mai, Rahja=Juni). 30 Tage pro Monat + 5 Namenlose Tage.
 
 REGELN AM TISCH (für den Spielleiter):
