@@ -163,7 +163,37 @@ export const helkaDialogs: Record<string, DialogTree> = {
             text: "Welche Frequenz hat er manipuliert? Nicht 104,6 — eine andere?",
             next: "helkaHiddenFreq1",
           },
+          {
+            text: "Kowalk sagt, Sie haben Brust mal im Phrasen-Duell stehen lassen. Womit?",
+            requires: ["kowalkHintedBodoHelka"],
+            hiddenWhen: ["learnedAttackTuerschild"],
+            next: "helkaTeachAttack1",
+          },
           { text: "[ Beenden ]" },
+        ],
+      },
+      helkaTeachAttack1: {
+        id: "helkaTeachAttack1",
+        speaker: "HELKA",
+        text: "Brust. Vor einem halben Jahr. Er wollte mir eine Sortier-Schicht verweigern: »Dafür bin ich nicht zuständig.«",
+        next: "helkaTeachAttack2",
+      },
+      helkaTeachAttack2: {
+        id: "helkaTeachAttack2",
+        speaker: "HELKA",
+        text: "Ich habe ihn nur angeschaut und gesagt: »Erstaunlich. Ihr eigenes Türschild sagt das genaue Gegenteil von dem, was Sie gerade behaupten.« — Er hat aufgehört zu atmen. Für eine Sekunde.",
+        subtext: "Sie lächelt nicht. Aber etwas an ihrem Mund tut es für sie.",
+        next: "helkaTeachAttack3",
+      },
+      helkaTeachAttack3: {
+        id: "helkaTeachAttack3",
+        speaker: "HELKA",
+        text: "Sein Türschild liest er nie. Die meisten lesen ihr eigenes nicht. — Schreiben Sie sich den Satz auf, Herr Worag. Er funktioniert auch bei Vossbeck.",
+        choices: [
+          {
+            text: "[ »Ihr Türschild sagt anderes« ins Phrasenbuch übernehmen ]",
+            action: (api) => api.setFlag("learnedAttackTuerschild"),
+          },
         ],
       },
       // Hinweis 2/3 für die Hidden Frequency 102,7 — Helka nennt die Stelle.
