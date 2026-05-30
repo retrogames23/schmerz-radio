@@ -1,62 +1,127 @@
-# Plan: Overlay-Verschieben im Dev-Modus verschlanken
 
-## Ziel
+## Worum geht's
 
-Das Drag/Resize-Tool für Hotspots/NPCs/Decals bleibt wie es ist. Aber der Workflow rundherum wird aufs Wesentliche reduziert:
+Die Duell-Mechanik selbst nennt sich intern längst **„Phrasen-Dreschen"** — Brust wirft Behörden-Phrasen, Layard kontert. Aber die Hinführungs-Dialoge mit **Kowalk** und **Brust** (und ein paar Sätze bei Vossbeck) sprechen noch durchgängig von **„Paragraphen"** / **„paragraphenfest"**. Das passt nicht mehr zur Mechanik und nimmt der Szene den Witz.
 
-- **Keine OK / Fix / Skip Buttons mehr** und keine Status-Zählung (`✓ x · ✎ y · …`).
-- **„Report kopieren"** baut automatisch einen kompakten, credit-schonenden Prompt aus genau dem, was sich seit dem letzten Kopieren geändert hat — neue Boxen, geänderte Boxen, gelöschte Boxen. Unverändertes wird weggelassen.
-- Wenn nichts neues da ist: kurzer Hinweis statt leerem Report.
+Gleichzeitig liest sich die ganze Hinführung aktuell sehr trocken-amtlich. Die Welt verträgt eine **Prise Monkey-Island-Schlagabtausch**, wenn er aus der **Behörden-Logik selbst** kommt (Kowalk seufzt routiniert, Brust nimmt seine eigene Wichtigkeit todernst, Vossbeck bleibt der gefährlich höfliche Endgegner). Slapstick wäre falsch. Augenzwinkernde Hyper-Bürokratie ist richtig.
 
-## Änderungen
+## Neue Grundidee in einem Satz
 
-### `src/dev/overlayQAState.ts`
+> **Vossbeck verhandelt grundsätzlich nur noch mit Bewohnern, die sich im Bürokratie-Alltag als schlagfertig erwiesen haben. Brust ist der Türsteher, der das prüft — am Tresen, an erfundenen Kantinenfällen. Kowalk hat das hundertmal gesehen, sie übersetzt für Layard.**
 
-- Entfernen: `QAStatus`, `getStatus`, `setStatus`, `clearAllStatus`, `STATUS_KEY`, `pushSnippet`, `getSnippets`, `getSnippetsBy`, `clearSnippets`, der gesamte `snippetBuffer`, sowie `isEditorForced` / `setEditorForced` (Editor ist ab jetzt einfach immer an, solange QA aktiv ist — ein Toggle weniger).
-- Behalten: `isQAActive` / `setQAActive`, `BoxOverride`, `getOverridesFor`, `setOverride`, `clearOverridesFor`, `clearAllOverrides`, `getOverrideCount`, `useQA`.
-- **Neu**: Snapshot-Mechanik für das Delta.
-  - Key `e67.overlayQA.lastReport` enthält serialisiertes `AllOverrides` vom Zeitpunkt des letzten „Report kopieren".
-  - `getLastReportSnapshot(): AllOverrides`
-  - `setLastReportSnapshot(snap: AllOverrides)`
-  - `diffSinceLastReport(): { added, changed, removed }` — vergleicht aktuellen `readAll()` mit Snapshot, gruppiert pro `sceneId`/`boxId`.
+Das macht aus „Paragraphen lernen" ein **„den Bürokratie-Tonfall lernen"** — und genau das wird beim Spielen gemacht: Behörden-Phrasen mit der richtigen Floskel entwerten.
 
-### `src/dev/OverlayQAOverlay.tsx`
+## Was geändert wird (Code-Locations)
 
-- Entfernen: OK / Fix / Skip Buttons, Zähler-Zeile, `showReport`-Toggle samt `<pre>`-Vorschau, „Editor an/aus" Button, `goIdx`-Pfeile bleiben (Raum-Navigation ist nützlich).
-- Übrig bleiben in der Toolbar: `QA starten/aktiv`, `Raster an/aus`, Szenen-Navigation `◀ scene ▶`, `Report kopieren`, `Reset`.
-- `buildReport()` neu: ruft `diffSinceLastReport()` auf und baut einen Prompt im Stil:
+Reine Text-Eingriffe, keine Mechanik-Änderung, keine neuen Flags.
 
-  ```text
-  Wende diese Overlay-Korrekturen an (Werte in % der Bühne):
+### 1. `src/game/dialogs/cafeteria.ts` — Kowalk (`cafeteriaKowalk`)
 
-  ## src/game/scenes/<file>.ts — sceneId: <id>
-  - geändert: id "schreibtisch" → x: 12.4, y: 41.8, w: 18.0, h: 22.5
-  - neu:      id "neuer-hotspot" → x: …, y: …, w: …, h: …
-  - gelöscht: id "alt-hotspot"
-  ```
+- **`kInsa6c`** („durchkommen heißt: erst Brust … Vossbeck nimmt nur Bewohner an, die paragraphenfest sind") → neu formuliert als **„schlagfertig im Behörden-Ton"**. Konkreter Vorschlag:
 
-  Pro Szene nur ein Block, nur Boxen mit Delta. Wenn `added+changed+removed === 0`: Text `"Keine Änderungen seit letztem Report."` kopieren und kurzen Toast/`alert` zeigen.
+  > KOWALK: „Und durchkommen heißt: erst Brust. Drei Trainingsfälle in Folge. Vossbeck verhandelt nur noch mit Bewohnern, die sich im Bürokratie-Alltag als schlagfertig erwiesen haben — und Brust ist heute mal wieder dran zu prüfen, wer das ist."
+  > KOWALK (Untertext): „Brust hält das für eine ehrenvolle Aufgabe. Lass ihn in dem Glauben, Worag — du brauchst ihn."
 
-- Nach erfolgreichem `clipboard.writeText` → `setLastReportSnapshot(readAll())`, damit der nächste Klick wieder nur das Neue liefert.
-- `Reset` löscht weiterhin alle Overrides **und** den Snapshot.
+- **`kAuth8`** („Vossbeck redet nur mit Leuten, die Paragraphen können …") → neu:
 
-### `src/dev/HotspotEditor.tsx`
+  > KOWALK: „Vossbeck redet nur mit Leuten, die im Bürokratie-Alltag mitreden können. Brust trainiert die Bewohner manchmal — erfundene Kantinenfälle, drei in Folge gewonnen, und du gilst bei Vossbeck als satisfaktionsfähig. Wer das nicht ist, läuft bei ihm gegen eine Wand. Eine sehr höfliche Wand."
 
-- Aufrufe von `pushSnippet(...)` / `setStatus(..., "fix")` entfernen (die Funktionen verschwinden). Drag-Ende ruft nur noch `setOverride(...)`.
-- Editor-Aktivierung: statt `isEditorForced()` einfach `isQAActive()` prüfen (oder ein dedizierter `editor`-State wenn er anderswo gebraucht wird — siehe Such-Treffer unten verifizieren).
+- **`kRecap`** („Brust. Trainingsfall. Drei in Folge. Dann Vossbeck") bleibt fast wörtlich, aber Schluss-Satz wird wärmer:
 
-### `SceneView.tsx`, `GameShell.tsx`, `SectorThresholdCutscene.tsx`
+  > KOWALK: „Brust testet, Vossbeck entscheidet. Drei Trainingsfälle in Folge — und du darfst rein. Den Rest mache ich von hier aus."
 
-- Nur die Importe/Aufrufe der entfernten Symbole anpassen (vermutlich `isEditorForced`); inhaltlich kein Verhaltenswechsel außer „Editor an, sobald QA aktiv".
+- **Neue Mini-Option im Hub `k0`** (nur sichtbar nach erstem Sieg, vor dem dritten — damit die Hinführung Atem hat und Kowalk Layard explizit anfeuert):
 
-## Technische Details
+  > Choice: „Brust ist anstrengend." → kBrustVent
+  > KOWALK: „Brust ist die strengste Form von Loyalität, die ich kenne — gegenüber einem Aushang, den niemand sonst noch liest. Lass ihn gewinnen wollen. Er gewinnt nur, wenn du verlierst."
 
-- Delta-Vergleich tolerant gegen Float-Rauschen: Werte vor dem Vergleich auf 1 Nachkommastelle runden (gleiche Präzision wie der ausgegebene Snippet), sonst gelten minimale Mausbewegungen schon als „geändert".
-- Snapshot wird beim allerersten „Report kopieren" leer angenommen → erster Report enthält alles, was aktuell als Override vorliegt. Genau das Verhalten, das man will.
-- `getOverrideCount()` bleibt für die Footer-Zeile.
-- Keine Änderungen an Persistenz-Format der Overrides selbst → bestehende lokale Korrekturen gehen nicht verloren.
+### 2. `src/game/dialogs/cafeteria.ts` — Brust (`cafeteriaBrust`)
 
-## Nicht im Scope
+Hier liegt der größte Hebel. Brust soll **todernst seinen Witz nicht merken** — daraus entsteht der Monkey-Island-Ton.
 
-- Drag/Resize-Mechanik im Editor selbst.
-- Original-Werte aus den Szenen-Dateien parsen (Prompt enthält nur die neuen Zielwerte; Lovable findet die zu ersetzende Box anhand `sceneId` + `id`).
+- **`bAuth3`** („Vossbeck nimmt aber nur Vorgänge von Bewohnern an, die paragraphenfest sind …") → neu:
+
+  > BRUST: „Oberinspektor Vossbeck nimmt Vorgänge nur von Bewohnern entgegen, die im Bürokratie-Alltag schlagfertig sind. Das ist mir die Aufgabe, das zu prüfen. — Trainingsfall. Erfundene Konstellation aus dem Kantinenbetrieb. Drei in Folge bei mir, dann sind Sie für Vossbeck satisfaktionsfähig."
+  > BRUST (Untertext): „Er sagt »satisfaktionsfähig« mit der Ehrfurcht eines Mannes, der das Wort jeden Morgen einmal vor dem Spiegel übt."
+
+- **`bDuelOffer` & `bDuelOffer2`** („Ich eröffne mit einem Paragraphen, Sie kontern …") → neu:
+
+  > BRUST: „Trainingsfall. Erfundene Konstellation aus dem Kantinenbetrieb. Ich eröffne mit einer typischen Bewohner-Phrase — Sie kontern. Zwei Treffer mehr als Fehler: bestanden. Drei Fehler: für heute schließen wir."
+  > BRUST: „Was Sie aus jedem Fall mitnehmen, landet in Ihrem Phrasenbuch. Drei gewonnene Trainingsfälle in Folge — und Vossbeck nimmt Sie ernst. Ich darf das beurkunden."
+  > BRUST (Untertext): „»Beurkunden« sagt er, als wäre es ein Ehrentitel."
+
+- **`bVossbeckHint`** bleibt fast wie er ist, kleiner Witz dazu:
+
+  > BRUST: „Drei in Folge. Korrekt notiert. — Direkt nebenan, Tür 3603. Klopfen Sie nicht. Vossbeck hört auf Aushänge, nicht auf Hände."
+
+- **`bHyg1` / `bHyg2`** (Aushang-Konflikt mit Kowalk) bleibt — passt schon, ist Brusts eigener kleiner Selbstmord am Regelwerk. Nur kosmetisch: „Das ist … unschön" → „Das ist … nicht ganz aushangkonform." (trockener)
+
+### 3. `src/game/dialogs/cafeteria.ts` — Vossbeck (`cafeteriaVossbeck`)
+
+- **`v6`** („Ich verwende ausschließlich Paragraphen, die in Ihrem Notizbuch stehen sollten …") → neu:
+
+  > VOSSBECK: „Ich verwende ausschließlich Phrasen, gegen die Brust Sie geübt haben sollte. Wenn Ihr Phrasenbuch lückenhaft ist — ist das Ihr Versäumnis. Nicht meines."
+
+- **`vAfter`** („Sie kennen Ihre Paragraphen …") → neu:
+
+  > VOSSBECK: „Herr Worag, Respekt. Sie sind im Behörden-Ton zu Hause. Haben Sie eine Fallnummer? Nein? Dann bitte ich Sie, mich meine Arbeit machen zu lassen."
+
+- **`vossbeckUnready` (`u3`)** („Trainingssiege bei Herrn Brust: keine dokumentiert — Sie brauchen drei …") bleibt sinngemäß, aber:
+
+  > VOSSBECK: „Trainingssiege bei Herrn Brust: keine dokumentiert. Drei brauchen Sie — sonst sind Sie hier nicht satisfaktionsfähig. Ich verhandle nicht mit Bewohnern, die mir noch im selben Satz aus der Hand fressen."
+  > VOSSBECK: „Drei in Folge bei Brust. Vorher nicht. — Tür ist da."
+
+  (`vossbeckUnreadyOne` / `vossbeckUnreadyTwo` analog im Tonfall — Witz darf in der Zwischenstufen-Variante stärker werden, weil Vossbeck dort minimal genervter wird.)
+
+### 4. `src/game/dialogs/vossbeckAct2.ts`
+
+- **`vossbeckAct2Skeptical.s1`** („Manche Bewohner halten meine Paragraphen für ein Hindernis …") → neu:
+
+  > VOSSBECK: „Manche Bewohner halten meine Phrasen für ein Hindernis. Andere für ein Werkzeug. Sie scheinen mir zur zweiten Sorte zu gehören."
+
+### 5. `src/components/game/BureaucracyDuelOverlay.tsx`
+
+- **Kowalk-Tutorial-Hinweis (Zeile 80)** („du hast noch nicht viele Paragraphen …") → neu:
+
+  > KOWALK (halblaut): „Worag — dein Phrasenbuch ist noch dünn. Wähl irgendwas. Brust korrigiert dich, dann hast du einen Konter mehr."
+
+- **Streak-Abschluss-Text (Zeile 243)** („Drei in Folge, Bewohner Worg. Das ist … selten.") bleibt, kleiner Witz weiter unten ergänzen:
+
+  > „Wenn Sie meinen, einen echten Vorgang führen zu können — kommen Sie zu mir. Tür 3603. Vor neunzehn Uhr. Nach neunzehn Uhr bin ich auch dort, aber dann ist es offiziell nicht mehr ich."
+
+- **Item-Description nach Endsieg (Zeile 223)** („Argument für Argument, Paragraph für Paragraph") → neu:
+
+  > „Eine grau-amber lackierte Konservendose … Vossbeck hat sie freigegeben — Phrase um Phrase, Floskel um Floskel. Es war fast schön anzusehen."
+
+### 6. `src/game/hints.ts`
+
+Zwei Zeilen umformulieren:
+
+- Z. 273 („Er nimmt nur Bewohner an, die paragraphenfest sind …") → „… die im Behörden-Ton schlagfertig sind — Brust trainiert dich am Tresen vorher."
+- Z. 378 („Jeder Fall lehrt dich Paragraphen fürs Notizbuch …") → „Jeder Trainingsfall ergänzt dein Phrasenbuch — verlierst du, lernst du den Konter trotzdem (Brust nennt ihn dir selbst)."
+
+### 7. Kommentare (low priority)
+
+Code-Kommentare wie `// Trainingsfall — fiktive Kantinenfälle, lehrt Paragraphen.` werden in „lehrt Konter fürs Phrasenbuch" geändert. Reine Lesbarkeit für die nächste Iteration; keine User-Wirkung.
+
+## Was bewusst NICHT geändert wird
+
+- **Mechanik des Duells.** PHRASES, COUNTERS, FICTIONAL_COUNTERS, Pool-Logik, Streak-Zählung, Notausgang über Kowalks Fälschung — alles bleibt wie es ist.
+- **Das Phrasenbuch-Overlay** (`ParagraphenNotizbuchOverlay.tsx`). Dateiname und interne Variable `learnedParagraphs` bleiben als reine Code-Aliasse (siehe vorhandener Kommentar im Code) — sonst müsste man zu viele Stellen umbenennen, ohne dass es der Spieler je sieht. Die **UI-Strings** im Overlay sind bereits neutral genug.
+- **`bAuth1` / `bAuth2`** (Brust verweist auf Aushang 4.2). Das sind echte Aushänge, keine Duell-Paragraphen — die Wortwahl bleibt.
+- **Tjark / DSA-Block** am Ende der Datei — nicht betroffen.
+
+## Tonalitäts-Leitplanken (für die Umsetzung)
+
+Damit der Humor nicht ins Albernkippt:
+
+1. **Brust nimmt sich todernst.** Witz entsteht durch _Untertext_ („sagt »beurkunden«, als wäre es ein Ehrentitel"), nicht durch flapsige Brust-Sätze.
+2. **Kowalk ist die einzige Figur, die offen über Brust schmunzelt** — und auch nur halblaut, im Aside. Das macht ihren Witz wertvoll.
+3. **Vossbeck wird trockener, nicht witziger.** Sein einziger Humor ist die selbstverständliche Höflichkeit, mit der er Layard rauswirft. Kein Augenzwinkern, niemals.
+4. **Layard antwortet im Duell wie bisher** — die fertigen Konter aus `COUNTERS` sind schon im richtigen Ton („Das sieht man dem Sektor auch an"). Hier wird nichts geändert.
+5. **Keine Brüche mit der Welt:** kein Pop-Culture-Witz, kein „Schwertmeister"-Wink. Der Insider-Witz bleibt _bürokratisch_.
+
+## Aufwand
+
+- Reine Text-Patches in 4 Dateien (`cafeteria.ts`, `vossbeckAct2.ts`, `BureaucracyDuelOverlay.tsx`, `hints.ts`) — überschaubar, eine Iteration.
+- Kein Mechanik-Test nötig, weil keine Flags / kein Game-State berührt werden. Sichtprüfung der Dialoge im Spiel reicht.
