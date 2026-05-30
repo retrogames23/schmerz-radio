@@ -564,8 +564,13 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           });
           const result = await callMaster(apiKey, systemPrompt, history, MIN_END_ASSISTANT_TURNS);
           if (!result.ok) return json(result.status, { error: result.error });
-          const parsed = parseMasterTurn(result.reply);
-          history.push({ role: "assistant", content: result.reply });
+          let reply = result.reply;
+          let parsed = parseMasterTurn(reply);
+          if (parsed.end && assistantTurns + 1 < MIN_END_ASSISTANT_TURNS) {
+            reply = stripEndMarker(reply);
+            parsed = parseMasterTurn(reply);
+          }
+          history.push({ role: "assistant", content: reply });
 
           let nextStatus: AdventureStatus = "active";
           if (parsed.end === "victory") nextStatus = "victory";
@@ -595,7 +600,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             return json(500, { error: "Speichern fehlgeschlagen." });
           }
           return json(200, {
-            reply: result.reply,
+            reply,
             parsed,
             imageTag: imgTag,
             status: nextStatus,
