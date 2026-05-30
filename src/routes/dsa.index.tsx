@@ -106,12 +106,12 @@ function DsaLanding() {
 
   async function handleDelete(slot: SlotIndex) {
     if (!window.confirm(`Held in Slot ${slot} wirklich löschen?`)) return;
+    const sessionIdToDelete = slotSessionId(slot);
     saveSlotCharacter(slot, null);
     setSlots((s) => ({ ...s, [slot]: null }));
     // Auch das serverseitige Abenteuer dieses Slots verwerfen, sonst
     // taucht der alte Stand beim nächsten Helden wieder auf.
     try {
-      const sessionId = slotSessionId(slot);
       const { getFreshAccessToken } = await import("@/auth/freshToken");
       const token = await getFreshAccessToken().catch(() => null);
       let anonId: string | null = null;
@@ -131,7 +131,7 @@ function DsaLanding() {
         headers,
         body: JSON.stringify({
           action: "abort",
-          sessionId,
+          sessionId: sessionIdToDelete,
           ...(token ? {} : { anonId: anonId ?? "anon000000000000" }),
         }),
       });
