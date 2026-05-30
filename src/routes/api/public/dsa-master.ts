@@ -400,6 +400,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             character: characterSnap,
             summary: "",
             offtopicStreak: 0,
+            assistantTurns: 0,
             cooldown: false,
           });
           const opener: StoredTurn = {
@@ -558,6 +559,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             character: characterSnap,
             summary,
             offtopicStreak,
+            assistantTurns,
             cooldown,
           });
           const result = await callMaster(apiKey, systemPrompt, history, MIN_END_ASSISTANT_TURNS);
