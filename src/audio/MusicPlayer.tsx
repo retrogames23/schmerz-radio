@@ -262,8 +262,14 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
 
   function startPlayback() {
     const active = activeRef.current === "a" ? aRef.current! : bRef.current!;
+    const mood = moodPoolRef.current;
     const overrideId = overrideRef.current;
-    const targetSrc = overrideId ? MUSIC_OVERRIDES[overrideId].src : pickTrack(indexRef.current);
+    const targetSrc = mood
+      ? (currentMoodSrcRef.current ?? pickMoodTrack(mood, null))
+      : overrideId
+        ? MUSIC_OVERRIDES[overrideId].src
+        : pickTrack(indexRef.current);
+    if (mood && !currentMoodSrcRef.current) currentMoodSrcRef.current = targetSrc;
     if (!active.src || active.src !== new URL(targetSrc, window.location.href).href) {
       active.src = targetSrc;
       active.currentTime = 0;
