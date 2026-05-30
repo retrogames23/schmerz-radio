@@ -1,127 +1,93 @@
+## Ziel
 
-## Worum geht's
+Phrasen-Duell von Grund auf neu aufsetzen — komplett in normalen Dialog-Bäumen, ohne eigenes Overlay. Mechanik so, dass sie zu den vier Beobachtungen passt.
 
-Die Duell-Mechanik selbst nennt sich intern längst **„Phrasen-Dreschen"** — Brust wirft Behörden-Phrasen, Layard kontert. Aber die Hinführungs-Dialoge mit **Kowalk** und **Brust** (und ein paar Sätze bei Vossbeck) sprechen noch durchgängig von **„Paragraphen"** / **„paragraphenfest"**. Das passt nicht mehr zur Mechanik und nimmt der Szene den Witz.
+## Neues Konzept
 
-Gleichzeitig liest sich die ganze Hinführung aktuell sehr trocken-amtlich. Die Welt verträgt eine **Prise Monkey-Island-Schlagabtausch**, wenn er aus der **Behörden-Logik selbst** kommt (Kowalk seufzt routiniert, Brust nimmt seine eigene Wichtigkeit todernst, Vossbeck bleibt der gefährlich höfliche Endgegner). Slapstick wäre falsch. Augenzwinkernde Hyper-Bürokratie ist richtig.
+### Grundregeln (anders als bisher)
 
-## Neue Grundidee in einem Satz
+1. **Lernen passiert nur durch fremde Konter.** Wenn Layard falsch kontert, lernt er **nichts**. Er lernt nur:
+   - wenn **Brust** ihm im Trainingsfall den richtigen Konter vorführt (Brust korrigiert mit Phrase + Konter, Layard kann „[ ins Phrasenbuch übernehmen ]“ wählen),
+   - wenn andere Bewohner (Bodo, Helka, Kowalk) ihm eine Phrase/einen Konter beibringen (bleibt wie bisher).
+2. **Wenn Layard angreift, muss Brust sichtbar reagieren.** Entweder Brust kontert souverän (Layard-Phrase war linkisch oder Brust kennt sie) — oder Brust stottert sichtbar (Bodo/Helka-Spezialphrase). Kein stiller Punktverlust mehr.
+3. **Layards Angriffsphrasen sind Behörden-Abschiebephrasen,** kein Smalltalk und keine Resonanz-Anspielungen. Beispiele: „Stehen Sie nicht auf der Liste für die Hausflurreinigung?“, „Den Antrag hätten Sie vor sechs Wochen stellen müssen.“, „Das fällt unter Anlage 3 — bitte den korrekten Stempel besorgen.“
+4. **Kein eigenes Interface.** Alles läuft im normalen Dialog-Overlay. Kowalk wird als halblaute Erzähler-/Off-Stimme unter Brusts Zeilen eingebaut (das `subtext`-Feld bzw. zusätzliche Dialogzeilen mit Sprecher KOWALK).
 
-> **Vossbeck verhandelt grundsätzlich nur noch mit Bewohnern, die sich im Bürokratie-Alltag als schlagfertig erwiesen haben. Brust ist der Türsteher, der das prüft — am Tresen, an erfundenen Kantinenfällen. Kowalk hat das hundertmal gesehen, sie übersetzt für Layard.**
+### Spielablauf eines Trainingsfalls (rein dialogisch)
 
-Das macht aus „Paragraphen lernen" ein **„den Bürokratie-Tonfall lernen"** — und genau das wird beim Spielen gemacht: Behörden-Phrasen mit der richtigen Floskel entwerten.
+Ein Trainingsfall = ein neuer DialogTree `cafeteriaTraining` (zufällig aus mehreren möglich) mit drei „Runden“:
 
-## Was geändert wird (Code-Locations)
+```
+Runde 1  Brust-Angriff  → Layard wählt aus 4 Konter-Optionen
+   Treffer : Brust knickt ein. Kowalk-Aside: „Sitzt.“ → Punkt für Layard.
+   Fehler  : Brust liefert den richtigen Konter nach. Spieler darf
+             [ ins Phrasenbuch übernehmen ] (lernt jetzt erst) → Brust-Punkt.
 
-Reine Text-Eingriffe, keine Mechanik-Änderung, keine neuen Flags.
+Runde 2  Layard-Angriff → Layard wählt aus 4 Angriffs-Phrasen
+   Phrase aus Phrasenbuch + Brust kennt keinen Konter
+        → Brust stottert sichtbar, Kowalk: „Volltreffer.“ → Punkt für Layard.
+   Phrase aus Phrasenbuch + Brust kennt sie
+        → Brust kontert souverän (ein Satz) → Brust-Punkt.
+   Linkische Eigen-Phrase (Smalltalk / Bitte)
+        → Brust kontert souverän → Brust-Punkt.
 
-### 1. `src/game/dialogs/cafeteria.ts` — Kowalk (`cafeteriaKowalk`)
+Runde 3  Brust-Angriff (wie Runde 1)
+```
 
-- **`kInsa6c`** („durchkommen heißt: erst Brust … Vossbeck nimmt nur Bewohner an, die paragraphenfest sind") → neu formuliert als **„schlagfertig im Behörden-Ton"**. Konkreter Vorschlag:
+Ergebnis: 2 Punkte = Trainingsfall gewonnen → Streak +1, Kowalk-Off („Du wirst besser, Worag.“). Sonst verloren, Streak resettet.
 
-  > KOWALK: „Und durchkommen heißt: erst Brust. Drei Trainingsfälle in Folge. Vossbeck verhandelt nur noch mit Bewohnern, die sich im Bürokratie-Alltag als schlagfertig erwiesen haben — und Brust ist heute mal wieder dran zu prüfen, wer das ist."
-  > KOWALK (Untertext): „Brust hält das für eine ehrenvolle Aufgabe. Lass ihn in dem Glauben, Worag — du brauchst ihn."
+Drei Trainingsfälle in Folge → Flag `duelTrainingWon3` → Brust verweist auf Vossbeck.
 
-- **`kAuth8`** („Vossbeck redet nur mit Leuten, die Paragraphen können …") → neu:
+### Vossbeck-Endrunde
 
-  > KOWALK: „Vossbeck redet nur mit Leuten, die im Bürokratie-Alltag mitreden können. Brust trainiert die Bewohner manchmal — erfundene Kantinenfälle, drei in Folge gewonnen, und du gilst bei Vossbeck als satisfaktionsfähig. Wer das nicht ist, läuft bei ihm gegen eine Wand. Eine sehr höfliche Wand."
+Eigener DialogTree `vossbeckDuel`: identische Mechanik, Phrasen aus dem Endgame-Pool, drei Runden Vossbeck-Brust-Vossbeck. Bei Sieg `duelEndgameWon`, bei Niederlage `duelEndgameLost`.
 
-- **`kRecap`** („Brust. Trainingsfall. Drei in Folge. Dann Vossbeck") bleibt fast wörtlich, aber Schluss-Satz wird wärmer:
+## Datenmodell
 
-  > KOWALK: „Brust testet, Vossbeck entscheidet. Drei Trainingsfälle in Folge — und du darfst rein. Den Rest mache ich von hier aus."
+`src/game/bureaucracyDuel.ts` wird zu einem reinen **Daten- und Helfer-Modul** (keine Round/Session-Logik fürs Overlay mehr). Behalten:
 
-- **Neue Mini-Option im Hub `k0`** (nur sichtbar nach erstem Sieg, vor dem dritten — damit die Hinführung Atem hat und Kowalk Layard explizit anfeuert):
+- `PHRASES`, `COUNTERS`, `ATTACK_PHRASES`, `FICTIONAL_COUNTERS`, `FICTIONAL_ATTACKS`, `ATTACK_COUNTER_LINES`, `getCounter`, `getPhrase`, `getAttack`, `opponentCounters`, `BRUST_KNOWS_ATTACKS`, `VOSSBECK_KNOWS_ATTACKS`.
 
-  > Choice: „Brust ist anstrengend." → kBrustVent
-  > KOWALK: „Brust ist die strengste Form von Loyalität, die ich kenne — gegenüber einem Aushang, den niemand sonst noch liest. Lass ihn gewinnen wollen. Er gewinnt nur, wenn du verlierst."
+Geändert/entfernt:
 
-### 2. `src/game/dialogs/cafeteria.ts` — Brust (`cafeteriaBrust`)
+- `FICTIONAL_ATTACKS` und `f-*` Konter werden gesäubert: die unpassenden Einträge (`f-warm`, `f-resonanz`, `fa-warm`, `fa-resonanz`, `fa-vorlauf` als „drei Wochen Vorlauf“) werden ersetzt durch behördentaugliche Abschiebe-Phrasen / linkische Höflichkeitsversuche, die ins Setting passen.
+- Neue Angriffs-Phrasen ergänzen (Spezialitäten von Bodo / Helka / Kowalk-Training): „Hausflurreinigung“, „Anlage 3“, „Stempel besorgen“, „Sechs-Wochen-Frist“. Quelle (`source`) zuordnen, damit das Phrasenbuch sie korrekt listet.
+- `TRAINING_ROUNDS`, `ENDGAME_ROUNDS`, `buildTrainingSession`, `buildEndgameSession`, `buildRoundCounters`, `buildLayardAttackOptions`, `pickTrainingRounds`, `pickEndgameRounds`, `DUEL_UI_TEXT` werden gelöscht — der neue Ablauf braucht sie nicht. Was an Ablauftexten wiederverwendbar ist (z.B. `onHit`, `onMiss`, `kowalkAside`), zieht in die neuen Dialog-Bäume um.
 
-Hier liegt der größte Hebel. Brust soll **todernst seinen Witz nicht merken** — daraus entsteht der Monkey-Island-Ton.
+## Neue Dialog-Bäume
 
-- **`bAuth3`** („Vossbeck nimmt aber nur Vorgänge von Bewohnern an, die paragraphenfest sind …") → neu:
+In `src/game/dialogs/cafeteria.ts` (oder neue Datei `src/game/dialogs/trainingDuel.ts`, dann im `dialogs/index.ts` einhängen):
 
-  > BRUST: „Oberinspektor Vossbeck nimmt Vorgänge nur von Bewohnern entgegen, die im Bürokratie-Alltag schlagfertig sind. Das ist mir die Aufgabe, das zu prüfen. — Trainingsfall. Erfundene Konstellation aus dem Kantinenbetrieb. Drei in Folge bei mir, dann sind Sie für Vossbeck satisfaktionsfähig."
-  > BRUST (Untertext): „Er sagt »satisfaktionsfähig« mit der Ehrfurcht eines Mannes, der das Wort jeden Morgen einmal vor dem Spiegel übt."
+- `cafeteriaTrainingA`, `cafeteriaTrainingB`, `cafeteriaTrainingC` — drei austauschbare Trainingsfälle, je mit Runde 1/2/3 wie oben.
+- `vossbeckDuel` — Endrunde, drei feste Runden gegen Vossbeck.
 
-- **`bDuelOffer` & `bDuelOffer2`** („Ich eröffne mit einem Paragraphen, Sie kontern …") → neu:
+Brusts `bDuelOffer` ruft nicht mehr `api.openBureaucracyDuel("training")`, sondern springt direkt in einen Trainingsfall-Baum. Welcher Baum gewählt wird: zufällig in einer kleinen Helper-Funktion in `_helpers.ts` oder per Counter-Flag (`duelTrainingsRun`).
 
-  > BRUST: „Trainingsfall. Erfundene Konstellation aus dem Kantinenbetrieb. Ich eröffne mit einer typischen Bewohner-Phrase — Sie kontern. Zwei Treffer mehr als Fehler: bestanden. Drei Fehler: für heute schließen wir."
-  > BRUST: „Was Sie aus jedem Fall mitnehmen, landet in Ihrem Phrasenbuch. Drei gewonnene Trainingsfälle in Folge — und Vossbeck nimmt Sie ernst. Ich darf das beurkunden."
-  > BRUST (Untertext): „»Beurkunden« sagt er, als wäre es ein Ehrentitel."
+Kowalk-Asides werden als eigene `KOWALK`-Zeilen (kursiv via Sprecher-Styling, wie schon bei `kowalkAside` in der `cafeteriaKowalk`-Szene) zwischen Brusts Zeilen eingebaut, nicht in `subtext`.
 
-- **`bVossbeckHint`** bleibt fast wie er ist, kleiner Witz dazu:
+### Phrasenbuch-Übernahme
 
-  > BRUST: „Drei in Folge. Korrekt notiert. — Direkt nebenan, Tür 3603. Klopfen Sie nicht. Vossbeck hört auf Aushänge, nicht auf Hände."
+Jeder „[ ins Phrasenbuch übernehmen ]“-Choice setzt einen Flag pro Konter-ID (`learnedCounter:c-stapel` o.ä.), den der Phrasenbuch-Overlay liest. Das ist parallel zu Bodos/Helkas existenten Übernahme-Choices und ersetzt das implizite Lernen aus dem Overlay.
 
-- **`bHyg1` / `bHyg2`** (Aushang-Konflikt mit Kowalk) bleibt — passt schon, ist Brusts eigener kleiner Selbstmord am Regelwerk. Nur kosmetisch: „Das ist … unschön" → „Das ist … nicht ganz aushangkonform." (trockener)
+## Aufräumen
 
-### 3. `src/game/dialogs/cafeteria.ts` — Vossbeck (`cafeteriaVossbeck`)
+Komplett löschen:
 
-- **`v6`** („Ich verwende ausschließlich Paragraphen, die in Ihrem Notizbuch stehen sollten …") → neu:
+- `src/components/game/BureaucracyDuelOverlay.tsx`
+- alle `duelOpen`/`duelMode`/`openBureaucracyDuel`/`closeDuel`-Felder in `GameContext.tsx` und `types.ts`
+- der Render-Aufruf in `GameShell.tsx`
+- Flag `duelTutorialShown` (kein Overlay-Tutorial mehr nötig)
 
-  > VOSSBECK: „Ich verwende ausschließlich Phrasen, gegen die Brust Sie geübt haben sollte. Wenn Ihr Phrasenbuch lückenhaft ist — ist das Ihr Versäumnis. Nicht meines."
+Bleibt erhalten:
 
-- **`vAfter`** („Sie kennen Ihre Paragraphen …") → neu:
+- `ParagraphenNotizbuchOverlay` (Phrasenbuch) — das ist ein normaler Inventarslot.
+- Flags `duelStarted`, `duelTrainingWon1/2/3`, `duelEndgameWon`, `duelEndgameLost` — werden jetzt aus den Dialog-`action`-Hooks gesetzt.
 
-  > VOSSBECK: „Herr Worag, Respekt. Sie sind im Behörden-Ton zu Hause. Haben Sie eine Fallnummer? Nein? Dann bitte ich Sie, mich meine Arbeit machen zu lassen."
+## Testliste (nach Implementierung)
 
-- **`vossbeckUnready` (`u3`)** („Trainingssiege bei Herrn Brust: keine dokumentiert — Sie brauchen drei …") bleibt sinngemäß, aber:
-
-  > VOSSBECK: „Trainingssiege bei Herrn Brust: keine dokumentiert. Drei brauchen Sie — sonst sind Sie hier nicht satisfaktionsfähig. Ich verhandle nicht mit Bewohnern, die mir noch im selben Satz aus der Hand fressen."
-  > VOSSBECK: „Drei in Folge bei Brust. Vorher nicht. — Tür ist da."
-
-  (`vossbeckUnreadyOne` / `vossbeckUnreadyTwo` analog im Tonfall — Witz darf in der Zwischenstufen-Variante stärker werden, weil Vossbeck dort minimal genervter wird.)
-
-### 4. `src/game/dialogs/vossbeckAct2.ts`
-
-- **`vossbeckAct2Skeptical.s1`** („Manche Bewohner halten meine Paragraphen für ein Hindernis …") → neu:
-
-  > VOSSBECK: „Manche Bewohner halten meine Phrasen für ein Hindernis. Andere für ein Werkzeug. Sie scheinen mir zur zweiten Sorte zu gehören."
-
-### 5. `src/components/game/BureaucracyDuelOverlay.tsx`
-
-- **Kowalk-Tutorial-Hinweis (Zeile 80)** („du hast noch nicht viele Paragraphen …") → neu:
-
-  > KOWALK (halblaut): „Worag — dein Phrasenbuch ist noch dünn. Wähl irgendwas. Brust korrigiert dich, dann hast du einen Konter mehr."
-
-- **Streak-Abschluss-Text (Zeile 243)** („Drei in Folge, Bewohner Worg. Das ist … selten.") bleibt, kleiner Witz weiter unten ergänzen:
-
-  > „Wenn Sie meinen, einen echten Vorgang führen zu können — kommen Sie zu mir. Tür 3603. Vor neunzehn Uhr. Nach neunzehn Uhr bin ich auch dort, aber dann ist es offiziell nicht mehr ich."
-
-- **Item-Description nach Endsieg (Zeile 223)** („Argument für Argument, Paragraph für Paragraph") → neu:
-
-  > „Eine grau-amber lackierte Konservendose … Vossbeck hat sie freigegeben — Phrase um Phrase, Floskel um Floskel. Es war fast schön anzusehen."
-
-### 6. `src/game/hints.ts`
-
-Zwei Zeilen umformulieren:
-
-- Z. 273 („Er nimmt nur Bewohner an, die paragraphenfest sind …") → „… die im Behörden-Ton schlagfertig sind — Brust trainiert dich am Tresen vorher."
-- Z. 378 („Jeder Fall lehrt dich Paragraphen fürs Notizbuch …") → „Jeder Trainingsfall ergänzt dein Phrasenbuch — verlierst du, lernst du den Konter trotzdem (Brust nennt ihn dir selbst)."
-
-### 7. Kommentare (low priority)
-
-Code-Kommentare wie `// Trainingsfall — fiktive Kantinenfälle, lehrt Paragraphen.` werden in „lehrt Konter fürs Phrasenbuch" geändert. Reine Lesbarkeit für die nächste Iteration; keine User-Wirkung.
-
-## Was bewusst NICHT geändert wird
-
-- **Mechanik des Duells.** PHRASES, COUNTERS, FICTIONAL_COUNTERS, Pool-Logik, Streak-Zählung, Notausgang über Kowalks Fälschung — alles bleibt wie es ist.
-- **Das Phrasenbuch-Overlay** (`ParagraphenNotizbuchOverlay.tsx`). Dateiname und interne Variable `learnedParagraphs` bleiben als reine Code-Aliasse (siehe vorhandener Kommentar im Code) — sonst müsste man zu viele Stellen umbenennen, ohne dass es der Spieler je sieht. Die **UI-Strings** im Overlay sind bereits neutral genug.
-- **`bAuth1` / `bAuth2`** (Brust verweist auf Aushang 4.2). Das sind echte Aushänge, keine Duell-Paragraphen — die Wortwahl bleibt.
-- **Tjark / DSA-Block** am Ende der Datei — nicht betroffen.
-
-## Tonalitäts-Leitplanken (für die Umsetzung)
-
-Damit der Humor nicht ins Albernkippt:
-
-1. **Brust nimmt sich todernst.** Witz entsteht durch _Untertext_ („sagt »beurkunden«, als wäre es ein Ehrentitel"), nicht durch flapsige Brust-Sätze.
-2. **Kowalk ist die einzige Figur, die offen über Brust schmunzelt** — und auch nur halblaut, im Aside. Das macht ihren Witz wertvoll.
-3. **Vossbeck wird trockener, nicht witziger.** Sein einziger Humor ist die selbstverständliche Höflichkeit, mit der er Layard rauswirft. Kein Augenzwinkern, niemals.
-4. **Layard antwortet im Duell wie bisher** — die fertigen Konter aus `COUNTERS` sind schon im richtigen Ton („Das sieht man dem Sektor auch an"). Hier wird nichts geändert.
-5. **Keine Brüche mit der Welt:** kein Pop-Culture-Witz, kein „Schwertmeister"-Wink. Der Insider-Witz bleibt _bürokratisch_.
-
-## Aufwand
-
-- Reine Text-Patches in 4 Dateien (`cafeteria.ts`, `vossbeckAct2.ts`, `BureaucracyDuelOverlay.tsx`, `hints.ts`) — überschaubar, eine Iteration.
-- Kein Mechanik-Test nötig, weil keine Flags / kein Game-State berührt werden. Sichtprüfung der Dialoge im Spiel reicht.
+- Brust-Trainingsfall durchspielen: Treffer in Runde 1, Fehler in Runde 1 → Übernahme-Choice sichtbar → Konter erscheint im Phrasenbuch.
+- Runde 2 mit nur linkischen Phrasen: Brust kontert immer souverän, keine Verwirrung.
+- Runde 2 mit gelernter Bodo-Phrase: Brust stottert sichtbar, Punkt für Layard.
+- Drei Trainingsfälle in Folge gewinnen → `bVossbeckHint` erreichbar.
+- Vossbeck-Duell: Sieg setzt `duelEndgameWon`, Niederlage `duelEndgameLost`.
+- Keine Console-Errors zu fehlendem `duelOpen` / `BureaucracyDuelOverlay`.
