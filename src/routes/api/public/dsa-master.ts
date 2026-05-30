@@ -375,9 +375,9 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           }
           const setting = getSetting(settingId)!;
           const characterSnap: DsaCharacterSummary = {
-            name: String(character.name).slice(0, 60),
-            className: String(character.className).slice(0, 40),
-            classId: String(character.classId).slice(0, 40),
+            name: sanitizePromptField(character.name, 60) || "Namenlos",
+            className: sanitizePromptField(character.className, 40) || "Abenteurer",
+            classId: String(character.classId).replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 40),
             attrs: sanitizeAttrs(character.attrs),
             le: character.le,
             leMax: character.leMax,
