@@ -51,6 +51,28 @@ function json(status: number, data: unknown): Response {
 
 const ALLOWED_SETTINGS = new Set<string>(DSA_SETTINGS.map((s) => s.id));
 
+const VALID_ATTR_KEYS = ["MU", "KL", "CH", "FF", "GE", "IN", "KK"] as const;
+type AttrKey = (typeof VALID_ATTR_KEYS)[number];
+
+/**
+ * Sanitize attribute keys: only the seven canonical DSA attributes are
+ * allowed; values are clamped to 1..20. This prevents prompt injection
+ * via crafted attribute names being interpolated into the master system
+ * prompt downstream.
+ */
+function sanitizeAttrs(input: unknown): Record<AttrKey, number> {
+  const out = {} as Record<AttrKey, number>;
+  const src = (input && typeof input === "object" ? input : {}) as Record<string, unknown>;
+  for (const k of VALID_ATTR_KEYS) {
+    const v = src[k];
+    out[k] =
+      typeof v === "number" && Number.isFinite(v)
+        ? Math.max(1, Math.min(20, Math.round(v)))
+        : 11;
+  }
+  return out;
+}
+
 function isCharacterSummary(value: unknown): value is DsaCharacterSummary {
   if (!value || typeof value !== "object") return false;
   const c = value as Record<string, unknown>;
