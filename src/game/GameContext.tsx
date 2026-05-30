@@ -597,7 +597,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
   // Start-Items: Bewohner-Ausweis & E67-Handbuch landen einmalig im Inventar,
   // sobald der GameProvider mountet (Spielstart). Ein vorhandener Eintrag
   // (z. B. nach Save-Load) wird respektiert.
+  // Guard gegen React-StrictMode-Doppel-Mount: ohne ihn liefe der Effect
+  // im Dev-Mode zweimal, bevor inventoryRef die neu gesetzten Items sieht,
+  // und Ausweis/Handbuch bekämen einen Stack-Zähler "2".
+  const startItemsInitRef = useRef(false);
   useEffect(() => {
+    if (startItemsInitRef.current) return;
+    startItemsInitRef.current = true;
     if (!inventoryRef.current.some((i) => i.id === "residentId")) {
       api.addItem({
         id: "residentId",
