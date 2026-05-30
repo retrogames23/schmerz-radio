@@ -524,7 +524,10 @@ export function DsaLlmAdventureScene() {
           className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 p-4 sm:p-8"
           onClick={() => setImageZoomed(false)}
         >
-          <CloseButton onClick={() => setImageZoomed(false)} />
+          <CloseButton
+            onClick={() => setImageZoomed(false)}
+            className="absolute top-3 right-3 z-10"
+          />
           <img
             src={imgSrc}
             alt="Szene (vergrößert)"

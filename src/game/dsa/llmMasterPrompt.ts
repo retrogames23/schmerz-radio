@@ -54,7 +54,10 @@ AUSGABEFORMAT — STRIKT:
 
   Optionale Marker (alle in eckigen Klammern, je in eigener Zeile):
     [SCENE: <tag>]            wechselt die Hintergrundillustration. Erlaubte Tags: ${sceneTagList}.
-                              Lass [SCENE: …] WEG, wenn KEIN Tag wirklich zur Szene passt — kein Bild ist besser als ein unpassendes.
+                              STRIKT: Setze [SCENE: …] NUR, wenn ein Tag die Szene wirklich präzise abbildet (Ort UND Stimmung).
+                              Im Zweifel KEIN [SCENE]. Lieber gar kein Bild als ein ungefähr passendes oder generisches.
+                              Niemals "den nächstbesten" Tag wählen. Wiederhole den letzten Tag NICHT, nur weil die Szene weiterläuft —
+                              setze [SCENE] nur bei einem echten Orts- oder Stimmungswechsel, der zu einem der Tags passt.
     [CHECK: <ATTR> [+/-N]]    fordert eine Eigenschaftsprobe (MU, KL, CH, FF, GE, IN, KK). Modifikator optional.
     [COMBAT: id1, id2, ...]   ruft den Kampfbildschirm auf. Erlaubte Gegner-IDs: ${enemyIdList}
     [OUTTIME_WARN]            zeigt, dass du den Spieler ans Abenteuer erinnerst.
