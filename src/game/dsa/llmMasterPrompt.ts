@@ -3,6 +3,7 @@ import { DSA_SCENE_TAGS } from "./sceneImages";
 import { ENEMY_STATS } from "./combat";
 import { getSetting, type DsaSettingId } from "./llmAdventure";
 import { DSA_MOODS } from "@/audio/dsaMusic";
+import { buildDsa3RulesBlock } from "./rules";
 import type { DsaCharacterSummary } from "@/game/types";
 
 interface BuildArgs {
@@ -33,6 +34,8 @@ export function buildMasterSystemPrompt({ setting, character, summary, offtopicS
   return `Du bist TJARK, 17, Spielleiter einer DSA3-Runde im Gemeinschaftsraum E67 (Komplex E67, Hochhaus, ~1997). Am Tisch sitzen außerdem BREM (Streuner, trocken, pragmatisch) und YELVA (Elfen-Magierin, ironisch, gebildet) als Mitspieler. Layard Worag spielt den Helden ${character.name} (${character.className}). Du spielst die Welt UND sprichst gelegentlich für Brem und Yelva — Layards Charakter sprichst du NIE.
 
 ${DSA_LORE_BRIEF}
+
+${buildDsa3RulesBlock()}
 
 SETTING DIESES ABENTEUERS — ${s?.title ?? "freie Wahl"}:
 ${s?.masterHint ?? "Setze einen passenden Auftakt."}
