@@ -778,6 +778,59 @@ export function pickEndgameRounds(): DuelRound[] {
   }));
 }
 
+/**
+ * Baut eine vollständige Trainingssession: 3 Runden, alternierend.
+ * Reihenfolge fest: Brust greift an → Layard greift an → Brust greift an.
+ * Die Layard-Angriffsrunde wird als „Pseudo-Runde" eingeschoben — sie
+ * hat keine counterOptions, sondern wird vom Overlay anders gerendert.
+ */
+export function buildTrainingSession(): DuelRound[] {
+  const real = pickRounds(TRAINING_ROUNDS, 2);
+  const layardRound: DuelRound = {
+    id: "training-layard-attack",
+    kind: "layardAttacks",
+    opponent: "brust",
+    attackPhraseId: "",
+    opening:
+      "So, Bewohner Worag. Jetzt sind Sie dran. Werfen Sie eine Phrase. Ich kontere — oder eben nicht.",
+    counterOptions: [],
+    onHit:
+      "(Brust hält sichtbar inne. Schaut zur Seite. Sagt erstmal nichts.) … das müsste ich erst nachschlagen, Bewohner Worag.",
+    onMiss:
+      "(Brust nickt knapp.) Bekannt. So frisst Sie der Herr Vossbeck zum Frühstück.",
+    kowalkAside:
+      "Solche Phrasen lernst du nicht bei Brust, Worag. Lass dir was zeigen — von Leuten, die Brust selbst schon mal kleingekriegt haben.",
+  };
+  return [real[0], layardRound, real[1] ?? real[0]];
+}
+
+/**
+ * Vollständige Endgame-Session: 3 Runden, alternierend.
+ * Vossbeck greift an → Layard greift an → Vossbeck greift an.
+ * Die Mittelrunde ist OHNE Bodo/Helka-Phrasen nicht zu treffen — das
+ * ist Absicht: wer nur bei Brust trainiert hat, kommt hier nicht durch.
+ */
+export function buildEndgameSession(): DuelRound[] {
+  const real = ENDGAME_ROUNDS.map((r) => ({
+    ...r,
+    counterOptions: shuffle(r.counterOptions),
+  }));
+  const layardRound: DuelRound = {
+    id: "endgame-layard-attack",
+    kind: "layardAttacks",
+    opponent: "vossbeck",
+    attackPhraseId: "",
+    opening:
+      "Bewohner Worag. Die zweite Runde gehört Ihnen — Aktenordnung. Werfen Sie. Ich kontere.",
+    counterOptions: [],
+    onHit:
+      "(Vossbeck legt den Bleistift langsam ab — zum ersten Mal an diesem Tag.) … hm. Das … ist nicht in meinem Aktendeckel.",
+    onMiss:
+      "Bewohner Worag. Diese Phrase liegt seit Jahren in meinem Aktendeckel. Weiter.",
+  };
+  return [real[0], layardRound, real[1] ?? real[0]];
+}
+
 function pickRounds(pool: readonly DuelRound[], n: number): DuelRound[] {
   const arr = [...pool];
   for (let i = arr.length - 1; i > 0; i--) {
