@@ -3,6 +3,7 @@ import { useGame } from "@/game/GameContext";
 import { useInventoryDrag } from "@/game/InventoryDragContext";
 import { useCoarsePointer } from "@/hooks/useCoarsePointer";
 import { combineItem } from "@/game/combine";
+import type { InventoryItemId } from "@/game/types";
 import { ItemIcon } from "../ItemIcon";
 
 /**
@@ -71,7 +72,7 @@ export function FocusSheet() {
     h.onUse(api);
   };
 
-  const handleItem = (itemId: string) => {
+  const handleItem = (itemId: InventoryItemId) => {
     const h = hotspot;
     setCaption(null);
     drag.closeFocus();
