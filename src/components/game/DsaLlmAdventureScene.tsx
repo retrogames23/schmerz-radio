@@ -160,7 +160,8 @@ export function DsaLlmAdventureScene() {
       } catch (e) {
         if (cancelled) return;
         console.error("dsa-llm load failed", e);
-        setMode({ kind: "picker", error: "Verbindung fehlgeschlagen." });
+        const msg = e instanceof Error ? e.message : "Verbindung fehlgeschlagen.";
+        setMode({ kind: "picker", error: msg });
       }
     })();
     return () => {
@@ -227,7 +228,7 @@ export function DsaLlmAdventureScene() {
       handleServerReply(data);
     } catch (e) {
       console.error("dsa-llm start failed", e);
-      setError("Verbindung fehlgeschlagen.");
+      setError(e instanceof Error ? e.message : "Verbindung fehlgeschlagen.");
     } finally {
       setBusy(false);
     }
@@ -255,7 +256,7 @@ export function DsaLlmAdventureScene() {
       handleServerReply(data);
     } catch (e) {
       console.error("dsa-llm say failed", e);
-      setError("Verbindung fehlgeschlagen.");
+      setError(e instanceof Error ? e.message : "Verbindung fehlgeschlagen.");
       setComposerText(text);
       setTurns((t) => t.filter((x) => x.id !== myId));
     } finally {
@@ -305,7 +306,7 @@ export function DsaLlmAdventureScene() {
       handleServerReply(data);
     } catch (e) {
       console.error("dsa-llm combat_result failed", e);
-      setError("Verbindung fehlgeschlagen.");
+      setError(e instanceof Error ? e.message : "Verbindung fehlgeschlagen.");
     } finally {
       setBusy(false);
     }
