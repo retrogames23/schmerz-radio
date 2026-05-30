@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import titleTrack from "@/assets/the-glass-hour.mp3";
@@ -210,6 +211,13 @@ export function TitleScreen({ onStart }: Props) {
             >
               Inspirationen & Dank
             </button>
+            <span aria-hidden="true" className="text-muted-foreground/50">·</span>
+            <Link
+              to="/dsa"
+              className="transition hover:text-amber-glow"
+            >
+              Direkt zum DSA-Soloabenteuer
+            </Link>
             <span aria-hidden="true" className="text-muted-foreground/50">·</span>
             <a
               href="mailto:stephan.doerner@posteo.de"
