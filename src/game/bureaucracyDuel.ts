@@ -149,7 +149,7 @@ export const PHRASES: Record<string, Phrase> = {
 export const COUNTERS: Record<string, Counter> = {
   "c-immer-so": {
     id: "c-immer-so",
-    shortLabel: "„Sieht man dem Sektor an"",
+    shortLabel: "„Sieht man dem Sektor an“",
     text: "Das sieht man dem Sektor auch an.",
     beats: ["p-immer-so", "pE-tradition"],
     learnHint:
@@ -157,7 +157,7 @@ export const COUNTERS: Record<string, Counter> = {
   },
   "c-stapel": {
     id: "c-stapel",
-    shortLabel: "„Last des ganzen Hauses"",
+    shortLabel: "„Last des ganzen Hauses“",
     text: "Perfekt — dann trägt er wenigstens die Last des ganzen Hauses.",
     beats: ["p-stapel", "pE-stapel-hoheit"],
     learnHint:
@@ -165,7 +165,7 @@ export const COUNTERS: Record<string, Counter> = {
   },
   "c-nicht-zustaendig": {
     id: "c-nicht-zustaendig",
-    shortLabel: "„Türschild sagt anderes"",
+    shortLabel: "„Türschild sagt anderes“",
     text: "Erstaunlich. Auf Ihrem Türschild steht das Gegenteil.",
     beats: ["p-nicht-zustaendig"],
     learnHint:
@@ -173,7 +173,7 @@ export const COUNTERS: Record<string, Counter> = {
   },
   "c-termin": {
     id: "c-termin",
-    shortLabel: "„Den hätte ich gern"",
+    shortLabel: "„Den hätte ich gern“",
     text: "Den hätte ich gern — bei jemandem, der zuständig ist.",
     beats: ["p-termin"],
     learnHint:
@@ -181,7 +181,7 @@ export const COUNTERS: Record<string, Counter> = {
   },
   "c-formsache": {
     id: "c-formsache",
-    shortLabel: "„Dann füllen Sie sie aus"",
+    shortLabel: "„Dann füllen Sie sie aus“",
     text: "Wunderbar. Dann füllen Sie sie doch eben aus.",
     beats: ["p-formsache"],
     learnHint:
@@ -189,7 +189,7 @@ export const COUNTERS: Record<string, Counter> = {
   },
   "c-vorgesetzte": {
     id: "c-vorgesetzte",
-    shortLabel: "„Holen Sie ihn. Ich warte"",
+    shortLabel: "„Holen Sie ihn. Ich warte“",
     text: "Wunderbar. Holen Sie ihn. Ich warte.",
     beats: ["p-vorgesetzte", "pE-vorgesetzten-bluff"],
     learnHint:
@@ -199,7 +199,7 @@ export const COUNTERS: Record<string, Counter> = {
   // diesem Korpus. Werden als „echte aber unpassende" Optionen genutzt.
   "c-vorschriften": {
     id: "c-vorschriften",
-    shortLabel: "„Trotzdem gern essen"",
+    shortLabel: "„Trotzdem gern essen“",
     text: "Verstehe ich. Trotzdem würde ich gern essen.",
     beats: [],
     learnHint:
@@ -207,7 +207,7 @@ export const COUNTERS: Record<string, Counter> = {
   },
   "c-naechste-woche": {
     id: "c-naechste-woche",
-    shortLabel: "„Stempel auf Vordermann"",
+    shortLabel: "„Stempel auf Vordermann“",
     text: "Gut. Bringen Sie bis dahin Ihren Stempel auf Vordermann.",
     beats: [],
     learnHint:
