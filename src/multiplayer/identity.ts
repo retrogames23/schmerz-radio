@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import md5 from "blueimp-md5";
 
 /**
  * Schichtnummer pro Browser-Session — bleibt während der Session stabil,
@@ -19,13 +20,15 @@ export function getShiftNumber(): number {
 }
 
 export function getDisplayName(opts: {
-  user: { email?: string | null; is_anonymous?: boolean | null } | null;
+  user: { id?: string | null; email?: string | null; is_anonymous?: boolean | null } | null;
   shiftNumber: number;
 }): string {
   const { user, shiftNumber } = opts;
-  if (user && !user.is_anonymous && user.email) {
-    const local = user.email.split("@")[0]?.slice(0, 24);
-    if (local) return local;
+  // Authentifizierte Spieler bekommen ein stabiles, pseudonymes Nickname
+  // (gleiches Format wie der DB-Trigger `enforce_pub_chat_identity`), damit
+  // KEIN E-Mail-Local-Part über den Realtime-Presence-Channel leakt.
+  if (user && !user.is_anonymous && user.id) {
+    return `Bewohner-${md5(user.id).slice(0, 4).toUpperCase()}`;
   }
   return `Layard · Schicht ${shiftNumber}`;
 }

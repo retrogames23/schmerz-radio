@@ -33,7 +33,7 @@ export function ToiletWallOverlay() {
       if (!auth) { setErr("Konnte keine Session anlegen."); return; }
       const shift = getShiftNumber();
       const name = getDisplayName({
-        user: { email: auth.email, is_anonymous: auth.isAnonymous },
+        user: { id: auth.userId, email: auth.email, is_anonymous: auth.isAnonymous },
         shiftNumber: shift,
       });
       // Nur Spender (donation_unlocked) → permanent. Alle anderen → 48h.

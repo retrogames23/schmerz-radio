@@ -75,7 +75,7 @@ export function usePubPresence(active: boolean): PubPresenceState {
       if (!auth || cancelled) return;
       const shiftNumber = getShiftNumber();
       const displayName = getDisplayName({
-        user: { email: auth.email, is_anonymous: auth.isAnonymous },
+        user: { id: auth.userId, email: auth.email, is_anonymous: auth.isAnonymous },
         shiftNumber,
       });
       const meVal = {
