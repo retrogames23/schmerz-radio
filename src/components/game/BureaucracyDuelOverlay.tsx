@@ -141,9 +141,10 @@ export function BureaucracyDuelOverlay() {
     if (counter.correct) {
       const nextHits = hits + 1;
       setHits(nextHits);
-      // Eigenen korrekten Konter ggf. ins Notizbuch.
+      // Eigenen korrekten Konter ggf. ins Notizbuch — nur in Typ-A.
+      // In Typ-B ist counterId eine Angriffsphrasen-ID, kein Konter.
       let learnedNow: string | null = null;
-      if (!api.hasParagraph(counter.counterId)) {
+      if (round.kind !== "layardAttacks" && !api.hasParagraph(counter.counterId)) {
         api.learnParagraph(counter.counterId);
         learnedNow = counter.counterId;
       }
@@ -164,10 +165,15 @@ export function BureaucracyDuelOverlay() {
     } else {
       const nextMisses = misses + 1;
       setMisses(nextMisses);
-      // Bei Fehlschuss lernt Layard im Training trotzdem den korrekten
-      // Konter — Brust nennt ihn ja in der Belehrung.
+      // Typ-B-Miss: Kowalk-Hinweis-Flag setzen, damit Bodo/Helka als
+      // Lehrer für Angriffsphrasen sichtbar werden.
+      if (round.kind === "layardAttacks" && !api.hasFlag("kowalkHintedBodoHelka")) {
+        api.setFlag("kowalkHintedBodoHelka");
+      }
+      // Bei Typ-A-Fehlschuss lernt Layard im Training trotzdem den
+      // korrekten Konter — Brust nennt ihn ja in der Belehrung.
       let learnedNow: string | null = null;
-      if (!isEndgame) {
+      if (!isEndgame && round.kind !== "layardAttacks") {
         // Korrekten Konter aus dem Runden-Pool finden — derjenige, dessen
         // `beats`-Liste die Angriffsphrase enthält. Bei Fehlschuss lernt
         // Layard ihn, weil Brust ihn in der Belehrung nennt.
@@ -185,6 +191,9 @@ export function BureaucracyDuelOverlay() {
         }
       }
       const lines = [(isEndgame ? "VOSSBECK: " : "BRUST: ") + round.onMiss];
+      if (round.kind === "layardAttacks" && round.kowalkAside && !isEndgame) {
+        lines.push("KOWALK (halblaut): " + round.kowalkAside);
+      }
       if (learnedNow) {
         const c = COUNTERS[learnedNow];
         if (c) lines.push(DUEL_UI_TEXT.paragraphLearnedToast(c));
