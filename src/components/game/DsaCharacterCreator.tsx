@@ -298,7 +298,7 @@ export function DsaCharacterCreator() {
                   HELDEN-DOKUMENT
                 </div>
                 <div className="dsa-typed truncate text-[9px] tracking-normal dsa-ink-faded sm:text-[11px] sm:tracking-widest">
-                  DAS SCHWARZE AUGE · Zweite Edition
+                  DAS SCHWARZE AUGE · Dritte Edition
                 </div>
               </div>
             </div>

@@ -925,7 +925,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       tWhat: {
         id: "tWhat",
         speaker: "TJARK",
-        text: "„Das Schwarze Auge“. Zweite Edition. Schmidt-Spiele, vor zwei Jahren rausgekommen. Wir spielen in Aventurien — das ist ein Kontinent, kein Wohnkomplex. Götter, Magie, ein Haufen Würfel.",
+        text: "„Das Schwarze Auge“. Dritte Edition. Schmidt-Spiele, vor ein paar Jahren rausgekommen. Wir spielen in Aventurien — das ist ein Kontinent, kein Wohnkomplex. Götter, Magie, ein Haufen Würfel.",
         next: "tWhat2",
       },
       tWhat2: {

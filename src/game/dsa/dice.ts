@@ -1,5 +1,5 @@
 /**
- * Würfelt 1W6 + 7 → Wert in [8..13]. Eigenschaftswurf nach DSA 2.
+ * Würfelt 1W6 + 7 → Wert in [8..13]. Eigenschaftswurf nach DSA 3.
  */
 export function roll1d6plus7(): number {
   return Math.floor(Math.random() * 6) + 1 + 7;
@@ -13,7 +13,7 @@ export function roll1d6(): number {
 }
 
 /**
- * Reihenfolge der sieben Eigenschaften nach DSA 2.
+ * Reihenfolge der sieben Eigenschaften nach DSA 3.
  */
 export const ATTR_ORDER = [
   "MU",
@@ -40,7 +40,7 @@ export const ATTR_LABEL: Record<Attr, string> = {
 };
 
 /**
- * Lebensenergie nach DSA 2 (vereinfachte Held-Variante):
+ * Lebensenergie nach DSA 3 (vereinfachte Held-Variante):
  * KK + 1W6 + 15.
  */
 export function rollLE(kk: number): number {

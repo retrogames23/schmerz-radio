@@ -53,7 +53,7 @@ export function DsaCharacterSheet() {
         {/* Header */}
         <div className="dsa-adventure-header shrink-0 px-5 sm:px-6 pt-5 pb-3 border-b-2 border-[rgba(30,18,8,0.85)]">
           <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold">
-            Charakterbogen · DSA 2
+            Charakterbogen · DSA 3
           </div>
           <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <h2 className="font-display text-2xl sm:text-3xl dsa-ink font-extrabold">

@@ -6,7 +6,7 @@ import {
 
 export type Geschlecht = "männlich" | "weiblich";
 
-/** Ein paar typische DSA2-Vornamen je Klasse + Geschlecht. */
+/** Ein paar typische DSA3-Vornamen je Klasse + Geschlecht. */
 export const NAME_POOL: Record<DsaClassId, { männlich: string[]; weiblich: string[] }> = {
   krieger: {
     männlich: ["Hjalmar von Salzgar", "Edur von Tannstein", "Roban Greifenklau", "Aldred von Eberstamm"],
