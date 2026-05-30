@@ -90,7 +90,7 @@ export function BureaucracyDuelOverlay() {
     setTutorialShown(true);
     api.setFlag("duelTutorialShown");
     setFeedback([
-      "KOWALK (halblaut): „Worag — dein Phrasenbuch ist noch dünn. Wähl irgendwas. Brust korrigiert dich, dann hast du einen Konter mehr.“",
+      "KOWALK (halblaut): „Worag — dein Phrasenbuch ist noch dünn. Wähl trotzdem etwas aus. Auch ein verlorener Trainingsfall lehrt dich, wie der Ton hier läuft.“",
     ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duelOpen, isEndgame]);

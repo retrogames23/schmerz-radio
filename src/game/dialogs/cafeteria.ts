@@ -197,6 +197,18 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         speaker: "KOWALK",
         text: "Und durchkommen heißt: erst Brust. Drei Trainingsfälle in Folge. Vossbeck verhandelt nur noch mit Bewohnern, die sich im Bürokratie-Alltag als schlagfertig erwiesen haben — und Brust ist heute mal wieder dran zu prüfen, wer das ist. Den Rest mache ich von hier aus.",
         subtext: "Brust hält das für eine ehrenvolle Aufgabe. Lassen Sie ihn in dem Glauben, Worag — Sie brauchen ihn.",
+        next: "kInsa6d",
+      },
+      kInsa6d: {
+        id: "kInsa6d",
+        speaker: "KOWALK",
+        text: "Verstehen Sie das richtig: Vossbeck entscheidet nicht über Ihren Vorgang, solange er Sie nicht ernst nimmt. Er prüft zuerst, ob Sie überhaupt satisfaktionsfähig sind — ob Sie im Behörden-Ton standhalten. Erst wenn das geklärt ist, schaut er in die Akte.",
+        next: "kInsa6e",
+      },
+      kInsa6e: {
+        id: "kInsa6e",
+        speaker: "KOWALK",
+        text: "Heißt konkret: Brust eröffnet jede Runde mit einer Bewohner-Phrase. Sie kontern aus dem Phrasenbuch. Jeder Konter, den Sie sauber sitzen lassen, landet dort drin. Drei Trainingsfälle in Folge ohne dass Sie zerbröseln — und Vossbeck lässt Sie über den Vorgang reden. Vorher nicht.",
         choices: [
           {
             text: "Verstanden. Ich rede mit Vossbeck.",
@@ -391,6 +403,12 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kAuth8",
         speaker: "KOWALK",
         text: "Aber Vossbeck redet nur mit Leuten, die im Bürokratie-Alltag mitreden können. Brust trainiert die Bewohner manchmal — fiktive Kantinenfälle, drei in Folge gewonnen, und Sie gelten bei Vossbeck als satisfaktionsfähig. Wer das nicht ist, läuft bei ihm gegen eine Wand. Eine sehr höfliche Wand.",
+        next: "kAuth8b",
+      },
+      kAuth8b: {
+        id: "kAuth8b",
+        speaker: "KOWALK",
+        text: "Vossbeck entscheidet erst, wenn er Sie ernst nimmt — vorher liest er Ihre Akte gar nicht. Brust eröffnet, Sie kontern aus dem Phrasenbuch, jeder Konter landet dort drin. Drei Trainingsfälle in Folge sauber durch — und Vossbeck verhandelt. Vorher nicht.",
         choices: [
           {
             text: "Verstanden. Ich übe mit Brust.",
