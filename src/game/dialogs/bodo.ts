@@ -192,7 +192,7 @@ export const bodoDialogs: Record<string, DialogTree> = {
       bodoLottiReveal3: {
         id: "bodoLottiReveal3",
         speaker: "BODO",
-        text: "Sie zuckt, wenn das Radio voll aufgedreht ist. Deshalb läuft hier 104,6 leise. Ist auch alles, was sie hört.",
+        text: "Sie zuckt, wenn das Radio voll aufgedreht ist. Deshalb läuft es hier nur leise — und nur, wenn überhaupt.",
         choices: [
           {
             text: "[ Verstanden. ]",
