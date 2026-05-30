@@ -235,10 +235,10 @@ export function LobbyGate() {
 
         {/* Display */}
         <div className="mb-4 rounded-sm border border-amber-glow/30 bg-black p-3">
-          <div className="font-mono-crt text-[0.6rem] uppercase tracking-[0.3em] text-phosphor/70">
+          <div className="font-mono-crt text-[0.9rem] uppercase tracking-[0.3em] text-phosphor/70">
             {screenText}
           </div>
-          <div className="mt-2 font-mono-crt text-[0.55rem] uppercase tracking-[0.25em] text-amber-glow/55">
+          <div className="mt-2 font-mono-crt text-[0.8rem] uppercase tracking-[0.25em] text-amber-glow/55">
             Identifikation über Wohnnummereinheit
           </div>
           <div className="mt-2 flex justify-between gap-2">
