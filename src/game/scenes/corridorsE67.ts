@@ -465,8 +465,8 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       {
         id: "oilCanSprite5610",
         src: oilCanSprite,
-        x: 41.3,
-        y: 71.9,
+        x: 44.5,
+        y: 70.5,
         w: 12.9,
         h: 30.2,
         alt: "Ölkännchen auf dem Wartungsregal",
