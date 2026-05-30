@@ -41,7 +41,7 @@ export function DsaCharacterSheet() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto bg-black/85 p-3 sm:p-6"
+      className="fixed inset-0 z-[60] flex items-start sm:items-center justify-center overflow-y-auto bg-black/85 p-3 sm:p-6"
       onClick={(e) => {
         // Klick aufs Backdrop schließt — Klick im Bogen selbst nicht.
         if (e.target === e.currentTarget) closeDsaSheet();

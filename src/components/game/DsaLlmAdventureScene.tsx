@@ -94,6 +94,7 @@ export function DsaLlmAdventureScene() {
   const [error, setError] = useState<string | null>(null);
   const [combat, setCombat] = useState<CombatBridge | null>(null);
   const [endState, setEndState] = useState<AdventureStatus | null>(null);
+  const [imageZoomed, setImageZoomed] = useState(false);
   const turnIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -340,6 +341,24 @@ export function DsaLlmAdventureScene() {
     [imageTag],
   );
 
+  // Beim Szenenwechsel oder Schließen automatisch Zoom zurücksetzen.
+  useEffect(() => {
+    setImageZoomed(false);
+  }, [imageTag, dsaAdventureOpen]);
+
+  // Escape schließt den Zoom.
+  useEffect(() => {
+    if (!imageZoomed) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        setImageZoomed(false);
+      }
+    }
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [imageZoomed]);
+
   if (!dsaAdventureOpen) return null;
   if (!dsaCharacter) {
     closeDsaAdventure();
@@ -402,14 +421,19 @@ export function DsaLlmAdventureScene() {
         {mode.kind === "play" && (
           <>
             {imgSrc && (
-              <div className="shrink-0 relative w-full bg-black/80">
+              <button
+                type="button"
+                onClick={() => setImageZoomed(true)}
+                title="Bild vergrößern"
+                className="shrink-0 relative w-full bg-black/80 cursor-zoom-in focus:outline-none"
+              >
                 <img
                   src={imgSrc}
                   alt="Szene"
                   loading="lazy"
                   className="w-full h-32 sm:h-48 object-cover opacity-90"
                 />
-              </div>
+              </button>
             )}
 
             <div
@@ -493,6 +517,21 @@ export function DsaLlmAdventureScene() {
           result={combat.result}
           onDone={(v) => void handleCombatDone(v)}
         />
+      )}
+
+      {imgSrc && imageZoomed && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 p-4 sm:p-8"
+          onClick={() => setImageZoomed(false)}
+        >
+          <CloseButton onClick={() => setImageZoomed(false)} />
+          <img
+            src={imgSrc}
+            alt="Szene (vergrößert)"
+            className="max-h-full max-w-full object-contain shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
       )}
     </div>
   );
