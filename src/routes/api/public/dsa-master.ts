@@ -407,7 +407,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             content:
               "(SPIELLEITER-CUE: Eröffne das Abenteuer. Setze die Szene mit [SCENE: …], beschreibe in 2–4 Sätzen, wo Layards Charakter mit Brem und Yelva steht und was sie umgibt. Schließe mit einer offenen Frage an die Gruppe oder einer ersten Beobachtung. Noch kein Kampf.)",
           };
-          const result = await callMaster(apiKey, systemPrompt, [opener]);
+          const result = await callMaster(apiKey, systemPrompt, [opener], MIN_END_ASSISTANT_TURNS);
           if (!result.ok) return json(result.status, { error: result.error });
           const parsed = parseMasterTurn(result.reply);
           const initialMessages: StoredTurn[] = [
@@ -560,7 +560,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             offtopicStreak,
             cooldown,
           });
-          const result = await callMaster(apiKey, systemPrompt, history);
+          const result = await callMaster(apiKey, systemPrompt, history, MIN_END_ASSISTANT_TURNS);
           if (!result.ok) return json(result.status, { error: result.error });
           const parsed = parseMasterTurn(result.reply);
           history.push({ role: "assistant", content: result.reply });
