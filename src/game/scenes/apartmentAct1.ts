@@ -76,8 +76,8 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "phoneApt",
-        x: 75.6,
-        y: 32.8,
+        x: 70.8,
+        y: 32.6,
         w: 6.7,
         h: 22,
         label: "Telefon",
@@ -240,9 +240,9 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "door",
-        x: 84.1,
-        y: 4.2,
-        w: 14.9,
+        x: 77.9,
+        y: 3.4,
+        w: 16.5,
         h: 92,
         label: "Wohnungstür",
         kind: "exit",
