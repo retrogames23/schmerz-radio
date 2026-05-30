@@ -70,12 +70,16 @@ function DsaMusicBridge() {
   const { scene, dsaAdventureOpen, dsaBeat } = useGame();
   const { setOverride, activeOverride } = useMusic();
   useEffect(() => {
+    // Wenn die LLM-Tafelrunde offen ist, übernimmt der Mood-Pool in
+    // DsaLlmAdventureScene die Musik — hier kein Override setzen.
     const inTavern = dsaAdventureOpen && !!dsaBeat && dsaBeat.startsWith("s2");
-    const inDsa = scene === "commonRoomE67" || dsaAdventureOpen;
+    const inDsa = scene === "commonRoomE67" && !dsaAdventureOpen;
     const inCafeteria = scene === "cafeteriaE67";
     const inPub = scene === "pub" || scene === "pubToilet";
     const inE71Nerds = scene === "commonRoomE71";
-    const target = inTavern
+    const target = dsaAdventureOpen
+      ? null
+      : inTavern
       ? "dsaTavern"
       : inDsa
         ? "dsaTable"
