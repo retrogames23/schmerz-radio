@@ -2,6 +2,7 @@ import { memo, useEffect, useRef } from "react";
 import { useGame } from "@/game/GameContext";
 import { useInventoryDrag } from "@/game/InventoryDragContext";
 import { combineItem } from "@/game/combine";
+import { useCoarsePointer } from "@/hooks/useCoarsePointer";
 import type { Hotspot as HotspotType } from "@/game/types";
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 function HotspotImpl({ hotspot, reveal = false }: Props) {
   const { api, setCaption, flags } = useGame();
   const drag = useInventoryDrag();
+  const isCoarse = useCoarsePointer();
   const hoveredRef = useRef(false);
 
   // Sicherheitsnetz: Falls dieser Hotspot beim Hover entfernt wird
@@ -115,6 +117,15 @@ function HotspotImpl({ hotspot, reveal = false }: Props) {
             targetKind: "hotspot",
             targetLabel: hotspot.label,
           });
+          return;
+        }
+        // Mobile „Context-First"-Flow: Bei coarse pointer öffnen wir
+        // statt der direkten Aktion das Fokus-Sheet, in dem der Spieler
+        // bequem in der Daumen-Zone die Aktion oder ein Item wählt.
+        // Exits bleiben direkt — sonst würde jeder Türklick zur Bremse.
+        if (isCoarse && hotspot.kind !== "exit") {
+          setCaption(null);
+          drag.openFocus(hotspot);
           return;
         }
         setCaption(null);
