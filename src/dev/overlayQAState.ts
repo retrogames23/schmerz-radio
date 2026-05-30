@@ -1,19 +1,16 @@
 /**
  * Overlay-QA — clientseitiger Zustand für die Dev-QA-Session.
- * Persistiert Status pro Raum in localStorage, sammelt Snippets im Speicher,
- * und exponiert einen kleinen Event-Bus, damit SceneView/HotspotEditor
- * reagieren können (z. B. Hotspots dauerhaft einblenden).
+ * Persistiert nur noch zwei Dinge: Ob QA aktiv ist und die per Drag/Resize
+ * verschobenen Boxen pro Szene. Beim „Report kopieren" wird ein Snapshot
+ * dieser Overrides gespeichert; der nächste Report enthält nur das Delta.
  */
 import { useEffect, useState } from "react";
 
-export type QAStatus = "todo" | "ok" | "skip" | "fix";
-const STATUS_KEY = (sceneId: string) => `e67.overlayQA.${sceneId}`;
 const ACTIVE_KEY = "e67.overlayQA.active";
-const EDITOR_KEY = "e67.overlayQA.editor";
 const OVERRIDES_KEY = "e67.overlayQA.overrides";
+const SNAPSHOT_KEY = "e67.overlayQA.lastReport";
 
 const EVT_CHANGE = "e67:overlayQA-change";
-const snippetBuffer: { sceneId: string; snippet: string; ts: number }[] = [];
 
 function emit() {
   if (typeof window !== "undefined") {
@@ -37,77 +34,6 @@ export function setQAActive(on: boolean) {
   } catch {
     /* ignore */
   }
-  emit();
-}
-
-export function isEditorForced(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    return window.localStorage.getItem(EDITOR_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-export function setEditorForced(on: boolean) {
-  if (typeof window === "undefined") return;
-  try {
-    if (on) window.localStorage.setItem(EDITOR_KEY, "1");
-    else window.localStorage.removeItem(EDITOR_KEY);
-  } catch {
-    /* ignore */
-  }
-  emit();
-}
-
-export function getStatus(sceneId: string): QAStatus {
-  if (typeof window === "undefined") return "todo";
-  try {
-    const v = window.localStorage.getItem(STATUS_KEY(sceneId));
-    if (v === "ok" || v === "skip" || v === "fix") return v;
-    return "todo";
-  } catch {
-    return "todo";
-  }
-}
-export function setStatus(sceneId: string, status: QAStatus) {
-  if (typeof window === "undefined") return;
-  try {
-    if (status === "todo") window.localStorage.removeItem(STATUS_KEY(sceneId));
-    else window.localStorage.setItem(STATUS_KEY(sceneId), status);
-  } catch {
-    /* ignore */
-  }
-  emit();
-}
-
-export function clearAllStatus(sceneIds: string[]) {
-  if (typeof window === "undefined") return;
-  for (const id of sceneIds) {
-    try {
-      window.localStorage.removeItem(STATUS_KEY(id));
-    } catch {
-      /* ignore */
-    }
-  }
-  snippetBuffer.length = 0;
-  emit();
-}
-
-export function pushSnippet(sceneId: string, snippet: string) {
-  snippetBuffer.push({ sceneId, snippet, ts: Date.now() });
-  // Auto-Mark: Korrigierter Raum gilt als „fix".
-  if (getStatus(sceneId) !== "ok") setStatus(sceneId, "fix");
-  emit();
-}
-
-export function getSnippets() {
-  return snippetBuffer.slice();
-}
-export function getSnippetsBy(sceneId: string) {
-  return snippetBuffer.filter((s) => s.sceneId === sceneId);
-}
-export function clearSnippets() {
-  snippetBuffer.length = 0;
   emit();
 }
 
@@ -167,6 +93,7 @@ export function clearOverridesFor(sceneId: string) {
 
 export function clearAllOverrides() {
   writeAll({});
+  setLastReportSnapshot({});
 }
 
 export function getOverrideCount(): number {
@@ -174,6 +101,76 @@ export function getOverrideCount(): number {
   let n = 0;
   for (const k of Object.keys(all)) n += Object.keys(all[k] ?? {}).length;
   return n;
+}
+
+/* ------------------------------------------------------------------ */
+/* Snapshot des zuletzt kopierten Reports → ermöglicht Delta-Prompts. */
+/* ------------------------------------------------------------------ */
+
+export function getLastReportSnapshot(): AllOverrides {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(SNAPSHOT_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? (parsed as AllOverrides) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function setLastReportSnapshot(snap: AllOverrides) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(snap));
+  } catch {
+    /* ignore */
+  }
+  emit();
+}
+
+export type BoxDelta = {
+  sceneId: string;
+  boxId: string;
+  box: BoxOverride;
+};
+export type OverrideDiff = {
+  added: BoxDelta[];
+  changed: BoxDelta[];
+  removed: { sceneId: string; boxId: string }[];
+};
+
+const r1 = (n: number) => Math.round(n * 10) / 10;
+const sameBox = (a: BoxOverride, b: BoxOverride) =>
+  r1(a.x) === r1(b.x) &&
+  r1(a.y) === r1(b.y) &&
+  r1(a.w) === r1(b.w) &&
+  r1(a.h) === r1(b.h);
+
+export function diffSinceLastReport(): OverrideDiff {
+  const current = readAll();
+  const prev = getLastReportSnapshot();
+  const added: BoxDelta[] = [];
+  const changed: BoxDelta[] = [];
+  const removed: { sceneId: string; boxId: string }[] = [];
+  const sceneIds = new Set([...Object.keys(current), ...Object.keys(prev)]);
+  for (const sceneId of sceneIds) {
+    const cur = current[sceneId] ?? {};
+    const old = prev[sceneId] ?? {};
+    const boxIds = new Set([...Object.keys(cur), ...Object.keys(old)]);
+    for (const boxId of boxIds) {
+      const c = cur[boxId];
+      const o = old[boxId];
+      if (c && !o) added.push({ sceneId, boxId, box: c });
+      else if (!c && o) removed.push({ sceneId, boxId });
+      else if (c && o && !sameBox(c, o)) changed.push({ sceneId, boxId, box: c });
+    }
+  }
+  return { added, changed, removed };
+}
+
+export function snapshotCurrentAsLastReport() {
+  setLastReportSnapshot(readAll());
 }
 
 export function useQA() {
@@ -189,6 +186,7 @@ export function useQA() {
   }, []);
   return {
     active: isQAActive(),
-    editorForced: isEditorForced(),
+    // Editor ist immer an, sobald QA aktiv ist (kein separater Toggle mehr).
+    editorForced: isQAActive(),
   };
 }

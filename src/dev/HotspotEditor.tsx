@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Hotspot, NpcSprite, SceneDecal } from "@/game/types";
-import { pushSnippet, setOverride, getOverridesFor } from "./overlayQAState";
+import { setOverride, getOverridesFor } from "./overlayQAState";
 
 /**
  * Dev-only Hotspot/NPC/Decal-Editor.
@@ -119,7 +119,6 @@ export function HotspotEditor({
       } catch {
         /* ignore */
       }
-      pushSnippet(sceneId, s);
       // Persistiere die neuen Koordinaten — überlebt Szenenwechsel
       // und Reload, bis sie in den Code übernommen werden.
       setOverride(sceneId, drag.id, {
@@ -153,7 +152,6 @@ export function HotspotEditor({
       } catch {
         /* ignore */
       }
-      pushSnippet(sceneId, s);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

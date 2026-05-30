@@ -2,32 +2,27 @@ import { useEffect, useMemo, useState } from "react";
 import { scenes, useGame } from "@/game/GameContext";
 import type { SceneId } from "@/game/types";
 import {
-  clearAllStatus,
   clearAllOverrides,
-  clearSnippets,
-  getSnippets,
-  getStatus,
+  diffSinceLastReport,
   getOverrideCount,
-  getOverridesFor,
-  isEditorForced,
   isQAActive,
-  setEditorForced,
   setQAActive,
-  setStatus,
+  snapshotCurrentAsLastReport,
   useQA,
 } from "./overlayQAState";
 
 /**
- * Dev-only Overlay-QA-Tool. Iteriert systematisch durch alle Räume,
- * blendet Hotspot-Rahmen dauerhaft ein und sammelt korrigierte
- * Snippets in einem Report — alles clientseitig, kein LLM, kein Server.
+ * Dev-only Overlay-QA-Tool. Bühne durchklicken, Hotspots/NPCs/Decals
+ * per Drag/Resize korrigieren — die Änderungen landen persistent in
+ * localStorage. „Report kopieren" baut einen kompakten Prompt aus
+ * exakt dem Delta seit dem letzten Kopieren.
  */
 export function OverlayQAOverlay() {
   const { api, scene } = useGame();
   useQA();
   const [open, setOpen] = useState(false);
-  const [showReport, setShowReport] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
+  const [hint, setHint] = useState<string | null>(null);
 
   const sceneIds = useMemo(
     () =>
@@ -39,15 +34,6 @@ export function OverlayQAOverlay() {
 
   const idx = Math.max(0, sceneIds.indexOf(scene as SceneId));
   const total = sceneIds.length;
-
-  const counts = sceneIds.reduce(
-    (acc, id) => {
-      const s = getStatus(id);
-      acc[s] = (acc[s] ?? 0) + 1;
-      return acc;
-    },
-    { ok: 0, fix: 0, skip: 0, todo: 0 } as Record<string, number>,
-  );
 
   // Grid via CSS injection (an QA-aktive Bühne gebunden).
   useEffect(() => {
@@ -77,16 +63,23 @@ export function OverlayQAOverlay() {
     };
   }, [showGrid]);
 
-  // Mark image layer for grid CSS selector.
   useEffect(() => {
-    const layers = document.querySelectorAll(".relative.mx-auto.aspect-\\[16\\/9\\]");
+    const layers = document.querySelectorAll(
+      ".relative.mx-auto.aspect-\\[16\\/9\\]",
+    );
     if (!isQAActive() || !showGrid) {
-      layers.forEach((n) => (n as HTMLElement).removeAttribute("data-overlay-qa-grid"));
+      layers.forEach((n) =>
+        (n as HTMLElement).removeAttribute("data-overlay-qa-grid"),
+      );
       return;
     }
-    layers.forEach((n) => (n as HTMLElement).setAttribute("data-overlay-qa-grid", "1"));
+    layers.forEach((n) =>
+      (n as HTMLElement).setAttribute("data-overlay-qa-grid", "1"),
+    );
     return () => {
-      layers.forEach((n) => (n as HTMLElement).removeAttribute("data-overlay-qa-grid"));
+      layers.forEach((n) =>
+        (n as HTMLElement).removeAttribute("data-overlay-qa-grid"),
+      );
     };
   }, [showGrid, scene]);
 
@@ -96,61 +89,86 @@ export function OverlayQAOverlay() {
   };
 
   const active = isQAActive();
-  const editor = isEditorForced();
   const overrideCount = getOverrideCount();
 
-  const buildReport = () => {
-    const lines: string[] = [];
-    lines.push(`# Overlay-QA-Report (${counts.ok} ok / ${counts.fix} fix / ${counts.skip} skip / ${counts.todo} todo)`);
-    lines.push("");
-    for (const id of sceneIds) {
-      const s = getStatus(id);
-      const sym =
-        s === "ok" ? "✓" : s === "fix" ? "✎" : s === "skip" ? "↷" : "·";
-      lines.push(`- ${sym} ${id} — ${s}`);
+  const fmt = (n: number) => (Math.round(n * 10) / 10).toString();
+
+  const buildReport = (): string | null => {
+    const diff = diffSinceLastReport();
+    if (
+      diff.added.length === 0 &&
+      diff.changed.length === 0 &&
+      diff.removed.length === 0
+    ) {
+      return null;
     }
-    const snips = getSnippets();
-    // Persistierte Overrides pro Szene zusätzlich als Snippets ausgeben,
-    // damit der Report auch dann vollständig ist, wenn der User Räume
-    // direkt mit „OK" markiert hat statt live zu draggen.
-    const bySc = new Map<string, string[]>();
-    for (const sn of snips) {
-      const arr = bySc.get(sn.sceneId) ?? [];
-      arr.push(sn.snippet);
-      bySc.set(sn.sceneId, arr);
-    }
-    for (const id of sceneIds) {
-      const ov = getOverridesFor(id);
-      const keys = Object.keys(ov);
-      if (keys.length === 0) continue;
-      const arr = bySc.get(id) ?? [];
-      for (const k of keys) {
-        const o = ov[k];
-        arr.push(`id: "${k}", x: ${o.x}, y: ${o.y}, w: ${o.w}, h: ${o.h},`);
+    const bySc = new Map<
+      string,
+      { added: typeof diff.added; changed: typeof diff.changed; removed: typeof diff.removed }
+    >();
+    const ensure = (id: string) => {
+      let e = bySc.get(id);
+      if (!e) {
+        e = { added: [], changed: [], removed: [] };
+        bySc.set(id, e);
       }
-      bySc.set(id, arr);
-    }
-    if (bySc.size > 0) {
+      return e;
+    };
+    for (const d of diff.added) ensure(d.sceneId).added.push(d);
+    for (const d of diff.changed) ensure(d.sceneId).changed.push(d);
+    for (const d of diff.removed) ensure(d.sceneId).removed.push(d);
+
+    const lines: string[] = [];
+    lines.push(
+      "Wende diese Overlay-Korrekturen auf die jeweilige Szene an. Werte sind Prozent der Bühne (16:9). Suche pro Block die Box mit der genannten id (Hotspot/NPC/Decal) in src/game/scenes/<sceneId>.ts und überschreibe nur x/y/w/h.",
+    );
+    for (const [sc, e] of bySc) {
       lines.push("");
-      lines.push("## Korrektur-Snippets");
-      for (const [sc, arr] of bySc) {
-        lines.push("");
-        lines.push(`### ${sc}`);
-        lines.push("```");
-        for (const s of arr) lines.push(s);
-        lines.push("```");
+      lines.push(`## ${sc}`);
+      for (const d of e.changed) {
+        lines.push(
+          `- geändert: id "${d.boxId}" → x: ${fmt(d.box.x)}, y: ${fmt(d.box.y)}, w: ${fmt(d.box.w)}, h: ${fmt(d.box.h)}`,
+        );
+      }
+      for (const d of e.added) {
+        lines.push(
+          `- neu: id "${d.boxId}" → x: ${fmt(d.box.x)}, y: ${fmt(d.box.y)}, w: ${fmt(d.box.w)}, h: ${fmt(d.box.h)}`,
+        );
+      }
+      for (const d of e.removed) {
+        lines.push(`- gelöscht: id "${d.boxId}"`);
       }
     }
     return lines.join("\n");
   };
 
   const copyReport = async () => {
+    const text = buildReport();
+    if (text === null) {
+      setHint("Keine Änderungen seit letztem Report.");
+      try {
+        await navigator.clipboard?.writeText(
+          "Keine Änderungen seit letztem Report.",
+        );
+      } catch {
+        /* ignore */
+      }
+      return;
+    }
     try {
-      await navigator.clipboard?.writeText(buildReport());
+      await navigator.clipboard?.writeText(text);
+      snapshotCurrentAsLastReport();
+      setHint("Report kopiert. Snapshot aktualisiert.");
     } catch {
-      /* ignore */
+      setHint("Clipboard fehlgeschlagen.");
     }
   };
+
+  useEffect(() => {
+    if (!hint) return;
+    const t = setTimeout(() => setHint(null), 2500);
+    return () => clearTimeout(t);
+  }, [hint]);
 
   return (
     <>
@@ -164,7 +182,7 @@ export function OverlayQAOverlay() {
       </button>
 
       {open && (
-        <div className="fixed bottom-16 left-4 z-[9999] w-[360px] rounded-sm border border-amber-glow/60 bg-background p-3 shadow-[0_0_60px_rgba(0,0,0,0.85)] font-mono-crt text-xs text-foreground">
+        <div className="fixed bottom-16 left-4 z-[9999] w-[340px] rounded-sm border border-amber-glow/60 bg-background p-3 shadow-[0_0_60px_rgba(0,0,0,0.85)] font-mono-crt text-xs text-foreground">
           <div className="mb-2 flex items-center justify-between">
             <div className="text-[10px] uppercase tracking-[0.2em] text-amber-glow">
               Overlay-QA
@@ -181,10 +199,7 @@ export function OverlayQAOverlay() {
           <div className="mb-2 flex items-center gap-2">
             <button
               type="button"
-              onClick={() => {
-                setQAActive(!active);
-                if (!active) setEditorForced(false);
-              }}
+              onClick={() => setQAActive(!active)}
               className={
                 "rounded-sm border px-2 py-1 " +
                 (active
@@ -193,18 +208,6 @@ export function OverlayQAOverlay() {
               }
             >
               {active ? "QA aktiv" : "QA starten"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setEditorForced(!editor)}
-              className={
-                "rounded-sm border px-2 py-1 " +
-                (editor
-                  ? "border-amber-glow bg-amber-glow/15 text-amber-glow"
-                  : "border-amber-glow/40 hover:bg-amber-glow/10")
-              }
-            >
-              Editor: {editor ? "an" : "aus"}
             </button>
             <button
               type="button"
@@ -229,7 +232,8 @@ export function OverlayQAOverlay() {
               ◀
             </button>
             <div className="flex-1 truncate text-center">
-              {idx + 1}/{total} · <span className="text-amber-glow">{scene}</span>
+              {idx + 1}/{total} ·{" "}
+              <span className="text-amber-glow">{scene}</span>
             </div>
             <button
               type="button"
@@ -240,51 +244,7 @@ export function OverlayQAOverlay() {
             </button>
           </div>
 
-          <div className="mb-2 grid grid-cols-3 gap-1">
-            <button
-              type="button"
-              onClick={() => {
-                setStatus(scene, "ok");
-                goIdx(idx + 1);
-              }}
-              className="rounded-sm border border-emerald-500/50 px-2 py-1 text-emerald-300 hover:bg-emerald-500/10"
-            >
-              ✓ OK
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setStatus(scene, "fix");
-                setEditorForced(true);
-              }}
-              className="rounded-sm border border-amber-glow/60 px-2 py-1 text-amber-glow hover:bg-amber-glow/10"
-            >
-              ✎ Fix
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setStatus(scene, "skip");
-                goIdx(idx + 1);
-              }}
-              className="rounded-sm border border-muted-foreground/40 px-2 py-1 text-muted-foreground hover:bg-muted-foreground/10"
-            >
-              ↷ Skip
-            </button>
-          </div>
-
-          <div className="mb-2 text-[10px] text-muted-foreground">
-            ✓ {counts.ok} · ✎ {counts.fix} · ↷ {counts.skip} · · {counts.todo}
-          </div>
-
           <div className="mb-2 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowReport((v) => !v)}
-              className="rounded-sm border border-amber-glow/40 px-2 py-1 hover:bg-amber-glow/10"
-            >
-              {showReport ? "Report aus" : "Report"}
-            </button>
             <button
               type="button"
               onClick={copyReport}
@@ -295,10 +255,14 @@ export function OverlayQAOverlay() {
             <button
               type="button"
               onClick={() => {
-                if (!confirm("Alle QA-Status & Snippets zurücksetzen?")) return;
-                clearAllStatus(sceneIds);
-                clearSnippets();
+                if (
+                  !confirm(
+                    "Alle Overrides & Report-Snapshot zurücksetzen?",
+                  )
+                )
+                  return;
                 clearAllOverrides();
+                setHint("Alles zurückgesetzt.");
               }}
               className="ml-auto rounded-sm border border-red-500/40 px-2 py-1 text-red-300 hover:bg-red-500/10"
             >
@@ -306,17 +270,16 @@ export function OverlayQAOverlay() {
             </button>
           </div>
 
-          {showReport && (
-            <pre className="max-h-[40vh] overflow-auto whitespace-pre-wrap rounded-sm border border-amber-glow/30 bg-black/40 p-2 text-[10px] leading-tight">
-              {buildReport()}
-            </pre>
+          {hint && (
+            <div className="mb-2 rounded-sm border border-amber-glow/30 bg-amber-glow/10 px-2 py-1 text-[10px] text-amber-glow">
+              {hint}
+            </div>
           )}
 
-          <div className="mt-2 text-[10px] text-muted-foreground">
-            Tipp: „Editor an" → Hotspots ziehen/größenändern. Änderungen werden
-            sofort persistent (localStorage, {overrideCount} aktiv) und
-            überleben Szenenwechsel/Reload. Snippets landen automatisch im
-            Report — von dort in den Code übernehmen, dann „Reset" klicken.
+          <div className="text-[10px] text-muted-foreground">
+            QA an → Hotspots/NPCs/Decals draggen & resizen. Änderungen
+            landen sofort persistent ({overrideCount} aktiv). „Report
+            kopieren" gibt nur das Delta seit dem letzten Kopieren aus.
           </div>
         </div>
       )}
