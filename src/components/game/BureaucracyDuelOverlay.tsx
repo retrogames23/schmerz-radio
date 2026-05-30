@@ -199,7 +199,7 @@ export function BureaucracyDuelOverlay() {
     const nextIdx = currentIdx + 1;
     if (nextIdx >= rounds.length) {
       // Sollte nicht passieren bei sauberer Mechanik, aber sicher ist sicher.
-      const fresh = isEndgame ? pickEndgameRounds() : pickTrainingRounds(3);
+      const fresh = isEndgame ? buildEndgameSession() : buildTrainingSession();
       setRounds((prev) => [...prev, ...fresh]);
     }
     setCurrentIdx(nextIdx);
