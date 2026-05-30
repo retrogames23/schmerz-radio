@@ -30,7 +30,7 @@ function MusicToggle() {
     <button
       onClick={toggleMusic}
       title={musicEnabled ? "Musik ausschalten" : "Musik einschalten"}
-      className="fixed top-4 right-4 z-50 flex items-center gap-2 rounded-full bg-black/60 px-3 py-2 text-sm text-white/90 backdrop-blur-sm transition-colors hover:bg-black/80"
+      className="fixed top-4 right-4 z-[80] flex items-center gap-2 rounded-full bg-black/60 px-3 py-2 text-sm text-white/90 backdrop-blur-sm transition-colors hover:bg-black/80"
     >
       {musicEnabled ? (
         <>
