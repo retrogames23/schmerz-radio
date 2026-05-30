@@ -52,18 +52,6 @@ export const Route = createFileRoute("/dsa/")({
           offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
         }),
       },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: FAQS.map((f) => ({
-            "@type": "Question",
-            name: f.q,
-            acceptedAnswer: { "@type": "Answer", text: f.a },
-          })),
-        }),
-      },
     ],
   }),
   component: DsaLanding,
@@ -142,7 +130,7 @@ function DsaLanding() {
           Spiele <strong>Das Schwarze Auge</strong> als Soloabenteuer im
           Browser. Würfle deinen Helden, wähle ein Setting und erlebe rund
           eine Stunde klassische Pen-&-Paper-Tafelrunde mit dem KI-Meister
-          Tjark. Aventurien im 20. Hal — Reichsbehüter Brin verteidigt das
+          Tjark. Aventurien im Jahr 20 nach Hal — Reichsbehüter Brin verteidigt das
           Mittelreich gegen den Dritten Orkensturm. Dein Tisch, dein Held,
           dein Bogen.
         </p>
@@ -172,22 +160,6 @@ function DsaLanding() {
       </section>
 
       {/* Footer */}
-      {/* FAQ — SEO + nützlicher Kontext für Neulinge */}
-      <section className="mx-auto max-w-3xl px-4 pb-12 sm:px-6">
-        <h2 className="mb-4 text-xs uppercase tracking-[0.3em] opacity-70">
-          Häufige Fragen
-        </h2>
-        <dl className="space-y-5">
-          {FAQS.map((f) => (
-            <div key={f.q}>
-              <dt className="font-serif text-base text-[#f1e6c8]">{f.q}</dt>
-              <dd className="mt-1 text-sm leading-relaxed text-[#f1e6c8]/80">
-                {f.a}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </section>
 
       <footer className="border-t border-[#3a2c1a] py-4 text-center text-[10px] uppercase tracking-wider opacity-60">
         <Link to="/" className="hover:opacity-100">
