@@ -4,6 +4,7 @@ import { useGame } from "@/game/GameContext";
 import { useInventoryDrag } from "@/game/InventoryDragContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playBeep, playKeypress, playUnlock } from "@/audio/sfx";
+import { useCoarsePointer } from "@/hooks/useCoarsePointer";
 import { CloseButton } from "./CloseButton";
 import { ItemIcon } from "./ItemIcon";
 
@@ -30,6 +31,7 @@ export function LobbyGate() {
     resetLobbyGateAttempts,
   } = useGame();
   const drag = useInventoryDrag();
+  const isCoarse = useCoarsePointer();
   const { sfxVolume } = useSettings();
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -148,6 +150,28 @@ export function LobbyGate() {
     }
   }
 
+  function rejectSlotItem() {
+    api.showText([
+      "Der Schlitz nimmt die Karte nicht an. Falsches Format.",
+      "Auf einem winzigen Aufkleber: »Nur E67-Bewohner-Ausweise«.",
+    ]);
+  }
+
+  function insertResidentId() {
+    if (cardSlotted) return;
+    playKeypress(0.5 * sfxVolume);
+    setCardSlotted(true);
+    setStatus("idle");
+  }
+
+  function applyItemToSlot(itemId: string) {
+    if (itemId !== "residentId") {
+      rejectSlotItem();
+      return;
+    }
+    insertResidentId();
+  }
+
   // Drop-Handler für den Karten-Slot.
   function onSlotPointerUp(e: React.PointerEvent<HTMLDivElement>) {
     if (!drag.dragItem) return;
@@ -155,15 +179,24 @@ export function LobbyGate() {
     e.stopPropagation();
     const dropped = drag.endDrag();
     if (!dropped) return;
-    if (dropped.id !== "residentId") {
-      api.showText([
-        "Der Schlitz nimmt die Karte nicht an. Falsches Format.",
-        "Auf einem winzigen Aufkleber: »Nur E67-Bewohner-Ausweise«.",
-      ]);
+    applyItemToSlot(dropped.id);
+  }
+
+  function onSlotClick() {
+    if (!isCoarse || cardSlotted) return;
+    if (drag.selectedItem) {
+      const selected = drag.consumeActive();
+      if (selected) applyItemToSlot(selected.id);
       return;
     }
-    playKeypress(0.5 * sfxVolume);
-    setCardSlotted(true);
+    if (api.hasItem("residentId")) {
+      insertResidentId();
+      return;
+    }
+    api.showText([
+      "Der Schlitz wartet auf einen E67-Bewohner-Ausweis.",
+      "Layard tastet seine Taschen ab. Da ist keiner.",
+    ]);
   }
 
   function ejectCard() {
@@ -174,10 +207,7 @@ export function LobbyGate() {
 
   if (!lobbyGateOpen) return null;
 
-  const displaySlots = Array.from(
-    { length: LOBBY_LEN },
-    (_, i) => code[i] ?? "",
-  );
+  const displaySlots = Array.from({ length: LOBBY_LEN }, (_, i) => code[i] ?? "");
 
   const ledClass =
     status === "ok"
@@ -225,9 +255,7 @@ export function LobbyGate() {
 
         {/* Kopfzeile */}
         <div className="mb-3 flex items-center gap-2">
-          <span
-            className={`h-2.5 w-2.5 rounded-full transition-all ${ledClass}`}
-          />
+          <span className={`h-2.5 w-2.5 rounded-full transition-all ${ledClass}`} />
           <span className="font-mono-crt text-[0.65rem] uppercase tracking-[0.3em] text-amber-glow/80">
             Lobby-Schleuse · E67 · Tagesmodus
           </span>
@@ -260,6 +288,7 @@ export function LobbyGate() {
         {/* Karten-Slot */}
         <div
           onPointerUp={onSlotPointerUp}
+          onClick={onSlotClick}
           className={`mb-4 flex items-center gap-3 rounded-sm border-2 border-dashed p-3 transition ${
             cardSlotted
               ? "border-phosphor/60 bg-phosphor/5"
@@ -280,7 +309,9 @@ export function LobbyGate() {
           <div className="flex-1 font-mono-crt text-[0.65rem] uppercase tracking-widest text-amber-glow/70">
             {cardSlotted
               ? "Bewohner-Ausweis 2611 erkannt."
-              : "Bewohner-Ausweis hier hineinziehen."}
+              : isCoarse
+                ? "Bewohner-Ausweis hier antippen."
+                : "Bewohner-Ausweis hier hineinziehen."}
           </div>
           {cardSlotted && (
             <button
@@ -296,11 +327,7 @@ export function LobbyGate() {
         {/* Tastatur 1–9 */}
         <div className="grid grid-cols-3 gap-2">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-            <KeypadButton
-              key={n}
-              onClick={() => pressDigit(String(n))}
-              disabled={!cardSlotted}
-            >
+            <KeypadButton key={n} onClick={() => pressDigit(String(n))} disabled={!cardSlotted}>
               {n}
             </KeypadButton>
           ))}
@@ -312,10 +339,7 @@ export function LobbyGate() {
           >
             <Delete className="h-5 w-5" />
           </KeypadButton>
-          <KeypadButton
-            onClick={() => pressDigit("0")}
-            disabled={!cardSlotted}
-          >
+          <KeypadButton onClick={() => pressDigit("0")} disabled={!cardSlotted}>
             0
           </KeypadButton>
           <KeypadButton onClick={submit} variant="ok" ariaLabel="Bestätigen">
@@ -339,13 +363,7 @@ interface BtnProps {
   ariaLabel?: string;
 }
 
-function KeypadButton({
-  children,
-  onClick,
-  variant = "default",
-  disabled,
-  ariaLabel,
-}: BtnProps) {
+function KeypadButton({ children, onClick, variant = "default", disabled, ariaLabel }: BtnProps) {
   const base =
     "flex h-12 items-center justify-center rounded-sm border-2 font-mono-crt text-lg uppercase transition-all active:translate-y-[1px] active:shadow-none disabled:opacity-40 disabled:cursor-not-allowed";
   const palette =
