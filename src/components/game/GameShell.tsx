@@ -28,6 +28,7 @@ import { LobbyGate } from "./LobbyGate";
 import { PneumaticTubeOverlay } from "./PneumaticTubeOverlay";
 import { CondomAutomatOverlay } from "./CondomAutomatOverlay";
 import { ParagraphenNotizbuchOverlay } from "./ParagraphenNotizbuchOverlay";
+import { KantinenverordnungOverlay } from "./KantinenverordnungOverlay";
 import { PubOverlay } from "./PubOverlay";
 import { RoomSwitcher } from "@/dev/RoomSwitcher";
 import { ConsoleSwitcher } from "@/dev/ConsoleSwitcher";
@@ -230,6 +231,7 @@ function GameStage({
             <PneumaticTubeOverlay />
             <CondomAutomatOverlay />
             <ParagraphenNotizbuchOverlay />
+            <KantinenverordnungOverlay />
             <PubOverlay />
             <ToiletWallOverlay />
             <Ending />
