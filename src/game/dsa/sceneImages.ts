@@ -44,6 +44,18 @@ import imgGraveyard from "@/assets/dsa/dsa-graveyard.jpg";
 import imgShipDeck from "@/assets/dsa/dsa-ship-deck.jpg";
 import imgHarbor from "@/assets/dsa/dsa-harbor.jpg";
 import imgNpcPriest from "@/assets/dsa/dsa-npc-priest.jpg";
+import imgAftermathAlley from "@/assets/dsa/dsa-aftermath-alley.jpg";
+import imgAftermathTavern from "@/assets/dsa/dsa-aftermath-tavern.jpg";
+import imgAftermathForest from "@/assets/dsa/dsa-aftermath-forest.jpg";
+import imgAftermathDungeon from "@/assets/dsa/dsa-aftermath-dungeon.jpg";
+import imgCombatAlley from "@/assets/dsa/dsa-combat-alley.jpg";
+import imgCombatTavern from "@/assets/dsa/dsa-combat-tavern.jpg";
+import imgCombatForest from "@/assets/dsa/dsa-combat-forest.jpg";
+import imgCombatDungeon from "@/assets/dsa/dsa-combat-dungeon.jpg";
+import imgCityCourtyard from "@/assets/dsa/dsa-city-courtyard.jpg";
+import imgNobleHall from "@/assets/dsa/dsa-noble-hall.jpg";
+import imgScriptorium from "@/assets/dsa/dsa-scriptorium.jpg";
+import imgTownWalls from "@/assets/dsa/dsa-town-walls.jpg";
 
 /**
  * Pool spezifisch illustrierter Aventurien-Szenen. Der LLM-Meister wählt
@@ -83,6 +95,10 @@ export const DSA_SCENE_IMAGES: Record<string, string> = {
   city_alley: imgCityAlley,
   city_temple: imgCityTemple,
   city_palace: imgCityPalace,
+  city_courtyard: imgCityCourtyard,
+  town_walls: imgTownWalls,
+  noble_hall: imgNobleHall,
+  scriptorium: imgScriptorium,
   temple_interior: imgTempleInterior,
   blacksmith: imgBlacksmith,
   graveyard: imgGraveyard,
@@ -108,6 +124,14 @@ export const DSA_SCENE_IMAGES: Record<string, string> = {
   npc_priest: imgNpcPriest,
   combat_intro: imgCombat,
   aftermath: imgAftermath,
+  combat_alley: imgCombatAlley,
+  combat_tavern: imgCombatTavern,
+  combat_forest: imgCombatForest,
+  combat_dungeon: imgCombatDungeon,
+  aftermath_alley: imgAftermathAlley,
+  aftermath_tavern: imgAftermathTavern,
+  aftermath_forest: imgAftermathForest,
+  aftermath_dungeon: imgAftermathDungeon,
 };
 
 export const DSA_SCENE_TAGS = Object.keys(DSA_SCENE_IMAGES) as ReadonlyArray<string>;

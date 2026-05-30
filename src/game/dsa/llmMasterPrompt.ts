@@ -60,6 +60,11 @@ AUSGABEFORMAT — STRIKT:
                               Im Zweifel KEIN [SCENE]. Lieber gar kein Bild als ein ungefähr passendes oder generisches.
                               Niemals "den nächstbesten" Tag wählen. Wiederhole den letzten Tag NICHT, nur weil die Szene weiterläuft —
                               setze [SCENE] nur bei einem echten Orts- oder Stimmungswechsel, der zu einem der Tags passt.
+                              Für Kämpfe und deren Nachwirkungen gibt es ORTSSPEZIFISCHE Tags: nutze
+                              combat_alley/aftermath_alley in Stadtgassen, combat_tavern/aftermath_tavern in Schenken,
+                              combat_forest/aftermath_forest im Wald, combat_dungeon/aftermath_dungeon in Verliesen/Krypten.
+                              Die generischen Tags combat_intro und aftermath zeigen offene Feldschlachten/Heerlager —
+                              wähle sie NUR, wenn die Szene wirklich draußen auf offenem Feld spielt.
     [CHECK: <ATTR> [+/-N]]    fordert eine Eigenschaftsprobe (MU, KL, CH, FF, GE, IN, KK). Modifikator optional.
     [COMBAT: id1, id2, ...]   ruft den Kampfbildschirm auf. Erlaubte Gegner-IDs: ${enemyIdList}
     [OUTTIME_WARN]            zeigt, dass du den Spieler ans Abenteuer erinnerst.
