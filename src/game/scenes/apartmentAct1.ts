@@ -545,6 +545,13 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
             api.setFlag("bodoSawFlyer");
             api.startDialog("bodoFlyer");
           } else if (
+            // Layard hat Bodos Thermoskanne aus 5610 dabei — bringt sie
+            // ihm zurück, bevor andere Smalltalk-Themen aufgehen.
+            api.hasItem("bodoThermos") &&
+            !api.hasFlag("gaveBodoThermos")
+          ) {
+            api.startDialog("bodoReturnThermos");
+          } else if (
             // Akt-I-Pflichträtsel: Layard hat den Blanko-Quittungsbogen UND
             // den Trockensiegel-Abdruck — er kann Bodo überreden, das Ding
             // als „Wartungs-Schicht-B-Quittung" gegenzuzeichnen.

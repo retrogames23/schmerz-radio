@@ -492,6 +492,17 @@ export function combineItem(
       // Code ist eingegeben — der Zettel wird nicht mehr gebraucht.
       ctx.api.removeItem("exitCode");
     }
+    // Spezialfall: Thermoskanne auf Bodo gezogen → Übergabe-Dialog
+    // (entfernt das Item, setzt `gaveBodoThermos`). Vor dem Fallback,
+    // sonst greift „Layard hat keine Idee" und das Item bleibt liegen.
+    if (
+      itemId === "bodoThermos" &&
+      ctx.targetId === "bodoNpc" &&
+      !ctx.api.hasFlag("gaveBodoThermos")
+    ) {
+      ctx.api.startDialog("bodoReturnThermos");
+      return;
+    }
     // Spezialfall: Fertige Quittung 4317-K auf die Pneumatik-Rohrpost
     // gezogen → Versand-Overlay öffnen (statt Lakonisch-Fallback).
     if (

@@ -327,6 +327,8 @@ export type StoryFlag =
   /** Layard hat das Ölkännchen aus Serverraum 5610 mitgenommen. */
   | "tookOilCan"
   | "tookBodoThermos"
+  /** Layard hat Bodo seine grüne Thermoskanne zurückgegeben. */
+  | "gaveBodoThermos"
   // ── E71-Hygiene / Maskenrätsel ─────────────────────────────────
   /** Empfangsdame hat einmalig auf die Maskenpflicht hingewiesen. */
   | "receptionRefusedNoMask"
