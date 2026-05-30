@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useGame } from "@/game/GameContext";
+import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { CloseButton } from "./CloseButton";
 import { ATTR_LABEL, ATTR_ORDER, type Attr } from "@/game/dsa/dice";
 import { DSA_CLASSES } from "@/game/dsa/classes";
@@ -14,7 +14,7 @@ import {
  * lesend. Lässt sich per Knopf (TopBar) oder Taste „C" öffnen/schließen.
  */
 export function DsaCharacterSheet() {
-  const { dsaSheetOpen, closeDsaSheet, dsaCharacter } = useGame();
+  const { dsaSheetOpen, closeDsaSheet, dsaCharacter } = useDsaHost();
 
   // Tastenkürzel C zum Ein-/Ausblenden — wird zentral in Game.tsx gehandhabt,
   // hier nur ESC zum Schließen.

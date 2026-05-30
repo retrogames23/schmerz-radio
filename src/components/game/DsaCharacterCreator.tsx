@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Dices } from "lucide-react";
-import { useGame } from "@/game/GameContext";
+import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { CloseButton } from "./CloseButton";
 import {
   ATTR_LABEL,
@@ -33,8 +33,14 @@ import { AttrBox, Field } from "./dsa/AttrBox";
 type Phase = "class" | "rolling" | "review" | "done";
 
 export function DsaCharacterCreator() {
-  const { dsaCreatorOpen, closeDsaCreator, setDsaCharacter, flags, api } =
-    useGame();
+  const {
+    dsaCreatorOpen,
+    closeDsaCreator,
+    setDsaCharacter,
+    flagsToken,
+    setFlag,
+    openDsaAdventure,
+  } = useDsaHost();
   const [phase, setPhase] = useState<Phase>("class");
   const [attrs, setAttrs] = useState<Partial<Attrs>>(emptyAttrs());
   const [le, setLe] = useState<number | null>(null);
@@ -70,7 +76,7 @@ export function DsaCharacterCreator() {
     setChosenGender("männlich");
     setNameTouched(false);
     setSigningOpen(false);
-  }, [dsaCreatorOpen, flags]);
+  }, [dsaCreatorOpen, flagsToken]);
 
   const fullAttrs: Attrs | null = useMemo(() => {
     const filled = ATTR_ORDER.every((a) => typeof attrs[a] === "number");
@@ -232,12 +238,12 @@ export function DsaCharacterCreator() {
       ae,
       rerolled: rollCount > 1,
     });
-    api.setFlag("dsaCharacterRolled");
-    api.setFlag("dsaSeatedAtTable");
-    if (rollCount > 1) api.setFlag("dsaCharacterRerolled");
+    setFlag("dsaCharacterRolled");
+    setFlag("dsaSeatedAtTable");
+    if (rollCount > 1) setFlag("dsaCharacterRerolled");
     closeDsaCreator();
     // Abenteuer sofort starten, sobald der Bogen unterschrieben ist.
-    api.openDsaAdventure();
+    openDsaAdventure();
   }
 
   function handleOpenSigning() {

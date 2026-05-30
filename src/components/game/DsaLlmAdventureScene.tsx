@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollText, Loader2, Send, LogOut, Dices, Swords } from "lucide-react";
-import { useGame } from "@/game/GameContext";
+import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import { CloseButton } from "./CloseButton";
 import { DsaCombatInteractive, type CombatDoneResult } from "./DsaCombatInteractive";
@@ -96,11 +96,13 @@ export function DsaLlmAdventureScene() {
     dsaAdventureOpen,
     dsaCharacter,
     setDsaCharacter,
+    clearDsaCharacter,
     closeDsaAdventure,
     toggleDsaSheet,
     dsaSheetOpen,
-    api,
-  } = useGame();
+    getDsaSessionId,
+    openDsaCreator,
+  } = useDsaHost();
   const { setMoodPool, setMood } = useMusic();
 
   const [mode, setMode] = useState<Mode>({ kind: "loading" });
@@ -146,7 +148,7 @@ export function DsaLlmAdventureScene() {
     setEndState(null);
     (async () => {
       try {
-        const r = await authedPost({ action: "load" }, api.getDsaSessionId());
+        const r = await authedPost({ action: "load" }, getDsaSessionId());
         if (cancelled) return;
         if (!r.ok) {
           setMode({ kind: "picker", error: "Konnte Stand nicht laden." });
@@ -246,7 +248,7 @@ export function DsaLlmAdventureScene() {
           setting: settingId,
           character: dsaCharacter,
         },
-        api.getDsaSessionId(),
+        getDsaSessionId(),
       );
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
@@ -275,7 +277,7 @@ export function DsaLlmAdventureScene() {
     const myId = nextId();
     setTurns((t) => [...t, { id: myId, kind: "player", text }]);
     try {
-      const r = await authedPost({ action: "say", text }, api.getDsaSessionId());
+      const r = await authedPost({ action: "say", text }, getDsaSessionId());
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
         setError(j.error || "Tjark schweigt.");
@@ -327,7 +329,7 @@ export function DsaLlmAdventureScene() {
           fallen: res.fallen,
           attrLowered: res.attrLowered,
         },
-        api.getDsaSessionId(),
+        getDsaSessionId(),
       );
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
@@ -347,7 +349,7 @@ export function DsaLlmAdventureScene() {
   async function handleAbortAndPickNew() {
     setBusy(true);
     try {
-      await authedPost({ action: "abort" }, api.getDsaSessionId());
+      await authedPost({ action: "abort" }, getDsaSessionId());
     } catch {
       /* ignore */
     }
@@ -357,9 +359,9 @@ export function DsaLlmAdventureScene() {
     setBusy(false);
     // Bei Niederlage: neuen Charakter rollen.
     if (endState === "defeat") {
-      api.clearDsaCharacter();
+      clearDsaCharacter();
       closeDsaAdventure();
-      api.openDsaCreator();
+      openDsaCreator();
       return;
     }
     setMode({ kind: "picker" });

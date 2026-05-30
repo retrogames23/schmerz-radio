@@ -1,0 +1,191 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Dices, LogIn, LogOut, ScrollText, Trash2 } from "lucide-react";
+import { useAuth } from "@/auth/AuthContext";
+import { AuthDialog } from "@/auth/AuthDialog";
+import {
+  SLOT_INDICES,
+  loadSlotCharacter,
+  saveSlotCharacter,
+  type SlotIndex,
+} from "@/components/dsa-standalone/slotStorage";
+import type { DsaCharacterSummary } from "@/game/types";
+
+export const Route = createFileRoute("/dsa/")({
+  component: DsaLanding,
+});
+
+function DsaLanding() {
+  const navigate = useNavigate();
+  const { user, signOut, loading } = useAuth();
+  const [authOpen, setAuthOpen] = useState(false);
+  const [slots, setSlots] = useState<Record<SlotIndex, DsaCharacterSummary | null>>(
+    () => ({ 1: null, 2: null, 3: null }),
+  );
+
+  // Slots aus localStorage laden (clientseitig).
+  useEffect(() => {
+    setSlots({
+      1: loadSlotCharacter(1),
+      2: loadSlotCharacter(2),
+      3: loadSlotCharacter(3),
+    });
+  }, []);
+
+  function handleDelete(slot: SlotIndex) {
+    if (!window.confirm(`Held in Slot ${slot} wirklich löschen?`)) return;
+    saveSlotCharacter(slot, null);
+    setSlots((s) => ({ ...s, [slot]: null }));
+  }
+
+  function goToSlot(slot: SlotIndex) {
+    navigate({ to: "/dsa/$slot", params: { slot: String(slot) } });
+  }
+
+  return (
+    <div className="min-h-screen w-full bg-[#1a120a] text-[#f1e6c8]">
+      {/* Header */}
+      <header className="border-b border-[#3a2c1a] bg-[#241a0e]">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.3em] opacity-60">
+              WhisperQuest
+            </div>
+            <h1 className="font-serif text-xl sm:text-2xl">Die Tafelrunde</h1>
+          </div>
+          <div className="text-xs">
+            {loading ? null : user ? (
+              <div className="flex items-center gap-2">
+                <span className="hidden sm:inline opacity-70 max-w-[180px] truncate">
+                  {user.email}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => void signOut()}
+                  className="inline-flex items-center gap-1 rounded border border-[#3a2c1a] bg-[#1a120a] px-2.5 py-1.5 uppercase tracking-wider hover:bg-[#3a2c1a]"
+                >
+                  <LogOut className="h-3 w-3" /> Abmelden
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setAuthOpen(true)}
+                className="inline-flex items-center gap-1 rounded border border-[#c9a84c] bg-[#c9a84c] px-2.5 py-1.5 font-bold uppercase tracking-wider text-[#1a120a] hover:bg-[#e0bf65]"
+              >
+                <LogIn className="h-3 w-3" /> Anmelden
+              </button>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* Pitch */}
+      <section className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 text-center">
+        <p className="font-serif text-base sm:text-lg leading-relaxed text-[#f1e6c8]/90">
+          Würfle einen Helden, wähle ein Abenteuer und spiel eine Stunde
+          klassische Tafelrunde mit dem KI-Meister Tjark. Aventurien im 20.
+          Hal — Reichsbehüter Brin verteidigt das Reich gegen den Dritten
+          Orkensturm. Dein Tisch, dein Held, dein Bogen.
+        </p>
+        {!user && (
+          <p className="mt-4 text-xs uppercase tracking-wider opacity-60">
+            Ohne Anmeldung werden deine Helden nur in diesem Browser gespeichert.
+          </p>
+        )}
+      </section>
+
+      {/* Slots */}
+      <section className="mx-auto max-w-5xl px-4 pb-12 sm:px-6">
+        <h2 className="mb-4 text-xs uppercase tracking-[0.3em] opacity-70">
+          Speicherplätze
+        </h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {SLOT_INDICES.map((slot) => (
+            <SlotCard
+              key={slot}
+              slot={slot}
+              character={slots[slot]}
+              onPlay={() => goToSlot(slot)}
+              onDelete={() => handleDelete(slot)}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-[#3a2c1a] py-4 text-center text-[10px] uppercase tracking-wider opacity-60">
+        <Link to="/" className="hover:opacity-100">
+          Zum Stammspiel
+        </Link>
+      </footer>
+
+      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
+    </div>
+  );
+}
+
+function SlotCard({
+  slot,
+  character,
+  onPlay,
+  onDelete,
+}: {
+  slot: SlotIndex;
+  character: DsaCharacterSummary | null;
+  onPlay: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <div className="dsa-paper relative overflow-hidden rounded-md px-4 py-5 text-[#2a1f10] shadow-xl">
+      <div className="mb-3 flex items-center justify-between">
+        <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-60">
+          Slot {slot}
+        </span>
+        {character && (
+          <button
+            type="button"
+            onClick={onDelete}
+            title="Held löschen"
+            className="rounded p-1 opacity-50 hover:bg-black/10 hover:opacity-100"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
+      {character ? (
+        <>
+          <h3 className="font-serif text-lg leading-tight">{character.name}</h3>
+          <p className="text-xs opacity-70">{character.className}</p>
+          <p className="mt-2 text-xs">
+            LE {character.le}/{character.leMax}
+            {character.ae != null ? ` · AE ${character.ae}` : ""}
+          </p>
+          <button
+            type="button"
+            onClick={onPlay}
+            className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10]"
+          >
+            <ScrollText className="h-3.5 w-3.5" strokeWidth={2.5} />
+            Weiterspielen
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="font-serif italic opacity-60">Leer</p>
+          <p className="mt-1 text-xs opacity-60">
+            Keine Heldin, kein Held, kein Bogen.
+          </p>
+          <button
+            type="button"
+            onClick={onPlay}
+            className="mt-6 inline-flex w-full items-center justify-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#f1d99a]"
+          >
+            <Dices className="h-3.5 w-3.5" strokeWidth={2.5} />
+            Neuen Helden würfeln
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
