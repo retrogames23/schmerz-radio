@@ -70,10 +70,6 @@ interface GameState {
   idCardOpen: boolean;
   /** Lobby-Schleuse-Overlay sichtbar (Tagesmodus, vor Erstbetreten). */
   lobbyGateOpen: boolean;
-  /** Bürokratie-Duell-Overlay (Brust-Tresen, Akt I) sichtbar. */
-  duelOpen: boolean;
-  /** Modus des aktiven Duells. */
-  duelMode: "training" | "endgame" | null;
   /** Notizbuch-Overlay (gelernte Paragraphen) sichtbar. */
   notizbuchOpen: boolean;
   /** Kantinenverordnung-Lese-Overlay sichtbar. */
@@ -121,8 +117,6 @@ interface GameContextValue extends GameState {
   /** Lobby-Schleuse manuell öffnen / schließen. */
   openLobbyGate: () => void;
   closeLobbyGate: () => void;
-  /** Bürokratie-Duell schließen (Abbruch oder nach Sieg/Niederlage). */
-  closeDuel: () => void;
   /** Notizbuch schließen. */
   closeNotizbuch: () => void;
   /** Kantinenverordnung schließen. */
@@ -241,8 +235,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [almanachOpen, setAlmanachOpen] = useState(false);
   const [idCardOpen, setIdCardOpen] = useState(false);
   const [lobbyGateOpen, setLobbyGateOpen] = useState(false);
-  const [duelOpen, setDuelOpen] = useState(false);
-  const [duelMode, setDuelMode] = useState<"training" | "endgame" | null>(null);
   const [notizbuchOpen, setNotizbuchOpen] = useState(false);
   const [kantinenverordnungOpen, setKantinenverordnungOpen] = useState(false);
   const [learnedParagraphs, setLearnedParagraphs] = useState<Set<string>>(
@@ -251,6 +243,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const learnedParagraphsRef = useRef(learnedParagraphs);
   learnedParagraphsRef.current = learnedParagraphs;
   const brustWinStreakRef = useRef(0);
+  const duelHitsRef = useRef(0);
   const [freeChatNpcId, setFreeChatNpcId] = useState<string | null>(null);
   const [isEssentialAssetsLoaded, setIsEssentialAssetsLoaded] = useState(false);
   // Eskalationszähler der Lobby-Schleuse (Fehlversuche), nicht persistiert.
@@ -465,13 +458,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setTerminalOpen(false);
         setCondomAutomatOpen(true);
       },
-      openBureaucracyDuel: (mode = "training") => {
-        setRadioOpen(false);
-        setTerminalOpen(false);
-        setPneumaticOpen(false);
-        setDuelMode(mode);
-        setDuelOpen(true);
-      },
       openParagraphenNotizbuch: () => {
         setNotizbuchOpen(true);
       },
@@ -511,6 +497,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
       },
       resetBrustWinStreak: () => {
         brustWinStreakRef.current = 0;
+      },
+      bumpDuelHit: () => {
+        duelHitsRef.current += 1;
+        return duelHitsRef.current;
+      },
+      getDuelHits: () => duelHitsRef.current,
+      resetDuelHits: () => {
+        duelHitsRef.current = 0;
       },
       setEnding: () => setEnding(true),
       clearEnding: () => setEnding(false),
@@ -793,7 +787,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       closeIdCard: () => setIdCardOpen(false),
       openLobbyGate: () => setLobbyGateOpen(true),
       closeLobbyGate: () => setLobbyGateOpen(false),
-      closeDuel: () => setDuelOpen(false),
       closeNotizbuch: () => setNotizbuchOpen(false),
       closeKantinenverordnung: () => setKantinenverordnungOpen(false),
       getLobbyGateAttempts: () => lobbyGateAttemptsRef.current,
@@ -1005,8 +998,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
     almanachOpen,
     idCardOpen,
     lobbyGateOpen,
-    duelOpen,
-    duelMode,
     notizbuchOpen,
     learnedParagraphs,
     kantinenverordnungOpen,
@@ -1055,8 +1046,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       almanachOpen,
       idCardOpen,
       lobbyGateOpen,
-      duelOpen,
-      duelMode,
       notizbuchOpen,
       learnedParagraphs,
       kantinenverordnungOpen,

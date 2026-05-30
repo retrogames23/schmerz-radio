@@ -1,93 +1,91 @@
 ## Ziel
 
-Phrasen-Duell von Grund auf neu aufsetzen — komplett in normalen Dialog-Bäumen, ohne eigenes Overlay. Mechanik so, dass sie zu den vier Beobachtungen passt.
+Das Phrasen-Duell läuft komplett in normalen Dialogen — wie jedes andere NPC-Gespräch. Kein eigenes UI, kein Overlay. Kowalk als ruhige Stimme aus dem Off (subtext) bei Bedarf. Punktezählung und Rundenlogik passieren über bestehende `setFlag`/Counter-Mechanik im Dialog.
 
-## Neues Konzept
+## Kernregeln (alle vier vom Nutzer aus dem letzten Turn)
 
-### Grundregeln (anders als bisher)
+1. **Layard lernt nur durch fremde Konter.** Wenn er Brust angreift und Brust sauber kontert, lernt er nichts. Wenn Brust ihn angreift und Layard danebenliegt, **zeigt Brust den richtigen Konter** — und nur dann darf der Spieler ihn ins Phrasenbuch übernehmen.
+2. **Brust muss sichtbar reagieren.** Greift Layard an, kontert Brust entweder souverän (Punkt für Brust) oder stottert sichtbar (Punkt für Layard). Kein stilles „verloren".
+3. **Layards Angriffe sind bürokratische Abschiebephrasen** (Hausflur-Liste, Anlage 3, Sechs-Wochen-Frist, „steht im Protokoll", Vorgesetzten-Bluff von Bodo, Türschild-Klassiker von Helka). Keine Höflichkeit, kein Smalltalk, keine Resonanz-Anspielungen.
+4. **Kein eigenes Interface.** Standard-Dialog-Overlay reicht. Kowalk-Kommentare laufen als `subtext` oder als `KOWALK`-Sprecher zwischen den Runden.
 
-1. **Lernen passiert nur durch fremde Konter.** Wenn Layard falsch kontert, lernt er **nichts**. Er lernt nur:
-   - wenn **Brust** ihm im Trainingsfall den richtigen Konter vorführt (Brust korrigiert mit Phrase + Konter, Layard kann „[ ins Phrasenbuch übernehmen ]“ wählen),
-   - wenn andere Bewohner (Bodo, Helka, Kowalk) ihm eine Phrase/einen Konter beibringen (bleibt wie bisher).
-2. **Wenn Layard angreift, muss Brust sichtbar reagieren.** Entweder Brust kontert souverän (Layard-Phrase war linkisch oder Brust kennt sie) — oder Brust stottert sichtbar (Bodo/Helka-Spezialphrase). Kein stiller Punktverlust mehr.
-3. **Layards Angriffsphrasen sind Behörden-Abschiebephrasen,** kein Smalltalk und keine Resonanz-Anspielungen. Beispiele: „Stehen Sie nicht auf der Liste für die Hausflurreinigung?“, „Den Antrag hätten Sie vor sechs Wochen stellen müssen.“, „Das fällt unter Anlage 3 — bitte den korrekten Stempel besorgen.“
-4. **Kein eigenes Interface.** Alles läuft im normalen Dialog-Overlay. Kowalk wird als halblaute Erzähler-/Off-Stimme unter Brusts Zeilen eingebaut (das `subtext`-Feld bzw. zusätzliche Dialogzeilen mit Sprecher KOWALK).
+## Aufbau eines Trainingsfalls (3 Runden pro Fall, 3 Fälle nötig)
 
-### Spielablauf eines Trainingsfalls (rein dialogisch)
+```text
+Runde 1 — Brust greift an
+  Brust:   <Phrase aus PHRASES>
+  Spieler: 4 Konter-Optionen
+    Treffer  → Punkt Layard, Kowalk (subtext): „Sitzt." → Runde 2
+    Fehler   → Brust zeigt korrekten Konter
+               Spieler: [Ins Phrasenbuch übernehmen] oder [Weiter]
+               → Runde 2
 
-Ein Trainingsfall = ein neuer DialogTree `cafeteriaTraining` (zufällig aus mehreren möglich) mit drei „Runden“:
+Runde 2 — Layard greift an
+  Spieler: 3–4 Angriffsphrasen (nur die, die er kennt; Standard-Pool +
+           gelernte Bodo/Helka-Specials, falls vorhanden)
+    Brust kennt sie  → souveräner Konter (Punkt Brust)
+    Brust kennt sie nicht (nur Bodo/Helka-Specials)
+                     → Brust stottert sichtbar (Punkt Layard)
+    → Runde 3
 
+Runde 3 — Brust greift an (wie Runde 1)
+
+Auswertung des Falls:
+  ≥ 2 Punkte Layard → Trainingsfall gewonnen, Counter +1
+  sonst             → verloren, Counter zurück auf 0 (oder nicht erhöht)
 ```
-Runde 1  Brust-Angriff  → Layard wählt aus 4 Konter-Optionen
-   Treffer : Brust knickt ein. Kowalk-Aside: „Sitzt.“ → Punkt für Layard.
-   Fehler  : Brust liefert den richtigen Konter nach. Spieler darf
-             [ ins Phrasenbuch übernehmen ] (lernt jetzt erst) → Brust-Punkt.
 
-Runde 2  Layard-Angriff → Layard wählt aus 4 Angriffs-Phrasen
-   Phrase aus Phrasenbuch + Brust kennt keinen Konter
-        → Brust stottert sichtbar, Kowalk: „Volltreffer.“ → Punkt für Layard.
-   Phrase aus Phrasenbuch + Brust kennt sie
-        → Brust kontert souverän (ein Satz) → Brust-Punkt.
-   Linkische Eigen-Phrase (Smalltalk / Bitte)
-        → Brust kontert souverän → Brust-Punkt.
+Drei gewonnene Fälle in Folge → `vossbeckSummoned` setzen → Brust schickt zu Vossbeck. Drei Niederlagen in Folge bei **Vossbeck** → `duelEndgameLost` → Kowalk-Fälschungspfad (existiert schon).
 
-Runde 3  Brust-Angriff (wie Runde 1)
-```
+## Vossbeck-Endrunde
 
-Ergebnis: 2 Punkte = Trainingsfall gewonnen → Streak +1, Kowalk-Off („Du wirst besser, Worag.“). Sonst verloren, Streak resettet.
-
-Drei Trainingsfälle in Folge → Flag `duelTrainingWon3` → Brust verweist auf Vossbeck.
-
-### Vossbeck-Endrunde
-
-Eigener DialogTree `vossbeckDuel`: identische Mechanik, Phrasen aus dem Endgame-Pool, drei Runden Vossbeck-Brust-Vossbeck. Bei Sieg `duelEndgameWon`, bei Niederlage `duelEndgameLost`.
+Identische Struktur, 3 Runden, härterer Ton (Vossbeck-Phrasen aus `pE-*`), setzt `duelEndgameWon` oder `duelEndgameLost`.
 
 ## Datenmodell
 
-`src/game/bureaucracyDuel.ts` wird zu einem reinen **Daten- und Helfer-Modul** (keine Round/Session-Logik fürs Overlay mehr). Behalten:
-
-- `PHRASES`, `COUNTERS`, `ATTACK_PHRASES`, `FICTIONAL_COUNTERS`, `FICTIONAL_ATTACKS`, `ATTACK_COUNTER_LINES`, `getCounter`, `getPhrase`, `getAttack`, `opponentCounters`, `BRUST_KNOWS_ATTACKS`, `VOSSBECK_KNOWS_ATTACKS`.
-
-Geändert/entfernt:
-
-- `FICTIONAL_ATTACKS` und `f-*` Konter werden gesäubert: die unpassenden Einträge (`f-warm`, `f-resonanz`, `fa-warm`, `fa-resonanz`, `fa-vorlauf` als „drei Wochen Vorlauf“) werden ersetzt durch behördentaugliche Abschiebe-Phrasen / linkische Höflichkeitsversuche, die ins Setting passen.
-- Neue Angriffs-Phrasen ergänzen (Spezialitäten von Bodo / Helka / Kowalk-Training): „Hausflurreinigung“, „Anlage 3“, „Stempel besorgen“, „Sechs-Wochen-Frist“. Quelle (`source`) zuordnen, damit das Phrasenbuch sie korrekt listet.
-- `TRAINING_ROUNDS`, `ENDGAME_ROUNDS`, `buildTrainingSession`, `buildEndgameSession`, `buildRoundCounters`, `buildLayardAttackOptions`, `pickTrainingRounds`, `pickEndgameRounds`, `DUEL_UI_TEXT` werden gelöscht — der neue Ablauf braucht sie nicht. Was an Ablauftexten wiederverwendbar ist (z.B. `onHit`, `onMiss`, `kowalkAside`), zieht in die neuen Dialog-Bäume um.
+`src/game/bureaucracyDuel.ts` bleibt **wie jetzt** (Phrasen, Konter, Angriffs-Phrasen, Konter-Replies, `opponentCounters()`-Helper). Keine Änderung nötig — der Korpus ist bereits passend.
 
 ## Neue Dialog-Bäume
 
-In `src/game/dialogs/cafeteria.ts` (oder neue Datei `src/game/dialogs/trainingDuel.ts`, dann im `dialogs/index.ts` einhängen):
+In `src/game/dialogs/cafeteria.ts`:
 
-- `cafeteriaTrainingA`, `cafeteriaTrainingB`, `cafeteriaTrainingC` — drei austauschbare Trainingsfälle, je mit Runde 1/2/3 wie oben.
-- `vossbeckDuel` — Endrunde, drei feste Runden gegen Vossbeck.
+- **`cafeteriaTrainingA`**, **`cafeteriaTrainingB`**, **`cafeteriaTrainingC`** — drei austauschbare Trainingsfälle, je 3 Runden. Brust wählt per Counter (`duelTrainingsRun`) den nächsten, damit kein Fall doppelt kommt.
+- **`vossbeckDuel`** — Endrunde, 3 Runden, identische Mechanik mit härteren Phrasen.
 
-Brusts `bDuelOffer` ruft nicht mehr `api.openBureaucracyDuel("training")`, sondern springt direkt in einen Trainingsfall-Baum. Welcher Baum gewählt wird: zufällig in einer kleinen Helper-Funktion in `_helpers.ts` oder per Counter-Flag (`duelTrainingsRun`).
+Jeder Tree nutzt nur Standard-Mechanik: `choices`, `next`, `action: (api) => api.setFlag(...)`, lokale Tally über transiente Flags wie `duelRoundHit1/2/3`. Am Ende des Falls Auswertung in einer Auswertungs-Line, Cleanup der transienten Flags.
 
-Kowalk-Asides werden als eigene `KOWALK`-Zeilen (kursiv via Sprecher-Styling, wie schon bei `kowalkAside` in der `cafeteriaKowalk`-Szene) zwischen Brusts Zeilen eingebaut, nicht in `subtext`.
+## Phrasenbuch-Übernahme
 
-### Phrasenbuch-Übernahme
+Bestehender Eintrag-Mechanismus bleibt: nach einer Fehlrunde bekommt der Spieler eine Wahl `[Ins Phrasenbuch übernehmen]`, die `api.learnCounter(id)` (oder das bestehende Äquivalent) aufruft. Das ist die **einzige** Lernquelle im Duell.
 
-Jeder „[ ins Phrasenbuch übernehmen ]“-Choice setzt einen Flag pro Konter-ID (`learnedCounter:c-stapel` o.ä.), den der Phrasenbuch-Overlay liest. Das ist parallel zu Bodos/Helkas existenten Übernahme-Choices und ersetzt das implizite Lernen aus dem Overlay.
+Bodo/Helka-Specials (`a-vorgesetzten-bodo`, `a-tuerschild-helka`) werden weiterhin außerhalb des Duells über die jeweiligen NPC-Dialoge gelernt — unverändert.
 
 ## Aufräumen
 
-Komplett löschen:
+- **Löschen**: `api.openBureaucracyDuel` / `api.closeDuel`, `duelOpen`, `duelMode`, `duelTutorialShown`, alle Callsites in `cafeteria.ts` (`bDuelOffer`, `bDuelRetry`, `v6`) und `src/dev/ConsoleSwitcher.tsx` Zeile 70.
+- **GameContext.tsx**: State + Setter + Provider-Werte entfernen (Zeilen 74–76, 125, 244–245, 468, 796, 1008–1009, 1058–1059).
+- **types.ts**: `openBureaucracyDuel` aus `GameApi` entfernen, `duelTutorialShown` aus Flag-Union entfernen. Behalten: `duelTrainingWon1/2/3`, `duelEndgameWon`, `duelEndgameLost`.
+- **GameShell.tsx**: bereits ohne Overlay (vorheriger Turn), nur noch prüfen, dass keine Reste übrig sind.
+- **`bDuelOffer`**: aktualisiert auf `next: "cafeteriaTrainingA"` (bzw. via Counter auf B/C rotierend) — keine Overlay-Action mehr.
+- **`v6`**: aktualisiert auf `next: "vossbeckDuel"`-Start, kein `openBureaucracyDuel`.
 
-- `src/components/game/BureaucracyDuelOverlay.tsx`
-- alle `duelOpen`/`duelMode`/`openBureaucracyDuel`/`closeDuel`-Felder in `GameContext.tsx` und `types.ts`
-- der Render-Aufruf in `GameShell.tsx`
-- Flag `duelTutorialShown` (kein Overlay-Tutorial mehr nötig)
+## Was bleibt unverändert
 
-Bleibt erhalten:
+- `bureaucracyDuel.ts` (Datenmodul)
+- Phrasenbuch-Inventar-Item (`ParagraphenNotizbuch`)
+- Flags `duelTrainingWon1/2/3`, `duelEndgameWon`, `duelEndgameLost`
+- Forgery-Pfad bei Kowalk (greift weiterhin auf `duelEndgameLost`)
+- Vossbeck-Unready-Dialoge (`vossbeckUnready`, `vossbeckUnreadyOne`, `vossbeckUnreadyTwo`)
 
-- `ParagraphenNotizbuchOverlay` (Phrasenbuch) — das ist ein normaler Inventarslot.
-- Flags `duelStarted`, `duelTrainingWon1/2/3`, `duelEndgameWon`, `duelEndgameLost` — werden jetzt aus den Dialog-`action`-Hooks gesetzt.
+## Testfälle
 
-## Testliste (nach Implementierung)
+1. Trainingsfall A starten, Runde 1 treffen, Runde 2 Standard-Phrase werfen (Brust kontert), Runde 3 treffen → 2 Punkte → gewonnen, Counter 1/3.
+2. Trainingsfall A starten, Runde 1 daneben → korrekter Konter wird gezeigt → ins Phrasenbuch übernehmen → Phrasenbuch enthält neuen Eintrag.
+3. Drei Fälle in Folge gewonnen → `vossbeckSummoned`, `bVossbeckHint` verfügbar.
+4. Bodo-Phrase gelernt, in Runde 2 von Fall C werfen → Brust stottert, Punkt Layard.
+5. Vossbeck-Endrunde gewinnen → `duelEndgameWon`, Kowalk-Stempel-Pfad öffnet.
+6. Vossbeck-Endrunde 3× verlieren → `duelEndgameLost`, Fälschungspfad bei Kowalk öffnet.
 
-- Brust-Trainingsfall durchspielen: Treffer in Runde 1, Fehler in Runde 1 → Übernahme-Choice sichtbar → Konter erscheint im Phrasenbuch.
-- Runde 2 mit nur linkischen Phrasen: Brust kontert immer souverän, keine Verwirrung.
-- Runde 2 mit gelernter Bodo-Phrase: Brust stottert sichtbar, Punkt für Layard.
-- Drei Trainingsfälle in Folge gewinnen → `bVossbeckHint` erreichbar.
-- Vossbeck-Duell: Sieg setzt `duelEndgameWon`, Niederlage `duelEndgameLost`.
-- Keine Console-Errors zu fehlendem `duelOpen` / `BureaucracyDuelOverlay`.
+## Größenordnung
+
+Drei Trainings-Trees + ein Vossbeck-Tree ≈ 400–600 Zeilen Dialog in `cafeteria.ts`. Cleanup in 4 Dateien. Keine neuen Komponenten, keine neuen Module.

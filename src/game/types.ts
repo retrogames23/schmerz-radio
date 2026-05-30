@@ -252,7 +252,6 @@ export type StoryFlag =
   | "metVossbeck"
   | "duelEndgameWon"
   | "duelEndgameLost"
-  | "duelTutorialShown"
   // Layards Angriffsphrasen (Phrasen, mit denen er selbst attackiert,
   // statt nur zu kontern). Gelernt bei anderen Bewohnern, die Brust
   // schon im Phrasen-Duell besiegt haben.
@@ -594,12 +593,6 @@ export interface GameApi {
   openPneumaticTube: () => void;
   /** Kondomautomat-Overlay in der Kneipen-Toilette. */
   openCondomAutomat: () => void;
-  /**
-   * Bürokratie-Duell am Brust-Tresen (Akt I, Kantine 3602). Öffnet das
-   * Overlay und startet einen frischen Versuch. `mode` steuert, ob es
-   * ein Trainingsfall gegen Brust ist oder das Endduell gegen Vossbeck.
-   */
-  openBureaucracyDuel: (mode?: "training" | "endgame") => void;
   /** Notizbuch-Overlay öffnen (gelernte Paragraphen). */
   openParagraphenNotizbuch: () => void;
   /** Kantinenverordnung-Lese-Overlay öffnen. */
@@ -613,6 +606,15 @@ export interface GameApi {
   /** Streak inkrementieren oder zurücksetzen. */
   bumpBrustWinStreak: () => number;
   resetBrustWinStreak: () => void;
+  /**
+   * Transiente Trefferzählung innerhalb eines einzelnen Trainings- oder
+   * Endduell-Falls (3 Runden). `bumpDuelHit` zählt einen Treffer für
+   * Layard, `getDuelHits` liest den Stand, `resetDuelHits` setzt ihn auf
+   * 0 (zu Beginn jedes Falls).
+   */
+  bumpDuelHit: () => number;
+  getDuelHits: () => number;
+  resetDuelHits: () => void;
   isRadioActive: () => boolean;
   setEnding: () => void;
   /** Ending-Overlay wieder schließen (z. B. beim Akt-II-Einstieg). */

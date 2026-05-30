@@ -651,30 +651,19 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             action: (api) => {
               api.setFlag("duelOffered");
               api.setFlag("duelStarted");
-              api.openBureaucracyDuel("training");
+              const streak = api.getBrustWinStreak();
+              const tree =
+                streak === 0
+                  ? "cafeteriaTrainingA"
+                  : streak === 1
+                    ? "cafeteriaTrainingB"
+                    : "cafeteriaTrainingC";
+              api.startDialog(tree);
             },
-            // Dialog beendet sich; das Overlay übernimmt.
+            // Dialog wechselt zum Trainingsfall-Tree.
           },
           {
             text: "Lieber nicht. Ich überlege es mir.",
-            next: "b0",
-          },
-        ],
-      },
-      bDuelRetry: {
-        id: "bDuelRetry",
-        speaker: "BRUST",
-        text: "Bewohner Worag. Sie sind hartnäckig. (Pause.) Gut. Neuer Trainingsfall.",
-        choices: [
-          {
-            text: "[ Trainingsfall beginnen ]",
-            action: (api) => {
-              api.setFlag("duelStarted");
-              api.openBureaucracyDuel("training");
-            },
-          },
-          {
-            text: "Ich überlege es mir.",
             next: "b0",
           },
         ],
@@ -784,7 +773,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             text: "[ Endduell beginnen ]",
             action: (api) => {
               api.setFlag("metVossbeck");
-              api.openBureaucracyDuel("endgame");
+              api.startDialog("vossbeckDuel");
             },
           },
           {
