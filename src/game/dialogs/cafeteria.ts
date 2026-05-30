@@ -195,7 +195,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kInsa6c: {
         id: "kInsa6c",
         speaker: "KOWALK",
-        text: "Und durchkommen heißt: erst Brust. Trainingsfall. Drei in Folge. Vossbeck nimmt nur Bewohner an, die paragraphenfest sind. — Den Rest mache ich von hier aus.",
+        text: "Und durchkommen heißt: erst Brust. Drei Trainingsfälle in Folge. Vossbeck verhandelt nur noch mit Bewohnern, die sich im Bürokratie-Alltag als schlagfertig erwiesen haben — und Brust ist heute mal wieder dran zu prüfen, wer das ist. Den Rest mache ich von hier aus.",
+        subtext: "Brust hält das für eine ehrenvolle Aufgabe. Lassen Sie ihn in dem Glauben, Worag — Sie brauchen ihn.",
         choices: [
           {
             text: "Verstanden. Ich rede mit Vossbeck.",
@@ -389,7 +390,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kAuth8: {
         id: "kAuth8",
         speaker: "KOWALK",
-        text: "Aber Vossbeck redet nur mit Leuten, die Paragraphen können. Brust trainiert die Bewohner manchmal — fiktive Kantinenfälle. Wer ihn dreimal in Folge schlägt, gilt als satisfaktionsfähig. Wer das nicht ist, läuft bei Vossbeck gegen eine Wand.",
+        text: "Aber Vossbeck redet nur mit Leuten, die im Bürokratie-Alltag mitreden können. Brust trainiert die Bewohner manchmal — fiktive Kantinenfälle, drei in Folge gewonnen, und Sie gelten bei Vossbeck als satisfaktionsfähig. Wer das nicht ist, läuft bei ihm gegen eine Wand. Eine sehr höfliche Wand.",
         choices: [
           {
             text: "Verstanden. Ich übe mit Brust.",
@@ -519,7 +520,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kRecap: {
         id: "kRecap",
         speaker: "KOWALK",
-        text: "Brust. Trainingsfall. Drei in Folge. Dann Vossbeck. — Den Rest mache ich von hier aus, Worag.",
+        text: "Brust testet, Vossbeck entscheidet. Drei Trainingsfälle in Folge bei Brust — und Sie dürfen rein. Den Rest mache ich von hier aus, Worag.",
         subtext: "Sie sagt es ruhig. Wie jemand, der einen Tresen schon viele Bewohner überstehen sehen hat.",
         next: "k0",
       },
