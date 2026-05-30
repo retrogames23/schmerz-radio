@@ -206,7 +206,7 @@ export function DsaCombatInteractive({
       aria-modal="true"
       aria-label="Kampf"
     >
-      <div className="dsa-adventure-shell relative my-auto w-full max-w-4xl rounded-md shadow-2xl flex flex-col max-h-[calc(100vh-1rem)] sm:max-h-[calc(100vh-3rem)]">
+      <div className="dsa-adventure-shell relative my-auto w-full max-w-4xl rounded-md shadow-2xl flex flex-col max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-3rem)]">
         {isTerminal && <CloseButton onClick={handleDone} />}
 
         <div className="dsa-adventure-header shrink-0 px-5 sm:px-6 pt-5 pb-3 border-b-2 border-[rgba(30,18,8,0.85)]">

@@ -398,7 +398,7 @@ export function DsaLlmAdventureScene() {
   // ──────────────────────────────────────────────────────────────
   return (
     <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto bg-black/85 p-2 sm:p-6">
-      <div className="dsa-adventure-shell relative my-auto w-full max-w-5xl overflow-hidden rounded-md shadow-2xl flex flex-col max-h-[calc(100vh-1rem)] sm:max-h-[calc(100vh-3rem)]">
+      <div className="dsa-adventure-shell relative my-auto w-full max-w-5xl overflow-hidden rounded-md shadow-2xl flex flex-col max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-3rem)]">
         <CloseButton onClick={handleStandUp} />
 
         {/* Header */}
