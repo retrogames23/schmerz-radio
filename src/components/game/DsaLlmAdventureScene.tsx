@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollText, Loader2, Send, LogOut, Dices, Swords } from "lucide-react";
-import { useGame } from "@/game/GameContext";
+import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import { CloseButton } from "./CloseButton";
 import { DsaCombatInteractive, type CombatDoneResult } from "./DsaCombatInteractive";
@@ -96,11 +96,13 @@ export function DsaLlmAdventureScene() {
     dsaAdventureOpen,
     dsaCharacter,
     setDsaCharacter,
+    clearDsaCharacter,
     closeDsaAdventure,
     toggleDsaSheet,
     dsaSheetOpen,
-    api,
-  } = useGame();
+    getDsaSessionId,
+    openDsaCreator,
+  } = useDsaHost();
   const { setMoodPool, setMood } = useMusic();
 
   const [mode, setMode] = useState<Mode>({ kind: "loading" });
