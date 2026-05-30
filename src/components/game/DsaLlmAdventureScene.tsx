@@ -191,10 +191,7 @@ export function DsaLlmAdventureScene() {
           .filter((f): f is Combatant => !!f);
         if (foes.length > 0) {
           const heroes = [hero, ...companions];
-          const heroesForFight = heroes.map((h) => ({ ...h }));
-          const foesForFight = foes.map((f) => ({ ...f }));
-          const result = resolveCombat(heroesForFight, foesForFight);
-          setCombat({ heroes, foes, result });
+          setCombat({ heroes, foes });
           return;
         }
       }
