@@ -10,6 +10,7 @@ interface Props {
   isDefending: boolean;
   facing: "left" | "right";
   compact?: boolean;
+  wounds?: number;
 }
 
 function CombatantCardImpl({
@@ -20,6 +21,7 @@ function CombatantCardImpl({
   isDefending,
   facing,
   compact,
+  wounds = 0,
 }: Props) {
   const dead = le <= 0;
   const pct = Math.max(0, Math.min(100, (le / c.leMax) * 100));
@@ -116,6 +118,27 @@ function CombatantCardImpl({
             <span>PA {c.pa}</span>
             <span className="dsa-ink-faded">·</span>
             <span>RS {c.rs}</span>
+          </div>
+        )}
+        {isHero && (
+          <div className="mt-1.5 flex items-center gap-1.5">
+            <span className="dsa-typed text-[9px] uppercase tracking-widest dsa-ink-faded font-bold">
+              Wunden
+            </span>
+            <div className="flex gap-0.5">
+              {[0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  className={
+                    "inline-block w-3 h-3 rounded-sm border " +
+                    (i < wounds
+                      ? "bg-[#8a2010] border-[#3a0a04]"
+                      : "bg-transparent border-[#3a2c1a]/50")
+                  }
+                  aria-label={i < wounds ? "Wunde" : "leer"}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>
