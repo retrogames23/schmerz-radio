@@ -120,6 +120,25 @@ export function DsaLlmAdventureScene() {
   const turnIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
+  // Vollbild (Desktop) – analog zur Stammspiel-TopBar.
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch {
+      /* Browser hat Vollbild verweigert – stillschweigend ignorieren. */
+    }
+  };
+
   const dsaCharacterRef = useRef(dsaCharacter);
   dsaCharacterRef.current = dsaCharacter;
 
