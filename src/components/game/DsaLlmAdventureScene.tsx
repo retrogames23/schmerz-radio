@@ -4,7 +4,6 @@ import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import { CloseButton } from "./CloseButton";
 import { DsaCombatInteractive, type CombatDoneResult } from "./DsaCombatInteractive";
-import imgTjark from "@/assets/dsa/dsa-npc-tjark.jpg";
 import {
   DSA_SETTINGS,
   parseMasterTurn,
