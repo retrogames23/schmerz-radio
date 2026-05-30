@@ -22,7 +22,7 @@ GÖTTERZWÖLF (immer mit Beinamen oder Symbol greifbar machen):
   Erzfeindin: die Namenlose. Ihr Name wird nicht ausgesprochen; in deren Tagen (Namenlose Tage am Jahresende) ist alles unheilig.
 
 REGIONEN (knappe Marker — nur was zum Setting passt, nennen):
-  Mittelreich (Gareth, Punin, Wehrheim, Greifenfurt) — Kaiser Hal, kaiserliche Garde, Praios-Klerus stark.
+  Mittelreich (Gareth, Punin, Wehrheim, Greifenfurt) — Kaiser Hal im Bornland verschollen, Kronprinz Brin als Reichsbehüter, kaiserliche Garde an der Orkfront, Praios-Klerus stark.
   Horasreich (Vinsalt, Methumis) — höfisch, intrigant, Rondra & Rahja im Vordergrund.
   Thorwal (Olport, Prem) — nordische Seefahrer, Swafnir-Kult (Sohn des Efferd), Hjaldingard.
   Aranien & Tulamidenlande (Zorgan, Khunchom, Mherwed) — orientalisch, Rastullah weiter südlich (Khôm), Magierakademie Khunchom.
