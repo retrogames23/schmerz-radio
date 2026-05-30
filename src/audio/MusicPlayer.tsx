@@ -152,15 +152,21 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
 
   // Auf veröffentlichter Domain kann ein alter Spielstand die Musik auf
   // "aus" oder 0 Lautstärke gespeichert haben; im Standalone-DSA gibt es
-  // sonst keinen Regler, der sie wieder einschaltet. Nur für /dsa/* reparieren.
+  // sonst keinen Regler, der sie wieder einschaltet. EINMALIG beim Mount
+  // auf /dsa/* reparieren — danach respektieren wir die Nutzer-Wahl
+  // (sonst überschreibt der Effekt jeden Toggle sofort wieder).
+  const dsaRepairDoneRef = useRef(false);
   useEffect(() => {
+    if (dsaRepairDoneRef.current) return;
     if (typeof window === "undefined") return;
     if (!window.location.pathname.startsWith("/dsa")) return;
+    dsaRepairDoneRef.current = true;
     const patch: { musicEnabled?: boolean; musicVolume?: number } = {};
     if (!musicEnabled) patch.musicEnabled = true;
     if (musicVolume < 0.08) patch.musicVolume = 0.45;
     if (patch.musicEnabled !== undefined || patch.musicVolume !== undefined) set(patch);
-  }, [musicEnabled, musicVolume, set]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   useEffect(() => {
     volumeRef.current = musicVolume;
   }, [musicVolume]);
