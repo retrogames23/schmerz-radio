@@ -53,7 +53,8 @@ AUSGABEFORMAT — STRIKT:
     [YELVA] Deine Mutter war Diebin, Brem.
 
   Optionale Marker (alle in eckigen Klammern, je in eigener Zeile):
-    [SCENE: <tag>]            wechselt die Hintergrundillustration. Erlaubte Tags: ${sceneTagList}
+    [SCENE: <tag>]            wechselt die Hintergrundillustration. Erlaubte Tags: ${sceneTagList}.
+                              Lass [SCENE: …] WEG, wenn KEIN Tag wirklich zur Szene passt — kein Bild ist besser als ein unpassendes.
     [CHECK: <ATTR> [+/-N]]    fordert eine Eigenschaftsprobe (MU, KL, CH, FF, GE, IN, KK). Modifikator optional.
     [COMBAT: id1, id2, ...]   ruft den Kampfbildschirm auf. Erlaubte Gegner-IDs: ${enemyIdList}
     [OUTTIME_WARN]            zeigt, dass du den Spieler ans Abenteuer erinnerst.

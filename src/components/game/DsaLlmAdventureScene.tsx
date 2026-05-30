@@ -13,7 +13,6 @@ import {
 } from "@/game/dsa/llmAdventure";
 import {
   resolveSceneImage,
-  DEFAULT_SCENE_IMAGE,
 } from "@/game/dsa/sceneImages";
 import {
   ENEMY_STATS,
@@ -337,7 +336,7 @@ export function DsaLlmAdventureScene() {
   }
 
   const imgSrc = useMemo(
-    () => resolveSceneImage(imageTag, DEFAULT_SCENE_IMAGE),
+    () => resolveSceneImage(imageTag),
     [imageTag],
   );
 
@@ -402,13 +401,16 @@ export function DsaLlmAdventureScene() {
 
         {mode.kind === "play" && (
           <>
-            <div className="shrink-0 relative w-full bg-black/80">
-              <img
-                src={imgSrc}
-                alt="Szene"
-                className="w-full h-32 sm:h-48 object-cover opacity-90"
-              />
-            </div>
+            {imgSrc && (
+              <div className="shrink-0 relative w-full bg-black/80">
+                <img
+                  src={imgSrc}
+                  alt="Szene"
+                  loading="lazy"
+                  className="w-full h-32 sm:h-48 object-cover opacity-90"
+                />
+              </div>
+            )}
 
             <div
               ref={scrollRef}
