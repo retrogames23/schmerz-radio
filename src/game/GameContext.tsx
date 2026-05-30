@@ -828,6 +828,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         miraFloors: miraFloorsRef.current,
         philippeFloor: philippeFloorRef.current,
         dsaCharacter: dsaCharacterRef.current,
+        dsaSessionId: dsaSessionIdRef.current,
       };
       const summary: SaveSummary = {
         slot,
