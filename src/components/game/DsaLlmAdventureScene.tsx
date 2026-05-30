@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ScrollText, Loader2, Send, LogOut, Dices } from "lucide-react";
+import { ScrollText, Loader2, Send, LogOut, Dices, Swords } from "lucide-react";
 import { useGame } from "@/game/GameContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import { CloseButton } from "./CloseButton";
@@ -112,6 +112,7 @@ export function DsaLlmAdventureScene() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [combat, setCombat] = useState<CombatBridge | null>(null);
+  const [pendingCombat, setPendingCombat] = useState<CombatBridge | null>(null);
   const [endState, setEndState] = useState<AdventureStatus | null>(null);
   const [imageZoomed, setImageZoomed] = useState(false);
   const turnIdRef = useRef(0);
@@ -211,7 +212,8 @@ export function DsaLlmAdventureScene() {
           .filter((f): f is Combatant => !!f);
         if (foes.length > 0) {
           const heroes = [hero, ...companions];
-          setCombat({ heroes, foes });
+          // Erst eine Zwischenstufe — Spieler bestätigt mit "Waffen ziehen!".
+          setPendingCombat({ heroes, foes });
           return;
         }
       }
