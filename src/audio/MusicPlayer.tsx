@@ -197,6 +197,51 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [musicEnabled]);
 
+  // Autoplay-Unlock: viele Browser blockieren `play()` ohne vorherige
+  // Nutzerinteraktion. Sobald der Spieler irgendwo klickt/tippt, holen
+  // wir das nach, falls die Musik aktiviert ist und gerade nichts läuft.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let done = false;
+    const unlock = () => {
+      if (done) return;
+      const a = aRef.current;
+      const b = bRef.current;
+      if (!a || !b) return;
+      if (!enabledRef.current && !overrideForceRef.current) return;
+      const active = activeRef.current === "a" ? a : b;
+      if (active.paused) {
+        if (!active.src) {
+          const overrideId = overrideRef.current;
+          active.src = overrideId
+            ? MUSIC_OVERRIDES[overrideId].src
+            : pickTrack(indexRef.current);
+        }
+        active.volume = clamp(volumeRef.current * duckRef.current);
+        void active.play().then(() => {
+          done = true;
+          ensureWatcher();
+          window.removeEventListener("pointerdown", unlock);
+          window.removeEventListener("keydown", unlock);
+          window.removeEventListener("touchstart", unlock);
+        }).catch(() => { /* erneut versuchen beim nächsten Klick */ });
+      } else {
+        done = true;
+        window.removeEventListener("pointerdown", unlock);
+        window.removeEventListener("keydown", unlock);
+        window.removeEventListener("touchstart", unlock);
+      }
+    };
+    window.addEventListener("pointerdown", unlock, { passive: true });
+    window.addEventListener("keydown", unlock);
+    window.addEventListener("touchstart", unlock, { passive: true });
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+      window.removeEventListener("touchstart", unlock);
+    };
+  }, []);
+
   function pickTrack(i: number) {
     return PLAYLIST[((i % PLAYLIST.length) + PLAYLIST.length) % PLAYLIST.length].src;
   }

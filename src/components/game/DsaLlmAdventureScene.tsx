@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ScrollText, Loader2, Send, LogOut, Dices, Swords } from "lucide-react";
+import { ScrollText, Loader2, Send, LogOut, Dices, Swords, Maximize2, Minimize2 } from "lucide-react";
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import { CloseButton } from "./CloseButton";
