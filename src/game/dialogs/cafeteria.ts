@@ -403,6 +403,12 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kAuth8",
         speaker: "KOWALK",
         text: "Aber Vossbeck redet nur mit Leuten, die im Bürokratie-Alltag mitreden können. Brust trainiert die Bewohner manchmal — fiktive Kantinenfälle, drei in Folge gewonnen, und Sie gelten bei Vossbeck als satisfaktionsfähig. Wer das nicht ist, läuft bei ihm gegen eine Wand. Eine sehr höfliche Wand.",
+        next: "kAuth8b",
+      },
+      kAuth8b: {
+        id: "kAuth8b",
+        speaker: "KOWALK",
+        text: "Vossbeck entscheidet erst, wenn er Sie ernst nimmt — vorher liest er Ihre Akte gar nicht. Brust eröffnet, Sie kontern aus dem Phrasenbuch, jeder Konter landet dort drin. Drei Trainingsfälle in Folge sauber durch — und Vossbeck verhandelt. Vorher nicht.",
         choices: [
           {
             text: "Verstanden. Ich übe mit Brust.",
