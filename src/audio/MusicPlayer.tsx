@@ -202,35 +202,37 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   // wir das nach, falls die Musik aktiviert ist und gerade nichts läuft.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    let done = false;
     const unlock = () => {
-      if (done) return;
       const a = aRef.current;
       const b = bRef.current;
       if (!a || !b) return;
       if (!enabledRef.current && !overrideForceRef.current) return;
+      if (externallyPausedRef.current) return;
       const active = activeRef.current === "a" ? a : b;
-      if (active.paused) {
-        if (!active.src) {
-          const overrideId = overrideRef.current;
-          active.src = overrideId
+      if (!active.paused) {
+        // Schon hörbar — Listener bleiben aktiv, damit wir nach einem
+        // späteren stillen `play()`-Reject (z. B. Mood-Crossfade beim
+        // Betreten der DSA-Tafelrunde) erneut nachhelfen können.
+        return;
+      }
+      // Falls noch gar keine Quelle gesetzt ist (Override/Mood/Playlist),
+      // wählen wir den aktuell passenden Track.
+      if (!active.src) {
+        const mood = moodPoolRef.current;
+        const overrideId = overrideRef.current;
+        active.src = mood
+          ? (currentMoodSrcRef.current ?? pickMoodTrack(mood, null))
+          : overrideId
             ? MUSIC_OVERRIDES[overrideId].src
             : pickTrack(indexRef.current);
+        if (mood && !currentMoodSrcRef.current) {
+          currentMoodSrcRef.current = active.src;
         }
-        active.volume = clamp(volumeRef.current * duckRef.current);
-        void active.play().then(() => {
-          done = true;
-          ensureWatcher();
-          window.removeEventListener("pointerdown", unlock);
-          window.removeEventListener("keydown", unlock);
-          window.removeEventListener("touchstart", unlock);
-        }).catch(() => { /* erneut versuchen beim nächsten Klick */ });
-      } else {
-        done = true;
-        window.removeEventListener("pointerdown", unlock);
-        window.removeEventListener("keydown", unlock);
-        window.removeEventListener("touchstart", unlock);
       }
+      active.volume = clamp(volumeRef.current * duckRef.current);
+      void active.play().then(() => {
+        ensureWatcher();
+      }).catch(() => { /* erneut versuchen beim nächsten Klick */ });
     };
     window.addEventListener("pointerdown", unlock, { passive: true });
     window.addEventListener("keydown", unlock);
