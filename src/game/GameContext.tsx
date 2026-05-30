@@ -76,6 +76,8 @@ interface GameState {
   duelMode: "training" | "endgame" | null;
   /** Notizbuch-Overlay (gelernte Paragraphen) sichtbar. */
   notizbuchOpen: boolean;
+  /** Kantinenverordnung-Lese-Overlay sichtbar. */
+  kantinenverordnungOpen: boolean;
 }
 
 interface GameContextValue extends GameState {
@@ -123,6 +125,8 @@ interface GameContextValue extends GameState {
   closeDuel: () => void;
   /** Notizbuch schließen. */
   closeNotizbuch: () => void;
+  /** Kantinenverordnung schließen. */
+  closeKantinenverordnung: () => void;
   /** Set der gelernten Paragraphen-IDs (für Notizbuch-UI). */
   learnedParagraphs: ReadonlySet<string>;
   /** Lobby-Schleusen-Eskalation (Fehlversuche, transient). */
@@ -240,6 +244,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [duelOpen, setDuelOpen] = useState(false);
   const [duelMode, setDuelMode] = useState<"training" | "endgame" | null>(null);
   const [notizbuchOpen, setNotizbuchOpen] = useState(false);
+  const [kantinenverordnungOpen, setKantinenverordnungOpen] = useState(false);
   const [learnedParagraphs, setLearnedParagraphs] = useState<Set<string>>(
     () => new Set(),
   );
@@ -469,6 +474,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       },
       openParagraphenNotizbuch: () => {
         setNotizbuchOpen(true);
+      },
+      openKantinenverordnung: () => {
+        setKantinenverordnungOpen(true);
       },
       hasParagraph: (id: string) => learnedParagraphsRef.current.has(id),
       learnParagraph: (id: string) => {
@@ -781,6 +789,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       closeLobbyGate: () => setLobbyGateOpen(false),
       closeDuel: () => setDuelOpen(false),
       closeNotizbuch: () => setNotizbuchOpen(false),
+      closeKantinenverordnung: () => setKantinenverordnungOpen(false),
       getLobbyGateAttempts: () => lobbyGateAttemptsRef.current,
       bumpLobbyGateAttempts: () => {
         lobbyGateAttemptsRef.current += 1;
@@ -994,6 +1003,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     duelMode,
     notizbuchOpen,
     learnedParagraphs,
+    kantinenverordnungOpen,
     freeChatNpcId,
       isEssentialAssetsLoaded,
       api,
@@ -1043,6 +1053,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       duelMode,
       notizbuchOpen,
       learnedParagraphs,
+      kantinenverordnungOpen,
       freeChatNpcId,
       isEssentialAssetsLoaded,
       api,
