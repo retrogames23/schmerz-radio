@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollText, Loader2, Send, LogOut, Dices } from "lucide-react";
 import { useGame } from "@/game/GameContext";
 import { CloseButton } from "./CloseButton";
-import { DsaCombatOverlay } from "./DsaCombatOverlay";
+import { DsaCombatInteractive, type CombatDoneResult } from "./DsaCombatInteractive";
 import {
   DSA_SETTINGS,
   parseMasterTurn,
@@ -19,9 +19,7 @@ import {
   companionCombatants,
   foeCombatantFromStat,
   heroCombatantFromCharacter,
-  resolveCombat,
   type Combatant,
-  type CombatResult,
 } from "@/game/dsa/combat";
 /**
  * LLM-Tafelrunde im Gemeinschaftsraum E67. Ersetzt das alte gescriptete
@@ -56,7 +54,6 @@ type Mode =
 interface CombatBridge {
   heroes: Combatant[];
   foes: Combatant[];
-  result: CombatResult;
 }
 
 async function authedPost(body: Record<string, unknown>, sessionId: string): Promise<Response> {
