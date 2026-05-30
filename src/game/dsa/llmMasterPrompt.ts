@@ -11,6 +11,7 @@ interface BuildArgs {
   character: DsaCharacterSummary;
   summary: string;
   offtopicStreak: number;
+  assistantTurns?: number;
   /**
    * Wahr, wenn das Abenteuer dramaturgisch in der Mitte ist und eine
    * Ruhe-/Cooldown-Phase laufen soll (Taverne, Lagerfeuer, Rast).
@@ -22,7 +23,7 @@ interface BuildArgs {
  * Vollständiger System-Prompt für Tjark, den LLM-Meister. Wird auf dem
  * Server gebaut — der Client kann ihn nicht überschreiben.
  */
-export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, cooldown }: BuildArgs): string {
+export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, assistantTurns = 0, cooldown }: BuildArgs): string {
   const s = getSetting(setting);
   const sceneTagList = DSA_SCENE_TAGS.join(", ");
   const enemyIdList = Object.keys(ENEMY_STATS).join(", ");
@@ -88,6 +89,7 @@ BISHER PASSIERT (Zusammenfassung, kann leer sein):
 ${summary || "— (Abenteuer beginnt jetzt)"}
 
 ABENTEUER-DRAMATURGIE — PFLICHT:
+  AKTUELLER UMFANG: Bisher gab es ${assistantTurns} Meisterwenden in diesem Abenteuer.
   Ein Abenteuer ist KEIN One-Shot von drei Szenen und KEINE Zusammenfassung.
   Es soll am Tisch wie ein echter Spielabend laufen (~40–60 Meisterwenden).
   Erzähle im Tempo einer Tischrunde: pro Antwort nur EINEN klaren Beat
