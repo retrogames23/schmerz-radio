@@ -315,7 +315,7 @@ export const TRAINING_ROUNDS: DuelRound[] = [
     onHit:
       "(Pause.) Hm. Das … sieht er ihm tatsächlich an. Setzen wir das ad acta.",
     onMiss:
-      "Bewohner Worag. Die richtige Antwort wäre gewesen: »Das sieht man dem Sektor auch an.« Schreiben Sie sich das auf.",
+      "Das war schwach, Herr Worag. So frisst Sie der Herr Vossbeck zum Frühstück.",
     kowalkAside:
       "Das hätte ich auch nicht besser sagen können, Worag. Schreib's dir hinter die Ohren.",
   },
@@ -329,7 +329,7 @@ export const TRAINING_ROUNDS: DuelRound[] = [
     onHit:
       "(Brust schaut auf den Stapel. Dann auf Layard. Dann wieder auf den Stapel.) Das … kann man so sehen.",
     onMiss:
-      "Falsch, Worag. Hätten Sie gesagt »Dann trägt er wenigstens die Last des ganzen Hauses« — hätte ich nicken müssen. Notieren Sie das.",
+      "Bewohner Worag. Ihre Erwiderung trägt nicht. Notieren tue ich das. Sie nicht.",
     kowalkAside: "Last des ganzen Hauses. Den nehm ich mir auch mit.",
   },
   {
@@ -342,7 +342,7 @@ export const TRAINING_ROUNDS: DuelRound[] = [
     onHit:
       "(Brust dreht sich unwillkürlich zu seinem Türschild um.) Hm. Das … ist tatsächlich ungünstig formuliert.",
     onMiss:
-      "Sie hätten gesagt: »Erstaunlich, auf Ihrem Türschild steht das Gegenteil.« — und ich hätte aufstehen müssen. Lernen Sie das.",
+      "Das war kein Konter, das war ein Verlegenheitsgeräusch. Bei Vossbeck geht damit das Licht aus.",
     kowalkAside: "Sein Türschild liest er nie. Du jetzt umso mehr.",
   },
   {
@@ -355,7 +355,7 @@ export const TRAINING_ROUNDS: DuelRound[] = [
     onHit:
       "(Brust zieht das Terminbuch hervor, schaut hinein, klappt es zu.) Auch wieder wahr.",
     onMiss:
-      "Sie hätten antworten müssen: »Den hätte ich gern — bei jemandem, der zuständig ist.« — Notieren Sie das, Worag.",
+      "Schwach, Worag. Sehr schwach. Ich gebe heute nichts mehr aus, das so dürftig vorgebracht wird.",
     kowalkAside: "Ich hätte ihm das Terminbuch geholt. Nimm's mit.",
   },
   {
@@ -368,7 +368,7 @@ export const TRAINING_ROUNDS: DuelRound[] = [
     onHit:
       "(Brust greift unwillkürlich nach dem Formularblock. Hält inne.) Das war jetzt … ungeschickt von mir.",
     onMiss:
-      "Sie hätten geantwortet: »Wunderbar. Dann füllen Sie sie doch eben aus.« — Das hätte gesessen. Schreiben Sie's auf.",
+      "Bewohner Worag, im Ernst. Ich kann das nicht durchgehen lassen. So lacht Vossbeck Sie aus der Tür.",
     kowalkAside: "Wer „Formsache“ sagt, hat sie schon verloren.",
   },
   {
@@ -381,7 +381,7 @@ export const TRAINING_ROUNDS: DuelRound[] = [
     onHit:
       "(Brust schaut sich um. Niemand da, den er holen könnte.) Hm. Gut. Nächste Runde.",
     onMiss:
-      "Bewohner Worag — Sie hätten gesagt: »Wunderbar. Holen Sie ihn. Ich warte.« Das ist die korrekte Replik. Merken Sie sich das.",
+      "(Brust lächelt knapp.) Das, Worag, war kein Argument. Das war ein Achselzucken in Wörtern.",
     kowalkAside: "Den Vorgesetzten hat Brust seit Monaten nicht gesehen.",
   },
 ];
