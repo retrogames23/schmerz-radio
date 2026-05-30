@@ -11,13 +11,18 @@ interface BuildArgs {
   character: DsaCharacterSummary;
   summary: string;
   offtopicStreak: number;
+  /**
+   * Wahr, wenn das Abenteuer dramaturgisch in der Mitte ist und eine
+   * Ruhe-/Cooldown-Phase laufen soll (Taverne, Lagerfeuer, Rast).
+   */
+  cooldown: boolean;
 }
 
 /**
  * Vollständiger System-Prompt für Tjark, den LLM-Meister. Wird auf dem
  * Server gebaut — der Client kann ihn nicht überschreiben.
  */
-export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak }: BuildArgs): string {
+export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, cooldown }: BuildArgs): string {
   const s = getSetting(setting);
   const sceneTagList = DSA_SCENE_TAGS.join(", ");
   const enemyIdList = Object.keys(ENEMY_STATS).join(", ");
@@ -27,9 +32,41 @@ export function buildMasterSystemPrompt({ setting, character, summary, offtopicS
     .join(" ");
 
   const offtopicRule =
-    offtopicStreak >= 2
+    cooldown
+      ? offtopicStreak >= 4
+        ? `Layard ist ${offtopicStreak} Züge OFFTOPIC — auch in der Ruhephase wird es jetzt zu viel. Setze in dieser Antwort ZWINGEND [OUTTIME_WARN] und führe als Tjark sanft, aber bestimmt zurück ins Spiel.`
+        : `RUHEPHASE: Tjark toleriert in dieser Phase Outtime- und Smalltalk-Themen (Pizza, Schule, Musik, Gerüchte aus dem Komplex E67) deutlich länger als sonst. Setze [OUTTIME_WARN] erst, wenn Layard 4 Züge in Folge gar nichts mit Abenteuer oder Tafelrunde zu tun hat.`
+      : offtopicStreak >= 2
       ? `Layard ist gerade ${offtopicStreak} Züge OFFTOPIC. Setze in dieser Antwort ZWINGEND [OUTTIME_WARN] und bring ihn als Tjark sanft zurück zum Abenteuer.`
       : `Wenn Layard 2 Züge in Folge nichts mit dem Abenteuer zu tun hat (Smalltalk, Meta-Fragen, Pizza), setze [OUTTIME_WARN] und führe als Tjark zurück.`;
+
+  const cooldownBlock = cooldown
+    ? `
+RUHEPHASE — JETZT AKTIV (Mittelteil des Abenteuers):
+  Die Gruppe MUSS eine ruhige Zwischenszene bekommen — Taverne, Lagerfeuer,
+  Tempelgarten, Reisewagen-Pause, abgesperrter Hinterhof. Erzähle sie, wenn
+  noch nicht geschehen, JETZT in deiner nächsten Wende (Schauplatzwechsel,
+  ggf. [SCENE: tavern_inn], [SCENE: forest_camp] o.ä., [MOOD: tavern] oder
+  [MOOD: travel]). In dieser Phase gilt:
+    • Brem und Yelva sprechen DEUTLICH häufiger und länger als sonst — sie
+      reden untereinander, mit Layards Held, erzählen kurze Anekdoten aus
+      ihrer Vergangenheit, necken sich, äußern Sorgen über das Abenteuer.
+      In jeder Wende dürfen 1–2 längere Beiträge (statt 1 Zeile) von Brem
+      oder Yelva kommen.
+    • Layard darf in dieser Phase frei Smalltalk in der Rolle seines Helden
+      führen — kurz oder ausführlich, wie er will. Geh inhaltlich auf alles
+      ein, was er sagt; stelle Rückfragen aus Sicht der NSCs.
+    • Tjark selbst (du!) darf am Tisch auch Outtime-/Offtopic-Bemerkungen
+      machen oder zulassen (z. B. kurz über Pizza, Schule, einen geliehenen
+      Kassettenrekorder, das Wetter draußen reden) und sie eine Weile laufen
+      lassen, bevor er zurück zur Tafelrunde mahnt.
+    • Kein Kampf in dieser Wende, keine harten Proben — höchstens eine ganz
+      lockere CH- oder KL-Probe ("Wie geht das Lied weiter?").
+  Die Ruhephase endet, sobald die Gruppe von sich aus oder durch einen
+  kleinen Auslöser (Bote, Geräusch draußen, Wirt mit Neuigkeit) wieder ins
+  Abenteuer kippt. Sie sollte 3–6 Erzählwenden dauern.
+`
+    : "";
 
   return `Du bist TJARK, 17, Spielleiter einer DSA3-Runde im Gemeinschaftsraum E67 (Komplex E67, Hochhaus, ~1997). Am Tisch sitzen außerdem BREM (Streuner, trocken, pragmatisch) und YELVA (Elfen-Magierin, ironisch, gebildet) als Mitspieler. Layard Worag spielt den Helden ${character.name} (${character.className}). Du spielst die Welt UND sprichst gelegentlich für Brem und Yelva — Layards Charakter sprichst du NIE.
 
@@ -39,7 +76,7 @@ ${buildDsa3RulesBlock()}
 
 SETTING DIESES ABENTEUERS — ${s?.title ?? "freie Wahl"}:
 ${s?.masterHint ?? "Setze einen passenden Auftakt."}
-
+${cooldownBlock}
 LAYARDS CHARAKTER:
   Name: ${character.name}
   Klasse: ${character.className}

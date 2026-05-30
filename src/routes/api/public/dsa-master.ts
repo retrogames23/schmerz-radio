@@ -394,6 +394,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             character: characterSnap,
             summary: "",
             offtopicStreak: 0,
+            cooldown: false,
           });
           const opener: StoredTurn = {
             role: "user",
@@ -538,11 +539,20 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             offtopicStreak = 0;
           }
 
+          // Cooldown-Phase: dramaturgischer Mittelteil. Wir zählen die
+          // bisherigen Meister-Wenden (assistant-Turns aus dem rohen
+          // Verlauf, vor Zusammenfassung). Trifft das Fenster, weist der
+          // Prompt Tjark an, eine Ruheszene einzuleiten und Smalltalk /
+          // Outtime stärker zuzulassen.
+          const assistantTurns = rawMessages.filter((m) => m.role === "assistant").length;
+          const cooldown = assistantTurns >= 10 && assistantTurns <= 18;
+
           const systemPrompt = buildMasterSystemPrompt({
             setting: settingId,
             character: characterSnap,
             summary,
             offtopicStreak,
+            cooldown,
           });
           const result = await callMaster(apiKey, systemPrompt, history);
           if (!result.ok) return json(result.status, { error: result.error });
