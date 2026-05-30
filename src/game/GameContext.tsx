@@ -216,6 +216,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
     useState<DsaCharacterSummary | null>(null);
   const dsaCharacterRef = useRef<DsaCharacterSummary | null>(null);
   dsaCharacterRef.current = dsaCharacter;
+  // UUID für die laufende DSA-Sitzung (= Save-Slot oder frischer
+  // Spielstart). Neue Spielinstanz → frische UUID → frisches
+  // LLM-Gedächtnis serverseitig. Load eines Saves → restored.
+  const dsaSessionIdRef = useRef<string>(
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `sess-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  );
   const [dsaAdventureOpen, setDsaAdventureOpen] = useState(false);
   const [dsaBeat, setDsaBeatState] = useState<string | null>(null);
   const dsaBeatRef = useRef<string | null>(null);
