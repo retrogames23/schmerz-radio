@@ -54,6 +54,7 @@ export type Database = {
           current_image_tag: string
           messages: Json
           offtopic_streak: number
+          session_id: string
           setting: string
           status: string
           summary: string
@@ -66,6 +67,7 @@ export type Database = {
           current_image_tag?: string
           messages?: Json
           offtopic_streak?: number
+          session_id?: string
           setting: string
           status?: string
           summary?: string
@@ -78,6 +80,7 @@ export type Database = {
           current_image_tag?: string
           messages?: Json
           offtopic_streak?: number
+          session_id?: string
           setting?: string
           status?: string
           summary?: string
