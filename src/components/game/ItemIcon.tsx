@@ -687,23 +687,19 @@ function ReichsmarkIcon({ count = 3 }: { count?: number } = {}) {
   const COIN_DK = "#7a4f1c";
   const COIN_FG = "#d49a3a";
   const COIN_HI = "#fce8b8";
-  // Einzelne Münze, ca. 8x8 Pixel mit "RM"-Punkt in der Mitte.
+  // Einzelne runde Münze, Durchmesser ~9px, mit "RM"-Punkt in der Mitte.
   const coin = (cx: number, key: string) => (
     <g key={key}>
-      {/* Außenring (dunkel) */}
-      <rect x={cx - 4} y={9} width={8} height={1} fill={COIN_DK} />
-      <rect x={cx - 4} y={15} width={8} height={1} fill={COIN_DK} />
-      <rect x={cx - 5} y={10} width={1} height={5} fill={COIN_DK} />
-      <rect x={cx + 4} y={10} width={1} height={5} fill={COIN_DK} />
+      {/* Dunkler Außenring */}
+      <circle cx={cx} cy={12} r={4.5} fill={COIN_DK} />
       {/* Münzfläche */}
-      <rect x={cx - 4} y={10} width={8} height={5} fill={COIN_FG} />
-      {/* Highlight oben */}
-      <rect x={cx - 4} y={10} width={8} height={1} fill={COIN_HI} opacity="0.7" />
-      <rect x={cx - 4} y={11} width={2} height={1} fill={COIN_HI} opacity="0.4" />
+      <circle cx={cx} cy={12} r={3.6} fill={COIN_FG} />
+      {/* Highlight oben links (Glanz auf gewölbter Münze) */}
+      <circle cx={cx - 1} cy={10.8} r={1.6} fill={COIN_HI} opacity="0.65" />
       {/* RM-Punkt mittig */}
-      <rect x={cx - 1} y={12} width={2} height={2} fill={ICON_BG} />
+      <circle cx={cx} cy={12} r={0.9} fill={COIN_DK} />
       {/* Schatten unten */}
-      <rect x={cx - 4} y={14} width={8} height={1} fill={COIN_DK} opacity="0.5" />
+      <circle cx={cx + 0.6} cy={13.4} r={1.4} fill={COIN_DK} opacity="0.35" />
     </g>
   );
   const n = Math.max(0, Math.min(3, count));
@@ -711,7 +707,7 @@ function ReichsmarkIcon({ count = 3 }: { count?: number } = {}) {
   const positions: Record<number, number[]> = {
     0: [],
     1: [12],
-    2: [8, 16],
+    2: [8.5, 15.5],
     3: [6, 12, 18],
   };
   return <>{positions[n].map((cx, i) => coin(cx, `c${i}`))}</>;
