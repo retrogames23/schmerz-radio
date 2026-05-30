@@ -164,7 +164,7 @@ export function LobbyGate() {
     setStatus("idle");
   }
 
-  function useItemOnSlot(itemId: string) {
+  function applyItemToSlot(itemId: string) {
     if (itemId !== "residentId") {
       rejectSlotItem();
       return;
@@ -179,14 +179,14 @@ export function LobbyGate() {
     e.stopPropagation();
     const dropped = drag.endDrag();
     if (!dropped) return;
-    useItemOnSlot(dropped.id);
+    applyItemToSlot(dropped.id);
   }
 
   function onSlotClick() {
     if (!isCoarse || cardSlotted) return;
     if (drag.selectedItem) {
       const selected = drag.consumeActive();
-      if (selected) useItemOnSlot(selected.id);
+      if (selected) applyItemToSlot(selected.id);
       return;
     }
     if (api.hasItem("residentId")) {
