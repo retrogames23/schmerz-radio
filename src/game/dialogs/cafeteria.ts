@@ -138,13 +138,13 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kInsa2: {
         id: "kInsa2",
         speaker: "KOWALK",
-        text: "Das ist ihre alte Aktennummer. Schicht A. Damals haben sie Nummern nicht doppelt vergeben — sie haben Buchstaben drangehängt. Tilla war 4317-K. Marteau war 4317. Lischke war 4317-L. Drei, vier andere noch.",
+        text: "Alte Aktennummer, Schicht A. Tilla war 4317-K, Marteau 4317, Lischke 4317-L. Drei, vier andere noch.",
         next: "kInsa3",
       },
       kInsa3: {
         id: "kInsa3",
         speaker: "KOWALK",
-        text: "Heute ist Tilla die Einzige aus der Liste, die noch eine offene Akte hat. — Außer Marteau. Den haben sie nie geschlossen. Und der lebt noch hier.",
+        text: "Tilla ist die Einzige mit offener Akte. Außer Marteau — den haben sie nie geschlossen. Der lebt noch hier.",
         subtext: "Sie sagt »Marteau« mit der Selbstverständlichkeit von jemandem, der den Namen seit zwanzig Jahren kennt.",
         choices: [
           {
@@ -161,7 +161,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kInsa3b: {
         id: "kInsa3b",
         speaker: "KOWALK",
-        text: "Philippe Marteau, ja. 2613. — Er war damals das Pendant auf der Männer-Liste. Wenn er Ihnen jemals eine 4317 in die Hand drückt: das ist nicht zufällig, das ist die alte Schicht-A-Akte. Er weiß genau, was die Nummer heißt.",
+        text: "Philippe Marteau, 2613. Wenn er Ihnen eine 4317 gibt: das ist die alte Schicht-A-Akte. Er weiß, was die Nummer heißt.",
         subtext: "Sie schaut Layard kurz direkt an. Etwas hängt zwischen ihnen, das sie nicht ausspricht.",
         next: "kInsa4",
       },
