@@ -24,6 +24,26 @@ import imgNpcMerchant from "@/assets/dsa/dsa-npc-merchant.jpg";
 import imgNpcMage from "@/assets/dsa/dsa-npc-mage.jpg";
 import imgCombat from "@/assets/dsa/dsa-anreise-encounter.jpg";
 import imgAftermath from "@/assets/dsa/dsa-aftermath.jpg";
+import imgForestShelter from "@/assets/dsa/dsa-forest-shelter.jpg";
+import imgHutExterior from "@/assets/dsa/dsa-hut-exterior.jpg";
+import imgHutInterior from "@/assets/dsa/dsa-hut-interior.jpg";
+import imgVillageSquare from "@/assets/dsa/dsa-village-square.jpg";
+import imgFarmstead from "@/assets/dsa/dsa-farmstead.jpg";
+import imgRiverBank from "@/assets/dsa/dsa-river-bank.jpg";
+import imgStoneBridge from "@/assets/dsa/dsa-stone-bridge.jpg";
+import imgCrossroadsShrine from "@/assets/dsa/dsa-crossroads-shrine.jpg";
+import imgTavernRoom from "@/assets/dsa/dsa-tavern-room.jpg";
+import imgBlacksmith from "@/assets/dsa/dsa-blacksmith.jpg";
+import imgTempleInterior from "@/assets/dsa/dsa-temple-interior.jpg";
+import imgWaysideShrine from "@/assets/dsa/dsa-wayside-shrine.jpg";
+import imgCaveEntrance from "@/assets/dsa/dsa-cave-entrance.jpg";
+import imgSwampPath from "@/assets/dsa/dsa-swamp-path.jpg";
+import imgSwampRuin from "@/assets/dsa/dsa-swamp-ruin.jpg";
+import imgSnowPass from "@/assets/dsa/dsa-snow-pass.jpg";
+import imgGraveyard from "@/assets/dsa/dsa-graveyard.jpg";
+import imgShipDeck from "@/assets/dsa/dsa-ship-deck.jpg";
+import imgHarbor from "@/assets/dsa/dsa-harbor.jpg";
+import imgNpcPriest from "@/assets/dsa/dsa-npc-priest.jpg";
 
 /**
  * Pool spezifisch illustrierter Aventurien-Szenen. Der LLM-Meister wählt
@@ -35,12 +55,27 @@ export const DSA_SCENE_IMAGES: Record<string, string> = {
   forest_path: imgForestPath,
   forest_clearing: imgForestClearing,
   forest_night: imgForestNight,
+  forest_shelter: imgForestShelter,
   mountain_pass: imgMountainPass,
   mountain_cave: imgMountainCave,
+  cave_entrance: imgCaveEntrance,
+  snow_pass: imgSnowPass,
   swamp: imgSwamp,
+  swamp_path: imgSwampPath,
+  swamp_ruin: imgSwampRuin,
   coast: imgCoast,
   river_ferry: imgRiverFerry,
+  river_bank: imgRiverBank,
+  stone_bridge: imgStoneBridge,
+  crossroads_shrine: imgCrossroadsShrine,
+  wayside_shrine: imgWaysideShrine,
   camp_fire: imgCampFire,
+
+  // Land & Hütte
+  hut_exterior: imgHutExterior,
+  hut_interior: imgHutInterior,
+  farmstead: imgFarmstead,
+  village_square: imgVillageSquare,
 
   // Stadt
   city_gate: imgCityGate,
@@ -48,11 +83,17 @@ export const DSA_SCENE_IMAGES: Record<string, string> = {
   city_alley: imgCityAlley,
   city_temple: imgCityTemple,
   city_palace: imgCityPalace,
+  temple_interior: imgTempleInterior,
+  blacksmith: imgBlacksmith,
+  graveyard: imgGraveyard,
+  harbor: imgHarbor,
+  ship_deck: imgShipDeck,
 
   // Schenke
   tavern_ext: imgTavernExt,
   tavern_int: imgTavernInt,
   tavern_brawl: imgTavernBrawl,
+  tavern_room: imgTavernRoom,
 
   // Verlies
   dungeon_door: imgDungeonDoor,
@@ -64,6 +105,7 @@ export const DSA_SCENE_IMAGES: Record<string, string> = {
   npc_noble: imgNpcNoble,
   npc_merchant: imgNpcMerchant,
   npc_mage: imgNpcMage,
+  npc_priest: imgNpcPriest,
   combat_intro: imgCombat,
   aftermath: imgAftermath,
 };
