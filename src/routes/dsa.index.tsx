@@ -15,7 +15,24 @@ const CANONICAL = "https://whisperquest.app/dsa";
 const TITLE = "DSA-Soloabenteuer mit KI-Meister – kostenlos online spielen";
 const DESCRIPTION =
   "Spiele DSA-Soloabenteuer (Das Schwarze Auge) online mit KI-Spielleiter Tjark. Helden würfeln, Pen-&-Paper-Tafelrunde in Aventurien, drei Speicherplätze – kostenlos im Browser, ohne Download.";
-
+const FAQS: Array<{ q: string; a: string }> = [
+  {
+    q: "Was ist ein DSA-Soloabenteuer?",
+    a: "Ein DSA-Soloabenteuer ist eine Pen-&-Paper-Runde im Schwarzen Auge, die du allein spielst. Statt einer menschlichen Spielleitung erzählt hier der KI-Meister Tjark die Szene, würfelt für die NPCs und reagiert auf deine Entscheidungen. Eine Sitzung dauert rund eine Stunde.",
+  },
+  {
+    q: "Brauche ich DSA-Regelkenntnisse, um zu spielen?",
+    a: "Nein. Du würfelst deinen Helden in wenigen Klicks, der KI-Meister erklärt die Welt und führt dich durch Proben, Kampf und Dialoge. Wer das Schwarze Auge kennt, fühlt sich sofort heimisch; alle anderen lernen es nebenbei.",
+  },
+  {
+    q: "Kostet das DSA-Online-Abenteuer etwas?",
+    a: "Nein. Die DSA-Tafelrunde auf WhisperQuest ist kostenlos im Browser spielbar. Ohne Anmeldung bleibt dein Held lokal in diesem Browser, mit Login synchronisieren wir deine drei Speicherplätze.",
+  },
+  {
+    q: "In welcher Epoche Aventuriens spielt das Abenteuer?",
+    a: "Im Jahr 20 nach Hal — Reichsbehüter Brin verteidigt das Mittelreich gegen den Dritten Orkensturm. Eine klassische Phase der DSA-Geschichte mit Intrigen, Schwertkampf und Magie.",
+  },
+];
 
 export const Route = createFileRoute("/dsa/")({
   head: () => ({
@@ -50,6 +67,18 @@ export const Route = createFileRoute("/dsa/")({
           playMode: "SinglePlayer",
           author: { "@type": "Organization", name: "WhisperQuest" },
           offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQS.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
         }),
       },
     ],
@@ -159,7 +188,19 @@ function DsaLanding() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* FAQ */}
+      <section className="mx-auto max-w-3xl px-4 pb-12 sm:px-6">
+        <dl className="space-y-5">
+          {FAQS.map((f) => (
+            <div key={f.q}>
+              <dt className="font-serif text-base text-[#f1e6c8]">{f.q}</dt>
+              <dd className="mt-1 text-sm leading-relaxed text-[#f1e6c8]/80">
+                {f.a}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
 
       <footer className="border-t border-[#3a2c1a] py-4 text-center text-[10px] uppercase tracking-wider opacity-60">
         <Link to="/" className="hover:opacity-100">
