@@ -21,6 +21,7 @@ import trackLinoleumWaltz from "@/assets/music/the-linoleum-waltz.mp3";
 import trackCornerBooth from "@/assets/music/The_Corner_Booth.mp3";
 import trackVictorySpire from "@/assets/music/victory-over-the-spire.mp3";
 import trackCityForgets from "@/assets/music/The_City_Forgets.mp3";
+import { pickMoodTrack, type DsaMood } from "./dsaMusic";
 
 /**
  * Background music. Plays a playlist of tracks in sequence and
@@ -62,6 +63,7 @@ export type MusicOverrideId = keyof typeof MUSIC_OVERRIDES;
 const CROSSFADE_SECONDS = 6;
 const FADE_TICK_MS = 50;
 const MANUAL_FADE_SECONDS = 1.2;
+const MOOD_FADE_SECONDS = 2.5;
 
 interface MusicCtx {
   tracks: MusicTrack[];
@@ -94,6 +96,18 @@ interface MusicCtx {
   ) => void;
   /** Aktuell laufender Override (oder null). UI nutzt das z. B., um den Song-Switcher auszublenden. */
   activeOverride: MusicOverrideId | null;
+  /**
+   * Aktiviert den DSA-Mood-Pool: Tracks aus dem aktuellen Mood werden
+   * geloopt, am Ende eines Tracks wählt der Player einen passenden
+   * nächsten Track. `null` deaktiviert den Pool und übergibt wieder an
+   * Playlist/Override.
+   */
+  setMoodPool: (mood: DsaMood | null) => void;
+  /**
+   * Setzt den aktuell gewünschten Mood. Wirkt erst beim nächsten
+   * Trackwechsel — der laufende Track wird NICHT unterbrochen.
+   */
+  setMood: (mood: DsaMood) => void;
 }
 
 const MusicContext = createContext<MusicCtx | null>(null);
@@ -127,6 +141,9 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   const overrideForceRef = useRef(false);
   const [activeOverride, setActiveOverride] = useState<MusicOverrideId | null>(null);
   const savedIndexRef = useRef<number | null>(null);
+  // Mood-Pool (LLM-Tafelrunde). Aktiv, wenn moodPoolRef.current !== null.
+  const moodPoolRef = useRef<DsaMood | null>(null);
+  const currentMoodSrcRef = useRef<string | null>(null);
 
   // Keep refs in sync so timers always read fresh values.
   useEffect(() => {
@@ -223,6 +240,16 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
       const active = activeRef.current === "a" ? aRef.current : bRef.current;
       if (!active || !active.duration || isNaN(active.duration)) return;
       const remaining = active.duration - active.currentTime;
+      if (moodPoolRef.current) {
+        // Mood-Pool aktiv: am Ende des aktuellen Tracks neuen Mood-Track wählen.
+        if (remaining <= MOOD_FADE_SECONDS && !active.paused) {
+          const mood = moodPoolRef.current;
+          const nextSrc = pickMoodTrack(mood, currentMoodSrcRef.current);
+          currentMoodSrcRef.current = nextSrc;
+          crossfadeToSrc(nextSrc, MOOD_FADE_SECONDS);
+        }
+        return;
+      }
       if (overrideRef.current) {
         // Override-Track: vollständig durchlaufen lassen. Bei `playOnce`
         // löst sich der Override am Ende des Tracks automatisch und die
@@ -366,6 +393,16 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     opts?: { playOnce?: boolean; force?: boolean },
   ) {
     if (overrideRef.current === id && !opts) return;
+    // Wenn der Mood-Pool aktiv ist, Override-Wechsel nur bookkeepen — der
+    // Mood-Pool gewinnt akustisch. Beim setMoodPool(null) wird auf den
+    // aktuell gemerkten Override (oder die Playlist) zurückgewechselt.
+    if (moodPoolRef.current) {
+      overrideRef.current = id;
+      overridePlayOnceRef.current = !!opts?.playOnce;
+      overrideForceRef.current = !!opts?.force;
+      setActiveOverride(id);
+      return;
+    }
     if (id) {
       // Wechsel auf Override: Playlist-Position merken.
       if (overrideRef.current === null) {
@@ -431,6 +468,63 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     [],
   );
 
+  const setMoodPool = useCallback((mood: DsaMood | null) => {
+    if (mood === null) {
+      if (moodPoolRef.current === null) return;
+      moodPoolRef.current = null;
+      currentMoodSrcRef.current = null;
+      // Zurück zu Override (falls aktiv) oder Playlist.
+      if (!enabledRef.current) {
+        // Musik aus → sauber ausblenden.
+        const active = activeRef.current === "a" ? aRef.current : bRef.current;
+        if (active && !active.paused) {
+          const startVol = active.volume;
+          const steps = Math.max(1, Math.floor((MANUAL_FADE_SECONDS * 1000) / FADE_TICK_MS));
+          let step = 0;
+          if (fadeTimerRef.current) window.clearInterval(fadeTimerRef.current);
+          fadeTimerRef.current = window.setInterval(() => {
+            step += 1;
+            const t = Math.min(1, step / steps);
+            active.volume = clamp(startVol * (1 - t));
+            if (t >= 1) {
+              active.pause();
+              active.currentTime = 0;
+              if (fadeTimerRef.current) {
+                window.clearInterval(fadeTimerRef.current);
+                fadeTimerRef.current = null;
+              }
+            }
+          }, FADE_TICK_MS);
+        }
+        return;
+      }
+      const targetSrc = overrideRef.current
+        ? MUSIC_OVERRIDES[overrideRef.current].src
+        : pickTrack(indexRef.current);
+      crossfadeToSrc(targetSrc);
+      ensureWatcher();
+      return;
+    }
+    // Mood-Pool aktivieren.
+    const wasActive = moodPoolRef.current !== null;
+    moodPoolRef.current = mood;
+    if (!wasActive) {
+      // Playlist-Position merken, falls noch nicht gemerkt.
+      if (savedIndexRef.current === null) savedIndexRef.current = indexRef.current;
+    }
+    if (!enabledRef.current) return;
+    const nextSrc = pickMoodTrack(mood, currentMoodSrcRef.current);
+    currentMoodSrcRef.current = nextSrc;
+    crossfadeToSrc(nextSrc, MOOD_FADE_SECONDS);
+    ensureWatcher();
+  }, []);
+
+  const setMood = useCallback((mood: DsaMood) => {
+    if (moodPoolRef.current === null) return; // Pool nicht aktiv → ignorieren
+    moodPoolRef.current = mood;
+    // Bewusst KEIN sofortiger Wechsel — der laufende Track spielt aus.
+  }, []);
+
   const next = useCallback(() => {
     playIndex(indexRef.current + 1);
   }, [playIndex]);
@@ -440,8 +534,21 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   }, [playIndex]);
 
   const value = useMemo<MusicCtx>(
-    () => ({ tracks: PLAYLIST, currentIndex, next, prev, playIndex, setDuck, pause, resume, setOverride, activeOverride }),
-    [currentIndex, next, prev, playIndex, setDuck, pause, resume, setOverride, activeOverride],
+    () => ({
+      tracks: PLAYLIST,
+      currentIndex,
+      next,
+      prev,
+      playIndex,
+      setDuck,
+      pause,
+      resume,
+      setOverride,
+      activeOverride,
+      setMoodPool,
+      setMood,
+    }),
+    [currentIndex, next, prev, playIndex, setDuck, pause, resume, setOverride, activeOverride, setMoodPool, setMood],
   );
 
   return <MusicContext.Provider value={value}>{children}</MusicContext.Provider>;

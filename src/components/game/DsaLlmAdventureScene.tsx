@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollText, Loader2, Send, LogOut, Dices } from "lucide-react";
 import { useGame } from "@/game/GameContext";
+import { useMusic } from "@/audio/MusicPlayer";
 import { CloseButton } from "./CloseButton";
 import { DsaCombatInteractive, type CombatDoneResult } from "./DsaCombatInteractive";
 import {
@@ -100,6 +101,7 @@ export function DsaLlmAdventureScene() {
     dsaSheetOpen,
     api,
   } = useGame();
+  const { setMoodPool, setMood } = useMusic();
 
   const [mode, setMode] = useState<Mode>({ kind: "loading" });
   const [imageTag, setImageTag] = useState<string>("forest_path");
@@ -196,6 +198,7 @@ export function DsaLlmAdventureScene() {
     (data: ServerReply) => {
       appendMaster(data.parsed);
       if (data.imageTag) setImageTag(data.imageTag);
+      if (data.parsed.mood) setMood(data.parsed.mood);
       if (data.parsed.combat && dsaCharacterRef.current) {
         // Kampfbildschirm bauen.
         const hero = heroCombatantFromCharacter(dsaCharacterRef.current);
@@ -216,8 +219,18 @@ export function DsaLlmAdventureScene() {
         setEndState(data.status);
       }
     },
-    [appendMaster],
+    [appendMaster, setMood],
   );
+
+  // Mood-Pool aktivieren, solange die Tafelrunde offen ist. Beim Schließen
+  // übernimmt die GameShell-Bridge wieder (-> dsaTavern).
+  useEffect(() => {
+    if (!dsaAdventureOpen) return;
+    setMoodPool("intro");
+    return () => {
+      setMoodPool(null);
+    };
+  }, [dsaAdventureOpen, setMoodPool]);
 
   async function handlePickSetting(settingId: DsaSettingId) {
     if (!dsaCharacter || busy) return;

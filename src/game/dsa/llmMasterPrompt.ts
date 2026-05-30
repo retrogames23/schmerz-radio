@@ -2,6 +2,7 @@ import { DSA_LORE_BRIEF } from "./llmLore";
 import { DSA_SCENE_TAGS } from "./sceneImages";
 import { ENEMY_STATS } from "./combat";
 import { getSetting, type DsaSettingId } from "./llmAdventure";
+import { DSA_MOODS } from "@/audio/dsaMusic";
 import type { DsaCharacterSummary } from "@/game/types";
 
 interface BuildArgs {
@@ -19,6 +20,7 @@ export function buildMasterSystemPrompt({ setting, character, summary, offtopicS
   const s = getSetting(setting);
   const sceneTagList = DSA_SCENE_TAGS.join(", ");
   const enemyIdList = Object.keys(ENEMY_STATS).join(", ");
+  const moodList = DSA_MOODS.join(", ");
   const attrLine = (Object.entries(character.attrs) as [string, number][])
     .map(([k, v]) => `${k}:${v}`)
     .join(" ");
@@ -62,6 +64,11 @@ AUSGABEFORMAT — STRIKT:
     [COMBAT: id1, id2, ...]   ruft den Kampfbildschirm auf. Erlaubte Gegner-IDs: ${enemyIdList}
     [OUTTIME_WARN]            zeigt, dass du den Spieler ans Abenteuer erinnerst.
     [END: victory|defeat|aborted]  beendet das Abenteuer (Sieg / Niederlage / Abbruch).
+    [MOOD: <id>]              gibt dem Musik-Player die aktuelle Stimmung. Erlaubt: ${moodList}.
+                              Setze [MOOD] NUR, wenn sich die Stimmung deutlich ändert (z. B. nach Kampfausbruch,
+                              beim Betreten eines Tempels, beim Rastlager, bei einer plötzlichen Bedrohung).
+                              Der laufende Musik-Track wird NIE mitten abgebrochen — der neue Mood greift erst
+                              beim nächsten Trackende. Wiederhole denselben Mood nicht.
 
 REGELN:
   - Sprich Layard mit »du« an, nicht mit »Spieler«. Layards Charakter heißt ${character.name}.
