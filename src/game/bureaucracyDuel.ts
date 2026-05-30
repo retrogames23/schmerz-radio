@@ -1,22 +1,26 @@
 /**
- * Bürokratie-Duell — Mehrstufiges Lernsystem (Akt I, Kantine 3602).
+ * Bürokratie-Duell — „Amtliches Phrasen-Dreschen" (Akt I, Kantine 3602).
  *
- * Adaption des Monkey-Island-Schwertkampfs: Layard lernt aus jedem
- * Trainingsduell gegen Brust einen neuen Verwaltungs-Paragraphen. Mit
- * genug gelernten §§ kann er Brust dreimal in Folge schlagen — und wird
- * damit würdig, den amtierenden Bürokratiemeister Oberinspektor Vossbeck
- * zum Endduell um die Vollmacht 4317 herauszufordern.
+ * Adaption des Monkey-Island-Schwertkampfs auf passiv-aggressive
+ * Behörden-Phrasen statt trockener Paragraphen: Brust greift mit einem
+ * typischen Amtsschimmel-Satz an, Layard kontert mit einer
+ * schlagfertigen System-Ironie. Pro neu gelerntem Konter wächst sein
+ * „Phrasenbuch". Drei Trainingssiege in Folge → Vossbeck nimmt ihn an.
  *
  * Mechanik (analog Monkey Island):
- *  - Jede Runde stellt der Gegner eine Behauptung mit Paragraph X.
+ *  - Jede Runde wirft der Gegner eine Phrase ins Feld.
  *  - Layard wählt aus 4 Antwortoptionen.
- *  - Genau eine Antwort ist die korrekte Kontrierung (Paragraph Y, der
- *    X widerspricht). Diese Antwort kann Layard NUR wählen, wenn er
- *    Paragraph Y bereits gelernt hat — sonst ist sie ausgegraut.
- *  - Im Trainingsduell lernt Layard bei JEDER Brust-Eröffnung den von
- *    Brust zitierten Paragraphen UND dessen offiziellen Konter (sofern
- *    er die Runde übersteht — bei korrekter Antwort sofort, bei falscher
- *    Antwort durch Brusts Schadenfreude-Belehrung).
+ *  - Genau eine Antwort ist der „passende" Konter (sein `beats`-Feld
+ *    enthält die Phrasen-ID). Diese Antwort kann Layard NUR wählen,
+ *    wenn er den Konter bereits gelernt hat — sonst gibt es nur
+ *    unpassende Konter und eigene linkische Versuche im Pool.
+ *  - Bei korrekter Antwort lernt er den Konter sofort (falls neu).
+ *  - Bei falscher Antwort liefert Brust den richtigen Konter selbst
+ *    nach — Layard übernimmt ihn in sein Phrasenbuch. So kann er das
+ *    Duell auch rein durch Verlieren-und-Lernen meistern.
+ *  - Im Endgame gegen Vossbeck sind die Phrasen NEU, aber die
+ *    korrekten Konter stammen aus Brusts Trainingspool — ein gelernter
+ *    Konter passt sinngemäß auch auf eine neue Phrase.
  *
  * Alle Strings sind ganze Sätze in einem Daten-Modul — i18n-konform,
  * keine String-Konkatenation, keine JSX-Schnipsel.
@@ -24,36 +28,38 @@
 
 export type DuelMode = "training" | "endgame";
 
-/**
- * Ein Verwaltungs-Paragraph aus dem fiktiven Kantinen-/Verwaltungsregelwerk.
- * Kann von einem anderen Paragraphen widerlegt werden (`beatenBy`).
- */
-export interface Paragraph {
-  /** Eindeutige ID, z.B. "p7-1". */
+/** Eine Behörden-Phrase, mit der ein Gegner angreift. */
+export interface Phrase {
+  /** Eindeutige ID, z.B. "p-immer-so". */
   id: string;
-  /** Kurze Bezeichnung für die Notizbuch-Liste, z.B. "Aushang 7.1 (1991)". */
+  /** Kurze Bezeichnung („Tradition", „Stapel-Bluff" …). */
   shortLabel: string;
-  /** Volltext, der im Notizbuch erscheint. */
-  fullText: string;
-  /** IDs derjenigen Paragraphen, die diesen hier außer Kraft setzen. */
-  beatenBy: string[];
-  /**
-   * Optionaler einzeiliger Lernhinweis, der erscheint, wenn der Spieler
-   * den Paragraphen frisch ins Notizbuch bekommt.
-   */
-  learnHint?: string;
+  /** Wörtliche Phrase, wie sie der Gegner sagt. */
+  text: string;
 }
 
 /**
- * Ein Konter ist eine Antwortoption innerhalb einer Duellrunde. Sie
- * referenziert den Paragraphen, den Layard zitiert. Korrekt ist die
- * Antwort genau dann, wenn `paragraphId` den `attackParagraphId` der
- * Runde widerlegt.
+ * Ein Konter — Layards schlagfertige Antwort. Beat-Liste sagt, welche
+ * Phrasen-IDs er entwertet. Wird im Phrasenbuch gesammelt.
  */
+export interface Counter {
+  /** Eindeutige ID, z.B. "c-immer-so". */
+  id: string;
+  /** Kurze Bezeichnung für das Phrasenbuch. */
+  shortLabel: string;
+  /** Wortlaut des Konters. */
+  text: string;
+  /** Phrasen-IDs, die dieser Konter humorvoll erledigt. */
+  beats: string[];
+  /** Optionaler Lernhinweis fürs Phrasenbuch. */
+  learnHint?: string;
+}
+
+/** Antwort-Option, die das Overlay anzeigt. */
 export interface DuelCounter {
   text: string;
-  /** Welchen Paragraphen zitiert Layard mit dieser Antwort? */
-  paragraphId: string;
+  /** ID des Konters (in COUNTERS oder FICTIONAL_COUNTERS). */
+  counterId: string;
   /** Wird aus der Runden-Definition berechnet. */
   correct: boolean;
 }
@@ -62,356 +68,366 @@ export interface DuelRound {
   id: string;
   /** Wer eröffnet die Runde — Brust (Training) oder Vossbeck (Endgame). */
   opponent: "brust" | "vossbeck";
-  /** Paragraph, mit dem der Gegner angreift. */
-  attackParagraphId: string;
-  /** Wörtliche Eröffnung des Gegners (zitiert den Paragraphen). */
+  /** Phrase, mit der der Gegner angreift. */
+  attackPhraseId: string;
+  /** Wörtliche Eröffnung des Gegners. */
   opening: string;
-  /** Vier Antwortoptionen, eine davon korrekt. */
-  counters: Array<{ text: string; paragraphId: string }>;
+  /**
+   * Vorgesehene Antwortoptionen für diese Runde — IDs aus COUNTERS.
+   * Genau einer davon hat `beats.includes(attackPhraseId)`. Die übrigen
+   * sind echte, aber unpassende Konter — sie klingen plausibel, treffen
+   * aber nicht.
+   */
+  counterOptions: string[];
   /** Reaktion des Gegners auf einen Treffer. */
   onHit: string;
-  /** Reaktion des Gegners auf einen Fehlschuss (lehrt zugleich den Konter). */
+  /** Reaktion des Gegners auf einen Fehlschuss (liefert den Konter nach). */
   onMiss: string;
   /** Optionaler Kowalk-Aside (nur Trainingsduelle). */
   kowalkAside?: string;
 }
 
 // ──────────────────────────────────────────────────────────────────
-// PARAGRAPHEN-KORPUS
+// PHRASEN-KORPUS (Angriffe)
 // ──────────────────────────────────────────────────────────────────
 
-export const PARAGRAPHS: Record<string, Paragraph> = {
-  // Aushänge — Hierarchie nach Datum, mit Übersagungs-Klausel
-  "p4-2": {
-    id: "p4-2",
-    shortLabel: "Aushang 4.2 (1996)",
-    fullText:
-      "Aushang 4.2 vom 14. März 1996: »Ausgaben der Schicht B erfolgen ausschließlich gegen Schicht-B-Gegenzeichnung. Schicht-A-Vollmachten gelten in Schicht B nicht.«",
-    beatenBy: ["p7-1", "p1a"],
-    learnHint: "Brusts Lieblingsaushang. Junges Datum, scharfer Ton.",
+export const PHRASES: Record<string, Phrase> = {
+  // Trainingsphrasen — die Brust standardmäßig wirft.
+  "p-immer-so": {
+    id: "p-immer-so",
+    shortLabel: "Tradition",
+    text: "Das haben wir hier schon immer so gemacht.",
   },
-  "p7-1": {
-    id: "p7-1",
-    shortLabel: "Aushang 7.1 (1991)",
-    fullText:
-      "Aushang 7.1 vom 02. August 1991: »Gegenzeichnungen aus benachbarten Schichten gelten als gleichwertig, sofern Identität und Anliegen unstrittig sind.« — Niemals ausdrücklich widerrufen.",
-    beatenBy: ["p1a-w"],
-    learnHint: "Älter, aber nie widerrufen. Kowalks stilles Schwert.",
+  "p-stapel": {
+    id: "p-stapel",
+    shortLabel: "Stapel-Bluff",
+    text: "Ihr Vorgang liegt ganz unten auf meinem Stapel.",
   },
-  "p1a": {
-    id: "p1a",
-    shortLabel: "Hausordnung §1a (Übersagung)",
-    fullText:
-      "Hausordnung §1a: »Bei mehrfacher Überlagerung gilt der jüngere Aushang, sofern der ältere im Wortlaut widerrufen wurde.«",
-    beatenBy: ["p1a-w"],
-    learnHint:
-      "Die Übersagungs-Klausel — und die Hintertür dazu: »sofern widerrufen«.",
+  "p-nicht-zustaendig": {
+    id: "p-nicht-zustaendig",
+    shortLabel: "Nicht-Zuständigkeit",
+    text: "Dafür bin ich nicht zuständig.",
   },
-  "p1a-w": {
-    id: "p1a-w",
-    shortLabel: "Hausordnung §1a — Wortlaut-Klausel",
-    fullText:
-      "Hausordnung §1a, zweiter Halbsatz: »…sofern der ältere im Wortlaut widerrufen wurde.« — Übersagung allein genügt nicht; das Wort »widerrufen« muss im neuen Aushang stehen.",
-    beatenBy: [],
-    learnHint:
-      "Die Hintertür: ohne ausdrücklichen Widerruf bleibt der ältere Aushang in Kraft.",
+  "p-termin": {
+    id: "p-termin",
+    shortLabel: "Terminzwang",
+    text: "Dafür bräuchten Sie einen Termin.",
+  },
+  "p-formsache": {
+    id: "p-formsache",
+    shortLabel: "Reine Formsache",
+    text: "Das ist eine reine Formsache. Es geht um den Vorgang als solchen.",
+  },
+  "p-vorgesetzte": {
+    id: "p-vorgesetzte",
+    shortLabel: "Vorgesetzten-Drohung",
+    text: "Das müsste ich erst meinem Vorgesetzten vorlegen.",
   },
 
-  // Schicht-Klauseln
-  "p3-4": {
-    id: "p3-4",
-    shortLabel: "Schichtordnung §3 Abs. 4",
-    fullText:
-      "Schichtordnung §3 Abs. 4: »Schichtwechsel erfolgt nahtlos; in der Übergabezeit dürfen Vorgänge der vorhergehenden Schicht von der nachfolgenden Schicht abgeschlossen werden.«",
-    beatenBy: ["p3-4b"],
-    learnHint: "Schichtordnung. Übergabe = Fortführung.",
+  // Endgame-Phrasen (Vossbeck) — kühler, distanzierter, derselbe Bautyp.
+  "pE-tradition": {
+    id: "pE-tradition",
+    shortLabel: "Vossbeck: Verfahren",
+    text: "Bewohner Worag. Wir halten uns hier an Verfahren, die sich seit Jahrzehnten bewährt haben.",
   },
-  "p3-4b": {
-    id: "p3-4b",
-    shortLabel: "Schichtordnung §3 Abs. 4 lit. b",
-    fullText:
-      "Schichtordnung §3 Abs. 4 lit. b: »Schichtfremde Vorgänge sind fortzuführen, sofern keine ausdrückliche schriftliche Einrede erhoben wird. Eine bloße mündliche Verweigerung gilt nicht als Einrede.«",
-    beatenBy: [],
-    learnHint:
-      "Mündliche Verweigerung zählt nicht. Nur schriftliche Einrede stoppt den Vorgang.",
+  "pE-stapel-hoheit": {
+    id: "pE-stapel-hoheit",
+    shortLabel: "Vossbeck: Vertagung",
+    text: "Über Vollmacht 4317 wird heute nicht entschieden. Setzen Sie sich auf meinen Stapel.",
   },
-
-  // Vollmachten
-  "p12": {
-    id: "p12",
-    shortLabel: "Vollmachtsordnung §12",
-    fullText:
-      "Vollmachtsordnung §12: »Eine Vollmacht erlischt mit Schichtende des ausstellenden Bediensteten.«",
-    beatenBy: ["p12-2"],
-    learnHint: "Brusts Trick: Vollmacht 4317 sei mit Schicht A erloschen.",
-  },
-  "p12-2": {
-    id: "p12-2",
-    shortLabel: "Vollmachtsordnung §12 Abs. 2",
-    fullText:
-      "Vollmachtsordnung §12 Abs. 2: »Vollmachten zugunsten von Bewohnern bleiben bis zur tatsächlichen Einlösung wirksam, unabhängig von Schichten oder Personalwechseln. Maßgeblich ist das Ausstellungsdatum, nicht der Einlösezeitpunkt.«",
-    beatenBy: [],
-    learnHint:
-      "Bewohner-Vollmachten überleben den Schichtwechsel. Datum zählt, nicht Uhrzeit.",
-  },
-
-  // Identität / Gegenzeichnung
-  "p2-1": {
-    id: "p2-1",
-    shortLabel: "Identitätsordnung §2",
-    fullText:
-      "Identitätsordnung §2: »Gegenzeichnung nur durch Bedienstete derselben Schicht und desselben Sektors zulässig.«",
-    beatenBy: ["p2-3"],
-    learnHint: "Strenge Auslegung: Schicht UND Sektor müssen passen.",
-  },
-  "p2-3": {
-    id: "p2-3",
-    shortLabel: "Identitätsordnung §2 Abs. 3",
-    fullText:
-      "Identitätsordnung §2 Abs. 3: »Bei Personalmangel oder unbesetzter Schicht kann die Gegenzeichnung durch eine sektor­benachbarte Stelle erfolgen. Die Annahme darf nicht verweigert werden, sofern die Identität des Bewohners feststeht.«",
-    beatenBy: [],
-    learnHint:
-      "Personalmangel-Klausel: Nachbarstellen dürfen — und müssen — gegenzeichnen.",
-  },
-
-  // Endgame-spezifisch: Vossbecks Lieblingstrick
-  "p99": {
-    id: "p99",
-    shortLabel: "Generalvorbehalt §99",
-    fullText:
-      "Verwaltungsrahmenordnung §99: »Die Verwaltung behält sich in Zweifelsfällen die endgültige Entscheidung vor.«",
-    beatenBy: ["p99-z"],
-    learnHint:
-      "Vossbecks Trumpf — angeblich. Klingt allmächtig, hat aber eine Bedingung.",
-  },
-  "p99-z": {
-    id: "p99-z",
-    shortLabel: "§99 — Zweifelsfall-Bedingung",
-    fullText:
-      "Verwaltungsrahmenordnung §99, Erläuterung: »Ein Zweifelsfall liegt nur vor, wenn die einschlägigen Spezialnormen lückenhaft oder widersprüchlich sind. Bei klarer Spezialregelung ist §99 nicht anwendbar.«",
-    beatenBy: [],
-    learnHint:
-      "§99 greift nur in echten Lücken. Existiert eine Spezialnorm, ist er gesperrt.",
+  "pE-vorgesetzten-bluff": {
+    id: "pE-vorgesetzten-bluff",
+    shortLabel: "Vossbeck: Vorgesetzter",
+    text: "Einen Vorgang dieser Tragweite werde ich der Bewohnervertretungs-Aufsicht vorlegen müssen.",
   },
 };
+
+// ──────────────────────────────────────────────────────────────────
+// KONTER-KORPUS (Layards Antworten — landen im Phrasenbuch)
+// ──────────────────────────────────────────────────────────────────
+
+export const COUNTERS: Record<string, Counter> = {
+  "c-immer-so": {
+    id: "c-immer-so",
+    shortLabel: "„Sieht man dem Sektor an"",
+    text: "Das sieht man dem Sektor auch an.",
+    beats: ["p-immer-so", "pE-tradition"],
+    learnHint:
+      "Gegen jede Form von Tradition-als-Argument. Funktioniert, weil es niemand widerlegen kann.",
+  },
+  "c-stapel": {
+    id: "c-stapel",
+    shortLabel: "„Last des ganzen Hauses"",
+    text: "Perfekt — dann trägt er wenigstens die Last des ganzen Hauses.",
+    beats: ["p-stapel", "pE-stapel-hoheit"],
+    learnHint:
+      "Macht aus dem Stapel-Bluff einen Verdienst. Die Phrase wird zum Lob — der Gegner muss nicken.",
+  },
+  "c-nicht-zustaendig": {
+    id: "c-nicht-zustaendig",
+    shortLabel: "„Türschild sagt anderes"",
+    text: "Erstaunlich. Auf Ihrem Türschild steht das Gegenteil.",
+    beats: ["p-nicht-zustaendig"],
+    learnHint:
+      "Der Klassiker gegen Nicht-Zuständigkeit. Das Türschild gewinnt fast immer.",
+  },
+  "c-termin": {
+    id: "c-termin",
+    shortLabel: "„Den hätte ich gern"",
+    text: "Den hätte ich gern — bei jemandem, der zuständig ist.",
+    beats: ["p-termin"],
+    learnHint:
+      "Verwandelt den Terminzwang in eine Bringschuld der Gegenseite.",
+  },
+  "c-formsache": {
+    id: "c-formsache",
+    shortLabel: "„Dann füllen Sie sie aus"",
+    text: "Wunderbar. Dann füllen Sie sie doch eben aus.",
+    beats: ["p-formsache"],
+    learnHint:
+      "Wer „Formsache" sagt, kann sie auch selbst erledigen. Punkt.",
+  },
+  "c-vorgesetzte": {
+    id: "c-vorgesetzte",
+    shortLabel: "„Holen Sie ihn. Ich warte"",
+    text: "Wunderbar. Holen Sie ihn. Ich warte.",
+    beats: ["p-vorgesetzte", "pE-vorgesetzten-bluff"],
+    learnHint:
+      "Gegen jeden Vorgesetzten-Bluff. Niemand will den Vorgesetzten wirklich holen.",
+  },
+  // Reine Ablenker — klingen plausibel, treffen aber keine Phrase aus
+  // diesem Korpus. Werden als „echte aber unpassende" Optionen genutzt.
+  "c-vorschriften": {
+    id: "c-vorschriften",
+    shortLabel: "„Trotzdem gern essen"",
+    text: "Verstehe ich. Trotzdem würde ich gern essen.",
+    beats: [],
+    learnHint:
+      "Charmant entwaffnend — aber nur, wenn die andere Seite mit Vorschriften kommt.",
+  },
+  "c-naechste-woche": {
+    id: "c-naechste-woche",
+    shortLabel: "„Stempel auf Vordermann"",
+    text: "Gut. Bringen Sie bis dahin Ihren Stempel auf Vordermann.",
+    beats: [],
+    learnHint:
+      "Gegen Vertröstungen auf „nächste Woche". Verschiebt die Bringschuld zurück.",
+  },
+};
+
+// ──────────────────────────────────────────────────────────────────
+// LEGACY-ALIASE
+// Der Rest des Codes greift historisch auf `PARAGRAPHS` / `Paragraph`
+// zu. Damit nichts bricht, exportieren wir die Konter-Tabelle unter den
+// alten Namen weiter — semantisch sind das jetzt Konter, keine §§ mehr.
+// ──────────────────────────────────────────────────────────────────
+export const PARAGRAPHS = COUNTERS;
+export type Paragraph = Counter;
 
 /**
- * Fiktive „Kantinen-Paragraphen" — Layards Pendant zu Guybrushs schlechten
- * Beleidigungen. Klingen plausibel, schlagen aber niemals etwas. Liegen ab
- * Spielstart implizit im Antwort-Pool, ohne im Notizbuch zu erscheinen.
+ * Layards eigene linkische Antwortversuche — Pendant zu Guybrushs
+ * schlechten Beleidigungen. Klingen plausibel, schlagen aber niemals
+ * eine Phrase. Liegen ab Spielstart implizit im Antwort-Pool, ohne im
+ * Phrasenbuch zu erscheinen.
  */
-export const FICTIONAL_PARAGRAPHS: Record<string, Paragraph> = {
-  "f-pause-4": {
-    id: "f-pause-4",
-    shortLabel: "Pausenordnung §4",
-    fullText: "Pausenordnung §4: »Brötchen sind vor der Suppe auszugeben.«",
-    beatenBy: [],
+export const FICTIONAL_COUNTERS: Record<string, Counter> = {
+  "f-paragraphenreiterei": {
+    id: "f-paragraphenreiterei",
+    shortLabel: "Verdrucktes Jurist-Spiel",
+    text: "Gemäß Aushang vier Punkt zwei wäre das aber sehr wohl mein gutes Recht.",
+    beats: [],
   },
-  "f-aushang-12-3": {
-    id: "f-aushang-12-3",
-    shortLabel: "Aushang 12.3 (1988)",
-    fullText:
-      "Aushang 12.3 vom 09. Mai 1988: »Tabletts sind in Fahrtrichtung der Ausgabezone zu führen.«",
-    beatenBy: [],
+  "f-bitte": {
+    id: "f-bitte",
+    shortLabel: "Höflichkeit",
+    text: "Bitte. Es wäre wirklich wichtig.",
+    beats: [],
   },
-  "f-id-7": {
-    id: "f-id-7",
-    shortLabel: "Identitätsordnung §7",
-    fullText:
-      "Identitätsordnung §7: »Bei Nachschlag ist der Lichtbildausweis erneut vorzuzeigen.«",
-    beatenBy: [],
+  "f-resonanz": {
+    id: "f-resonanz",
+    shortLabel: "Resonanz-Geraune",
+    text: "Ich höre da etwas — die Resonanz hat heute eine andere Frequenz.",
+    beats: [],
   },
-  "f-haus-9c": {
-    id: "f-haus-9c",
-    shortLabel: "Hausordnung §9c",
-    fullText: "Hausordnung §9c: »Pfeifen im Speisesaal ist zu unterlassen.«",
-    beatenBy: [],
+  "f-warm": {
+    id: "f-warm",
+    shortLabel: "Schlechter Smalltalk",
+    text: "Heute ist es ja besonders warm hier hinten, oder?",
+    beats: [],
   },
-  "f-aushang-2-2": {
-    id: "f-aushang-2-2",
-    shortLabel: "Aushang 2.2 (1993)",
-    fullText:
-      "Aushang 2.2 vom 17. November 1993: »Suppenlöffel sind nach Gebrauch mit der konvexen Seite nach oben abzulegen.«",
-    beatenBy: [],
+  "f-uhr": {
+    id: "f-uhr",
+    shortLabel: "Uhr-Bemerkung",
+    text: "Schauen Sie auf die Uhr — wir sollten das jetzt durchziehen.",
+    beats: [],
   },
-  "f-vor-5": {
-    id: "f-vor-5",
-    shortLabel: "Vorratsordnung §5",
-    fullText:
-      "Vorratsordnung §5: »Nachschub aus dem Lager B-Süd erfolgt ausschließlich freitags nach 14 Uhr.«",
-    beatenBy: [],
+  "f-vossbeck": {
+    id: "f-vossbeck",
+    shortLabel: "Vossbeck-Drohung",
+    text: "Wenn das so weitergeht, sage ich Vossbeck Bescheid.",
+    beats: [],
   },
-  "f-tres-3": {
-    id: "f-tres-3",
-    shortLabel: "Tresenordnung §3",
-    fullText:
-      "Tresenordnung §3: »Bewohner haben einen Mindestabstand von vierzig Zentimetern zur Ausgabekante zu wahren.«",
-    beatenBy: [],
+  "f-handschuhe": {
+    id: "f-handschuhe",
+    shortLabel: "Handschuh-Hinweis",
+    text: "Vergessen Sie nicht die Handschuhe bei der Ausgabe.",
+    beats: [],
   },
-  "f-stempel-1b": {
-    id: "f-stempel-1b",
-    shortLabel: "Stempelordnung §1 lit. b",
-    fullText:
-      "Stempelordnung §1 lit. b: »Stempel sind mittig auf der Unterschriftenzeile zu setzen, niemals darüber.«",
-    beatenBy: [],
+  "f-vorlauf": {
+    id: "f-vorlauf",
+    shortLabel: "Vorlauf-Behauptung",
+    text: "Ich hatte das mit drei Wochen Vorlauf angekündigt.",
+    beats: [],
   },
 };
 
-/** Lookup, der echte UND fiktive Paragraphen findet. */
-export function getParagraph(id: string): Paragraph | undefined {
-  return PARAGRAPHS[id] ?? FICTIONAL_PARAGRAPHS[id];
+// Legacy alias — alter Code/Notebook greift über diesen Namen zu.
+export const FICTIONAL_PARAGRAPHS = FICTIONAL_COUNTERS;
+
+/** Phrase nach ID (für Opening-Anzeige etc.). */
+export function getPhrase(id: string): Phrase | undefined {
+  return PHRASES[id];
+}
+
+/** Konter-Lookup — findet echte UND linkische. */
+export function getCounter(id: string): Counter | undefined {
+  return COUNTERS[id] ?? FICTIONAL_COUNTERS[id];
+}
+
+/** Legacy-Alias — alter Code ruft das so. */
+export function getParagraph(id: string): Counter | undefined {
+  return getCounter(id);
 }
 
 // ──────────────────────────────────────────────────────────────────
 // RUNDEN-POOLS
 // ──────────────────────────────────────────────────────────────────
 
-/** Trainingsrunden gegen Brust — fiktive Kantinen-Streitfälle. */
+/** Trainingsrunden gegen Brust — alltägliche Phrasen-Scharmützel. */
 export const TRAINING_ROUNDS: DuelRound[] = [
   {
-    id: "training-aushang",
+    id: "training-tradition",
     opponent: "brust",
-    attackParagraphId: "p4-2",
+    attackPhraseId: "p-immer-so",
     opening:
-      "Bewohner Worag. Fiktiver Fall: Bewohner X holt B3 in Schicht B mit Vollmacht aus Schicht A. Aushang vier Punkt zwei vom 14. März 1996 ist eindeutig. Schicht A gilt nicht in Schicht B.",
-    counters: [
-      { text: "Aushang 7.1 (1991): Gegenzeichnungen aus Nachbarschichten sind gleichwertig — und nie widerrufen. Schicht A bindet also auch in Schicht B.", paragraphId: "p7-1" },
-      { text: "Hausordnung §1a: Bei Überlagerung gilt der jüngere Aushang — folglich Brusts 4.2.", paragraphId: "p1a" },
-      { text: "Vollmachtsordnung §12: Vollmachten erlöschen mit Schichtende — die Schicht-A-Vollmacht ist also tot.", paragraphId: "p12" },
-      { text: "Generalvorbehalt §99: Verwaltung entscheidet in Zweifelsfällen — also gegen den Bewohner.", paragraphId: "p99" },
-    ],
+      "Bewohner Worag. Bevor Sie fragen: Das haben wir hier schon immer so gemacht.",
+    counterOptions: ["c-immer-so", "c-vorschriften", "c-formsache", "c-naechste-woche"],
     onHit:
-      "Aushang sieben Punkt eins ist tatsächlich nie ausdrücklich widerrufen worden. Das ist … korrekt.",
+      "(Pause.) Hm. Das … sieht er ihm tatsächlich an. Setzen wir das ad acta.",
     onMiss:
-      "Bewohner Worag, Sie verkennen die Lage. Aushang sieben Punkt eins von 1991 wäre die korrekte Gegennorm. Notieren Sie sich das.",
-    kowalkAside: "Aushang sieben Punkt eins. Schreib es dir auf, Worag.",
+      "Bewohner Worag. Die richtige Antwort wäre gewesen: »Das sieht man dem Sektor auch an.« Schreiben Sie sich das auf.",
+    kowalkAside:
+      "Das hätte ich auch nicht besser sagen können, Worag. Schreib's dir hinter die Ohren.",
   },
   {
-    id: "training-uebersagt",
+    id: "training-stapel",
     opponent: "brust",
-    attackParagraphId: "p1a",
+    attackPhraseId: "p-stapel",
     opening:
-      "Nächster fiktiver Fall. Hausordnung §1a: Bei Überlagerung gilt der jüngere Aushang. Punkt. Damit wäre vier Punkt zwei der einzig gültige.",
-    counters: [
-      { text: "Aushang 7.1 (1991): gleichwertige Gegenzeichnung aus Nachbarschicht — älter, aber nie widerrufen.", paragraphId: "p7-1" },
-      { text: "§1a, zweiter Halbsatz: Übersagung gilt nur, wenn der ältere im Wortlaut widerrufen wurde — das Wort fehlt in 4.2.", paragraphId: "p1a-w" },
-      { text: "Schichtordnung §3 Abs. 4: Übergabezeit, Vorgänge dürfen schichtübergreifend abgeschlossen werden.", paragraphId: "p3-4" },
-      { text: "Identitätsordnung §2: Gegenzeichnung nur in derselben Schicht und im selben Sektor zulässig.", paragraphId: "p2-1" },
-    ],
+      "Ihr Vorgang liegt ganz unten auf meinem Stapel. So ist das nun mal.",
+    counterOptions: ["c-stapel", "c-termin", "c-naechste-woche", "c-vorschriften"],
     onHit:
-      "»…sofern der ältere im Wortlaut widerrufen wurde.« Korrekt zitiert. Das Wort »widerrufen« kommt im neuen Aushang nicht vor.",
+      "(Brust schaut auf den Stapel. Dann auf Layard. Dann wieder auf den Stapel.) Das … kann man so sehen.",
     onMiss:
-      "Falsch. Die korrekte Erwiderung wäre der zweite Halbsatz von §1a gewesen — die Wortlaut-Klausel. Übersagung ohne Widerruf trägt nicht.",
-    kowalkAside: "Übersagt ist nicht widerrufen. Das hat sie schön gesagt.",
+      "Falsch, Worag. Hätten Sie gesagt »Dann trägt er wenigstens die Last des ganzen Hauses« — hätte ich nicken müssen. Notieren Sie das.",
+    kowalkAside: "Last des ganzen Hauses. Den nehm ich mir auch mit.",
   },
   {
-    id: "training-schicht",
+    id: "training-nichtzustaendig",
     opponent: "brust",
-    attackParagraphId: "p3-4",
+    attackPhraseId: "p-nicht-zustaendig",
     opening:
-      "Fiktiver Fall: Bewohnerin Y reicht in Schicht B einen Vorgang ein, den Schicht A angefangen hat. Schichtordnung §3 Abs. 4 — nahtlose Übergabe — gilt nur für die Bediensteten, nicht für Bewohnervorgänge.",
-    counters: [
-      { text: "Schichtordnung §3 Abs. 4 lit. b: Schichtfremde Vorgänge sind fortzuführen — eine bloße mündliche Verweigerung ist keine Einrede.", paragraphId: "p3-4b" },
-      { text: "Aushang 7.1 (1991): gleichwertige Gegenzeichnung aus Nachbarschichten, nie widerrufen.", paragraphId: "p7-1" },
-      { text: "Vollmachtsordnung §12 Abs. 2: Bewohner-Vollmachten überleben den Schichtwechsel.", paragraphId: "p12-2" },
-      { text: "Identitätsordnung §2: Gegenzeichnung nur in derselben Schicht und im selben Sektor.", paragraphId: "p2-1" },
-    ],
+      "Dafür bin ich nicht zuständig. Ich gebe nur die Rationen aus.",
+    counterOptions: ["c-nicht-zustaendig", "c-termin", "c-formsache", "c-vorgesetzte"],
     onHit:
-      "§3 Abs. 4 lit. b. Sie haben Recht — eine bloße mündliche Verweigerung genügt nicht. Es bräuchte eine schriftliche Einrede.",
+      "(Brust dreht sich unwillkürlich zu seinem Türschild um.) Hm. Das … ist tatsächlich ungünstig formuliert.",
     onMiss:
-      "Sie hätten §3 Abs. 4 lit. b zitieren müssen. Mündliche Verweigerung ist keine Einrede. Das steht ausdrücklich im Buchstaben b.",
-    kowalkAside: "Brust verweigert immer mündlich. Immer.",
+      "Sie hätten gesagt: »Erstaunlich, auf Ihrem Türschild steht das Gegenteil.« — und ich hätte aufstehen müssen. Lernen Sie das.",
+    kowalkAside: "Sein Türschild liest er nie. Du jetzt umso mehr.",
   },
   {
-    id: "training-vollmacht",
+    id: "training-termin",
     opponent: "brust",
-    attackParagraphId: "p12",
+    attackPhraseId: "p-termin",
     opening:
-      "Fiktiver Fall: Vollmacht ausgestellt um 11:55, eingelöst um 12:05. Schichtwechsel zwölf Uhr. Vollmachtsordnung §12: erloschen.",
-    counters: [
-      { text: "Vollmachtsordnung §12 Abs. 2: Bewohner-Vollmachten gelten bis zur Einlösung — maßgeblich ist das Ausstellungsdatum, nicht die Uhrzeit.", paragraphId: "p12-2" },
-      { text: "Aushang 7.1 (1991): gleichwertige Gegenzeichnung aus Nachbarschicht.", paragraphId: "p7-1" },
-      { text: "Schichtordnung §3 Abs. 4: Übergabezeit, Vorgänge dürfen schichtübergreifend abgeschlossen werden.", paragraphId: "p3-4" },
-      { text: "Generalvorbehalt §99: Verwaltung entscheidet in Zweifelsfällen — auch über die Uhrzeit.", paragraphId: "p99" },
-    ],
+      "Für so etwas bräuchten Sie eigentlich einen Termin.",
+    counterOptions: ["c-termin", "c-nicht-zustaendig", "c-formsache", "c-vorschriften"],
     onHit:
-      "§12 Abs. 2. — »Maßgeblich ist das Ausstellungsdatum, nicht der Einlösezeitpunkt.« Das ist … unbestreitbar.",
+      "(Brust zieht das Terminbuch hervor, schaut hinein, klappt es zu.) Auch wieder wahr.",
     onMiss:
-      "Falsch. §12 Abs. 2 hätte gegolten — Bewohner-Vollmachten erlöschen nicht mit Schichtende. Das ist eine Spezialregel.",
-    kowalkAside: "Absatz Zwei. Den vergisst er gern.",
+      "Sie hätten antworten müssen: »Den hätte ich gern — bei jemandem, der zuständig ist.« — Notieren Sie das, Worag.",
+    kowalkAside: "Ich hätte ihm das Terminbuch geholt. Nimm's mit.",
   },
   {
-    id: "training-identitaet",
+    id: "training-formsache",
     opponent: "brust",
-    attackParagraphId: "p2-1",
+    attackPhraseId: "p-formsache",
     opening:
-      "Fiktiver Fall: Gegenzeichnung aus Sektor E68 für einen E67-Bewohner. Identitätsordnung §2: nur dieselbe Schicht UND derselbe Sektor.",
-    counters: [
-      { text: "Identitätsordnung §2 Abs. 3: Bei Personalmangel darf — und muss — eine sektorbenachbarte Stelle gegenzeichnen.", paragraphId: "p2-3" },
-      { text: "Aushang 7.1 (1991): gleichwertige Gegenzeichnung aus Nachbarschichten, nie widerrufen.", paragraphId: "p7-1" },
-      { text: "Vollmachtsordnung §12 Abs. 2: Bewohner-Vollmachten überleben Schichtwechsel.", paragraphId: "p12-2" },
-      { text: "Schichtordnung §3 Abs. 4 lit. b: Mündliche Verweigerung zählt nicht als Einrede.", paragraphId: "p3-4b" },
-    ],
+      "Letzten Endes ist das alles eine reine Formsache.",
+    counterOptions: ["c-formsache", "c-stapel", "c-vorgesetzte", "c-vorschriften"],
     onHit:
-      "§2 Abs. 3. Bei Personalmangel ist die Annahme nicht verweigerbar. Sie zitieren es richtig.",
+      "(Brust greift unwillkürlich nach dem Formularblock. Hält inne.) Das war jetzt … ungeschickt von mir.",
     onMiss:
-      "Falsch. §2 Abs. 3 — die Personalmangel-Klausel — wäre Ihre Erwiderung gewesen. Der Sektor E67 ist heute halb besetzt.",
-    kowalkAside: "Personalmangel haben wir hier seit Jahren.",
+      "Sie hätten geantwortet: »Wunderbar. Dann füllen Sie sie doch eben aus.« — Das hätte gesessen. Schreiben Sie's auf.",
+    kowalkAside: "Wer „Formsache" sagt, hat sie schon verloren.",
+  },
+  {
+    id: "training-vorgesetzte",
+    opponent: "brust",
+    attackPhraseId: "p-vorgesetzte",
+    opening:
+      "Das müsste ich eigentlich erst meinem Vorgesetzten vorlegen.",
+    counterOptions: ["c-vorgesetzte", "c-termin", "c-nicht-zustaendig", "c-naechste-woche"],
+    onHit:
+      "(Brust schaut sich um. Niemand da, den er holen könnte.) Hm. Gut. Nächste Runde.",
+    onMiss:
+      "Bewohner Worag — Sie hätten gesagt: »Wunderbar. Holen Sie ihn. Ich warte.« Das ist die korrekte Replik. Merken Sie sich das.",
+    kowalkAside: "Den Vorgesetzten hat Brust seit Monaten nicht gesehen.",
   },
 ];
 
-/** Endgame-Runden gegen Vossbeck — der echte Fall: Vollmacht 4317. */
+/**
+ * Endgame-Runden gegen Vossbeck — derselbe Bautyp wie Brusts Phrasen,
+ * aber neu formuliert. Die korrekten Konter stammen aus dem Brust-Pool:
+ * Wer im Training gelernt hat, schlagfertig zu sein, kann diese Konter
+ * sinngemäß auch auf Vossbecks vornehmere Variante anwenden.
+ */
 export const ENDGAME_ROUNDS: DuelRound[] = [
   {
-    id: "endgame-1",
+    id: "endgame-tradition",
     opponent: "vossbeck",
-    attackParagraphId: "p4-2",
+    attackPhraseId: "pE-tradition",
     opening:
-      "Worag. Vollmacht 4317. Marteau. Schicht A. Heute Schicht B. Aushang vier Punkt zwei untersagt. Ich bestätige Brusts Entscheidung.",
-    counters: [
-      { text: "Aushang 7.1 (1991): Gegenzeichnungen aus Nachbarschichten sind gleichwertig — und nie widerrufen. Marteaus Schicht-A-Zeichnung trägt also.", paragraphId: "p7-1" },
-      { text: "Hausordnung §1a: Bei Überlagerung gilt der jüngere Aushang — also 4.2.", paragraphId: "p1a" },
-      { text: "Vollmachtsordnung §12: Vollmachten erlöschen mit Schichtende — Marteaus Vollmacht ist tot.", paragraphId: "p12" },
-      { text: "Identitätsordnung §2: Gegenzeichnung nur in derselben Schicht und im selben Sektor.", paragraphId: "p2-1" },
-    ],
+      "Bewohner Worag. Bevor wir anfangen: Wir halten uns hier an Verfahren, die sich seit Jahrzehnten bewährt haben.",
+    counterOptions: ["c-immer-so", "c-vorschriften", "c-formsache", "c-termin"],
     onHit:
-      "Hm. Aushang 7.1. Tatsächlich nicht widerrufen. — Das nehme ich auf. Weiter.",
+      "(Vossbeck hebt langsam den Kopf.) Hm. Das … ist eine Beobachtung, die ich nur schwer entkräften kann. Weiter.",
     onMiss:
-      "Worag. Sie hätten lernen können. Aushang 7.1 wäre Ihre Karte gewesen. Wir machen das nicht noch einmal.",
+      "Worag. »Das sieht man dem Sektor auch an« wäre die korrekte Replik gewesen. Sie kennen sie aus dem Training. Sie haben sie nicht eingesetzt.",
   },
   {
-    id: "endgame-2",
+    id: "endgame-stapel",
     opponent: "vossbeck",
-    attackParagraphId: "p12",
+    attackPhraseId: "pE-stapel-hoheit",
     opening:
-      "Marteau hat in Schicht A unterzeichnet. Schicht A endete um zwölf Uhr. Vollmachtsordnung §12: erloschen. Daran ändert auch ein alter Aushang nichts.",
-    counters: [
-      { text: "Vollmachtsordnung §12 Abs. 2: Bewohner-Vollmachten gelten bis zur Einlösung — maßgeblich ist das Ausstellungsdatum, nicht das Schichtende.", paragraphId: "p12-2" },
-      { text: "Aushang 7.1 (1991): gleichwertige Gegenzeichnung aus Nachbarschicht.", paragraphId: "p7-1" },
-      { text: "Hausordnung §1a, Wortlaut-Klausel: Übersagung nur bei ausdrücklichem Widerruf — sagt nichts über Vollmachten.", paragraphId: "p1a-w" },
-      { text: "Schichtordnung §3 Abs. 4: Übergabezeit, Vorgänge laufen schichtübergreifend.", paragraphId: "p3-4" },
-    ],
+      "Über Vollmacht 4317 wird heute nicht entschieden. Setzen Sie sich auf meinen Stapel.",
+    counterOptions: ["c-stapel", "c-vorgesetzte", "c-termin", "c-vorschriften"],
     onHit:
-      "§12 Abs. 2. — Lex specialis. Sie haben mich an meiner eigenen Wand erwischt, Worag.",
+      "(Vossbeck schaut auf seinen Stapel. Glättet ihn unwillkürlich.) Sehr wohl. Last des Hauses. Notiert.",
     onMiss:
-      "Falsch. §12 Abs. 2 hätte gegolten. Sie hatten ihn in Ihrem Notizbuch. Sie haben ihn nicht gespielt.",
+      "Worag. »Dann trägt er wenigstens die Last des ganzen Hauses« — Brust hat Ihnen das gezeigt. Sie haben es nicht gespielt.",
   },
   {
-    id: "endgame-3",
+    id: "endgame-vorgesetzter",
     opponent: "vossbeck",
-    attackParagraphId: "p99",
+    attackPhraseId: "pE-vorgesetzten-bluff",
     opening:
-      "Genug der Spezialnormen. Verwaltungsrahmenordnung §99: Generalvorbehalt. In Zweifelsfällen entscheidet die Verwaltung. Heißt: ich. Ration verweigert.",
-    counters: [
-      { text: "§99 Erläuterung: Ein Zweifelsfall liegt nur bei Lücken vor — hier greifen 7.1, §1a Wortlaut und §12 Abs. 2. Kein §99.", paragraphId: "p99-z" },
-      { text: "Aushang 7.1 (1991): gleichwertige Gegenzeichnung aus Nachbarschicht — schlägt aber keinen Generalvorbehalt.", paragraphId: "p7-1" },
-      { text: "Hausordnung §1a, Wortlaut-Klausel: Übersagung nur bei ausdrücklichem Widerruf.", paragraphId: "p1a-w" },
-      { text: "Vollmachtsordnung §12 Abs. 2: Bewohner-Vollmachten überleben Schichtwechsel.", paragraphId: "p12-2" },
-    ],
+      "Einen Vorgang dieser Tragweite werde ich der Bewohnervertretungs-Aufsicht vorlegen müssen.",
+    counterOptions: ["c-vorgesetzte", "c-nicht-zustaendig", "c-stapel", "c-formsache"],
     onHit:
-      "(Lange Pause.) Sie zitieren die Erläuterung zu §99. Korrekt. Ein Zweifelsfall liegt nicht vor — wir haben Spezialnormen. Sie haben § 7.1, § 1a Wortlaut, § 12 Abs. 2 ins Feld geführt. Das genügt.",
+      "(Lange Pause. Vossbeck legt den Bleistift parallel zum Aktendeckel.) Hm. Niemand will diese Aufsicht wirklich holen. Auch ich nicht. — Vollmacht 4317 wird freigegeben.",
     onMiss:
-      "Sie verwechseln Generalvorbehalt mit Generalermächtigung, Worag. Die Erläuterung zu §99 wäre Ihr letzter Stein gewesen. Schade.",
+      "Worag. »Holen Sie ihn. Ich warte« hätte mich heute beinahe in Verlegenheit gebracht. Sie haben es nicht gespielt. Schade.",
   },
 ];
 
@@ -420,14 +436,13 @@ export const ENDGAME_ROUNDS: DuelRound[] = [
 // ──────────────────────────────────────────────────────────────────
 
 /**
- * Liefert die korrekte Konter-Paragraph-ID für eine Runde, oder `null`,
- * wenn keine der angebotenen Antworten den Angriffs-Paragraphen schlägt.
+ * Liefert die korrekte Konter-ID für eine Runde, oder `null`, wenn keine
+ * der angebotenen Antworten die Angriffsphrase wirklich schlägt.
  */
 export function correctCounterId(round: DuelRound): string | null {
-  const attack = PARAGRAPHS[round.attackParagraphId];
-  if (!attack) return null;
-  for (const c of round.counters) {
-    if (attack.beatenBy.includes(c.paragraphId)) return c.paragraphId;
+  for (const cid of round.counterOptions) {
+    const c = COUNTERS[cid];
+    if (c && c.beats.includes(round.attackPhraseId)) return cid;
   }
   return null;
 }
@@ -435,76 +450,76 @@ export function correctCounterId(round: DuelRound): string | null {
 /** Resolved counter mit korrekt-Markierung — für die Overlay-Anzeige. */
 export function resolveCounters(round: DuelRound): DuelCounter[] {
   const correctId = correctCounterId(round);
-  return round.counters.map((c) => ({
-    text: c.text,
-    paragraphId: c.paragraphId,
-    correct: c.paragraphId === correctId,
-  }));
+  return round.counterOptions.map((cid) => {
+    const c = COUNTERS[cid];
+    return {
+      text: c ? c.text : cid,
+      counterId: cid,
+      correct: cid === correctId,
+    };
+  });
 }
 
 /**
  * Baut die vier Antwort-Optionen für eine Runde abhängig vom aktuellen
  * Wissensstand des Spielers (Monkey-Island-Logik):
  *
- *  - Wenn der Spieler mindestens einen korrekten Konter (= einen Paragraph,
- *    der `attackParagraphId` schlägt) bereits gelernt hat, kommt GENAU EINER
+ *  - Wenn der Spieler mindestens einen korrekten Konter (= einen Konter,
+ *    der die Angriffsphrase schlägt) bereits gelernt hat, kommt GENAU EINER
  *    davon in die Auswahl. Die übrigen Plätze werden mit unpassenden echten
- *    Paragraphen + fiktiven Kantinen-Paragraphen aufgefüllt.
+ *    Kontern + linkischen Eigenversuchen aufgefüllt.
  *  - Wenn nicht, sind alle vier Antworten falsch (Mix aus unpassenden echten
- *    + fiktiven). Die Runde ist dann nicht gewinnbar — der Spieler weiß das
- *    nicht und muss raten. Bei Fehlschlag lernt er den korrekten Konter.
- *
- * Die Original-Counter-Liste der Runde wird als Pool für die "echten,
- * unpassenden" Optionen genutzt (sie sind passgenau formuliert).
+ *    + linkischen). Die Runde ist dann nicht gewinnbar — der Spieler weiß
+ *    das nicht und muss raten. Bei Fehlschlag lernt er den korrekten Konter.
  */
 export function buildRoundCounters(
   round: DuelRound,
   knownIds: ReadonlySet<string>,
 ): DuelCounter[] {
   const TARGET = 4;
-  const attack = PARAGRAPHS[round.attackParagraphId];
-  const correctIds = attack ? attack.beatenBy : [];
+  // IDs aller Konter, die diese Angriffsphrase laut Datenbank schlagen.
+  const correctIds = Object.values(COUNTERS)
+    .filter((c) => c.beats.includes(round.attackPhraseId))
+    .map((c) => c.id);
 
   // 1) Korrekten Konter aus den Runden-Optionen wählen — falls bekannt.
-  const correctOption = round.counters.find(
-    (c) => correctIds.includes(c.paragraphId) && knownIds.has(c.paragraphId),
+  const correctOption = round.counterOptions.find(
+    (cid) => correctIds.includes(cid) && knownIds.has(cid),
   );
 
-  const picked: Array<{ text: string; paragraphId: string; correct: boolean }> =
-    [];
+  const picked: DuelCounter[] = [];
   const usedIds = new Set<string>();
 
   if (correctOption) {
-    picked.push({ ...correctOption, correct: true });
-    usedIds.add(correctOption.paragraphId);
+    const c = COUNTERS[correctOption];
+    picked.push({
+      text: c ? c.text : correctOption,
+      counterId: correctOption,
+      correct: true,
+    });
+    usedIds.add(correctOption);
   }
 
   // 2) Auffüllen mit unpassenden echten Optionen aus dem Runden-Pool.
   const wrongRealPool = shuffle(
-    round.counters.filter(
-      (c) => !correctIds.includes(c.paragraphId) && !usedIds.has(c.paragraphId),
+    round.counterOptions.filter(
+      (cid) => !correctIds.includes(cid) && !usedIds.has(cid),
     ),
   );
-  for (const c of wrongRealPool) {
+  for (const cid of wrongRealPool) {
     if (picked.length >= TARGET) break;
-    picked.push({ ...c, correct: false });
-    usedIds.add(c.paragraphId);
+    const c = COUNTERS[cid];
+    if (!c) continue;
+    picked.push({ text: c.text, counterId: cid, correct: false });
+    usedIds.add(cid);
   }
 
-  // 3) Auffüllen mit fiktiven Kantinen-Paragraphen.
-  const fictionalPool = shuffle(Object.values(FICTIONAL_PARAGRAPHS));
+  // 3) Auffüllen mit linkischen Eigenversuchen.
+  const fictionalPool = shuffle(Object.values(FICTIONAL_COUNTERS));
   for (const f of fictionalPool) {
     if (picked.length >= TARGET) break;
     if (usedIds.has(f.id)) continue;
-    // Format konsistent zu echten Optionen: »<shortLabel>: <inhalt>«
-    const inhalt = f.fullText
-      .replace(/^[^:]+:\s*»?/, "")
-      .replace(/«\.?$/, "");
-    picked.push({
-      text: `${f.shortLabel}: ${inhalt}`,
-      paragraphId: f.id,
-      correct: false,
-    });
+    picked.push({ text: f.text, counterId: f.id, correct: false });
     usedIds.add(f.id);
   }
 
@@ -521,7 +536,10 @@ export function pickTrainingRounds(n: number = 3): DuelRound[] {
 
 /** Endgame is fixed: 3 rounds in order. */
 export function pickEndgameRounds(): DuelRound[] {
-  return ENDGAME_ROUNDS.map((r) => ({ ...r, counters: shuffle(r.counters) }));
+  return ENDGAME_ROUNDS.map((r) => ({
+    ...r,
+    counterOptions: shuffle(r.counterOptions),
+  }));
 }
 
 function pickRounds(pool: readonly DuelRound[], n: number): DuelRound[] {
@@ -532,7 +550,7 @@ function pickRounds(pool: readonly DuelRound[], n: number): DuelRound[] {
   }
   return arr.slice(0, Math.min(n, arr.length)).map((r) => ({
     ...r,
-    counters: shuffle(r.counters),
+    counterOptions: shuffle(r.counterOptions),
   }));
 }
 
@@ -550,12 +568,12 @@ function shuffle<T>(arr: readonly T[]): T[] {
 // ──────────────────────────────────────────────────────────────────
 
 export const DUEL_UI_TEXT = {
-  trainingTitle: "Bürokratie-Duell · Trainingsfall · Tresen Schicht B",
-  endgameTitle: "Bürokratie-Duell · Vollmacht 4317 · Endrunde",
+  trainingTitle: "Phrasen-Dreschen · Trainingsfall · Tresen Schicht B",
+  endgameTitle: "Phrasen-Dreschen · Vollmacht 4317 · Endrunde",
   trainingSubtitle:
-    "Zwei Treffer mehr als Fehler — und Sie gewinnen den Trainingsfall. Drei Fehler — und Brust schließt für heute.",
+    "Brust feuert eine Behörden-Phrase, Sie kontern. Zwei Treffer — Trainingsfall gewonnen. Drei Fehler — Brust schließt für heute.",
   endgameSubtitle:
-    "Drei Treffer in Folge — und Vossbeck gibt die Vollmacht frei. Drei Fehler — und der Fall ist verloren.",
+    "Vossbeck wirft neue Phrasen — die Konter aus dem Training passen sinngemäß. Drei Treffer in Folge: Vollmacht frei. Drei Fehler: Vorgang verloren.",
   hitsLabel: "Treffer",
   missesLabel: "Fehler",
   roundLabel: "Runde",
@@ -563,7 +581,7 @@ export const DUEL_UI_TEXT = {
   learnedBadge: "📓 gelernt",
   unlearnedBadge: "🔒 nicht gelernt",
   unlearnedHint:
-    "Diese Antwort referenziert einen Paragraphen, den Sie noch nicht im Notizbuch haben. Lernen Sie ihn in einem anderen Trainingsduell.",
+    "Dieser Konter steht noch nicht in Ihrem Phrasenbuch. Lernen Sie ihn in einem anderen Trainingsduell — oder hören Sie genauer zu, wenn andere Bewohner über Brust meckern.",
   brustMood: {
     composed: "Brust steht sehr gerade. Hände auf dem Tresen.",
     sweating: "Brust hat begonnen zu schwitzen. Sein linker Mundwinkel zuckt.",
@@ -579,19 +597,19 @@ export const DUEL_UI_TEXT = {
   trainingVictoryHeadline: "Trainingsfall gewonnen.",
   trainingVictoryLines: [
     "Brust nickt knapp. Schreibt etwas in sein Heft.",
-    "„Bewohner Worag. Argumentation tragfähig. Trainingsfall abgeschlossen.“",
+    "„Bewohner Worag. Schlagfertigkeit tragfähig. Trainingsfall abgeschlossen.“",
     "Im Hintergrund Kowalk, halblaut: „Du wirst besser, Worag.“",
   ],
   trainingDefeatHeadline: "Brust schließt die Ausgabezone.",
   trainingDefeatLines: [
     "Brust hebt langsam den Kopf. Seine Mimik wird wieder steif.",
-    "„Bewohner Worag. Ihre Argumentation trägt nicht. Trainingsfall verloren.“",
+    "„Bewohner Worag. Ihre Erwiderungen tragen nicht. Trainingsfall verloren.“",
     "„Bitte verlassen Sie die Ausgabezone. Sie können es zu einem späteren Zeitpunkt erneut versuchen.“",
   ],
   endgameVictoryHeadline: "Vossbeck kapituliert. Vollmacht 4317 anerkannt.",
   endgameVictoryLines: [
     "Vossbeck legt die Vollmacht sehr sorgfältig auf den Tresen. Glättet sie.",
-    "„Bewohner Worag. Ihre Argumentation ist … in sich schlüssig. Die Ration wird ausgegeben.“",
+    "„Bewohner Worag. Ihre Schlagfertigkeit ist … in sich schlüssig. Die Ration wird ausgegeben.“",
     "Brust bückt sich, holt eine grau-amber lackierte Dose hervor und schiebt sie über den Tresen.",
     "Im Hintergrund Kowalk, halblaut: „So habe ich Vossbeck noch nie gesehen, Worag. Glückwunsch.“",
     "[ B3-Ration eingesteckt. ]",
@@ -610,6 +628,6 @@ export const DUEL_UI_TEXT = {
     "Layard tritt einen halben Schritt vom Tresen zurück.",
     "Brust nickt knapp. „Wenn Sie wieder bereit sind, Bewohner Worag.“",
   ],
-  paragraphLearnedToast: (p: Paragraph) =>
-    `📓 Neuer Paragraph gelernt: ${p.shortLabel}. ${p.learnHint ?? ""}`,
+  paragraphLearnedToast: (c: Counter) =>
+    `📓 Neuer Konter gelernt: ${c.shortLabel}. ${c.learnHint ?? ""}`,
 };
