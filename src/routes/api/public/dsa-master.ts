@@ -568,6 +568,9 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           let parsed = parseMasterTurn(reply);
           if (parsed.end && assistantTurns + 1 < MIN_END_ASSISTANT_TURNS) {
             reply = stripEndMarker(reply);
+            if (!reply) {
+              reply = "[TJARK] Noch ist das nicht vorbei. Eine neue Spur liegt offen, und Brem trommelt schon ungeduldig mit den Fingern auf den Tisch.";
+            }
             parsed = parseMasterTurn(reply);
           }
           history.push({ role: "assistant", content: reply });
