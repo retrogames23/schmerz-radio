@@ -7,6 +7,7 @@ import {
   SLOT_INDICES,
   loadSlotCharacter,
   saveSlotCharacter,
+  slotSessionId,
   type SlotIndex,
 } from "@/components/dsa-standalone/slotStorage";
 import type { DsaCharacterSummary } from "@/game/types";
@@ -103,10 +104,40 @@ function DsaLanding() {
     });
   }, []);
 
-  function handleDelete(slot: SlotIndex) {
+  async function handleDelete(slot: SlotIndex) {
     if (!window.confirm(`Held in Slot ${slot} wirklich löschen?`)) return;
     saveSlotCharacter(slot, null);
     setSlots((s) => ({ ...s, [slot]: null }));
+    // Auch das serverseitige Abenteuer dieses Slots verwerfen, sonst
+    // taucht der alte Stand beim nächsten Helden wieder auf.
+    try {
+      const sessionId = slotSessionId(slot);
+      const { getFreshAccessToken } = await import("@/auth/freshToken");
+      const token = await getFreshAccessToken().catch(() => null);
+      let anonId: string | null = null;
+      if (!token) {
+        try {
+          anonId = window.localStorage.getItem("dsa.anonId");
+        } catch {
+          anonId = null;
+        }
+      }
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (token) headers.Authorization = `Bearer ${token}`;
+      await fetch("/api/public/dsa-master", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          action: "abort",
+          sessionId,
+          ...(token ? {} : { anonId: anonId ?? "anon000000000000" }),
+        }),
+      });
+    } catch {
+      /* Best effort – lokaler Slot ist bereits gelöscht. */
+    }
   }
 
   function goToSlot(slot: SlotIndex) {
