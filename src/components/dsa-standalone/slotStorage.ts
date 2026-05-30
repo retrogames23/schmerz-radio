@@ -9,9 +9,19 @@ function key(slot: SlotIndex): string {
   return `${KEY_PREFIX}${slot}`;
 }
 
-/** Stabile sessionId pro Slot — der Server skopiert intern nach user_id/anon_id. */
+/**
+ * Stabile sessionId pro Slot — der Server skopiert intern nach user_id/anon_id.
+ * Muss ein UUID sein (DB-Spalte `session_id uuid`). Wir verwenden feste,
+ * deterministische UUIDs pro Slot, damit jeder Slot serverseitig sein
+ * eigenes Abenteuer führt.
+ */
+const SLOT_UUIDS: Record<SlotIndex, string> = {
+  1: "d5a51071-0000-4000-8000-000000000001",
+  2: "d5a51072-0000-4000-8000-000000000002",
+  3: "d5a51073-0000-4000-8000-000000000003",
+};
 export function slotSessionId(slot: SlotIndex): string {
-  return `dsa-slot-${slot}`;
+  return SLOT_UUIDS[slot];
 }
 
 export function loadSlotCharacter(slot: SlotIndex): DsaCharacterSummary | null {
