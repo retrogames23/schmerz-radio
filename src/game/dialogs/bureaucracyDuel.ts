@@ -119,6 +119,7 @@ function attackChoices(opp: "brust" | "vossbeck"): {
     choices.push({
       text: atk.text,
       requires: ["learnedAttackVorgesetzten"],
+      action: (a) => a.bumpDuelHit(),
       next: respId,
     });
     lines[respId] = {
@@ -132,7 +133,6 @@ function attackChoices(opp: "brust" | "vossbeck"): {
         opp === "brust"
           ? "Bodo hatte recht. Brust stottert sichtbar. Treffer für Layard."
           : "Vossbeck stottert. Sehr kurz, sehr trocken — aber er stottert. Treffer.",
-      action: (a) => a.bumpDuelHit(),
       next: "r3Brust",
     };
   }
@@ -145,6 +145,7 @@ function attackChoices(opp: "brust" | "vossbeck"): {
     choices.push({
       text: atk.text,
       requires: ["learnedAttackTuerschild"],
+      action: (a) => a.bumpDuelHit(),
       next: respId,
     });
     lines[respId] = {
@@ -158,7 +159,6 @@ function attackChoices(opp: "brust" | "vossbeck"): {
         opp === "brust"
           ? "Helkas Klassiker zieht. Brust verliert kurz die Spur. Treffer."
           : "Vossbecks Antwort verliert die Schärfe. Treffer.",
-      action: (a) => a.bumpDuelHit(),
       next: "r3Brust",
     };
   }
