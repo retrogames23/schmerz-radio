@@ -56,17 +56,37 @@ interface CombatBridge {
   foes: Combatant[];
 }
 
+/**
+ * Stabile, im Browser gespeicherte ID für anonyme DSA-Runden. Wird nur
+ * mitgeschickt, wenn der Spieler nicht angemeldet ist.
+ */
+function getAnonId(): string {
+  if (typeof window === "undefined") return "anon000000000000";
+  try {
+    let id = window.localStorage.getItem("dsa.anonId");
+    if (!id || !/^[0-9a-zA-Z_-]{8,64}$/.test(id)) {
+      id = crypto.randomUUID().replace(/-/g, "").slice(0, 32);
+      window.localStorage.setItem("dsa.anonId", id);
+    }
+    return id;
+  } catch {
+    return "anon000000000000";
+  }
+}
+
 async function authedPost(body: Record<string, unknown>, sessionId: string): Promise<Response> {
   const { getFreshAccessToken } = await import("@/auth/freshToken");
-  const token = await getFreshAccessToken();
-  if (!token) throw new Error("Nicht angemeldet.");
+  const token = await getFreshAccessToken().catch(() => null);
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers.Authorization = `Bearer ${token}`;
   return fetch("/api/public/dsa-master", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ ...body, sessionId }),
+    headers,
+    body: JSON.stringify({
+      ...body,
+      sessionId,
+      ...(token ? {} : { anonId: getAnonId() }),
+    }),
   });
 }
 
@@ -169,12 +189,8 @@ export function DsaLlmAdventureScene() {
     };
   }, [dsaAdventureOpen]);
 
-  // Auto-scroll auf neueste Zeile.
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    el.scrollTop = el.scrollHeight;
-  }, [turns.length, busy, endState]);
+  // Bewusst kein Auto-Scroll: der Spieler bleibt an der zuletzt gelesenen
+  // Stelle und scrollt nach unten, wenn er die Reaktion sehen will.
 
   const handleServerReply = useCallback(
     (data: ServerReply) => {

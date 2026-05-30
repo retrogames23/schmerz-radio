@@ -230,15 +230,16 @@ export const Route = createFileRoute("/api/public/dsa-master")({
         }
         const authHeader = request.headers.get("authorization") ?? "";
         const userToken = authHeader.replace(/^Bearer\s+/i, "");
-        if (!userToken) return json(401, { error: "Anmeldung erforderlich." });
-
-        const userClient = createClient(supabaseUrl, supabasePub, {
-          global: { headers: { Authorization: `Bearer ${userToken}` } },
-          auth: { persistSession: false, autoRefreshToken: false },
-        });
-        const { data: u, error: authErr } = await userClient.auth.getUser(userToken);
-        const uid = u?.user?.id;
-        if (authErr || !uid) return json(401, { error: "Ungültiges Token." });
+        let uid: string | null = null;
+        if (userToken) {
+          const userClient = createClient(supabaseUrl, supabasePub, {
+            global: { headers: { Authorization: `Bearer ${userToken}` } },
+            auth: { persistSession: false, autoRefreshToken: false },
+          });
+          const { data: u, error: authErr } = await userClient.auth.getUser(userToken);
+          if (authErr || !u?.user?.id) return json(401, { error: "Ungültiges Token." });
+          uid = u.user.id;
+        }
 
         let body: unknown;
         try {
@@ -255,16 +256,28 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           return json(400, { error: "Ungültige Session-ID." });
         }
 
+        // Anonyme Spieler identifizieren sich über eine stabile, im
+        // Browser gespeicherte ID. Genau eines von beidem ist gesetzt.
+        const anonIdRaw = typeof b.anonId === "string" ? b.anonId : "";
+        const anonId =
+          !uid && /^[0-9a-zA-Z_-]{8,64}$/.test(anonIdRaw) ? anonIdRaw : null;
+        if (!uid && !anonId) {
+          return json(400, { error: "Anonyme ID fehlt." });
+        }
+
         const admin = createClient(supabaseUrl, serviceKey, {
           auth: { persistSession: false, autoRefreshToken: false },
         });
 
         // ── load ──────────────────────────────────────────
         if (action === "load") {
-          const { data: row } = await admin
+          const q = admin
             .from("dsa_llm_adventures")
-            .select("setting, character_snapshot, messages, summary, current_image_tag, status, offtopic_streak")
-            .eq("user_id", uid)
+            .select("setting, character_snapshot, messages, summary, current_image_tag, status, offtopic_streak");
+          const { data: row } = await (uid
+            ? q.eq("user_id", uid)
+            : q.eq("anon_id", anonId!)
+          )
             .eq("session_id", sessionId)
             .maybeSingle();
           if (!row) return json(200, { none: true });
@@ -273,31 +286,58 @@ export const Route = createFileRoute("/api/public/dsa-master")({
 
         // ── abort ─────────────────────────────────────────
         if (action === "abort") {
-          await admin
+          const del = admin
             .from("dsa_llm_adventures")
-            .delete()
-            .eq("user_id", uid)
+            .delete();
+          await (uid ? del.eq("user_id", uid) : del.eq("anon_id", anonId!))
             .eq("session_id", sessionId);
           return json(200, { ok: true });
         }
 
-        // Alle weiteren Aktionen verbrauchen einen Cloud-Request.
-        const { data: incRows, error: incErr } = await admin.rpc(
-          "try_increment_cloud_request_count",
-          { _user_id: uid, _hard_limit: HARD_LIMIT },
-        );
-        if (incErr || !incRows) return json(500, { error: "Profil nicht gefunden." });
-        const incRow = Array.isArray(incRows) ? incRows[0] : incRows;
-        if (incRow.limit_reached) {
-          return json(402, {
-            error:
-              "Cloud-Limit erreicht. Bitte unterstütze das Projekt, um weiter chatten zu können.",
-            code: "donation_required",
-          });
+        // Angemeldete Spieler verbrauchen Cloud-Requests aus ihrem Profil.
+        // Anonyme Spieler bekommen genau ein Abenteuer pro anon_id.
+        if (uid) {
+          const { data: incRows, error: incErr } = await admin.rpc(
+            "try_increment_cloud_request_count",
+            { _user_id: uid, _hard_limit: HARD_LIMIT },
+          );
+          if (incErr || !incRows) return json(500, { error: "Profil nicht gefunden." });
+          const incRow = Array.isArray(incRows) ? incRows[0] : incRows;
+          if (incRow.limit_reached) {
+            return json(402, {
+              error:
+                "Cloud-Limit erreicht. Bitte unterstütze das Projekt, um weiter chatten zu können.",
+              code: "donation_required",
+            });
+          }
         }
 
         // ── start ─────────────────────────────────────────
         if (action === "start") {
+          // Anonyme: nur ein Abenteuer insgesamt. Existiert bereits eins
+          // (egal welcher Status), gibts den Spendenhinweis.
+          if (anonId) {
+            const { data: existing } = await admin
+              .from("dsa_llm_adventures")
+              .select("session_id, status")
+              .eq("anon_id", anonId)
+              .limit(1)
+              .maybeSingle();
+            if (existing && existing.session_id !== sessionId) {
+              return json(402, {
+                error:
+                  "Dein Schnupper-Abenteuer ist vorbei. Melde dich an und unterstütze das Projekt, um weitere Runden zu spielen.",
+                code: "donation_required",
+              });
+            }
+            if (existing && existing.status !== "active") {
+              return json(402, {
+                error:
+                  "Dein Schnupper-Abenteuer ist vorbei. Melde dich an und unterstütze das Projekt, um eine weitere Runde zu spielen.",
+                code: "donation_required",
+              });
+            }
+          }
           const settingId = typeof b.setting === "string" ? b.setting : "";
           if (!ALLOWED_SETTINGS.has(settingId)) {
             return json(400, { error: "Unbekanntes Setting." });
@@ -341,6 +381,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             .upsert(
               {
                 user_id: uid,
+                anon_id: anonId,
                 session_id: sessionId,
                 setting: settingId,
                 character_snapshot: characterSnap as unknown as Record<string, unknown>,
@@ -350,7 +391,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
                 status: "active" as AdventureStatus,
                 offtopic_streak: 0,
               },
-              { onConflict: "user_id,session_id" },
+              { onConflict: uid ? "user_id,session_id" : "anon_id,session_id" },
             );
           if (upErr) {
             console.error("dsa-master upsert failed", upErr);
@@ -366,10 +407,13 @@ export const Route = createFileRoute("/api/public/dsa-master")({
 
         // ── say / combat_result ───────────────────────────
         if (action === "say" || action === "combat_result") {
-          const { data: row, error: loadErr } = await admin
+          const baseQ = admin
             .from("dsa_llm_adventures")
-            .select("setting, character_snapshot, messages, summary, current_image_tag, status, offtopic_streak")
-            .eq("user_id", uid)
+            .select("setting, character_snapshot, messages, summary, current_image_tag, status, offtopic_streak");
+          const { data: row, error: loadErr } = await (uid
+            ? baseQ.eq("user_id", uid)
+            : baseQ.eq("anon_id", anonId!)
+          )
             .eq("session_id", sessionId)
             .maybeSingle();
           if (loadErr || !row) return json(404, { error: "Kein laufendes Abenteuer." });
@@ -473,7 +517,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
 
           if (parsed.outtimeWarn) offtopicStreak = 0;
 
-          const { error: upErr } = await admin
+          const updateQ = admin
             .from("dsa_llm_adventures")
             .update({
               messages: history as unknown as Record<string, unknown>[],
@@ -481,8 +525,11 @@ export const Route = createFileRoute("/api/public/dsa-master")({
               current_image_tag: imgTag,
               status: nextStatus,
               offtopic_streak: offtopicStreak,
-            })
-            .eq("user_id", uid)
+            });
+          const { error: upErr } = await (uid
+            ? updateQ.eq("user_id", uid)
+            : updateQ.eq("anon_id", anonId!)
+          )
             .eq("session_id", sessionId);
           if (upErr) {
             console.error("dsa-master update failed", upErr);

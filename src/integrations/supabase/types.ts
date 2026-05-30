@@ -49,9 +49,11 @@ export type Database = {
       }
       dsa_llm_adventures: {
         Row: {
+          anon_id: string | null
           character_snapshot: Json
           created_at: string
           current_image_tag: string
+          id: string
           messages: Json
           offtopic_streak: number
           session_id: string
@@ -59,12 +61,14 @@ export type Database = {
           status: string
           summary: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
+          anon_id?: string | null
           character_snapshot: Json
           created_at?: string
           current_image_tag?: string
+          id?: string
           messages?: Json
           offtopic_streak?: number
           session_id?: string
@@ -72,12 +76,14 @@ export type Database = {
           status?: string
           summary?: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
+          anon_id?: string | null
           character_snapshot?: Json
           created_at?: string
           current_image_tag?: string
+          id?: string
           messages?: Json
           offtopic_streak?: number
           session_id?: string
@@ -85,7 +91,7 @@ export type Database = {
           status?: string
           summary?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
