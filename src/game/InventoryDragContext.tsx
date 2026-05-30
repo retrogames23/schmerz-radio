@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { InventoryItem } from "./types";
+import type { Hotspot, InventoryItem } from "./types";
 
 interface DragState {
   /** Aktuell gezogenes Item, oder null. */
@@ -41,6 +41,14 @@ interface DragState {
    * (Drag & Selection). Für Drop-Handler beim Kombinieren.
    */
   consumeActive: () => InventoryItem | null;
+  /**
+   * Mobiler „Fokus-Sheet"-Flow: ein Hotspot ist angetippt und das
+   * Bottom-Sheet mit Aktionen / Item-Strip ist offen. Auf Desktop
+   * (fine pointer) bleibt das immer null.
+   */
+  focusHotspot: Hotspot | null;
+  openFocus: (hotspot: Hotspot) => void;
+  closeFocus: () => void;
 }
 
 const InventoryDragContext = createContext<DragState | null>(null);
@@ -49,6 +57,7 @@ export function InventoryDragProvider({ children }: { children: ReactNode }) {
   const [dragItem, setDragItem] = useState<InventoryItem | null>(null);
   const [cursor, setCursor] = useState<{ x: number; y: number } | null>(null);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [focusHotspot, setFocusHotspot] = useState<Hotspot | null>(null);
   const dragItemRef = useRef<InventoryItem | null>(null);
   dragItemRef.current = dragItem;
   const selectedItemRef = useRef<InventoryItem | null>(null);
@@ -125,6 +134,13 @@ export function InventoryDragProvider({ children }: { children: ReactNode }) {
     return drag ?? sel;
   }, []);
 
+  const openFocus = useCallback((hotspot: Hotspot) => {
+    setFocusHotspot(hotspot);
+  }, []);
+  const closeFocus = useCallback(() => {
+    setFocusHotspot(null);
+  }, []);
+
   return (
     <InventoryDragContext.Provider
       value={{
@@ -138,6 +154,9 @@ export function InventoryDragProvider({ children }: { children: ReactNode }) {
         clearSelection,
         activeItem: dragItem ?? selectedItem,
         consumeActive,
+        focusHotspot,
+        openFocus,
+        closeFocus,
       }}
     >
       {children}

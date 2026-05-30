@@ -1,91 +1,96 @@
-## Ziel
+# Mobile Interaktion: Fokus-Sheet statt Drag-and-Drop
 
-Das Phrasen-Duell läuft komplett in normalen Dialogen — wie jedes andere NPC-Gespräch. Kein eigenes UI, kein Overlay. Kowalk als ruhige Stimme aus dem Off (subtext) bei Bedarf. Punktezählung und Rundenlogik passieren über bestehende `setFlag`/Counter-Mechanik im Dialog.
+Desktop bleibt unangetastet. Alles unten beschriebene wird über `useCoarsePointer()` ausschließlich für Touch-Geräte aktiv. Die bestehende Tap-to-Use-Mechanik (Item antippen → Banner oben → Hotspot antippen) wird durch einen umgekehrten, „Context-First"-Flow ersetzt: zuerst das Ziel, dann der Gegenstand.
 
-## Kernregeln (alle vier vom Nutzer aus dem letzten Turn)
+## Kritische Anpassung gegenüber dem Gemini-Entwurf
 
-1. **Layard lernt nur durch fremde Konter.** Wenn er Brust angreift und Brust sauber kontert, lernt er nichts. Wenn Brust ihn angreift und Layard danebenliegt, **zeigt Brust den richtigen Konter** — und nur dann darf der Spieler ihn ins Phrasenbuch übernehmen.
-2. **Brust muss sichtbar reagieren.** Greift Layard an, kontert Brust entweder souverän (Punkt für Brust) oder stottert sichtbar (Punkt für Layard). Kein stilles „verloren".
-3. **Layards Angriffe sind bürokratische Abschiebephrasen** (Hausflur-Liste, Anlage 3, Sechs-Wochen-Frist, „steht im Protokoll", Vorgesetzten-Bluff von Bodo, Türschild-Klassiker von Helka). Keine Höflichkeit, kein Smalltalk, keine Resonanz-Anspielungen.
-4. **Kein eigenes Interface.** Standard-Dialog-Overlay reicht. Kowalk-Kommentare laufen als `subtext` oder als `KOWALK`-Sprecher zwischen den Runden.
+Der Vorschlag trennt „Untersuchen" und „Benutzen". Im Code hat ein `Hotspot` aber genau **eine** Aktion (`onUse`) — `label` ist nur die Bezeichnung. Eine Trennung wäre erfunden und müsste an hunderten Stellen nachgepflegt werden. Stattdessen leitet das Sheet seine Primär-Aktion aus `hotspot.kind` ab (`look | use | talk | exit`) und zeigt nur dort einen Item-Slot, wo Kombination Sinn ergibt.
 
-## Aufbau eines Trainingsfalls (3 Runden pro Fall, 3 Fälle nötig)
+Exits (`kind: "exit"`) und reine Talks bekommen kein Sheet, sondern lösen weiterhin direkt aus — alles andere wäre eine Bremse in jedem Türklick.
+
+## Flow (mobil)
 
 ```text
-Runde 1 — Brust greift an
-  Brust:   <Phrase aus PHRASES>
-  Spieler: 4 Konter-Optionen
-    Treffer  → Punkt Layard, Kowalk (subtext): „Sitzt." → Runde 2
-    Fehler   → Brust zeigt korrekten Konter
-               Spieler: [Ins Phrasenbuch übernehmen] oder [Weiter]
-               → Runde 2
-
-Runde 2 — Layard greift an
-  Spieler: 3–4 Angriffsphrasen (nur die, die er kennt; Standard-Pool +
-           gelernte Bodo/Helka-Specials, falls vorhanden)
-    Brust kennt sie  → souveräner Konter (Punkt Brust)
-    Brust kennt sie nicht (nur Bodo/Helka-Specials)
-                     → Brust stottert sichtbar (Punkt Layard)
-    → Runde 3
-
-Runde 3 — Brust greift an (wie Runde 1)
-
-Auswertung des Falls:
-  ≥ 2 Punkte Layard → Trainingsfall gewonnen, Counter +1
-  sonst             → verloren, Counter zurück auf 0 (oder nicht erhöht)
+Tap auf Hotspot (kind ≠ exit)
+        │
+        ▼
+ Hintergrund dimmt + Hotspot bekommt CRT-Rahmen
+        │
+        ▼
+ Bottom-Sheet slidet in die Thumb-Zone
+   ┌────────────────────────────────┐
+   │ FOKUS: <hotspot.label>         │
+   │ [ Primär-Aktion ]              │  ← „Ansehen" / „Benutzen" / „Sprechen"
+   │ [ Gegenstand verwenden… ]      │  ← nur wenn Inventar nicht leer
+   │ [ Abbrechen ]                  │
+   └────────────────────────────────┘
+        │
+        ▼ (bei „Gegenstand verwenden…")
+   Item-Strip klappt darüber auf:
+   horizontal scrollbar, 64×64-Buttons
+        │
+        ▼ Tap auf Item
+   Sheet schließt, combineItem() läuft,
+   Caption/Reaktion wie gewohnt
 ```
 
-Drei gewonnene Fälle in Folge → `vossbeckSummoned` setzen → Brust schickt zu Vossbeck. Drei Niederlagen in Folge bei **Vossbeck** → `duelEndgameLost` → Kowalk-Fälschungspfad (existiert schon).
+Shortcuts bleiben erhalten:
+- Tap auf ein Inventar-Item öffnet weiter den bestehenden „selected"-Zustand (Banner oben). Ein darauffolgender Tap auf einen Hotspot wendet das Item direkt an, ohne das Sheet zu öffnen. Power-User-Pfad für wiederholte Kombinationsversuche.
+- Doppelter Tap auf einen Exit ist nicht nötig — Exits umgehen das Sheet komplett.
 
-## Vossbeck-Endrunde
+## Was passiert in welcher Datei
 
-Identische Struktur, 3 Runden, härterer Ton (Vossbeck-Phrasen aus `pE-*`), setzt `duelEndgameWon` oder `duelEndgameLost`.
+**Neu: `src/components/game/mobile/FocusSheet.tsx`**
+- Bottom-Sheet-Komponente (Tailwind, `fixed inset-x-0 bottom-0`, `safe-area-inset-bottom`, slide-in via `transition-transform`).
+- Props: `hotspot`, `onClose`, `onPrimary`, `onUseItem(item)`.
+- Rendert Primär-Aktion abhängig von `hotspot.kind`:
+  - `look` → „Ansehen"
+  - `use` (Default) → „Benutzen"
+  - `talk` → „Sprechen"
+- Item-Strip: horizontal scrollbar (`overflow-x-auto`, `snap-x`), Buttons mit `ItemIcon` + Kurzname, min. 64×64 dp.
+- Stil aus dem bestehenden Design-System: `border-amber-glow`, `font-mono-crt`, `bg-background/95`, leichter Scanline-Overlay-Stil wie bei den anderen Overlays.
+- Schließt bei Tap auf Backdrop, Escape, Hardware-Back (über `popstate`-History-Eintrag wie bei `DialogOverlay`).
 
-## Datenmodell
+**Neu: `src/game/mobile/focusSheetState.ts` (oder als Context in `InventoryDragContext`)**
+- Globaler State `focusHotspot: Hotspot | null`, `open(hotspot)`, `close()`.
+- Begründung Context: Hotspot lebt in `HotspotLayer`, das Sheet muss aber außerhalb der Bühne (über `<Game>`-Root) gerendert werden, damit Dimm-Backdrop und Sheet die ganze App überdecken. Ein dünner Context vermeidet Prop-Drilling.
 
-`src/game/bureaucracyDuel.ts` bleibt **wie jetzt** (Phrasen, Konter, Angriffs-Phrasen, Konter-Replies, `opponentCounters()`-Helper). Keine Änderung nötig — der Korpus ist bereits passend.
+**`src/components/game/Hotspot.tsx`**
+- `onClick`: Wenn `useCoarsePointer()` true und `hotspot.kind !== "exit"` und `drag.selectedItem == null` → `focusSheet.open(hotspot)` statt `hotspot.onUse(api)`.
+- Bestehender Shortcut (selectedItem gesetzt → direkt kombinieren) bleibt unverändert.
+- Desktop-Pfad (kein coarse pointer) bleibt 1:1 wie heute (Klick = `onUse`, Drag = combine).
 
-## Neue Dialog-Bäume
+**`src/components/game/Game.tsx` (oder GameShell)**
+- Einmal `<FocusSheet />` auf oberster Ebene mounten, liest aus dem neuen Context.
+- Backdrop und Sheet selbst werden nur gerendert, wenn `focusHotspot && isCoarse`.
 
-In `src/game/dialogs/cafeteria.ts`:
+**`src/components/game/ActiveItemBanner.tsx`**
+- Bleibt bestehen für den Shortcut-Pfad (Item zuerst angetippt). Kein Eingriff nötig.
 
-- **`cafeteriaTrainingA`**, **`cafeteriaTrainingB`**, **`cafeteriaTrainingC`** — drei austauschbare Trainingsfälle, je 3 Runden. Brust wählt per Counter (`duelTrainingsRun`) den nächsten, damit kein Fall doppelt kommt.
-- **`vossbeckDuel`** — Endrunde, 3 Runden, identische Mechanik mit härteren Phrasen.
+**`src/components/game/Inventory.tsx`**
+- Hilfetext im Floating-Panel (Zeilen ~285-297) anpassen für mobile: „Tippen: Ziel wählen → Aktion. Halten: ansehen." Sonst keine Logikänderung — das Panel bleibt sekundärer Zugang.
 
-Jeder Tree nutzt nur Standard-Mechanik: `choices`, `next`, `action: (api) => api.setFlag(...)`, lokale Tally über transiente Flags wie `duelRoundHit1/2/3`. Am Ende des Falls Auswertung in einer Auswertungs-Line, Cleanup der transienten Flags.
+**`src/styles.css`**
+- Bei Bedarf eine Utility-Klasse `.hotspot-touch` prüfen/erweitern, damit Hotspots auf coarse pointer ein Mindest-Hit-Target von 44×44 dp bekommen (über `::after`-Pseudo-Element, ohne das visuelle Layout zu verändern). Falls bereits vorhanden, nur Werte verifizieren.
 
-## Phrasenbuch-Übernahme
+## Audio / Haptik
 
-Bestehender Eintrag-Mechanismus bleibt: nach einer Fehlrunde bekommt der Spieler eine Wahl `[Ins Phrasenbuch übernehmen]`, die `api.learnCounter(id)` (oder das bestehende Äquivalent) aufruft. Das ist die **einzige** Lernquelle im Duell.
+- Sheet-Open: vorhandener `sfx.ui.tap`-Sound (falls existent, sonst stumm — keine neuen Assets in diesem Schritt).
+- Optional: `navigator.vibrate?.(8)` beim Öffnen des Sheets. Mit Fallback `?.` — kein Bruch, wo nicht unterstützt.
 
-Bodo/Helka-Specials (`a-vorgesetzten-bodo`, `a-tuerschild-helka`) werden weiterhin außerhalb des Duells über die jeweiligen NPC-Dialoge gelernt — unverändert.
+## Was bewusst NICHT Teil dieses Plans ist
 
-## Aufräumen
+- Kein Kamera-Zoom auf den Hotspot (vom Gemini-Entwurf vorgeschlagen). Die Szenen sind handgemalt mit fixen Layouts, ein Zoom würde Pixel matschen und alle anderen Hotspots verdecken. Stattdessen reicht der CRT-Rahmen + Dimm-Backdrop.
+- Keine Trennung „Untersuchen vs. Benutzen" (siehe oben).
+- Keine Änderung an `Hotspot`-Datenmodell, keine Migration in `scenes/*`.
+- Keine Desktop-Änderungen.
 
-- **Löschen**: `api.openBureaucracyDuel` / `api.closeDuel`, `duelOpen`, `duelMode`, `duelTutorialShown`, alle Callsites in `cafeteria.ts` (`bDuelOffer`, `bDuelRetry`, `v6`) und `src/dev/ConsoleSwitcher.tsx` Zeile 70.
-- **GameContext.tsx**: State + Setter + Provider-Werte entfernen (Zeilen 74–76, 125, 244–245, 468, 796, 1008–1009, 1058–1059).
-- **types.ts**: `openBureaucracyDuel` aus `GameApi` entfernen, `duelTutorialShown` aus Flag-Union entfernen. Behalten: `duelTrainingWon1/2/3`, `duelEndgameWon`, `duelEndgameLost`.
-- **GameShell.tsx**: bereits ohne Overlay (vorheriger Turn), nur noch prüfen, dass keine Reste übrig sind.
-- **`bDuelOffer`**: aktualisiert auf `next: "cafeteriaTrainingA"` (bzw. via Counter auf B/C rotierend) — keine Overlay-Action mehr.
-- **`v6`**: aktualisiert auf `next: "vossbeckDuel"`-Start, kein `openBureaucracyDuel`.
+## Test-Szenarien
 
-## Was bleibt unverändert
-
-- `bureaucracyDuel.ts` (Datenmodul)
-- Phrasenbuch-Inventar-Item (`ParagraphenNotizbuch`)
-- Flags `duelTrainingWon1/2/3`, `duelEndgameWon`, `duelEndgameLost`
-- Forgery-Pfad bei Kowalk (greift weiterhin auf `duelEndgameLost`)
-- Vossbeck-Unready-Dialoge (`vossbeckUnready`, `vossbeckUnreadyOne`, `vossbeckUnreadyTwo`)
-
-## Testfälle
-
-1. Trainingsfall A starten, Runde 1 treffen, Runde 2 Standard-Phrase werfen (Brust kontert), Runde 3 treffen → 2 Punkte → gewonnen, Counter 1/3.
-2. Trainingsfall A starten, Runde 1 daneben → korrekter Konter wird gezeigt → ins Phrasenbuch übernehmen → Phrasenbuch enthält neuen Eintrag.
-3. Drei Fälle in Folge gewonnen → `vossbeckSummoned`, `bVossbeckHint` verfügbar.
-4. Bodo-Phrase gelernt, in Runde 2 von Fall C werfen → Brust stottert, Punkt Layard.
-5. Vossbeck-Endrunde gewinnen → `duelEndgameWon`, Kowalk-Stempel-Pfad öffnet.
-6. Vossbeck-Endrunde 3× verlieren → `duelEndgameLost`, Fälschungspfad bei Kowalk öffnet.
-
-## Größenordnung
-
-Drei Trainings-Trees + ein Vossbeck-Tree ≈ 400–600 Zeilen Dialog in `cafeteria.ts`. Cleanup in 4 Dateien. Keine neuen Komponenten, keine neuen Module.
+1. Aufzug E67: Tap auf Kartenschlitz-Hotspot → Sheet zeigt „Benutzen" + „Gegenstand verwenden…". Letzteres → Strip mit Bewohnerausweis → Tap → Etage freigeschaltet, Sheet zu.
+2. Apartment, Bücherschrank (`kind: "look"`): Sheet zeigt „Ansehen" als Primär-Aktion.
+3. NPC mit `kind: "talk"`: Sheet zeigt „Sprechen".
+4. Korridor-Exit (`kind: "exit"`): Tap wechselt direkt die Szene, kein Sheet.
+5. Shortcut: Inventar-Item antippen (Banner oben) → Tap auf Hotspot → direktes Combine, Sheet erscheint nicht.
+6. Backdrop-Tap und Hardware-Back schließen das Sheet, ohne Aktion auszulösen.
+7. Desktop (fine pointer): unverändertes Klick- und Drag-Verhalten, kein Sheet erscheint je.

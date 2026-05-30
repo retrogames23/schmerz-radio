@@ -284,9 +284,9 @@ export function Inventory() {
               <div className="mt-3 border-t border-border/60 pt-2 font-mono-crt text-[10px] leading-relaxed text-muted-foreground">
                 {isCoarse ? (
                   <>
-                    Tippen: verwenden.
+                    Ziel antippen → Aktion oder Gegenstand wählen.
                     <br />
-                    Halten: ansehen.
+                    Item antippen → direkt anwenden.
                   </>
                 ) : (
                   <>
