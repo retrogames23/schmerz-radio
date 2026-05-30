@@ -263,19 +263,22 @@ export function DsaLlmAdventureScene() {
     }
   }
 
-  async function handleCombatDone(victory: boolean) {
+  async function handleCombatDone(res: CombatDoneResult) {
     if (!combat || !dsaCharacter) return;
-    const heroLeFinal = Math.max(0, combat.result.heroLeFinal);
-    const fallen = combat.result.fallenHeroes.map((h) => h.name);
-    // LE des Helden übernehmen (mind. 1 wenn er überlebt).
-    if (victory) {
-      setDsaCharacter({
-        ...dsaCharacter,
-        le: Math.max(1, heroLeFinal),
-      });
+    let nextChar = { ...dsaCharacter };
+    if (res.outcome === "victory" || res.outcome === "aborted") {
+      nextChar.le = Math.max(1, res.heroLe);
     } else {
-      setDsaCharacter({ ...dsaCharacter, le: 0 });
+      nextChar.le = Math.max(1, Math.floor(dsaCharacter.leMax / 2));
+      if (res.consequenceKind === "wound" && res.attrLowered) {
+        const cur = dsaCharacter.attrs[res.attrLowered] ?? 11;
+        nextChar = {
+          ...nextChar,
+          attrs: { ...dsaCharacter.attrs, [res.attrLowered]: Math.max(1, cur - 1) },
+        };
+      }
     }
+    setDsaCharacter(nextChar);
     setCombat(null);
     setBusy(true);
     setError(null);
@@ -283,10 +286,13 @@ export function DsaLlmAdventureScene() {
       const r = await authedPost(
         {
           action: "combat_result",
-          victory,
-          heroLe: victory ? Math.max(1, heroLeFinal) : 0,
-          heroLeMax: dsaCharacter.leMax,
-          fallen,
+          outcome: res.outcome,
+          consequenceKind: res.consequenceKind,
+          heroLe: nextChar.le,
+          heroLeMax: nextChar.leMax,
+          wounds: res.heroWounds,
+          fallen: res.fallen,
+          attrLowered: res.attrLowered,
         },
         api.getDsaSessionId(),
       );
@@ -505,11 +511,14 @@ export function DsaLlmAdventureScene() {
       </div>
 
       {combat && (
-        <DsaCombatOverlay
+        <DsaCombatInteractive
           heroes={combat.heroes}
           foes={combat.foes}
-          result={combat.result}
-          onDone={(v) => void handleCombatDone(v)}
+          player={{
+            KL: dsaCharacter.attrs.KL ?? 11,
+            CH: dsaCharacter.attrs.CH ?? 11,
+          }}
+          onDone={(r) => void handleCombatDone(r)}
         />
       )}
 
