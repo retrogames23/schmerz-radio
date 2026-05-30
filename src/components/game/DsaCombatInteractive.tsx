@@ -410,8 +410,16 @@ function TacticPicker({
                   : "border-[#3a2c1a] bg-[#fbf2d8] text-[#2a1f10] hover:bg-[#f1d99a]")
               }
             >
-              <div className="dsa-typed font-extrabold text-sm">{meta.title}</div>
-              <div className="dsa-typed text-[11px] leading-snug opacity-90 mt-0.5">
+              <div
+                className="dsa-typed font-extrabold text-sm"
+                style={active ? { color: "#f1e6c8" } : undefined}
+              >
+                {meta.title}
+              </div>
+              <div
+                className="dsa-typed text-[11px] leading-snug opacity-90 mt-0.5"
+                style={active ? { color: "#f1e6c8" } : undefined}
+              >
                 {meta.blurb}
               </div>
             </button>
