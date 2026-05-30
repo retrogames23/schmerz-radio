@@ -13,6 +13,7 @@ import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as DsaRouteImport } from './routes/dsa'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DsaIndexRouteImport } from './routes/dsa.index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
@@ -46,6 +47,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DsaIndexRoute = DsaIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DsaRoute,
 } as any)
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
   id: '/email/unsubscribe',
@@ -120,11 +126,12 @@ const LovableEmailQueueProcessRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dsa': typeof DsaRoute
+  '/dsa': typeof DsaRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/dsa/': typeof DsaIndexRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
   '/api/public/dsa-master': typeof ApiPublicDsaMasterRoute
   '/api/public/fastweb-chat': typeof ApiPublicFastwebChatRoute
@@ -139,11 +146,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dsa': typeof DsaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/dsa': typeof DsaIndexRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
   '/api/public/dsa-master': typeof ApiPublicDsaMasterRoute
   '/api/public/fastweb-chat': typeof ApiPublicFastwebChatRoute
@@ -159,11 +166,12 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dsa': typeof DsaRoute
+  '/dsa': typeof DsaRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/dsa/': typeof DsaIndexRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
   '/api/public/dsa-master': typeof ApiPublicDsaMasterRoute
   '/api/public/fastweb-chat': typeof ApiPublicFastwebChatRoute
@@ -185,6 +193,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/api/tts'
     | '/email/unsubscribe'
+    | '/dsa/'
     | '/api/public/donation-checkout'
     | '/api/public/dsa-master'
     | '/api/public/fastweb-chat'
@@ -199,11 +208,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/dsa'
     | '/sitemap.xml'
     | '/unsubscribe'
     | '/api/tts'
     | '/email/unsubscribe'
+    | '/dsa'
     | '/api/public/donation-checkout'
     | '/api/public/dsa-master'
     | '/api/public/fastweb-chat'
@@ -223,6 +232,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/api/tts'
     | '/email/unsubscribe'
+    | '/dsa/'
     | '/api/public/donation-checkout'
     | '/api/public/dsa-master'
     | '/api/public/fastweb-chat'
@@ -238,7 +248,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DsaRoute: typeof DsaRoute
+  DsaRoute: typeof DsaRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
   ApiTtsRoute: typeof ApiTtsRoute
@@ -285,6 +295,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dsa/': {
+      id: '/dsa/'
+      path: '/'
+      fullPath: '/dsa/'
+      preLoaderRoute: typeof DsaIndexRouteImport
+      parentRoute: typeof DsaRoute
     }
     '/email/unsubscribe': {
       id: '/email/unsubscribe'
@@ -380,9 +397,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DsaRouteChildren {
+  DsaIndexRoute: typeof DsaIndexRoute
+}
+
+const DsaRouteChildren: DsaRouteChildren = {
+  DsaIndexRoute: DsaIndexRoute,
+}
+
+const DsaRouteWithChildren = DsaRoute._addFileChildren(DsaRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DsaRoute: DsaRoute,
+  DsaRoute: DsaRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   UnsubscribeRoute: UnsubscribeRoute,
   ApiTtsRoute: ApiTtsRoute,
