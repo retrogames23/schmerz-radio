@@ -6,12 +6,16 @@ import {
   COUNTERS,
   PHRASES,
   getCounter,
-  pickEndgameRounds,
-  pickTrainingRounds,
+  buildTrainingSession,
+  buildEndgameSession,
+  buildLayardAttackOptions,
+  buildOpponentCounterLine,
+  buildOpponentBlindspotLine,
   resolveCounters,
   type DuelCounter,
   type DuelMode,
   type DuelRound,
+  type LayardAttackOption,
 } from "@/game/bureaucracyDuel";
 import { CloseButton } from "./CloseButton";
 
@@ -28,6 +32,15 @@ type Phase = "round" | "feedback" | "victory" | "defeat";
 
 export function BureaucracyDuelOverlay() {
   const { duelOpen, duelMode, closeDuel, api, learnedParagraphs } = useGame();
+
+  // Layards gelernte Angriffsphrasen — derived aus Flags (kein eigener State).
+  const learnedAttackIds = useMemo<ReadonlySet<string>>(() => {
+    const s = new Set<string>();
+    if (api.hasFlag("learnedAttackVorgesetzten")) s.add("a-vorgesetzten-bodo");
+    if (api.hasFlag("learnedAttackTuerschild")) s.add("a-tuerschild-helka");
+    return s;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [duelOpen, api]);
 
   const mode: DuelMode = duelMode ?? "training";
   const isEndgame = mode === "endgame";
@@ -52,7 +65,7 @@ export function BureaucracyDuelOverlay() {
   // Bei jedem Open: passend zum Modus würfeln + Reset.
   useEffect(() => {
     if (!duelOpen) return;
-    setRounds(isEndgame ? pickEndgameRounds() : pickTrainingRounds(3));
+    setRounds(isEndgame ? buildEndgameSession() : buildTrainingSession());
     setCurrentIdx(0);
     setHits(0);
     setMisses(0);
