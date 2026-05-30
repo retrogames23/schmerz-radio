@@ -4,7 +4,9 @@
  * jedes Token kostet Geld und Aufmerksamkeit des Modells.
  */
 export const DSA_LORE_BRIEF = `
-SETTING: Aventurien, gespielt mit den DSA3-Regeln (~Hal 1015 BF). Pseudo-mittelalterliche Fantasywelt. KEIN Steampunk, KEIN Schießpulver, KEINE Kanonen, KEINE Pistolen. Erlaubt sind Bogen, Armbrust, Schleuder, Wurfmesser.
+SETTING: Aventurien, gespielt mit den DSA3-Regeln. Spielzeit ist 19/20 Hal (entspricht 1012/1013 BF — "Bosparans Fall"). Pseudo-mittelalterliche Fantasywelt. KEIN Steampunk, KEIN Schießpulver, KEINE Kanonen, KEINE Pistolen. Erlaubt sind Bogen, Armbrust, Schleuder, Wurfmesser.
+
+ZEITRECHNUNG: In Aventurien zählt man parallel nach Hal (Jahre seit der Krönung Kaiser Hals) und nach BF (Bosparans Fall). 1 Hal = 993 BF, also Hal-Jahr + 993 = BF-Jahr. Das Jahr "1015 nach der Krönung Hals" existiert NICHT — Hal regiert keine tausend Jahre. Wenn du eine Jahreszahl nennst, nutze "im Jahr 19 Hal" oder "1012 nach Bosparans Fall", niemals vierstellige Hal-Zahlen.
 
 REGELN (DSA3, NICHT DSA2/4/5):
   Sieben positive Eigenschaften: Mut (MU), Klugheit (KL), Intuition (IN), Charisma (CH), Fingerfertigkeit (FF), Gewandtheit (GE), Körperkraft (KK).
@@ -13,7 +15,7 @@ REGELN (DSA3, NICHT DSA2/4/5):
   Talentprobe: 3W20 gegen die drei dem Talent zugeordneten Eigenschaften; Fehlpunkte werden mit dem Talentwert (TaW) ausgeglichen.
   Kampfwerte: AT, PA, RS, TP, LE, AE.
 
-EPOCHE: Hal-Zeit, VOR der Borbarad-Invasion. Das Mittelreich unter Kaiser Hal ist (noch) stabil, das Bornland mystisch und rau, Thorwal voller stolzer Seefahrer. Tonfall: "fantastischer Realismus" — dreckig, bodenständig, aber voller Wunder. Borbarad selbst ist Lehrstoff finsterer Geschichten, nicht aktuelles Tagesgeschehen.
+EPOCHE: Späte Hal-Zeit, 19/20 Hal — die Zeit des DRITTEN ORKENSTURMS und des Klassikers "Das Jahr des Greifen". Kaiser Hal selbst ist spurlos im Bornland verschwunden; sein Sohn KRONPRINZ BRIN führt das Mittelreich als Reichsbehüter gegen die einfallenden Orkheere. Im Norden und in den Schwarzen Landen brennt es; Greifenfurt, Gareth und die Trollzacken sind Schlagworte der Stunde. Die Borbarad-Invasion liegt noch in der Zukunft — Borbarad ist Lehrstoff finsterer Geschichten, nicht aktuelles Tagesgeschehen. Tonfall: "fantastischer Realismus" — dreckig, bodenständig, aber voller Wunder, mit dem ständigen Druck des Orkensturms im Hintergrund.
 
 GÖTTERZWÖLF (immer mit Beinamen oder Symbol greifbar machen):
   Praios (Sonne, Recht), Rondra (Sturm, Schwert, Ehre), Efferd (Meer, Wetter), Travia (Herd, Treue), Boron (Tod, Schlaf, Schweigen), Hesinde (Wissen, Magie, Schlangen), Firun (Jagd, Winter), Tsa (Leben, Wandel, Echsen), Phex (Diebe, Händler, Schatten), Peraine (Heilung, Acker), Ingerimm (Schmiede, Feuer, Zwerge), Rahja (Liebe, Rausch, Tanz).
