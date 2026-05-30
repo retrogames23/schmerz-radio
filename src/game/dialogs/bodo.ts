@@ -151,6 +151,12 @@ export const bodoDialogs: Record<string, DialogTree> = {
             text: "Sie haben vorhin von Trägersignalen geredet — gibt es da Frequenzen außerhalb der Skala?",
             next: "bodoHiddenFreq1",
           },
+          {
+            text: "Kowalk sagt, Sie haben Brust mal im Phrasen-Duell kleingekriegt. Wie?",
+            requires: ["kowalkHintedBodoHelka"],
+            hiddenWhen: ["learnedAttackVorgesetzten"],
+            next: "bodoTeachAttack1",
+          },
           { text: "[ Beenden ]" },
         ],
       },
