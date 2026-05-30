@@ -4,6 +4,7 @@ import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import { CloseButton } from "./CloseButton";
 import { DsaCombatInteractive, type CombatDoneResult } from "./DsaCombatInteractive";
+import imgTjark from "@/assets/dsa/dsa-npc-tjark.jpg";
 import {
   DSA_SETTINGS,
   parseMasterTurn,
@@ -606,18 +607,32 @@ function MasterTurn({ lines }: { lines: SpokenLine[] }) {
     <div className="space-y-1.5">
       {lines.map((l, i) => (
         <div key={i} className="font-serif text-[15px] leading-relaxed">
-          <span
-            className={
-              "inline-block mr-2 text-[10px] font-bold uppercase tracking-widest align-middle px-1.5 py-0.5 rounded " +
-              (l.speaker === "TJARK"
-                ? "bg-[#3a2c1a] text-[#f1e6c8]"
-                : l.speaker === "BREM"
+          {l.speaker === "TJARK" ? (
+            <span className="inline-flex items-center gap-1.5 mr-2 align-middle">
+              <img
+                src={imgTjark}
+                alt="Tjark"
+                loading="lazy"
+                width={28}
+                height={28}
+                className="h-7 w-7 rounded-full object-cover ring-2 ring-[#3a2c1a]/60"
+              />
+              <span className="inline-block text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#3a2c1a] text-[#f1e6c8]">
+                Tjark
+              </span>
+            </span>
+          ) : (
+            <span
+              className={
+                "inline-block mr-2 text-[10px] font-bold uppercase tracking-widest align-middle px-1.5 py-0.5 rounded " +
+                (l.speaker === "BREM"
                   ? "bg-[#6b3a2a] text-[#f1e6c8]"
                   : "bg-[#3a4a6a] text-[#f1e6c8]")
-            }
-          >
-            {l.speaker === "TJARK" ? "Tjark" : l.speaker === "BREM" ? "Brem" : "Yelva"}
-          </span>
+              }
+            >
+              {l.speaker === "BREM" ? "Brem" : "Yelva"}
+            </span>
+          )}
           <span>{l.text}</span>
         </div>
       ))}
