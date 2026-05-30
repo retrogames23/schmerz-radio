@@ -52,6 +52,8 @@ export type InventoryItemId =
   | "wartungsDiktat"
   // Bürokratie-Duell — gesammelte Verwaltungs-Paragraphen
   | "paragraphenNotizbuch"
+  // Kantinenverordnung — statisches Sammelbuch (Akt I, Layards Bücherschrank)
+  | "kantinenverordnung"
   // MARV-9 / Kneipenvorraum
   | "oilCan"
   // E71-Hygienevorschrift / Kondomautomat in „Zum stillen Funk"
@@ -591,6 +593,8 @@ export interface GameApi {
   openBureaucracyDuel: (mode?: "training" | "endgame") => void;
   /** Notizbuch-Overlay öffnen (gelernte Paragraphen). */
   openParagraphenNotizbuch: () => void;
+  /** Kantinenverordnung-Lese-Overlay öffnen. */
+  openKantinenverordnung: () => void;
   /** Hat Layard den Paragraphen schon im Notizbuch? */
   hasParagraph: (id: string) => boolean;
   /** Paragraph ins Notizbuch eintragen (idempotent). */
