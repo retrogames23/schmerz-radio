@@ -413,7 +413,11 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             history = history.slice(history.length - MAX_MESSAGES);
           }
 
-          const characterSnap = row.character_snapshot as DsaCharacterSummary;
+          const rawSnap = row.character_snapshot as DsaCharacterSummary;
+          const characterSnap: DsaCharacterSummary = {
+            ...rawSnap,
+            attrs: sanitizeAttrs(rawSnap.attrs),
+          };
           const settingId = row.setting as DsaSettingId;
 
           // Offtopic-Heuristik: User-Turn ohne Charakter-/Welt-Bezug zählt.
