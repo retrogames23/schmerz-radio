@@ -1,41 +1,31 @@
 /**
- * Bürokratie-Duell — „Amtliches Phrasen-Dreschen" (Akt I, Kantine 3602).
+ * Bürokratie-Duell — „Phrasen-Dreschen" (Akt I, Kantine 3602).
  *
- * Adaption des Monkey-Island-Schwertkampfs auf passiv-aggressive
- * Behörden-Phrasen statt trockener Paragraphen: Brust greift mit einem
- * typischen Amtsschimmel-Satz an, Layard kontert mit einer
- * schlagfertigen System-Ironie. Pro neu gelerntem Konter wächst sein
- * „Phrasenbuch". Drei Trainingssiege in Folge → Vossbeck nimmt ihn an.
+ * Reines Daten-Modul: enthält den Korpus aller Phrasen und Konter, die
+ * an Brusts Tresen und in Vossbecks Endrunde verwendet werden. Die
+ * Mechanik des Duells (Runden, Tally, Lernen) lebt in den Dialog-Bäumen
+ * `cafeteriaTrainingA/B/C` und `vossbeckDuel` — KEIN eigenes Overlay.
  *
- * Mechanik (analog Monkey Island):
- *  - Jede Runde wirft der Gegner eine Phrase ins Feld.
- *  - Layard wählt aus 4 Antwortoptionen.
- *  - Genau eine Antwort ist der „passende" Konter (sein `beats`-Feld
- *    enthält die Phrasen-ID). Diese Antwort kann Layard NUR wählen,
- *    wenn er den Konter bereits gelernt hat — sonst gibt es nur
- *    unpassende Konter und eigene linkische Versuche im Pool.
- *  - Bei korrekter Antwort lernt er den Konter sofort (falls neu).
- *  - Bei falscher Antwort liefert Brust den richtigen Konter selbst
- *    nach — Layard übernimmt ihn in sein Phrasenbuch. So kann er das
- *    Duell auch rein durch Verlieren-und-Lernen meistern.
- *  - Im Endgame gegen Vossbeck sind die Phrasen NEU, aber die
- *    korrekten Konter stammen aus Brusts Trainingspool — ein gelernter
- *    Konter passt sinngemäß auch auf eine neue Phrase.
+ * Was diese Datei liefert:
+ *  - PHRASES (Brust- + Vossbeck-Angriffsphrasen)
+ *  - COUNTERS (Layards Konter, landen im Phrasenbuch)
+ *  - ATTACK_PHRASES (Layards eigene Angriffsphrasen, gelernt von Bodo/Helka)
+ *  - FICTIONAL_ATTACKS (linkische Eigenversuche, die der Gegner immer kontert)
+ *  - ATTACK_COUNTER_LINES (die Konter-Repliken des Gegners auf Layard-Angriffe)
+ *  - opponentCounters / getCounter / getPhrase / getAttack
  *
- * Alle Strings sind ganze Sätze in einem Daten-Modul — i18n-konform,
- * keine String-Konkatenation, keine JSX-Schnipsel.
+ * Mechanik (umgesetzt in Dialog-Bäumen):
+ *  - Brust greift mit einer Phrase an → Spieler wählt aus 4 Kontern.
+ *    Treffer = Punkt für Layard. Fehler = Brust liefert den richtigen
+ *    Konter NACH, und der Spieler kann ihn in sein Phrasenbuch
+ *    aufnehmen (das ist die EINZIGE Lernquelle im Duell selbst — durch
+ *    falsches Raten lernt Layard NICHTS).
+ *  - In Layards Angriffsrunde wirft er selbst eine Phrase. Kennt der
+ *    Gegner sie nicht → Gegner stottert sichtbar (Treffer). Sonst
+ *    kontert er souverän (Fehler).
+ *
+ * Alle Strings sind ganze Sätze, i18n-konform, keine Konkatenation.
  */
-
-export type DuelMode = "training" | "endgame";
-
-/**
- * Welcher Runden-Typ. „opponentAttacks" = der klassische Monkey-Island-
- * Move: Brust/Vossbeck wirft eine Phrase, Layard kontert. „layardAttacks"
- * = der Konter-Spieß umgedreht: Layard wirft eine Phrase (aus seinem
- * Phrasenbuch — bei Bodo oder Helka gelernt), der Gegner versucht zu
- * kontern. Wenn der Gegner die Phrase nicht kennt → Treffer für Layard.
- */
-export type RoundKind = "opponentAttacks" | "layardAttacks";
 
 /** Eine Behörden-Phrase, mit der ein Gegner angreift. */
 export interface Phrase {
