@@ -40,6 +40,8 @@ export function Inventory() {
       openIdCard();
     } else if (item.id === "paragraphenNotizbuch") {
       api.openParagraphenNotizbuch();
+    } else if (item.id === "kantinenverordnung") {
+      api.openKantinenverordnung();
     } else if (item.id === "painRadio") {
       api.openRadio();
     } else {
