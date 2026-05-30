@@ -193,9 +193,6 @@ export function DsaLlmAdventureScene() {
   // Stelle und scrollt nach unten, wenn er die Reaktion sehen will.
 
   const handleServerReply = useCallback(
-    // Mood-Pool aktivieren, solange die Tafelrunde offen ist. Schließen
-    // gibt die Musik wieder an die GameShell-Bridge frei (-> dsaTavern).
-    // (Effekt steht unten, hier nur Markierung wegen Patch-Reihenfolge.)
     (data: ServerReply) => {
       appendMaster(data.parsed);
       if (data.imageTag) setImageTag(data.imageTag);
