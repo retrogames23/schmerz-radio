@@ -92,7 +92,8 @@ export function useDsaHost(): DsaHostValue {
       openDsaAdventure: () => game.api.openDsaAdventure(),
       closeDsaAdventure: game.closeDsaAdventure,
       getDsaSessionId: game.api.getDsaSessionId,
-      setFlag: game.api.setFlag,
+      setFlag: (flag: string) =>
+        (game.api.setFlag as (f: string) => void)(flag),
       flagsToken: game.flags,
     }),
     [game],
