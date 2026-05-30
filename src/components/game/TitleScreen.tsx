@@ -203,6 +203,21 @@ export function TitleScreen({ onStart }: Props) {
               Impressum
             </button>
             <span aria-hidden="true" className="text-muted-foreground/50">·</span>
+            <button
+              type="button"
+              onClick={() => setCreditsOpen(true)}
+              className="transition hover:text-amber-glow"
+            >
+              Inspirationen & Dank
+            </button>
+            <span aria-hidden="true" className="text-muted-foreground/50">·</span>
+            <a
+              href="mailto:stephan.doerner@posteo.de"
+              className="transition hover:text-amber-glow"
+            >
+              Kontakt: stephan.doerner@posteo.de
+            </a>
+            <span aria-hidden="true" className="text-muted-foreground/50">·</span>
             <a
               href="mailto:stephan.doerner@posteo.de"
               className="transition hover:text-amber-glow"
