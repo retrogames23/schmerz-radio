@@ -308,7 +308,6 @@ export const TRAINING_ROUNDS: DuelRound[] = [
   {
     id: "training-tradition",
     opponent: "brust",
-    kind: "opponentAttacks",
     attackPhraseId: "p-immer-so",
     opening:
       "Bewohner Worag. Bevor Sie fragen: Das haben wir hier schon immer so gemacht.",
@@ -323,7 +322,6 @@ export const TRAINING_ROUNDS: DuelRound[] = [
   {
     id: "training-stapel",
     opponent: "brust",
-    kind: "opponentAttacks",
     attackPhraseId: "p-stapel",
     opening:
       "Ihr Vorgang liegt ganz unten auf meinem Stapel. So ist das nun mal.",
@@ -337,7 +335,6 @@ export const TRAINING_ROUNDS: DuelRound[] = [
   {
     id: "training-nichtzustaendig",
     opponent: "brust",
-    kind: "opponentAttacks",
     attackPhraseId: "p-nicht-zustaendig",
     opening:
       "Dafür bin ich nicht zuständig. Ich gebe nur die Rationen aus.",
@@ -351,7 +348,6 @@ export const TRAINING_ROUNDS: DuelRound[] = [
   {
     id: "training-termin",
     opponent: "brust",
-    kind: "opponentAttacks",
     attackPhraseId: "p-termin",
     opening:
       "Für so etwas bräuchten Sie eigentlich einen Termin.",
@@ -365,7 +361,6 @@ export const TRAINING_ROUNDS: DuelRound[] = [
   {
     id: "training-formsache",
     opponent: "brust",
-    kind: "opponentAttacks",
     attackPhraseId: "p-formsache",
     opening:
       "Letzten Endes ist das alles eine reine Formsache.",
@@ -379,7 +374,6 @@ export const TRAINING_ROUNDS: DuelRound[] = [
   {
     id: "training-vorgesetzte",
     opponent: "brust",
-    kind: "opponentAttacks",
     attackPhraseId: "p-vorgesetzte",
     opening:
       "Das müsste ich eigentlich erst meinem Vorgesetzten vorlegen.",
