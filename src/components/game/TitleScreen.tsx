@@ -3,6 +3,7 @@ import { Volume2, VolumeX } from "lucide-react";
 import titleTrack from "@/assets/the-glass-hour.mp3";
 import { ImpressumOverlay } from "./ImpressumOverlay";
 import { OpenSourceOverlay } from "./OpenSourceOverlay";
+import { CreditsOverlay } from "./CreditsOverlay";
 import { DonationModal } from "@/components/donation/DonationModal";
 import titleArtwork from "@/assets/title/whisper-quest-v1.jpg";
 import { RainOverlay } from "./RainOverlay";
