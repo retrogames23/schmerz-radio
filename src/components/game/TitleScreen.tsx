@@ -3,6 +3,7 @@ import { Volume2, VolumeX } from "lucide-react";
 import titleTrack from "@/assets/the-glass-hour.mp3";
 import { ImpressumOverlay } from "./ImpressumOverlay";
 import { OpenSourceOverlay } from "./OpenSourceOverlay";
+import { CreditsOverlay } from "./CreditsOverlay";
 import { DonationModal } from "@/components/donation/DonationModal";
 import titleArtwork from "@/assets/title/whisper-quest-v1.jpg";
 import { RainOverlay } from "./RainOverlay";
@@ -25,6 +26,7 @@ export function TitleScreen({ onStart }: Props) {
   const [musicOn, setMusicOn] = useState(true);
   const [impressumOpen, setImpressumOpen] = useState(false);
   const [ossOpen, setOssOpen] = useState(false);
+  const [creditsOpen, setCreditsOpen] = useState(false);
   const [warningOpen, setWarningOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
 
@@ -201,6 +203,21 @@ export function TitleScreen({ onStart }: Props) {
               Impressum
             </button>
             <span aria-hidden="true" className="text-muted-foreground/50">·</span>
+            <button
+              type="button"
+              onClick={() => setCreditsOpen(true)}
+              className="transition hover:text-amber-glow"
+            >
+              Inspirationen & Dank
+            </button>
+            <span aria-hidden="true" className="text-muted-foreground/50">·</span>
+            <a
+              href="mailto:stephan.doerner@posteo.de"
+              className="transition hover:text-amber-glow"
+            >
+              Kontakt: stephan.doerner@posteo.de
+            </a>
+            <span aria-hidden="true" className="text-muted-foreground/50">·</span>
             <a
               href="mailto:stephan.doerner@posteo.de"
               className="transition hover:text-amber-glow"
@@ -221,6 +238,7 @@ export function TitleScreen({ onStart }: Props) {
 
       <ImpressumOverlay open={impressumOpen} onClose={() => setImpressumOpen(false)} />
       <OpenSourceOverlay open={ossOpen} onClose={() => setOssOpen(false)} />
+      <CreditsOverlay open={creditsOpen} onClose={() => setCreditsOpen(false)} />
       <DonationModal
         open={donationOpen}
         onClose={() => setDonationOpen(false)}
