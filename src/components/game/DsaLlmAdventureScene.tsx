@@ -500,6 +500,21 @@ export function DsaLlmAdventureScene() {
           onDone={(v) => void handleCombatDone(v)}
         />
       )}
+
+      {imgSrc && imageZoomed && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 p-4 sm:p-8"
+          onClick={() => setImageZoomed(false)}
+        >
+          <CloseButton onClick={() => setImageZoomed(false)} />
+          <img
+            src={imgSrc}
+            alt="Szene (vergrößert)"
+            className="max-h-full max-w-full object-contain shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
