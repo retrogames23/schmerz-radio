@@ -220,37 +220,37 @@ export const bodoDialogs: Record<string, DialogTree> = {
       bf2: {
         id: "bf2",
         speaker: "SYSTEM",
-        text: "[ Bodo nimmt das Flugblatt zwischen zwei Finger. Liest. Lange. Lotti zuckt einmal mit dem Ohr, als wäre eine Frequenz gewandert. ]",
+        text: "[ Bodo nimmt das Flugblatt zwischen zwei Finger. Liest. Lange. Lotti zuckt einmal mit dem Ohr, als hätte jemand im Nebenraum gehustet. ]",
         next: "bf3",
       },
       bf3: {
         id: "bf3",
         speaker: "BODO",
-        text: "Z.K.S. Den Namen kenne ich. Aus dem Funkprotokoll. — Das hier ist nichts Neues, Herr Worag. Das hier ist nur das erste Mal, dass es jemand auf Papier bringt.",
+        text: "Z.K.S. Den Namen kenne ich. Aus alten Akten bei den Stadtwerken. — Das hier ist nichts Neues, Herr Worag. Das hier ist nur das erste Mal, dass es jemand auf Papier bringt.",
         next: "bf4",
       },
       bf4: {
         id: "bf4",
         speaker: "LAYARD",
-        text: "Welches Funkprotokoll?",
+        text: "Welche Akten?",
         next: "bf5",
       },
       bf5: {
         id: "bf5",
         speaker: "BODO",
-        text: "Das Trägersignal von 104,6. Stadtwerke-Logbücher, neunzehnhunderteinundneunzig. Seitdem wird der Träger manuell nachgeregelt — von Hand. Ein Mensch, eine Schicht, ein Drehknopf.",
+        text: "Stadtwerke-Logbücher, neunzehnhunderteinundneunzig. Seitdem läuft hier vieles nur, weil jemand von Hand nachregelt — Schicht für Schicht. Ein Mensch, eine Liste, ein Schraubenzieher.",
         next: "bf5b",
       },
       bf5b: {
         id: "bf5b",
         speaker: "BODO",
-        text: "Wer da am Knopf sitzt, ist nicht die Stadt. Das war sie nie. Wer es ist — keine Ahnung. Aber jemand zahlt ihn.",
+        text: "Wer diese Schichten besetzt, ist nicht die Stadt. Das war sie nie. Wer es ist — keine Ahnung. Aber jemand zahlt sie.",
         next: "bf6",
       },
       bf6: {
         id: "bf6",
         speaker: "BODO",
-        text: "Wenn der Mensch geht, geht das Signal. Wenn das Signal geht, hört der Sektor sich selbst. Das ist alles, was Sie wissen müssen — und mehr, als ich heute hätte sagen sollen.",
+        text: "Wenn der Mensch geht, fällt die Schicht aus. Wenn die Schicht ausfällt, hört der Sektor sich selbst. Das ist alles, was Sie wissen müssen — und mehr, als ich heute hätte sagen sollen.",
         next: "bf7",
       },
       bf7: {
