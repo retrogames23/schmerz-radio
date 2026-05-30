@@ -202,6 +202,18 @@ function DsaLanding() {
         </dl>
       </section>
 
+      {/* Disclaimer */}
+      <section className="mx-auto max-w-3xl px-4 pb-8 sm:px-6">
+        <div className="rounded border border-[#3a2c1a]/60 bg-[#1a120a]/80 p-4 text-[11px] leading-relaxed text-[#f1e6c8]/50">
+          <p className="mb-2">
+            Bei WhisperQuest handelt es sich um ein rein privates, nicht-kommerzielles Fan-Projekt, das in keiner offiziellen Verbindung zu Ulisses Spiele steht.
+          </p>
+          <p>
+            DAS SCHWARZE AUGE, AVENTURIEN, DERE, MYRANOR, THARUN, UTHURIA, RIESLAND und THE DARK EYE sind eingetragene Marken der Ulisses Spiele GmbH. Es werden keine urheberrechtlich geschützten Texte oder offiziellen Grafiken eins zu eins vervielfältigt.
+          </p>
+        </div>
+      </section>
+
       <footer className="border-t border-[#3a2c1a] py-4 text-center text-[10px] uppercase tracking-wider opacity-60">
         <Link to="/" className="hover:opacity-100">
           Zum Stammspiel
