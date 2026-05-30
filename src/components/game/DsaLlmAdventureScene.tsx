@@ -341,6 +341,24 @@ export function DsaLlmAdventureScene() {
     [imageTag],
   );
 
+  // Beim Szenenwechsel oder Schließen automatisch Zoom zurücksetzen.
+  useEffect(() => {
+    setImageZoomed(false);
+  }, [imageTag, dsaAdventureOpen]);
+
+  // Escape schließt den Zoom.
+  useEffect(() => {
+    if (!imageZoomed) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        setImageZoomed(false);
+      }
+    }
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [imageZoomed]);
+
   if (!dsaAdventureOpen) return null;
   if (!dsaCharacter) {
     closeDsaAdventure();
