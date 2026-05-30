@@ -580,12 +580,8 @@ export const corridorsE67Scenes: Record<string, Scene> = {
               "Eine kleine zinnerne Ölkanne mit langem, schlankem Schnabel. Halb voll, klebrig am Hals. Auf einem Aufkleber, mit Bleistift: »Wartung — Tür 4 fällig«. Niemand hat sich darum gekümmert.",
           });
           api.showText([
-            "Auf dem unteren Wartungsregal liegt zwischen Lötzinn und",
-            "vergilbten Gummiringen ein kleines Ölkännchen. Der Aufkleber",
-            "ist alt: »Wartung — Tür 4 fällig«.",
-            "Layard nimmt es mit. Tür 4 — das ist die Lautsprecher-Maske",
-            "vor der Kneipe.",
-            "[ Ölkännchen eingesteckt. ]",
+            "Auf dem unteren Wartungsregal liegt zwischen Lötzinn und vergilbten Gummiringen ein kleines Ölkännchen. Der Aufkleber ist alt: »Wartung — Tür 4 fällig«.",
+            "Layard nimmt es mit. Tür 4 — das ist die Lautsprecher-Maske vor der Kneipe. [ Ölkännchen eingesteckt. ]",
           ]);
         },
       },
