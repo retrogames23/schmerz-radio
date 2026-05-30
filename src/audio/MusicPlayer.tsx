@@ -393,6 +393,16 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     opts?: { playOnce?: boolean; force?: boolean },
   ) {
     if (overrideRef.current === id && !opts) return;
+    // Wenn der Mood-Pool aktiv ist, Override-Wechsel nur bookkeepen — der
+    // Mood-Pool gewinnt akustisch. Beim setMoodPool(null) wird auf den
+    // aktuell gemerkten Override (oder die Playlist) zurückgewechselt.
+    if (moodPoolRef.current) {
+      overrideRef.current = id;
+      overridePlayOnceRef.current = !!opts?.playOnce;
+      overrideForceRef.current = !!opts?.force;
+      setActiveOverride(id);
+      return;
+    }
     if (id) {
       // Wechsel auf Override: Playlist-Position merken.
       if (overrideRef.current === null) {
