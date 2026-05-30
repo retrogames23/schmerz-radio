@@ -61,11 +61,6 @@ const AlmanachOverlay = lazy(() =>
 const HelpOverlay = lazy(() =>
   import("./HelpOverlay").then((m) => ({ default: m.HelpOverlay })),
 );
-const BureaucracyDuelOverlay = lazy(() =>
-  import("./BureaucracyDuelOverlay").then((m) => ({
-    default: m.BureaucracyDuelOverlay,
-  })),
-);
 const FreeChatOverlay = lazy(() =>
   import("./FreeChatOverlay").then((m) => ({ default: m.FreeChatOverlay })),
 );
@@ -255,7 +250,6 @@ function GameStage({
                   onClose={handleCloseHelp}
                 />
               )}
-              <BureaucracyDuelGate />
               <FreeChatGate />
             </Suspense>
           </div>
@@ -270,12 +264,6 @@ function GameStage({
       {dev && <DevPlaybackPanel />}
     </>
   );
-}
-
-function BureaucracyDuelGate() {
-  const { duelOpen } = useGame();
-  if (!duelOpen) return null;
-  return <BureaucracyDuelOverlay />;
 }
 
 function FreeChatGate() {
