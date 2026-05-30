@@ -919,4 +919,9 @@ export const DUEL_UI_TEXT = {
   ],
   paragraphLearnedToast: (c: Counter) =>
     `📓 Neuer Konter gelernt: ${c.shortLabel}. ${c.learnHint ?? ""}`,
+  layardAttackPrompt: "Ihre Phrase:",
+  layardAttackHint:
+    "Wählen Sie eine Phrase aus Ihrem Phrasenbuch. Linkische Eigenversuche wird der Gegner souverän kontern.",
+  layardAttackNoLearned:
+    "Sie haben noch keine eigene Angriffsphrase. Lassen Sie sich von erfahrenen Bewohnern eine zeigen — Brust hat blinde Flecken.",
 };
