@@ -341,6 +341,339 @@ export interface CombatResult {
   fallenHeroes: { id: string; name: string }[];
 }
 
+// ════════════════════════════════════════════════════════════════
+// Neues interaktives Modell: Wunden, Taktiken, Fail-Forward.
+// Wird vom LLM-Abenteuer (DsaLlmAdventureScene + DsaCombatInteractive)
+// genutzt. Die ältere `resolveCombat`-API bleibt für die scripted
+// `DsaAdventureScene` unverändert bestehen.
+// ════════════════════════════════════════════════════════════════
+
+export type Tactic = "balanced" | "aggressive" | "defensive" | "cunning" | "flee";
+
+export const TACTIC_LABELS: Record<Tactic, { title: string; blurb: string }> = {
+  balanced: {
+    title: "Ausgewogen",
+    blurb: "Standard-Kampf, keine Sonder-Risiken.",
+  },
+  aggressive: {
+    title: "Aggressiver Vorstoß",
+    blurb: "+2 AT · +2 TP · −3 PA. Schneller fertig, aber gefährlicher.",
+  },
+  defensive: {
+    title: "Defensives Taktieren",
+    blurb: "+3 PA · −2 AT · −2 TP. Dauert länger, sicherer.",
+  },
+  cunning: {
+    title: "Umgebung nutzen",
+    blurb: "KL-Probe je Runde. Erfolg: Gegner −2 AT/PA. Misserfolg: keine Wirkung.",
+  },
+  flee: {
+    title: "Flucht / Einschüchtern",
+    blurb: "CH-Probe je Runde. Erfolg: Kampf abbrechen. Misserfolg: Gegner +1 AT.",
+  },
+};
+
+export type ConsequenceKind = "capture" | "robbery" | "wound" | "timeloss";
+
+export interface WoundedCombatant extends Combatant {
+  /** 0..3 — ab 3 ist die Heldenfigur endgültig kampfunfähig.
+   *  Gegner führen keine Wunden — sie fallen einfach bei LE ≤ 0. */
+  wounds: number;
+}
+
+export interface CombatState {
+  heroes: WoundedCombatant[];
+  foes: WoundedCombatant[];
+  round: number;
+  phase: "ongoing" | "victory" | "defeat" | "aborted";
+  consequenceKind: ConsequenceKind | null;
+  fallenHeroes: { id: string; name: string }[];
+  /** Letzte tatsächlich verwendete Taktik — beeinflusst die Konsequenz-Auswahl. */
+  lastTactic: Tactic;
+}
+
+export interface PlayerStats {
+  KL: number;
+  CH: number;
+}
+
+function wrap(c: Combatant): WoundedCombatant {
+  return { ...c, wounds: 0 };
+}
+
+export function createCombatState(
+  heroes: Combatant[],
+  foes: Combatant[],
+): CombatState {
+  return {
+    heroes: heroes.map(wrap),
+    foes: foes.map(wrap),
+    round: 0,
+    phase: "ongoing",
+    consequenceKind: null,
+    fallenHeroes: [],
+    lastTactic: "balanced",
+  };
+}
+
+function snapshotW(all: WoundedCombatant[]): { id: string; le: number }[] {
+  return all.map((c) => ({ id: c.id, le: c.le }));
+}
+
+interface RoundModifiers {
+  heroAt: number;
+  heroPa: number;
+  heroTp: number;
+  foeAt: number;
+  foePa: number;
+}
+
+function pickConsequence(tactic: Tactic): ConsequenceKind {
+  const table: Record<Tactic, ConsequenceKind[]> = {
+    aggressive: ["capture", "capture", "wound", "wound", "robbery"],
+    defensive: ["robbery", "robbery", "robbery", "timeloss", "timeloss", "wound"],
+    cunning: ["timeloss", "timeloss", "capture", "capture", "wound"],
+    flee: ["robbery", "robbery", "capture", "capture"],
+    balanced: ["capture", "robbery", "wound", "timeloss"],
+  };
+  const arr = table[tactic];
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/**
+ * Führt genau eine Runde aus und gibt die Events dieser Runde zurück.
+ * Mutiert `state` (LE, Wunden, Phase). Wenn `state.phase !== "ongoing"`
+ * vorher schon terminal war, liefert die Funktion eine leere Liste.
+ */
+export function resolveRound(
+  state: CombatState,
+  tactic: Tactic,
+  player: PlayerStats,
+): CombatEvent[] {
+  if (state.phase !== "ongoing") return [];
+  state.lastTactic = tactic;
+  state.round += 1;
+  const events: CombatEvent[] = [];
+  const all = [...state.heroes, ...state.foes];
+
+  const mods: RoundModifiers = { heroAt: 0, heroPa: 0, heroTp: 0, foeAt: 0, foePa: 0 };
+
+  // Runden-Header
+  events.push({
+    kind: "round-start",
+    text: `── Runde ${state.round} · ${TACTIC_LABELS[tactic].title} ──`,
+    snapshot: snapshotW(all),
+  });
+
+  // Taktik-spezifische Eröffnungs-Probe.
+  if (tactic === "aggressive") {
+    mods.heroAt += 2; mods.heroTp += 2; mods.heroPa -= 3;
+  } else if (tactic === "defensive") {
+    mods.heroPa += 3; mods.heroAt -= 2; mods.heroTp -= 2;
+  } else if (tactic === "cunning") {
+    const roll = d20();
+    const success = roll <= player.KL && roll !== 20;
+    events.push({
+      kind: "ini",
+      text: success
+        ? `Listige Aktion gelingt — Sand, Stuhl, herabfallender Krug. Gegner −2 AT/PA diese Runde.`
+        : `Listige Aktion misslingt — kein Effekt.`,
+      dice: [{ label: "KL-Probe", value: roll, target: player.KL, success }],
+      snapshot: snapshotW(all),
+    });
+    if (success) { mods.foeAt -= 2; mods.foePa -= 2; }
+  } else if (tactic === "flee") {
+    const roll = d20();
+    const success = roll <= player.CH && roll !== 20;
+    events.push({
+      kind: "ini",
+      text: success
+        ? `Einschüchtern / Flucht gelingt — der Kampf bricht ab.`
+        : `Einschüchtern misslingt — Gegner wittern Schwäche. +1 AT diese Runde.`,
+      dice: [{ label: "CH-Probe", value: roll, target: player.CH, success }],
+      snapshot: snapshotW(all),
+    });
+    if (success) {
+      state.phase = "aborted";
+      return events;
+    }
+    mods.foeAt += 1;
+  }
+
+  // Initiative
+  const order = [...state.heroes.filter(alive), ...state.foes.filter(alive)]
+    .map((c) => ({ c, ini: c.iniBase + d6() }))
+    .sort((a, b) => b.ini - a.ini);
+  events.push({
+    kind: "ini",
+    text: "Initiative: " + order.map((o) => `${o.c.name} ${o.ini}`).join(" · "),
+    dice: order.map((o) => ({ label: `${o.c.name.split(" ")[0]} INI`, value: o.ini })),
+    snapshot: snapshotW(all),
+  });
+
+  const isLayard = (c: WoundedCombatant) => c.id === "hero";
+
+  for (const { c: actor } of order) {
+    if (!alive(actor)) continue;
+    if (state.phase !== "ongoing") break;
+    if (state.foes.every((f) => !alive(f))) break;
+
+    const target =
+      actor.side === "hero" ? pickFoeTargetW(state.foes) : pickWeakestW(state.heroes);
+    if (!target) continue;
+
+    // Wunden-Malus auf AT/PA: −2 pro Wunde des Akteurs/Verteidigers.
+    const actorAtMod =
+      -2 * actor.wounds +
+      (actor.side === "foe" ? mods.foeAt : isLayard(actor) ? mods.heroAt : 0);
+    const targetPaMod =
+      -2 * target.wounds +
+      (target.side === "foe" ? mods.foePa : isLayard(target) ? mods.heroPa : 0);
+    const actorTpMod =
+      -2 * actor.wounds + (isLayard(actor) ? mods.heroTp : 0);
+
+    const effAt = Math.max(1, actor.at + actorAtMod);
+    const effPa = Math.max(1, target.pa + targetPaMod);
+
+    // Attacke
+    const atRoll = d20();
+    const atHit = atRoll <= effAt && atRoll !== 20;
+    if (!atHit) {
+      events.push({
+        kind: "attack-miss",
+        text: `${actor.name} greift mit ${actor.weapon} an — daneben.`,
+        dice: [{ label: "AT (1W20)", value: atRoll, target: effAt, success: false }],
+        snapshot: snapshotW(all),
+        actorId: actor.id,
+        targetId: target.id,
+      });
+      continue;
+    }
+    events.push({
+      kind: "attack-hit",
+      text: `${actor.name} trifft auf ${target.name} mit ${actor.weapon}.`,
+      dice: [{ label: "AT (1W20)", value: atRoll, target: effAt, success: true }],
+      snapshot: snapshotW(all),
+      actorId: actor.id,
+      targetId: target.id,
+    });
+
+    // Parade
+    const paRoll = d20();
+    const paHit = paRoll <= effPa && paRoll !== 20;
+    if (paHit) {
+      events.push({
+        kind: "parry-success",
+        text: `${target.name} pariert.`,
+        dice: [{ label: "PA (1W20)", value: paRoll, target: effPa, success: true }],
+        snapshot: snapshotW(all),
+        actorId: target.id,
+        targetId: actor.id,
+      });
+      continue;
+    }
+
+    // Schaden
+    const tpRolls: number[] = [];
+    let raw = actor.tpBonus + actorTpMod;
+    for (let i = 0; i < actor.tpDice; i++) {
+      const r = d6();
+      tpRolls.push(r);
+      raw += r;
+    }
+    const dmg = Math.max(1, raw - target.rs);
+    target.le = Math.max(0, target.le - dmg);
+
+    events.push({
+      kind: "damage",
+      text: `${dmg} TP Schaden (${tpRolls.join("+")}${
+        actor.tpBonus ? `+${actor.tpBonus}` : ""
+      } − RS ${target.rs}). ${target.name}: ${target.le}/${target.leMax} LE.`,
+      dice: [
+        ...tpRolls.map((r, i) => ({ label: `TP W${i + 1}`, value: r })),
+        { label: "RS", value: target.rs },
+      ],
+      snapshot: snapshotW(all),
+      actorId: actor.id,
+      targetId: target.id,
+    });
+
+    if (target.le <= 0) {
+      if (target.side === "hero") {
+        target.wounds += 1;
+        if (target.wounds >= 3) {
+          state.fallenHeroes.push({ id: target.id, name: target.name });
+          events.push({
+            kind: "downed",
+            text: `${target.name} sinkt zu Boden — dritte Wunde, kampfunfähig.`,
+            snapshot: snapshotW(all),
+            actorId: actor.id,
+            targetId: target.id,
+          });
+        } else {
+          target.le = Math.max(1, Math.floor(target.leMax / 2));
+          events.push({
+            kind: "downed",
+            text: `${target.name} stürzt, rappelt sich blutend wieder auf — ${target.wounds}. Wunde brennt. (LE ${target.le}/${target.leMax})`,
+            snapshot: snapshotW(all),
+            actorId: actor.id,
+            targetId: target.id,
+          });
+        }
+      } else {
+        events.push({
+          kind: "downed",
+          text: `${target.name} ist kampfunfähig.`,
+          snapshot: snapshotW(all),
+          actorId: actor.id,
+          targetId: target.id,
+        });
+      }
+    }
+  }
+
+  // Ende-Check
+  const heroAlive = state.heroes.some(
+    (h) => !state.fallenHeroes.some((f) => f.id === h.id),
+  );
+  const layardDown = state.fallenHeroes.some((f) => f.id === "hero");
+  if (state.foes.every((f) => !alive(f))) {
+    state.phase = "victory";
+    events.push({
+      kind: "end-victory",
+      text: "Der Kampf ist vorbei. Ihr habt überlebt.",
+      snapshot: snapshotW(all),
+    });
+  } else if (layardDown || !heroAlive) {
+    state.phase = "defeat";
+    state.consequenceKind = pickConsequence(tactic);
+    const desc: Record<ConsequenceKind, string> = {
+      capture: "Schwärze. Du erwachst gefesselt — Ausrüstung weg.",
+      robbery: "Sie lassen dich blutend im Schlamm liegen. Beraubt.",
+      wound: "Du überlebst, behältst aber eine bleibende Narbe.",
+      timeloss: "Drei Tage Fieberkoma — die Welt hat sich verändert.",
+    };
+    events.push({
+      kind: "end-defeat",
+      text: `Niederlage. ${desc[state.consequenceKind]}`,
+      snapshot: snapshotW(all),
+    });
+  }
+
+  return events;
+}
+
+function pickWeakestW(group: WoundedCombatant[]): WoundedCombatant | null {
+  const live = group.filter(alive);
+  if (live.length === 0) return null;
+  return live.sort((a, b) => a.le - b.le)[0];
+}
+function pickFoeTargetW(foes: WoundedCombatant[]): WoundedCombatant | null {
+  const live = foes.filter(alive);
+  if (live.length === 0) return null;
+  return live.sort((a, b) => a.le - b.le)[0];
+}
+
 function snapshot(all: Combatant[]): { id: string; le: number }[] {
   return all.map((c) => ({ id: c.id, le: c.le }));
 }
