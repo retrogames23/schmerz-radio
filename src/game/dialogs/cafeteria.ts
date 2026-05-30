@@ -556,12 +556,12 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             hiddenWhen: ["gotB3Ration"],
           },
           {
-            // Trainingsfall — fiktive Kantinenfälle, lehrt Paragraphen.
+            // Trainingsfall — fiktive Kantinenfälle, lehrt Konter fürs Phrasenbuch.
             // Bleibt verfügbar, bis Layard das Endduell gewonnen hat.
             text: "Ich würde mit Ihnen einen Trainingsfall durchgehen.",
             next: "bDuelOffer",
-            // Erst sichtbar, sobald Layard weiß, warum er paragraphenfest
-            // werden muss (Vossbeck-Pfad über Kowalk/Brust erfahren).
+            // Erst sichtbar, sobald Layard weiß, warum er im Behörden-Ton
+            // schlagfertig werden muss (Vossbeck-Pfad über Kowalk/Brust erfahren).
             requires: ["knowsVossbeckPath"],
             hiddenWhen: ["gotB3Ration"],
           },
