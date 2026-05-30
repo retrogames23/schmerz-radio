@@ -88,10 +88,18 @@ AUSGABEFORMAT — STRIKT:
 
   Optionale Marker (alle in eckigen Klammern, je in eigener Zeile):
     [SCENE: <tag>]            wechselt die Hintergrundillustration. Erlaubte Tags: ${sceneTagList}.
-                              STRIKT: Setze [SCENE: …] NUR, wenn ein Tag die Szene wirklich präzise abbildet (Ort UND Stimmung).
-                              Im Zweifel KEIN [SCENE]. Lieber gar kein Bild als ein ungefähr passendes oder generisches.
-                              Niemals "den nächstbesten" Tag wählen. Wiederhole den letzten Tag NICHT, nur weil die Szene weiterläuft —
-                              setze [SCENE] nur bei einem echten Orts- oder Stimmungswechsel, der zu einem der Tags passt.
+                              SEHR STRIKT: [SCENE] ist die Ausnahme, NICHT die Regel. Standardverhalten = KEIN [SCENE].
+                              Setze [SCENE: …] NUR dann, wenn ein Tag den aktuellen Schauplatz UND die Stimmung
+                              eindeutig, wörtlich und unverwechselbar trifft. Beispiel: Eine Hafengasse bei Nacht ist
+                              KEIN "npc_merchant" nur weil ein Händler vorkommt, und KEIN "city_market" nur weil es
+                              irgendwo in einer Stadt spielt. NPC-Tags (npc_merchant, npc_noble, npc_mage, npc_priest)
+                              nur, wenn die ganze Szene ein ruhiges Porträt-Gespräch mit genau dieser Figur ist —
+                              nicht für beiläufige Erwähnungen, Verfolgungen, Kämpfe oder Straßenszenen.
+                              Im Zweifel IMMER kein [SCENE]. Lieber gar kein Bild als ein ungefähr passendes,
+                              stilistisch abweichendes oder nur grob thematisch verwandtes. Niemals "den nächstbesten"
+                              Tag wählen. Wiederhole den letzten Tag NICHT, nur weil die Szene weiterläuft —
+                              setze [SCENE] ausschließlich bei einem echten Orts- oder Stimmungswechsel, der zu einem
+                              der Tags passt. Wenn du unsicher bist, ob ein Tag passt: lass ihn weg.
                               Für Kämpfe und deren Nachwirkungen gibt es ORTSSPEZIFISCHE Tags: nutze
                               combat_alley/aftermath_alley in Stadtgassen, combat_tavern/aftermath_tavern in Schenken,
                               combat_forest/aftermath_forest im Wald, combat_dungeon/aftermath_dungeon in Verliesen/Krypten.
