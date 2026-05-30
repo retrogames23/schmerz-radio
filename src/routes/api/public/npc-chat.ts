@@ -26,6 +26,29 @@ const RATE_MAX_HOUR = 200;
 const ipMin = new Map<string, number[]>();
 const ipHour = new Map<string, number[]>();
 
+/**
+ * Sanitize free-text fields before interpolating into the LLM system
+ * prompt. Strips control chars / brackets and neutralizes common prompt
+ * injection phrases (same battery as dsa-master.ts).
+ */
+function sanitizePromptField(input: unknown, maxLen: number): string {
+  let s = typeof input === "string" ? input : "";
+  s = s.replace(/[\u0000-\u001F\u007F]+/g, " ");
+  s = s.replace(/[<>{}\[\]`|\\]/g, " ");
+  const phrases = [
+    /ignore (all |previous |above )?(instructions|rules|prompts?)/gi,
+    /disregard (all |previous |above )?(instructions|rules|prompts?)/gi,
+    /(system|developer|assistant)\s*[: ]\s*prompt/gi,
+    /ignoriere (alle |vorherigen |obigen )?(anweisungen|regeln|prompts?)/gi,
+    /vergiss (alle |alles |vorherige[ns]? )?(anweisungen|regeln|prompts?)/gi,
+    /system[- ]?prompt/gi,
+    /jailbreak/gi,
+  ];
+  for (const p of phrases) s = s.replace(p, "");
+  s = s.replace(/\s+/g, " ").trim();
+  return s.slice(0, maxLen);
+}
+
 function rateLimited(ip: string): boolean {
   const now = Date.now();
   const m = (ipMin.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MIN_MS);
