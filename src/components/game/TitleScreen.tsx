@@ -26,6 +26,7 @@ export function TitleScreen({ onStart }: Props) {
   const [musicOn, setMusicOn] = useState(true);
   const [impressumOpen, setImpressumOpen] = useState(false);
   const [ossOpen, setOssOpen] = useState(false);
+  const [creditsOpen, setCreditsOpen] = useState(false);
   const [warningOpen, setWarningOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
 
