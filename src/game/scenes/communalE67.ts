@@ -44,10 +44,10 @@ export const communalE67Scenes: Record<string, Scene> = {
       {
         id: "tjarkSpot",
         // Tjark (schwarze Haare, Brille) hinten Mitte-Rechts hinter dem GM-Schirm.
-        x: 66,
-        y: 4,
+        x: 63.4,
+        y: 4.5,
         w: 20,
-        h: 54,
+        h: 34.3,
         label: "Tjark (Meister)",
         kind: "talk",
         onUse: (api) => api.startDialog("tjarkSmalltalk"),
@@ -70,10 +70,10 @@ export const communalE67Scenes: Record<string, Scene> = {
       {
         id: "bremSpot",
         // Brem (rote Haare, rot-schwarz gestreift) steht links am Tisch.
-        x: 13,
+        x: 19.2,
         y: 12,
-        w: 22,
-        h: 78,
+        w: 15.8,
+        h: 42.8,
         label: "Brem (Streuner)",
         kind: "talk",
         onUse: (api) =>
@@ -100,9 +100,9 @@ export const communalE67Scenes: Record<string, Scene> = {
       {
         id: "exitCommon",
         // Schmaler Streifen am linken Bildrand (Tür außerhalb des Bildes).
-        x:  0,
+        x: 0.2,
         y: 0,
-        w: 4,
+        w: 6.1,
         h: 100,
         label: "Zurück in die Lobby",
         kind: "exit",
