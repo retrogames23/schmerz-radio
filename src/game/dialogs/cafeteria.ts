@@ -601,7 +601,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       bAuth3: {
         id: "bAuth3",
         speaker: "BRUST",
-        text: "Vossbeck nimmt aber nur Vorgänge von Bewohnern an, die paragraphenfest sind. Wenn Sie wollen — wir können vorher einen Trainingsfall durchgehen. Drei in Folge bei mir, dann sind Sie für Vossbeck satisfaktionsfähig.",
+        text: "Oberinspektor Vossbeck nimmt Vorgänge nur von Bewohnern entgegen, die im Bürokratie-Alltag schlagfertig sind. Mir ist die Aufgabe übertragen, das zu prüfen. — Wir können einen Trainingsfall durchgehen. Drei in Folge bei mir, dann sind Sie für Vossbeck satisfaktionsfähig.",
+        subtext: "Er sagt »satisfaktionsfähig« mit der Ehrfurcht eines Mannes, der das Wort jeden Morgen einmal vor dem Spiegel übt.",
         choices: [
           {
             text: "Trainingsfall, ja.",
@@ -618,13 +619,14 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       bDuelOffer: {
         id: "bDuelOffer",
         speaker: "BRUST",
-        text: "Trainingsfall. Fiktive Konstellation aus dem Kantinenbetrieb. Ich eröffne mit einem Paragraphen, Sie kontern. Zwei Treffer mehr als Fehler — Sie haben gewonnen. Drei Fehler — Trainingsfall verloren.",
+        text: "Trainingsfall. Erfundene Konstellation aus dem Kantinenbetrieb. Ich eröffne mit einer typischen Bewohner-Phrase — Sie kontern. Zwei Treffer mehr als Fehler: bestanden. Drei Fehler: für heute schließen wir.",
         next: "bDuelOffer2",
       },
       bDuelOffer2: {
         id: "bDuelOffer2",
         speaker: "BRUST",
-        text: "Was Sie aus jedem Fall mitnehmen, landet in Ihrem Notizbuch. Drei gewonnene Trainingsfälle in Folge — und Vossbeck nimmt Sie ernst.",
+        text: "Was Sie aus jedem Fall mitnehmen, landet in Ihrem Phrasenbuch. Drei gewonnene Trainingsfälle in Folge — und Vossbeck nimmt Sie ernst. Ich darf das beurkunden.",
+        subtext: "»Beurkunden« sagt er, als wäre es ein Ehrentitel.",
         choices: [
           {
             text: "[ Trainingsfall beginnen ]",
@@ -662,7 +664,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       bVossbeckHint: {
         id: "bVossbeckHint",
         speaker: "BRUST",
-        text: "Drei in Folge. Korrekt notiert. — Direkt nebenan, Tür 3603, Kantinenverwaltung. Dahinter sitzt Vossbeck. Er weiß bereits, dass Sie kommen. Klopfen Sie nicht. Er hasst das.",
+        text: "Drei in Folge. Korrekt notiert. — Direkt nebenan, Tür 3603, Kantinenverwaltung. Dahinter sitzt Vossbeck. Er weiß bereits, dass Sie kommen. Klopfen Sie nicht. Vossbeck hört auf Aushänge, nicht auf Hände.",
         next: "b0",
       },
       bHyg1: {
@@ -674,7 +676,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       bHyg2: {
         id: "bHyg2",
         speaker: "BRUST",
-        text: "Bei mehrfacher Überlagerung gilt der jüngere, sofern der ältere ausdrücklich widerrufen wurde. Das Wort »widerrufen« kommt im neuen Aushang nicht vor. Das ist … unschön.",
+        text: "Bei mehrfacher Überlagerung gilt der jüngere, sofern der ältere ausdrücklich widerrufen wurde. Das Wort »widerrufen« kommt im neuen Aushang nicht vor. Das ist … nicht ganz aushangkonform.",
         subtext: "Das ist das erste Mal, dass er die Stimme leiser macht.",
         next: "b0",
       },
