@@ -125,7 +125,7 @@ export function DsaLlmAdventureScene() {
     setEndState(null);
     (async () => {
       try {
-        const r = await authedPost({ action: "load" });
+        const r = await authedPost({ action: "load" }, api.getDsaSessionId());
         if (cancelled) return;
         if (!r.ok) {
           setMode({ kind: "picker", error: "Konnte Stand nicht laden." });
@@ -213,11 +213,14 @@ export function DsaLlmAdventureScene() {
     setBusy(true);
     setError(null);
     try {
-      const r = await authedPost({
-        action: "start",
-        setting: settingId,
-        character: dsaCharacter,
-      });
+      const r = await authedPost(
+        {
+          action: "start",
+          setting: settingId,
+          character: dsaCharacter,
+        },
+        api.getDsaSessionId(),
+      );
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
         setError(j.error || "Fehler beim Start.");
@@ -245,7 +248,7 @@ export function DsaLlmAdventureScene() {
     const myId = nextId();
     setTurns((t) => [...t, { id: myId, kind: "player", text }]);
     try {
-      const r = await authedPost({ action: "say", text });
+      const r = await authedPost({ action: "say", text }, api.getDsaSessionId());
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
         setError(j.error || "Tjark schweigt.");
@@ -283,13 +286,16 @@ export function DsaLlmAdventureScene() {
     setBusy(true);
     setError(null);
     try {
-      const r = await authedPost({
-        action: "combat_result",
-        victory,
-        heroLe: victory ? Math.max(1, heroLeFinal) : 0,
-        heroLeMax: dsaCharacter.leMax,
-        fallen,
-      });
+      const r = await authedPost(
+        {
+          action: "combat_result",
+          victory,
+          heroLe: victory ? Math.max(1, heroLeFinal) : 0,
+          heroLeMax: dsaCharacter.leMax,
+          fallen,
+        },
+        api.getDsaSessionId(),
+      );
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
         setError(j.error || "Tjark schweigt.");
@@ -308,7 +314,7 @@ export function DsaLlmAdventureScene() {
   async function handleAbortAndPickNew() {
     setBusy(true);
     try {
-      await authedPost({ action: "abort" });
+      await authedPost({ action: "abort" }, api.getDsaSessionId());
     } catch {
       /* ignore */
     }
