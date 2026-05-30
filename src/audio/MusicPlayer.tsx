@@ -119,7 +119,7 @@ export function useMusic() {
 }
 
 export function MusicPlayer({ children }: { children?: ReactNode }) {
-  const { musicEnabled, musicVolume } = useSettings();
+  const { musicEnabled, musicVolume, set } = useSettings();
 
   // Two audio elements so we can crossfade between them.
   const aRef = useRef<HTMLAudioElement | null>(null);
@@ -149,6 +149,18 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   useEffect(() => {
     enabledRef.current = musicEnabled;
   }, [musicEnabled]);
+
+  // Auf veröffentlichter Domain kann ein alter Spielstand die Musik auf
+  // "aus" oder 0 Lautstärke gespeichert haben; im Standalone-DSA gibt es
+  // sonst keinen Regler, der sie wieder einschaltet. Nur für /dsa/* reparieren.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.location.pathname.startsWith("/dsa")) return;
+    const patch: { musicEnabled?: boolean; musicVolume?: number } = {};
+    if (!musicEnabled) patch.musicEnabled = true;
+    if (musicVolume < 0.08) patch.musicVolume = 0.45;
+    if (patch.musicEnabled !== undefined || patch.musicVolume !== undefined) set(patch);
+  }, [musicEnabled, musicVolume, set]);
   useEffect(() => {
     volumeRef.current = musicVolume;
   }, [musicVolume]);
@@ -250,8 +262,14 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
 
   function startPlayback() {
     const active = activeRef.current === "a" ? aRef.current! : bRef.current!;
+    const mood = moodPoolRef.current;
     const overrideId = overrideRef.current;
-    const targetSrc = overrideId ? MUSIC_OVERRIDES[overrideId].src : pickTrack(indexRef.current);
+    const targetSrc = mood
+      ? (currentMoodSrcRef.current ?? pickMoodTrack(mood, null))
+      : overrideId
+        ? MUSIC_OVERRIDES[overrideId].src
+        : pickTrack(indexRef.current);
+    if (mood && !currentMoodSrcRef.current) currentMoodSrcRef.current = targetSrc;
     if (!active.src || active.src !== new URL(targetSrc, window.location.href).href) {
       active.src = targetSrc;
       active.currentTime = 0;
