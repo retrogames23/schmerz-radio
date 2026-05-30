@@ -439,6 +439,19 @@ export function DsaLlmAdventureScene() {
             <div className="flex shrink-0 items-center gap-2 mr-10">
               <button
                 type="button"
+                onClick={toggleFullscreen}
+                title={isFullscreen ? "Vollbild verlassen" : "Vollbild"}
+                aria-label={isFullscreen ? "Vollbild verlassen" : "Vollbild aktivieren"}
+                className="hidden sm:inline-flex items-center justify-center rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-2 py-1.5 text-[#2a1f10] hover:bg-[#f1d99a]"
+              >
+                {isFullscreen ? (
+                  <Minimize2 className="h-3.5 w-3.5" strokeWidth={2.5} />
+                ) : (
+                  <Maximize2 className="h-3.5 w-3.5" strokeWidth={2.5} />
+                )}
+              </button>
+              <button
+                type="button"
                 onClick={toggleDsaSheet}
                 title="Charakterbogen (C)"
                 className={
