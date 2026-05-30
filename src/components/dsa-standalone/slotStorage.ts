@@ -19,12 +19,13 @@ function isValidSessionId(value: string | null): value is string {
 }
 
 function createSessionId(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return crypto.randomUUID();
+  const webCrypto = globalThis.crypto;
+  if (webCrypto?.randomUUID) {
+    return webCrypto.randomUUID();
   }
   const bytes = new Uint8Array(16);
-  if (typeof crypto !== "undefined" && "getRandomValues" in crypto) {
-    crypto.getRandomValues(bytes);
+  if (webCrypto?.getRandomValues) {
+    webCrypto.getRandomValues(bytes);
   } else {
     for (let i = 0; i < bytes.length; i += 1) bytes[i] = Math.floor(Math.random() * 256);
   }
