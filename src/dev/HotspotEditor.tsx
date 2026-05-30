@@ -152,7 +152,6 @@ export function HotspotEditor({
       } catch {
         /* ignore */
       }
-      pushSnippet(sceneId, s);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
