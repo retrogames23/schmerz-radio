@@ -311,7 +311,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             name: String(character.name).slice(0, 60),
             className: String(character.className).slice(0, 40),
             classId: String(character.classId).slice(0, 40),
-            attrs: character.attrs,
+            attrs: sanitizeAttrs(character.attrs),
             le: character.le,
             leMax: character.leMax,
             ae: character.ae,
