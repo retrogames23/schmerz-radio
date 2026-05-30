@@ -264,8 +264,6 @@ export const Route = createFileRoute("/api/public/dsa-master")({
         if (!uid && !anonId) {
           return json(400, { error: "Anonyme ID fehlt." });
         }
-        const ownerFilter = (q: ReturnType<typeof admin.from>) =>
-          uid ? q.eq("user_id", uid) : q.eq("anon_id", anonId!);
 
         const admin = createClient(supabaseUrl, serviceKey, {
           auth: { persistSession: false, autoRefreshToken: false },
