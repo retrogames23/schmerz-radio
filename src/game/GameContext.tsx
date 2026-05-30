@@ -169,6 +169,11 @@ interface PersistedState {
   philippeFloor?: 3 | 4 | 5 | null;
   /** DSA-Charakter, falls Layard schon einen erwürfelt hat. */
   dsaCharacter?: DsaCharacterSummary | null;
+  /**
+   * UUID des laufenden DSA-Abenteuers. Wird mit dem Save persistiert,
+   * damit jeder Slot sein eigenes Meister-Gedächtnis behält.
+   */
+  dsaSessionId?: string | null;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
