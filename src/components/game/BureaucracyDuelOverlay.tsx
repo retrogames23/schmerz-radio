@@ -3,8 +3,9 @@ import { useGame } from "@/game/GameContext";
 import {
   buildRoundCounters,
   DUEL_UI_TEXT,
-  PARAGRAPHS,
-  getParagraph,
+  COUNTERS,
+  PHRASES,
+  getCounter,
   pickEndgameRounds,
   pickTrainingRounds,
   resolveCounters,
@@ -129,9 +130,9 @@ export function BureaucracyDuelOverlay() {
       setHits(nextHits);
       // Eigenen korrekten Konter ggf. ins Notizbuch.
       let learnedNow: string | null = null;
-      if (!api.hasParagraph(counter.paragraphId)) {
-        api.learnParagraph(counter.paragraphId);
-        learnedNow = counter.paragraphId;
+      if (!api.hasParagraph(counter.counterId)) {
+        api.learnParagraph(counter.counterId);
+        learnedNow = counter.counterId;
       }
       const lines = [
         (isEndgame ? "VOSSBECK: " : "BRUST: ") + round.onHit,
@@ -140,8 +141,8 @@ export function BureaucracyDuelOverlay() {
           : []),
       ];
       if (learnedNow) {
-        const p = PARAGRAPHS[learnedNow];
-        if (p) lines.push(DUEL_UI_TEXT.paragraphLearnedToast(p));
+        const c = COUNTERS[learnedNow];
+        if (c) lines.push(DUEL_UI_TEXT.paragraphLearnedToast(c));
       }
       setFeedback(lines);
       const target = isEndgame ? 3 : 2;
@@ -154,26 +155,26 @@ export function BureaucracyDuelOverlay() {
       // Konter — Brust nennt ihn ja in der Belehrung.
       let learnedNow: string | null = null;
       if (!isEndgame) {
-        // Korrekten Konter aus dem Original-Datensatz finden (nicht aus den
-        // ggf. teilweise fiktiven Anzeige-Countern).
-        const attack = PARAGRAPHS[round.attackParagraphId];
-        if (attack) {
-          for (const cand of round.counters) {
-            if (
-              attack.beatenBy.includes(cand.paragraphId) &&
-              !api.hasParagraph(cand.paragraphId)
-            ) {
-              api.learnParagraph(cand.paragraphId);
-              learnedNow = cand.paragraphId;
-              break;
-            }
+        // Korrekten Konter aus dem Runden-Pool finden — derjenige, dessen
+        // `beats`-Liste die Angriffsphrase enthält. Bei Fehlschuss lernt
+        // Layard ihn, weil Brust ihn in der Belehrung nennt.
+        for (const cid of round.counterOptions) {
+          const cand = COUNTERS[cid];
+          if (
+            cand &&
+            cand.beats.includes(round.attackPhraseId) &&
+            !api.hasParagraph(cid)
+          ) {
+            api.learnParagraph(cid);
+            learnedNow = cid;
+            break;
           }
         }
       }
       const lines = [(isEndgame ? "VOSSBECK: " : "BRUST: ") + round.onMiss];
       if (learnedNow) {
-        const p = PARAGRAPHS[learnedNow];
-        if (p) lines.push(DUEL_UI_TEXT.paragraphLearnedToast(p));
+        const c = COUNTERS[learnedNow];
+        if (c) lines.push(DUEL_UI_TEXT.paragraphLearnedToast(c));
       }
       setFeedback(lines);
       setPendingNext(nextMisses >= 3 ? "defeat" : "advance");
@@ -370,7 +371,7 @@ export function BureaucracyDuelOverlay() {
               <div className="mt-2 rounded-sm border border-amber-glow/30 bg-amber-glow/10 px-3 py-1 font-mono-crt text-[13px] text-amber-glow/90">
                 📓 Notiert:{" "}
                 {learnedThisRound
-                  .map((id) => PARAGRAPHS[id]?.shortLabel ?? id)
+                  .map((id) => COUNTERS[id]?.shortLabel ?? id)
                   .join(" · ")}
               </div>
             )}
@@ -382,7 +383,7 @@ export function BureaucracyDuelOverlay() {
               </div>
               <div className="mt-2 grid gap-2">
                 {counters.map((c, i) => {
-                  const para = getParagraph(c.paragraphId);
+                  const counterMeta = getCounter(c.counterId);
                   const reveal = phase === "feedback";
                   const isChosen = chosenIdx === i;
                   const isCorrect = c.correct;
@@ -406,7 +407,7 @@ export function BureaucracyDuelOverlay() {
                       type="button"
                       disabled={locked || phase === "feedback"}
                       onClick={() => onChoose(i)}
-                      title={para?.shortLabel}
+                      title={counterMeta?.shortLabel}
                       className={`group w-full rounded-sm border px-3 py-2 text-left font-mono-crt text-base leading-snug transition disabled:cursor-not-allowed ${stateClasses}`}
                     >
                       <div className="leading-snug">
