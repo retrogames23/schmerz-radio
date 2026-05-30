@@ -295,6 +295,231 @@ export const FICTIONAL_COUNTERS: Record<string, Counter> = {
 // Legacy alias — alter Code/Notebook greift über diesen Namen zu.
 export const FICTIONAL_PARAGRAPHS = FICTIONAL_COUNTERS;
 
+// ──────────────────────────────────────────────────────────────────
+// ANGRIFFS-PHRASEN (Layard wirft sie — Typ-B-Runden)
+// ──────────────────────────────────────────────────────────────────
+
+/**
+ * Eine Bürokratie-Phrase, die LAYARD selbst gegen den Gegner einsetzt.
+ * Lernt er von anderen Bewohnern (Bodo, Helka — die haben Brust selbst
+ * schon im Phrasen-Duell besiegt). Eine „echte" Angriffsphrase trifft
+ * dann, wenn der Gegner sie nicht zu kontern weiß.
+ */
+export interface AttackPhrase {
+  id: string;
+  shortLabel: string;
+  text: string;
+  /** Von wem hat Layard die Phrase. */
+  source: "bodo" | "helka" | "layard";
+  /** Lernhinweis fürs Phrasenbuch. */
+  learnHint?: string;
+}
+
+/** Echte Angriffsphrasen — Bodo und Helkas Spezialitäten. */
+export const ATTACK_PHRASES: Record<string, AttackPhrase> = {
+  "a-vorgesetzten-bodo": {
+    id: "a-vorgesetzten-bodo",
+    shortLabel: "„Holen Sie Ihren Vorgesetzten“",
+    text: "Holen Sie doch bitte gleich Ihren Vorgesetzten. Ich warte hier — ich habe Zeit.",
+    source: "bodo",
+    learnHint:
+      "Bodo hat Brust damit zum Schwitzen gebracht. Nur wer keinen Vorgesetzten holen will, kennt keinen Konter.",
+  },
+  "a-tuerschild-helka": {
+    id: "a-tuerschild-helka",
+    shortLabel: "„Ihr Türschild sagt anderes“",
+    text: "Erstaunlich. Ihr eigenes Türschild sagt das genaue Gegenteil von dem, was Sie gerade behaupten.",
+    source: "helka",
+    learnHint:
+      "Helkas Klassiker aus der Bibliotheks-Zeit. Schlägt jeden, der noch nie auf sein eigenes Türschild geguckt hat.",
+  },
+};
+
+/**
+ * Layards eigene linkische Angriffsversuche — analog zu den linkischen
+ * Kontern. Liegen ab Spielstart implizit im Pool und werden vom Gegner
+ * IMMER souverän gekontert (kein Treffer).
+ */
+export const FICTIONAL_ATTACKS: Record<string, AttackPhrase> = {
+  "fa-bitte": {
+    id: "fa-bitte",
+    shortLabel: "Höflichkeit",
+    text: "Bitte. Es wäre wirklich wichtig für mich.",
+    source: "layard",
+  },
+  "fa-warm": {
+    id: "fa-warm",
+    shortLabel: "Smalltalk",
+    text: "Heute ist es hier hinten besonders warm, finden Sie nicht?",
+    source: "layard",
+  },
+  "fa-vorlauf": {
+    id: "fa-vorlauf",
+    shortLabel: "Vorlauf-Behauptung",
+    text: "Ich hatte das mit drei Wochen Vorlauf angekündigt, beim letzten Mal.",
+    source: "layard",
+  },
+  "fa-resonanz": {
+    id: "fa-resonanz",
+    shortLabel: "Resonanz-Geraune",
+    text: "Die Resonanz hat heute eine andere Frequenz. Hören Sie das nicht?",
+    source: "layard",
+  },
+};
+
+/**
+ * Welche Angriffs-Phrasen der jeweilige Gegner sicher kontern kann.
+ * Brust kontert seine eigenen Schulungsfälle und alle linkischen
+ * Versuche — aber NICHT die Bodo/Helka-Spezialitäten (das sind seine
+ * Schwachstellen, an denen er beide bereits einmal verloren hat).
+ * Vossbeck hat von Brust nachgelernt, aber dieselben blinden Flecken.
+ */
+export const BRUST_KNOWS_ATTACKS: ReadonlySet<string> = new Set<string>([
+  "fa-bitte",
+  "fa-warm",
+  "fa-vorlauf",
+  "fa-resonanz",
+]);
+export const VOSSBECK_KNOWS_ATTACKS: ReadonlySet<string> = new Set<string>([
+  "fa-bitte",
+  "fa-warm",
+  "fa-vorlauf",
+  "fa-resonanz",
+]);
+
+/** Konter-Replik, die der Gegner sagt, wenn er Layards Angriff abwehrt. */
+export const ATTACK_COUNTER_LINES: Record<
+  string,
+  { brust: string; vossbeck: string }
+> = {
+  "fa-bitte": {
+    brust:
+      "„Bitte“ ist kein Vorgang, Bewohner Worag. Schwächer geht es nicht.",
+    vossbeck:
+      "„Bitte“ ist keine Erwiderung. Notiert als Versäumnis.",
+  },
+  "fa-warm": {
+    brust: "Das Wetter steht heute nicht zur Verhandlung. Nächste Phrase.",
+    vossbeck: "Das Klima im Sektor ist nicht meine Zuständigkeit. Weiter.",
+  },
+  "fa-vorlauf": {
+    brust: "Drei Wochen ohne Aushang sind null Wochen mit Aushang. Schwach.",
+    vossbeck: "Vorlauf ohne Eintrag ist kein Vorlauf. Weiter.",
+  },
+  "fa-resonanz": {
+    brust:
+      "Ich höre nichts. Und was ich nicht höre, das ist auch kein Argument.",
+    vossbeck:
+      "Resonanz ist eine Frage für die Leitstelle. Nicht für diesen Tresen.",
+  },
+};
+
+/** Generische Konter-Replik des Gegners auf eine echte, aber bekannte Angriffsphrase. */
+const GENERIC_ATTACK_COUNTER = {
+  brust: "Die kenne ich, Bewohner Worag. So frisst Sie der Herr Vossbeck zum Frühstück.",
+  vossbeck:
+    "Bewohner Worag. Diese Phrase liegt in meinem Aktendeckel. Weiter.",
+};
+
+/** Wenn der Gegner KEINEN Konter kennt — sichtbarer Treffer für Layard. */
+const BLINDSPOT_HIT_LINE = {
+  brust:
+    "(Brust hält inne. Er schaut zur Seite. Er hat sichtlich keine Antwort parat.) … das … das müsste ich erst nachschlagen.",
+  vossbeck:
+    "(Vossbeck legt den Bleistift langsam ab. Zum ersten Mal.) … hm. Das ist … nicht in meinem Aktendeckel.",
+};
+
+/** Sichtbare Konter-Replik bauen. */
+export function buildOpponentCounterLine(
+  opponent: "brust" | "vossbeck",
+  attackId: string,
+): string {
+  const specific = ATTACK_COUNTER_LINES[attackId];
+  if (specific) return specific[opponent];
+  return GENERIC_ATTACK_COUNTER[opponent];
+}
+
+/** Sichtbare Treffer-Replik bauen (Gegner stutzt). */
+export function buildOpponentBlindspotLine(
+  opponent: "brust" | "vossbeck",
+): string {
+  return BLINDSPOT_HIT_LINE[opponent];
+}
+
+/** Lookup für Angriffsphrasen (echt ODER linkisch). */
+export function getAttack(id: string): AttackPhrase | undefined {
+  return ATTACK_PHRASES[id] ?? FICTIONAL_ATTACKS[id];
+}
+
+/** Weiß der Gegner, wie er diese Angriffsphrase kontert? */
+export function opponentCounters(
+  opponent: "brust" | "vossbeck",
+  attackId: string,
+): boolean {
+  const known =
+    opponent === "brust" ? BRUST_KNOWS_ATTACKS : VOSSBECK_KNOWS_ATTACKS;
+  return known.has(attackId);
+}
+
+/**
+ * Antwort-Optionen für eine Typ-B-Runde bauen: alle wirklich gelernten
+ * Angriffsphrasen + bis zu 4 Slots gesamt, aufgefüllt mit linkischen
+ * Eigenversuchen.
+ */
+export interface LayardAttackOption {
+  attackId: string;
+  text: string;
+  /** Trifft? (= Gegner kennt keinen Konter) */
+  hits: boolean;
+  /** Aus Layards Phrasenbuch (vs. linkischer Eigenversuch). */
+  learned: boolean;
+}
+
+export function buildLayardAttackOptions(
+  opponent: "brust" | "vossbeck",
+  learnedAttackIds: ReadonlySet<string>,
+): LayardAttackOption[] {
+  const TARGET = 4;
+  const opts: LayardAttackOption[] = [];
+  const used = new Set<string>();
+  // 1) Alle wirklich gelernten Angriffsphrasen einbauen.
+  for (const id of learnedAttackIds) {
+    const ap = ATTACK_PHRASES[id];
+    if (!ap || used.has(id)) continue;
+    opts.push({
+      attackId: id,
+      text: ap.text,
+      hits: !opponentCounters(opponent, id),
+      learned: true,
+    });
+    used.add(id);
+    if (opts.length >= TARGET) break;
+  }
+  // 2) Mit linkischen Eigenversuchen auffüllen.
+  const fictional = shuffleArr(Object.values(FICTIONAL_ATTACKS));
+  for (const fa of fictional) {
+    if (opts.length >= TARGET) break;
+    if (used.has(fa.id)) continue;
+    opts.push({
+      attackId: fa.id,
+      text: fa.text,
+      hits: !opponentCounters(opponent, fa.id),
+      learned: false,
+    });
+    used.add(fa.id);
+  }
+  return shuffleArr(opts);
+}
+
+function shuffleArr<T>(arr: readonly T[]): T[] {
+  const out = [...arr];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
 /** Phrase nach ID (für Opening-Anzeige etc.). */
 export function getPhrase(id: string): Phrase | undefined {
   return PHRASES[id];
