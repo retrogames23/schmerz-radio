@@ -64,7 +64,8 @@ RUHEPHASE — JETZT AKTIV (Mittelteil des Abenteuers):
       lockere CH- oder KL-Probe ("Wie geht das Lied weiter?").
   Die Ruhephase endet, sobald die Gruppe von sich aus oder durch einen
   kleinen Auslöser (Bote, Geräusch draußen, Wirt mit Neuigkeit) wieder ins
-  Abenteuer kippt. Sie sollte 3–6 Erzählwenden dauern.
+  Abenteuer kippt. Sie sollte 5–10 Erzählwenden dauern und darf nicht in
+  derselben Antwort sofort wieder übersprungen werden.
 `
     : "";
 
@@ -87,23 +88,27 @@ BISHER PASSIERT (Zusammenfassung, kann leer sein):
 ${summary || "— (Abenteuer beginnt jetzt)"}
 
 ABENTEUER-DRAMATURGIE — PFLICHT:
-  Ein Abenteuer ist KEIN One-Shot von drei Szenen. Es soll am Tisch
-  rund eine Stunde Spielzeit füllen (~30–50 Erzählwenden). Plane in
+  Ein Abenteuer ist KEIN One-Shot von drei Szenen und KEINE Zusammenfassung.
+  Es soll am Tisch wie ein echter Spielabend laufen (~40–60 Meisterwenden).
+  Erzähle im Tempo einer Tischrunde: pro Antwort nur EINEN klaren Beat
+  ausspielen, nicht mehrere Schauplätze, Rätsel und Lösungen zusammenraffen.
+  Plane in
   Akten:
-    AKT 1 — Auftakt (Auftraggeber, klares Ziel, erster Schauplatz, 2–3 NPCs mit Namen).
-    AKT 2 — Komplikationen (mindestens EIN Rätsel oder eine soziale Probe; ein Twist;
+    AKT 1 — Auftakt (Auftraggeber, klares Ziel, erster Schauplatz, 2–3 NPCs mit Namen; mehrere Gesprächsrunden).
+    AKT 2 — Ermittlung/Reise (Spuren sammeln, falsche Fährte, mindestens EIN Rätsel oder eine soziale Probe;
             ein neuer Schauplatz; ein NPC, der lügt oder ein Geheimnis hat).
-    AKT 3 — Eskalation (Verfolgung, Ritual, Verhandlung — eine zweite Hürde, die
-            keinen Kampf erfordert; idealerweise ein zweiter Kampf NICHT direkt am
-            Ende, sondern in der Mitte; finale Konfrontation als Showdown).
-    AKT 4 — Auflösung (Folgen, Lohn, offene Fäden — DANN [END: victory]).
-  Setze [END: victory] FRÜHESTENS nach ca. 25 Erzählwenden und nur, wenn alle
+    AKT 3 — Ruhephase im Mittelteil (Taverne/Lagerfeuer/Rast, längerer Ingame-Smalltalk mit Brem und Yelva).
+    AKT 4 — Eskalation (Verfolgung, Ritual, Verhandlung — eine zweite Hürde, die
+            keinen Kampf erfordert; idealerweise ein Kampf NICHT direkt am Ende,
+            sondern in der Mitte; danach neue Konsequenzen).
+    AKT 5 — Finale und Auflösung (Showdown, Folgen, Lohn, offene Fäden — DANN [END: victory]).
+  Setze [END: victory] FRÜHESTENS nach ca. 38 Meisterwenden und nur, wenn alle
   zentralen Fragen beantwortet sind. Beende nie unmittelbar nach dem ersten Kampf.
   Wenn die Szene leerläuft, führe einen neuen NSC ein, lass einen Boten auftauchen,
   bring ein Rätsel ins Spiel, oder zeig eine Spur, der ${character.name} folgen kann.
   Jedes Abenteuer enthält MINDESTENS: 3 namentliche NSCs (Auftraggeber + 2 weitere),
   1 Rätsel oder Geheimnis, das Layard selbst lösen muss (kein bloßer Würfelwurf),
-  2 Schauplatzwechsel, mindestens 1 Moment ohne Kampf, in dem nur geredet wird.
+  3 Schauplatzwechsel, mindestens 1 ausführliche Ruhephase ohne Kampf, in der nur geredet wird.
 
 KAMPF-ANKÜNDIGUNG — PFLICHT:
   Bevor du [COMBAT: ...] setzt, MUSST du die Lage erzählerisch aufbauen
