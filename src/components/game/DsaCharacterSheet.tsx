@@ -47,7 +47,7 @@ export function DsaCharacterSheet() {
         if (e.target === e.currentTarget) closeDsaSheet();
       }}
     >
-      <div className="dsa-adventure-shell relative my-auto w-full max-w-3xl rounded-md shadow-2xl flex flex-col max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)]">
+      <div className="dsa-adventure-shell relative my-auto w-full max-w-3xl rounded-md shadow-2xl flex flex-col max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-3rem)]">
         <CloseButton onClick={closeDsaSheet} />
 
         {/* Header */}
