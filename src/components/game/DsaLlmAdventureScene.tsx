@@ -60,7 +60,7 @@ interface CombatBridge {
   result: CombatResult;
 }
 
-async function authedPost(body: unknown): Promise<Response> {
+async function authedPost(body: Record<string, unknown>, sessionId: string): Promise<Response> {
   const { getFreshAccessToken } = await import("@/auth/freshToken");
   const token = await getFreshAccessToken();
   if (!token) throw new Error("Nicht angemeldet.");
@@ -70,7 +70,7 @@ async function authedPost(body: unknown): Promise<Response> {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ ...body, sessionId }),
   });
 }
 
