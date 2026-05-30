@@ -66,7 +66,7 @@ export const vossbeckAct2Dialogs: Record<string, DialogTree> = {
       s1: {
         id: "s1",
         speaker: "VOSSBECK",
-        text: "Manche Bewohner halten meine Paragraphen für ein Hindernis. Andere für ein Werkzeug.",
+        text: "Manche Bewohner halten meine Phrasen für ein Hindernis. Andere für ein Werkzeug.",
         next: "s2",
       },
       s2: {
