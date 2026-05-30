@@ -394,6 +394,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             character: characterSnap,
             summary: "",
             offtopicStreak: 0,
+            cooldown: false,
           });
           const opener: StoredTurn = {
             role: "user",
