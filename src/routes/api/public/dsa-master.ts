@@ -26,6 +26,7 @@ const HARD_LIMIT = 50;
 const MAX_USER_INPUT = 500;
 const MAX_MESSAGES = 90;
 const SUMMARY_TRIGGER = 72; // ab dieser Länge älteste Hälfte zusammenfassen
+const MIN_END_ASSISTANT_TURNS = 38;
 
 const RATE_WINDOW_MIN_MS = 60_000;
 const RATE_MAX_MIN = 20;
@@ -47,6 +48,10 @@ function json(status: number, data: unknown): Response {
     status,
     headers: { "Content-Type": "application/json" },
   });
+}
+
+function stripEndMarker(reply: string): string {
+  return reply.replace(/^\s*\[END:\s*(?:victory|defeat|aborted)\s*\]\s*$/gim, "").trim();
 }
 
 const ALLOWED_SETTINGS = new Set<string>(DSA_SETTINGS.map((s) => s.id));
