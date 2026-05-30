@@ -533,6 +533,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setDsaCreatorOpen(true);
       },
       getDsaCharacter: () => dsaCharacterRef.current,
+      getDsaSessionId: () => dsaSessionIdRef.current,
       clearDsaCharacter: () => {
         dsaCharacterRef.current = null;
         setDsaCharacterState(null);
