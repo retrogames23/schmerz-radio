@@ -71,13 +71,10 @@ export interface DuelRound {
   /**
    * Welche Seite eröffnet diese Runde mit einer Phrase.
    * - "opponent": klassisch — der Gegner wirft eine PHRASE, Layard kontert.
-   * - "layard":   neu — Layard wirft eine gelernte ATTACK_PHRASE, der Gegner
-   *               versucht zu kontern. Hat er keinen Konter, stottert er
-   *               (Hit für Layard). Kontert er souverän, **lernt Layard den
-   *               benutzten Konter** ins Phrasenbuch (Miss in der Runde,
-   *               aber Lerngewinn fürs nächste Mal).
+   *               (Default — Layard-Angriff-Modus folgt in einer
+   *               späteren Iteration.)
    */
-  kind: "opponentAttacks" | "layardAttacks";
+  kind?: "opponentAttacks" | "layardAttacks";
   /** Phrase, mit der der Gegner angreift. */
   attackPhraseId?: string;
   /** Wörtliche Eröffnung des Gegners. */
