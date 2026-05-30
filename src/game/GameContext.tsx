@@ -169,6 +169,11 @@ interface PersistedState {
   philippeFloor?: 3 | 4 | 5 | null;
   /** DSA-Charakter, falls Layard schon einen erwürfelt hat. */
   dsaCharacter?: DsaCharacterSummary | null;
+  /**
+   * UUID des laufenden DSA-Abenteuers. Wird mit dem Save persistiert,
+   * damit jeder Slot sein eigenes Meister-Gedächtnis behält.
+   */
+  dsaSessionId?: string | null;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -216,6 +221,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
     useState<DsaCharacterSummary | null>(null);
   const dsaCharacterRef = useRef<DsaCharacterSummary | null>(null);
   dsaCharacterRef.current = dsaCharacter;
+  // UUID für die laufende DSA-Sitzung (= Save-Slot oder frischer
+  // Spielstart). Neue Spielinstanz → frische UUID → frisches
+  // LLM-Gedächtnis serverseitig. Load eines Saves → restored.
+  const dsaSessionIdRef = useRef<string>(
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `sess-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  );
   const [dsaAdventureOpen, setDsaAdventureOpen] = useState(false);
   const [dsaBeat, setDsaBeatState] = useState<string | null>(null);
   const dsaBeatRef = useRef<string | null>(null);
@@ -525,6 +538,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setDsaCreatorOpen(true);
       },
       getDsaCharacter: () => dsaCharacterRef.current,
+      getDsaSessionId: () => dsaSessionIdRef.current,
       clearDsaCharacter: () => {
         dsaCharacterRef.current = null;
         setDsaCharacterState(null);
@@ -814,6 +828,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         miraFloors: miraFloorsRef.current,
         philippeFloor: philippeFloorRef.current,
         dsaCharacter: dsaCharacterRef.current,
+        dsaSessionId: dsaSessionIdRef.current,
       };
       const summary: SaveSummary = {
         slot,
@@ -875,6 +890,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
     } else {
       dsaCharacterRef.current = null;
       setDsaCharacterState(null);
+    }
+    // Restore the DSA session id for this save slot — or mint a fresh
+    // one for legacy saves, so the adventure starts with empty memory.
+    if (typeof persisted.dsaSessionId === "string" && persisted.dsaSessionId) {
+      dsaSessionIdRef.current = persisted.dsaSessionId;
+    } else {
+      dsaSessionIdRef.current =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `sess-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     }
     miraFloorsRef.current = [4];
     philippeFloorRef.current = 5;

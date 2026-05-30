@@ -642,6 +642,14 @@ export interface GameApi {
   /** Verwirft den aktuellen DSA-Charakter (nur intern für Reset gebraucht). */
   clearDsaCharacter: () => void;
   /**
+   * Pro Spielinstanz/Save-Slot stabile UUID. Wird beim Start einer
+   * frischen Sitzung generiert und beim Laden eines Saves
+   * wiederhergestellt. Identifiziert das laufende DSA-Abenteuer
+   * serverseitig, damit jeder neue Spielstand sein eigenes
+   * Meister-Gedächtnis hat.
+   */
+  getDsaSessionId: () => string;
+  /**
    * Öffnet das DSA-Abenteuer-Overlay. Ohne `beatId` springt es zum
    * gespeicherten Beat oder — wenn keiner existiert — an den Anfang
    * des ersten Akts.

@@ -226,6 +226,12 @@ export const Route = createFileRoute("/api/public/dsa-master")({
         }
         const b = body as Record<string, unknown>;
         const action = typeof b.action === "string" ? b.action : "";
+        // Per-game-instance scope so each save slot / fresh game keeps
+        // its own master memory.
+        const sessionId = typeof b.sessionId === "string" ? b.sessionId : "";
+        if (!/^[0-9a-zA-Z_-]{8,64}$/.test(sessionId)) {
+          return json(400, { error: "Ungültige Session-ID." });
+        }
 
         const admin = createClient(supabaseUrl, serviceKey, {
           auth: { persistSession: false, autoRefreshToken: false },
@@ -237,6 +243,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             .from("dsa_llm_adventures")
             .select("setting, character_snapshot, messages, summary, current_image_tag, status, offtopic_streak")
             .eq("user_id", uid)
+            .eq("session_id", sessionId)
             .maybeSingle();
           if (!row) return json(200, { none: true });
           return json(200, { adventure: row });
@@ -247,7 +254,8 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           await admin
             .from("dsa_llm_adventures")
             .delete()
-            .eq("user_id", uid);
+            .eq("user_id", uid)
+            .eq("session_id", sessionId);
           return json(200, { ok: true });
         }
 
@@ -311,6 +319,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             .upsert(
               {
                 user_id: uid,
+                session_id: sessionId,
                 setting: settingId,
                 character_snapshot: characterSnap as unknown as Record<string, unknown>,
                 messages: initialMessages as unknown as Record<string, unknown>[],
@@ -319,7 +328,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
                 status: "active" as AdventureStatus,
                 offtopic_streak: 0,
               },
-              { onConflict: "user_id" },
+              { onConflict: "user_id,session_id" },
             );
           if (upErr) {
             console.error("dsa-master upsert failed", upErr);
@@ -339,6 +348,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             .from("dsa_llm_adventures")
             .select("setting, character_snapshot, messages, summary, current_image_tag, status, offtopic_streak")
             .eq("user_id", uid)
+            .eq("session_id", sessionId)
             .maybeSingle();
           if (loadErr || !row) return json(404, { error: "Kein laufendes Abenteuer." });
           if (row.status !== "active") {
@@ -425,7 +435,8 @@ export const Route = createFileRoute("/api/public/dsa-master")({
               status: nextStatus,
               offtopic_streak: offtopicStreak,
             })
-            .eq("user_id", uid);
+            .eq("user_id", uid)
+            .eq("session_id", sessionId);
           if (upErr) {
             console.error("dsa-master update failed", upErr);
             return json(500, { error: "Speichern fehlgeschlagen." });
