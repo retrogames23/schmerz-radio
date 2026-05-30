@@ -142,6 +142,7 @@ export function DsaLlmAdventureScene() {
     setError(null);
     setTurns([]);
     setCombat(null);
+    setPendingCombat(null);
     setEndState(null);
     (async () => {
       try {
