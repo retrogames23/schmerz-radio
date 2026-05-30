@@ -784,7 +784,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             text: "[ Endduell beginnen ]",
             action: (api) => {
               api.setFlag("metVossbeck");
-              api.openBureaucracyDuel("endgame");
+              api.startDialog("vossbeckDuel");
             },
           },
           {
