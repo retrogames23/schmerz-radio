@@ -4,6 +4,7 @@ import { useGame } from "@/game/GameContext";
 import { useInventoryDrag } from "@/game/InventoryDragContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playBeep, playKeypress, playUnlock } from "@/audio/sfx";
+import { useCoarsePointer } from "@/hooks/useCoarsePointer";
 import { CloseButton } from "./CloseButton";
 import { ItemIcon } from "./ItemIcon";
 
@@ -30,6 +31,7 @@ export function LobbyGate() {
     resetLobbyGateAttempts,
   } = useGame();
   const drag = useInventoryDrag();
+  const isCoarse = useCoarsePointer();
   const { sfxVolume } = useSettings();
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -148,6 +150,28 @@ export function LobbyGate() {
     }
   }
 
+  function rejectSlotItem() {
+    api.showText([
+      "Der Schlitz nimmt die Karte nicht an. Falsches Format.",
+      "Auf einem winzigen Aufkleber: »Nur E67-Bewohner-Ausweise«.",
+    ]);
+  }
+
+  function insertResidentId() {
+    if (cardSlotted) return;
+    playKeypress(0.5 * sfxVolume);
+    setCardSlotted(true);
+    setStatus("idle");
+  }
+
+  function useItemOnSlot(itemId: string) {
+    if (itemId !== "residentId") {
+      rejectSlotItem();
+      return;
+    }
+    insertResidentId();
+  }
+
   // Drop-Handler für den Karten-Slot.
   function onSlotPointerUp(e: React.PointerEvent<HTMLDivElement>) {
     if (!drag.dragItem) return;
@@ -155,15 +179,24 @@ export function LobbyGate() {
     e.stopPropagation();
     const dropped = drag.endDrag();
     if (!dropped) return;
-    if (dropped.id !== "residentId") {
-      api.showText([
-        "Der Schlitz nimmt die Karte nicht an. Falsches Format.",
-        "Auf einem winzigen Aufkleber: »Nur E67-Bewohner-Ausweise«.",
-      ]);
+    useItemOnSlot(dropped.id);
+  }
+
+  function onSlotClick() {
+    if (!isCoarse || cardSlotted) return;
+    if (drag.selectedItem) {
+      const selected = drag.consumeActive();
+      if (selected) useItemOnSlot(selected.id);
       return;
     }
-    playKeypress(0.5 * sfxVolume);
-    setCardSlotted(true);
+    if (api.hasItem("residentId")) {
+      insertResidentId();
+      return;
+    }
+    api.showText([
+      "Der Schlitz wartet auf einen E67-Bewohner-Ausweis.",
+      "Layard tastet seine Taschen ab. Da ist keiner.",
+    ]);
   }
 
   function ejectCard() {
@@ -260,6 +293,7 @@ export function LobbyGate() {
         {/* Karten-Slot */}
         <div
           onPointerUp={onSlotPointerUp}
+          onClick={onSlotClick}
           className={`mb-4 flex items-center gap-3 rounded-sm border-2 border-dashed p-3 transition ${
             cardSlotted
               ? "border-phosphor/60 bg-phosphor/5"
@@ -280,7 +314,9 @@ export function LobbyGate() {
           <div className="flex-1 font-mono-crt text-[0.65rem] uppercase tracking-widest text-amber-glow/70">
             {cardSlotted
               ? "Bewohner-Ausweis 2611 erkannt."
-              : "Bewohner-Ausweis hier hineinziehen."}
+              : isCoarse
+                ? "Bewohner-Ausweis hier antippen."
+                : "Bewohner-Ausweis hier hineinziehen."}
           </div>
           {cardSlotted && (
             <button
