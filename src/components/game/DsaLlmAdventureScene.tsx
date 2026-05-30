@@ -606,6 +606,7 @@ function MasterTurn({ lines }: { lines: SpokenLine[] }) {
     <div className="space-y-1.5">
       {lines.map((l, i) => (
         <div key={i} className="font-serif text-[15px] leading-relaxed">
+          {(i === 0 || lines[i - 1].speaker !== l.speaker) && (
           <span
             className={
               "inline-block mr-2 text-[10px] font-bold uppercase tracking-widest align-middle px-1.5 py-0.5 rounded " +
@@ -622,6 +623,7 @@ function MasterTurn({ lines }: { lines: SpokenLine[] }) {
                 ? "Brem"
                 : "Yelva"}
           </span>
+          )}
           <span>{l.text}</span>
         </div>
       ))}
