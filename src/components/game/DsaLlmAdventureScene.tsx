@@ -189,12 +189,8 @@ export function DsaLlmAdventureScene() {
     };
   }, [dsaAdventureOpen]);
 
-  // Auto-scroll auf neueste Zeile.
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    el.scrollTop = el.scrollHeight;
-  }, [turns.length, busy, endState]);
+  // Bewusst kein Auto-Scroll: der Spieler bleibt an der zuletzt gelesenen
+  // Stelle und scrollt nach unten, wenn er die Reaktion sehen will.
 
   const handleServerReply = useCallback(
     (data: ServerReply) => {
