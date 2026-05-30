@@ -1,96 +1,111 @@
-# Mobile Interaktion: Fokus-Sheet statt Drag-and-Drop
+# Konzept: Dynamische Musik für die DSA-Tafelrunde
 
-Desktop bleibt unangetastet. Alles unten beschriebene wird über `useCoarsePointer()` ausschließlich für Touch-Geräte aktiv. Die bestehende Tap-to-Use-Mechanik (Item antippen → Banner oben → Hotspot antippen) wird durch einen umgekehrten, „Context-First"-Flow ersetzt: zuerst das Ziel, dann der Gegenstand.
+## Ziel
 
-## Kritische Anpassung gegenüber dem Gemini-Entwurf
+Während ein DSA-Abenteuer am Tisch im Gemeinschaftsraum läuft, soll die Hintergrundmusik zur Stimmung der gerade erzählten Szene passen — ohne hektische Wechsel. Verlässt der Spieler den Tisch, übernimmt wieder die normale Gemeinschaftsraum-Musik (`dsaTavern`).
 
-Der Vorschlag trennt „Untersuchen" und „Benutzen". Im Code hat ein `Hotspot` aber genau **eine** Aktion (`onUse`) — `label` ist nur die Bezeichnung. Eine Trennung wäre erfunden und müsste an hunderten Stellen nachgepflegt werden. Stattdessen leitet das Sheet seine Primär-Aktion aus `hotspot.kind` ab (`look | use | talk | exit`) und zeigt nur dort einen Item-Slot, wo Kombination Sinn ergibt.
+## Verhalten
 
-Exits (`kind: "exit"`) und reine Talks bekommen kein Sheet, sondern lösen weiterhin direkt aus — alles andere wäre eine Bremse in jedem Türklick.
+1. **Pool von 10–15 Stimmungs-Tracks** (siehe Prompts unten), zusätzlich zum bestehenden `dsaTavern` (Raumton) und `dsaTable` (Tisch-Grundstimmung).
+2. **Kein Mid-Track-Wechsel**: Ein Track läuft immer vollständig durch. Erst kurz vor Ende (im bestehenden `CROSSFADE_SECONDS`-Fenster) wird der nächste ausgewählt.
+3. **Auswahl durch das DSA-Master-LLM**: Beim regulären `say`/`combat_result`-Call gibt der Master in seinem JSON-Output ein zusätzliches Feld `mood` zurück (Enum, z. B. `calm_travel`, `tense_investigation`, `combat`, `victory`, `mystery`, `dialogue`, `dread`, `tavern_rest`, `boss_fight`, `chase`, `ritual`, `grief`, `wonder`, `defeat`, `intro`). Frontend cached den letzten `mood`-Wert.
+4. **Trackwahl-Logik im Client** (kein extra LLM-Call): Beim Track-Ende mappt der Client `mood` → Track-Kandidaten und wählt einen, der nicht der zuletzt gespielte war. So bleibt es deterministisch, günstig und ohne Latenz.
+5. **Einstieg ins Abenteuer**: Sobald der Spieler sich an den Tisch setzt und ein Abenteuer beginnt, fadet `dsaTavern` aus und der erste stimmungspassende Track ein (Default `intro` / `calm_travel`).
+6. **Aufstehen vom Tisch**: `dsaTavern` fadet wieder ein, DSA-Abenteuermusik sofort aus (bestehende `setOverride(null)`-Mechanik, mit `dsaTavern` als neuem Override für den Raum).
+7. **Kampf-Sonderfall**: `combat_result` darf `mood: "combat"` schon mid-track signalisieren — wir respektieren weiterhin Punkt 2 (kein harter Cut), aber der nächste Trackwechsel priorisiert Combat-Pool. Optional kann später ein „hard cut bei Kampfbeginn" hinzukommen — bewusst nicht Teil dieses Konzepts.
 
-## Flow (mobil)
+## Technische Punkte (für später bei Implementierung)
 
-```text
-Tap auf Hotspot (kind ≠ exit)
-        │
-        ▼
- Hintergrund dimmt + Hotspot bekommt CRT-Rahmen
-        │
-        ▼
- Bottom-Sheet slidet in die Thumb-Zone
-   ┌────────────────────────────────┐
-   │ FOKUS: <hotspot.label>         │
-   │ [ Primär-Aktion ]              │  ← „Ansehen" / „Benutzen" / „Sprechen"
-   │ [ Gegenstand verwenden… ]      │  ← nur wenn Inventar nicht leer
-   │ [ Abbrechen ]                  │
-   └────────────────────────────────┘
-        │
-        ▼ (bei „Gegenstand verwenden…")
-   Item-Strip klappt darüber auf:
-   horizontal scrollbar, 64×64-Buttons
-        │
-        ▼ Tap auf Item
-   Sheet schließt, combineItem() läuft,
-   Caption/Reaktion wie gewohnt
-```
+- Neuer Override-Modus „mood-pool" im `MusicPlayer`: statt fixem Override-Track ein Pool + Mood-Ref. Watcher wählt am Trackende `pickByMood(currentMood, lastTrack)`.
+- `dsa-master.ts`-Prompt + Response-Schema um `mood` (string-enum, optional) erweitern.
+- Track-Manifest mit Tag-Map: `{ trackId, file, moods: string[] }`.
+- Bestehende `MUSIC_OVERRIDES`-Konstante um die neuen Tracks erweitern; `dsaTable` bleibt als Fallback.
 
-Shortcuts bleiben erhalten:
-- Tap auf ein Inventar-Item öffnet weiter den bestehenden „selected"-Zustand (Banner oben). Ein darauffolgender Tap auf einen Hotspot wendet das Item direkt an, ohne das Sheet zu öffnen. Power-User-Pfad für wiederholte Kombinationsversuche.
-- Doppelter Tap auf einen Exit ist nicht nötig — Exits umgehen das Sheet komplett.
+## Stimmungs-Mapping
 
-## Was passiert in welcher Datei
+| Mood-Tag | Wann | Track-Slots |
+|---|---|---|
+| `intro` | Abenteuerstart, Prolog | 1 |
+| `calm_travel` | Reise, ruhige Erkundung | 2 |
+| `tavern_rest` | Rast, Lager, Wirtshaus im Abenteuer | 1 |
+| `dialogue` | NSC-Gespräche, Verhandlung | 1 |
+| `mystery` | Rätsel, Hinweissuche, Bibliothek | 1 |
+| `tense_investigation` | Angespannte Erkundung, Schleichen | 1 |
+| `dread` | Horror, Bedrohung, Untote | 1 |
+| `combat` | Standardkampf | 2 |
+| `boss_fight` | Endgegner, epische Konfrontation | 1 |
+| `chase` | Verfolgung, Flucht | 1 |
+| `ritual` | Magie, Beschwörung, heilige Orte | 1 |
+| `victory` | Sieg, Triumph | 1 |
+| `defeat` | Niederlage, dunkles Ende | 1 |
+| `wonder` | Staunen, magische Entdeckung | 1 |
+| `grief` | Trauer, Verlust, Abschied | 1 |
 
-**Neu: `src/components/game/mobile/FocusSheet.tsx`**
-- Bottom-Sheet-Komponente (Tailwind, `fixed inset-x-0 bottom-0`, `safe-area-inset-bottom`, slide-in via `transition-transform`).
-- Props: `hotspot`, `onClose`, `onPrimary`, `onUseItem(item)`.
-- Rendert Primär-Aktion abhängig von `hotspot.kind`:
-  - `look` → „Ansehen"
-  - `use` (Default) → „Benutzen"
-  - `talk` → „Sprechen"
-- Item-Strip: horizontal scrollbar (`overflow-x-auto`, `snap-x`), Buttons mit `ItemIcon` + Kurzname, min. 64×64 dp.
-- Stil aus dem bestehenden Design-System: `border-amber-glow`, `font-mono-crt`, `bg-background/95`, leichter Scanline-Overlay-Stil wie bei den anderen Overlays.
-- Schließt bei Tap auf Backdrop, Escape, Hardware-Back (über `popstate`-History-Eintrag wie bei `DialogOverlay`).
+≈ **17 Slots**, geplant **12–15 Tracks** (manche Slots teilen sich Tracks via mehreren Mood-Tags).
 
-**Neu: `src/game/mobile/focusSheetState.ts` (oder als Context in `InventoryDragContext`)**
-- Globaler State `focusHotspot: Hotspot | null`, `open(hotspot)`, `close()`.
-- Begründung Context: Hotspot lebt in `HotspotLayer`, das Sheet muss aber außerhalb der Bühne (über `<Game>`-Root) gerendert werden, damit Dimm-Backdrop und Sheet die ganze App überdecken. Ein dünner Context vermeidet Prop-Drilling.
+## Gemini-Prompts für die Musikerzeugung
 
-**`src/components/game/Hotspot.tsx`**
-- `onClick`: Wenn `useCoarsePointer()` true und `hotspot.kind !== "exit"` und `drag.selectedItem == null` → `focusSheet.open(hotspot)` statt `hotspot.onUse(api)`.
-- Bestehender Shortcut (selectedItem gesetzt → direkt kombinieren) bleibt unverändert.
-- Desktop-Pfad (kein coarse pointer) bleibt 1:1 wie heute (Klick = `onUse`, Drag = combine).
+Stil-Klammer für alle Tracks (am Anfang jedes Prompts mit anfügen, damit alles zusammenklingt):
 
-**`src/components/game/Game.tsx` (oder GameShell)**
-- Einmal `<FocusSheet />` auf oberster Ebene mounten, liest aus dem neuen Context.
-- Backdrop und Sheet selbst werden nur gerendert, wenn `focusHotspot && isCoarse`.
+> **Style baseline**: Cinematic fantasy score in the spirit of classic 90s tabletop RPG soundtracks (Baldur's Gate, Heroes of Might & Magic, early Gothic). Acoustic instrumentation: strings, woodwinds, harp, lute, soft choir, occasional hand percussion. Recorded with a slight warm tape character. No modern synths, no drum machines, no vocals with words. 90–120 seconds, seamless loop, ends on a soft sustain so it can crossfade.
 
-**`src/components/game/ActiveItemBanner.tsx`**
-- Bleibt bestehen für den Shortcut-Pfad (Item zuerst angetippt). Kein Eingriff nötig.
+### 1. `intro_01` — Aufbruch
+"Slow opening with solo harp and a distant horn call, then warm low strings entering underneath. Hopeful, a little melancholic, the feeling of standing at a crossroads at dawn. Builds gently, never reaches a climax."
 
-**`src/components/game/Inventory.tsx`**
-- Hilfetext im Floating-Panel (Zeilen ~285-297) anpassen für mobile: „Tippen: Ziel wählen → Aktion. Halten: ansehen." Sonst keine Logikänderung — das Panel bleibt sekundärer Zugang.
+### 2. `calm_travel_01` — Wanderung
+"Light pizzicato strings, a wandering flute melody, soft tambourine on the off-beat. Pastoral, walking pace. Suggests open road, fields, a friendly companion. Major key, no tension."
 
-**`src/styles.css`**
-- Bei Bedarf eine Utility-Klasse `.hotspot-touch` prüfen/erweitern, damit Hotspots auf coarse pointer ein Mindest-Hit-Target von 44×44 dp bekommen (über `::after`-Pseudo-Element, ohne das visuelle Layout zu verändern). Falls bereits vorhanden, nur Werte verifizieren.
+### 3. `calm_travel_02` — Wald
+"Quiet acoustic guitar arpeggios, recorder melody on top, distant bird-like flute trills. Forest atmosphere, late afternoon light. Calm and curious, slightly mysterious but not threatening."
 
-## Audio / Haptik
+### 4. `tavern_rest_01` — Lagerfeuer
+"Solo lute with a slow ballad melody, soft cello drone underneath, very gentle hand drum. Intimate, like a song shared around a campfire. Warm, slightly weary, full of small comfort."
 
-- Sheet-Open: vorhandener `sfx.ui.tap`-Sound (falls existent, sonst stumm — keine neuen Assets in diesem Schritt).
-- Optional: `navigator.vibrate?.(8)` beim Öffnen des Sheets. Mit Fallback `?.` — kein Bruch, wo nicht unterstützt.
+### 5. `dialogue_01` — Gespräch
+"Sparse arrangement: sustained low strings, occasional clarinet phrases, a soft harp accent every few bars. Neutral, attentive, leaves room for spoken dialogue. No melody that draws attention."
 
-## Was bewusst NICHT Teil dieses Plans ist
+### 6. `mystery_01` — Rätsel
+"Hesitant celesta or music box motif, repeating a 4-note figure, with col legno strings tapping underneath. Curious, slightly puzzled. Like turning over an old map by candlelight."
 
-- Kein Kamera-Zoom auf den Hotspot (vom Gemini-Entwurf vorgeschlagen). Die Szenen sind handgemalt mit fixen Layouts, ein Zoom würde Pixel matschen und alle anderen Hotspots verdecken. Stattdessen reicht der CRT-Rahmen + Dimm-Backdrop.
-- Keine Trennung „Untersuchen vs. Benutzen" (siehe oben).
-- Keine Änderung an `Hotspot`-Datenmodell, keine Migration in `scenes/*`.
-- Keine Desktop-Änderungen.
+### 7. `tense_investigation_01` — Schleichen
+"Pulsing low strings on a single note, sparse plucked harp, soft timpani rolls in the distance. Held breath. Quiet but constantly suggesting that something could go wrong. No release."
 
-## Test-Szenarien
+### 8. `dread_01` — Bedrohung
+"Detuned cellos, breathy bass flute, a faint choir whisper without words, occasional metallic bowl-like resonance. Cold, oppressive. Slow heartbeat in the low end. Stays unresolved throughout."
 
-1. Aufzug E67: Tap auf Kartenschlitz-Hotspot → Sheet zeigt „Benutzen" + „Gegenstand verwenden…". Letzteres → Strip mit Bewohnerausweis → Tap → Etage freigeschaltet, Sheet zu.
-2. Apartment, Bücherschrank (`kind: "look"`): Sheet zeigt „Ansehen" als Primär-Aktion.
-3. NPC mit `kind: "talk"`: Sheet zeigt „Sprechen".
-4. Korridor-Exit (`kind: "exit"`): Tap wechselt direkt die Szene, kein Sheet.
-5. Shortcut: Inventar-Item antippen (Banner oben) → Tap auf Hotspot → direktes Combine, Sheet erscheint nicht.
-6. Backdrop-Tap und Hardware-Back schließen das Sheet, ohne Aktion auszulösen.
-7. Desktop (fine pointer): unverändertes Klick- und Drag-Verhalten, kein Sheet erscheint je.
+### 9. `combat_01` — Kampf
+"Driving 6/8 strings ostinato, brass stabs, rapid taiko-style hand drums, an urgent woodwind melody on top. Heroic but dangerous. Steady forward motion, no slow sections."
+
+### 10. `combat_02` — Kampf alternativ
+"Aggressive low strings in a minor key, syncopated frame drums, sharp horn calls. Darker and grittier than the first combat track. Constant momentum, never lets up."
+
+### 11. `boss_fight_01` — Endgegner
+"Full orchestral feel: massive low brass theme, full string section, choir vocalising (no words), thundering percussion. Epic, dread-tinged, the feeling of facing something far larger than yourself. Builds and recedes in waves, never fully resolves."
+
+### 12. `chase_01` — Verfolgung
+"Very fast string ostinato, breathless tin whistle melody, galloping low drum. Forward panic. Suggests running through narrow streets or a dark forest. No safe pause."
+
+### 13. `ritual_01` — Magie
+"Slow drone in low strings, sustained female choir vowels (no language), shimmering bell-tree accents, occasional deep gong. Ceremonial and otherworldly. Suspended in time."
+
+### 14. `victory_01` — Triumph
+"Bright full strings on a major theme, warm horn countermelody, light cymbal shimmer at phrase ends. Earned, slightly tired triumph — not bombastic, more 'we made it home'. Resolves clearly at the end."
+
+### 15. `grief_01` — Trauer / Abschied
+"Solo cello carrying a slow lament, distant choir pad underneath, occasional harp tear-drop notes. Deep, quiet sadness. No percussion. Ends on an unresolved sigh."
+
+(Optional 16. `wonder_01`, 17. `defeat_01` — können nach Bedarf später ergänzt werden, sind in obiger Tabelle nur Slots ohne fix zugewiesenen Track.)
+
+## Lieferformat
+
+- MP3, 192–256 kbps, ca. 90–120 s, **nahtlos loopfähig** (Anfang und Ende auf gleichem Ton/Stille).
+- Dateinamen: `dsa_<mood>_<nr>.mp3`, in `src/assets/music/dsa/` ablegen.
+- Manifest (`src/audio/dsaMusic.ts`) listet Datei + `moods: string[]`-Tags.
+
+## Was ich danach implementieren würde (separater Schritt)
+
+1. Tracks in `src/assets/music/dsa/` ablegen + Manifest.
+2. `MusicPlayer` um Pool-Override erweitern (`setMoodPool({ initialMood })` / `setMood(mood)`).
+3. `dsa-master.ts`-Response-Schema + System-Prompt um optionales `mood`-Feld erweitern.
+4. `DsaLlmAdventureScene` ruft beim Tisch-Sitzen `setMoodPool('intro')` und bei Mood-Update aus jeder Antwort `setMood(mood)`. Beim Aufstehen `setOverride('dsaTavern')`.
+5. Desktop-Verhalten bleibt unverändert in der Bedienung — nur die Musiklogik ändert sich.
