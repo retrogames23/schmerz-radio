@@ -68,8 +68,18 @@ export interface DuelRound {
   id: string;
   /** Wer eröffnet die Runde — Brust (Training) oder Vossbeck (Endgame). */
   opponent: "brust" | "vossbeck";
+  /**
+   * Welche Seite eröffnet diese Runde mit einer Phrase.
+   * - "opponent": klassisch — der Gegner wirft eine PHRASE, Layard kontert.
+   * - "layard":   neu — Layard wirft eine gelernte ATTACK_PHRASE, der Gegner
+   *               versucht zu kontern. Hat er keinen Konter, stottert er
+   *               (Hit für Layard). Kontert er souverän, **lernt Layard den
+   *               benutzten Konter** ins Phrasenbuch (Miss in der Runde,
+   *               aber Lerngewinn fürs nächste Mal).
+   */
+  kind: "opponentAttacks" | "layardAttacks";
   /** Phrase, mit der der Gegner angreift. */
-  attackPhraseId: string;
+  attackPhraseId?: string;
   /** Wörtliche Eröffnung des Gegners. */
   opening: string;
   /**
@@ -77,12 +87,14 @@ export interface DuelRound {
    * Genau einer davon hat `beats.includes(attackPhraseId)`. Die übrigen
    * sind echte, aber unpassende Konter — sie klingen plausibel, treffen
    * aber nicht.
+   * Nur bei `kind === "opponentAttacks"` befüllt — bei Layard-Runden wird
+   * die Auswahl zur Laufzeit aus seinem ATTACK-Phrasenbuch gebaut.
    */
-  counterOptions: string[];
+  counterOptions?: string[];
   /** Reaktion des Gegners auf einen Treffer. */
-  onHit: string;
+  onHit?: string;
   /** Reaktion des Gegners auf einen Fehlschuss (liefert den Konter nach). */
-  onMiss: string;
+  onMiss?: string;
   /** Optionaler Kowalk-Aside (nur Trainingsduelle). */
   kowalkAside?: string;
 }
