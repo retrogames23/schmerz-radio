@@ -47,6 +47,18 @@ export function ImpressumOverlay({ open, onClose }: Props) {
             und der Cloud-AI-Chats zu decken, freue ich mich über freiwillige
             Unterstützungsbeiträge.
           </p>
+
+          <div className="rounded border border-amber-glow/20 bg-background/50 p-3 text-xs leading-relaxed text-muted-foreground">
+            <p className="mb-1.5 font-semibold text-amber-glow/80">
+              DSA-Fan-Projekt-Hinweis
+            </p>
+            <p className="mb-1.5">
+              Bei WhisperQuest handelt es sich um ein rein privates, nicht-kommerzielles Fan-Projekt, das in keiner offiziellen Verbindung zu Ulisses Spiele steht.
+            </p>
+            <p>
+              DAS SCHWARZE AUGE, AVENTURIEN, DERE, MYRANOR, THARUN, UTHURIA, RIESLAND und THE DARK EYE sind eingetragene Marken der Ulisses Spiele GmbH. Es werden keine urheberrechtlich geschützten Texte oder offiziellen Grafiken eins zu eins vervielfältigt.
+            </p>
+          </div>
         </div>
       </div>
     </div>
