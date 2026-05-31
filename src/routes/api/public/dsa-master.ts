@@ -37,7 +37,7 @@ const MAX_NPCS = 16;
  * Nur für eingeloggte Spieler — anonyme spielen nur ein Schnupper-Abenteuer.
  */
 async function loadHeroMemory(
-  admin: ReturnType<typeof createClient>,
+  admin: ReturnType<typeof createClient<any, any, any>>,
   uid: string | null,
   heroSlot: number,
 ): Promise<HeroMemory | null> {
