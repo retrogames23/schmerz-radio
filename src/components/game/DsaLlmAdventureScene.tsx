@@ -140,8 +140,10 @@ export function DsaLlmAdventureScene() {
     openDsaCreator,
     creditHeroAp,
   } = useDsaHost();
+  const { user } = useAuth();
   const { setMoodPool, setMood } = useMusic();
   const heroSlot = normalizeHeroSlot(dsaHeroSlot);
+  const expectsSignedInUser = !!user;
 
   const [mode, setMode] = useState<Mode>({ kind: "loading" });
   const [imageTag, setImageTag] = useState<string>("forest_path");
@@ -217,10 +219,11 @@ export function DsaLlmAdventureScene() {
     setEndState(null);
     (async () => {
       try {
-        const r = await authedPost({ action: "load", heroSlot }, sidForLoad);
+        const r = await authedPost({ action: "load", heroSlot }, sidForLoad, expectsSignedInUser);
         if (cancelled) return;
         if (!r.ok) {
-          setMode({ kind: "picker", error: "Konnte Stand nicht laden." });
+          const j = await r.json().catch(() => ({ error: "Konnte Stand nicht laden." }));
+          setMode({ kind: "picker", error: j.error || "Konnte Stand nicht laden." });
           return;
         }
         const data = (await r.json()) as { none?: boolean; adventure?: LoadedAdventure };
@@ -268,7 +271,7 @@ export function DsaLlmAdventureScene() {
     return () => {
       cancelled = true;
     };
-  }, [dsaAdventureOpen, sidForLoad, heroSlot]);
+  }, [dsaAdventureOpen, sidForLoad, heroSlot, expectsSignedInUser]);
 
   // Bewusst kein Auto-Scroll: der Spieler bleibt an der zuletzt gelesenen
   // Stelle und scrollt nach unten, wenn er die Reaktion sehen will.
