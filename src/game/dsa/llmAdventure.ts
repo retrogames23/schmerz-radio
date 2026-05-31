@@ -26,7 +26,7 @@ export interface DsaSetting {
   masterHint: string;
   /** Eröffnungsbild-Tag. */
   openingTag: string;
-  /** Nur für eingeloggte Spender freigeschaltet. */
+  /** Nur für eingeloggte Spender*innen freigeschaltet. */
   donorOnly?: boolean;
   /** Spieler gibt vorab einen Freitext-Wunsch ein. */
   requiresWish?: boolean;
