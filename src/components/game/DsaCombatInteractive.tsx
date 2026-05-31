@@ -274,6 +274,8 @@ export function DsaCombatInteractive({
             <TacticPicker
               tactic={tactic}
               onChange={setTactic}
+              spellFocus={spellFocus}
+              onFocusChange={setSpellFocus}
               onConfirm={() => {
                 if (!hasStarted) handleStart();
                 else setPaused(false);
