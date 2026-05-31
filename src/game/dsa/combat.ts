@@ -462,6 +462,7 @@ function pickConsequence(tactic: Tactic): ConsequenceKind {
     cunning: ["timeloss", "timeloss", "capture", "capture", "wound"],
     flee: ["robbery", "robbery", "capture", "capture"],
     balanced: ["capture", "robbery", "wound", "timeloss"],
+    spell: ["capture", "wound", "robbery", "timeloss"],
   };
   const arr = table[tactic];
   return arr[Math.floor(Math.random() * arr.length)];
