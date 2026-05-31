@@ -648,7 +648,7 @@ export function DsaLlmAdventureScene() {
         >
           <CloseButton
             onClick={() => setImageZoomed(false)}
-            className="absolute top-3 right-3 z-10"
+            className="absolute top-3 left-3 z-10"
           />
           <img
             src={imgSrc}
