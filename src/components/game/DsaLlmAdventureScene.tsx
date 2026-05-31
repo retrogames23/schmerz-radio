@@ -387,6 +387,7 @@ export function DsaLlmAdventureScene() {
       const r = await authedPost(
         {
           action: "combat_result",
+          heroSlot,
           outcome: res.outcome,
           consequenceKind: res.consequenceKind,
           heroLe: nextChar.le,
@@ -415,7 +416,7 @@ export function DsaLlmAdventureScene() {
   async function handleAbortAndPickNew() {
     setBusy(true);
     try {
-      await authedPost({ action: "abort" }, getDsaSessionId());
+      await authedPost({ action: "abort", heroSlot }, getDsaSessionId());
     } catch {
       /* ignore */
     }
@@ -436,7 +437,7 @@ export function DsaLlmAdventureScene() {
   async function handleResume() {
     setBusy(true);
     try {
-      await authedPost({ action: "resume" }, getDsaSessionId());
+      await authedPost({ action: "resume", heroSlot }, getDsaSessionId());
       setEndState(null);
       setEndAp(null);
     } catch (e) {
