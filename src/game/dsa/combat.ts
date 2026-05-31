@@ -1,6 +1,8 @@
 import type { Attrs } from "./dice";
 import type { DsaClassId } from "./classes";
 import type { DsaCharacterSummary } from "@/game/types";
+import { SPELLS, type SpellDef } from "./rules/spells";
+import type { AttributeId } from "./rules/mechanics";
 
 /**
  * Vereinfachte DSA-Kampfregeln für die automatischen Tafelrunden-Kämpfe.
@@ -42,6 +44,16 @@ export interface Combatant {
   weapon: string;
   /** Kurzer Flavor-Satz, der einmal beim Auftritt erscheint. */
   intro?: string;
+  /** Eigenschaften des Helden — nur gesetzt für Layard, gebraucht für Zauberproben. */
+  attrs?: Attrs;
+  /** Aktuelle Astralpunkte (nur Magier/Elf-Held). */
+  ae?: number;
+  /** AE-Maximum (für die Anzeige). */
+  aeMax?: number;
+  /** Gelernte Zauber id→ZfW (nur Layard, wenn magisch begabt). */
+  spells?: Record<string, number>;
+  /** Klassen-ID für Hauszauber-Erleichterung. */
+  classId?: DsaClassId;
 }
 
 export interface EnemyStat {
