@@ -33,6 +33,7 @@ export interface DsaHostValue {
 
   // Sitzung (für Server-Persistenz pro Slot/Spielstand)
   getDsaSessionId: () => string;
+  dsaHeroSlot?: number;
 
   // Flags — im Stammspiel: GameContext-Flags. Standalone: stabile no-op.
   setFlag: (flag: string) => void;

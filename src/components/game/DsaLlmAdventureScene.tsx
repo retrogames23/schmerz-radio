@@ -101,6 +101,10 @@ async function authedPost(body: Record<string, unknown>, sessionId: string): Pro
   });
 }
 
+function normalizeHeroSlot(value: number | undefined): 1 | 2 | 3 {
+  return value === 1 || value === 2 || value === 3 ? value : 1;
+}
+
 export function DsaLlmAdventureScene() {
   const {
     dsaAdventureOpen,
@@ -111,10 +115,12 @@ export function DsaLlmAdventureScene() {
     toggleDsaSheet,
     dsaSheetOpen,
     getDsaSessionId,
+    dsaHeroSlot,
     openDsaCreator,
     creditHeroAp,
   } = useDsaHost();
   const { setMoodPool, setMood } = useMusic();
+  const heroSlot = normalizeHeroSlot(dsaHeroSlot);
 
   const [mode, setMode] = useState<Mode>({ kind: "loading" });
   const [imageTag, setImageTag] = useState<string>("forest_path");
