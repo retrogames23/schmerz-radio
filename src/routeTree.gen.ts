@@ -15,6 +15,7 @@ import { Route as DsaRouteImport } from './routes/dsa'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DsaIndexRouteImport } from './routes/dsa.index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
+import { Route as DsaHeldenRouteImport } from './routes/dsa.helden'
 import { Route as DsaSlotRouteImport } from './routes/dsa.$slot'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
@@ -58,6 +59,11 @@ const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
   id: '/email/unsubscribe',
   path: '/email/unsubscribe',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DsaHeldenRoute = DsaHeldenRouteImport.update({
+  id: '/helden',
+  path: '/helden',
+  getParentRoute: () => DsaRoute,
 } as any)
 const DsaSlotRoute = DsaSlotRouteImport.update({
   id: '/$slot',
@@ -137,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/unsubscribe': typeof UnsubscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/dsa/$slot': typeof DsaSlotRoute
+  '/dsa/helden': typeof DsaHeldenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dsa/': typeof DsaIndexRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/unsubscribe': typeof UnsubscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/dsa/$slot': typeof DsaSlotRoute
+  '/dsa/helden': typeof DsaHeldenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dsa': typeof DsaIndexRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/unsubscribe': typeof UnsubscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/dsa/$slot': typeof DsaSlotRoute
+  '/dsa/helden': typeof DsaHeldenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dsa/': typeof DsaIndexRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
@@ -202,6 +211,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/api/tts'
     | '/dsa/$slot'
+    | '/dsa/helden'
     | '/email/unsubscribe'
     | '/dsa/'
     | '/api/public/donation-checkout'
@@ -222,6 +232,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/api/tts'
     | '/dsa/$slot'
+    | '/dsa/helden'
     | '/email/unsubscribe'
     | '/dsa'
     | '/api/public/donation-checkout'
@@ -243,6 +254,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/api/tts'
     | '/dsa/$slot'
+    | '/dsa/helden'
     | '/email/unsubscribe'
     | '/dsa/'
     | '/api/public/donation-checkout'
@@ -321,6 +333,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/email/unsubscribe'
       preLoaderRoute: typeof EmailUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dsa/helden': {
+      id: '/dsa/helden'
+      path: '/helden'
+      fullPath: '/dsa/helden'
+      preLoaderRoute: typeof DsaHeldenRouteImport
+      parentRoute: typeof DsaRoute
     }
     '/dsa/$slot': {
       id: '/dsa/$slot'
@@ -418,11 +437,13 @@ declare module '@tanstack/react-router' {
 
 interface DsaRouteChildren {
   DsaSlotRoute: typeof DsaSlotRoute
+  DsaHeldenRoute: typeof DsaHeldenRoute
   DsaIndexRoute: typeof DsaIndexRoute
 }
 
 const DsaRouteChildren: DsaRouteChildren = {
   DsaSlotRoute: DsaSlotRoute,
+  DsaHeldenRoute: DsaHeldenRoute,
   DsaIndexRoute: DsaIndexRoute,
 }
 
@@ -450,12 +471,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
