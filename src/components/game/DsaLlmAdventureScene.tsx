@@ -196,7 +196,7 @@ export function DsaLlmAdventureScene() {
     setEndState(null);
     (async () => {
       try {
-        const r = await authedPost({ action: "load" }, sidForLoad);
+        const r = await authedPost({ action: "load", heroSlot }, sidForLoad);
         if (cancelled) return;
         if (!r.ok) {
           setMode({ kind: "picker", error: "Konnte Stand nicht laden." });
@@ -247,7 +247,7 @@ export function DsaLlmAdventureScene() {
     return () => {
       cancelled = true;
     };
-  }, [dsaAdventureOpen, sidForLoad]);
+  }, [dsaAdventureOpen, sidForLoad, heroSlot]);
 
   // Bewusst kein Auto-Scroll: der Spieler bleibt an der zuletzt gelesenen
   // Stelle und scrollt nach unten, wenn er die Reaktion sehen will.
@@ -309,6 +309,7 @@ export function DsaLlmAdventureScene() {
         {
           action: "start",
           setting: settingId,
+          heroSlot,
           character: dsaCharacter,
           ...(wishBrief ? { wishBrief } : {}),
         },
@@ -342,7 +343,7 @@ export function DsaLlmAdventureScene() {
     const myId = nextId();
     setTurns((t) => [...t, { id: myId, kind: "player", text }]);
     try {
-      const r = await authedPost({ action: "say", text }, getDsaSessionId());
+      const r = await authedPost({ action: "say", text, heroSlot }, getDsaSessionId());
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
         setError(j.error || "Tjark schweigt.");
@@ -361,7 +362,7 @@ export function DsaLlmAdventureScene() {
     } finally {
       setBusy(false);
     }
-  }, [composerText, busy, endState, nextId, handleServerReply]);
+  }, [composerText, busy, endState, nextId, handleServerReply, heroSlot, getDsaSessionId]);
 
   async function handleCombatDone(res: CombatDoneResult) {
     if (!combat || !dsaCharacter) return;
