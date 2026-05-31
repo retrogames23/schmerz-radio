@@ -3,7 +3,7 @@ import { DSA_SCENE_TAGS } from "./sceneImages";
 import { ENEMY_STATS } from "./combat";
 import { getSetting, type DsaSettingId } from "./llmAdventure";
 import { DSA_MOODS } from "@/audio/dsaMusic";
-import { buildDsa3RulesBlock } from "./rules";
+import { buildDsa3RulesBlock, SPELLS } from "./rules";
 import type { DsaCharacterSummary } from "@/game/types";
 
 export interface HeroChronicleEntry {
@@ -34,13 +34,18 @@ interface BuildArgs {
   cooldown: boolean;
   /** Vorgeschichte dieses Helden über frühere Abenteuer hinweg. */
   memory?: HeroMemory | null;
+  /**
+   * Vom Helden gelernte Zauber (Zauber-ID → ZfW). Nur diese darf der
+   * Meister den Helden tatsächlich wirken lassen. Leer/undef = unmagisch.
+   */
+  knownSpells?: Record<string, number> | null;
 }
 
 /**
  * Vollständiger System-Prompt für Tjark, den LLM-Meister. Wird auf dem
  * Server gebaut — der Client kann ihn nicht überschreiben.
  */
-export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, assistantTurns = 0, cooldown, memory = null }: BuildArgs): string {
+export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, assistantTurns = 0, cooldown, memory = null, knownSpells = null }: BuildArgs): string {
   const s = getSetting(setting);
   const sceneTagList = DSA_SCENE_TAGS.join(", ");
   const enemyIdList = Object.keys(ENEMY_STATS).join(", ");
@@ -48,6 +53,47 @@ export function buildMasterSystemPrompt({ setting, character, summary, offtopicS
   const attrLine = (Object.entries(character.attrs) as [string, number][])
     .map(([k, v]) => `${k}:${v}`)
     .join(" ");
+
+  const spellsBlock = (() => {
+    const entries = Object.entries(knownSpells ?? {}).filter(([, z]) => typeof z === "number" && z >= 0);
+    if (character.ae === null || entries.length === 0) {
+      return `
+MAGIE — PFLICHT:
+  ${character.name} ist NICHT magiebegabt und kennt KEINE Zauber. Lass den
+  Helden niemals einen Zauber wirken. NSCs (außer Yelva) wirken nur Magie,
+  wenn ihre Statline das hergibt — ansonsten beschreibst du Effekte rein
+  weltlich (Tricks, Alchemie, Wunder eines Geweihten mit klarer Quelle).`;
+    }
+    const known = entries
+      .map(([id, z]) => {
+        const def = SPELLS.find((sp) => sp.id === id);
+        if (!def) return `  • ${id} (ZfW ${z})`;
+        return `  • ${def.name} (ZfW ${z}, Probe ${def.probe.join("/")}, Kosten ${def.cost} AsP, ${def.target})`;
+      })
+      .join("\n");
+    return `
+MAGIE — PFLICHT:
+  ${character.name} kennt AUSSCHLIESSLICH folgende Zauber. Versucht der Held,
+  einen anderen Spruch zu wirken, lehnst du als Tjark freundlich-bestimmt ab
+  ("Den hast du nicht gelernt, Layard."). Auch NSCs (inkl. Yelva) wirken nur
+  Magie, die zu ihrer Klasse passt — erfinde keine neuen Sprüche.
+${known}
+
+  ASTRALPUNKTE (AsP):
+    Aktueller AsP-Pool des Helden zu Spielbeginn: ${character.ae}.
+    Bei JEDEM gewirkten Zauber MUSST du in deiner Erzählung die Kosten
+    explizit abziehen, z. B. "(AsP -8 → ${Math.max(0, character.ae - 8)} übrig)".
+    Reichen die AsP nicht, schlägt der Zauber fehl (Erschöpfung, kein Effekt).
+    Probe (3W20) zählt nur als gelungen, wenn AsP gezahlt UND keine Eigenschaft
+    überschritten wurde; bei "Hauszauber" der eigenen Klasse Probe -3 leichter.
+
+  RUHEPHASEN / ÜBERNACHTUNG (DSA3-Regeneration):
+    Eine ungestörte Nachtruhe regeneriert 1W6 AsP UND 1W6 LE. Eine kurze Rast
+    (ein paar Stunden, kein Schlaf) regeneriert nichts. Mehrere ruhige Tage
+    in einem Tempel oder Heim können bis zur vollen Regeneration führen
+    (1W6 pro Nacht summiert). Erzähle die Regeneration konkret nach einer
+    Übernachtungs-Szene ("Am Morgen fühlst du dich klarer — +4 AsP, +3 LE").`;
+  })();
 
   const memoryBlock = (() => {
     if (!memory) return "";
@@ -118,7 +164,7 @@ ${buildDsa3RulesBlock()}
 
 SETTING DIESES ABENTEUERS — ${s?.title ?? "freie Wahl"}:
 ${s?.masterHint ?? "Setze einen passenden Auftakt."}
-${cooldownBlock}${memoryBlock}
+${cooldownBlock}${memoryBlock}${spellsBlock}
 LAYARDS CHARAKTER:
   Name: ${character.name}
   Klasse: ${character.className}
