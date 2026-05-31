@@ -36,7 +36,7 @@ export function ToiletWallOverlay() {
         user: { id: auth.userId, email: auth.email, is_anonymous: auth.isAnonymous },
         shiftNumber: shift,
       });
-      // Nur Spender (donation_unlocked) → permanent. Alle anderen → 48h.
+      // Nur Spender*innen (donation_unlocked) → permanent. Alle anderen → 48h.
       const ephemeral = !donation.unlocked;
       const r = await wall.write({
         userId: auth.userId,
@@ -114,8 +114,8 @@ export function ToiletWallOverlay() {
         </div>
         <p className="mt-1 font-mono-crt text-[10px] uppercase tracking-widest text-muted-foreground">
           {donation.unlocked
-            ? "Spender-Code aktiv – deine Kritzelei bleibt für immer."
-            : "Deine Kritzelei verblasst nach 48 h. Mit Spender-Code bleibt sie für immer."}
+            ? "Spender*innen-Code aktiv – deine Kritzelei bleibt für immer."
+            : "Deine Kritzelei verblasst nach 48 h. Mit Spender*innen-Code bleibt sie für immer."}
         </p>
         {err && <p className="mt-1 font-mono-crt text-xs text-rust">{err}</p>}
       </div>

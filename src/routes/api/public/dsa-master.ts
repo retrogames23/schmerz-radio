@@ -580,15 +580,15 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           if (!ALLOWED_SETTINGS.has(settingId)) {
             return json(400, { error: "Unbekanntes Setting." });
           }
-          // Donor-only Settings (Sandbox, Wunsch-Abenteuer) erfordern einen
-          // eingeloggten Spender. Anonyme oder noch nicht freigeschaltete
+          // Donor-only Settings (Sandbox, Wunsch-Abenteuer) erfordern eine
+          // eingeloggte Spender*in. Anonyme oder noch nicht freigeschaltete
           // Spieler bekommen den Spenden-Hinweis.
           let wishBrief: string | null = null;
           if (DONOR_ONLY_SETTINGS.has(settingId)) {
             if (!uid) {
               return json(401, {
-                error:
-                  "Diese Abenteuerart ist Spendern vorbehalten. Bitte melde dich an und unterstütze das Projekt.",
+              error:
+                  "Diese Abenteuerart ist Spender*innen vorbehalten. Bitte melde dich an und unterstütze das Projekt.",
                 code: "donation_required",
               });
             }
@@ -599,8 +599,8 @@ export const Route = createFileRoute("/api/public/dsa-master")({
               .maybeSingle();
             if (!prof?.donation_unlocked) {
               return json(402, {
-                error:
-                  "Diese Abenteuerart ist Spendern vorbehalten. Bitte unterstütze das Projekt, um sie freizuschalten.",
+              error:
+                  "Diese Abenteuerart ist Spender*innen vorbehalten. Bitte unterstütze das Projekt, um sie freizuschalten.",
                 code: "donation_required",
               });
             }

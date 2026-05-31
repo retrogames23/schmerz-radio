@@ -799,7 +799,7 @@ function SettingPicker({
                   <h3 className="font-serif text-base font-bold">{s.title}</h3>
                   {s.donorOnly && (
                     <span className="ml-auto inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-[#6b4a1a]">
-                      {locked && <Lock className="h-3 w-3" />} Spender
+                      {locked && <Lock className="h-3 w-3" />} Spender*in
                     </span>
                   )}
                 </div>
