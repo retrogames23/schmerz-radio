@@ -371,7 +371,20 @@ export interface CombatResult {
 // `DsaAdventureScene` unverändert bestehen.
 // ════════════════════════════════════════════════════════════════
 
-export type Tactic = "balanced" | "aggressive" | "defensive" | "cunning" | "flee" | "spell";
+export type Tactic =
+  | "balanced"
+  | "aggressive"
+  | "defensive"
+  | "cunning"
+  | "flee"
+  | "spell"
+  | "magic-none"
+  | "magic-low"
+  | "magic-mid"
+  | "magic-high";
+
+/** Schwerpunkt bei Magie-Taktiken, wenn Layard Balsam Salabunde kennt. */
+export type SpellFocus = "offense" | "healing" | "balanced";
 
 export const TACTIC_LABELS: Record<Tactic, { title: string; blurb: string }> = {
   balanced: {
@@ -397,6 +410,22 @@ export const TACTIC_LABELS: Record<Tactic, { title: string; blurb: string }> = {
   spell: {
     title: "Kampfzauber wirken",
     blurb: "3W20-Probe gegen Eigenschaften, AsP-Kosten. Layard greift in dieser Runde nicht in den Nahkampf ein.",
+  },
+  "magic-none": {
+    title: "Kein Magie-Einsatz",
+    blurb: "Stab & Klinge — Layard spart seine Astralenergie vollständig.",
+  },
+  "magic-low": {
+    title: "Wenig Magie",
+    blurb: "Vereinzelt ein Spruch, sonst Nahkampf. Astralenergie wird geschont.",
+  },
+  "magic-mid": {
+    title: "Moderater Magie-Einsatz",
+    blurb: "Etwa jede zweite Runde ein Spruch. Balance aus Klinge und Formel.",
+  },
+  "magic-high": {
+    title: "Viel Magie",
+    blurb: "Solange AsP reichen, dröhnt jede Runde ein Spruch. Hohe Wirkung, hoher Verbrauch.",
   },
 };
 
@@ -465,6 +494,10 @@ function pickConsequence(tactic: Tactic): ConsequenceKind {
     flee: ["robbery", "robbery", "capture", "capture"],
     balanced: ["capture", "robbery", "wound", "timeloss"],
     spell: ["capture", "wound", "robbery", "timeloss"],
+    "magic-none": ["capture", "robbery", "wound", "timeloss"],
+    "magic-low": ["capture", "robbery", "wound", "timeloss"],
+    "magic-mid": ["capture", "wound", "robbery", "timeloss"],
+    "magic-high": ["capture", "wound", "wound", "robbery", "timeloss"],
   };
   const arr = table[tactic];
   return arr[Math.floor(Math.random() * arr.length)];
@@ -479,6 +512,7 @@ export function resolveRound(
   state: CombatState,
   tactic: Tactic,
   player: PlayerStats,
+  opts?: { spellFocus?: SpellFocus },
 ): CombatEvent[] {
   if (state.phase !== "ongoing") return [];
   state.lastTactic = tactic;
@@ -540,6 +574,48 @@ export function resolveRound(
     const foeTarget = layard ? pickWeakestW(state.foes) : null;
     if (layard && alive(layard) && foeTarget) {
       resolveLayardSpell(layard, foeTarget, all, events);
+    }
+  }
+
+  // Magie-Intensitäts-Taktiken: Layard entscheidet pro Runde probabilistisch,
+  // ob er einen Spruch wirkt. Schwerpunkt steuert offensiv vs. heilend (nur
+  // wenn Balsam Salabunde bekannt ist).
+  if (
+    tactic === "magic-none" ||
+    tactic === "magic-low" ||
+    tactic === "magic-mid" ||
+    tactic === "magic-high"
+  ) {
+    const prob: Record<typeof tactic, number> = {
+      "magic-none": 0,
+      "magic-low": 0.34,
+      "magic-mid": 0.67,
+      "magic-high": 1,
+    } as const;
+    const p = prob[tactic];
+    const layard = state.heroes.find((h) => h.id === "hero");
+    if (p > 0 && layard && alive(layard) && Math.random() < p) {
+      const focus: SpellFocus = opts?.spellFocus ?? "offense";
+      const knowsBalsam =
+        typeof layard.spells?.["balsam_salabunde"] === "number";
+      const missingLe = Math.max(0, layard.leMax - layard.le);
+      const halfLe = Math.ceil(layard.leMax * 0.5);
+      const wantHeal =
+        knowsBalsam &&
+        missingLe >= 3 &&
+        (focus === "healing" ||
+          (focus === "balanced" && layard.le <= halfLe));
+      if (wantHeal) {
+        layardSkipMelee = true;
+        resolveLayardBalsam(layard, all, events);
+      } else if (focus !== "healing") {
+        const foeTarget = pickWeakestW(state.foes);
+        if (foeTarget && pickCombatSpell(layard)) {
+          layardSkipMelee = true;
+          resolveLayardSpell(layard, foeTarget, all, events);
+        }
+      }
+      // Heilfokus ohne Bedarf → kein Spruch, normaler Nahkampf bleibt.
     }
   }
 
@@ -887,6 +963,86 @@ function resolveLayardSpell(
       targetId: foe.id,
     });
   }
+}
+
+/**
+ * Layard wirkt Balsam Salabunde auf sich selbst. AsP-Kosten = geheilte LE
+ * (1 AsP pro LE). Bei misslungener Probe verpuffen die halben Kosten der
+ * geplanten Heilung. Mutiert `layard.le` und `layard.ae`.
+ */
+function resolveLayardBalsam(
+  layard: WoundedCombatant,
+  all: WoundedCombatant[],
+  events: CombatEvent[],
+): void {
+  const spell = SPELLS.find((s) => s.id === "balsam_salabunde");
+  const zfw = layard.spells?.["balsam_salabunde"];
+  const attrs = layard.attrs;
+  if (!spell || typeof zfw !== "number" || !attrs) {
+    events.push({
+      kind: "spell-fizzle",
+      text: `${layard.name} kann Balsam Salabunde nicht stabilisieren.`,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+    });
+    return;
+  }
+  const ae = layard.ae ?? 0;
+  const missingLe = Math.max(0, layard.leMax - layard.le);
+  // Geplante Heilung: durch ZfW gedeckelt, durch AsP gedeckelt, durch Bedarf.
+  const planned = Math.max(1, Math.min(missingLe, zfw, ae));
+  if (ae <= 0 || missingLe <= 0) {
+    events.push({
+      kind: "spell-fizzle",
+      text: `${layard.name} braucht keine Heilung — Balsam Salabunde bleibt ungewirkt.`,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+    });
+    return;
+  }
+
+  const ownSchool = spellOwnSchool(layard.classId, spell);
+  const modBuf = ownSchool ? 3 : 0;
+  const rolls: number[] = [d20(), d20(), d20()];
+  let bufferLeft = zfw + modBuf;
+  const dice = rolls.map((r, i) => {
+    const attrId = spell.probe[i] as AttributeId;
+    const target = attrs[attrId] ?? 10;
+    const fail = r > target;
+    if (fail) bufferLeft -= r - target;
+    return { label: `${attrId} (W20)`, value: r, target, success: !fail };
+  });
+  const ones = rolls.filter((r) => r === 1).length;
+  const twenties = rolls.filter((r) => r === 20).length;
+  let success: boolean;
+  if (twenties >= 2) success = false;
+  else if (ones >= 2) success = true;
+  else success = bufferLeft >= 0;
+
+  if (!success) {
+    const lost = Math.max(1, Math.ceil(planned / 2));
+    layard.ae = Math.max(0, ae - lost);
+    events.push({
+      kind: "spell-fail",
+      text: `${layard.name} wirkt Balsam Salabunde — Probe misslingt (Puffer ${bufferLeft}). Astralenergie verpufft halbiert (AsP −${lost} → ${layard.ae}).`,
+      dice,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+    });
+    return;
+  }
+
+  // Erfolg: Heilung in Höhe von `planned`, gleich viele AsP abziehen.
+  layard.le = Math.min(layard.leMax, layard.le + planned);
+  layard.ae = Math.max(0, ae - planned);
+  events.push({
+    kind: "spell-cast",
+    text: `${layard.name} wirkt Balsam Salabunde${ownSchool ? " (Hauszauber)" : ""} auf sich selbst. +${planned} LE (AsP −${planned} → ${layard.ae}). ${layard.name}: ${layard.le}/${layard.leMax} LE.`,
+    dice,
+    snapshot: snapshotW(all),
+    actorId: layard.id,
+    targetId: layard.id,
+  });
 }
 
 function snapshot(all: Combatant[]): { id: string; le: number }[] {

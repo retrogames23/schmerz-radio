@@ -11,6 +11,7 @@ import {
   type ConsequenceKind,
   type PlayerStats,
   type Tactic,
+  type SpellFocus,
 } from "@/game/dsa/combat";
 import { SPELLS } from "@/game/dsa/rules/spells";
 import { CombatantCard } from "./dsa/CombatantCard";
@@ -58,6 +59,7 @@ export function DsaCombatInteractive({
     ),
   );
   const [tactic, setTactic] = useState<Tactic>("balanced");
+  const [spellFocus, setSpellFocus] = useState<SpellFocus>("offense");
   const [hasStarted, setHasStarted] = useState(false);
   const [paused, setPaused] = useState(false);
   const [fast, setFast] = useState(false);
@@ -69,6 +71,8 @@ export function DsaCombatInteractive({
   const logRef = useRef<HTMLDivElement | null>(null);
   const tacticRef = useRef(tactic);
   tacticRef.current = tactic;
+  const spellFocusRef = useRef(spellFocus);
+  spellFocusRef.current = spellFocus;
 
   const current = events[Math.min(step, events.length - 1)];
   const queueExhausted = step >= events.length - 1;
@@ -80,7 +84,9 @@ export function DsaCombatInteractive({
     if (paused) return;
     if (phase !== "ongoing") return;
     if (!queueExhausted) return;
-    const newEvents = resolveRound(stateRef.current, tacticRef.current, player);
+    const newEvents = resolveRound(stateRef.current, tacticRef.current, player, {
+      spellFocus: spellFocusRef.current,
+    });
     if (newEvents.length === 0) return;
     setEvents((prev) => [...prev, ...newEvents]);
     setPhase(stateRef.current.phase);
@@ -268,6 +274,8 @@ export function DsaCombatInteractive({
             <TacticPicker
               tactic={tactic}
               onChange={setTactic}
+              spellFocus={spellFocus}
+              onFocusChange={setSpellFocus}
               onConfirm={() => {
                 if (!hasStarted) handleStart();
                 else setPaused(false);
@@ -382,52 +390,70 @@ function SideLabel({ label, align }: { label: string; align: "left" | "right" })
 function TacticPicker({
   tactic,
   onChange,
+  spellFocus,
+  onFocusChange,
   onConfirm,
   confirmLabel,
   layard,
 }: {
   tactic: Tactic;
   onChange: (t: Tactic) => void;
+  spellFocus: SpellFocus;
+  onFocusChange: (f: SpellFocus) => void;
   onConfirm: () => void;
   confirmLabel: string;
   layard: Combatant | null;
 }) {
   const combatSpellIds = new Set(["ignifaxius", "blitz_dich_find", "fulminictus"]);
-  const canCast = (() => {
-    if (!layard) return false;
-    if ((layard.ae ?? 0) <= 0) return false;
-    const spells = layard.spells ?? {};
-    return Object.keys(spells).some((id) => combatSpellIds.has(id));
-  })();
-  const tactics: Tactic[] = [
-    "balanced",
-    "aggressive",
-    "defensive",
-    "cunning",
-    "flee",
-    ...(canCast ? (["spell"] as Tactic[]) : []),
-  ];
-  // Wenn Zaubern verschwindet (z.B. AsP leer) und vorher gewählt war → zurück auf balanced.
+  const spells = layard?.spells ?? {};
+  const knowsCombatSpell = Object.keys(spells).some((id) =>
+    combatSpellIds.has(id),
+  );
+  const knowsBalsam = typeof spells["balsam_salabunde"] === "number";
+  const hasAsp = (layard?.ae ?? 0) > 0;
+  // Magier-Modus: Spieler wählt Magie-Intensität statt klassischer Taktik.
+  const mageMode = knowsCombatSpell;
+  const tactics: Tactic[] = mageMode
+    ? ["magic-none", "magic-low", "magic-mid", "magic-high", "flee"]
+    : ["balanced", "aggressive", "defensive", "cunning", "flee"];
+  // Default auf sinnvolle Magier-Taktik umstellen, wenn nötig.
   useEffect(() => {
-    if (!canCast && tactic === "spell") onChange("balanced");
-  }, [canCast, tactic, onChange]);
+    if (mageMode && !tactics.includes(tactic)) onChange("magic-mid");
+    if (!mageMode && (tactic === "spell" || tactic.startsWith("magic-")))
+      onChange("balanced");
+    // Wenn AsP leer → "magic-none" reicht; alle anderen Magie-Tasten bleiben
+    // wählbar, wirken aber im Resolver einfach nicht.
+    if (mageMode && !hasAsp && tactic !== "magic-none" && tactic !== "flee")
+      onChange("magic-none");
+  }, [mageMode, hasAsp, tactic, onChange, tactics]);
   return (
     <section className="dsa-box-thick p-3 sm:p-4">
       <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.7)] pb-1">
-        Layards Taktik
+        {mageMode ? "Layards Magie-Einsatz" : "Layards Taktik"}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
         {tactics.map((t) => {
           const meta = TACTIC_LABELS[t];
           const active = tactic === t;
           const subline = (() => {
-            if (t !== "spell" || !layard) return null;
-            const spells = layard.spells ?? {};
-            const known = SPELLS.filter(
-              (s) => combatSpellIds.has(s.id) && typeof spells[s.id] === "number",
-            );
-            if (known.length === 0) return null;
-            return `Bekannt: ${known.map((s) => `${s.name} (ZfW ${spells[s.id]})`).join(" · ")} · AsP ${layard.ae}/${layard.aeMax ?? layard.ae}`;
+            if (!layard) return null;
+            if (t.startsWith("magic-")) {
+              const known = SPELLS.filter(
+                (s) =>
+                  (combatSpellIds.has(s.id) || s.id === "balsam_salabunde") &&
+                  typeof spells[s.id] === "number",
+              );
+              if (known.length === 0) return null;
+              return `Bekannt: ${known.map((s) => `${s.name} (ZfW ${spells[s.id]})`).join(" · ")} · AsP ${layard.ae}/${layard.aeMax ?? layard.ae}`;
+            }
+            if (t === "spell") {
+              const known = SPELLS.filter(
+                (s) => combatSpellIds.has(s.id) && typeof spells[s.id] === "number",
+              );
+              if (known.length === 0) return null;
+              return `Bekannt: ${known.map((s) => `${s.name} (ZfW ${spells[s.id]})`).join(" · ")} · AsP ${layard.ae}/${layard.aeMax ?? layard.ae}`;
+            }
+            return null;
           })();
           return (
             <button
@@ -465,6 +491,50 @@ function TacticPicker({
           );
         })}
       </div>
+      {mageMode && knowsBalsam && tactic !== "magic-none" && tactic !== "flee" && (
+        <div className="mb-3">
+          <div className="dsa-typed text-[10px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b border-[rgba(20,12,4,0.55)] pb-1">
+            Magie-Schwerpunkt
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {(
+              [
+                { id: "offense", title: "Angriffszauber", blurb: "Nur Ignifaxius & Co. — kein Balsam." },
+                { id: "balanced", title: "Ausgeglichen", blurb: "Balsam erst, wenn Layard unter halber LE ist." },
+                { id: "healing", title: "Heilzauber", blurb: "Bevorzugt Balsam Salabunde, wenn Wunden vorhanden." },
+              ] as { id: SpellFocus; title: string; blurb: string }[]
+            ).map((opt) => {
+              const active = spellFocus === opt.id;
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => onFocusChange(opt.id)}
+                  className={
+                    "text-left rounded border-2 px-3 py-2 transition-all " +
+                    (active
+                      ? "border-[#3a2c1a] bg-[#3a2c1a] text-[#f1e6c8]"
+                      : "border-[#3a2c1a] bg-[#fbf2d8] text-[#2a1f10] hover:bg-[#f1d99a]")
+                  }
+                >
+                  <div
+                    className="dsa-typed font-extrabold text-sm"
+                    style={active ? { color: "#f1e6c8" } : undefined}
+                  >
+                    {opt.title}
+                  </div>
+                  <div
+                    className="dsa-typed text-[11px] leading-snug opacity-90 mt-0.5"
+                    style={active ? { color: "#f1e6c8" } : undefined}
+                  >
+                    {opt.blurb}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
       <button
         type="button"
         onClick={onConfirm}
