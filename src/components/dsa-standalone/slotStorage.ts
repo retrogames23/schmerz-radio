@@ -79,6 +79,21 @@ export function rotateSlotSessionId(slot: SlotIndex): string {
   return fresh;
 }
 
+/**
+ * Übernimmt eine vom Server bekannte SessionId für einen Slot. Wird
+ * nach dem Login genutzt, damit derselbe Slot auf allen Geräten den
+ * laufenden Spielstand fortsetzt statt ein neues Abenteuer zu starten.
+ */
+export function setSlotSessionId(slot: SlotIndex, sessionId: string): void {
+  if (typeof window === "undefined") return;
+  if (!isValidSessionId(sessionId)) return;
+  try {
+    window.localStorage.setItem(sessionKey(slot), sessionId);
+  } catch {
+    /* Storage gesperrt — Slot bleibt nur in-Memory. */
+  }
+}
+
 export function loadSlotCharacter(slot: SlotIndex): DsaCharacterSummary | null {
   if (typeof window === "undefined") return null;
   try {
