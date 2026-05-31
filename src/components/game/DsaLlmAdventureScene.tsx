@@ -592,17 +592,10 @@ export function DsaLlmAdventureScene() {
                   <textarea
                     value={composerText}
                     onChange={(e) => setComposerText(e.target.value.slice(0, 500))}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleSend();
-                      }
-                    }}
                     placeholder={
                       pendingCombat
                         ? "Ein Kampf bahnt sich an — zieh die Waffen, um fortzufahren."
-                        : `Was tut ${dsaCharacter.name}? (Enter = senden)`
+                        : `Was tut ${dsaCharacter.name}? (Klick auf „Senden")`
                     }
                     rows={2}
                     disabled={busy || !!pendingCombat}
