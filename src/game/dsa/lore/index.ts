@@ -5,11 +5,12 @@ import { DSA_LANGUAGE_BRIEF } from "./language";
 import { buildGodsBlock } from "./gods";
 import { buildRegionsBlockForSetting } from "./regions";
 import { buildBestiaryBlock, DSA_BESTIARY } from "./bestiary";
+import { DSA_AUELFEN_BRIEF } from "./auelfen";
 import type { DsaSettingId } from "../llmAdventure";
 
 export * from "./gods";
 export * from "./regions";
-export { DSA_BESTIARY };
+export { DSA_BESTIARY, DSA_AUELFEN_BRIEF };
 
 /** Immer mitgesendeter Lore-Kern (Tagesgeschehen, Wirtschaft, Kalender, Sprache, Götter). */
 export function buildCoreLoreAppend(): string {
@@ -25,6 +26,8 @@ export function buildCoreLoreAppend(): string {
     DSA_LANGUAGE_BRIEF,
     "",
     buildGodsBlock(),
+    "",
+    DSA_AUELFEN_BRIEF,
   ].join("\n");
 }
 
