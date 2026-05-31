@@ -85,18 +85,39 @@ function getAnonId(): string {
   }
 }
 
-async function authedPost(body: Record<string, unknown>, sessionId: string): Promise<Response> {
+async function authedPost(
+  body: Record<string, unknown>,
+  sessionId: string,
+  expectsSignedInUser = false,
+): Promise<Response> {
   const { getFreshAccessToken } = await import("@/auth/freshToken");
   const token = await getFreshAccessToken().catch(() => null);
+  if (expectsSignedInUser && !token) {
+    return new Response(JSON.stringify({ error: "Bitte melde dich erneut an." }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
-  return fetch("/api/public/dsa-master", {
+  const response = await fetch("/api/public/dsa-master", {
     method: "POST",
     headers,
     body: JSON.stringify({
       ...body,
       sessionId,
       ...(token ? {} : { anonId: getAnonId() }),
+    }),
+  });
+  if (response.status !== 401 || !token) return response;
+  const refreshedToken = await getFreshAccessToken(true).catch(() => null);
+  if (!refreshedToken) return response;
+  return fetch("/api/public/dsa-master", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${refreshedToken}` },
+    body: JSON.stringify({
+      ...body,
+      sessionId,
     }),
   });
 }
