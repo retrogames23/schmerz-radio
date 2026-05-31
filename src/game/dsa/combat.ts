@@ -343,7 +343,7 @@ export interface CombatEvent {
   /** Würfel, die diesen Schritt bestimmt haben — für die Anzeige unten. */
   dice?: { label: string; value: number; target?: number; success?: boolean }[];
   /** Aktuelle LE-Snapshots nach dem Event (für Balken-Animation). */
-  snapshot: { id: string; le: number }[];
+  snapshot: { id: string; le: number; ae?: number }[];
   /** Wer hat zuletzt zugeschlagen (für Welt-Animation). */
   actorId?: string;
   targetId?: string;
