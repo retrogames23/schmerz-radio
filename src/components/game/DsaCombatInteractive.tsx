@@ -11,6 +11,7 @@ import {
   type ConsequenceKind,
   type PlayerStats,
   type Tactic,
+  type SpellFocus,
 } from "@/game/dsa/combat";
 import { SPELLS } from "@/game/dsa/rules/spells";
 import { CombatantCard } from "./dsa/CombatantCard";
@@ -58,6 +59,7 @@ export function DsaCombatInteractive({
     ),
   );
   const [tactic, setTactic] = useState<Tactic>("balanced");
+  const [spellFocus, setSpellFocus] = useState<SpellFocus>("offense");
   const [hasStarted, setHasStarted] = useState(false);
   const [paused, setPaused] = useState(false);
   const [fast, setFast] = useState(false);
@@ -69,6 +71,8 @@ export function DsaCombatInteractive({
   const logRef = useRef<HTMLDivElement | null>(null);
   const tacticRef = useRef(tactic);
   tacticRef.current = tactic;
+  const spellFocusRef = useRef(spellFocus);
+  spellFocusRef.current = spellFocus;
 
   const current = events[Math.min(step, events.length - 1)];
   const queueExhausted = step >= events.length - 1;
@@ -80,7 +84,9 @@ export function DsaCombatInteractive({
     if (paused) return;
     if (phase !== "ongoing") return;
     if (!queueExhausted) return;
-    const newEvents = resolveRound(stateRef.current, tacticRef.current, player);
+    const newEvents = resolveRound(stateRef.current, tacticRef.current, player, {
+      spellFocus: spellFocusRef.current,
+    });
     if (newEvents.length === 0) return;
     setEvents((prev) => [...prev, ...newEvents]);
     setPhase(stateRef.current.phase);
