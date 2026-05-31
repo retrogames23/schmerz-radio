@@ -12,6 +12,7 @@ import {
 } from "@/components/dsa-standalone/slotStorage";
 import type { DsaHero } from "@/game/types";
 import { availableAp } from "@/game/dsa/advancement";
+import landingBg from "@/assets/dsa/landing-bg.jpg";
 
 const CANONICAL = "https://whisperquest.app/dsa";
 const TITLE = "DSA-Soloabenteuer mit KI-Meister – kostenlos online spielen";
@@ -146,9 +147,22 @@ function DsaLanding() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#1a120a] text-[#f1e6c8]">
+    <div className="relative min-h-screen w-full overflow-hidden bg-[#1a120a] text-[#f1e6c8]">
+      {/* Stimmungsvolles Aventurien-Hintergrundbild mit sanfter Animation */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+      >
+        <div
+          className="dsa-landing-bg absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${landingBg})` }}
+        />
+        {/* Lesbarkeits-Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1a120a]/70 via-[#1a120a]/80 to-[#1a120a]/95" />
+      </div>
+
       {/* Header */}
-      <header className="border-b border-[#3a2c1a] bg-[#241a0e]">
+      <header className="relative border-b border-[#3a2c1a] bg-[#241a0e]/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
           <div>
             <div className="text-[10px] uppercase tracking-[0.3em] opacity-60">
