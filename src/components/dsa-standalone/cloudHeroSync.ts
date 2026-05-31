@@ -69,7 +69,7 @@ export async function cloudUpsertHero(
   const { error } = await supabase
     .from("dsa_heroes")
     .upsert(
-      {
+      [{
         user_id: userId,
         slot,
         hero: hero as unknown as Record<string, unknown>,
@@ -77,7 +77,7 @@ export async function cloudUpsertHero(
         ap_spent: hero.apSpent ?? 0,
         adventures_played: hero.adventuresPlayed ?? 0,
         adventures_won: hero.adventuresWon ?? 0,
-      },
+      }],
       { onConflict: "user_id,slot" },
     );
   if (error) console.warn("cloudUpsertHero failed", error);
