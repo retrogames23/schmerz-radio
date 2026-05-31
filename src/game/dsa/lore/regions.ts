@@ -182,6 +182,8 @@ export const SETTING_TO_REGIONS: Record<DsaSettingId, DsaRegionId[]> = {
   dungeon: ["mittelreich_kern", "schwarze_lande", "bornland_svellt"],
   court: ["mittelreich_kern", "almada_horas", "tulamiden"],
   random: ["mittelreich_kern", "thorwal", "tulamiden", "bornland_svellt", "maraskan"],
+  sandbox: ["mittelreich_kern", "almada_horas", "tulamiden", "bornland_svellt", "thorwal"],
+  wish: ["mittelreich_kern", "almada_horas", "tulamiden", "bornland_svellt", "thorwal", "maraskan", "schwarze_lande"],
 };
 
 function regionBlock(r: RegionBrief): string {
