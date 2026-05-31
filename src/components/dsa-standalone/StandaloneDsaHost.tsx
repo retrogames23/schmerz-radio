@@ -79,6 +79,11 @@ export function StandaloneDsaHost({
         // Wenn der lokale Cache leer war, hatten wir den Creator offen
         // gezeigt — jetzt direkt ins Abenteuer wechseln.
         setView("adventure");
+      } else {
+        // Cloud kennt diesen Slot noch nicht — falls lokal ein Held
+        // existiert (z. B. vor dem Login angelegt), einmalig hochladen.
+        const local = loadSlotHero(slot);
+        if (local) void cloudUpsertHero(user.id, slot, local);
       }
     })();
     return () => {
