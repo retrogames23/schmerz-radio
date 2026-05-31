@@ -7,6 +7,7 @@ import {
   CLASS_COMBAT_PROFILES,
   heroCombatantFromCharacter,
 } from "@/game/dsa/combat";
+import { SPELLS } from "@/game/dsa/rules/spells";
 
 /**
  * Vollbild-Overlay, das den aktuellen DSA-Charakterbogen zeigt — im
