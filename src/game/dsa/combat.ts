@@ -528,6 +528,19 @@ export function resolveRound(
     mods.foeAt += 1;
   }
 
+  // Layard wirkt einen Kampfzauber — die Aktion ersetzt seinen Nahkampfangriff
+  // in dieser Runde, läuft aber VOR der Initiative ab (Zauber sind schnell,
+  // und so kann sich das Schadensfenster vor den Gegner-Aktionen öffnen).
+  let layardSkipMelee = false;
+  if (tactic === "spell") {
+    layardSkipMelee = true;
+    const layard = state.heroes.find((h) => h.id === "hero");
+    const foeTarget = layard ? pickWeakestW(state.foes) : null;
+    if (layard && alive(layard) && foeTarget) {
+      resolveLayardSpell(layard, foeTarget, all, events);
+    }
+  }
+
   // Initiative
   const order = [...state.heroes.filter(alive), ...state.foes.filter(alive)]
     .map((c) => ({ c, ini: c.iniBase + d6() }))
@@ -545,6 +558,8 @@ export function resolveRound(
     if (!alive(actor)) continue;
     if (state.phase !== "ongoing") break;
     if (state.foes.every((f) => !alive(f))) break;
+    // Layard hat diese Runde gezaubert → kein Nahkampf-Angriff.
+    if (layardSkipMelee && isLayard(actor)) continue;
 
     const target =
       actor.side === "hero" ? pickFoeTargetW(state.foes) : pickWeakestW(state.heroes);
