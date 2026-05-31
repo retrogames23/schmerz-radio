@@ -112,7 +112,9 @@ export function StandaloneDsaHost({
       openDsaCreator: () => setView("creator"),
       closeDsaCreator: () => {
         // Abbruch ohne Charakter → zurück zur Übersicht.
-        if (!character) {
+        // heroRef wird in setCharacter synchron gesetzt, daher zuverlässiger
+        // als das (durch React-State verzögerte) `character`.
+        if (!heroRef.current && !character) {
           onExit();
           return;
         }
