@@ -512,6 +512,7 @@ export function resolveRound(
   state: CombatState,
   tactic: Tactic,
   player: PlayerStats,
+  opts?: { spellFocus?: SpellFocus },
 ): CombatEvent[] {
   if (state.phase !== "ongoing") return [];
   state.lastTactic = tactic;
@@ -573,6 +574,48 @@ export function resolveRound(
     const foeTarget = layard ? pickWeakestW(state.foes) : null;
     if (layard && alive(layard) && foeTarget) {
       resolveLayardSpell(layard, foeTarget, all, events);
+    }
+  }
+
+  // Magie-Intensitäts-Taktiken: Layard entscheidet pro Runde probabilistisch,
+  // ob er einen Spruch wirkt. Schwerpunkt steuert offensiv vs. heilend (nur
+  // wenn Balsam Salabunde bekannt ist).
+  if (
+    tactic === "magic-none" ||
+    tactic === "magic-low" ||
+    tactic === "magic-mid" ||
+    tactic === "magic-high"
+  ) {
+    const prob: Record<typeof tactic, number> = {
+      "magic-none": 0,
+      "magic-low": 0.34,
+      "magic-mid": 0.67,
+      "magic-high": 1,
+    } as const;
+    const p = prob[tactic];
+    const layard = state.heroes.find((h) => h.id === "hero");
+    if (p > 0 && layard && alive(layard) && Math.random() < p) {
+      const focus: SpellFocus = opts?.spellFocus ?? "offense";
+      const knowsBalsam =
+        typeof layard.spells?.["balsam_salabunde"] === "number";
+      const missingLe = Math.max(0, layard.leMax - layard.le);
+      const halfLe = Math.ceil(layard.leMax * 0.5);
+      const wantHeal =
+        knowsBalsam &&
+        missingLe >= 3 &&
+        (focus === "healing" ||
+          (focus === "balanced" && layard.le <= halfLe));
+      if (wantHeal) {
+        layardSkipMelee = true;
+        resolveLayardBalsam(layard, all, events);
+      } else if (focus !== "healing") {
+        const foeTarget = pickWeakestW(state.foes);
+        if (foeTarget && pickCombatSpell(layard)) {
+          layardSkipMelee = true;
+          resolveLayardSpell(layard, foeTarget, all, events);
+        }
+      }
+      // Heilfokus ohne Bedarf → kein Spruch, normaler Nahkampf bleibt.
     }
   }
 
