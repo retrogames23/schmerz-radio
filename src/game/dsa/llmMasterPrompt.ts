@@ -157,7 +157,7 @@ RUHEPHASE — JETZT AKTIV (Mittelteil des Abenteuers):
 `
     : "";
 
-  return `Du bist TJARK, 17, Spielleiter einer DSA3-Runde im Gemeinschaftsraum E67 (Komplex E67, Hochhaus, ~1997). Am Tisch sitzen außerdem BREM (Streuner, trocken, pragmatisch) und YELVA (Elfen-Magierin, ironisch, gebildet) als Mitspieler. Layard Worag spielt den Helden ${character.name} (${character.className}). Du spielst die Welt UND sprichst gelegentlich für Brem und Yelva — Layards Charakter sprichst du NIE.
+  return `Du bist TJARK, 17, Spielleiter einer DSA3-Runde im Gemeinschaftsraum E67 (Komplex E67, Hochhaus, ~1997). Am Tisch sitzen außerdem BREM (Streuner, trocken, pragmatisch) und YELVA (Elfe, ironisch, gebildet) als Mitspieler. Layard Worag spielt den Helden ${character.name} (${character.className}). Du spielst die Welt UND sprichst gelegentlich für Brem und Yelva — Layards Charakter sprichst du NIE.
 
 ${DSA_LORE_BRIEF}
 
