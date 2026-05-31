@@ -53,9 +53,11 @@ export type Database = {
           adventures_won: number
           ap_spent: number
           ap_total: number
+          chronicle: Json
           created_at: string
           hero: Json
           id: string
+          npcs: Json
           slot: number
           updated_at: string
           user_id: string
@@ -65,9 +67,11 @@ export type Database = {
           adventures_won?: number
           ap_spent?: number
           ap_total?: number
+          chronicle?: Json
           created_at?: string
           hero: Json
           id?: string
+          npcs?: Json
           slot: number
           updated_at?: string
           user_id: string
@@ -77,9 +81,11 @@ export type Database = {
           adventures_won?: number
           ap_spent?: number
           ap_total?: number
+          chronicle?: Json
           created_at?: string
           hero?: Json
           id?: string
+          npcs?: Json
           slot?: number
           updated_at?: string
           user_id?: string
