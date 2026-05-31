@@ -790,6 +790,8 @@ function EndBanner({
   ap,
   onNew,
   onStandUp,
+  onResume,
+  resuming,
 }: {
   status: AdventureStatus;
   turns: Array<
@@ -801,6 +803,8 @@ function EndBanner({
   ap: { value: number; reason: string } | null;
   onNew: () => void;
   onStandUp: () => void;
+  onResume?: () => void;
+  resuming?: boolean;
 }) {
   const label =
     status === "victory"
@@ -889,6 +893,21 @@ function EndBanner({
         </button>
       </div>
       <div className="flex flex-wrap gap-2">
+        {onResume && (
+          <button
+            type="button"
+            onClick={onResume}
+            disabled={resuming}
+            className="inline-flex items-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#2d5a3d] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#1f4029] disabled:opacity-60"
+          >
+            {resuming ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Play className="h-3.5 w-3.5" strokeWidth={2.5} />
+            )}
+            Weiterspielen
+          </button>
+        )}
         <button
           type="button"
           onClick={onNew}
