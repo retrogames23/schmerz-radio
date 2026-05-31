@@ -965,6 +965,86 @@ function resolveLayardSpell(
   }
 }
 
+/**
+ * Layard wirkt Balsam Salabunde auf sich selbst. AsP-Kosten = geheilte LE
+ * (1 AsP pro LE). Bei misslungener Probe verpuffen die halben Kosten der
+ * geplanten Heilung. Mutiert `layard.le` und `layard.ae`.
+ */
+function resolveLayardBalsam(
+  layard: WoundedCombatant,
+  all: WoundedCombatant[],
+  events: CombatEvent[],
+): void {
+  const spell = SPELLS.find((s) => s.id === "balsam_salabunde");
+  const zfw = layard.spells?.["balsam_salabunde"];
+  const attrs = layard.attrs;
+  if (!spell || typeof zfw !== "number" || !attrs) {
+    events.push({
+      kind: "spell-fizzle",
+      text: `${layard.name} kann Balsam Salabunde nicht stabilisieren.`,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+    });
+    return;
+  }
+  const ae = layard.ae ?? 0;
+  const missingLe = Math.max(0, layard.leMax - layard.le);
+  // Geplante Heilung: durch ZfW gedeckelt, durch AsP gedeckelt, durch Bedarf.
+  const planned = Math.max(1, Math.min(missingLe, zfw, ae));
+  if (ae <= 0 || missingLe <= 0) {
+    events.push({
+      kind: "spell-fizzle",
+      text: `${layard.name} braucht keine Heilung — Balsam Salabunde bleibt ungewirkt.`,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+    });
+    return;
+  }
+
+  const ownSchool = spellOwnSchool(layard.classId, spell);
+  const modBuf = ownSchool ? 3 : 0;
+  const rolls: number[] = [d20(), d20(), d20()];
+  let bufferLeft = zfw + modBuf;
+  const dice = rolls.map((r, i) => {
+    const attrId = spell.probe[i] as AttributeId;
+    const target = attrs[attrId] ?? 10;
+    const fail = r > target;
+    if (fail) bufferLeft -= r - target;
+    return { label: `${attrId} (W20)`, value: r, target, success: !fail };
+  });
+  const ones = rolls.filter((r) => r === 1).length;
+  const twenties = rolls.filter((r) => r === 20).length;
+  let success: boolean;
+  if (twenties >= 2) success = false;
+  else if (ones >= 2) success = true;
+  else success = bufferLeft >= 0;
+
+  if (!success) {
+    const lost = Math.max(1, Math.ceil(planned / 2));
+    layard.ae = Math.max(0, ae - lost);
+    events.push({
+      kind: "spell-fail",
+      text: `${layard.name} wirkt Balsam Salabunde — Probe misslingt (Puffer ${bufferLeft}). Astralenergie verpufft halbiert (AsP −${lost} → ${layard.ae}).`,
+      dice,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+    });
+    return;
+  }
+
+  // Erfolg: Heilung in Höhe von `planned`, gleich viele AsP abziehen.
+  layard.le = Math.min(layard.leMax, layard.le + planned);
+  layard.ae = Math.max(0, ae - planned);
+  events.push({
+    kind: "spell-cast",
+    text: `${layard.name} wirkt Balsam Salabunde${ownSchool ? " (Hauszauber)" : ""} auf sich selbst. +${planned} LE (AsP −${planned} → ${layard.ae}). ${layard.name}: ${layard.le}/${layard.leMax} LE.`,
+    dice,
+    snapshot: snapshotW(all),
+    actorId: layard.id,
+    targetId: layard.id,
+  });
+}
+
 function snapshot(all: Combatant[]): { id: string; le: number }[] {
   return all.map((c) => ({ id: c.id, le: c.le }));
 }
