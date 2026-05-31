@@ -320,7 +320,7 @@ export function DsaLlmAdventureScene() {
     }
   }
 
-  async function handleSend() {
+  const handleSend = useCallback(async () => {
     const text = composerText.trim();
     if (!text || busy || endState) return;
     setComposerText("");
@@ -348,7 +348,7 @@ export function DsaLlmAdventureScene() {
     } finally {
       setBusy(false);
     }
-  }
+  }, [composerText, busy, endState, nextId, handleServerReply]);
 
   async function handleCombatDone(res: CombatDoneResult) {
     if (!combat || !dsaCharacter) return;
