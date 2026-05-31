@@ -338,6 +338,7 @@ export function DsaLlmAdventureScene() {
           ...(wishBrief ? { wishBrief } : {}),
         },
         getDsaSessionId(),
+        expectsSignedInUser,
       );
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
@@ -367,7 +368,7 @@ export function DsaLlmAdventureScene() {
     const myId = nextId();
     setTurns((t) => [...t, { id: myId, kind: "player", text }]);
     try {
-      const r = await authedPost({ action: "say", text, heroSlot }, getDsaSessionId());
+      const r = await authedPost({ action: "say", text, heroSlot }, getDsaSessionId(), expectsSignedInUser);
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
         setError(j.error || "Tjark schweigt.");
@@ -386,7 +387,7 @@ export function DsaLlmAdventureScene() {
     } finally {
       setBusy(false);
     }
-  }, [composerText, busy, endState, nextId, handleServerReply, heroSlot, getDsaSessionId]);
+  }, [composerText, busy, endState, nextId, handleServerReply, heroSlot, getDsaSessionId, expectsSignedInUser]);
 
   async function handleCombatDone(res: CombatDoneResult) {
     if (!combat || !dsaCharacter) return;
@@ -421,6 +422,7 @@ export function DsaLlmAdventureScene() {
           attrLowered: res.attrLowered,
         },
         getDsaSessionId(),
+        expectsSignedInUser,
       );
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
@@ -440,7 +442,7 @@ export function DsaLlmAdventureScene() {
   async function handleAbortAndPickNew() {
     setBusy(true);
     try {
-      await authedPost({ action: "abort", heroSlot }, getDsaSessionId());
+      await authedPost({ action: "abort", heroSlot }, getDsaSessionId(), expectsSignedInUser);
     } catch {
       /* ignore */
     }
@@ -461,7 +463,7 @@ export function DsaLlmAdventureScene() {
   async function handleResume() {
     setBusy(true);
     try {
-      await authedPost({ action: "resume", heroSlot }, getDsaSessionId());
+      await authedPost({ action: "resume", heroSlot }, getDsaSessionId(), expectsSignedInUser);
       setEndState(null);
       setEndAp(null);
     } catch (e) {
