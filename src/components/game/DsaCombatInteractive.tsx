@@ -273,6 +273,7 @@ export function DsaCombatInteractive({
                 else setPaused(false);
               }}
               confirmLabel={!hasStarted ? "Kampf beginnen" : "Weiterkämpfen"}
+              layard={stateRef.current.heroes.find((h) => h.id === "hero") ?? null}
             />
           )}
 
