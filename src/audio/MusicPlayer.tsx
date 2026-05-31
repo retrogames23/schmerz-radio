@@ -551,6 +551,7 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
       if (moodPoolRef.current === null) return;
       moodPoolRef.current = null;
       currentMoodSrcRef.current = null;
+      currentMoodRef.current = null;
       // Zurück zu Override (falls aktiv) oder Playlist.
       if (!enabledRef.current) {
         // Musik aus → sauber ausblenden.
