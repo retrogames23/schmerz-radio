@@ -44,6 +44,8 @@ interface ServerReply {
   parsed: ParsedMasterTurn;
   imageTag: string;
   status: AdventureStatus;
+  apAwarded?: number;
+  apReason?: string;
 }
 
 interface LoadedAdventure {
@@ -108,6 +110,7 @@ export function DsaLlmAdventureScene() {
     dsaSheetOpen,
     getDsaSessionId,
     openDsaCreator,
+    creditHeroAp,
   } = useDsaHost();
   const { setMoodPool, setMood } = useMusic();
 
@@ -125,6 +128,7 @@ export function DsaLlmAdventureScene() {
   const [combat, setCombat] = useState<CombatBridge | null>(null);
   const [pendingCombat, setPendingCombat] = useState<CombatBridge | null>(null);
   const [endState, setEndState] = useState<AdventureStatus | null>(null);
+  const [endAp, setEndAp] = useState<{ value: number; reason: string } | null>(null);
   const [settingId, setSettingId] = useState<DsaSettingId | null>(null);
   const [imageZoomed, setImageZoomed] = useState(false);
   const turnIdRef = useRef(0);
@@ -261,9 +265,13 @@ export function DsaLlmAdventureScene() {
       }
       if (data.status !== "active") {
         setEndState(data.status);
+        if (typeof data.apAwarded === "number" && data.apAwarded > 0) {
+          setEndAp({ value: data.apAwarded, reason: data.apReason ?? "" });
+          creditHeroAp?.(data.apAwarded, data.apReason ?? "", data.status === "victory");
+        }
       }
     },
-    [appendMaster, setMood],
+    [appendMaster, setMood, creditHeroAp],
   );
 
   // Mood-Pool aktivieren, solange die Tafelrunde offen ist. Beim Schließen
@@ -570,6 +578,7 @@ export function DsaLlmAdventureScene() {
                 turns={turns}
                 character={dsaCharacter}
                 settingId={settingId}
+                ap={endAp}
                 onNew={handleAbortAndPickNew}
                 onStandUp={handleStandUp}
               />
@@ -764,6 +773,7 @@ function EndBanner({
   turns,
   character,
   settingId,
+  ap,
   onNew,
   onStandUp,
 }: {
@@ -774,6 +784,7 @@ function EndBanner({
   >;
   character: import("@/game/types").DsaCharacterSummary;
   settingId: DsaSettingId | null;
+  ap: { value: number; reason: string } | null;
   onNew: () => void;
   onStandUp: () => void;
 }) {
@@ -814,6 +825,22 @@ function EndBanner({
   return (
     <div className="dsa-adventure-header shrink-0 border-t border-[#3a2c1a]/30 px-4 py-4 text-[#2a1f10]">
       <p className="font-serif text-base mb-3">{label}</p>
+      {ap && ap.value > 0 && (
+        <div className="mb-3 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 text-sm">
+          <div className="font-bold uppercase tracking-wider text-[11px] text-[#2a1f10]/70">
+            Abenteuerpunkte
+          </div>
+          <div className="font-serif text-lg leading-tight">
+            +{ap.value} AP{" "}
+            <span className="text-xs opacity-70">für {character.name}</span>
+          </div>
+          {ap.reason && (
+            <div className="font-serif text-[13px] italic mt-1 opacity-80">
+              „{ap.reason}"
+            </div>
+          )}
+        </div>
+      )}
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <span className="text-[10px] uppercase tracking-wider opacity-70 mr-1">
           Abenteuer mitnehmen:

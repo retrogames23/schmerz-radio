@@ -47,12 +47,54 @@ export type Database = {
         }
         Relationships: []
       }
+      dsa_heroes: {
+        Row: {
+          adventures_played: number
+          adventures_won: number
+          ap_spent: number
+          ap_total: number
+          created_at: string
+          hero: Json
+          id: string
+          slot: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          adventures_played?: number
+          adventures_won?: number
+          ap_spent?: number
+          ap_total?: number
+          created_at?: string
+          hero: Json
+          id?: string
+          slot: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          adventures_played?: number
+          adventures_won?: number
+          ap_spent?: number
+          ap_total?: number
+          created_at?: string
+          hero?: Json
+          id?: string
+          slot?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       dsa_llm_adventures: {
         Row: {
           anon_id: string | null
+          ap_awarded: number
+          ap_reason: string
           character_snapshot: Json
           created_at: string
           current_image_tag: string
+          hero_slot: number
           id: string
           messages: Json
           offtopic_streak: number
@@ -65,9 +107,12 @@ export type Database = {
         }
         Insert: {
           anon_id?: string | null
+          ap_awarded?: number
+          ap_reason?: string
           character_snapshot: Json
           created_at?: string
           current_image_tag?: string
+          hero_slot?: number
           id?: string
           messages?: Json
           offtopic_streak?: number
@@ -80,9 +125,12 @@ export type Database = {
         }
         Update: {
           anon_id?: string | null
+          ap_awarded?: number
+          ap_reason?: string
           character_snapshot?: Json
           created_at?: string
           current_image_tag?: string
+          hero_slot?: number
           id?: string
           messages?: Json
           offtopic_streak?: number

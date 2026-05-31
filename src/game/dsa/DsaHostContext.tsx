@@ -38,6 +38,13 @@ export interface DsaHostValue {
   setFlag: (flag: string) => void;
   /** Stabile Referenz; wird vom Creator nur als Reset-Dep verwendet. */
   flagsToken: unknown;
+
+  /**
+   * Schreibt AP-Gutschrift auf den Helden (nur Standalone implementiert
+   * sie wirklich — im Hauptspiel ein no-op, weil der DSA-Held dort über
+   * den Save-Slot persistiert wird).
+   */
+  creditHeroAp?: (ap: number, reason: string, won: boolean) => void;
 }
 
 const DsaHostOverrideContext = createContext<DsaHostValue | null>(null);

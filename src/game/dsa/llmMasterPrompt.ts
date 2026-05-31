@@ -158,6 +158,16 @@ AUSGABEFORMAT — STRIKT:
                               beim Betreten eines Tempels, beim Rastlager, bei einer plötzlichen Bedrohung).
                               Der laufende Musik-Track wird NIE mitten abgebrochen — der neue Mood greift erst
                               beim nächsten Trackende. Wiederhole denselben Mood nicht.
+    [AP: <50-300> | <kurze begründung>]
+                              Vergabe von Abenteuerpunkten am Spielende. NUR erlaubt zusammen mit [END: …]
+                              in derselben Antwort. Wähle den Wert nach Schwierigkeit, Spieldauer, kreativen
+                              Lösungen und Rollenspiel:
+                                Sieg:        100–250 AP (Standard ~150; ein langes, schweres oder besonders
+                                             klug gespieltes Abenteuer ruhig bis 300).
+                                Niederlage:  50–120 AP (für Mut, Konsequenzen-Tragen, gute Szenen).
+                                Abbruch:     50 AP (Trostpreis).
+                              Halte die Begründung knapp (max. 1 Satz), ohne neue Marker. Beispiel:
+                              [AP: 180 | Kluges Verhandeln mit Vossbeck und mutiger Showdown im Tempel]
 
 REGELN:
   - Sprich Layard mit »du« an, nicht mit »Spieler«. Layards Charakter heißt ${character.name}.

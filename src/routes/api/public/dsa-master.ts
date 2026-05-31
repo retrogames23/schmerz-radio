@@ -10,6 +10,7 @@ import {
   type AdventureStatus,
 } from "@/game/dsa/llmAdventure";
 import type { DsaCharacterSummary } from "@/game/types";
+import { AP_DEFAULTS, clampAp } from "@/game/dsa/advancement";
 
 /**
  * LLM-Tafelrunde im Gemeinschaftsraum E67. Eine einzige Route, drei
@@ -293,6 +294,8 @@ export const Route = createFileRoute("/api/public/dsa-master")({
         if (!/^[0-9a-zA-Z_-]{8,64}$/.test(sessionId)) {
           return json(400, { error: "Ungültige Session-ID." });
         }
+        const heroSlotRaw = typeof b.heroSlot === "number" ? b.heroSlot : 1;
+        const heroSlot = heroSlotRaw === 1 || heroSlotRaw === 2 || heroSlotRaw === 3 ? heroSlotRaw : 1;
 
         // Anonyme Spieler identifizieren sich über eine stabile, im
         // Browser gespeicherte ID. Genau eines von beidem ist gesetzt.
@@ -311,7 +314,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
         if (action === "load") {
           const q = admin
             .from("dsa_llm_adventures")
-            .select("setting, character_snapshot, messages, summary, current_image_tag, status, offtopic_streak");
+            .select("setting, character_snapshot, messages, summary, current_image_tag, status, offtopic_streak, ap_awarded, ap_reason, hero_slot");
           const { data: row } = await (uid
             ? q.eq("user_id", uid)
             : q.eq("anon_id", anonId!)
@@ -322,13 +325,42 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           return json(200, { adventure: row });
         }
 
+        // ── list ──────────────────────────────────────────
+        // Liefert alle Abenteuer dieses Slots (für Archiv-Ansicht).
+        if (action === "list") {
+          const q = admin
+            .from("dsa_llm_adventures")
+            .select("id, session_id, setting, status, ap_awarded, ap_reason, current_image_tag, updated_at, created_at")
+            .eq("hero_slot", heroSlot)
+            .order("created_at", { ascending: false })
+            .limit(50);
+          const { data: rows } = await (uid
+            ? q.eq("user_id", uid)
+            : q.eq("anon_id", anonId!));
+          return json(200, { adventures: rows ?? [] });
+        }
+
         // ── abort ─────────────────────────────────────────
         if (action === "abort") {
+          // Markiert ein laufendes Abenteuer als abgebrochen, statt es zu
+          // löschen — so bleibt es im Archiv erhalten.
+          const upd = admin
+            .from("dsa_llm_adventures")
+            .update({ status: "aborted" as AdventureStatus })
+            .eq("status", "active");
+          await (uid ? upd.eq("user_id", uid) : upd.eq("anon_id", anonId!))
+            .eq("session_id", sessionId);
+          return json(200, { ok: true });
+        }
+
+        // ── delete_slot ───────────────────────────────────
+        // Löscht ALLE Abenteuer eines Slots (Held-Reset auf der Landing).
+        if (action === "delete_slot") {
           const del = admin
             .from("dsa_llm_adventures")
-            .delete();
-          await (uid ? del.eq("user_id", uid) : del.eq("anon_id", anonId!))
-            .eq("session_id", sessionId);
+            .delete()
+            .eq("hero_slot", heroSlot);
+          await (uid ? del.eq("user_id", uid) : del.eq("anon_id", anonId!));
           return json(200, { ok: true });
         }
 
@@ -376,6 +408,18 @@ export const Route = createFileRoute("/api/public/dsa-master")({
               });
             }
           }
+          // Eingeloggte Spieler: pro Slot darf nur EIN aktives Abenteuer
+          // gleichzeitig laufen. Findet sich noch eines, wird es zuvor
+          // implizit als 'aborted' markiert.
+          if (uid) {
+            await admin
+              .from("dsa_llm_adventures")
+              .update({ status: "aborted" as AdventureStatus })
+              .eq("user_id", uid)
+              .eq("hero_slot", heroSlot)
+              .eq("status", "active")
+              .neq("session_id", sessionId);
+          }
           const settingId = typeof b.setting === "string" ? b.setting : "";
           if (!ALLOWED_SETTINGS.has(settingId)) {
             return json(400, { error: "Unbekanntes Setting." });
@@ -421,6 +465,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             anon_id: anonId,
             session_id: sessionId,
             setting: settingId,
+            hero_slot: heroSlot,
             character_snapshot: characterSnap as unknown as Record<string, unknown>,
             messages: initialMessages as unknown as Record<string, unknown>[],
             summary: "",
@@ -584,6 +629,19 @@ export const Route = createFileRoute("/api/public/dsa-master")({
 
           if (parsed.outtimeWarn) offtopicStreak = 0;
 
+          // AP-Vergabe nur bei Spielende.
+          let apAwarded = 0;
+          let apReason = "";
+          if (parsed.end) {
+            if (parsed.ap && Number.isFinite(parsed.ap.value)) {
+              apAwarded = clampAp(parsed.ap.value);
+              apReason = parsed.ap.reason || "";
+            } else {
+              apAwarded = AP_DEFAULTS[parsed.end];
+              apReason = "";
+            }
+          }
+
           const updateQ = admin
             .from("dsa_llm_adventures")
             .update({
@@ -592,6 +650,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
               current_image_tag: imgTag,
               status: nextStatus,
               offtopic_streak: offtopicStreak,
+              ...(parsed.end ? { ap_awarded: apAwarded, ap_reason: apReason } : {}),
             });
           const { error: upErr } = await (uid
             ? updateQ.eq("user_id", uid)
@@ -602,11 +661,40 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             console.error("dsa-master update failed", upErr);
             return json(500, { error: "Speichern fehlgeschlagen." });
           }
+
+          // Hero-Mirror in dsa_heroes hochzählen (nur eingeloggt).
+          if (uid && parsed.end) {
+            try {
+              const { data: heroRow } = await admin
+                .from("dsa_heroes")
+                .select("ap_total, adventures_played, adventures_won")
+                .eq("user_id", uid)
+                .eq("slot", heroSlot)
+                .maybeSingle();
+              if (heroRow) {
+                await admin
+                  .from("dsa_heroes")
+                  .update({
+                    ap_total: (heroRow.ap_total ?? 0) + apAwarded,
+                    adventures_played: (heroRow.adventures_played ?? 0) + 1,
+                    adventures_won:
+                      (heroRow.adventures_won ?? 0) + (nextStatus === "victory" ? 1 : 0),
+                  })
+                  .eq("user_id", uid)
+                  .eq("slot", heroSlot);
+              }
+            } catch (e) {
+              console.error("dsa-master hero credit failed", e);
+            }
+          }
+
           return json(200, {
             reply,
             parsed,
             imageTag: imgTag,
             status: nextStatus,
+            apAwarded,
+            apReason,
           });
         }
 

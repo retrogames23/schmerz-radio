@@ -1,70 +1,71 @@
-# Standalone-DSA unter `/dsa`
-
 ## Ziel
-Unter `whisperquest.app/dsa` eine eigene Seite, auf der ausschließlich die DSA-Tafelrunde gespielt werden kann — ohne Komplex E67, ohne Kantine, ohne Worag. Drei Speicherplätze, optional Login, sonst nichts vom Stammspiel sichtbar.
 
-Das Stammspiel (`/`) bleibt unverändert: dort taucht weder ein neuer Slot-Picker auf, noch ändert sich der Charakter-Flow, die Tafelrunden-Mechanik oder das Speicher­verhalten.
+Helden und Abenteuer werden zu zwei unabhängigen Konzepten. Ein Held lebt in einem von drei Slots, sammelt Abenteuerpunkte (AP) aus beendeten Runden und kann diese in Eigenschaften, Talente und (für Magier) Zauber investieren. Derselbe Held kann nacheinander beliebig viele Abenteuer spielen – sowohl im Hauptspiel als auch standalone, mit getrennten Pools je Modus.
 
-## UX
+## 1. Datenmodell
 
-### 1. Landingpage `/dsa`
-- Eigene Optik (Pergament-Look der DSA-Welt, NICHT der CRT/E67-Stil).
-- Header: „Die Tafelrunde" + kurzer Pitch (1–2 Sätze, was hier passiert).
-- Login-Button oben rechts: öffnet bestehenden `AuthDialog`. Eingeloggte sehen ihren Namen + Logout.
-- Hinweis: „Ohne Login werden deine Helden nur in diesem Browser gespeichert."
-- Drei Slot-Karten nebeneinander (mobil: untereinander):
-  - **Leer**: „Neuen Helden würfeln" → öffnet Charaktererschaffung für diesen Slot.
-  - **Belegt**: Name, Klasse, LE, Status („Abenteuer läuft" / „Bereit für neues Abenteuer" / „Gefallen"). Buttons: „Weiterspielen" und „Held löschen".
-- Footer: kleiner Link zurück zu `/` („Zum Stammspiel"), Impressum.
+**Held (Slot 1/2/3)**
+- bisher: `DsaCharacterSummary` (Snapshot mit `attrs`, `le`, `leMax`, `ae`).
+- neu zusätzlich: `apTotal`, `apSpent`, `talents: Record<talentId, number>`, `spells: string[]` (gelernte Zauber-IDs, nur Magier), `adventuresPlayed`, `adventuresWon`, `createdAt`.
+- gespeichert pro Slot in `localStorage` (`dsa.standalone.hero-N`) und – wenn eingeloggt – in neuer Tabelle `dsa_heroes` (PK `user_id + slot`).
 
-### 2. Spielfluss pro Slot
-- Charaktererschaffung (bestehender Würfel-Flow) → Setting-Picker → Tjarks Tafelrunde → Kämpfe → Fail-Forward → Ende.
-- Beim Beenden („Vom Tisch aufstehen") landet man wieder auf der Slot-Übersicht, nicht im Stammspiel.
+**Abenteuer (beliebig viele pro Held)**
+- bisher: `dsa_llm_adventures` mit `session_id` pro Slot.
+- neu: `hero_slot smallint` und `status` (`active`/`finished`/`aborted`) bleiben, aber pro Held kann es mehrere Zeilen geben. Neuer Index `(user_id|anon_id, hero_slot, created_at desc)`. Die bisherige stabile Slot-UUID wird zur „aktiven" Session des Helden; abgeschlossene Abenteuer bekommen jeweils eine neue UUID und bleiben als Archiv erhalten.
 
-## Architektur
+**Trennung Hauptspiel ↔ Standalone**
+- Hauptspiel-Held lebt weiterhin im Save-Slot (`GameContext`-Persistenz) und ist eine eigene `DsaHero`-Instanz. Standalone-Helden leben in den 3 Slots der `/dsa`-Route. Kein gemeinsamer Pool, kein Cross-Sync.
 
-### Wichtigster Punkt — keine Doppelpflege
-Die DSA-Komponenten (`DsaCharacterCreator`, `DsaLlmAdventureScene`, `DsaCharacterSheet`, `DsaCombatInteractive`) hängen aktuell hart an `useGame()`. Statt sie zu duplizieren, führe ich einen schmalen Adapter ein:
+## 2. AP-Vergabe durch den Meister
 
-- Neuer **`DsaHostContext`** mit genau den Feldern, die die DSA-Komponenten brauchen (character get/set, sessionId, open/close-Flags, mood-Setter).
-- Die DSA-Komponenten werden so umgestellt, dass sie `useDsaHost()` statt `useGame()` lesen.
-- Im Stammspiel wickelt die `GameShell` die DSA-Komponenten in einen `<DsaHostFromGameContext>` ein, der `useGame()` aufruft und in den Host-Shape übersetzt. → Verhalten und gespeicherte Daten im Stammspiel bleiben identisch.
-- Auf `/dsa` liefert ein eigener `<StandaloneDsaHost>` denselben Shape aus eigenem State (localStorage + optional Cloud).
+- Neuer Marker im LLM-Master-Prompt: `[AP: <50-300> | <Begründung>]`, ausschließlich erlaubt zusammen mit `[END: victory|defeat|aborted]`.
+- Parser in `src/game/dsa/llmAdventure.ts` extrahiert `ap` + `reason` in `ParsedMasterTurn`.
+- Server (`/api/public/dsa-master.ts`) clamped auf 50–300, schreibt `ap_awarded` + `ap_reason` ins Abenteuer und addiert auf `hero.apTotal`. Fehlt der Marker bei `[END]`, vergibt der Server einen Default (Sieg 150 / Niederlage 60 / Abbruch 0).
+- `EndBanner` zeigt vergebene AP + Begründung; Knopf „Held steigern" öffnet das neue Steigerungs-Overlay.
 
-Das ist die einzige Stelle, an der Stammspiel-Code angefasst wird — und nur als reines Re-Wiring der Imports, ohne Logikänderung.
+## 3. Steigerungs-Overlay
 
-### Speicherplätze
-- Server-Schema bleibt wie es ist (`dsa_llm_adventures` ist schon nach `(user_id|anon_id, session_id)` partitioniert).
-- Drei Slots = drei stabile sessionIds pro Spieler:
-  - Eingeloggt: `dsa-slot-1`, `dsa-slot-2`, `dsa-slot-3` (server matcht auf user_id).
-  - Anonym: gleiche Slot-Ids + browserbasierte `anonId` (existiert bereits).
-- Charakter pro Slot wird in `localStorage` unter `dsa.standalone.slot-{n}.character` abgelegt. Cloud-Sync für den reinen Charakter ist nicht Teil dieses Schritts — die Adventure-Rows enthalten ohnehin den Character-Snapshot.
+Neues Overlay `DsaHeroAdvancement.tsx` (öffenbar aus Charakterbogen und EndBanner). Inhalt:
+- **Eigenschaften** (MU/KL/CH/FF/GE/IN/KK): DSA-typische steigende Kosten (z. B. neuer Wert × 15 AP); LE/AE werden bei KK/IN automatisch nachgezogen.
+- **Talente** aus `src/game/dsa/rules/talents.ts`: Steigerung in Klasse erlaubter Talente; Kosten nach Spalte (A=15, B=30, C=45 …).
+- **Zauber** (nur wenn `cls.magic`): Lernen neuer klassen­passender Sprüche aus `rules/spells.ts` (Kosten Faktor × neuer Wert) und Steigern bekannter.
+- Anzeige: verfügbare AP (`apTotal - apSpent`), Vorschau der Veränderung, „Bestätigen" persistiert in den Slot.
 
-### Routing
-- Neue Datei `src/routes/dsa/index.tsx` → Landingpage mit Slot-Picker.
-- Neue Datei `src/routes/dsa/$slot.tsx` → Spielansicht für `/dsa/1`, `/dsa/2`, `/dsa/3`.
-- Beide Routen sind komplett unabhängig vom `Game.tsx`/`GameShell`-Tree — kein `MainGame`, kein Adventure-State, keine Worag-Logik.
-- Eigene Head-Meta (Titel „DSA Tafelrunde — WhisperQuest", eigene Description, og-Tags).
+Charakterbogen (`DsaCharacterSheet.tsx`) zeigt zusätzlich: AP-Stand, gespielte/gewonnene Abenteuer, gelernte Talente, Zauber.
 
-### Login
-- Wiederverwendung von `AuthContext` + `AuthDialog`. Beides ist bereits app-weit verfügbar.
-- Slots funktionieren ohne Login (anonym, lokal). Nach Login wandern existierende Anonym-Adventures **nicht** automatisch um — bewusste Entscheidung, weil sonst Konflikte mit eventuell vorhandenen Cloud-Slots entstehen. Stattdessen Hinweis in der UI.
+## 4. UI-Flow
 
-### Was bleibt unverändert
-- `src/components/game/Game.tsx`, `GameShell.tsx` Routing-Logik, alle Stammspiel-Szenen, Inventar, Dialoge.
-- DSA-Charaktererschaffung, Tafelrunden-Scene und Kampf-Overlay funktional 1:1, nur über neuen Context geliefert.
-- Server-Route `/api/public/dsa-master` und Migrations.
+**Standalone (`/dsa`)**
+- Landing-Seite zeigt pro Slot: Heldenname, Klasse, LE/AE, AP, Stand & Knopf „Steigern" wenn freie AP. Zusätzlich „Neues Abenteuer starten" (wenn kein aktives offen) und „Weiterspielen" (wenn `status=active`).
+- Neue Unterroute `/dsa/$slot/archiv` listet beendete Abenteuer (Setting, Datum, Ausgang, AP, DOCX/PDF-Download wie bisher).
+- „Held löschen" entfernt Held + alle zugehörigen Abenteuer; einzelne Abenteuer separat löschbar.
 
-## Schritte
+**Hauptspiel**
+- Im Charakterbogen-Overlay (Gemeinschaftsraum E67) erscheint der gleiche „Steigern"-Knopf, sobald AP vorhanden.
+- Nach beendetem Abenteuer kann Tjark eine neue Runde mit demselben Helden anbieten (Setting-Auswahl); bisheriges Verhalten („selber Held bleibt") wird zur expliziten Wahl.
 
-1. `DsaHostContext` + `useDsaHost()` einführen, DSA-Komponenten auf den Hook umstellen.
-2. `GameShell` mit dem Bridge-Provider versehen, der `useGame()` → DsaHost übersetzt. Smoke-Test im Stammspiel (Worag → DSA-Tisch).
-3. `StandaloneDsaHost` für `/dsa` implementieren (Slot-State, localStorage, sessionId-Mapping).
-4. Landingpage `/dsa` mit Slot-Karten + Login bauen.
-5. Slot-Route `/dsa/$slot` bauen: Creator-Overlay bzw. Adventure-Scene rendern, je nachdem ob ein Charakter existiert. „Aufstehen" navigiert zurück zu `/dsa`.
-6. Head-Meta, Footer, Impressum-Link, Smoke-Test als anonymer + eingeloggter User.
+## 5. Migration
 
-## Offene Punkte (Annahmen, korrigiere wenn falsch)
-- Charakter-Daten der Slots werden nur lokal gespeichert; nur das laufende Abenteuer landet (wie bisher) in der Cloud. OK?
-- Drei Slots sind hart kodiert, keine Umbenennung („Slot 1/2/3" reicht). OK?
-- Auf `/dsa` ist kein Backlink zum Komplex E67 sichtbar außer dem dezenten Footer-Link „Zum Stammspiel". OK?
+- Beim ersten Laden: bestehendes `dsa.standalone.slot-N` (alter `DsaCharacterSummary`) wird zu `dsa.standalone.hero-N` mit `apTotal=0`, `apSpent=0`, leeren Talenten/Zaubern aufgewertet.
+- Bestehende `dsa_llm_adventures`-Zeilen bekommen `hero_slot` per Default aus der bekannten Slot-UUID-Zuordnung; `status` bleibt wie gehabt.
+
+## Technische Details
+
+Geänderte/neue Dateien:
+- `src/game/types.ts` – neuer Typ `DsaHero` (erweitert `DsaCharacterSummary`).
+- `src/components/dsa-standalone/slotStorage.ts` – `loadHero/saveHero`, Liste der Abenteuer pro Slot, separate Session-ID pro Abenteuer.
+- `src/game/dsa/llmAdventure.ts` – Parser für `[AP:…]`, Typen `ParsedMasterTurn.ap`.
+- `src/game/dsa/llmMasterPrompt.ts` – Marker-Doku für den Meister.
+- `src/routes/api/public/dsa-master.ts` – Hero-Tabelle hochzählen, AP clampen, mehrere Abenteuer pro Slot zulassen, `list`/`finish`-Aktionen.
+- Neue Migration: Tabelle `dsa_heroes (user_id, slot, hero jsonb, ap_total, ap_spent, updated_at)` mit GRANTs + RLS (user-scoped), plus Spalte `hero_slot` + `ap_awarded` + `ap_reason` auf `dsa_llm_adventures`.
+- Neue Komponente `src/components/game/DsaHeroAdvancement.tsx`.
+- `DsaCharacterSheet.tsx` – AP-Block + Talent-/Zauberliste mit aktuellem Wert.
+- `DsaLlmAdventureScene.tsx` – EndBanner zeigt AP, Knopf „Steigern" + „Neues Abenteuer".
+- `routes/dsa.index.tsx`, `routes/dsa.$slot.tsx`, neue `routes/dsa.$slot.archiv.tsx`.
+- `DsaHostContext.tsx` + `StandaloneDsaHost.tsx` + `GameContext.tsx` – Hero-CRUD-API (`updateHero`, `spendAp`, `startNewAdventure`, `listAdventures`).
+
+Regeltabellen (`rules/talents.ts`, `rules/spells.ts`) bekommen Steigerungskosten als zusätzliche Felder, falls nicht vorhanden.
+
+## Offen für später (nicht Teil dieser Iteration)
+- Cloud-Sync der Helden zwischen Geräten via `dsa_heroes` (Server-Endpunkte werden zwar mit­erstellt, UI bleibt minimal).
+- Export/Import einzelner Helden als JSON.
