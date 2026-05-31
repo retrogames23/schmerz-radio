@@ -371,7 +371,7 @@ export interface CombatResult {
 // `DsaAdventureScene` unverändert bestehen.
 // ════════════════════════════════════════════════════════════════
 
-export type Tactic = "balanced" | "aggressive" | "defensive" | "cunning" | "flee";
+export type Tactic = "balanced" | "aggressive" | "defensive" | "cunning" | "flee" | "spell";
 
 export const TACTIC_LABELS: Record<Tactic, { title: string; blurb: string }> = {
   balanced: {
@@ -393,6 +393,10 @@ export const TACTIC_LABELS: Record<Tactic, { title: string; blurb: string }> = {
   flee: {
     title: "Flucht / Einschüchtern",
     blurb: "CH-Probe je Runde. Erfolg: Kampf abbrechen. Misserfolg: Gegner +1 AT.",
+  },
+  spell: {
+    title: "Kampfzauber wirken",
+    blurb: "3W20-Probe gegen Eigenschaften, AsP-Kosten. Layard greift in dieser Runde nicht in den Nahkampf ein.",
   },
 };
 
