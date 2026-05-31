@@ -10,6 +10,11 @@ import {
   slotSessionId,
   type SlotIndex,
 } from "@/components/dsa-standalone/slotStorage";
+import {
+  cloudFetchAllHeroes,
+  cloudDeleteHero,
+  cloudDeleteSlotAdventures,
+} from "@/components/dsa-standalone/cloudHeroSync";
 import type { DsaHero } from "@/game/types";
 import { availableAp } from "@/game/dsa/advancement";
 
@@ -41,18 +46,38 @@ function DsaHeroManager() {
   );
 
   useEffect(() => {
+    // Sofort den lokalen Cache zeigen, damit nichts flackert.
     setSlots({
       1: loadSlotHero(1),
       2: loadSlotHero(2),
       3: loadSlotHero(3),
     });
-  }, []);
+    if (!user) return;
+    // Eingeloggt → Cloud ist die Wahrheit. Spiegeln in localStorage,
+    // damit Folge-Navigation ohne Spinner auskommt.
+    let cancelled = false;
+    (async () => {
+      const cloud = await cloudFetchAllHeroes();
+      if (cancelled) return;
+      setSlots(cloud);
+      for (const slot of SLOT_INDICES) saveSlotHero(slot, cloud[slot]);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   async function handleDelete(slot: SlotIndex) {
     if (!window.confirm(`Held in Slot ${slot} wirklich löschen?`)) return;
     const sessionIdToDelete = slotSessionId(slot);
     saveSlotHero(slot, null);
     setSlots((s) => ({ ...s, [slot]: null }));
+    if (user) {
+      // Cloud-Spiegel ebenfalls leeren, sonst taucht der Held nach
+      // einem Reload auf einem anderen Gerät wieder auf.
+      await cloudDeleteHero(slot).catch(() => {});
+      await cloudDeleteSlotAdventures(slot).catch(() => {});
+    }
     try {
       const { getFreshAccessToken } = await import("@/auth/freshToken");
       const token = await getFreshAccessToken().catch(() => null);
