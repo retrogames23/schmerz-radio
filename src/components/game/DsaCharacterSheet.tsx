@@ -51,12 +51,12 @@ export function DsaCharacterSheet() {
   const hero = upgradeToHero(dsaCharacter as DsaHero) as DsaHero;
   const ap = availableAp(hero);
   const canAdvance = !!updateHero;
-  const learnedTalents = Object.entries(hero.talents ?? {})
-    .map(([id, value]) => {
+  type LearnedTalent = { name: string; value: number; probe: readonly string[] };
+  const learnedTalents: LearnedTalent[] = Object.entries(hero.talents ?? {})
+    .flatMap(([id, value]) => {
       const def = TALENTS.find((t) => t.id === id);
-      return def ? { name: def.name, value, probe: def.probe } : null;
+      return def ? [{ name: def.name, value, probe: def.probe as readonly string[] }] : [];
     })
-    .filter((t): t is { name: string; value: number; probe: readonly string[] } => !!t)
     .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name));
   const learnedSpells = Object.entries(hero.spells ?? {})
     .map(([id, value]) => {
