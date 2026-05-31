@@ -371,7 +371,20 @@ export interface CombatResult {
 // `DsaAdventureScene` unverändert bestehen.
 // ════════════════════════════════════════════════════════════════
 
-export type Tactic = "balanced" | "aggressive" | "defensive" | "cunning" | "flee" | "spell";
+export type Tactic =
+  | "balanced"
+  | "aggressive"
+  | "defensive"
+  | "cunning"
+  | "flee"
+  | "spell"
+  | "magic-none"
+  | "magic-low"
+  | "magic-mid"
+  | "magic-high";
+
+/** Schwerpunkt bei Magie-Taktiken, wenn Layard Balsam Salabunde kennt. */
+export type SpellFocus = "offense" | "healing" | "balanced";
 
 export const TACTIC_LABELS: Record<Tactic, { title: string; blurb: string }> = {
   balanced: {
@@ -397,6 +410,22 @@ export const TACTIC_LABELS: Record<Tactic, { title: string; blurb: string }> = {
   spell: {
     title: "Kampfzauber wirken",
     blurb: "3W20-Probe gegen Eigenschaften, AsP-Kosten. Layard greift in dieser Runde nicht in den Nahkampf ein.",
+  },
+  "magic-none": {
+    title: "Kein Magie-Einsatz",
+    blurb: "Stab & Klinge — Layard spart seine Astralenergie vollständig.",
+  },
+  "magic-low": {
+    title: "Wenig Magie",
+    blurb: "Vereinzelt ein Spruch, sonst Nahkampf. Astralenergie wird geschont.",
+  },
+  "magic-mid": {
+    title: "Moderater Magie-Einsatz",
+    blurb: "Etwa jede zweite Runde ein Spruch. Balance aus Klinge und Formel.",
+  },
+  "magic-high": {
+    title: "Viel Magie",
+    blurb: "Solange AsP reichen, dröhnt jede Runde ein Spruch. Hohe Wirkung, hoher Verbrauch.",
   },
 };
 
