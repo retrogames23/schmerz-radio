@@ -48,6 +48,10 @@ export function StandaloneDsaHost({
   const heroRef = useRef<DsaHero | null>(loadSlotHero(slot));
   const [sheetOpen, setSheetOpen] = useState(false);
   const [view, setView] = useState<View>(character ? "adventure" : "creator");
+  // SessionId reaktiv halten, damit Konsument:innen (z. B. die
+  // LLM-Scene) ein erneutes Laden auslösen, wenn nach dem Login die
+  // Cloud-SessionId vom anderen Gerät übernommen wird.
+  const [sessionId, setSessionIdState] = useState<string>(() => slotSessionId(slot));
 
   // Wenn der Slot wechselt (Navigation), Inhalt neu laden.
   useEffect(() => {
@@ -57,6 +61,7 @@ export function StandaloneDsaHost({
     setCharacterState(c);
     setView(c ? "adventure" : "creator");
     setSheetOpen(false);
+    setSessionIdState(slotSessionId(slot));
   }, [slot]);
 
   // Eingeloggt? Dann ist die Cloud die Wahrheit: Hero + laufende
@@ -71,7 +76,10 @@ export function StandaloneDsaHost({
         cloudFetchActiveSessionId(slot),
       ]);
       if (cancelled) return;
-      if (activeSid) setSlotSessionId(slot, activeSid);
+      if (activeSid) {
+        setSlotSessionId(slot, activeSid);
+        setSessionIdState(activeSid);
+      }
       if (cloudHero) {
         heroRef.current = cloudHero;
         saveSlotHero(slot, cloudHero);
@@ -140,7 +148,6 @@ export function StandaloneDsaHost({
   );
 
   const value = useMemo<DsaHostValue>(() => {
-    const sessionId = slotSessionId(slot);
     return {
       dsaCharacter: character,
       setDsaCharacter: setCharacter,
@@ -176,7 +183,7 @@ export function StandaloneDsaHost({
       creditHeroAp,
       updateHero,
     };
-  }, [character, setCharacter, sheetOpen, view, slot, onExit, creditHeroAp, updateHero]);
+  }, [character, setCharacter, sheetOpen, view, slot, sessionId, onExit, creditHeroAp, updateHero]);
 
   return (
     <DsaHostOverrideProvider value={value}>{children}</DsaHostOverrideProvider>
