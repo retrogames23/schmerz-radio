@@ -594,7 +594,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           const opener: StoredTurn = {
             role: "user",
             content:
-              "(SPIELLEITER-CUE: Eröffne das Abenteuer. Setze die Szene mit [SCENE: …], beschreibe in 2–4 Sätzen, wo Layards Charakter mit Brem und Yelva steht und was sie umgibt. Schließe mit einer offenen Frage an die Gruppe oder einer ersten Beobachtung. Noch kein Kampf.)",
+              "(SPIELLEITER-CUE: Eröffne das Abenteuer. Wende dich ZUERST als Tjark kurz direkt an Layard (1–2 Sätze, [TJARK]-Zeile) und weise ihn darauf hin, dass er dich jederzeit mit dem Stichwort »Outtime« ansprechen kann, wenn er Regelfragen oder Fragen zur Welt Aventuriens hat — und dass du für manche In-World-Wissensfragen (Etikette, Heraldik, Götter, Geschichte, Magiekunde) eine passende Probe verlangen kannst. DANACH setze die Szene mit [SCENE: …], beschreibe in 2–4 Sätzen, wo Layards Charakter mit Brem und Yelva steht und was sie umgibt. Schließe mit einer offenen Frage an die Gruppe oder einer ersten Beobachtung. Noch kein Kampf.)",
           };
           const result = await callMaster(apiKey, systemPrompt, [opener], MIN_END_ASSISTANT_TURNS);
           if (!result.ok) return json(result.status, { error: result.error });
