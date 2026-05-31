@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
-import { buildMasterSystemPrompt } from "@/game/dsa/llmMasterPrompt";
+import { buildMasterSystemPrompt, type HeroMemory, type HeroKnownNpc, type HeroChronicleEntry } from "@/game/dsa/llmMasterPrompt";
 import {
   DSA_SETTINGS,
   getSetting,
@@ -28,6 +28,118 @@ const MAX_USER_INPUT = 500;
 const MAX_MESSAGES = 90;
 const SUMMARY_TRIGGER = 72; // ab dieser Länge älteste Hälfte zusammenfassen
 const MIN_END_ASSISTANT_TURNS = 38;
+
+const MAX_CHRONICLE_ENTRIES = 8;
+const MAX_NPCS = 16;
+
+/**
+ * Liest die Heldenakte (Chronik + bekannte NSCs) für einen Slot.
+ * Nur für eingeloggte Spieler — anonyme spielen nur ein Schnupper-Abenteuer.
+ */
+async function loadHeroMemory(
+  admin: ReturnType<typeof createClient<any, any, any>>,
+  uid: string | null,
+  heroSlot: number,
+): Promise<HeroMemory | null> {
+  if (!uid) return null;
+  const { data: rowData } = await admin
+    .from("dsa_heroes")
+    .select("chronicle, npcs")
+    .eq("user_id", uid)
+    .eq("slot", heroSlot)
+    .maybeSingle();
+  const row = rowData as { chronicle?: unknown; npcs?: unknown } | null;
+  if (!row) return null;
+  const chronicle = Array.isArray(row.chronicle) ? (row.chronicle as HeroChronicleEntry[]) : [];
+  const npcs = Array.isArray(row.npcs) ? (row.npcs as HeroKnownNpc[]) : [];
+  return { chronicle, npcs };
+}
+
+/**
+ * Lässt ein zweites LLM aus dem Abenteuer-Transkript eine Chronik-Zeile
+ * (2–3 Sätze) und ein NSC-Update extrahieren. Liefert Fallback bei Fehler.
+ */
+async function runChronicler(
+  apiKey: string,
+  heroName: string,
+  settingId: string,
+  status: "victory" | "defeat" | "aborted",
+  transcript: string,
+  prior: HeroMemory,
+): Promise<{ entry: HeroChronicleEntry; npcs: HeroKnownNpc[] }> {
+  const fallback: HeroChronicleEntry = {
+    setting: settingId,
+    status,
+    summary:
+      status === "victory"
+        ? `${heroName} brachte das Abenteuer in ${settingId} zu einem guten Ende.`
+        : status === "defeat"
+          ? `${heroName} scheiterte im Abenteuer in ${settingId}.`
+          : `${heroName} brach das Abenteuer in ${settingId} ab.`,
+  };
+  const knownNpcLines = prior.npcs
+    .map((n) => `- ${n.name} (${n.role}): ${n.note}`)
+    .join("\n");
+  const sys = `Du bist Chronist einer DSA3-Runde. Aus dem folgenden Transkript erstellst du:
+1) Eine "summary": 2–3 ganze Sätze in der dritten Person über ${heroName}: Was geschah, welche Spuren der Held hinterließ, mit wem er sich anlegte oder verbündete. Keine Spielmechanik, keine Sprecherkürzel.
+2) Eine NSCs-Liste: bis zu 6 namentliche NSCs, mit denen ${heroName} relevant interagiert hat. Aktualisiere bekannte NSCs (Beziehung kann sich ändern), nimm neue hinzu. Pro NSC: name, role (1–4 Wörter, z. B. "Praios-Geweihter in Punin"), note (1 Satz Beziehung/Eindruck, z. B. "misstraut Layard wegen der Tempelaffäre").
+
+Antworte AUSSCHLIESSLICH als gültiges JSON, ohne Markdown:
+{"summary":"…","npcs":[{"name":"…","role":"…","note":"…"}]}`;
+  const user = `BEKANNTE NSCs (vor diesem Abenteuer):
+${knownNpcLines || "(keine)"}
+
+TRANSKRIPT (gekürzt):
+${transcript.slice(-6000)}`;
+  try {
+    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: sys },
+          { role: "user", content: user },
+        ],
+        temperature: 0.3,
+        max_tokens: 600,
+        stream: false,
+      }),
+    });
+    if (!resp.ok) return { entry: fallback, npcs: prior.npcs };
+    const data = (await resp.json()) as { choices?: Array<{ message?: { content?: string } }> };
+    const raw = data.choices?.[0]?.message?.content?.trim() ?? "";
+    const jsonStr = raw.replace(/^```(?:json)?/i, "").replace(/```$/i, "").trim();
+    const parsed = JSON.parse(jsonStr) as { summary?: unknown; npcs?: unknown };
+    const summary = typeof parsed.summary === "string" ? parsed.summary.trim().slice(0, 500) : "";
+    const npcsIn = Array.isArray(parsed.npcs) ? parsed.npcs : [];
+    const npcsClean: HeroKnownNpc[] = [];
+    for (const item of npcsIn) {
+      if (!item || typeof item !== "object") continue;
+      const o = item as Record<string, unknown>;
+      const name = typeof o.name === "string" ? o.name.trim().slice(0, 60) : "";
+      const role = typeof o.role === "string" ? o.role.trim().slice(0, 80) : "";
+      const note = typeof o.note === "string" ? o.note.trim().slice(0, 200) : "";
+      if (name && role) npcsClean.push({ name, role, note });
+      if (npcsClean.length >= 6) break;
+    }
+    // Merge: chronicler liefert das aktuelle Bild — überschreibt Notizen
+    // mit gleichem Namen, fügt neue an, behält ältere bekannte NSCs.
+    const merged = new Map<string, HeroKnownNpc>();
+    for (const n of prior.npcs) merged.set(n.name.toLowerCase(), n);
+    for (const n of npcsClean) merged.set(n.name.toLowerCase(), n);
+    const mergedArr = Array.from(merged.values()).slice(-MAX_NPCS);
+    const entry: HeroChronicleEntry = {
+      setting: settingId,
+      status,
+      summary: summary || fallback.summary,
+    };
+    return { entry, npcs: mergedArr };
+  } catch (e) {
+    console.error("dsa-master chronicler failed", e);
+    return { entry: fallback, npcs: prior.npcs };
+  }
+}
 
 const RATE_WINDOW_MIN_MS = 60_000;
 const RATE_MAX_MIN = 20;
@@ -439,6 +551,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             ae: character.ae,
             rerolled: !!character.rerolled,
           };
+          const memory = await loadHeroMemory(admin, uid, heroSlot);
           const systemPrompt = buildMasterSystemPrompt({
             setting: settingId as DsaSettingId,
             character: characterSnap,
@@ -446,6 +559,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             offtopicStreak: 0,
             assistantTurns: 0,
             cooldown: false,
+            memory,
           });
           const opener: StoredTurn = {
             role: "user",
@@ -606,6 +720,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             offtopicStreak,
             assistantTurns,
             cooldown,
+            memory: await loadHeroMemory(admin, uid, heroSlot),
           });
           const result = await callMaster(apiKey, systemPrompt, history, MIN_END_ASSISTANT_TURNS);
           if (!result.ok) return json(result.status, { error: result.error });
@@ -667,18 +782,43 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             try {
               const { data: heroRow } = await admin
                 .from("dsa_heroes")
-                .select("ap_total, adventures_played, adventures_won")
+                .select("ap_total, adventures_played, adventures_won, chronicle, npcs")
                 .eq("user_id", uid)
                 .eq("slot", heroSlot)
                 .maybeSingle();
               if (heroRow) {
+                // Chronicler: 2–3 Sätze Chronik + NSC-Update aus dem
+                // Transkript ziehen, in den Helden-Akten persistieren.
+                const prior: HeroMemory = {
+                  chronicle: Array.isArray((heroRow as any).chronicle)
+                    ? ((heroRow as any).chronicle as HeroChronicleEntry[])
+                    : [],
+                  npcs: Array.isArray((heroRow as any).npcs)
+                    ? ((heroRow as any).npcs as HeroKnownNpc[])
+                    : [],
+                };
+                const transcript = history
+                  .filter((m) => m.role === "assistant" || m.role === "user")
+                  .map((m) => `${m.role === "assistant" ? "MEISTER" : "SPIELER"}: ${m.content}`)
+                  .join("\n");
+                const chron = await runChronicler(
+                  apiKey,
+                  characterSnap.name,
+                  settingId,
+                  parsed.end,
+                  transcript,
+                  prior,
+                );
+                const nextChronicle = [...prior.chronicle, chron.entry].slice(-MAX_CHRONICLE_ENTRIES);
                 await admin
                   .from("dsa_heroes")
                   .update({
-                    ap_total: (heroRow.ap_total ?? 0) + apAwarded,
-                    adventures_played: (heroRow.adventures_played ?? 0) + 1,
+                    ap_total: ((heroRow as any).ap_total ?? 0) + apAwarded,
+                    adventures_played: ((heroRow as any).adventures_played ?? 0) + 1,
                     adventures_won:
-                      (heroRow.adventures_won ?? 0) + (nextStatus === "victory" ? 1 : 0),
+                      ((heroRow as any).adventures_won ?? 0) + (nextStatus === "victory" ? 1 : 0),
+                    chronicle: nextChronicle,
+                    npcs: chron.npcs,
                   })
                   .eq("user_id", uid)
                   .eq("slot", heroSlot);
