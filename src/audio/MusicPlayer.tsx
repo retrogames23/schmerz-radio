@@ -64,6 +64,8 @@ const CROSSFADE_SECONDS = 6;
 const FADE_TICK_MS = 50;
 const MANUAL_FADE_SECONDS = 1.2;
 const MOOD_FADE_SECONDS = 2.5;
+/** Crossfade-Dauer bei einem Stimmungswechsel (sofortiger Wechsel). */
+const MOOD_CHANGE_FADE_SECONDS = 4;
 
 interface MusicCtx {
   tracks: MusicTrack[];
@@ -144,6 +146,10 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   // Mood-Pool (LLM-Tafelrunde). Aktiv, wenn moodPoolRef.current !== null.
   const moodPoolRef = useRef<DsaMood | null>(null);
   const currentMoodSrcRef = useRef<string | null>(null);
+  // Aktuell tatsächlich klingender Mood. Wird genutzt, um zu erkennen,
+  // ob `setMood` eine echte Stimmungsänderung ist (→ sofortiges
+  // Aus-/Einblenden) oder nur den gleichen Mood erneut setzt.
+  const currentMoodRef = useRef<DsaMood | null>(null);
 
   // Keep refs in sync so timers always read fresh values.
   useEffect(() => {
@@ -276,6 +282,7 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
         ? MUSIC_OVERRIDES[overrideId].src
         : pickTrack(indexRef.current);
     if (mood && !currentMoodSrcRef.current) currentMoodSrcRef.current = targetSrc;
+    if (mood) currentMoodRef.current = mood;
     if (!active.src || active.src !== new URL(targetSrc, window.location.href).href) {
       active.src = targetSrc;
       active.currentTime = 0;
@@ -586,6 +593,7 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     if (!enabledRef.current) return;
     const nextSrc = pickMoodTrack(mood, currentMoodSrcRef.current);
     currentMoodSrcRef.current = nextSrc;
+    currentMoodRef.current = mood;
     crossfadeToSrc(nextSrc, MOOD_FADE_SECONDS);
     ensureWatcher();
   }, []);
@@ -593,7 +601,16 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   const setMood = useCallback((mood: DsaMood) => {
     if (moodPoolRef.current === null) return; // Pool nicht aktiv → ignorieren
     moodPoolRef.current = mood;
-    // Bewusst KEIN sofortiger Wechsel — der laufende Track spielt aus.
+    // Gleicher Mood → laufenden Track ausspielen lassen.
+    if (currentMoodRef.current === mood) return;
+    // Echte Stimmungsänderung → aktuellen Track ausblenden und einen
+    // passenden neuen Track aus dem Mood-Pool einblenden.
+    currentMoodRef.current = mood;
+    if (!enabledRef.current) return;
+    const nextSrc = pickMoodTrack(mood, currentMoodSrcRef.current);
+    currentMoodSrcRef.current = nextSrc;
+    crossfadeToSrc(nextSrc, MOOD_CHANGE_FADE_SECONDS);
+    ensureWatcher();
   }, []);
 
   const next = useCallback(() => {
