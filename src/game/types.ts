@@ -695,3 +695,26 @@ export interface DsaCharacterSummary {
   ae: number | null;
   rerolled: boolean;
 }
+
+/**
+ * Voller Held inkl. Steigerung. Erweitert den Charakter-Snapshot um
+ * Abenteuerpunkte (AP) sowie gelernte/gesteigerte Talente und Zauber.
+ * Wird sowohl im Standalone-Modus (Slot 1/2/3) als auch im Hauptspiel
+ * (Save-Slot-Held) verwendet — die beiden Pools sind getrennt.
+ */
+export interface DsaHero extends DsaCharacterSummary {
+  /** AP, die der Meister bisher vergeben hat (Summe aller Abenteuer). */
+  apTotal: number;
+  /** AP, die bereits in Steigerung investiert wurden. */
+  apSpent: number;
+  /** Talent-IDs → aktueller TaW (>= 0). */
+  talents: Record<string, number>;
+  /** Zauber-IDs → aktueller ZfW (>= 0). Leer bei nicht-magischen Klassen. */
+  spells: Record<string, number>;
+  /** Anzahl beendeter Abenteuer (Sieg + Niederlage + Abbruch). */
+  adventuresPlayed: number;
+  /** Anzahl mit Sieg beendeter Abenteuer. */
+  adventuresWon: number;
+  /** Zeitstempel der Erschaffung (ISO-String). */
+  createdAt: string;
+}
