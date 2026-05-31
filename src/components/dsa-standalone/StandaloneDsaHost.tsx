@@ -176,6 +176,7 @@ export function StandaloneDsaHost({
       closeDsaAdventure: () => onExit(),
 
       getDsaSessionId: () => sessionId,
+      dsaHeroSlot: slot,
       setFlag: () => {
         /* Stammspiel-Flags spielen im Standalone keine Rolle. */
       },
