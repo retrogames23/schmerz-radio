@@ -28,6 +28,9 @@ const MAX_USER_INPUT = 500;
 const MAX_MESSAGES = 90;
 const SUMMARY_TRIGGER = 72; // ab dieser Länge älteste Hälfte zusammenfassen
 const MIN_END_ASSISTANT_TURNS = 38;
+const MAX_WISH_BRIEF = 600;
+const MIN_WISH_BRIEF = 10;
+const DONOR_ONLY_SETTINGS = new Set<string>(["sandbox", "wish"]);
 
 const MAX_CHRONICLE_ENTRIES = 8;
 const MAX_NPCS = 16;
@@ -454,7 +457,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
         if (action === "load") {
           const q = admin
             .from("dsa_llm_adventures")
-            .select("setting, character_snapshot, messages, summary, current_image_tag, status, offtopic_streak, ap_awarded, ap_reason, hero_slot");
+            .select("setting, character_snapshot, messages, summary, current_image_tag, status, offtopic_streak, ap_awarded, ap_reason, hero_slot, wish_brief");
           const { data: row } = await (uid
             ? q.eq("user_id", uid)
             : q.eq("anon_id", anonId!)
@@ -577,6 +580,42 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           if (!ALLOWED_SETTINGS.has(settingId)) {
             return json(400, { error: "Unbekanntes Setting." });
           }
+          // Donor-only Settings (Sandbox, Wunsch-Abenteuer) erfordern einen
+          // eingeloggten Spender. Anonyme oder noch nicht freigeschaltete
+          // Spieler bekommen den Spenden-Hinweis.
+          let wishBrief: string | null = null;
+          if (DONOR_ONLY_SETTINGS.has(settingId)) {
+            if (!uid) {
+              return json(401, {
+                error:
+                  "Diese Abenteuerart ist Spendern vorbehalten. Bitte melde dich an und unterstütze das Projekt.",
+                code: "donation_required",
+              });
+            }
+            const { data: prof } = await admin
+              .from("profiles")
+              .select("donation_unlocked")
+              .eq("user_id", uid)
+              .maybeSingle();
+            if (!prof?.donation_unlocked) {
+              return json(402, {
+                error:
+                  "Diese Abenteuerart ist Spendern vorbehalten. Bitte unterstütze das Projekt, um sie freizuschalten.",
+                code: "donation_required",
+              });
+            }
+            if (settingId === "wish") {
+              const raw = typeof b.wishBrief === "string" ? b.wishBrief.trim() : "";
+              if (raw.length < MIN_WISH_BRIEF || raw.length > MAX_WISH_BRIEF) {
+                return json(400, {
+                  error: `Bitte beschreibe deinen Wunsch in ${MIN_WISH_BRIEF}–${MAX_WISH_BRIEF} Zeichen.`,
+                });
+              }
+              // Markdown/Marker-artige eckige Klammern entschärfen, damit
+              // sie nicht versehentlich als Meister-Marker geparst werden.
+              wishBrief = raw.replace(/[\[\]]/g, "").slice(0, MAX_WISH_BRIEF);
+            }
+          }
           const character = b.character;
           if (!isCharacterSummary(character)) {
             return json(400, { error: "Charakter fehlt oder ungültig." });
@@ -609,13 +648,15 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             cooldown: false,
             memory,
             knownSpells,
+            wishBrief,
           });
           const opener: StoredTurn = {
             role: "user",
             content:
               "(SPIELLEITER-CUE: Eröffne das Abenteuer. Wende dich ZUERST als Tjark kurz direkt an Layard (1–2 Sätze, [TJARK]-Zeile) und weise ihn darauf hin, dass er dich jederzeit mit dem Stichwort »Outtime« ansprechen kann, wenn er Regelfragen oder Fragen zur Welt Aventuriens hat — und dass du für manche In-World-Wissensfragen (Etikette, Heraldik, Götter, Geschichte, Magiekunde) eine passende Probe verlangen kannst. DANACH setze die Szene mit [SCENE: …], beschreibe in 2–4 Sätzen, wo Layards Charakter mit Brem und Yelva steht und was sie umgibt. Schließe mit einer offenen Frage an die Gruppe oder einer ersten Beobachtung. Noch kein Kampf.)",
           };
-          const result = await callMaster(apiKey, systemPrompt, [opener], MIN_END_ASSISTANT_TURNS);
+          const minEnd = DONOR_ONLY_SETTINGS.has(settingId) ? 0 : MIN_END_ASSISTANT_TURNS;
+          const result = await callMaster(apiKey, systemPrompt, [opener], minEnd);
           if (!result.ok) return json(result.status, { error: result.error });
           const parsed = parseMasterTurn(result.reply);
           const initialMessages: StoredTurn[] = [
@@ -635,6 +676,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             current_image_tag: imgTag,
             status: "active" as AdventureStatus,
             offtopic_streak: 0,
+            wish_brief: wishBrief,
           };
           const existingQ = admin.from("dsa_llm_adventures").select("id");
           const { data: existingRow, error: existingErr } = await (uid
@@ -666,7 +708,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
         if (action === "say" || action === "combat_result") {
           const baseQ = admin
             .from("dsa_llm_adventures")
-            .select("setting, character_snapshot, messages, summary, current_image_tag, status, offtopic_streak");
+            .select("setting, character_snapshot, messages, summary, current_image_tag, status, offtopic_streak, wish_brief");
           const { data: row, error: loadErr } = await (uid
             ? baseQ.eq("user_id", uid)
             : baseQ.eq("anon_id", anonId!)
@@ -741,6 +783,8 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             attrs: sanitizeAttrs(rawSnap.attrs),
           };
           const settingId = row.setting as DsaSettingId;
+          const wishBrief = (row as { wish_brief?: string | null }).wish_brief ?? null;
+          const isOpenSetting = DONOR_ONLY_SETTINGS.has(settingId);
 
           // Offtopic-Heuristik: User-Turn ohne Charakter-/Welt-Bezug zählt.
           let offtopicStreak = row.offtopic_streak ?? 0;
@@ -760,7 +804,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           // Prompt Tjark an, eine Ruheszene einzuleiten und Smalltalk /
           // Outtime stärker zuzulassen.
           const assistantTurns = rawMessages.filter((m) => m.role === "assistant").length;
-          const cooldown = assistantTurns >= 10 && assistantTurns <= 18;
+          const cooldown = !isOpenSetting && assistantTurns >= 10 && assistantTurns <= 18;
 
           const systemPrompt = buildMasterSystemPrompt({
             setting: settingId,
@@ -771,12 +815,14 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             cooldown,
             memory: await loadHeroMemory(admin, uid, heroSlot),
             knownSpells: await loadHeroSpells(admin, uid, heroSlot),
+            wishBrief,
           });
-          const result = await callMaster(apiKey, systemPrompt, history, MIN_END_ASSISTANT_TURNS);
+          const minEnd = isOpenSetting ? 0 : MIN_END_ASSISTANT_TURNS;
+          const result = await callMaster(apiKey, systemPrompt, history, minEnd);
           if (!result.ok) return json(result.status, { error: result.error });
           let reply = result.reply;
           let parsed = parseMasterTurn(reply);
-          if (parsed.end && assistantTurns + 1 < MIN_END_ASSISTANT_TURNS) {
+          if (parsed.end && !isOpenSetting && assistantTurns + 1 < MIN_END_ASSISTANT_TURNS) {
             reply = stripEndMarker(reply);
             if (!reply) {
               reply = "[TJARK] Noch ist das nicht vorbei. Eine neue Spur liegt offen, und Brem trommelt schon ungeduldig mit den Fingern auf den Tisch.";
