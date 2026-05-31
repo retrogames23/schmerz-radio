@@ -14,7 +14,9 @@ export type DsaSettingId =
   | "epic"
   | "dungeon"
   | "court"
-  | "random";
+  | "random"
+  | "sandbox"
+  | "wish";
 
 export interface DsaSetting {
   id: DsaSettingId;
@@ -24,6 +26,10 @@ export interface DsaSetting {
   masterHint: string;
   /** Eröffnungsbild-Tag. */
   openingTag: string;
+  /** Nur für eingeloggte Spender freigeschaltet. */
+  donorOnly?: boolean;
+  /** Spieler gibt vorab einen Freitext-Wunsch ein. */
+  requiresWish?: boolean;
 }
 
 export const DSA_SETTINGS: ReadonlyArray<DsaSetting> = [
@@ -74,6 +80,27 @@ export const DSA_SETTINGS: ReadonlyArray<DsaSetting> = [
     masterHint:
       "Wähle das Setting selbst und überrasche die Gruppe. Schreibe in deinem ersten Satz, in welcher Region und Stadt/Wildnis ihr seid.",
     openingTag: "forest_path",
+  },
+  {
+    id: "sandbox",
+    title: "Sandbox-Welterkundung",
+    blurb:
+      "Offene Reise durch Aventurien. Sprich mit Leuten, lass dich in Tavernen nieder — vielleicht passiert was, vielleicht nicht.",
+    masterHint:
+      "Dies ist eine SANDBOX-RUNDE — KEIN klassisches Abenteuer mit Auftrag, Akten oder Showdown. Wähle eine Startregion und eine Stadt/Wildnis-Lage und beschreibe sie atmosphärisch. Layard soll Aventurien BEREISEN dürfen: Tavernen, Märkte, Tempel, Reisewege, Gerüchte. NSCs entstehen organisch, Begegnungen sind oft klein und alltagsnah (Reisende, Wirte, Wachen, Pilger, Bauern). Es gibt KEIN festes Ziel. Hin und wieder DARF — muss aber nicht — etwas Spannendes passieren (Diebstahl in der Schenke, Bote mit Gerücht, Streit auf der Straße, ein Räuberüberfall am Wegesrand); zwinge nichts. Akzeptiere, wenn Layard einfach nur reist, redet und beobachtet. Kämpfe sind selten und kurz. KEIN Dramaturgie-Korsett mit fünf Akten, KEIN Mindest-Wendenkanon — die Runde endet nur dann mit [END: …], wenn die Story selbst sauber dorthin kippt oder Layard sie outtime beendet.",
+    openingTag: "forest_path",
+    donorOnly: true,
+  },
+  {
+    id: "wish",
+    title: "Wunsch-Abenteuer",
+    blurb:
+      "Du beschreibst, was du erleben willst — Tjark prüft auf DSA-Lore und baut so nah wie möglich daran das Abenteuer.",
+    masterHint:
+      "WUNSCH-ABENTEUER: Layards Wunschtext steht weiter unten im Abschnitt »SPIELERWUNSCH«. Lies ihn als Grundlage und baue das Abenteuer so nah wie möglich an diesem Wunsch — Ort, Ton, Konflikt, Figuren. Andere DSA-Zeitalter (Hadrumal, Dritter Drachenkrieg, Bornland-Bürgerkrieg, Borbarad-Zeit etc.) sind erlaubt, solange Aventurien die Welt bleibt. NICHT erlaubt: andere Welten (Erde, fiktive Planeten), andere Genres (Cyberpunk, Steampunk, SciFi, Superhelden), nicht-aventurische Götter oder Magiesysteme. Passt der Wunsch nicht zur Lore, KIPPE ihn behutsam: behalte den Kern (Stimmung, gewünschte Begegnungen, Tonfall) und übersetze ihn in das passendste aventurische Gegenstück, anstatt ihn abzulehnen. Erkläre als Tjark im allerersten Beitrag (Outtime, 1–2 Sätze, [TJARK] mit »(Outtime) «) kurz, wie du den Wunsch umgesetzt hast und welche Anpassungen du an die Lore vorgenommen hast — DANACH erst startest du regulär mit der Eröffnungsszene.",
+    openingTag: "forest_path",
+    donorOnly: true,
+    requiresWish: true,
   },
 ];
 
@@ -242,4 +269,5 @@ export interface AdventureRow {
   status: AdventureStatus;
   offtopic_streak: number;
   updated_at: string;
+  wish_brief?: string | null;
 }
