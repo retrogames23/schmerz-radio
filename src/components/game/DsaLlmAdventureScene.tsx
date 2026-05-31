@@ -140,7 +140,7 @@ export function DsaLlmAdventureScene() {
     openDsaCreator,
     creditHeroAp,
   } = useDsaHost();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { setMoodPool, setMood } = useMusic();
   const heroSlot = normalizeHeroSlot(dsaHeroSlot);
   const expectsSignedInUser = !!user;
@@ -209,7 +209,7 @@ export function DsaLlmAdventureScene() {
   // muss der Load mit der NEUEN SID wiederholt werden.
   const sidForLoad = getDsaSessionId();
   useEffect(() => {
-    if (!dsaAdventureOpen) return;
+    if (!dsaAdventureOpen || authLoading) return;
     let cancelled = false;
     setMode({ kind: "loading" });
     setError(null);
@@ -271,7 +271,7 @@ export function DsaLlmAdventureScene() {
     return () => {
       cancelled = true;
     };
-  }, [dsaAdventureOpen, sidForLoad, heroSlot, expectsSignedInUser]);
+  }, [dsaAdventureOpen, authLoading, sidForLoad, heroSlot, expectsSignedInUser]);
 
   // Bewusst kein Auto-Scroll: der Spieler bleibt an der zuletzt gelesenen
   // Stelle und scrollt nach unten, wenn er die Reaktion sehen will.
