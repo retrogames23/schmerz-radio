@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ScrollText, Loader2, Send, LogOut, Dices, Swords, Maximize2, Minimize2, FileDown } from "lucide-react";
+import { ScrollText, Loader2, Send, LogOut, Dices, Swords, Maximize2, Minimize2, FileDown, Play } from "lucide-react";
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import { CloseButton } from "./CloseButton";
@@ -419,6 +419,20 @@ export function DsaLlmAdventureScene() {
     setMode({ kind: "picker" });
   }
 
+  async function handleResume() {
+    setBusy(true);
+    try {
+      await authedPost({ action: "resume" }, getDsaSessionId());
+      setEndState(null);
+      setEndAp(null);
+    } catch (e) {
+      console.error("dsa-llm resume failed", e);
+      setError(e instanceof Error ? e.message : "Konnte nicht fortsetzen.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function handleStandUp() {
     closeDsaAdventure();
   }
@@ -585,6 +599,8 @@ export function DsaLlmAdventureScene() {
                 ap={endAp}
                 onNew={handleAbortAndPickNew}
                 onStandUp={handleStandUp}
+                onResume={endState === "aborted" ? handleResume : undefined}
+                resuming={busy}
               />
             ) : (
               <div className="dsa-adventure-header shrink-0 border-t border-[#3a2c1a]/30 px-3 sm:px-4 py-3">
