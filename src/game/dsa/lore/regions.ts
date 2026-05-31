@@ -3,9 +3,12 @@
  * Werden je nach Setting gezielt in den System-Prompt eingehängt
  * (vermeidet, alle ~12 Regionen pro Wende mitzuschleppen).
  *
- * Stand: DSA3, "Das Jahr des Greifen". Eigene Worte. Kantige Themen
- * (Orkfront, Sklaverei, Inquisition, Aufstände) ausdrücklich enthalten —
- * Layard ist Mitte 30 und spielt erwachsenes DSA.
+ * Stand: DSA3, "Das Jahr des Greifen". Eigene Worte. Die Grundstimmung
+ * Aventuriens ist abenteuerlich-bunt, nicht düster: Heldenmut, Wunder,
+ * Tavernen-Romantik, gelegentliche Gefahr. Erwachsene Themen (Orkfront,
+ * Sklaverei, Inquisition, Aufstände) sind LORE-WAHR und dürfen erwähnt
+ * werden, sollen aber nicht jede Szene einfärben — sie sind Kulisse,
+ * kein Dauerton.
  */
 
 export type DsaRegionId =
