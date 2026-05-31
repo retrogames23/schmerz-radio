@@ -151,18 +151,18 @@ function DsaLanding() {
       {/* Stimmungsvolles Aventurien-Hintergrundbild mit sanfter Animation */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
       >
         <div
           className="dsa-landing-bg absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${landingBg})` }}
         />
         {/* Lesbarkeits-Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1a120a]/70 via-[#1a120a]/80 to-[#1a120a]/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1a120a]/40 via-[#1a120a]/70 to-[#1a120a]/95" />
       </div>
 
       {/* Header */}
-      <header className="relative border-b border-[#3a2c1a] bg-[#241a0e]/80 backdrop-blur-sm">
+      <header className="relative z-10 border-b border-[#3a2c1a] bg-[#241a0e]/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
           <div>
             <div className="text-[10px] uppercase tracking-[0.3em] opacity-60">
@@ -200,7 +200,7 @@ function DsaLanding() {
       </header>
 
       {/* Pitch */}
-      <section className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 text-center">
+      <section className="relative z-10 mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 text-center">
         <p className="font-serif text-base sm:text-lg leading-relaxed text-[#f1e6c8]/90">
           Spiele <strong>Das Schwarze Auge</strong> als Soloabenteuer im
           Browser. Würfle deinen Helden, wähle ein Setting und erlebe rund
@@ -217,7 +217,7 @@ function DsaLanding() {
       </section>
 
       {/* Slots */}
-      <section className="mx-auto max-w-5xl px-4 pb-12 sm:px-6">
+      <section className="relative z-10 mx-auto max-w-5xl px-4 pb-12 sm:px-6">
         <h2 className="mb-4 text-xs uppercase tracking-[0.3em] opacity-70">
           Speicherplätze
         </h2>
@@ -235,7 +235,7 @@ function DsaLanding() {
       </section>
 
       {/* FAQ */}
-      <section className="mx-auto max-w-3xl px-4 pb-12 sm:px-6">
+      <section className="relative z-10 mx-auto max-w-3xl px-4 pb-12 sm:px-6">
         <dl className="space-y-5">
           {FAQS.map((f) => (
             <div key={f.q}>
@@ -249,7 +249,7 @@ function DsaLanding() {
       </section>
 
       {/* Disclaimer */}
-      <section className="mx-auto max-w-3xl px-4 pb-8 sm:px-6">
+      <section className="relative z-10 mx-auto max-w-3xl px-4 pb-8 sm:px-6">
         <div className="rounded border border-[#3a2c1a]/60 bg-[#1a120a]/80 p-4 text-[11px] leading-relaxed text-[#f1e6c8]/50">
           <p className="mb-2">
             Bei WhisperQuest handelt es sich um ein rein privates, nicht-kommerzielles Fan-Projekt, das in keiner offiziellen Verbindung zu Ulisses Spiele steht.
@@ -260,7 +260,7 @@ function DsaLanding() {
         </div>
       </section>
 
-      <footer className="border-t border-[#3a2c1a] py-4 text-center text-[10px] uppercase tracking-wider opacity-60">
+      <footer className="relative z-10 border-t border-[#3a2c1a] py-4 text-center text-[10px] uppercase tracking-wider opacity-60">
         <Link to="/" className="hover:opacity-100">
           Zum Stammspiel
         </Link>
