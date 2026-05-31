@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ScrollText, Loader2, Send, LogOut, Dices, Swords, Maximize2, Minimize2, FileDown, Play } from "lucide-react";
+import { ScrollText, Loader2, Send, LogOut, Dices, Swords, Maximize2, Minimize2, FileDown, Play, Lock, Sparkles } from "lucide-react";
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { useMusic } from "@/audio/MusicPlayer";
+import { useAuth } from "@/auth/AuthContext";
+import { useDonationStatus } from "@/hooks/useDonationStatus";
 import { CloseButton } from "./CloseButton";
 import { DsaCombatInteractive, type CombatDoneResult } from "./DsaCombatInteractive";
 import {
@@ -288,7 +290,7 @@ export function DsaLlmAdventureScene() {
     };
   }, [dsaAdventureOpen, setMoodPool]);
 
-  async function handlePickSetting(settingId: DsaSettingId) {
+  async function handlePickSetting(settingId: DsaSettingId, wishBrief?: string) {
     if (!dsaCharacter || busy) return;
     setBusy(true);
     setError(null);
@@ -298,6 +300,7 @@ export function DsaLlmAdventureScene() {
           action: "start",
           setting: settingId,
           character: dsaCharacter,
+          ...(wishBrief ? { wishBrief } : {}),
         },
         getDsaSessionId(),
       );
