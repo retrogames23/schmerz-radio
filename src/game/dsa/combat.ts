@@ -717,6 +717,176 @@ function pickFoeTargetW(foes: WoundedCombatant[]): WoundedCombatant | null {
   return live.sort((a, b) => a.le - b.le)[0];
 }
 
+// ────────────────────────────────────────────────────────────────
+// Kampfzauber für Layard (Tactic "spell").
+// ────────────────────────────────────────────────────────────────
+
+/** Reihenfolge, in der Layard Zauber bevorzugt — stärkster zuerst. */
+const COMBAT_SPELL_PRIORITY = ["ignifaxius", "blitz_dich_find", "fulminictus"];
+
+/** Hauszauber-Schulen für die −3-Erleichterung. */
+function spellOwnSchool(classId: string | undefined, spell: SpellDef): boolean {
+  if (!classId) return false;
+  return spell.schools.includes(classId);
+}
+
+/** AsP-Kosten als Zahl (Strings wie "KK/2" werden defensiv auf 4 gesetzt). */
+function spellCost(spell: SpellDef): number {
+  const n = Number(spell.cost);
+  return Number.isFinite(n) && n > 0 ? n : 4;
+}
+
+/** Wählt den ersten priorisierten Zauber, den Layard kennt UND bezahlen kann. */
+function pickCombatSpell(
+  layard: WoundedCombatant,
+): { spell: SpellDef; zfw: number; cost: number } | null {
+  const known = layard.spells;
+  const ae = layard.ae ?? 0;
+  if (!known) return null;
+  for (const id of COMBAT_SPELL_PRIORITY) {
+    const zfw = known[id];
+    if (typeof zfw !== "number" || zfw < 0) continue;
+    const spell = SPELLS.find((s) => s.id === id);
+    if (!spell) continue;
+    const cost = spellCost(spell);
+    if (ae < cost) continue;
+    return { spell, zfw, cost };
+  }
+  return null;
+}
+
+/** TP-Formel je Zauber. RS-Anteil halbiert sich bei Blitz dich find. */
+function spellDamage(
+  spell: SpellDef,
+  zfw: number,
+  targetRs: number,
+): { rolls: number[]; dmg: number; rsApplied: number } {
+  const rolls: number[] = [];
+  let raw = zfw;
+  let dice = 1;
+  let rsApplied = targetRs;
+  if (spell.id === "ignifaxius") {
+    dice = 2; // 2W6 + ZfW
+  } else if (spell.id === "blitz_dich_find") {
+    dice = 1; // 1W6 + ZfW
+    rsApplied = Math.floor(targetRs / 2);
+  } else if (spell.id === "fulminictus") {
+    dice = 1; // 1W6 + ZfW/2
+    raw = Math.floor(zfw / 2);
+  }
+  for (let i = 0; i < dice; i++) {
+    const r = d6();
+    rolls.push(r);
+    raw += r;
+  }
+  const dmg = Math.max(1, raw - rsApplied);
+  return { rolls, dmg, rsApplied };
+}
+
+/**
+ * Führt Layards Zauber aus: Probe → AsP abziehen → Wirkung. Mutiert
+ * `layard.ae` und ggf. `foe.le`. Schreibt 1–2 Events ins Log.
+ */
+function resolveLayardSpell(
+  layard: WoundedCombatant,
+  foe: WoundedCombatant,
+  all: WoundedCombatant[],
+  events: CombatEvent[],
+): void {
+  // 1. Hat Layard überhaupt einen wirkbaren Kampfzauber?
+  const pick = pickCombatSpell(layard);
+  if (!pick) {
+    const reason = !layard.spells || Object.keys(layard.spells).length === 0
+      ? `${layard.name} kennt keinen Kampfzauber — die Formel verpufft, bevor sie beginnt.`
+      : `${layard.name} hat zu wenig Astralenergie für einen Kampfzauber — die Formel zerbricht.`;
+    events.push({
+      kind: "spell-fizzle",
+      text: reason,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+    });
+    return;
+  }
+  const { spell, zfw, cost } = pick;
+  const attrs = layard.attrs;
+  if (!attrs) {
+    events.push({
+      kind: "spell-fizzle",
+      text: `${layard.name} kann den Zauber ${spell.name} ohne Eigenschaftswerte nicht stabilisieren.`,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+    });
+    return;
+  }
+
+  // 2. 3W20-Probe gegen die drei Zauber-Eigenschaften.
+  const ownSchool = spellOwnSchool(layard.classId, spell);
+  const modBuf = ownSchool ? 3 : 0; // Hauszauber: +3 ZfW-Puffer
+  const rolls: number[] = [d20(), d20(), d20()];
+  let bufferLeft = zfw + modBuf;
+  const dice = rolls.map((r, i) => {
+    const attrId = spell.probe[i] as AttributeId;
+    const target = attrs[attrId] ?? 10;
+    const fail = r > target;
+    if (fail) bufferLeft -= r - target;
+    return { label: `${attrId} (W20)`, value: r, target, success: !fail };
+  });
+  const ones = rolls.filter((r) => r === 1).length;
+  const twenties = rolls.filter((r) => r === 20).length;
+  let success: boolean;
+  if (twenties >= 2) success = false;
+  else if (ones >= 2) success = true;
+  else success = bufferLeft >= 0;
+
+  // 3. AsP abziehen (Erfolg: voll, Misserfolg: halb).
+  const aeCost = success ? cost : Math.ceil(cost / 2);
+  layard.ae = Math.max(0, (layard.ae ?? 0) - aeCost);
+
+  if (!success) {
+    events.push({
+      kind: "spell-fail",
+      text: `${layard.name} wirkt ${spell.name} — Probe misslingt (Puffer ${bufferLeft}). Astralenergie verpufft halbiert (AsP −${aeCost} → ${layard.ae}).`,
+      dice,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+      targetId: foe.id,
+    });
+    return;
+  }
+
+  // 4. Erfolg → Schaden anwenden.
+  const { rolls: tpRolls, dmg, rsApplied } = spellDamage(spell, zfw, foe.rs);
+  foe.le = Math.max(0, foe.le - dmg);
+
+  const formulaStr =
+    spell.id === "ignifaxius"
+      ? `2W6+ZfW(${zfw})`
+      : spell.id === "fulminictus"
+        ? `1W6+ZfW/2(${Math.floor(zfw / 2)})`
+        : `1W6+ZfW(${zfw})`;
+  events.push({
+    kind: "spell-cast",
+    text: `${layard.name} wirkt ${spell.name}${ownSchool ? " (Hauszauber)" : ""} auf ${foe.name}. ${dmg} TP (${tpRolls.join("+")} ${formulaStr} − RS ${rsApplied}). AsP −${aeCost} → ${layard.ae}. ${foe.name}: ${foe.le}/${foe.leMax} LE.`,
+    dice: [
+      ...dice,
+      ...tpRolls.map((r, i) => ({ label: `TP W${i + 1}`, value: r })),
+    ],
+    snapshot: snapshotW(all),
+    actorId: layard.id,
+    targetId: foe.id,
+  });
+
+  if (foe.le <= 0) {
+    events.push({
+      kind: "downed",
+      text: `${foe.name} ist kampfunfähig.`,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+      targetId: foe.id,
+    });
+  }
+}
+
 function snapshot(all: Combatant[]): { id: string; le: number }[] {
   return all.map((c) => ({ id: c.id, le: c.le }));
 }
