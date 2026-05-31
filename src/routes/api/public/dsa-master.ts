@@ -611,9 +611,15 @@ export const Route = createFileRoute("/api/public/dsa-master")({
                   error: `Bitte beschreibe deinen Wunsch in ${MIN_WISH_BRIEF}–${MAX_WISH_BRIEF} Zeichen.`,
                 });
               }
-              // Markdown/Marker-artige eckige Klammern entschärfen, damit
-              // sie nicht versehentlich als Meister-Marker geparst werden.
-              wishBrief = raw.replace(/[\[\]]/g, "").slice(0, MAX_WISH_BRIEF);
+              // Vollständige Sanitisierung gegen Prompt-Injection: entfernt
+              // Steuerzeichen, Marker-artige Klammern und neutralisiert
+              // typische Injection-Phrasen (wie bei character.name/className).
+              wishBrief = sanitizePromptField(raw, MAX_WISH_BRIEF);
+              if (wishBrief.length < MIN_WISH_BRIEF) {
+                return json(400, {
+                  error: `Bitte beschreibe deinen Wunsch in ${MIN_WISH_BRIEF}–${MAX_WISH_BRIEF} Zeichen.`,
+                });
+              }
             }
           }
           const character = b.character;
