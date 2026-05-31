@@ -574,9 +574,15 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             className: sanitizePromptField(character.className, 40) || "Abenteurer",
             classId: String(character.classId).replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 40),
             attrs: sanitizeAttrs(character.attrs),
-            le: character.le,
-            leMax: character.leMax,
-            ae: character.ae,
+            le: typeof character.le === "number" && Number.isFinite(character.le)
+              ? Math.max(0, Math.round(character.le))
+              : 0,
+            leMax: typeof character.leMax === "number" && Number.isFinite(character.leMax)
+              ? Math.max(1, Math.round(character.leMax))
+              : 1,
+            ae: typeof character.ae === "number" && Number.isFinite(character.ae)
+              ? Math.max(0, Math.round(character.ae))
+              : null,
             rerolled: !!character.rerolled,
           };
           const memory = await loadHeroMemory(admin, uid, heroSlot);
