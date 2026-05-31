@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { useGame } from "@/game/GameContext";
-import type { DsaCharacterSummary } from "@/game/types";
+import type { DsaCharacterSummary, DsaHero } from "@/game/types";
 
 /**
  * Schmale Schnittstelle, die alle DSA-UI-Komponenten brauchen
@@ -45,6 +45,14 @@ export interface DsaHostValue {
    * den Save-Slot persistiert wird).
    */
   creditHeroAp?: (ap: number, reason: string, won: boolean) => void;
+
+  /**
+   * Schreibt einen Helden (inkl. AP/Talente/Zauber) zurück. Standalone
+   * persistiert in den Slot; im Hauptspiel wird der Charakter-Snapshot
+   * aktualisiert (die Hero-Felder leben dann nur im laufenden Session-
+   * Speicher des Slots).
+   */
+  updateHero?: (hero: DsaHero) => void;
 }
 
 const DsaHostOverrideContext = createContext<DsaHostValue | null>(null);
