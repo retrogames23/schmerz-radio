@@ -12,6 +12,7 @@ import {
   type PlayerStats,
   type Tactic,
 } from "@/game/dsa/combat";
+import { SPELLS } from "@/game/dsa/rules/spells";
 import { CombatantCard } from "./dsa/CombatantCard";
 import { ActionIndicator } from "./dsa/ActionIndicator";
 import { DieBox } from "./dsa/DieBox";
@@ -272,6 +273,7 @@ export function DsaCombatInteractive({
                 else setPaused(false);
               }}
               confirmLabel={!hasStarted ? "Kampf beginnen" : "Weiterkämpfen"}
+              layard={stateRef.current.heroes.find((h) => h.id === "hero") ?? null}
             />
           )}
 
@@ -382,13 +384,33 @@ function TacticPicker({
   onChange,
   onConfirm,
   confirmLabel,
+  layard,
 }: {
   tactic: Tactic;
   onChange: (t: Tactic) => void;
   onConfirm: () => void;
   confirmLabel: string;
+  layard: Combatant | null;
 }) {
-  const tactics: Tactic[] = ["balanced", "aggressive", "defensive", "cunning", "flee"];
+  const combatSpellIds = new Set(["ignifaxius", "blitz_dich_find", "fulminictus"]);
+  const canCast = (() => {
+    if (!layard) return false;
+    if ((layard.ae ?? 0) <= 0) return false;
+    const spells = layard.spells ?? {};
+    return Object.keys(spells).some((id) => combatSpellIds.has(id));
+  })();
+  const tactics: Tactic[] = [
+    "balanced",
+    "aggressive",
+    "defensive",
+    "cunning",
+    "flee",
+    ...(canCast ? (["spell"] as Tactic[]) : []),
+  ];
+  // Wenn Zaubern verschwindet (z.B. AsP leer) und vorher gewählt war → zurück auf balanced.
+  useEffect(() => {
+    if (!canCast && tactic === "spell") onChange("balanced");
+  }, [canCast, tactic, onChange]);
   return (
     <section className="dsa-box-thick p-3 sm:p-4">
       <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.7)] pb-1">
@@ -398,6 +420,15 @@ function TacticPicker({
         {tactics.map((t) => {
           const meta = TACTIC_LABELS[t];
           const active = tactic === t;
+          const subline = (() => {
+            if (t !== "spell" || !layard) return null;
+            const spells = layard.spells ?? {};
+            const known = SPELLS.filter(
+              (s) => combatSpellIds.has(s.id) && typeof spells[s.id] === "number",
+            );
+            if (known.length === 0) return null;
+            return `Bekannt: ${known.map((s) => `${s.name} (ZfW ${spells[s.id]})`).join(" · ")} · AsP ${layard.ae}/${layard.aeMax ?? layard.ae}`;
+          })();
           return (
             <button
               key={t}
@@ -422,6 +453,14 @@ function TacticPicker({
               >
                 {meta.blurb}
               </div>
+              {subline && (
+                <div
+                  className="dsa-typed text-[10px] leading-snug opacity-80 mt-1 italic"
+                  style={active ? { color: "#f1e6c8" } : undefined}
+                >
+                  {subline}
+                </div>
+              )}
             </button>
           );
         })}
