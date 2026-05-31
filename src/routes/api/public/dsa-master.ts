@@ -551,6 +551,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             ae: character.ae,
             rerolled: !!character.rerolled,
           };
+          const memory = await loadHeroMemory(admin, uid, heroSlot);
           const systemPrompt = buildMasterSystemPrompt({
             setting: settingId as DsaSettingId,
             character: characterSnap,
@@ -558,6 +559,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             offtopicStreak: 0,
             assistantTurns: 0,
             cooldown: false,
+            memory,
           });
           const opener: StoredTurn = {
             role: "user",
@@ -718,6 +720,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             offtopicStreak,
             assistantTurns,
             cooldown,
+            memory: await loadHeroMemory(admin, uid, heroSlot),
           });
           const result = await callMaster(apiKey, systemPrompt, history, MIN_END_ASSISTANT_TURNS);
           if (!result.ok) return json(result.status, { error: result.error });
