@@ -332,7 +332,10 @@ export type CombatEventKind =
   | "damage"
   | "downed"
   | "end-victory"
-  | "end-defeat";
+  | "end-defeat"
+  | "spell-cast"
+  | "spell-fail"
+  | "spell-fizzle";
 
 export interface CombatEvent {
   kind: CombatEventKind;
