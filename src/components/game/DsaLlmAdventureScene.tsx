@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ScrollText, Loader2, Send, LogOut, Dices, Swords, Maximize2, Minimize2 } from "lucide-react";
+import { ScrollText, Loader2, Send, LogOut, Dices, Swords, Maximize2, Minimize2, FileDown } from "lucide-react";
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import { CloseButton } from "./CloseButton";
@@ -7,6 +7,7 @@ import { DsaCombatInteractive, type CombatDoneResult } from "./DsaCombatInteract
 import {
   DSA_SETTINGS,
   parseMasterTurn,
+  getSetting,
   type ParsedMasterTurn,
   type SpokenLine,
   type DsaSettingId,
@@ -15,6 +16,11 @@ import {
 import {
   resolveSceneImage,
 } from "@/game/dsa/sceneImages";
+import {
+  exportAdventureAsDocx,
+  exportAdventureAsPdf,
+  type ExportTurn,
+} from "@/game/dsa/adventureExport";
 import {
   ENEMY_STATS,
   companionCombatants,
@@ -108,7 +114,10 @@ export function DsaLlmAdventureScene() {
   const [mode, setMode] = useState<Mode>({ kind: "loading" });
   const [imageTag, setImageTag] = useState<string>("forest_path");
   const [turns, setTurns] = useState<
-    Array<{ id: number; kind: "master"; lines: SpokenLine[] } | { id: number; kind: "player"; text: string }>
+    Array<
+      | { id: number; kind: "master"; lines: SpokenLine[]; sceneTag: string | null }
+      | { id: number; kind: "player"; text: string }
+    >
   >([]);
   const [composerText, setComposerText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -116,6 +125,7 @@ export function DsaLlmAdventureScene() {
   const [combat, setCombat] = useState<CombatBridge | null>(null);
   const [pendingCombat, setPendingCombat] = useState<CombatBridge | null>(null);
   const [endState, setEndState] = useState<AdventureStatus | null>(null);
+  const [settingId, setSettingId] = useState<DsaSettingId | null>(null);
   const [imageZoomed, setImageZoomed] = useState(false);
   const turnIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -148,9 +158,12 @@ export function DsaLlmAdventureScene() {
   }, []);
 
   const appendMaster = useCallback(
-    (parsed: ParsedMasterTurn) => {
+    (parsed: ParsedMasterTurn, sceneTag: string | null) => {
       if (parsed.lines.length === 0) return;
-      setTurns((t) => [...t, { id: nextId(), kind: "master", lines: parsed.lines }]);
+      setTurns((t) => [
+        ...t,
+        { id: nextId(), kind: "master", lines: parsed.lines, sceneTag },
+      ]);
     },
     [nextId],
   );
@@ -180,6 +193,7 @@ export function DsaLlmAdventureScene() {
         }
         const adv = data.adventure;
         setImageTag(adv.current_image_tag || "forest_path");
+        setSettingId(adv.setting);
         // Verlauf rekonstruieren — nur user/assistant, keine System-Cues.
         const restored: typeof turns = [];
         for (const m of adv.messages) {
@@ -187,7 +201,12 @@ export function DsaLlmAdventureScene() {
             const parsed = parseMasterTurn(m.content);
             if (parsed.lines.length > 0) {
               turnIdRef.current += 1;
-              restored.push({ id: turnIdRef.current, kind: "master", lines: parsed.lines });
+              restored.push({
+                id: turnIdRef.current,
+                kind: "master",
+                lines: parsed.lines,
+                sceneTag: parsed.sceneTag,
+              });
             }
           } else if (m.role === "user") {
             // Spieler-Cues + COMBAT_RESULT ausblenden.
@@ -219,7 +238,8 @@ export function DsaLlmAdventureScene() {
 
   const handleServerReply = useCallback(
     (data: ServerReply) => {
-      appendMaster(data.parsed);
+      const newTag = data.imageTag || data.parsed.sceneTag || null;
+      appendMaster(data.parsed, newTag);
       if (data.imageTag) setImageTag(data.imageTag);
       if (data.parsed.mood) setMood(data.parsed.mood);
       if (data.parsed.combat && dsaCharacterRef.current) {
@@ -277,6 +297,7 @@ export function DsaLlmAdventureScene() {
       }
       const data = (await r.json()) as ServerReply;
       setTurns([]);
+      setSettingId(settingId);
       setMode({ kind: "play" });
       handleServerReply(data);
     } catch (e) {
@@ -546,6 +567,9 @@ export function DsaLlmAdventureScene() {
             {endState ? (
               <EndBanner
                 status={endState}
+                turns={turns}
+                character={dsaCharacter}
+                settingId={settingId}
                 onNew={handleAbortAndPickNew}
                 onStandUp={handleStandUp}
               />
@@ -737,10 +761,19 @@ function SettingPicker({
 
 function EndBanner({
   status,
+  turns,
+  character,
+  settingId,
   onNew,
   onStandUp,
 }: {
   status: AdventureStatus;
+  turns: Array<
+    | { id: number; kind: "master"; lines: SpokenLine[]; sceneTag: string | null }
+    | { id: number; kind: "player"; text: string }
+  >;
+  character: import("@/game/types").DsaCharacterSummary;
+  settingId: DsaSettingId | null;
   onNew: () => void;
   onStandUp: () => void;
 }) {
@@ -752,9 +785,68 @@ function EndBanner({
         : "Abenteuer abgebrochen.";
   const newLabel =
     status === "defeat" ? "Neuen Charakter rollen" : "Neues Abenteuer wählen";
+
+  const [downloading, setDownloading] = useState<"docx" | "pdf" | null>(null);
+  const exportPayload = () => ({
+    character,
+    settingTitle: (settingId && getSetting(settingId)?.title) || "Tafelrunde",
+    endingLabel: label,
+    turns: turns.map((t): ExportTurn =>
+      t.kind === "master"
+        ? { kind: "master", lines: t.lines, sceneTag: t.sceneTag }
+        : { kind: "player", text: t.text },
+    ),
+  });
+  async function handleDownload(kind: "docx" | "pdf") {
+    if (downloading) return;
+    setDownloading(kind);
+    try {
+      if (kind === "docx") await exportAdventureAsDocx(exportPayload());
+      else await exportAdventureAsPdf(exportPayload());
+    } catch (e) {
+      console.error("dsa export failed", e);
+      alert("Download fehlgeschlagen.");
+    } finally {
+      setDownloading(null);
+    }
+  }
+
   return (
     <div className="dsa-adventure-header shrink-0 border-t border-[#3a2c1a]/30 px-4 py-4 text-[#2a1f10]">
       <p className="font-serif text-base mb-3">{label}</p>
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <span className="text-[10px] uppercase tracking-wider opacity-70 mr-1">
+          Abenteuer mitnehmen:
+        </span>
+        <button
+          type="button"
+          onClick={() => void handleDownload("docx")}
+          disabled={!!downloading}
+          title="Word/OpenOffice/LibreOffice (.docx)"
+          className="inline-flex items-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a] disabled:opacity-50"
+        >
+          {downloading === "docx" ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : (
+            <FileDown className="h-3 w-3" strokeWidth={2.5} />
+          )}
+          Word / OpenOffice
+        </button>
+        <button
+          type="button"
+          onClick={() => void handleDownload("pdf")}
+          disabled={!!downloading}
+          title="PDF"
+          className="inline-flex items-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a] disabled:opacity-50"
+        >
+          {downloading === "pdf" ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : (
+            <FileDown className="h-3 w-3" strokeWidth={2.5} />
+          )}
+          PDF
+        </button>
+      </div>
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
