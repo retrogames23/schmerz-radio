@@ -85,18 +85,39 @@ function getAnonId(): string {
   }
 }
 
-async function authedPost(body: Record<string, unknown>, sessionId: string): Promise<Response> {
+async function authedPost(
+  body: Record<string, unknown>,
+  sessionId: string,
+  expectsSignedInUser = false,
+): Promise<Response> {
   const { getFreshAccessToken } = await import("@/auth/freshToken");
   const token = await getFreshAccessToken().catch(() => null);
+  if (expectsSignedInUser && !token) {
+    return new Response(JSON.stringify({ error: "Bitte melde dich erneut an." }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
-  return fetch("/api/public/dsa-master", {
+  const response = await fetch("/api/public/dsa-master", {
     method: "POST",
     headers,
     body: JSON.stringify({
       ...body,
       sessionId,
       ...(token ? {} : { anonId: getAnonId() }),
+    }),
+  });
+  if (response.status !== 401 || !token) return response;
+  const refreshedToken = await getFreshAccessToken(true).catch(() => null);
+  if (!refreshedToken) return response;
+  return fetch("/api/public/dsa-master", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${refreshedToken}` },
+    body: JSON.stringify({
+      ...body,
+      sessionId,
     }),
   });
 }
@@ -119,8 +140,10 @@ export function DsaLlmAdventureScene() {
     openDsaCreator,
     creditHeroAp,
   } = useDsaHost();
+  const { user, loading: authLoading } = useAuth();
   const { setMoodPool, setMood } = useMusic();
   const heroSlot = normalizeHeroSlot(dsaHeroSlot);
+  const expectsSignedInUser = !!user;
 
   const [mode, setMode] = useState<Mode>({ kind: "loading" });
   const [imageTag, setImageTag] = useState<string>("forest_path");
@@ -186,7 +209,7 @@ export function DsaLlmAdventureScene() {
   // muss der Load mit der NEUEN SID wiederholt werden.
   const sidForLoad = getDsaSessionId();
   useEffect(() => {
-    if (!dsaAdventureOpen) return;
+    if (!dsaAdventureOpen || authLoading) return;
     let cancelled = false;
     setMode({ kind: "loading" });
     setError(null);
@@ -196,10 +219,11 @@ export function DsaLlmAdventureScene() {
     setEndState(null);
     (async () => {
       try {
-        const r = await authedPost({ action: "load", heroSlot }, sidForLoad);
+        const r = await authedPost({ action: "load", heroSlot }, sidForLoad, expectsSignedInUser);
         if (cancelled) return;
         if (!r.ok) {
-          setMode({ kind: "picker", error: "Konnte Stand nicht laden." });
+          const j = await r.json().catch(() => ({ error: "Konnte Stand nicht laden." }));
+          setMode({ kind: "picker", error: j.error || "Konnte Stand nicht laden." });
           return;
         }
         const data = (await r.json()) as { none?: boolean; adventure?: LoadedAdventure };
@@ -247,7 +271,7 @@ export function DsaLlmAdventureScene() {
     return () => {
       cancelled = true;
     };
-  }, [dsaAdventureOpen, sidForLoad, heroSlot]);
+  }, [dsaAdventureOpen, authLoading, sidForLoad, heroSlot, expectsSignedInUser]);
 
   // Bewusst kein Auto-Scroll: der Spieler bleibt an der zuletzt gelesenen
   // Stelle und scrollt nach unten, wenn er die Reaktion sehen will.
@@ -314,6 +338,7 @@ export function DsaLlmAdventureScene() {
           ...(wishBrief ? { wishBrief } : {}),
         },
         getDsaSessionId(),
+        expectsSignedInUser,
       );
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
@@ -343,7 +368,7 @@ export function DsaLlmAdventureScene() {
     const myId = nextId();
     setTurns((t) => [...t, { id: myId, kind: "player", text }]);
     try {
-      const r = await authedPost({ action: "say", text, heroSlot }, getDsaSessionId());
+      const r = await authedPost({ action: "say", text, heroSlot }, getDsaSessionId(), expectsSignedInUser);
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
         setError(j.error || "Tjark schweigt.");
@@ -362,7 +387,7 @@ export function DsaLlmAdventureScene() {
     } finally {
       setBusy(false);
     }
-  }, [composerText, busy, endState, nextId, handleServerReply, heroSlot, getDsaSessionId]);
+  }, [composerText, busy, endState, nextId, handleServerReply, heroSlot, getDsaSessionId, expectsSignedInUser]);
 
   async function handleCombatDone(res: CombatDoneResult) {
     if (!combat || !dsaCharacter) return;
@@ -397,6 +422,7 @@ export function DsaLlmAdventureScene() {
           attrLowered: res.attrLowered,
         },
         getDsaSessionId(),
+        expectsSignedInUser,
       );
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
@@ -416,7 +442,7 @@ export function DsaLlmAdventureScene() {
   async function handleAbortAndPickNew() {
     setBusy(true);
     try {
-      await authedPost({ action: "abort", heroSlot }, getDsaSessionId());
+      await authedPost({ action: "abort", heroSlot }, getDsaSessionId(), expectsSignedInUser);
     } catch {
       /* ignore */
     }
@@ -437,7 +463,7 @@ export function DsaLlmAdventureScene() {
   async function handleResume() {
     setBusy(true);
     try {
-      await authedPost({ action: "resume", heroSlot }, getDsaSessionId());
+      await authedPost({ action: "resume", heroSlot }, getDsaSessionId(), expectsSignedInUser);
       setEndState(null);
       setEndAp(null);
     } catch (e) {
