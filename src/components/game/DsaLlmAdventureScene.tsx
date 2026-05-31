@@ -595,7 +595,8 @@ export function DsaLlmAdventureScene() {
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
-                        void handleSend();
+                        e.stopPropagation();
+                        handleSend();
                       }
                     }}
                     placeholder={
