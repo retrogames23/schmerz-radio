@@ -7,6 +7,7 @@ import {
   CLASS_COMBAT_PROFILES,
   heroCombatantFromCharacter,
 } from "@/game/dsa/combat";
+import { SPELLS } from "@/game/dsa/rules/spells";
 
 /**
  * Vollbild-Overlay, das den aktuellen DSA-Charakterbogen zeigt — im
@@ -168,6 +169,47 @@ export function DsaCharacterSheet() {
                   </div>
                 ))}
               </div>
+            </section>
+          )}
+
+          {/* Zauber (nur magisch begabte Klassen) */}
+          {cls?.magic && (
+            <section>
+              <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.85)] pb-1">
+                Zauber · Hauszauber
+              </div>
+              {(() => {
+                const own = SPELLS.filter((s) =>
+                  s.schools.includes(dsaCharacter.classId),
+                );
+                if (own.length === 0) {
+                  return (
+                    <div className="dsa-typed text-[13px] dsa-ink italic font-semibold">
+                      Keine Hauszauber für diese Klasse verzeichnet.
+                    </div>
+                  );
+                }
+                return (
+                  <div className="space-y-2">
+                    {own.map((s) => (
+                      <div
+                        key={s.id}
+                        className="dsa-typed text-[13px] dsa-ink font-semibold border-b border-[rgba(20,12,4,0.55)] pb-1.5"
+                      >
+                        <div className="flex flex-wrap items-baseline gap-x-2">
+                          <span className="font-display dsa-ink font-extrabold text-[15px]">
+                            {s.name}
+                          </span>
+                          <span className="text-[11px] uppercase tracking-widest">
+                            Probe {s.probe.join("/")} · {s.cost} AsP · {s.target}
+                          </span>
+                        </div>
+                        <div className="italic mt-0.5">{s.effect}</div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
             </section>
           )}
         </div>
