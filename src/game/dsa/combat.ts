@@ -444,7 +444,9 @@ export function createCombatState(
 }
 
 function snapshotW(all: WoundedCombatant[]): { id: string; le: number }[] {
-  return all.map((c) => ({ id: c.id, le: c.le }));
+  return all.map((c) =>
+    c.ae !== undefined ? { id: c.id, le: c.le, ae: c.ae } : { id: c.id, le: c.le },
+  );
 }
 
 interface RoundModifiers {
