@@ -599,6 +599,22 @@
   animation: dsa-stamp-in 0.35s ease-out;
 }
 
+/* ── DSA-Landing-Hintergrund: sanftes Ken-Burns + Schwanken ──────── */
+@keyframes dsa-landing-drift {
+  0%   { transform: scale(1.08) translate3d(0, 0, 0); }
+  50%  { transform: scale(1.12) translate3d(-1.2%, -0.8%, 0); }
+  100% { transform: scale(1.08) translate3d(0, 0, 0); }
+}
+.dsa-landing-bg {
+  will-change: transform;
+  transform-origin: 65% 35%;
+  animation: dsa-landing-drift 38s ease-in-out infinite;
+  filter: saturate(1.05);
+}
+@media (prefers-reduced-motion: reduce) {
+  .dsa-landing-bg { animation: none; transform: scale(1.05); }
+}
+
 /* ── DSA-Abenteuer-Overlay ───────────────────────────────────────── */
 .dsa-adventure-shell {
   background-color: #f1e6c8;
