@@ -72,7 +72,7 @@ export async function cloudUpsertHero(
       [{
         user_id: userId,
         slot,
-        hero: hero as unknown as Record<string, unknown>,
+        hero: hero as unknown as never,
         ap_total: hero.apTotal ?? 0,
         ap_spent: hero.apSpent ?? 0,
         adventures_played: hero.adventuresPlayed ?? 0,
