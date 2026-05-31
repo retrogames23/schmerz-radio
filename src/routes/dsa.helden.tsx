@@ -14,6 +14,7 @@ import {
   cloudFetchAllHeroes,
   cloudDeleteHero,
   cloudDeleteSlotAdventures,
+  cloudUpsertHero,
 } from "@/components/dsa-standalone/cloudHeroSync";
 import type { DsaHero } from "@/game/types";
 import { availableAp } from "@/game/dsa/advancement";
@@ -59,8 +60,21 @@ function DsaHeroManager() {
     (async () => {
       const cloud = await cloudFetchAllHeroes();
       if (cancelled) return;
-      setSlots(cloud);
-      for (const slot of SLOT_INDICES) saveSlotHero(slot, cloud[slot]);
+      // Slots, die lokal gefüllt sind, aber in der Cloud (noch) leer:
+      // den lokalen Helden einmalig in die Cloud spiegeln, damit der
+      // erste Login von einem zweiten Gerät den gleichen Stand zeigt.
+      const merged: Record<SlotIndex, DsaHero | null> = { ...cloud };
+      for (const slot of SLOT_INDICES) {
+        if (!cloud[slot]) {
+          const local = loadSlotHero(slot);
+          if (local) {
+            merged[slot] = local;
+            void cloudUpsertHero(user.id, slot, local);
+          }
+        }
+      }
+      setSlots(merged);
+      for (const slot of SLOT_INDICES) saveSlotHero(slot, merged[slot]);
     })();
     return () => {
       cancelled = true;
