@@ -11,10 +11,17 @@ import {
   saveSlotHero,
   slotSessionId,
   rotateSlotSessionId,
+  setSlotSessionId,
   type SlotIndex,
 } from "./slotStorage";
 import { upgradeToHero } from "@/game/dsa/advancement";
 import type { DsaHero } from "@/game/types";
+import { useAuth } from "@/auth/AuthContext";
+import {
+  cloudFetchHero,
+  cloudUpsertHero,
+  cloudFetchActiveSessionId,
+} from "./cloudHeroSync";
 
 type View = "creator" | "adventure";
 
@@ -34,6 +41,7 @@ export function StandaloneDsaHost({
   onExit: () => void;
   children: ReactNode;
 }) {
+  const { user } = useAuth();
   const [character, setCharacterState] = useState<DsaCharacterSummary | null>(
     () => loadSlotHero(slot) ?? loadSlotCharacter(slot),
   );
@@ -51,6 +59,33 @@ export function StandaloneDsaHost({
     setSheetOpen(false);
   }, [slot]);
 
+  // Eingeloggt? Dann ist die Cloud die Wahrheit: Hero + laufende
+  // Abenteuer-SessionId für diesen Slot vom Server hydrieren, lokalen
+  // Cache überschreiben und ggf. die View neu wählen.
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      const [cloudHero, activeSid] = await Promise.all([
+        cloudFetchHero(slot),
+        cloudFetchActiveSessionId(slot),
+      ]);
+      if (cancelled) return;
+      if (activeSid) setSlotSessionId(slot, activeSid);
+      if (cloudHero) {
+        heroRef.current = cloudHero;
+        saveSlotHero(slot, cloudHero);
+        setCharacterState(cloudHero);
+        // Wenn der lokale Cache leer war, hatten wir den Creator offen
+        // gezeigt — jetzt direkt ins Abenteuer wechseln.
+        setView("adventure");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user, slot]);
+
   const setCharacter = useCallback(
     (c: DsaCharacterSummary | null) => {
       setCharacterState(c);
@@ -61,13 +96,14 @@ export function StandaloneDsaHost({
         } as DsaHero);
         heroRef.current = merged;
         saveSlotHero(slot, merged);
+        if (user && merged) void cloudUpsertHero(user.id, slot, merged);
       } else {
         heroRef.current = null;
         saveSlotHero(slot, null);
         saveSlotCharacter(slot, null);
       }
     },
-    [slot],
+    [slot, user],
   );
 
   const creditHeroAp = useCallback(
@@ -83,8 +119,9 @@ export function StandaloneDsaHost({
       heroRef.current = next;
       saveSlotHero(slot, next);
       setCharacterState(next);
+      if (user) void cloudUpsertHero(user.id, slot, next);
     },
-    [slot],
+    [slot, user],
   );
 
   const updateHero = useCallback(
@@ -92,8 +129,9 @@ export function StandaloneDsaHost({
       heroRef.current = hero;
       saveSlotHero(slot, hero);
       setCharacterState(hero);
+      if (user) void cloudUpsertHero(user.id, slot, hero);
     },
-    [slot],
+    [slot, user],
   );
 
   const value = useMemo<DsaHostValue>(() => {
