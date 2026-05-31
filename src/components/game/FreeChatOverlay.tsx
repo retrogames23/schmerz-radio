@@ -170,13 +170,12 @@ function FreeChatInner({
         .eq("slot", 1)
         .maybeSingle();
       if (cancelled || !data) return;
-      const chronicle = Array.isArray(
-        (data as { chronicle?: unknown }).chronicle,
-      )
-        ? ((data as { chronicle: HeroChronicleEntry[] }).chronicle)
+      const raw = data as unknown as { chronicle?: unknown; npcs?: unknown };
+      const chronicle = Array.isArray(raw.chronicle)
+        ? (raw.chronicle as HeroChronicleEntry[])
         : [];
-      const npcs = Array.isArray((data as { npcs?: unknown }).npcs)
-        ? ((data as { npcs: HeroKnownNpc[] }).npcs)
+      const npcs = Array.isArray(raw.npcs)
+        ? (raw.npcs as HeroKnownNpc[])
         : [];
       setHeroMemory({ chronicle, npcs });
     })();
