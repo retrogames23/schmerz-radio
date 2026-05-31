@@ -87,6 +87,15 @@ export function StandaloneDsaHost({
     [slot],
   );
 
+  const updateHero = useCallback(
+    (hero: DsaHero) => {
+      heroRef.current = hero;
+      saveSlotHero(slot, hero);
+      setCharacterState(hero);
+    },
+    [slot],
+  );
+
   const value = useMemo<DsaHostValue>(() => {
     const sessionId = slotSessionId(slot);
     return {
@@ -120,8 +129,9 @@ export function StandaloneDsaHost({
       },
       flagsToken: slot,
       creditHeroAp,
+      updateHero,
     };
-  }, [character, setCharacter, sheetOpen, view, slot, onExit, creditHeroAp]);
+  }, [character, setCharacter, sheetOpen, view, slot, onExit, creditHeroAp, updateHero]);
 
   return (
     <DsaHostOverrideProvider value={value}>{children}</DsaHostOverrideProvider>

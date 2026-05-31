@@ -5,12 +5,13 @@ import { useAuth } from "@/auth/AuthContext";
 import { AuthDialog } from "@/auth/AuthDialog";
 import {
   SLOT_INDICES,
-  loadSlotCharacter,
-  saveSlotCharacter,
+  loadSlotHero,
+  saveSlotHero,
   slotSessionId,
   type SlotIndex,
 } from "@/components/dsa-standalone/slotStorage";
-import type { DsaCharacterSummary } from "@/game/types";
+import type { DsaHero } from "@/game/types";
+import { availableAp } from "@/game/dsa/advancement";
 
 const CANONICAL = "https://whisperquest.app/dsa";
 const TITLE = "DSA-Soloabenteuer mit KI-Meister – kostenlos online spielen";
@@ -91,23 +92,23 @@ function DsaLanding() {
   const navigate = useNavigate();
   const { user, signOut, loading } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
-  const [slots, setSlots] = useState<Record<SlotIndex, DsaCharacterSummary | null>>(
+  const [slots, setSlots] = useState<Record<SlotIndex, DsaHero | null>>(
     () => ({ 1: null, 2: null, 3: null }),
   );
 
   // Slots aus localStorage laden (clientseitig).
   useEffect(() => {
     setSlots({
-      1: loadSlotCharacter(1),
-      2: loadSlotCharacter(2),
-      3: loadSlotCharacter(3),
+      1: loadSlotHero(1),
+      2: loadSlotHero(2),
+      3: loadSlotHero(3),
     });
   }, []);
 
   async function handleDelete(slot: SlotIndex) {
     if (!window.confirm(`Held in Slot ${slot} wirklich löschen?`)) return;
     const sessionIdToDelete = slotSessionId(slot);
-    saveSlotCharacter(slot, null);
+    saveSlotHero(slot, null);
     setSlots((s) => ({ ...s, [slot]: null }));
     // Auch das serverseitige Abenteuer dieses Slots verwerfen, sonst
     // taucht der alte Stand beim nächsten Helden wieder auf.
@@ -263,7 +264,7 @@ function SlotCard({
   onDelete,
 }: {
   slot: SlotIndex;
-  character: DsaCharacterSummary | null;
+  character: DsaHero | null;
   onPlay: () => void;
   onDelete: () => void;
 }) {
@@ -291,6 +292,18 @@ function SlotCard({
           <p className="mt-2 text-xs">
             LE {character.le}/{character.leMax}
             {character.ae != null ? ` · AE ${character.ae}` : ""}
+          </p>
+          <p className="mt-1 text-[11px] uppercase tracking-wider opacity-70">
+            AP {availableAp(character)}
+            {(character.apTotal ?? 0) > 0 && (
+              <span className="opacity-60"> · gesamt {character.apTotal}</span>
+            )}
+            {(character.adventuresPlayed ?? 0) > 0 && (
+              <span className="opacity-60">
+                {" "}
+                · {character.adventuresPlayed} Abenteuer
+              </span>
+            )}
           </p>
           <button
             type="button"
