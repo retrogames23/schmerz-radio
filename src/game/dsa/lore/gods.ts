@@ -2,8 +2,10 @@
  * Die Zwölfgötter — Detailbriefs für den LLM-Meister. Nur was er
  * pro Geweihten-NSC braucht: Beiname, Tempel, Festtag, Liturgie-Eigenheit,
  * typische Gebote/Tabus, Schattenseiten. DSA3-Stand ("Götter und Dämonen").
- * Eigene Formulierung. Kantige Themen (Inquisition, Sklavenkult,
- * Tempelprostitution, Schwarzmagie-Verfolgung) explizit dabei.
+ * Eigene Formulierung. Die Grundstimmung der Zwölfgötterwelt ist
+ * farbenfroh und heldenmythisch — Schattenseiten (Inquisition, Sklaven-
+ * kult, Schwarzmagie-Verfolgung) sind Lore-wahr und sollen nur dort
+ * auftauchen, wo das Abenteuer sie wirklich braucht.
  */
 
 export type DsaGodId =

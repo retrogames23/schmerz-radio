@@ -3,9 +3,12 @@
  * Werden je nach Setting gezielt in den System-Prompt eingehängt
  * (vermeidet, alle ~12 Regionen pro Wende mitzuschleppen).
  *
- * Stand: DSA3, "Das Jahr des Greifen". Eigene Worte. Kantige Themen
- * (Orkfront, Sklaverei, Inquisition, Aufstände) ausdrücklich enthalten —
- * Layard ist Mitte 30 und spielt erwachsenes DSA.
+ * Stand: DSA3, "Das Jahr des Greifen". Eigene Worte. Die Grundstimmung
+ * Aventuriens ist abenteuerlich-bunt, nicht düster: Heldenmut, Wunder,
+ * Tavernen-Romantik, gelegentliche Gefahr. Erwachsene Themen (Orkfront,
+ * Sklaverei, Inquisition, Aufstände) sind LORE-WAHR und dürfen erwähnt
+ * werden, sollen aber nicht jede Szene einfärben — sie sind Kulisse,
+ * kein Dauerton.
  */
 
 export type DsaRegionId =
@@ -57,7 +60,7 @@ export const DSA_REGIONS: Record<DsaRegionId, RegionBrief> = {
     bedrohung: "Orkstreifscharen jederzeit. Plünderer in eigenen Reihen. Schwarzmagier-Späher der Orks (›Borks‹ — selten, aber real).",
     sprache: "Garethi mit nordischem Klang, Soldatenfluch, derbe Direktheit.",
     namen: "Reto, Hartwig, Edgardo, Beronika, Garibald.",
-    notiz: "Kriegssetting. Erwarte Verwundete, Massengräber, Beutestreit. Hier wird Heldentum teuer bezahlt.",
+    notiz: "Kriegsnahes Grenzland. Verwundete, Heerlager und Beutestreit gehören dazu, müssen aber nicht jede Szene tragen — auch hier gibt es Lagerfeuer, Heldengeschichten und Hoffnung.",
   },
   almada_horas: {
     id: "almada_horas",
@@ -81,7 +84,7 @@ export const DSA_REGIONS: Record<DsaRegionId, RegionBrief> = {
     bedrohung: "Sippenfehden, Maraskan-Pirateninvasion, Hjaldingsche Hochzeitsschlägereien. Im Winter geschlossene Pässe.",
     sprache: "Thorwalsch (eigene Sprache) und gebrochenes Garethi. Anrede: ›Sohn/Tochter des XYZ‹ + Ottajasko-Name.",
     namen: "Asleif, Garhelt, Swantje, Erlan, Olaf Knochenhand, Yala Sturmwind.",
-    notiz: "Erwachsene Themen: Sklavenraub (mittelreichisch), Frauen mit Axt, derber Humor, kein Adelsgehabe.",
+    notiz: "Raue, freie Hafenkultur. Derber Humor, starke Frauen, kein Adelsgehabe — Stimmung eher trinkfest und stolz als düster.",
   },
   tulamiden: {
     id: "tulamiden",
@@ -93,7 +96,7 @@ export const DSA_REGIONS: Record<DsaRegionId, RegionBrief> = {
     bedrohung: "Sklavenhändler, Khôm-Räuber, rastullahgläubige Eiferer, Djinnen-Beschwörer. Magier-Akademie-Politik tödlich.",
     sprache: "Tulamidya neben Garethi. Anreden: Effendi, Sahib, Lalla, Hadschi. Blumige Höflichkeit ist Pflicht.",
     namen: "Abu Tarik, Selima, Rashid, Yasmina, Zaid ben Mhanadi.",
-    notiz: "Sklaverei, Harems, Magier-Intrigen, Wüstenromantik — alles dabei. Kantig spielen.",
+    notiz: "Bunt, gewürzreich, voller Magier und Karawanen. Sklaverei und Harems sind Lore-Realität, dominieren aber nicht die Grundstimmung.",
   },
   bornland_svellt:  {
     id: "bornland_svellt",
@@ -105,7 +108,7 @@ export const DSA_REGIONS: Record<DsaRegionId, RegionBrief> = {
     bedrohung: "Goblins aus den Trollzacken, Eiswölfe, Verirren bei Schneesturm, Bojaren-Willkür gegen Bauern.",
     sprache: "Bornisch (mit slawischem Klang) neben Garethi. Anrede: ›Boschpane‹, ›Boschperan‹.",
     namen: "Brogar, Yelda, Slavomir, Borislaw, Olgerd.",
-    notiz: "Kalt, hart, magisch. Hier ist Kaiser Hal angeblich verschwunden — die Bornländer wissen mehr, als sie sagen.",
+    notiz: "Kalt, weit, alte Magie unter dem Schnee. Hier soll Kaiser Hal verschwunden sein — die Bornländer wissen mehr, als sie sagen.",
   },
   maraskan: {
     id: "maraskan",
@@ -117,7 +120,7 @@ export const DSA_REGIONS: Record<DsaRegionId, RegionBrief> = {
     bedrohung: "Aufständische in jedem Dorf. Gift in jedem Becher. Sumpf-Fieber. Tigerhaie an der Küste. Reichssoldaten, die Vergeltung üben.",
     sprache: "Maraskani (eigene Sprache, Garethi nur in Häfen). Anreden formal mit Kasten-Suffixen.",
     namen: "Galahan, Sirla, Rohaja, Ifirgan, Yossan.",
-    notiz: "Gewalt-Setting. Folter, Massenexekutionen, Vergiftungen sind Alltag. Erwachsen spielen.",
+    notiz: "Aufstandsgebiet — Gefahr und Misstrauen sind real, aber dosiert einsetzen. Nur explizit als Schauplatz wählen, wenn das Abenteuer wirklich dort spielt.",
   },
   alanfa_sueden: {
     id: "alanfa_sueden",
@@ -129,7 +132,7 @@ export const DSA_REGIONS: Record<DsaRegionId, RegionBrief> = {
     bedrohung: "Patriarchen-Garde, Boron-Inquisition, Giftmischer, Sklavenjäger. Wer aus Al'Anfa flieht, wird verfolgt.",
     sprache: "Garethi mit dunklem Süd-Akzent, viel ›Würden‹ und ›Erhabenheiten‹. Patriarch wird mit ›Euer Hochwürdigste Erhabenheit‹ angeredet.",
     namen: "Pavur, Gariel, Charypso, Soltan, Ardare al'Plitana.",
-    notiz: "Düsterstes Setting Aventuriens. Sklaverei, Folter, religiöser Terror — wenn Layard kantig spielen will, hier.",
+    notiz: "Aventuriens dunkler Süden — Sklavenhandel und Boron-Patriarchat sind Lore-Fakt. Als Schauplatz nur wählen, wenn das Abenteuer explizit dorthin verlangt; sonst nur erwähnen.",
   },
   andergast_nostria: {
     id: "andergast_nostria",
@@ -141,7 +144,7 @@ export const DSA_REGIONS: Record<DsaRegionId, RegionBrief> = {
     bedrohung: "Hexenverfolgung, Druiden-Rivalität, Grenzscharmützel zwischen den Bauernkönigreichen.",
     sprache: "Garethi mit Bauern-Akzent, derb, ehrlich. Adel mit ›Eure Wohlgeboren‹.",
     namen: "Wendelmar, Trastor, Gerwulf, Adelheid, Hjalmir.",
-    notiz: "Märchenhaft-derb. Hexenangst und Aberglaube tragen jede Szene.",
+    notiz: "Märchenhaft-derb. Hexenangst und Aberglaube sind Würze, kein Dauerton.",
   },
   khom_rastullah: {
     id: "khom_rastullah",
@@ -153,7 +156,7 @@ export const DSA_REGIONS: Record<DsaRegionId, RegionBrief> = {
     bedrohung: "Hitze, Sandsturm, Wüstendämonen (Ifrits — selten), fanatische Mawdli, die Zwölfgöttergläubige als Ungläubige sehen.",
     sprache: "Tulamidya, kein Garethi außer in Handelsstädten. Anreden hochformelhaft.",
     namen: "Abu Feyrad, Selim, Yasimina, Tarik ben Hadrian.",
-    notiz: "Religiöser Konflikt als Dauerthema. Rastullahglaube ist DSA3-spezifisch hart gezeichnet.",
+    notiz: "Wüstenromantik mit religiösem Reibungspunkt. Rastullahglaube ist DSA3-typisch streng gezeichnet, aber Karawanen, Oasen und Gastfreundschaft tragen die Stimmung.",
   },
   schwarze_lande: {
     id: "schwarze_lande",

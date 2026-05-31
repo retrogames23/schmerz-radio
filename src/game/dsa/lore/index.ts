@@ -14,6 +14,8 @@ export { DSA_BESTIARY };
 /** Immer mitgesendeter Lore-Kern (Tagesgeschehen, Wirtschaft, Kalender, Sprache, Götter). */
 export function buildCoreLoreAppend(): string {
   return [
+    TONE_GUIDELINE,
+    "",
     DSA_CURRENT_AFFAIRS_20HAL,
     "",
     DSA_ECONOMY_BRIEF,
@@ -25,6 +27,18 @@ export function buildCoreLoreAppend(): string {
     buildGodsBlock(),
   ].join("\n");
 }
+
+const TONE_GUIDELINE = `
+GRUNDSTIMMUNG (WICHTIG):
+  DSA3 / Aventurien im Jahr 20 Hal ist eine bunte, heldenmythische Welt:
+  Tavernenromantik, Wunder der Zwölfgötter, schillernde Magie, Reisen,
+  Freundschaft, Heldentum. Die Grundstimmung ist NICHT düster.
+  Schattenseiten (Orkkrieg, Inquisition, Sklavenhandel in Al'Anfa,
+  Maraskan-Aufstand) sind LORE-WAHR und dürfen genannt werden, wenn sie
+  zur Szene passen — aber sie sind Kulisse, kein Dauerton. Standardstimmung
+  ist abenteuerlich, hoffnungsvoll, gelegentlich gefährlich. Edgy/grimdark
+  nur, wenn das Abenteuer es ausdrücklich verlangt.
+`.trim();
 
 /** Kontext-Lore, abhängig vom Setting und den verfügbaren Gegnern. */
 export function buildContextualLoreBlock(args: {
