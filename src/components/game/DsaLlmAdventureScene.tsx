@@ -175,6 +175,10 @@ export function DsaLlmAdventureScene() {
   );
 
   // Initial: laufendes Abenteuer laden.
+  // Hängt auch an der SessionId, weil eingeloggte Spielende nach dem
+  // Mount die SID vom anderen Gerät (Cloud) übernehmen können — dann
+  // muss der Load mit der NEUEN SID wiederholt werden.
+  const sidForLoad = getDsaSessionId();
   useEffect(() => {
     if (!dsaAdventureOpen) return;
     let cancelled = false;
@@ -186,7 +190,7 @@ export function DsaLlmAdventureScene() {
     setEndState(null);
     (async () => {
       try {
-        const r = await authedPost({ action: "load" }, getDsaSessionId());
+        const r = await authedPost({ action: "load" }, sidForLoad);
         if (cancelled) return;
         if (!r.ok) {
           setMode({ kind: "picker", error: "Konnte Stand nicht laden." });
@@ -237,7 +241,7 @@ export function DsaLlmAdventureScene() {
     return () => {
       cancelled = true;
     };
-  }, [dsaAdventureOpen]);
+  }, [dsaAdventureOpen, sidForLoad]);
 
   // Bewusst kein Auto-Scroll: der Spieler bleibt an der zuletzt gelesenen
   // Stelle und scrollt nach unten, wenn er die Reaktion sehen will.
