@@ -494,6 +494,10 @@ function pickConsequence(tactic: Tactic): ConsequenceKind {
     flee: ["robbery", "robbery", "capture", "capture"],
     balanced: ["capture", "robbery", "wound", "timeloss"],
     spell: ["capture", "wound", "robbery", "timeloss"],
+    "magic-none": ["capture", "robbery", "wound", "timeloss"],
+    "magic-low": ["capture", "robbery", "wound", "timeloss"],
+    "magic-mid": ["capture", "wound", "robbery", "timeloss"],
+    "magic-high": ["capture", "wound", "wound", "robbery", "timeloss"],
   };
   const arr = table[tactic];
   return arr[Math.floor(Math.random() * arr.length)];
