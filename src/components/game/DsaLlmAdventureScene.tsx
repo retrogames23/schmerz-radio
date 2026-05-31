@@ -248,7 +248,12 @@ export function DsaLlmAdventureScene() {
       if (data.parsed.mood) setMood(data.parsed.mood);
       if (data.parsed.combat && dsaCharacterRef.current) {
         // Kampfbildschirm bauen.
-        const hero = heroCombatantFromCharacter(dsaCharacterRef.current);
+        const ch = dsaCharacterRef.current;
+        const heroLike =
+          ch && typeof (ch as { spells?: unknown }).spells === "object"
+            ? (ch as { spells: Record<string, number> })
+            : null;
+        const hero = heroCombatantFromCharacter(ch, heroLike);
         const companions = companionCombatants();
         const foes = data.parsed.combat.enemyIds
           .map((id, i) => {
