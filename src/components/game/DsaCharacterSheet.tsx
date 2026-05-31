@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { CloseButton } from "./CloseButton";
 import { ATTR_LABEL, ATTR_ORDER, type Attr } from "@/game/dsa/dice";
