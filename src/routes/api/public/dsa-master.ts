@@ -493,6 +493,19 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           return json(200, { ok: true });
         }
 
+        // ── resume ────────────────────────────────────────
+        // Setzt ein abgebrochenes Abenteuer wieder auf "active", damit
+        // der Spieler weiterspielen kann. Sieg/Niederlage bleiben final.
+        if (action === "resume") {
+          const upd = admin
+            .from("dsa_llm_adventures")
+            .update({ status: "active" as AdventureStatus })
+            .eq("status", "aborted");
+          await (uid ? upd.eq("user_id", uid) : upd.eq("anon_id", anonId!))
+            .eq("session_id", sessionId);
+          return json(200, { ok: true });
+        }
+
         // ── delete_slot ───────────────────────────────────
         // Löscht ALLE Abenteuer eines Slots (Held-Reset auf der Landing).
         if (action === "delete_slot") {

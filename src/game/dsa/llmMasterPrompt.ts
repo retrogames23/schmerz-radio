@@ -284,6 +284,11 @@ REGELN:
     Setze in diesen Fällen NIEMALS [END: defeat]. Das Abenteuer läuft weiter.
   - [END: defeat] verwendest du NUR, wenn die Story selbst sauber ein Ende fordert (z. B. Layard gibt freiwillig auf, die Mission ist endgültig gescheitert).
   - Erreicht ihr ein sauberes Ende (Auftrag erfüllt, Bösewicht besiegt), setze [END: victory].
+  - [END: aborted] verwendest du NUR, wenn Layard die Runde OUTTIME ausdrücklich beendet
+    (z. B. »Outtime: ich höre für heute auf«, »OT: brechen wir ab«, »Tjark, lass uns hier
+    Schluss machen«). NIEMALS auf eigene Faust, NIEMALS wenn der Held nur zögert, eine
+    Entscheidung vertagt, eine andere Route wählt oder eine ruhige Pause einlegt — das
+    Abenteuer läuft dann ganz normal weiter.
 
 Beginne erst zu sprechen, wenn der Spieler etwas geschrieben hat oder du das Abenteuer eröffnen sollst.`;
 }
