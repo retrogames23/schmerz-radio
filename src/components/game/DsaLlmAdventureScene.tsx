@@ -761,10 +761,19 @@ function SettingPicker({
 
 function EndBanner({
   status,
+  turns,
+  character,
+  settingId,
   onNew,
   onStandUp,
 }: {
   status: AdventureStatus;
+  turns: Array<
+    | { id: number; kind: "master"; lines: SpokenLine[]; sceneTag: string | null }
+    | { id: number; kind: "player"; text: string }
+  >;
+  character: import("@/game/types").DsaCharacterSummary;
+  settingId: DsaSettingId | null;
   onNew: () => void;
   onStandUp: () => void;
 }) {
@@ -776,9 +785,68 @@ function EndBanner({
         : "Abenteuer abgebrochen.";
   const newLabel =
     status === "defeat" ? "Neuen Charakter rollen" : "Neues Abenteuer wählen";
+
+  const [downloading, setDownloading] = useState<"docx" | "pdf" | null>(null);
+  const exportPayload = () => ({
+    character,
+    settingTitle: (settingId && getSetting(settingId)?.title) || "Tafelrunde",
+    endingLabel: label,
+    turns: turns.map((t): ExportTurn =>
+      t.kind === "master"
+        ? { kind: "master", lines: t.lines, sceneTag: t.sceneTag }
+        : { kind: "player", text: t.text },
+    ),
+  });
+  async function handleDownload(kind: "docx" | "pdf") {
+    if (downloading) return;
+    setDownloading(kind);
+    try {
+      if (kind === "docx") await exportAdventureAsDocx(exportPayload());
+      else await exportAdventureAsPdf(exportPayload());
+    } catch (e) {
+      console.error("dsa export failed", e);
+      alert("Download fehlgeschlagen.");
+    } finally {
+      setDownloading(null);
+    }
+  }
+
   return (
     <div className="dsa-adventure-header shrink-0 border-t border-[#3a2c1a]/30 px-4 py-4 text-[#2a1f10]">
       <p className="font-serif text-base mb-3">{label}</p>
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <span className="text-[10px] uppercase tracking-wider opacity-70 mr-1">
+          Abenteuer mitnehmen:
+        </span>
+        <button
+          type="button"
+          onClick={() => void handleDownload("docx")}
+          disabled={!!downloading}
+          title="Word/OpenOffice/LibreOffice (.docx)"
+          className="inline-flex items-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a] disabled:opacity-50"
+        >
+          {downloading === "docx" ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : (
+            <FileDown className="h-3 w-3" strokeWidth={2.5} />
+          )}
+          Word / OpenOffice
+        </button>
+        <button
+          type="button"
+          onClick={() => void handleDownload("pdf")}
+          disabled={!!downloading}
+          title="PDF"
+          className="inline-flex items-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a] disabled:opacity-50"
+        >
+          {downloading === "pdf" ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : (
+            <FileDown className="h-3 w-3" strokeWidth={2.5} />
+          )}
+          PDF
+        </button>
+      </div>
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
