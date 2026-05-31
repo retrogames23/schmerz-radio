@@ -782,18 +782,43 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             try {
               const { data: heroRow } = await admin
                 .from("dsa_heroes")
-                .select("ap_total, adventures_played, adventures_won")
+                .select("ap_total, adventures_played, adventures_won, chronicle, npcs")
                 .eq("user_id", uid)
                 .eq("slot", heroSlot)
                 .maybeSingle();
               if (heroRow) {
+                // Chronicler: 2–3 Sätze Chronik + NSC-Update aus dem
+                // Transkript ziehen, in den Helden-Akten persistieren.
+                const prior: HeroMemory = {
+                  chronicle: Array.isArray((heroRow as any).chronicle)
+                    ? ((heroRow as any).chronicle as HeroChronicleEntry[])
+                    : [],
+                  npcs: Array.isArray((heroRow as any).npcs)
+                    ? ((heroRow as any).npcs as HeroKnownNpc[])
+                    : [],
+                };
+                const transcript = history
+                  .filter((m) => m.role === "assistant" || m.role === "user")
+                  .map((m) => `${m.role === "assistant" ? "MEISTER" : "SPIELER"}: ${m.content}`)
+                  .join("\n");
+                const chron = await runChronicler(
+                  apiKey,
+                  characterSnap.name,
+                  settingId,
+                  parsed.end,
+                  transcript,
+                  prior,
+                );
+                const nextChronicle = [...prior.chronicle, chron.entry].slice(-MAX_CHRONICLE_ENTRIES);
                 await admin
                   .from("dsa_heroes")
                   .update({
-                    ap_total: (heroRow.ap_total ?? 0) + apAwarded,
-                    adventures_played: (heroRow.adventures_played ?? 0) + 1,
+                    ap_total: ((heroRow as any).ap_total ?? 0) + apAwarded,
+                    adventures_played: ((heroRow as any).adventures_played ?? 0) + 1,
                     adventures_won:
-                      (heroRow.adventures_won ?? 0) + (nextStatus === "victory" ? 1 : 0),
+                      ((heroRow as any).adventures_won ?? 0) + (nextStatus === "victory" ? 1 : 0),
+                    chronicle: nextChronicle,
+                    npcs: chron.npcs,
                   })
                   .eq("user_id", uid)
                   .eq("slot", heroSlot);
