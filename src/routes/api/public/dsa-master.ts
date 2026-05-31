@@ -42,12 +42,13 @@ async function loadHeroMemory(
   heroSlot: number,
 ): Promise<HeroMemory | null> {
   if (!uid) return null;
-  const { data: row } = await admin
+  const { data: rowData } = await admin
     .from("dsa_heroes")
     .select("chronicle, npcs")
     .eq("user_id", uid)
     .eq("slot", heroSlot)
     .maybeSingle();
+  const row = rowData as { chronicle?: unknown; npcs?: unknown } | null;
   if (!row) return null;
   const chronicle = Array.isArray(row.chronicle) ? (row.chronicle as HeroChronicleEntry[]) : [];
   const npcs = Array.isArray(row.npcs) ? (row.npcs as HeroKnownNpc[]) : [];
