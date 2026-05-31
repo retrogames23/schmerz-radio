@@ -249,10 +249,9 @@ export function DsaLlmAdventureScene() {
       if (data.parsed.combat && dsaCharacterRef.current) {
         // Kampfbildschirm bauen.
         const ch = dsaCharacterRef.current;
+        const maybeHero = ch as unknown as { spells?: Record<string, number> };
         const heroLike =
-          ch && typeof (ch as { spells?: unknown }).spells === "object"
-            ? (ch as { spells: Record<string, number> })
-            : null;
+          maybeHero && typeof maybeHero.spells === "object" ? maybeHero : null;
         const hero = heroCombatantFromCharacter(ch, heroLike);
         const companions = companionCombatants();
         const foes = data.parsed.combat.enemyIds
