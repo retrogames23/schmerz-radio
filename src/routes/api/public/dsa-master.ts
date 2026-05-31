@@ -56,6 +56,34 @@ async function loadHeroMemory(
 }
 
 /**
+ * Liest die gelernten Zauber des Helden (Slot) — wird in den
+ * Master-Prompt eingespeist, damit nur erlaubte Sprüche gewirkt werden.
+ */
+async function loadHeroSpells(
+   admin: ReturnType<typeof createClient<any, any, any>>,
+   uid: string | null,
+   heroSlot: number,
+): Promise<Record<string, number> | null> {
+  if (!uid) return null;
+  const { data: rowData } = await admin
+    .from("dsa_heroes")
+    .select("hero")
+    .eq("user_id", uid)
+    .eq("slot", heroSlot)
+    .maybeSingle();
+  const row = rowData as { hero?: { spells?: Record<string, number> } } | null;
+  const spells = row?.hero?.spells;
+  if (!spells || typeof spells !== "object") return null;
+  const out: Record<string, number> = {};
+  for (const [id, v] of Object.entries(spells)) {
+    if (/^[a-z0-9_]+$/.test(id) && typeof v === "number" && Number.isFinite(v)) {
+      out[id] = Math.max(0, Math.min(20, Math.round(v)));
+    }
+  }
+  return out;
+}
+
+/**
  * Lässt ein zweites LLM aus dem Abenteuer-Transkript eine Chronik-Zeile
  * (2–3 Sätze) und ein NSC-Update extrahieren. Liefert Fallback bei Fehler.
  */
