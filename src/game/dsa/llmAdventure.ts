@@ -107,6 +107,8 @@ export interface ParsedMasterTurn {
   end: EndKind | null;
   /** Optionaler Mood-Hinweis vom Meister an den Musik-Player. */
   mood: DsaMood | null;
+  /** [AP: <n> | <begründung>] — wird nur zusammen mit `end` ausgewertet. */
+  ap: { value: number; reason: string } | null;
 }
 
 const SPEAKER_RE = /^\s*\[(TJARK|BREM|YELVA)\]\s*/i;
@@ -116,6 +118,7 @@ const CHECK_RE = /\[CHECK:\s*(MU|KL|CH|FF|GE|IN|KK)\s*(?:([+-]\s*\d+))?\s*\]/i;
 const OUTTIME_RE = /\[OUTTIME_WARN\]/i;
 const END_RE = /\[END:\s*(victory|defeat|aborted)\s*\]/i;
 const MOOD_RE = /\[MOOD:\s*([a-z_]+)\s*\]/i;
+const AP_RE = /\[AP:\s*(\d{1,4})\s*(?:\|\s*([^\]]+))?\]/i;
 
 /** Entfernt jegliche Marker aus dem reinen Sprechtext einer Zeile. */
 function stripMarkers(s: string): string {
@@ -126,6 +129,7 @@ function stripMarkers(s: string): string {
     .replace(OUTTIME_RE, "")
     .replace(END_RE, "")
     .replace(MOOD_RE, "")
+    .replace(AP_RE, "")
     .trim();
 }
 
@@ -141,6 +145,13 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
   const moodMatch = MOOD_RE.exec(text);
   const mood: DsaMood | null =
     moodMatch && isDsaMood(moodMatch[1].toLowerCase()) ? (moodMatch[1].toLowerCase() as DsaMood) : null;
+  const apMatch = AP_RE.exec(text);
+  const ap = apMatch
+    ? {
+        value: parseInt(apMatch[1], 10),
+        reason: (apMatch[2] ?? "").trim().slice(0, 200),
+      }
+    : null;
 
   const sceneTag =
     sceneMatch && DSA_SCENE_TAGS.includes(sceneMatch[1].toLowerCase())
@@ -207,6 +218,7 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
     outtimeWarn: outtime,
     end,
     mood,
+    ap,
   };
 }
 
