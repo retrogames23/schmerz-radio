@@ -40,14 +40,22 @@ interface BuildArgs {
    * Meister den Helden tatsächlich wirken lassen. Leer/undef = unmagisch.
    */
   knownSpells?: Record<string, number> | null;
+  /**
+   * Freitext-Wunsch des Spielers (nur bei Setting "wish"). Wird in den
+   * Prompt eingespeist, damit der Meister das Abenteuer daran ausrichtet.
+   */
+  wishBrief?: string | null;
 }
 
 /**
  * Vollständiger System-Prompt für Tjark, den LLM-Meister. Wird auf dem
  * Server gebaut — der Client kann ihn nicht überschreiben.
  */
-export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, assistantTurns = 0, cooldown, memory = null, knownSpells = null }: BuildArgs): string {
+export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, assistantTurns = 0, cooldown, memory = null, knownSpells = null, wishBrief = null }: BuildArgs): string {
   const s = getSetting(setting);
+  const isSandbox = setting === "sandbox";
+  const isWish = setting === "wish";
+  const isOpen = isSandbox || isWish;
   const sceneTagList = DSA_SCENE_TAGS.join(", ");
   const enemyIdList = Object.keys(ENEMY_STATS).join(", ");
   const moodList = DSA_MOODS.join(", ");
@@ -166,10 +174,18 @@ ${buildCoreLoreAppend()}
 ${buildContextualLoreBlock({ setting, enemyIds: Object.keys(ENEMY_STATS) })}
 
 ${buildDsa3RulesBlock()}
+${isWish && wishBrief ? `
+SPIELERWUNSCH (PFLICHT BEACHTEN):
+  Layard hat folgenden Wunsch für dieses Abenteuer formuliert. Setze ihn so
+  lore-treu wie möglich um (siehe Wunsch-Abenteuer-Regeln im Setting-Hint):
+  """
+  ${wishBrief.trim()}
+  """
+` : ""}
 
 SETTING DIESES ABENTEUERS — ${s?.title ?? "freie Wahl"}:
 ${s?.masterHint ?? "Setze einen passenden Auftakt."}
-${cooldownBlock}${memoryBlock}${spellsBlock}
+${isOpen ? "" : cooldownBlock}${memoryBlock}${spellsBlock}
 LAYARDS CHARAKTER:
   Name: ${character.name}
   Klasse: ${character.className}
@@ -179,7 +195,19 @@ LAYARDS CHARAKTER:
 BISHER PASSIERT (Zusammenfassung, kann leer sein):
 ${summary || "— (Abenteuer beginnt jetzt)"}
 
-ABENTEUER-DRAMATURGIE — PFLICHT:
+${isOpen ? `OFFENE RUNDE — DRAMATURGIE:
+  Diese Runde hat KEIN festes Akt-Korsett und KEINE Mindest-Wendenzahl.
+  Es gibt keinen Pflicht-Showdown, kein "in 3 Schauplätzen muss x passieren".
+  Erzähle ruhig, atmosphärisch, sinnlich. Begegnungen dürfen klein bleiben
+  (Tavernen-Smalltalk, ein Marktstand, ein Lied am Lagerfeuer). Wenn Layard
+  nur reist und redet — ist das auch ok. Bring nur dann Spannung (Diebstahl,
+  Bote, Räuberüberfall, ein Gerücht, ein Auftrag, der vorbeikommt), wenn die
+  Szene danach verlangt; zwinge nichts. Brem und Yelva dürfen häufiger
+  ausführlich sprechen als in einem klassischen Abenteuer.
+  Setze [END: victory] NUR, wenn die Story selbst sauber dorthin kippt (z. B.
+  ein gefundener Auftrag wird zu Ende geführt). Sonst beendet die Runde
+  ausschließlich Layard outtime (→ [END: aborted]). Mindest-Wenden für [END]
+  gelten in dieser Runde NICHT.` : `ABENTEUER-DRAMATURGIE — PFLICHT:
   AKTUELLER UMFANG: Bisher gab es ${assistantTurns} Meisterwenden in diesem Abenteuer.
   Ein Abenteuer ist KEIN One-Shot von drei Szenen und KEINE Zusammenfassung.
   Es soll am Tisch wie ein echter Spielabend laufen (~40–60 Meisterwenden).
@@ -201,7 +229,7 @@ ABENTEUER-DRAMATURGIE — PFLICHT:
   bring ein Rätsel ins Spiel, oder zeig eine Spur, der ${character.name} folgen kann.
   Jedes Abenteuer enthält MINDESTENS: 3 namentliche NSCs (Auftraggeber + 2 weitere),
   1 Rätsel oder Geheimnis, das Layard selbst lösen muss (kein bloßer Würfelwurf),
-  3 Schauplatzwechsel, mindestens 1 ausführliche Ruhephase ohne Kampf, in der nur geredet wird.
+  3 Schauplatzwechsel, mindestens 1 ausführliche Ruhephase ohne Kampf, in der nur geredet wird.`}
 
 KAMPF-ANKÜNDIGUNG — PFLICHT:
   Bevor du [COMBAT: ...] setzt, MUSST du die Lage erzählerisch aufbauen
