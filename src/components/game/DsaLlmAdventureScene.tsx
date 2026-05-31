@@ -689,8 +689,8 @@ function MasterTurn({ lines }: { lines: SpokenLine[] }) {
             {l.speaker === "TJARK"
               ? "Tjark (Meister)"
               : l.speaker === "BREM"
-                ? "Brem"
-                : "Yelva"}
+                ? "Brem (Streuner)"
+                : "Yelva (Magierin)"}
           </span>
           )}
           <span>{l.text}</span>
@@ -729,8 +729,8 @@ function SettingPicker({
           <span className="inline-block mr-2 text-[10px] font-bold uppercase tracking-widest bg-[#3a2c1a] text-[#f1e6c8] px-1.5 py-0.5 rounded">
             Tjark
           </span>
-          Also gut. Brem schiebt die Würfel hin und her, Yelva poliert ihre
-          Brille. Worauf hast du heute Lust?
+          Also gut. Brem (Streuner) schiebt die Würfel hin und her, Yelva
+          (Magierin) poliert ihre Brille. Worauf hast du heute Lust?
         </p>
         <p className="text-xs uppercase tracking-[0.3em] opacity-60 mt-6 mb-3">
           Setting wählen
