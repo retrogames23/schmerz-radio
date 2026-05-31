@@ -440,11 +440,21 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     const toKey = fromKey === "a" ? "b" : "a";
     const from = fromKey === "a" ? aRef.current : bRef.current;
     const to = toKey === "a" ? aRef.current : bRef.current;
+    // Wenn das Ziel-Element bereits genau diese Quelle abspielt (z. B.
+    // mood-Crossfade in mood-Crossfade kurz hintereinander), nichts tun.
+    const targetHref = new URL(src, window.location.href).href;
+    if (to.src === targetHref && !to.paused) {
+      // Laufende Wiedergabe weiterführen, nur sicherstellen, dass aktiv ist.
+      return;
+    }
     to.src = src;
     to.currentTime = 0;
     to.volume = 0;
     void to.play().catch(() => {});
-    const startVol = clamp(volumeRef.current);
+    // Lautstärke, von der „from" tatsächlich herunterblenden soll. Wenn
+    // from gerade selbst noch hochfaded (volume ~0), springt sonst kein
+    // hörbarer Übergang zustande.
+    const startVol = Math.max(from.volume, clamp(volumeRef.current));
     const steps = Math.max(1, Math.floor((durationSeconds * 1000) / FADE_TICK_MS));
     let step = 0;
     if (fadeTimerRef.current) window.clearInterval(fadeTimerRef.current);
