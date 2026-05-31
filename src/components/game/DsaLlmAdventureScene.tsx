@@ -732,9 +732,16 @@ function SettingPicker({
 }: {
   error: string | null | undefined;
   busy: boolean;
-  onPick: (id: DsaSettingId) => void;
+  onPick: (id: DsaSettingId, wishBrief?: string) => void;
   onStandUp: () => void;
 }) {
+  const { user } = useAuth();
+  const donation = useDonationStatus();
+  const isDonor = !!user && donation.unlocked;
+  const [wishOpen, setWishOpen] = useState(false);
+  const [wishText, setWishText] = useState("");
+  const wishLen = wishText.trim().length;
+  const wishValid = wishLen >= 10 && wishLen <= 600;
   return (
     <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-6">
       <div className="max-w-2xl mx-auto text-[#2a1f10]">
@@ -754,22 +761,107 @@ function SettingPicker({
           </div>
         )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {DSA_SETTINGS.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              disabled={busy}
-              onClick={() => onPick(s.id)}
-              className="text-left rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] hover:bg-[#f1d99a] disabled:opacity-50 px-4 py-3 transition-all"
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <Dices className="h-4 w-4" strokeWidth={2.5} />
-                <h3 className="font-serif text-base font-bold">{s.title}</h3>
-              </div>
-              <p className="text-xs leading-snug opacity-80">{s.blurb}</p>
-            </button>
-          ))}
+          {DSA_SETTINGS.map((s) => {
+            const locked = !!s.donorOnly && !isDonor;
+            const Icon = s.donorOnly ? Sparkles : Dices;
+            const handleClick = () => {
+              if (locked) return;
+              if (s.requiresWish) {
+                setWishOpen(true);
+                return;
+              }
+              onPick(s.id);
+            };
+            return (
+              <button
+                key={s.id}
+                type="button"
+                disabled={busy || locked}
+                onClick={handleClick}
+                title={
+                  locked
+                    ? user
+                      ? "Nur für Unterstützer:innen — bitte spende, um diese Abenteuerart freizuschalten."
+                      : "Bitte melde dich an und unterstütze das Projekt, um diese Abenteuerart freizuschalten."
+                    : undefined
+                }
+                className={
+                  "relative text-left rounded border-2 px-4 py-3 transition-all disabled:opacity-50 " +
+                  (locked
+                    ? "border-[#3a2c1a]/40 bg-[#fbf2d8]/60 cursor-not-allowed"
+                    : s.donorOnly
+                      ? "border-[#6b4a1a] bg-[#fbf2d8] hover:bg-[#f1d99a]"
+                      : "border-[#3a2c1a] bg-[#fbf2d8] hover:bg-[#f1d99a]")
+                }
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <Icon className="h-4 w-4" strokeWidth={2.5} />
+                  <h3 className="font-serif text-base font-bold">{s.title}</h3>
+                  {s.donorOnly && (
+                    <span className="ml-auto inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-[#6b4a1a]">
+                      {locked && <Lock className="h-3 w-3" />} Spender
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs leading-snug opacity-80">{s.blurb}</p>
+              </button>
+            );
+          })}
         </div>
+        {!isDonor && (
+          <p className="mt-3 text-[11px] leading-snug text-[#2a1f10]/70">
+            <Lock className="inline h-3 w-3 mr-1" />
+            Sandbox- und Wunsch-Abenteuer sind Unterstützer:innen vorbehalten —
+            {user ? " spende einmalig, um sie freizuschalten." : " melde dich an und spende, um sie freizuschalten."}
+          </p>
+        )}
+        {wishOpen && (
+          <div className="mt-5 rounded border-2 border-[#6b4a1a] bg-[#fbf2d8] p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="h-4 w-4" strokeWidth={2.5} />
+              <h4 className="font-serif text-base font-bold">Wunsch-Abenteuer</h4>
+            </div>
+            <p className="text-xs leading-snug opacity-80 mb-2">
+              Beschreibe in 1–3 Sätzen, was du erleben willst — Ort, Stimmung,
+              Gegenspieler, Genre-Wink. Tjark prüft, ob es lore-treu umsetzbar
+              ist, und passt notfalls behutsam an Aventurien an (andere
+              Zeitalter ok, andere Welten/Genres nicht).
+            </p>
+            <textarea
+              value={wishText}
+              onChange={(e) => setWishText(e.target.value.slice(0, 600))}
+              placeholder="z. B. Eine Reise zu einer verschollenen Echsenruine im südlichen Regengebirge, drückende Hitze, ein zwielichtiger Tulamide als Führer."
+              rows={4}
+              disabled={busy}
+              className="w-full resize-none rounded border-2 border-[#3a2c1a] bg-[#f1e6c8] px-3 py-2 font-sans text-sm leading-relaxed text-[#2a1f10] placeholder:text-[#2a1f10]/40 focus:outline-none focus:ring-2 focus:ring-[#3a2c1a]/40 disabled:opacity-50"
+            />
+            <div className="mt-2 flex items-center justify-between text-[10px] uppercase tracking-wider text-[#2a1f10]/60">
+              <button
+                type="button"
+                onClick={() => {
+                  setWishOpen(false);
+                  setWishText("");
+                }}
+                disabled={busy}
+                className="hover:text-[#2a1f10]"
+              >
+                Abbrechen
+              </button>
+              <span>{wishLen}/600</span>
+            </div>
+            <div className="mt-3 text-right">
+              <button
+                type="button"
+                onClick={() => onPick("wish", wishText.trim())}
+                disabled={busy || !wishValid}
+                className="inline-flex items-center gap-1.5 rounded border-2 border-[#6b4a1a] bg-[#6b4a1a] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#523713] disabled:opacity-50"
+              >
+                <Sparkles className="h-3.5 w-3.5" strokeWidth={2.5} />
+                Wunsch an Tjark schicken
+              </button>
+            </div>
+          </div>
+        )}
         <div className="mt-6 text-center">
           <button
             type="button"
