@@ -215,6 +215,7 @@ export const CLASS_COMBAT_PROFILES: Record<
 /** Wandelt den Spielercharakter in einen Combatant um. */
 export function heroCombatantFromCharacter(
   ch: DsaCharacterSummary,
+  hero?: { spells?: Record<string, number> } | null,
 ): Combatant {
   const profile =
     CLASS_COMBAT_PROFILES[(ch.classId as DsaClassId)] ??
@@ -226,6 +227,8 @@ export function heroCombatantFromCharacter(
   const atBonus = Math.floor(((a.KK - 11) + (a.GE - 11)) / 2);
   const paBonus = Math.floor(((a.GE - 11) + (a.IN - 11)) / 2);
   const tpKKBonus = Math.max(0, Math.floor((a.KK - 12) / 2));
+  const spells =
+    hero?.spells && typeof hero.spells === "object" ? hero.spells : undefined;
   return {
     id: "hero",
     name: ch.name,
@@ -239,6 +242,11 @@ export function heroCombatantFromCharacter(
     rs: profile.rs,
     iniBase: a.MU,
     weapon: profile.weapon,
+    attrs: a,
+    ae: ch.ae ?? undefined,
+    aeMax: ch.ae ?? undefined,
+    spells,
+    classId: ch.classId as DsaClassId,
   };
 }
 
