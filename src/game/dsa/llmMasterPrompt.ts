@@ -6,6 +6,21 @@ import { DSA_MOODS } from "@/audio/dsaMusic";
 import { buildDsa3RulesBlock } from "./rules";
 import type { DsaCharacterSummary } from "@/game/types";
 
+export interface HeroChronicleEntry {
+  setting: string;
+  status: "victory" | "defeat" | "aborted";
+  summary: string;
+}
+export interface HeroKnownNpc {
+  name: string;
+  role: string;
+  note: string;
+}
+export interface HeroMemory {
+  chronicle: HeroChronicleEntry[];
+  npcs: HeroKnownNpc[];
+}
+
 interface BuildArgs {
   setting: DsaSettingId;
   character: DsaCharacterSummary;
@@ -17,13 +32,15 @@ interface BuildArgs {
    * Ruhe-/Cooldown-Phase laufen soll (Taverne, Lagerfeuer, Rast).
    */
   cooldown: boolean;
+  /** Vorgeschichte dieses Helden über frühere Abenteuer hinweg. */
+  memory?: HeroMemory | null;
 }
 
 /**
  * Vollständiger System-Prompt für Tjark, den LLM-Meister. Wird auf dem
  * Server gebaut — der Client kann ihn nicht überschreiben.
  */
-export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, assistantTurns = 0, cooldown }: BuildArgs): string {
+export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, assistantTurns = 0, cooldown, memory = null }: BuildArgs): string {
   const s = getSetting(setting);
   const sceneTagList = DSA_SCENE_TAGS.join(", ");
   const enemyIdList = Object.keys(ENEMY_STATS).join(", ");
@@ -31,6 +48,29 @@ export function buildMasterSystemPrompt({ setting, character, summary, offtopicS
   const attrLine = (Object.entries(character.attrs) as [string, number][])
     .map(([k, v]) => `${k}:${v}`)
     .join(" ");
+
+  const memoryBlock = (() => {
+    if (!memory) return "";
+    const chron = (memory.chronicle ?? []).slice(-6);
+    const npcs = (memory.npcs ?? []).slice(0, 12);
+    if (chron.length === 0 && npcs.length === 0) return "";
+    const chronLines = chron
+      .map((c, i) => `  ${i + 1}. (${c.setting}, ${c.status}) ${c.summary}`)
+      .join("\n");
+    const npcLines = npcs
+      .map((n) => `  • ${n.name} — ${n.role}: ${n.note}`)
+      .join("\n");
+    return `
+VORGESCHICHTE DIESES HELDEN — PFLICHT BEACHTEN:
+  ${character.name} hat bereits frühere Abenteuer erlebt. Tjark, Brem und Yelva
+  ERINNERN sich daran. Erwähne im Lauf des Abenteuers natürlich frühere Taten,
+  und bringe bekannte NSCs zurück, wenn es geografisch/dramaturgisch passt —
+  als Wiedersehen, Gerücht, Feindschaft oder offene Rechnung. Erfinde keine
+  Details, die diesen Notizen widersprechen.
+${chron.length ? `\n  Frühere Abenteuer (älteste zuerst):\n${chronLines}` : ""}
+${npcs.length ? `\n  Bekannte NSCs:\n${npcLines}` : ""}
+`;
+  })();
 
   const offtopicRule =
     cooldown
@@ -78,7 +118,7 @@ ${buildDsa3RulesBlock()}
 
 SETTING DIESES ABENTEUERS — ${s?.title ?? "freie Wahl"}:
 ${s?.masterHint ?? "Setze einen passenden Auftakt."}
-${cooldownBlock}
+${cooldownBlock}${memoryBlock}
 LAYARDS CHARAKTER:
   Name: ${character.name}
   Klasse: ${character.className}
