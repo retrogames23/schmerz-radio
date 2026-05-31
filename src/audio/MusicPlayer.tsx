@@ -451,10 +451,11 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     to.currentTime = 0;
     to.volume = 0;
     void to.play().catch(() => {});
-    // Lautstärke, von der „from" tatsächlich herunterblenden soll. Wenn
-    // from gerade selbst noch hochfaded (volume ~0), springt sonst kein
-    // hörbarer Übergang zustande.
-    const startVol = Math.max(from.volume, clamp(volumeRef.current));
+    // Lautstärke, von der „from" herunterblenden soll: aktueller IST-Wert,
+    // damit ein noch laufender (gerade abgebrochener) Vorgängerfade nicht
+    // einen hörbaren Lautstärke-Sprung verursacht. Falls from komplett
+    // stumm war, fällt der Fade akustisch eh weg.
+    const startVol = from.volume;
     const steps = Math.max(1, Math.floor((durationSeconds * 1000) / FADE_TICK_MS));
     let step = 0;
     if (fadeTimerRef.current) window.clearInterval(fadeTimerRef.current);
