@@ -273,10 +273,14 @@ AUSGABEFORMAT — STRIKT:
     [OUTTIME_WARN]            zeigt, dass du den Spieler ans Abenteuer erinnerst.
     [END: victory|defeat|aborted]  beendet das Abenteuer (Sieg / Niederlage / Abbruch).
     [MOOD: <id>]              gibt dem Musik-Player die aktuelle Stimmung. Erlaubt: ${moodList}.
-                              Setze [MOOD] NUR, wenn sich die Stimmung deutlich ändert (z. B. nach Kampfausbruch,
-                              beim Betreten eines Tempels, beim Rastlager, bei einer plötzlichen Bedrohung).
-                              Der laufende Musik-Track wird NIE mitten abgebrochen — der neue Mood greift erst
-                              beim nächsten Trackende. Wiederhole denselben Mood nicht.
+                              Setze [MOOD] IMMER, wenn sich die Stimmung der Szene spürbar ändert
+                              (Kampfausbruch, Kampfende, Betreten einer Taverne/eines Tempels/eines Verlieses,
+                              Rastlager, neue Bedrohung, Trauer nach Verlust, Triumph, ruhige Reise,
+                              dialoglastige Verhandlung, mysteriöse Entdeckung). Lieber einmal zu viel als zu
+                              wenig — sobald sich die akustische Grundfarbe ändern sollte, setze den Tag.
+                              Der Musik-Player blendet sofort weich (ein paar Sekunden Crossfade) auf einen
+                              passenden Track aus dem neuen Mood-Pool über; es muss also NICHT auf ein Trackende
+                              gewartet werden. Wiederhole denselben Mood NICHT in aufeinanderfolgenden Zügen.
     [AP: <50-300> | <kurze begründung>]
                               Vergabe von Abenteuerpunkten am Spielende. NUR erlaubt zusammen mit [END: …]
                               in derselben Antwort. Wähle den Wert nach Schwierigkeit, Spieldauer, kreativen
