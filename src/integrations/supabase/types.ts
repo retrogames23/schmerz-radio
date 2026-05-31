@@ -110,6 +110,7 @@ export type Database = {
           summary: string
           updated_at: string
           user_id: string | null
+          wish_brief: string | null
         }
         Insert: {
           anon_id?: string | null
@@ -128,6 +129,7 @@ export type Database = {
           summary?: string
           updated_at?: string
           user_id?: string | null
+          wish_brief?: string | null
         }
         Update: {
           anon_id?: string | null
@@ -146,6 +148,7 @@ export type Database = {
           summary?: string
           updated_at?: string
           user_id?: string | null
+          wish_brief?: string | null
         }
         Relationships: []
       }
