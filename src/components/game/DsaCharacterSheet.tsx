@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { CloseButton } from "./CloseButton";
 import { ATTR_LABEL, ATTR_ORDER, type Attr } from "@/game/dsa/dice";
@@ -8,6 +8,10 @@ import {
   heroCombatantFromCharacter,
 } from "@/game/dsa/combat";
 import { SPELLS } from "@/game/dsa/rules/spells";
+import { TALENTS } from "@/game/dsa/rules/talents";
+import { upgradeToHero, availableAp } from "@/game/dsa/advancement";
+import { DsaHeroAdvancement } from "./DsaHeroAdvancement";
+import type { DsaHero } from "@/game/types";
 
 /**
  * Vollbild-Overlay, das den aktuellen DSA-Charakterbogen zeigt — im
@@ -15,7 +19,8 @@ import { SPELLS } from "@/game/dsa/rules/spells";
  * lesend. Lässt sich per Knopf (TopBar) oder Taste „C" öffnen/schließen.
  */
 export function DsaCharacterSheet() {
-  const { dsaSheetOpen, closeDsaSheet, dsaCharacter } = useDsaHost();
+  const { dsaSheetOpen, closeDsaSheet, dsaCharacter, updateHero } = useDsaHost();
+  const [advanceOpen, setAdvanceOpen] = useState(false);
 
   // Tastenkürzel C zum Ein-/Ausblenden — wird zentral in Game.tsx gehandhabt,
   // hier nur ESC zum Schließen.
@@ -39,6 +44,27 @@ export function DsaCharacterSheet() {
   const profile =
     (CLASS_COMBAT_PROFILES as Record<string, unknown>)[dsaCharacter.classId] ??
     null;
+
+  // DsaHero ist Erweiterung von DsaCharacterSummary; im Standalone führen
+  // wir den Helden bereits als Hero, im Hauptspiel wird er beim Anzeigen
+  // promotet (AP-Felder dann 0, bis das Hauptspiel sie befüllt).
+  const hero = upgradeToHero(dsaCharacter as DsaHero) as DsaHero;
+  const ap = availableAp(hero);
+  const canAdvance = !!updateHero;
+  const learnedTalents = Object.entries(hero.talents ?? {})
+    .map(([id, value]) => {
+      const def = TALENTS.find((t) => t.id === id);
+      return def ? { name: def.name, value, probe: def.probe } : null;
+    })
+    .filter((t): t is { name: string; value: number; probe: readonly string[] } => !!t)
+    .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name));
+  const learnedSpells = Object.entries(hero.spells ?? {})
+    .map(([id, value]) => {
+      const def = SPELLS.find((s) => s.id === id);
+      return def ? { def, value } : null;
+    })
+    .filter((s): s is { def: typeof SPELLS[number]; value: number } => !!s)
+    .sort((a, b) => b.value - a.value || a.def.name.localeCompare(b.def.name));
 
   return (
     <div
@@ -69,6 +95,29 @@ export function DsaCharacterSheet() {
             <p className="dsa-typed mt-2 text-sm italic dsa-ink leading-snug font-semibold">
               {cls.blurb}
             </p>
+          )}
+          {canAdvance && (
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded border-2 border-[rgba(30,18,8,0.65)] bg-[rgba(30,18,8,0.08)] px-3 py-2">
+              <div className="dsa-typed text-[12px] dsa-ink font-bold">
+                Verfügbare AP: <span className="font-display text-lg">{ap}</span>
+                <span className="ml-2 opacity-70 text-[10px] uppercase tracking-widest">
+                  · gespielt {hero.adventuresPlayed} · siegreich {hero.adventuresWon}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAdvanceOpen(true)}
+                disabled={ap <= 0}
+                className={
+                  "dsa-typed text-[11px] uppercase tracking-widest font-bold px-3 py-1.5 border-2 rounded-sm " +
+                  (ap > 0
+                    ? "bg-[rgba(30,18,8,0.85)] text-[#f1e6c8] border-[rgba(30,18,8,0.85)] hover:bg-[rgba(30,18,8,1)]"
+                    : "dsa-ink border-[rgba(30,18,8,0.4)] opacity-50 cursor-not-allowed")
+                }
+              >
+                Held steigern
+              </button>
+            </div>
           )}
         </div>
 
@@ -176,13 +225,15 @@ export function DsaCharacterSheet() {
           {cls?.magic && (
             <section>
               <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.85)] pb-1">
-                Zauber · Hauszauber
+                Zauber · Gelernt
               </div>
               {(() => {
-                const own = SPELLS.filter((s) =>
-                  s.schools.includes(dsaCharacter.classId),
-                );
-                if (own.length === 0) {
+                const list = learnedSpells.length > 0
+                  ? learnedSpells
+                  : SPELLS.filter((s) => s.schools.includes(dsaCharacter.classId)).map(
+                      (def) => ({ def, value: 0 }),
+                    );
+                if (list.length === 0) {
                   return (
                     <div className="dsa-typed text-[13px] dsa-ink italic font-semibold">
                       Keine Hauszauber für diese Klasse verzeichnet.
@@ -191,14 +242,14 @@ export function DsaCharacterSheet() {
                 }
                 return (
                   <div className="space-y-2">
-                    {own.map((s) => (
+                    {list.map(({ def: s, value }) => (
                       <div
                         key={s.id}
                         className="dsa-typed text-[13px] dsa-ink font-semibold border-b border-[rgba(20,12,4,0.55)] pb-1.5"
                       >
                         <div className="flex flex-wrap items-baseline gap-x-2">
                           <span className="font-display dsa-ink font-extrabold text-[15px]">
-                            {s.name}
+                            {s.name} <span className="text-[12px] opacity-80">(ZfW {value})</span>
                           </span>
                           <span className="text-[11px] uppercase tracking-widest">
                             Probe {s.probe.join("/")} · {s.cost} AsP · {s.target}
@@ -210,6 +261,31 @@ export function DsaCharacterSheet() {
                   </div>
                 );
               })()}
+            </section>
+          )}
+
+          {/* Gelernte Talente (Steigerungs-Sicht). */}
+          {canAdvance && learnedTalents.length > 0 && (
+            <section>
+              <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.85)] pb-1">
+                Talente · Gelernt
+              </div>
+              <div className="dsa-typed text-[13px] dsa-ink font-semibold grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
+                {learnedTalents.map((t) => (
+                  <div
+                    key={t.name}
+                    className="flex items-center justify-between border-b border-[rgba(20,12,4,0.55)] py-0.5"
+                  >
+                    <span>
+                      {t.name}{" "}
+                      <span className="text-[10px] opacity-60 uppercase tracking-wider">
+                        {t.probe.join("/")}
+                      </span>
+                    </span>
+                    <span className="dsa-ink font-bold">{t.value}</span>
+                  </div>
+                ))}
+              </div>
             </section>
           )}
         </div>
@@ -229,6 +305,14 @@ export function DsaCharacterSheet() {
           </button>
         </div>
       </div>
+
+      {advanceOpen && canAdvance && (
+        <DsaHeroAdvancement
+          hero={hero}
+          onChange={(h) => updateHero?.(h)}
+          onClose={() => setAdvanceOpen(false)}
+        />
+      )}
     </div>
   );
 }
