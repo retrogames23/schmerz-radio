@@ -7,9 +7,14 @@ import type { DsaCharacterSummary } from "@/game/types";
 import {
   loadSlotCharacter,
   saveSlotCharacter,
+  loadSlotHero,
+  saveSlotHero,
   slotSessionId,
+  rotateSlotSessionId,
   type SlotIndex,
 } from "./slotStorage";
+import { upgradeToHero } from "@/game/dsa/advancement";
+import type { DsaHero } from "@/game/types";
 
 type View = "creator" | "adventure";
 
@@ -30,14 +35,17 @@ export function StandaloneDsaHost({
   children: ReactNode;
 }) {
   const [character, setCharacterState] = useState<DsaCharacterSummary | null>(
-    () => loadSlotCharacter(slot),
+    () => loadSlotHero(slot) ?? loadSlotCharacter(slot),
   );
+  const heroRef = useRef<DsaHero | null>(loadSlotHero(slot));
   const [sheetOpen, setSheetOpen] = useState(false);
   const [view, setView] = useState<View>(character ? "adventure" : "creator");
 
   // Wenn der Slot wechselt (Navigation), Inhalt neu laden.
   useEffect(() => {
-    const c = loadSlotCharacter(slot);
+    const h = loadSlotHero(slot);
+    heroRef.current = h;
+    const c = h ?? loadSlotCharacter(slot);
     setCharacterState(c);
     setView(c ? "adventure" : "creator");
     setSheetOpen(false);
@@ -46,7 +54,35 @@ export function StandaloneDsaHost({
   const setCharacter = useCallback(
     (c: DsaCharacterSummary | null) => {
       setCharacterState(c);
-      saveSlotCharacter(slot, c);
+      if (c) {
+        const merged = upgradeToHero({
+          ...(heroRef.current ?? {}),
+          ...c,
+        } as DsaHero);
+        heroRef.current = merged;
+        saveSlotHero(slot, merged);
+      } else {
+        heroRef.current = null;
+        saveSlotHero(slot, null);
+        saveSlotCharacter(slot, null);
+      }
+    },
+    [slot],
+  );
+
+  const creditHeroAp = useCallback(
+    (ap: number, _reason: string, won: boolean) => {
+      const h = heroRef.current;
+      if (!h) return;
+      const next: DsaHero = {
+        ...h,
+        apTotal: (h.apTotal ?? 0) + Math.max(0, ap),
+        adventuresPlayed: (h.adventuresPlayed ?? 0) + 1,
+        adventuresWon: (h.adventuresWon ?? 0) + (won ? 1 : 0),
+      };
+      heroRef.current = next;
+      saveSlotHero(slot, next);
+      setCharacterState(next);
     },
     [slot],
   );
@@ -83,10 +119,16 @@ export function StandaloneDsaHost({
         /* Stammspiel-Flags spielen im Standalone keine Rolle. */
       },
       flagsToken: slot,
+      creditHeroAp,
     };
-  }, [character, setCharacter, sheetOpen, view, slot, onExit]);
+  }, [character, setCharacter, sheetOpen, view, slot, onExit, creditHeroAp]);
 
   return (
     <DsaHostOverrideProvider value={value}>{children}</DsaHostOverrideProvider>
   );
 }
+
+// Stillschweigend genutzt, damit das Rotieren beim Held-Löschen einen
+// stabilen Pfad hat — die Landing ruft `saveSlotHero(slot, null)` auf,
+// das intern bereits `rotateSlotSessionId` triggert.
+void rotateSlotSessionId;
