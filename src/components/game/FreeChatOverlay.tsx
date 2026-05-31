@@ -19,6 +19,10 @@ import { CloseButton } from "./CloseButton";
 import { Loader2, Bug } from "lucide-react";
 import { useDevMode, useLlmModeOverride } from "@/dev/devMode";
 import { supabase } from "@/integrations/supabase/client";
+import type {
+  HeroChronicleEntry,
+  HeroKnownNpc,
+} from "@/game/dsa/llmMasterPrompt";
 
 interface UiMsg {
   role: "user" | "assistant";
@@ -141,6 +145,45 @@ function FreeChatInner({
   const isMarv = npcId === "marv9";
   const [marv, setMarv] = useState<MarvUpdate | null>(null);
 
+  // === Tjark-spezifische Helden-Memory (Chronik + bekannte NSCs) ===
+  // Tjark ist im Hauptspiel KEIN Meister, sondern Tischnachbar. Hier
+  // bekommt sein Free-Chat Zugriff auf die DSA-Heldenakte (Slot 1, der
+  // im Hauptspiel als Default verwendet wird), damit er sich an
+  // gemeinsame Abenteuer und namentliche NSCs erinnern kann.
+  const isTjark = npcId === "tjark";
+  const heroName = game.dsaCharacter?.name ?? null;
+  const heroClass = game.dsaCharacter?.className ?? null;
+  const [heroMemory, setHeroMemory] = useState<{
+    chronicle: HeroChronicleEntry[];
+    npcs: HeroKnownNpc[];
+  } | null>(null);
+  const openerInsertedRef = useRef(false);
+
+  useEffect(() => {
+    if (!isTjark || !userId) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("dsa_heroes")
+        .select("chronicle, npcs")
+        .eq("user_id", userId)
+        .eq("slot", 1)
+        .maybeSingle();
+      if (cancelled || !data) return;
+      const raw = data as unknown as { chronicle?: unknown; npcs?: unknown };
+      const chronicle = Array.isArray(raw.chronicle)
+        ? (raw.chronicle as HeroChronicleEntry[])
+        : [];
+      const npcs = Array.isArray(raw.npcs)
+        ? (raw.npcs as HeroKnownNpc[])
+        : [];
+      setHeroMemory({ chronicle, npcs });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isTjark, userId]);
+
   useEffect(() => {
     if (!isMarv) return;
     const off = onMarvUpdate((u) => {
@@ -228,13 +271,71 @@ function FreeChatInner({
     const activeFlags = (persona.contextFlags ?? []).filter((f) =>
       game.flags.has(f),
     );
-    return buildSystemPrompt(persona, {
+    const base = buildSystemPrompt(persona, {
       sceneTitle,
       resonance: game.resonance,
       activeFlags,
       playedDialogIds: persona.staticDialogIds.filter(() => true),
     });
-  }, [persona, game.scene, game.resonance, game.flags]);
+    if (!isTjark) return base;
+    // Tjark-Zusatzblock: Heldenakte aus den DSA-Abenteuern.
+    const chron = (heroMemory?.chronicle ?? []).slice(-6);
+    const npcs = (heroMemory?.npcs ?? []).slice(0, 12);
+    if (chron.length === 0 && npcs.length === 0 && !heroName) return base;
+    const chronLines = chron
+      .map(
+        (c, i) => `  ${i + 1}. (${c.setting}, ${c.status}) ${c.summary}`,
+      )
+      .join("\n");
+    const npcLines = npcs
+      .map((n) => `  - ${n.name} (${n.role}): ${n.note}`)
+      .join("\n");
+    const heroLine = heroName
+      ? `Layards Held am Tisch heißt ${heroName}${heroClass ? ` (${heroClass})` : ""}.`
+      : "Layard hat (noch) keinen Helden erstellt.";
+    const block = `
+
+DSA-TISCHRUNDEN-GEDÄCHTNIS (WICHTIG):
+Du bist JETZT NICHT Meister — du sitzt mit Layard im Gemeinschaftsraum/in der Kneipe und sprichst als Tjark, der Mensch. Du DARFST aber an die gemeinsamen Tischrunden erinnern, wenn es passt — locker, im Plauderton, nicht als Spielleitung.
+${heroLine}
+${chron.length > 0 ? `LETZTE ABENTEUER (chronologisch, ältestes oben):\n${chronLines}` : "Noch keine Abenteuer gespielt."}
+${npcs.length > 0 ? `\nNAMENTLICH BEKANNTE NSCs aus früheren Sitzungen:\n${npcLines}` : ""}
+
+Regeln: Erfinde KEINE Abenteuer-Ereignisse, die hier nicht stehen. Mach kein Meister-Rollenspiel ("Du betrittst …"), sondern erzähl wie ein Mitspieler/Freund ("Weißt du noch, wie …"). Wenn Layard nichts dazu fragt, brauchst du es auch nicht von dir aus zu erwähnen — außer in der ersten Begrüßung passt es.`;
+    return base + block;
+  }, [
+    persona,
+    game.scene,
+    game.resonance,
+    game.flags,
+    isTjark,
+    heroMemory,
+    heroName,
+    heroClass,
+  ]);
+
+  // === Stufe 3: Auto-Opener, sobald Tjark-Memory geladen ist ===
+  // Wenn der Free-Chat leer startet und es mindestens einen Chronik-Eintrag
+  // gibt, eröffnet Tjark mit einem kurzen Rückblick auf die letzte Runde.
+  useEffect(() => {
+    if (!isTjark) return;
+    if (openerInsertedRef.current) return;
+    if (sending) return;
+    if (messages.length > 0) return;
+    const chron = heroMemory?.chronicle ?? [];
+    if (chron.length === 0) return;
+    const last = chron[chron.length - 1];
+    const statusTail =
+      last.status === "victory"
+        ? "— war eine gute Runde."
+        : last.status === "defeat"
+          ? "— bitterer Ausgang."
+          : "— wir hatten ja abgebrochen.";
+    const hero = heroName ?? "dein Held";
+    const opener = `Hey Layard! Schön dass du wieder vorbeischaust. Ich denke noch an unsere letzte Runde in ${last.setting}: ${last.summary} ${statusTail} Hat ${hero} sich erholt — magst du nochmal ran?`;
+    openerInsertedRef.current = true;
+    setMessages([{ role: "assistant", content: opener }]);
+  }, [isTjark, heroMemory, heroName, messages.length, sending]);
 
   const fewshotPreview = useMemo(
     () => getFewshotMetaDeflection(persona),
