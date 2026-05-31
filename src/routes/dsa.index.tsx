@@ -264,7 +264,7 @@ function SlotCard({
   onDelete,
 }: {
   slot: SlotIndex;
-  character: DsaCharacterSummary | null;
+  character: DsaHero | null;
   onPlay: () => void;
   onDelete: () => void;
 }) {
@@ -292,6 +292,18 @@ function SlotCard({
           <p className="mt-2 text-xs">
             LE {character.le}/{character.leMax}
             {character.ae != null ? ` · AE ${character.ae}` : ""}
+          </p>
+          <p className="mt-1 text-[11px] uppercase tracking-wider opacity-70">
+            AP {availableAp(character)}
+            {(character.apTotal ?? 0) > 0 && (
+              <span className="opacity-60"> · gesamt {character.apTotal}</span>
+            )}
+            {(character.adventuresPlayed ?? 0) > 0 && (
+              <span className="opacity-60">
+                {" "}
+                · {character.adventuresPlayed} Abenteuer
+              </span>
+            )}
           </p>
           <button
             type="button"
