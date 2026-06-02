@@ -444,7 +444,6 @@ type WindowState =
   | { kind: "drawer"; id: string; node: FileNode & { kind: "drawer" } }
   | { kind: "file"; id: string; name: string; content: ReactNode }
   | { kind: "fastweb"; id: string }
-  | { kind: "tycoon"; id: string }
   | { kind: "shell"; id: string };
 
 let WIN_ID = 0;
@@ -532,16 +531,6 @@ export function AmigaWorkbench() {
     setWindows((w) => [...w, { kind: "fastweb", id }]);
     setZOrder((z) => [...z, id]);
   };
-  const openTycoon = () => {
-    if (windows.some((w) => w.kind === "tycoon")) {
-      const existing = windows.find((w) => w.kind === "tycoon")!;
-      focus(existing.id);
-      return;
-    }
-    const id = nextId();
-    setWindows((w) => [...w, { kind: "tycoon", id }]);
-    setZOrder((z) => [...z, id]);
-  };
   const openShell = () => {
     const id = nextId();
     setWindows((w) => [...w, { kind: "shell", id }]);
@@ -592,7 +581,6 @@ export function AmigaWorkbench() {
           />
           <DesktopIcon label="Ram Disk" icon={<RamDiskIcon />} onOpen={() => openFile("Ram Disk", <em>(leer · 0% full)</em>)} />
           <DesktopIcon label="Shell" icon={<ShellIcon />} onOpen={openShell} />
-          <DesktopIcon label="SiliconWars" icon={<TycoonIcon />} onOpen={openTycoon} />
           <DesktopIcon label="Trashcan" icon={<TrashIcon />} onOpen={() => openFile("Trashcan", <em>(leer)</em>)} />
         </div>
 
@@ -607,12 +595,11 @@ export function AmigaWorkbench() {
                 w.kind === "drawer" ? `${w.node.name}:` :
                 w.kind === "file" ? w.name :
                 w.kind === "shell" ? "AmigaShell" :
-                w.kind === "tycoon" ? "SiliconWars" :
                 "FastWeb"
               }
               z={10 + z}
               offset={offset}
-              isFastWeb={w.kind === "fastweb" || w.kind === "tycoon"}
+              isFastWeb={w.kind === "fastweb"}
               isShell={w.kind === "shell"}
               onFocus={() => focus(w.id)}
               onClose={() => closeWindow(w.id)}
@@ -626,7 +613,6 @@ export function AmigaWorkbench() {
                 </div>
               )}
               {w.kind === "fastweb" && <FastWebBrowser />}
-              {w.kind === "tycoon" && <TycoonFrame />}
               {w.kind === "shell" && <AmigaShell />}
             </WindowFrame>
           );
@@ -1293,48 +1279,6 @@ function FastWebToolIcon() {
       <line x1="9" y1="17" x2="31" y2="17" stroke={WB_WHITE} strokeWidth="1" />
       <line x1="20" y1="6" x2="20" y2="28" stroke={WB_WHITE} strokeWidth="1" />
     </svg>
-  );
-}
-
-function TycoonIcon() {
-  // CRT-Monitor mit Chip-Symbol auf dem Schirm
-  return (
-    <svg width="40" height="36" viewBox="0 0 40 36" aria-hidden shapeRendering="crispEdges">
-      <rect x="2" y="2" width="36" height="26" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
-      <rect x="5" y="5" width="30" height="20" fill="#003322" stroke={WB_BLACK} strokeWidth="1" />
-      <rect x="14" y="11" width="12" height="8" fill="#22cc66" stroke={WB_BLACK} strokeWidth="1" />
-      {[0,1,2,3].map((i) => <rect key={`t${i}`} x={15 + i * 3} y={9} width="1" height="2" fill={WB_BLACK} />)}
-      {[0,1,2,3].map((i) => <rect key={`b${i}`} x={15 + i * 3} y={19} width="1" height="2" fill={WB_BLACK} />)}
-      <rect x="14" y="29" width="12" height="3" fill={WB_GREY} stroke={WB_BLACK} strokeWidth="1" />
-      <rect x="10" y="32" width="20" height="2" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
-    </svg>
-  );
-}
-
-function TycoonFrame() {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "#000" }}>
-      <div style={{ background: "#bbbbbb", borderBottom: "2px solid #000", padding: "2px 6px", fontSize: 11, color: "#000", fontFamily: "monospace", display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          http://computertycoon.app/
-        </span>
-        <a
-          href="https://computertycoon.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "#000", textDecoration: "underline" }}
-        >
-          ↗ neues Fenster
-        </a>
-      </div>
-      <iframe
-        src="https://computertycoon.app/"
-        title="SiliconWars / Home Computer Tycoon"
-        style={{ flex: 1, width: "100%", border: "none", background: "#000" }}
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock"
-        allow="autoplay; clipboard-read; clipboard-write; fullscreen"
-      />
-    </div>
   );
 }
 
