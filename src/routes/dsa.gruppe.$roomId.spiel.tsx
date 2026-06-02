@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Loader2, Maximize2, Minimize2, ScrollText, Send } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { getFreshAccessToken } from "@/auth/freshToken";
 import { parseMasterTurn, type SpokenLine } from "@/game/dsa/llmAdventure";
 import { resolveSceneImage } from "@/game/dsa/sceneImages";
 
@@ -158,12 +159,26 @@ function SpielraumPage() {
   async function call(action: string, extra: Record<string, unknown> = {}) {
     setBusy(true);
     try {
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
-      const resp = await fetch("/api/public/dsa-group", {
+      let token = await getFreshAccessToken();
+      if (!token) {
+        setError("Bitte melde dich erneut an.");
+        return false;
+      }
+      let resp = await fetch("/api/public/dsa-group", {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ action, roomId, ...extra }),
       });
+      if (resp.status === 401) {
+        token = await getFreshAccessToken(true);
+        if (token) {
+          resp = await fetch("/api/public/dsa-group", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ action, roomId, ...extra }),
+          });
+        }
+      }
       const data = (await resp.json()) as { ok?: boolean; error?: string };
       if (!resp.ok || !data.ok) {
         setError(data.error ?? "Fehler.");
