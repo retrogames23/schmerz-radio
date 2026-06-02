@@ -34,6 +34,7 @@ interface RoomRow {
   turn_idx: number;
   summary: string;
   ap_awarded: boolean;
+  host_user_id: string;
 }
 
 const COLLECT_WINDOW_MS = 20_000;
@@ -76,7 +77,7 @@ function SpielraumPage() {
       const [{ data: r }, { data: ms }, { data: msg }, { data: pa }] = await Promise.all([
         supabase
           .from("dsa_group_rooms")
-          .select("id,name,status,turn_idx,summary,ap_awarded")
+          .select("id,name,status,turn_idx,summary,ap_awarded,host_user_id")
           .eq("id", roomId)
           .maybeSingle(),
         supabase
