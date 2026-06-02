@@ -1,9 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Lock, Plus, Users, LogIn, Trash2 } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
 import { AuthDialog } from "@/auth/AuthDialog";
 import { supabase } from "@/integrations/supabase/client";
+import { getFreshAccessToken } from "@/auth/freshToken";
 import { DSA_SETTINGS } from "@/game/dsa/llmAdventure";
 import gruppeBg from "@/assets/dsa-gruppe-bg.jpg";
 
@@ -37,11 +38,16 @@ interface RoomRow {
 function GruppeLobby() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   const [rooms, setRooms] = useState<RoomRow[]>([]);
   const [authOpen, setAuthOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [joining, setJoining] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  if (/^\/dsa\/gruppe\/[^/]+/.test(pathname)) {
+    return <Outlet />;
+  }
 
   useEffect(() => {
     if (!user) return;
@@ -105,7 +111,12 @@ function GruppeLobby() {
     }
     setJoining(room.id);
     try {
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const token = await getFreshAccessToken();
+      if (!token) {
+        setAuthOpen(true);
+        setError("Bitte melde dich erneut an, bevor du beitrittst.");
+        return;
+      }
       const resp = await fetch("/api/public/dsa-group", {
         method: "POST",
         headers: {
@@ -129,7 +140,12 @@ function GruppeLobby() {
     if (!user) return;
     if (!window.confirm(`Raum „${room.name}" wirklich löschen?`)) return;
     setError(null);
-    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    const token = await getFreshAccessToken();
+    if (!token) {
+      setAuthOpen(true);
+      setError("Bitte melde dich erneut an, bevor du den Raum löschst.");
+      return;
+    }
     const resp = await fetch("/api/public/dsa-group", {
       method: "POST",
       headers: {
@@ -145,13 +161,13 @@ function GruppeLobby() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[#1a120a] text-[#f1e6c8]">
       {/* Animated atmospheric background */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
         <div
-          className="absolute inset-0 bg-cover bg-center motion-safe:animate-[gruppeKenBurns_45s_ease-in-out_infinite_alternate]"
+          className="absolute inset-0 bg-cover bg-center opacity-85 motion-safe:animate-[gruppeKenBurns_45s_ease-in-out_infinite_alternate]"
           style={{ backgroundImage: `url(${gruppeBg})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1a120a]/70 via-[#1a120a]/80 to-[#1a120a]/95" />
-        <div className="absolute inset-0 motion-safe:animate-[gruppeMist_30s_ease-in-out_infinite_alternate] bg-[radial-gradient(ellipse_at_50%_60%,transparent_0%,rgba(26,18,10,0.6)_70%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1a120a]/45 via-[#1a120a]/55 to-[#1a120a]/85" />
+        <div className="absolute inset-0 motion-safe:animate-[gruppeMist_30s_ease-in-out_infinite_alternate] bg-[radial-gradient(ellipse_at_50%_60%,transparent_0%,rgba(26,18,10,0.35)_72%)]" />
       </div>
       <style>{`
         @keyframes gruppeKenBurns {
@@ -163,7 +179,7 @@ function GruppeLobby() {
           100% { opacity: 0.85; }
         }
       `}</style>
-      <header className="border-b border-[#3a2c1a] bg-[#241a0e]/80 backdrop-blur-sm">
+      <header className="relative z-10 border-b border-[#3a2c1a] bg-[#241a0e]/70 backdrop-blur-sm">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
             <Link
@@ -179,7 +195,7 @@ function GruppeLobby() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+      <main className="relative z-10 mx-auto max-w-5xl px-4 py-8 sm:px-6">
         {loading ? (
           <p className="opacity-60">Lade …</p>
         ) : !user ? (
