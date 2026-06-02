@@ -35,10 +35,17 @@ type View = "creator" | "adventure";
 export function StandaloneDsaHost({
   slot,
   onExit,
+  onCharacterCreated,
   children,
 }: {
   slot: SlotIndex;
   onExit: () => void;
+  /**
+   * Wird aufgerufen, sobald im Creator ein Held fertig unterschrieben
+   * ist (statt direkt ins Solo-Abenteuer zu springen). Genutzt, wenn
+   * der Standalone-Host aus dem Gruppen-Vorzimmer geöffnet wurde.
+   */
+  onCharacterCreated?: () => void;
   children: ReactNode;
 }) {
   const { user } = useAuth();
@@ -172,7 +179,13 @@ export function StandaloneDsaHost({
       },
 
       dsaAdventureOpen: view === "adventure",
-      openDsaAdventure: () => setView("adventure"),
+      openDsaAdventure: () => {
+        if (onCharacterCreated) {
+          onCharacterCreated();
+          return;
+        }
+        setView("adventure");
+      },
       closeDsaAdventure: () => onExit(),
 
       getDsaSessionId: () => sessionId,
@@ -184,7 +197,7 @@ export function StandaloneDsaHost({
       creditHeroAp,
       updateHero,
     };
-  }, [character, setCharacter, sheetOpen, view, slot, sessionId, onExit, creditHeroAp, updateHero]);
+  }, [character, setCharacter, sheetOpen, view, slot, sessionId, onExit, onCharacterCreated, creditHeroAp, updateHero]);
 
   return (
     <DsaHostOverrideProvider value={value}>{children}</DsaHostOverrideProvider>
