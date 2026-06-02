@@ -797,6 +797,21 @@ async function advanceTurn(
   apiKey: string,
   roomId: string,
 ): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
+  // Wenn der Gastgeber offline ist, pausieren wir das Spiel komplett:
+  // kein Vorrücken, kein LLM-Call, das Sammelfenster bleibt stehen.
+  // Sobald der Host zurückkehrt (sein Heartbeat trifft ein), wird das
+  // Vorrücken erneut versucht.
+  const preRoom = await fetchRoom(admin, roomId);
+  if (!preRoom) return { ok: true };
+  const preMembers = await fetchMembers(admin, roomId);
+  const host = preMembers.find((m) => m.user_id === preRoom.host_user_id);
+  const hostAbsent =
+    !host ||
+    Date.now() - new Date(host.last_seen_at).getTime() > ABSENCE_MS;
+  if (hostAbsent) {
+    return { ok: true };
+  }
+
   // Atomar das Sammelfenster zuklappen — nur ein Aufrufer darf
   // weitermachen, sonst entstehen doppelte Master-Wenden.
   const { data: claimed } = await admin
