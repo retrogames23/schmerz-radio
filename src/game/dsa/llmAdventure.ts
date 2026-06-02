@@ -152,8 +152,6 @@ const MOOD_RE = /\[MOOD:\s*([a-z_]+)\s*\]/i;
 const AP_RE = /\[AP:\s*(\d{1,4})\s*(?:\|\s*([^\]]+))?\]/i;
 const ITEM_PLUS_RE_G = /\[ITEM\+:\s*([^\]]+?)\s*\]/gi;
 const ITEM_MINUS_RE_G = /\[ITEM-:\s*([^\]]+?)\s*\]/gi;
-const ITEM_PLUS_RE = /\[ITEM\+:\s*[^\]]+?\s*\]/i;
-const ITEM_MINUS_RE = /\[ITEM-:\s*[^\]]+?\s*\]/i;
 
 /** Entfernt jegliche Marker aus dem reinen Sprechtext einer Zeile. */
 function stripMarkers(s: string): string {
@@ -201,7 +199,10 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
     const headTrim = head.trim();
     const countMatch = /\s+[x×]\s*(\d{1,2})\s*$/i.exec(headTrim);
     const count = countMatch ? Math.max(1, Math.min(99, parseInt(countMatch[1], 10))) : undefined;
-    const name = (countMatch ? headTrim.slice(0, countMatch.index).trim() : headTrim).slice(0, 60);
+    const nameRaw = countMatch && typeof countMatch.index === "number"
+      ? headTrim.slice(0, countMatch.index).trim()
+      : headTrim;
+    const name = nameRaw.slice(0, 60);
     if (!name) continue;
     itemsAdded.push({ name, description: description?.slice(0, 160), count });
     if (itemsAdded.length >= 6) break;
