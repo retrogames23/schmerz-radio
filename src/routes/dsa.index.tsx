@@ -137,7 +137,7 @@ function DsaLanding() {
             </Link>
             <Link
               to="/dsa/gruppe"
-              className="inline-flex items-center justify-center gap-2 rounded border-2 border-[#c9a84c] bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[0.2em] text-[#c9a84c] shadow-xl transition-colors hover:bg-[#c9a84c]/10"
+              className="inline-flex items-center justify-center gap-2 rounded border-2 border-[#c9a84c] bg-[#c9a84c] px-6 py-3 text-sm font-bold uppercase tracking-[0.2em] text-[#1a120a] shadow-xl transition-colors hover:bg-[#e0bf65]"
             >
               <Users className="h-4 w-4" strokeWidth={2.5} />
               DSA-Gruppenabenteuer mit menschlichen Gefährten starten
