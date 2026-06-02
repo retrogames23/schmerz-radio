@@ -196,7 +196,16 @@ function SpielraumPage() {
     const tick = () => {
       const left = Math.max(0, Math.round((COLLECT_WINDOW_MS - (Date.now() - started)) / 1000));
       setSecondsLeft(left);
-      if (left <= 0 && advanceFiredRef.current !== batchKey) {
+      // Wenn der Gastgeber offline ist, NICHT vorrücken — das Spiel
+      // pausiert, bis er zurück ist (er triggert dann selbst per
+      // Heartbeat das Vorrücken serverseitig).
+      const hostNow = membersRef.current.find(
+        (m) => m.user_id === roomRef.current?.host_user_id,
+      );
+      const hostAbsentNow =
+        !hostNow ||
+        Date.now() - new Date(hostNow.last_seen_at).getTime() > 60_000;
+      if (left <= 0 && advanceFiredRef.current !== batchKey && !hostAbsentNow) {
         advanceFiredRef.current = batchKey;
         void call("advance");
       }
