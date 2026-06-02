@@ -1,71 +1,80 @@
 ## Ziel
 
-Helden und Abenteuer werden zu zwei unabhängigen Konzepten. Ein Held lebt in einem von drei Slots, sammelt Abenteuerpunkte (AP) aus beendeten Runden und kann diese in Eigenschaften, Talente und (für Magier) Zauber investieren. Derselbe Held kann nacheinander beliebig viele Abenteuer spielen – sowohl im Hauptspiel als auch standalone, mit getrennten Pools je Modus.
+DSA-Helden bekommen eine sichtbare Ausrüstungssicht (Inventar + Waffe + Rüstung). Standardausrüstung pro Klasse, Wirkung auf AT/PA/TP/RS im Kampf, der LLM-Meister verwaltet sie und kennt zusätzlich Inventar von Brem und Yelva. Kein Bruchfaktor.
 
-## 1. Datenmodell
+## Datenmodell
 
-**Held (Slot 1/2/3)**
-- bisher: `DsaCharacterSummary` (Snapshot mit `attrs`, `le`, `leMax`, `ae`).
-- neu zusätzlich: `apTotal`, `apSpent`, `talents: Record<talentId, number>`, `spells: string[]` (gelernte Zauber-IDs, nur Magier), `adventuresPlayed`, `adventuresWon`, `createdAt`.
-- gespeichert pro Slot in `localStorage` (`dsa.standalone.hero-N`) und – wenn eingeloggt – in neuer Tabelle `dsa_heroes` (PK `user_id + slot`).
+Erweiterung von `DsaHero` (in `src/game/types.ts`) — wird in `dsa_heroes.hero` JSONB persistiert, kein DB-Migrations-Bedarf:
 
-**Abenteuer (beliebig viele pro Held)**
-- bisher: `dsa_llm_adventures` mit `session_id` pro Slot.
-- neu: `hero_slot smallint` und `status` (`active`/`finished`/`aborted`) bleiben, aber pro Held kann es mehrere Zeilen geben. Neuer Index `(user_id|anon_id, hero_slot, created_at desc)`. Die bisherige stabile Slot-UUID wird zur „aktiven" Session des Helden; abgeschlossene Abenteuer bekommen jeweils eine neue UUID und bleiben als Archiv erhalten.
+```text
+gear: {
+  weaponId: string | null   // ref WEAPONS aus rules/weapons.ts
+  armorId:  string | null   // ref neuer ARMORS-Tabelle
+  shieldId: string | null   // optional, für Schild-PA-Bonus
+  items: { id: string; name: string; description?: string; count?: number }[]
+}
+```
 
-**Trennung Hauptspiel ↔ Standalone**
-- Hauptspiel-Held lebt weiterhin im Save-Slot (`GameContext`-Persistenz) und ist eine eigene `DsaHero`-Instanz. Standalone-Helden leben in den 3 Slots der `/dsa`-Route. Kein gemeinsamer Pool, kein Cross-Sync.
+`items` ist ein freier Topf (keine `InventoryItemId`-Enum-Pflicht), damit der Meister auch Story-Gegenstände vergeben kann („Brief des Barons", „silberner Schlüssel").
 
-## 2. AP-Vergabe durch den Meister
+## Neue Module
 
-- Neuer Marker im LLM-Master-Prompt: `[AP: <50-300> | <Begründung>]`, ausschließlich erlaubt zusammen mit `[END: victory|defeat|aborted]`.
-- Parser in `src/game/dsa/llmAdventure.ts` extrahiert `ap` + `reason` in `ParsedMasterTurn`.
-- Server (`/api/public/dsa-master.ts`) clamped auf 50–300, schreibt `ap_awarded` + `ap_reason` ins Abenteuer und addiert auf `hero.apTotal`. Fehlt der Marker bei `[END]`, vergibt der Server einen Default (Sieg 150 / Niederlage 60 / Abbruch 0).
-- `EndBanner` zeigt vergebene AP + Begründung; Knopf „Held steigern" öffnet das neue Steigerungs-Overlay.
+**`src/game/dsa/rules/armor.ts`** — Tabelle `ARMORS` analog zu `WEAPONS`: id, name, rs, beBonus (Behinderung), gewicht. Standardrüstungen: keine, Lederrüstung (RS 1), Kettenhemd (RS 3), Plattenharnisch (RS 5), Robe (RS 0), Schild (PA +2). Plus `armorsForPrompt()` für den System-Prompt.
 
-## 3. Steigerungs-Overlay
+**`src/game/dsa/gear.ts`** — Helfer:
+- `defaultGearFor(classId)` → Standard­ausrüstung pro Klasse (z. B. Krieger: Anderthalbhänder + Kettenhemd; Streuner: Dolch + Lederrüstung + Wurfmesser ×3; Magier: Stab + Robe; Thorwaler: Streitaxt + Schild + Lederrüstung; usw.)
+- `defaultGearForCompanion("brem" | "yelva")` → feste Ausrüstung der Begleiter
+- `addItem(gear, item)`, `removeItem(gear, idOrName)` — reine Funktionen
+- `serializeGearForPrompt(gear)` → kompakte Textzeile für den Meister
 
-Neues Overlay `DsaHeroAdvancement.tsx` (öffenbar aus Charakterbogen und EndBanner). Inhalt:
-- **Eigenschaften** (MU/KL/CH/FF/GE/IN/KK): DSA-typische steigende Kosten (z. B. neuer Wert × 15 AP); LE/AE werden bei KK/IN automatisch nachgezogen.
-- **Talente** aus `src/game/dsa/rules/talents.ts`: Steigerung in Klasse erlaubter Talente; Kosten nach Spalte (A=15, B=30, C=45 …).
-- **Zauber** (nur wenn `cls.magic`): Lernen neuer klassen­passender Sprüche aus `rules/spells.ts` (Kosten Faktor × neuer Wert) und Steigern bekannter.
-- Anzeige: verfügbare AP (`apTotal - apSpent`), Vorschau der Veränderung, „Bestätigen" persistiert in den Slot.
+## Kampfwerte vom Equipment ableiten
 
-Charakterbogen (`DsaCharacterSheet.tsx`) zeigt zusätzlich: AP-Stand, gespielte/gewonnene Abenteuer, gelernte Talente, Zauber.
+`heroCombatantFromCharacter` in `src/game/dsa/combat.ts` zieht künftig AT/PA/TP/RS aus der Ausrüstung, nicht mehr (allein) aus `CLASS_COMBAT_PROFILES`:
 
-## 4. UI-Flow
+- Wenn `gear.weaponId` gesetzt: TP aus `WEAPONS[id].tp` parsen, AT/PA-Modifier addieren, Waffenname für Log.
+- Wenn `gear.armorId` gesetzt: RS aus `ARMORS[id].rs`.
+- Wenn `gear.shieldId` gesetzt: PA-Bonus.
+- Fallback (kein Gear gesetzt) bleibt das alte `CLASS_COMBAT_PROFILES` — bestehende Helden ohne Gear brechen nicht.
 
-**Standalone (`/dsa`)**
-- Landing-Seite zeigt pro Slot: Heldenname, Klasse, LE/AE, AP, Stand & Knopf „Steigern" wenn freie AP. Zusätzlich „Neues Abenteuer starten" (wenn kein aktives offen) und „Weiterspielen" (wenn `status=active`).
-- Neue Unterroute `/dsa/$slot/archiv` listet beendete Abenteuer (Setting, Datum, Ausgang, AP, DOCX/PDF-Download wie bisher).
-- „Held löschen" entfernt Held + alle zugehörigen Abenteuer; einzelne Abenteuer separat löschbar.
+Bestehende Eigenschafts-Boni (KK/GE/IN) bleiben unverändert.
 
-**Hauptspiel**
-- Im Charakterbogen-Overlay (Gemeinschaftsraum E67) erscheint der gleiche „Steigern"-Knopf, sobald AP vorhanden.
-- Nach beendetem Abenteuer kann Tjark eine neue Runde mit demselben Helden anbieten (Setting-Auswahl); bisheriges Verhalten („selber Held bleibt") wird zur expliziten Wahl.
+## LLM-Meister: Marker und Wissen
 
-## 5. Migration
+`src/game/dsa/llmMasterPrompt.ts` und `llmAdventure.ts`:
 
-- Beim ersten Laden: bestehendes `dsa.standalone.slot-N` (alter `DsaCharacterSummary`) wird zu `dsa.standalone.hero-N` mit `apTotal=0`, `apSpent=0`, leeren Talenten/Zaubern aufgewertet.
-- Bestehende `dsa_llm_adventures`-Zeilen bekommen `hero_slot` per Default aus der bekannten Slot-UUID-Zuordnung; `status` bleibt wie gehabt.
+1. Neuer Inventar-Block im System-Prompt:
+   - Layards Inventar/Waffe/Rüstung + alle Items mit Kurzbeschreibung
+   - Brems Inventar (fest: Dolch, Diebeswerkzeug, Wurfmesser, kleiner Geldbeutel)
+   - Yelvas Inventar (fest: Elfenbogen, 20 Pfeile, Säbel, Heilkräuter, Silberkette)
+   - Pflicht-Regel: „Wenn Layard sein Inventar einsetzen will, prüfe ob das Item dort steht. Entscheide als Meister, was geschieht."
 
-## Technische Details
+2. Neue optionale Marker im Ausgabeformat:
+   - `[ITEM+: name | kurzbeschreibung]` — fügt Layards Inventar etwas hinzu
+   - `[ITEM-: name]` — streicht ein Item (verloren, verbraucht, kaputt, verpatzte Probe)
+   - Mehrere Marker pro Antwort erlaubt. Keine Wirkung auf Brem/Yelva-Inventar (das verwaltet der Spielleiter narrativ).
 
-Geänderte/neue Dateien:
-- `src/game/types.ts` – neuer Typ `DsaHero` (erweitert `DsaCharacterSummary`).
-- `src/components/dsa-standalone/slotStorage.ts` – `loadHero/saveHero`, Liste der Abenteuer pro Slot, separate Session-ID pro Abenteuer.
-- `src/game/dsa/llmAdventure.ts` – Parser für `[AP:…]`, Typen `ParsedMasterTurn.ap`.
-- `src/game/dsa/llmMasterPrompt.ts` – Marker-Doku für den Meister.
-- `src/routes/api/public/dsa-master.ts` – Hero-Tabelle hochzählen, AP clampen, mehrere Abenteuer pro Slot zulassen, `list`/`finish`-Aktionen.
-- Neue Migration: Tabelle `dsa_heroes (user_id, slot, hero jsonb, ap_total, ap_spent, updated_at)` mit GRANTs + RLS (user-scoped), plus Spalte `hero_slot` + `ap_awarded` + `ap_reason` auf `dsa_llm_adventures`.
-- Neue Komponente `src/components/game/DsaHeroAdvancement.tsx`.
-- `DsaCharacterSheet.tsx` – AP-Block + Talent-/Zauberliste mit aktuellem Wert.
-- `DsaLlmAdventureScene.tsx` – EndBanner zeigt AP, Knopf „Steigern" + „Neues Abenteuer".
-- `routes/dsa.index.tsx`, `routes/dsa.$slot.tsx`, neue `routes/dsa.$slot.archiv.tsx`.
-- `DsaHostContext.tsx` + `StandaloneDsaHost.tsx` + `GameContext.tsx` – Hero-CRUD-API (`updateHero`, `spendAp`, `startNewAdventure`, `listAdventures`).
+3. Parser in `parseMasterTurn` ergänzen: `itemsAdded[]`, `itemsRemoved[]` ins `ParsedMasterTurn`.
 
-Regeltabellen (`rules/talents.ts`, `rules/spells.ts`) bekommen Steigerungskosten als zusätzliche Felder, falls nicht vorhanden.
+4. Server (`src/routes/api/public/dsa-master.ts`) wendet die Item-Marker nach jedem Meisterzug auf `dsa_heroes.hero.gear.items` an und schreibt zurück. Hartlimit: max 25 Items.
 
-## Offen für später (nicht Teil dieser Iteration)
-- Cloud-Sync der Helden zwischen Geräten via `dsa_heroes` (Server-Endpunkte werden zwar mit­erstellt, UI bleibt minimal).
-- Export/Import einzelner Helden als JSON.
+## UI
+
+**`DsaCharacterSheet.tsx`** bekommt eine neue Sektion „Ausrüstung":
+- Waffe (Name + TP/AT/PA), Rüstung (Name + RS), Schild falls vorhanden
+- Item-Liste (Name, Kurzbeschreibung, Anzahl)
+- Rein lesend — Vergabe/Streichung kommt nur vom Meister
+- Die bestehende „Kampfwerte (im Abenteuer)"-Sektion zeigt automatisch die abgeleiteten Werte (kommt schon aus `heroCombatantFromCharacter`)
+
+**Charakter-Erstellung** (`DsaCharacterCreator.tsx`): am Ende `defaultGearFor(classId)` einfüllen, sodass jeder neue Held mit Standardausrüstung startet. Bestehende Helden ohne `gear` bekommen beim ersten Laden lazy ein `defaultGearFor(classId)` (Migration in `upgradeToHero` in `advancement.ts`).
+
+## Was nicht passiert
+
+- Keine DB-Migration (Gear liegt im bestehenden `hero` JSONB).
+- Kein Bruchfaktor, keine Waffenkampf-Patzer-Effekte.
+- Keine Änderung der scripted Mini-Kampagne (`DsaAdventureScene`) — die nutzt fest verdrahtete Klassenwerte und wird nicht angefasst, falls keine ausdrückliche Bitte kommt.
+- Brem/Yelva-Inventar wird im Code fest definiert; der Meister darf es erzählerisch nutzen, aber nicht per Marker ändern (sonst wird die Quelle der Wahrheit unklar).
+
+## Geänderte/neue Dateien
+
+- neu: `src/game/dsa/rules/armor.ts`, `src/game/dsa/gear.ts`
+- geändert: `src/game/types.ts` (DsaHero.gear), `src/game/dsa/combat.ts` (Equipment → Kampfwerte), `src/game/dsa/advancement.ts` (Lazy-Gear bei Upgrade), `src/game/dsa/creator/data.ts` oder `DsaCharacterCreator.tsx` (Default-Gear bei Erschaffung), `src/components/game/DsaCharacterSheet.tsx` (Ausrüstungs-Sektion), `src/game/dsa/llmAdventure.ts` (Marker-Parser), `src/game/dsa/llmMasterPrompt.ts` (Inventar-Block + Marker-Doku), `src/routes/api/public/dsa-master.ts` (Marker auf Heldenakte anwenden), `src/game/dsa/rules/index.ts` (armorsForPrompt einbinden).

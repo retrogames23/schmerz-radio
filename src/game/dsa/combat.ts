@@ -3,6 +3,9 @@ import type { DsaClassId } from "./classes";
 import type { DsaCharacterSummary } from "@/game/types";
 import { SPELLS, type SpellDef } from "./rules/spells";
 import type { AttributeId } from "./rules/mechanics";
+import { WEAPONS } from "./rules/weapons";
+import { ARMORS } from "./rules/armor";
+import type { HeroGear } from "./gear";
 
 /**
  * Vereinfachte DSA-Kampfregeln für die automatischen Tafelrunden-Kämpfe.
@@ -215,7 +218,7 @@ export const CLASS_COMBAT_PROFILES: Record<
 /** Wandelt den Spielercharakter in einen Combatant um. */
 export function heroCombatantFromCharacter(
   ch: DsaCharacterSummary,
-  hero?: { spells?: Record<string, number> } | null,
+  hero?: { spells?: Record<string, number>; gear?: HeroGear } | null,
 ): Combatant {
   const profile =
     CLASS_COMBAT_PROFILES[(ch.classId as DsaClassId)] ??
@@ -229,25 +232,63 @@ export function heroCombatantFromCharacter(
   const tpKKBonus = Math.max(0, Math.floor((a.KK - 12) / 2));
   const spells =
     hero?.spells && typeof hero.spells === "object" ? hero.spells : undefined;
+
+  // Ausrüstung: Waffe ersetzt TP-Würfel/Bonus und liefert AT/PA-Modifikatoren,
+  // Rüstung ersetzt RS, Schild gibt zusätzlich PA-Bonus.
+  const gear = hero?.gear;
+  const weapon = gear?.weaponId ? WEAPONS[gear.weaponId] : null;
+  const armor = gear?.armorId ? ARMORS[gear.armorId] : null;
+  const shield = gear?.shieldId ? ARMORS[gear.shieldId] : null;
+
+  let tpDice = profile.tpDice;
+  let tpBonus = profile.tpBonus + tpKKBonus;
+  let weaponName = profile.weapon;
+  let weaponAtMod = 0;
+  let weaponPaMod = 0;
+  if (weapon) {
+    const parsed = parseTp(weapon.tp);
+    tpDice = parsed.dice;
+    tpBonus = parsed.bonus + tpKKBonus;
+    weaponName = weapon.name;
+    weaponAtMod = weapon.at;
+    weaponPaMod = weapon.pa;
+  }
+
+  let rs = profile.rs;
+  if (armor) rs = armor.rs;
+
+  let shieldPa = 0;
+  if (shield && shield.kind === "shield") shieldPa = shield.paBonus ?? 0;
+
   return {
     id: "hero",
     name: ch.name,
     side: "hero",
     le: ch.le,
     leMax: ch.leMax ?? ch.le,
-    at: profile.atBase + atBonus,
-    pa: profile.paBase + paBonus,
-    tpDice: profile.tpDice,
-    tpBonus: profile.tpBonus + tpKKBonus,
-    rs: profile.rs,
+    at: profile.atBase + atBonus + weaponAtMod,
+    pa: profile.paBase + paBonus + weaponPaMod + shieldPa,
+    tpDice,
+    tpBonus,
+    rs,
     iniBase: a.MU,
-    weapon: profile.weapon,
+    weapon: shield ? `${weaponName} & ${shield.name}` : weaponName,
     attrs: a,
     ae: ch.ae ?? undefined,
     aeMax: ch.ae ?? undefined,
     spells,
     classId: ch.classId as DsaClassId,
   };
+}
+
+/** Parst einen TP-String wie "1W+4" oder "2W+2" in Würfel + Flat-Bonus. */
+function parseTp(tp: string): { dice: number; bonus: number } {
+  const m = /^\s*(\d+)\s*[wW]6?\s*(?:([+-])\s*(\d+))?\s*$/.exec(tp);
+  if (!m) return { dice: 1, bonus: 0 };
+  const dice = parseInt(m[1], 10);
+  const sign = m[2] === "-" ? -1 : 1;
+  const bonus = m[3] ? sign * parseInt(m[3], 10) : 0;
+  return { dice, bonus };
 }
 
 export function foeCombatantFromStat(stat: EnemyStat, idx = 0): Combatant {

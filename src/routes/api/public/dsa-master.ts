@@ -11,6 +11,7 @@ import {
 } from "@/game/dsa/llmAdventure";
 import type { DsaCharacterSummary } from "@/game/types";
 import { AP_DEFAULTS, clampAp } from "@/game/dsa/advancement";
+import { addItem, defaultGearFor, removeItem, type HeroGear } from "@/game/dsa/gear";
 
 /**
  * LLM-Tafelrunde im Gemeinschaftsraum E67. Eine einzige Route, drei
@@ -84,6 +85,43 @@ async function loadHeroSpells(
     }
   }
   return out;
+}
+
+/** Liest die Ausrüstung des Helden aus dem dsa_heroes-JSONB. */
+async function loadHeroGearAndRow(
+  admin: ReturnType<typeof createClient<any, any, any>>,
+  uid: string | null,
+  heroSlot: number,
+): Promise<{ gear: HeroGear | null; rawHero: Record<string, unknown> | null }> {
+  if (!uid) return { gear: null, rawHero: null };
+  const { data: rowData } = await admin
+    .from("dsa_heroes")
+    .select("hero")
+    .eq("user_id", uid)
+    .eq("slot", heroSlot)
+    .maybeSingle();
+  const hero = (rowData as { hero?: Record<string, unknown> } | null)?.hero ?? null;
+  if (!hero || typeof hero !== "object") return { gear: null, rawHero: null };
+  const g = (hero as { gear?: unknown }).gear;
+  if (!g || typeof g !== "object" || !Array.isArray((g as HeroGear).items)) {
+    return { gear: null, rawHero: hero };
+  }
+  return { gear: g as HeroGear, rawHero: hero };
+}
+
+async function persistHeroGear(
+  admin: ReturnType<typeof createClient<any, any, any>>,
+  uid: string,
+  heroSlot: number,
+  rawHero: Record<string, unknown> | null,
+  gear: HeroGear,
+): Promise<void> {
+  const nextHero = { ...(rawHero ?? {}), gear };
+  await admin
+    .from("dsa_heroes")
+    .update({ hero: nextHero })
+    .eq("user_id", uid)
+    .eq("slot", heroSlot);
 }
 
 /**
@@ -645,6 +683,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           };
           const memory = await loadHeroMemory(admin, uid, heroSlot);
           const knownSpells = await loadHeroSpells(admin, uid, heroSlot);
+          const gearInfo = await loadHeroGearAndRow(admin, uid, heroSlot);
           const systemPrompt = buildMasterSystemPrompt({
             setting: settingId as DsaSettingId,
             character: characterSnap,
@@ -655,6 +694,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             memory,
             knownSpells,
             wishBrief,
+            gear: gearInfo.gear,
           });
           const opener: StoredTurn = {
             role: "user",
@@ -822,6 +862,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             memory: await loadHeroMemory(admin, uid, heroSlot),
             knownSpells: await loadHeroSpells(admin, uid, heroSlot),
             wishBrief,
+            gear: (await loadHeroGearAndRow(admin, uid, heroSlot)).gear,
           });
           const minEnd = isOpenSetting ? 0 : MIN_END_ASSISTANT_TURNS;
           const result = await callMaster(apiKey, systemPrompt, history, minEnd);
@@ -845,6 +886,23 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           const imgTag = parsed.sceneTag ?? row.current_image_tag ?? "forest_path";
 
           if (parsed.outtimeWarn) offtopicStreak = 0;
+
+          // Item-Marker des Meisters auf den Helden anwenden (nur eingeloggt).
+          let appliedGear: HeroGear | null = null;
+          if (uid && (parsed.itemsAdded.length > 0 || parsed.itemsRemoved.length > 0)) {
+            try {
+              const cur = await loadHeroGearAndRow(admin, uid, heroSlot);
+              let g: HeroGear = cur.gear ?? defaultGearFor(
+                String(characterSnap.classId),
+              );
+              for (const name of parsed.itemsRemoved) g = removeItem(g, name);
+              for (const it of parsed.itemsAdded) g = addItem(g, it);
+              await persistHeroGear(admin, uid, heroSlot, cur.rawHero, g);
+              appliedGear = g;
+            } catch (e) {
+              console.error("dsa-master apply items failed", e);
+            }
+          }
 
           // AP-Vergabe nur bei Spielende.
           let apAwarded = 0;
@@ -937,6 +995,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             status: nextStatus,
             apAwarded,
             apReason,
+            gear: appliedGear,
           });
         }
 

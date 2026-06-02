@@ -6,6 +6,12 @@ import { DSA_MOODS } from "@/audio/dsaMusic";
 import { buildDsa3RulesBlock, SPELLS } from "./rules";
 import { buildCoreLoreAppend, buildContextualLoreBlock } from "./lore";
 import type { DsaCharacterSummary } from "@/game/types";
+import {
+  defaultGearFor,
+  serializeCompanionGearForPrompt,
+  serializeGearForPrompt,
+  type HeroGear,
+} from "./gear";
 
 export interface HeroChronicleEntry {
   setting: string;
@@ -45,13 +51,18 @@ interface BuildArgs {
    * Prompt eingespeist, damit der Meister das Abenteuer daran ausrichtet.
    */
   wishBrief?: string | null;
+  /**
+   * Aktuelle Ausrüstung des Helden. Fehlt sie, fällt der Prompt auf die
+   * Standardausrüstung der Klasse zurück.
+   */
+  gear?: HeroGear | null;
 }
 
 /**
  * Vollständiger System-Prompt für Tjark, den LLM-Meister. Wird auf dem
  * Server gebaut — der Client kann ihn nicht überschreiben.
  */
-export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, assistantTurns = 0, cooldown, memory = null, knownSpells = null, wishBrief = null }: BuildArgs): string {
+export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, assistantTurns = 0, cooldown, memory = null, knownSpells = null, wishBrief = null, gear = null }: BuildArgs): string {
   const s = getSetting(setting);
   const isSandbox = setting === "sandbox";
   const isWish = setting === "wish";
@@ -62,6 +73,36 @@ export function buildMasterSystemPrompt({ setting, character, summary, offtopicS
   const attrLine = (Object.entries(character.attrs) as [string, number][])
     .map(([k, v]) => `${k}:${v}`)
     .join(" ");
+
+  const effectiveGear = gear ?? defaultGearFor(character.classId);
+  const inventoryBlock = `
+AUSRÜSTUNG UND INVENTAR — PFLICHT BEACHTEN:
+  ${character.name} führt folgende Ausrüstung mit sich. Das ist die alleinige
+  Wahrheit; lass Layards Helden NIE Dinge einsetzen, die nicht hier stehen.
+  Will Layard etwas verwenden, das im Inventar steht — entscheide als Meister,
+  ob und wie es wirkt (ggf. mit Probe). Will er etwas verwenden, das NICHT in
+  der Liste steht ("ich werfe eine Bombe"), lehne als Tjark ruhig ab
+  ("Das hast du nicht dabei.").
+
+${serializeGearForPrompt(effectiveGear)}
+
+  BEGLEITER-AUSRÜSTUNG (Brem und Yelva — fest, du verwaltest sie narrativ):
+${serializeCompanionGearForPrompt()}
+
+  ITEM-VERWALTUNG (nur für Layards Inventar):
+    Du KANNST dem Helden Gegenstände hinzufügen oder streichen — z. B. nach
+    Beute, Geschenk, Verbrauch, verpatzter Probe (kaputt/verloren), Diebstahl.
+    KEIN BRUCHFAKTOR — Waffen/Rüstungen gehen nur kaputt, wenn du es
+    erzählerisch begründest.
+    Marker (je in eigener Zeile):
+      [ITEM+: <Name> | <kurze Beschreibung>]      — fügt ein Item hinzu.
+      [ITEM+: <Name> ×<N> | <kurze Beschreibung>] — fügt N Stück hinzu.
+      [ITEM-: <Name oder Teilstring>]             — streicht ein Item.
+    Du darfst Brems und Yelvas Inventar NICHT mit Markern ändern — beschreibe
+    deren Auf- und Verbrauch nur erzählerisch in den [BREM]/[YELVA]-Zeilen.
+    Setze Item-Marker sparsam: ein Marker pro tatsächlichem Ereignis. Erzähle
+    den Vorgang immer auch im Fließtext ("Du steckst den Brief des Barons ein.").
+`;
 
   const spellsBlock = (() => {
     const entries = Object.entries(knownSpells ?? {}).filter(([, z]) => typeof z === "number" && z >= 0);
@@ -186,6 +227,7 @@ SPIELERWUNSCH (PFLICHT BEACHTEN):
 SETTING DIESES ABENTEUERS — ${s?.title ?? "freie Wahl"}:
 ${s?.masterHint ?? "Setze einen passenden Auftakt."}
 ${isOpen ? "" : cooldownBlock}${memoryBlock}${spellsBlock}
+${inventoryBlock}
 LAYARDS CHARAKTER:
   Name: ${character.name}
   Klasse: ${character.className}

@@ -136,6 +136,10 @@ export interface ParsedMasterTurn {
   mood: DsaMood | null;
   /** [AP: <n> | <begründung>] — wird nur zusammen mit `end` ausgewertet. */
   ap: { value: number; reason: string } | null;
+  /** Vom Meister vergebene Inventar-Items (Layards Held). */
+  itemsAdded: { name: string; description?: string; count?: number }[];
+  /** Vom Meister gestrichene Items (per Name / Teilstring / ID). */
+  itemsRemoved: string[];
 }
 
 const SPEAKER_RE = /^\s*\[(TJARK|BREM|YELVA)\]\s*/i;
@@ -146,6 +150,8 @@ const OUTTIME_RE = /\[OUTTIME_WARN\]/i;
 const END_RE = /\[END:\s*(victory|defeat|aborted)\s*\]/i;
 const MOOD_RE = /\[MOOD:\s*([a-z_]+)\s*\]/i;
 const AP_RE = /\[AP:\s*(\d{1,4})\s*(?:\|\s*([^\]]+))?\]/i;
+const ITEM_PLUS_RE_G = /\[ITEM\+:\s*([^\]]+?)\s*\]/gi;
+const ITEM_MINUS_RE_G = /\[ITEM-:\s*([^\]]+?)\s*\]/gi;
 
 /** Entfernt jegliche Marker aus dem reinen Sprechtext einer Zeile. */
 function stripMarkers(s: string): string {
@@ -157,6 +163,8 @@ function stripMarkers(s: string): string {
     .replace(END_RE, "")
     .replace(MOOD_RE, "")
     .replace(AP_RE, "")
+    .replace(ITEM_PLUS_RE_G, "")
+    .replace(ITEM_MINUS_RE_G, "")
     .trim();
 }
 
@@ -179,6 +187,32 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
         reason: (apMatch[2] ?? "").trim().slice(0, 200),
       }
     : null;
+
+  // ITEM+ / ITEM-: mehrere pro Antwort erlaubt.
+  const itemsAdded: { name: string; description?: string; count?: number }[] = [];
+  for (const m of text.matchAll(ITEM_PLUS_RE_G)) {
+    const payload = (m[1] ?? "").trim();
+    if (!payload) continue;
+    // Format: "Name | Beschreibung" oder "Name ×N | Beschreibung" oder nur "Name"
+    const [head, ...descParts] = payload.split("|");
+    const description = descParts.join("|").trim() || undefined;
+    const headTrim = head.trim();
+    const countMatch = /\s+[x×]\s*(\d{1,2})\s*$/i.exec(headTrim);
+    const count = countMatch ? Math.max(1, Math.min(99, parseInt(countMatch[1], 10))) : undefined;
+    const nameRaw = countMatch && typeof countMatch.index === "number"
+      ? headTrim.slice(0, countMatch.index).trim()
+      : headTrim;
+    const name = nameRaw.slice(0, 60);
+    if (!name) continue;
+    itemsAdded.push({ name, description: description?.slice(0, 160), count });
+    if (itemsAdded.length >= 6) break;
+  }
+  const itemsRemoved: string[] = [];
+  for (const m of text.matchAll(ITEM_MINUS_RE_G)) {
+    const payload = (m[1] ?? "").trim().slice(0, 60);
+    if (payload) itemsRemoved.push(payload);
+    if (itemsRemoved.length >= 6) break;
+  }
 
   const sceneTag =
     sceneMatch && DSA_SCENE_TAGS.includes(sceneMatch[1].toLowerCase())
@@ -246,6 +280,8 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
     end,
     mood,
     ap,
+    itemsAdded,
+    itemsRemoved,
   };
 }
 
