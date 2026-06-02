@@ -421,6 +421,22 @@ export const Route = createFileRoute("/api/public/dsa-group")({
 
         // ─── create ───────────────────────────────────────
         if (action === "create") {
+          // Nur ein offener Raum pro Gastgeber.
+          const { data: existingHosted } = await admin
+            .from("dsa_group_rooms")
+            .select("id, name, status")
+            .eq("host_user_id", uid)
+            .neq("status", "done")
+            .limit(1)
+            .maybeSingle();
+          if (existingHosted) {
+            return json(409, {
+              error:
+                "Du hast bereits einen offenen Raum. Lösche ihn zuerst, bevor du einen neuen eröffnest.",
+              code: "already_hosting",
+              roomId: (existingHosted as { id: string }).id,
+            });
+          }
           const name = sanitize(b.name, MAX_NAME);
           if (name.length < 3) return json(400, { error: "Raumname zu kurz." });
           const setting = typeof b.setting === "string" ? b.setting : "";
@@ -523,6 +539,18 @@ export const Route = createFileRoute("/api/public/dsa-group")({
             return json(200, { ok: true });
           }
           await admin.from("dsa_group_members").delete().eq("room_id", roomId).eq("user_id", uid);
+          return json(200, { ok: true });
+        }
+
+        // ─── deleteRoom (nur Gastgeber, jederzeit) ────────
+        if (action === "deleteRoom") {
+          if (uid !== room.host_user_id) {
+            return json(403, { error: "Nur der Gastgeber kann den Raum löschen." });
+          }
+          await admin.from("dsa_group_members").delete().eq("room_id", roomId);
+          await admin.from("dsa_group_messages").delete().eq("room_id", roomId);
+          await admin.from("dsa_group_pending_actions").delete().eq("room_id", roomId);
+          await admin.from("dsa_group_rooms").delete().eq("id", roomId);
           return json(200, { ok: true });
         }
 

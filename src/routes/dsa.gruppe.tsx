@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Lock, Plus, Users, LogIn } from "lucide-react";
+import { ArrowLeft, Lock, Plus, Users, LogIn, Trash2 } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
 import { AuthDialog } from "@/auth/AuthDialog";
 import { supabase } from "@/integrations/supabase/client";
@@ -124,6 +124,23 @@ function GruppeLobby() {
     }
   }
 
+  async function handleDelete(room: RoomRow) {
+    if (!user) return;
+    if (!window.confirm(`Raum „${room.name}" wirklich löschen?`)) return;
+    setError(null);
+    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    const resp = await fetch("/api/public/dsa-group", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ action: "deleteRoom", roomId: room.id }),
+    });
+    const data = (await resp.json()) as { ok?: boolean; error?: string };
+    if (!resp.ok || !data.ok) setError(data.error ?? "Löschen fehlgeschlagen.");
+  }
+
   return (
     <div className="min-h-screen w-full bg-[#1a120a] text-[#f1e6c8]">
       <header className="border-b border-[#3a2c1a] bg-[#241a0e]">
@@ -204,14 +221,27 @@ function GruppeLobby() {
                       <p className="mt-2 inline-flex items-center gap-1 text-[11px] uppercase tracking-wider opacity-70">
                         <Users className="h-3 w-3" /> {r.member_count ?? 0}/{r.max_players}
                       </p>
-                      <button
-                        type="button"
-                        disabled={joining === r.id || (full && !isHost)}
-                        onClick={() => (isHost ? navigate({ to: "/dsa/gruppe/$roomId", params: { roomId: r.id } }) : handleJoin(r))}
-                        className="mt-3 w-full rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10] disabled:opacity-40"
-                      >
-                        {isHost ? "Zum Vorzimmer" : full ? "Voll" : joining === r.id ? "Trete bei …" : "Beitreten"}
-                      </button>
+                      <div className="mt-3 flex gap-2">
+                        <button
+                          type="button"
+                          disabled={joining === r.id || (full && !isHost)}
+                          onClick={() => (isHost ? navigate({ to: "/dsa/gruppe/$roomId", params: { roomId: r.id } }) : handleJoin(r))}
+                          className="flex-1 rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10] disabled:opacity-40"
+                        >
+                          {isHost ? "Zum Vorzimmer" : full ? "Voll" : joining === r.id ? "Trete bei …" : "Beitreten"}
+                        </button>
+                        {isHost && (
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(r)}
+                            title="Raum löschen"
+                            aria-label="Raum löschen"
+                            className="rounded border-2 border-red-800/60 bg-transparent px-3 py-2 text-red-300 hover:bg-red-900/30"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
