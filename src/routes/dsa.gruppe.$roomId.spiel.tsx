@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Loader2, Maximize2, Minimize2, ScrollText, Send } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { getFreshAccessToken } from "@/auth/freshToken";
 import { parseMasterTurn, type SpokenLine } from "@/game/dsa/llmAdventure";
 import { resolveSceneImage } from "@/game/dsa/sceneImages";
 
@@ -42,7 +43,9 @@ function SpielraumPage() {
   const [room, setRoom] = useState<RoomRow | null>(null);
   const [members, setMembers] = useState<MemberRow[]>([]);
   const [messages, setMessages] = useState<MessageRow[]>([]);
-  const [pending, setPending] = useState<{ user_id: string; hero_name: string; action: string }[]>([]);
+  const [pending, setPending] = useState<{ user_id: string; hero_name: string; action: string }[]>(
+    [],
+  );
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +63,9 @@ function SpielraumPage() {
     try {
       if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
       else await document.exitFullscreen();
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   };
 
   useEffect(() => {
@@ -68,10 +73,24 @@ function SpielraumPage() {
     let alive = true;
     async function reload() {
       const [{ data: r }, { data: ms }, { data: msg }, { data: pa }] = await Promise.all([
-        supabase.from("dsa_group_rooms").select("id,name,status,turn_idx,summary,ap_awarded").eq("id", roomId).maybeSingle(),
-        supabase.from("dsa_group_members").select("user_id,ready,hero_snapshot,last_seen_at").eq("room_id", roomId),
-        supabase.from("dsa_group_messages").select("*").eq("room_id", roomId).order("idx", { ascending: true }),
-        supabase.from("dsa_group_pending_actions").select("user_id,hero_name,action").eq("room_id", roomId),
+        supabase
+          .from("dsa_group_rooms")
+          .select("id,name,status,turn_idx,summary,ap_awarded")
+          .eq("id", roomId)
+          .maybeSingle(),
+        supabase
+          .from("dsa_group_members")
+          .select("user_id,ready,hero_snapshot,last_seen_at")
+          .eq("room_id", roomId),
+        supabase
+          .from("dsa_group_messages")
+          .select("*")
+          .eq("room_id", roomId)
+          .order("idx", { ascending: true }),
+        supabase
+          .from("dsa_group_pending_actions")
+          .select("user_id,hero_name,action")
+          .eq("room_id", roomId),
       ]);
       if (!alive) return;
       setRoom(r as RoomRow | null);
@@ -82,10 +101,41 @@ function SpielraumPage() {
     void reload();
     const ch = supabase
       .channel(`dsa_group_spiel_${roomId}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "dsa_group_messages", filter: `room_id=eq.${roomId}` }, () => void reload())
-      .on("postgres_changes", { event: "*", schema: "public", table: "dsa_group_pending_actions", filter: `room_id=eq.${roomId}` }, () => void reload())
-      .on("postgres_changes", { event: "*", schema: "public", table: "dsa_group_rooms", filter: `id=eq.${roomId}` }, () => void reload())
-      .on("postgres_changes", { event: "*", schema: "public", table: "dsa_group_members", filter: `room_id=eq.${roomId}` }, () => void reload())
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "dsa_group_messages",
+          filter: `room_id=eq.${roomId}`,
+        },
+        () => void reload(),
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "dsa_group_pending_actions",
+          filter: `room_id=eq.${roomId}`,
+        },
+        () => void reload(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "dsa_group_rooms", filter: `id=eq.${roomId}` },
+        () => void reload(),
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "dsa_group_members",
+          filter: `room_id=eq.${roomId}`,
+        },
+        () => void reload(),
+      )
       .subscribe();
     // Heartbeat every 25s
     const hb = setInterval(() => void call("heartbeat"), 25_000);
@@ -158,12 +208,26 @@ function SpielraumPage() {
   async function call(action: string, extra: Record<string, unknown> = {}) {
     setBusy(true);
     try {
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
-      const resp = await fetch("/api/public/dsa-group", {
+      let token = await getFreshAccessToken();
+      if (!token) {
+        setError("Bitte melde dich erneut an.");
+        return false;
+      }
+      let resp = await fetch("/api/public/dsa-group", {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ action, roomId, ...extra }),
       });
+      if (resp.status === 401) {
+        token = await getFreshAccessToken(true);
+        if (token) {
+          resp = await fetch("/api/public/dsa-group", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ action, roomId, ...extra }),
+          });
+        }
+      }
       const data = (await resp.json()) as { ok?: boolean; error?: string };
       if (!resp.ok || !data.ok) {
         setError(data.error ?? "Fehler.");
@@ -203,7 +267,10 @@ function SpielraumPage() {
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] opacity-70">
-                <Link to="/dsa/gruppe" className="inline-flex items-center gap-1 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-2 py-1 text-[#2a1f10] hover:bg-[#f1d99a]">
+                <Link
+                  to="/dsa/gruppe"
+                  className="inline-flex items-center gap-1 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-2 py-1 text-[#2a1f10] hover:bg-[#f1d99a]"
+                >
                   <ArrowLeft className="h-3 w-3" strokeWidth={2.5} /> Lobby
                 </Link>
                 <span className="ml-1">Tjark erzählt · Runde {room.turn_idx}</span>
@@ -217,7 +284,11 @@ function SpielraumPage() {
                 title={isFullscreen ? "Vollbild verlassen" : "Vollbild"}
                 className="hidden sm:inline-flex items-center justify-center rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-2 py-1.5 text-[#2a1f10] hover:bg-[#f1d99a]"
               >
-                {isFullscreen ? <Minimize2 className="h-3.5 w-3.5" strokeWidth={2.5} /> : <Maximize2 className="h-3.5 w-3.5" strokeWidth={2.5} />}
+                {isFullscreen ? (
+                  <Minimize2 className="h-3.5 w-3.5" strokeWidth={2.5} />
+                ) : (
+                  <Maximize2 className="h-3.5 w-3.5" strokeWidth={2.5} />
+                )}
               </button>
               <Link
                 to="/dsa/helden"
@@ -234,7 +305,12 @@ function SpielraumPage() {
         {/* Scene image */}
         {imgSrc && (
           <div className="relative w-full bg-black/80">
-            <img src={imgSrc} alt="Szene" loading="lazy" className="w-full h-32 sm:h-48 object-cover opacity-90" />
+            <img
+              src={imgSrc}
+              alt="Szene"
+              loading="lazy"
+              className="w-full h-32 sm:h-48 object-cover opacity-90"
+            />
           </div>
         )}
 
@@ -243,7 +319,9 @@ function SpielraumPage() {
           <section className="flex min-h-[55vh] flex-col">
             <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-3 text-[#2a1f10]">
               {turns.items.length === 0 ? (
-                <p className="font-serif italic text-[#2a1f10]/70">Tjark setzt sich gleich an den Tisch …</p>
+                <p className="font-serif italic text-[#2a1f10]/70">
+                  Tjark setzt sich gleich an den Tisch …
+                </p>
               ) : (
                 turns.items.map((t) =>
                   t.kind === "master" ? (
@@ -251,19 +329,24 @@ function SpielraumPage() {
                   ) : t.kind === "player" ? (
                     <PlayerTurn key={t.id} name={t.name} text={t.text} />
                   ) : (
-                    <div key={t.id} className="text-xs italic text-[#2a1f10]/60">{t.text}</div>
+                    <div key={t.id} className="text-xs italic text-[#2a1f10]/60">
+                      {t.text}
+                    </div>
                   ),
                 )
               )}
               {pending.length > 0 && (
                 <div className="flex items-center gap-2 font-serif italic text-[#2a1f10]/70">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Gesammelte Aktionen ({pending.length}): {pending.map((p) => p.hero_name).join(", ")}
+                  Gesammelte Aktionen ({pending.length}):{" "}
+                  {pending.map((p) => p.hero_name).join(", ")}
                   {secondsLeft != null && ` · Tjark webt in ${secondsLeft}s …`}
                 </div>
               )}
               {error && (
-                <div className="rounded border-2 border-red-900/40 bg-red-100/60 px-3 py-2 text-sm text-red-900">{error}</div>
+                <div className="rounded border-2 border-red-900/40 bg-red-100/60 px-3 py-2 text-sm text-red-900">
+                  {error}
+                </div>
               )}
               <div ref={bottomRef} />
             </div>
@@ -280,7 +363,11 @@ function SpielraumPage() {
                         void submitAction();
                       }
                     }}
-                    placeholder={hasPending ? "Du hast diese Runde schon gehandelt — warte auf Tjark." : "Was tust du?"}
+                    placeholder={
+                      hasPending
+                        ? "Du hast diese Runde schon gehandelt — warte auf Tjark."
+                        : "Was tust du?"
+                    }
                     rows={2}
                     disabled={hasPending || busy}
                     className="flex-1 resize-none rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 font-sans text-base leading-relaxed text-[#2a1f10] placeholder:text-[#2a1f10]/40 focus:outline-none focus:ring-2 focus:ring-[#3a2c1a]/40 disabled:opacity-50"
@@ -307,17 +394,26 @@ function SpielraumPage() {
           </section>
 
           <aside className="border-l border-[#3a2c1a]/30 bg-[#e8dab8]/60 p-3">
-            <h2 className="mb-2 text-[10px] uppercase tracking-[0.3em] text-[#2a1f10]/70">Gruppe</h2>
+            <h2 className="mb-2 text-[10px] uppercase tracking-[0.3em] text-[#2a1f10]/70">
+              Gruppe
+            </h2>
             <ul className="space-y-2 text-xs text-[#2a1f10]">
               {members.map((m) => {
                 const stale = Date.now() - new Date(m.last_seen_at).getTime() > 60_000;
                 return (
-                  <li key={m.user_id} className="rounded border-2 border-[#3a2c1a]/40 bg-[#fbf2d8] px-2 py-1.5">
+                  <li
+                    key={m.user_id}
+                    className="rounded border-2 border-[#3a2c1a]/40 bg-[#fbf2d8] px-2 py-1.5"
+                  >
                     <div className="font-serif text-sm">{m.hero_snapshot?.name ?? "?"}</div>
                     <div className="opacity-70">{m.hero_snapshot?.className}</div>
                     <div className="mt-1 flex items-center justify-between">
-                      <span>LE {m.hero_snapshot?.le ?? "?"}/{m.hero_snapshot?.leMax ?? "?"}</span>
-                      {stale && <span className="text-[10px] uppercase text-amber-700">abwesend</span>}
+                      <span>
+                        LE {m.hero_snapshot?.le ?? "?"}/{m.hero_snapshot?.leMax ?? "?"}
+                      </span>
+                      {stale && (
+                        <span className="text-[10px] uppercase text-amber-700">abwesend</span>
+                      )}
                     </div>
                   </li>
                 );
