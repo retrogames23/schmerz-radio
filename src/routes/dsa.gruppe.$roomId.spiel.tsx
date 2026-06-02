@@ -373,7 +373,7 @@ function SpielraumPage() {
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Gesammelte Aktionen ({pending.length}):{" "}
                   {pending.map((p) => p.hero_name).join(", ")}
-                  {!showHostPause && secondsLeft != null && ` · Tjark webt in ${secondsLeft}s …`}
+                  {!showHostPause && secondsLeft != null && ` · Tjark erzählt weiter in ${secondsLeft}s …`}
                 </div>
               )}
               {showHostPause && (
