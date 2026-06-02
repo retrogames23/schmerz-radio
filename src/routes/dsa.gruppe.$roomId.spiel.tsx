@@ -254,7 +254,7 @@ function SpielraumPage() {
   if (!room) return <div className="min-h-screen bg-[#1a120a] p-8 text-[#f1e6c8]">Lade …</div>;
 
   const me = members.find((m) => m.user_id === user.id);
-  void me;
+  const mySlot = me?.slot && me.slot >= 1 && me.slot <= 3 ? me.slot : null;
   const hasPending = pending.some((p) => p.user_id === user.id);
   const isDone = room.status === "done";
 
@@ -291,14 +291,21 @@ function SpielraumPage() {
                   <Maximize2 className="h-3.5 w-3.5" strokeWidth={2.5} />
                 )}
               </button>
-              <Link
-                to="/dsa/helden"
-                title="Charakterbogen"
-                className="inline-flex items-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a]"
-              >
-                <ScrollText className="h-3.5 w-3.5" strokeWidth={2.5} />
-                <span>Bogen</span>
-              </Link>
+              {mySlot ? (
+                <Link
+                  to="/dsa/$slot"
+                  params={{ slot: String(mySlot) }}
+                  search={{
+                    view: "sheet",
+                    returnTo: `/dsa/gruppe/${roomId}/spiel`,
+                  }}
+                  title="Charakterbogen"
+                  className="inline-flex items-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a]"
+                >
+                  <ScrollText className="h-3.5 w-3.5" strokeWidth={2.5} />
+                  <span>Bogen</span>
+                </Link>
+              ) : null}
             </div>
           </div>
         </div>
