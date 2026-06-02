@@ -43,10 +43,6 @@ function VorzimmerPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  if (pathname.endsWith("/spiel")) {
-    return <Outlet />;
-  }
-
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
@@ -106,6 +102,10 @@ function VorzimmerPage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  if (pathname.endsWith("/spiel")) {
+    return <Outlet />;
   }
 
   if (authLoading || !user) {
