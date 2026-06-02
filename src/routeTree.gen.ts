@@ -27,6 +27,7 @@ import { Route as ApiPublicNpcChatRouteImport } from './routes/api/public/npc-ch
 import { Route as ApiPublicMarvOilRouteImport } from './routes/api/public/marv-oil'
 import { Route as ApiPublicFastwebChatRouteImport } from './routes/api/public/fastweb-chat'
 import { Route as ApiPublicDsaMasterRouteImport } from './routes/api/public/dsa-master'
+import { Route as ApiPublicDsaGroupRouteImport } from './routes/api/public/dsa-group'
 import { Route as ApiPublicDonationCheckoutRouteImport } from './routes/api/public/donation-checkout'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -124,6 +125,11 @@ const ApiPublicDsaMasterRoute = ApiPublicDsaMasterRouteImport.update({
   path: '/api/public/dsa-master',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicDsaGroupRoute = ApiPublicDsaGroupRouteImport.update({
+  id: '/api/public/dsa-group',
+  path: '/api/public/dsa-group',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicDonationCheckoutRoute =
   ApiPublicDonationCheckoutRouteImport.update({
     id: '/api/public/donation-checkout',
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dsa/': typeof DsaIndexRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
+  '/api/public/dsa-group': typeof ApiPublicDsaGroupRoute
   '/api/public/dsa-master': typeof ApiPublicDsaMasterRoute
   '/api/public/fastweb-chat': typeof ApiPublicFastwebChatRoute
   '/api/public/marv-oil': typeof ApiPublicMarvOilRoute
@@ -190,6 +197,7 @@ export interface FileRoutesByTo {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dsa': typeof DsaIndexRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
+  '/api/public/dsa-group': typeof ApiPublicDsaGroupRoute
   '/api/public/dsa-master': typeof ApiPublicDsaMasterRoute
   '/api/public/fastweb-chat': typeof ApiPublicFastwebChatRoute
   '/api/public/marv-oil': typeof ApiPublicMarvOilRoute
@@ -216,6 +224,7 @@ export interface FileRoutesById {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dsa/': typeof DsaIndexRoute
   '/api/public/donation-checkout': typeof ApiPublicDonationCheckoutRoute
+  '/api/public/dsa-group': typeof ApiPublicDsaGroupRoute
   '/api/public/dsa-master': typeof ApiPublicDsaMasterRoute
   '/api/public/fastweb-chat': typeof ApiPublicFastwebChatRoute
   '/api/public/marv-oil': typeof ApiPublicMarvOilRoute
@@ -243,6 +252,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/dsa/'
     | '/api/public/donation-checkout'
+    | '/api/public/dsa-group'
     | '/api/public/dsa-master'
     | '/api/public/fastweb-chat'
     | '/api/public/marv-oil'
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/dsa'
     | '/api/public/donation-checkout'
+    | '/api/public/dsa-group'
     | '/api/public/dsa-master'
     | '/api/public/fastweb-chat'
     | '/api/public/marv-oil'
@@ -292,6 +303,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/dsa/'
     | '/api/public/donation-checkout'
+    | '/api/public/dsa-group'
     | '/api/public/dsa-master'
     | '/api/public/fastweb-chat'
     | '/api/public/marv-oil'
@@ -314,6 +326,7 @@ export interface RootRouteChildren {
   ApiTtsRoute: typeof ApiTtsRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ApiPublicDonationCheckoutRoute: typeof ApiPublicDonationCheckoutRoute
+  ApiPublicDsaGroupRoute: typeof ApiPublicDsaGroupRoute
   ApiPublicDsaMasterRoute: typeof ApiPublicDsaMasterRoute
   ApiPublicFastwebChatRoute: typeof ApiPublicFastwebChatRoute
   ApiPublicMarvOilRoute: typeof ApiPublicMarvOilRoute
@@ -454,6 +467,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicDsaMasterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/dsa-group': {
+      id: '/api/public/dsa-group'
+      path: '/api/public/dsa-group'
+      fullPath: '/api/public/dsa-group'
+      preLoaderRoute: typeof ApiPublicDsaGroupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/donation-checkout': {
       id: '/api/public/donation-checkout'
       path: '/api/public/donation-checkout'
@@ -540,6 +560,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiTtsRoute: ApiTtsRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ApiPublicDonationCheckoutRoute: ApiPublicDonationCheckoutRoute,
+  ApiPublicDsaGroupRoute: ApiPublicDsaGroupRoute,
   ApiPublicDsaMasterRoute: ApiPublicDsaMasterRoute,
   ApiPublicFastwebChatRoute: ApiPublicFastwebChatRoute,
   ApiPublicMarvOilRoute: ApiPublicMarvOilRoute,
@@ -554,3 +575,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
