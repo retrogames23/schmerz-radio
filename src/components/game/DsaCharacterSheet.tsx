@@ -451,3 +451,18 @@ function classTalents(classId: string): string[] {
       return ["Hiebwaffen +6", "Schild +5", "Reiten +4", "Athletik +4"];
   }
 }
+
+function GearSlot({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="dsa-typed text-[10px] uppercase tracking-widest dsa-ink-faded font-bold mb-1">
+        {label}
+      </div>
+      <div className="dsa-box-thick flex h-10 items-center justify-center px-2">
+        <span className="font-display dsa-ink font-extrabold text-[13px] truncate">
+          {value}
+        </span>
+      </div>
+    </div>
+  );
+}
