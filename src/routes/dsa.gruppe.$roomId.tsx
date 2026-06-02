@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Check, Crown, LogOut, Play, UserX } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
@@ -35,12 +35,17 @@ interface MemberRow {
 function VorzimmerPage() {
   const { roomId } = useParams({ from: "/dsa/gruppe/$roomId" });
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { user, loading: authLoading } = useAuth();
   const [room, setRoom] = useState<RoomRow | null>(null);
   const [members, setMembers] = useState<MemberRow[]>([]);
   const [heroes, setHeroes] = useState<Record<SlotIndex, DsaHero | null>>({ 1: null, 2: null, 3: null });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  if (pathname.endsWith("/spiel")) {
+    return <Outlet />;
+  }
 
   useEffect(() => {
     if (authLoading) return;
