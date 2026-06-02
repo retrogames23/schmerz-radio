@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Swords } from "lucide-react";
+import { Swords, Users } from "lucide-react";
 import landingBg from "@/assets/dsa/landing-bg.jpg";
 
 const CANONICAL = "https://whisperquest.app/dsa";
@@ -22,6 +22,10 @@ const FAQS: Array<{ q: string; a: string }> = [
   {
     q: "In welcher Epoche Aventuriens spielt das Abenteuer?",
     a: "Im Jahr 20 nach Hal — Reichsbehüter Brin verteidigt das Mittelreich gegen den Dritten Orkensturm. Eine klassische Phase der DSA-Geschichte mit Intrigen, Schwertkampf und Magie.",
+  },
+  {
+    q: "Was ist der Gruppenmodus?",
+    a: "Im Gruppenmodus sitzen zwei bis vier menschliche Spieler an einer gemeinsamen Tafelrunde, Tjark bleibt der KI-Meister. Du eröffnest einen Raum, gibst ihm einen Namen (optional ein Passwort) und wählst ein Setting; deine Mitspieler treten mit ihren bereits gespeicherten Helden bei. Sobald alle „Bereit“ klicken, beginnt das Abenteuer. Eine Anmeldung ist Pflicht — der Spielstand wandert sonst nicht zwischen den Geräten.",
   },
 ];
 
@@ -124,13 +128,22 @@ function DsaLanding() {
           dein Bogen.
         </p>
         <div className="mt-8">
-          <Link
-            to="/dsa/helden"
-            className="inline-flex items-center justify-center gap-2 rounded border-2 border-[#c9a84c] bg-[#c9a84c] px-6 py-3 text-sm font-bold uppercase tracking-[0.2em] text-[#1a120a] shadow-xl transition-colors hover:bg-[#e0bf65]"
-          >
-            <Swords className="h-4 w-4" strokeWidth={2.5} />
-            DSA-Rollenspiel starten
-          </Link>
+          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <Link
+              to="/dsa/helden"
+              className="inline-flex items-center justify-center gap-2 rounded border-2 border-[#c9a84c] bg-[#c9a84c] px-6 py-3 text-sm font-bold uppercase tracking-[0.2em] text-[#1a120a] shadow-xl transition-colors hover:bg-[#e0bf65]"
+            >
+              <Swords className="h-4 w-4" strokeWidth={2.5} />
+              DSA-Solo-Abenteuer mit KI-Gefährten starten
+            </Link>
+            <Link
+              to="/dsa/gruppe"
+              className="inline-flex items-center justify-center gap-2 rounded border-2 border-[#c9a84c] bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[0.2em] text-[#c9a84c] shadow-xl transition-colors hover:bg-[#c9a84c]/10"
+            >
+              <Users className="h-4 w-4" strokeWidth={2.5} />
+              DSA-Gruppenabenteuer mit menschlichen Gefährten starten
+            </Link>
+          </div>
         </div>
       </section>
 
