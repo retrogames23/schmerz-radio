@@ -782,8 +782,20 @@ async function advanceTurn(
   apiKey: string,
   roomId: string,
 ): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
-  const room = await fetchRoom(admin, roomId);
-  if (!room) return { ok: false, status: 404, error: "Raum weg." };
+  // Atomar das Sammelfenster zuklappen — nur ein Aufrufer darf
+  // weitermachen, sonst entstehen doppelte Master-Wenden.
+  const { data: claimed } = await admin
+    .from("dsa_group_rooms")
+    .update({ collect_started_at: null })
+    .eq("id", roomId)
+    .not("collect_started_at", "is", null)
+    .select("*")
+    .maybeSingle();
+  const room = (claimed as RoomRow | null) ?? null;
+  if (!room) {
+    // Sammelfenster war bereits abgeräumt → anderer Pfad hat übernommen.
+    return { ok: true };
+  }
   const members = await fetchMembers(admin, roomId);
   const { data: pa } = await admin
     .from("dsa_group_pending_actions")
