@@ -45,10 +45,6 @@ function GruppeLobby() {
   const [joining, setJoining] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  if (/^\/dsa\/gruppe\/[^/]+/.test(pathname)) {
-    return <Outlet />;
-  }
-
   useEffect(() => {
     if (!user) return;
     let alive = true;
@@ -156,6 +152,10 @@ function GruppeLobby() {
     });
     const data = (await resp.json()) as { ok?: boolean; error?: string };
     if (!resp.ok || !data.ok) setError(data.error ?? "Löschen fehlgeschlagen.");
+  }
+
+  if (/^\/dsa\/gruppe\/[^/]+/.test(pathname)) {
+    return <Outlet />;
   }
 
   return (
