@@ -49,17 +49,30 @@ function GruppeLobby() {
     if (!user) return;
     let alive = true;
     async function load() {
-      const { data, error: e } = await supabase
-        .from("dsa_group_rooms")
-        .select("id, name, setting, status, max_players, password_hash, include_npc_companions, host_user_id")
-        .eq("status", "lobby")
-        .order("created_at", { ascending: false });
+      const [lobbyRes, ownedRes] = await Promise.all([
+        supabase
+          .from("dsa_group_rooms")
+          .select("id, name, setting, status, max_players, password_hash, include_npc_companions, host_user_id")
+          .eq("status", "lobby")
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("dsa_group_rooms")
+          .select("id, name, setting, status, max_players, password_hash, include_npc_companions, host_user_id")
+          .eq("host_user_id", user!.id)
+          .neq("status", "done")
+          .order("created_at", { ascending: false }),
+      ]);
       if (!alive) return;
-      if (e) {
-        setError(e.message);
+      if (lobbyRes.error) {
+        setError(lobbyRes.error.message);
         return;
       }
-      const rows = (data ?? []) as RoomRow[];
+      const map = new Map<string, RoomRow>();
+      for (const r of ((lobbyRes.data ?? []) as RoomRow[])) map.set(r.id, r);
+      for (const r of ((ownedRes.data ?? []) as RoomRow[])) {
+        if (!map.has(r.id)) map.set(r.id, r);
+      }
+      const rows = Array.from(map.values());
       // Mitgliederzahl pro Raum nachladen.
       const ids = rows.map((r) => r.id);
       if (ids.length > 0) {
