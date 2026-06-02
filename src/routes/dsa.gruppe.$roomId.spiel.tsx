@@ -259,6 +259,13 @@ function SpielraumPage() {
   const hasPending = pending.some((p) => p.user_id === user.id);
   const isDone = room.status === "done";
 
+  const hostMember = members.find((m) => m.user_id === room.host_user_id);
+  const hostAbsent =
+    !hostMember ||
+    Date.now() - new Date(hostMember.last_seen_at).getTime() > 60_000;
+  const hostIsMe = room.host_user_id === user.id;
+  const showHostPause = hostAbsent && !hostIsMe && !isDone;
+
   const imgSrc = resolveSceneImage(turns.sceneTag);
 
   return (
