@@ -1296,6 +1296,48 @@ function FastWebToolIcon() {
   );
 }
 
+function TycoonIcon() {
+  // CRT-Monitor mit Chip-Symbol auf dem Schirm
+  return (
+    <svg width="40" height="36" viewBox="0 0 40 36" aria-hidden shapeRendering="crispEdges">
+      <rect x="2" y="2" width="36" height="26" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="5" y="5" width="30" height="20" fill="#003322" stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="14" y="11" width="12" height="8" fill="#22cc66" stroke={WB_BLACK} strokeWidth="1" />
+      {[0,1,2,3].map((i) => <rect key={`t${i}`} x={15 + i * 3} y={9} width="1" height="2" fill={WB_BLACK} />)}
+      {[0,1,2,3].map((i) => <rect key={`b${i}`} x={15 + i * 3} y={19} width="1" height="2" fill={WB_BLACK} />)}
+      <rect x="14" y="29" width="12" height="3" fill={WB_GREY} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="10" y="32" width="20" height="2" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+    </svg>
+  );
+}
+
+function TycoonFrame() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "#000" }}>
+      <div style={{ background: "#bbbbbb", borderBottom: "2px solid #000", padding: "2px 6px", fontSize: 11, color: "#000", fontFamily: "monospace", display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          http://computertycoon.app/
+        </span>
+        <a
+          href="https://computertycoon.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#000", textDecoration: "underline" }}
+        >
+          ↗ neues Fenster
+        </a>
+      </div>
+      <iframe
+        src="https://computertycoon.app/"
+        title="SiliconWars / Home Computer Tycoon"
+        style={{ flex: 1, width: "100%", border: "none", background: "#000" }}
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock"
+        allow="autoplay; clipboard-read; clipboard-write; fullscreen"
+      />
+    </div>
+  );
+}
+
 function ArchiveIcon() {
   return (
     <svg width="36" height="40" viewBox="0 0 36 40" aria-hidden shapeRendering="crispEdges">
