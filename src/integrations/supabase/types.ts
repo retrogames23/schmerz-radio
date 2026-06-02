@@ -47,6 +47,183 @@ export type Database = {
         }
         Relationships: []
       }
+      dsa_group_members: {
+        Row: {
+          hero_snapshot: Json | null
+          joined_at: string
+          last_seen_at: string
+          position: number
+          ready: boolean
+          room_id: string
+          slot: number
+          user_id: string
+        }
+        Insert: {
+          hero_snapshot?: Json | null
+          joined_at?: string
+          last_seen_at?: string
+          position?: number
+          ready?: boolean
+          room_id: string
+          slot?: number
+          user_id: string
+        }
+        Update: {
+          hero_snapshot?: Json | null
+          joined_at?: string
+          last_seen_at?: string
+          position?: number
+          ready?: boolean
+          room_id?: string
+          slot?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dsa_group_members_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "dsa_group_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dsa_group_messages: {
+        Row: {
+          author_hero_name: string | null
+          author_user_id: string | null
+          content: string
+          created_at: string
+          id: string
+          idx: number
+          role: string
+          room_id: string
+        }
+        Insert: {
+          author_hero_name?: string | null
+          author_user_id?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          idx: number
+          role: string
+          room_id: string
+        }
+        Update: {
+          author_hero_name?: string | null
+          author_user_id?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          idx?: number
+          role?: string
+          room_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dsa_group_messages_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "dsa_group_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dsa_group_pending_actions: {
+        Row: {
+          action: string
+          created_at: string
+          hero_name: string
+          room_id: string
+          turn_idx: number
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          hero_name: string
+          room_id: string
+          turn_idx: number
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          hero_name?: string
+          room_id?: string
+          turn_idx?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dsa_group_pending_actions_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "dsa_group_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dsa_group_rooms: {
+        Row: {
+          ap_awarded: boolean
+          collect_started_at: string | null
+          created_at: string
+          current_image_tag: string
+          host_user_id: string
+          id: string
+          include_npc_companions: boolean
+          max_players: number
+          name: string
+          password_hash: string | null
+          session_id: string
+          setting: string
+          status: string
+          summary: string
+          turn_idx: number
+          updated_at: string
+          wish_brief: string | null
+        }
+        Insert: {
+          ap_awarded?: boolean
+          collect_started_at?: string | null
+          created_at?: string
+          current_image_tag?: string
+          host_user_id: string
+          id?: string
+          include_npc_companions?: boolean
+          max_players?: number
+          name: string
+          password_hash?: string | null
+          session_id?: string
+          setting: string
+          status?: string
+          summary?: string
+          turn_idx?: number
+          updated_at?: string
+          wish_brief?: string | null
+        }
+        Update: {
+          ap_awarded?: boolean
+          collect_started_at?: string | null
+          created_at?: string
+          current_image_tag?: string
+          host_user_id?: string
+          id?: string
+          include_npc_companions?: boolean
+          max_players?: number
+          name?: string
+          password_hash?: string | null
+          session_id?: string
+          setting?: string
+          status?: string
+          summary?: string
+          turn_idx?: number
+          updated_at?: string
+          wish_brief?: string | null
+        }
+        Relationships: []
+      }
       dsa_heroes: {
         Row: {
           adventures_played: number
@@ -552,6 +729,10 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      is_dsa_room_member: {
+        Args: { _room_id: string; _user_id: string }
+        Returns: boolean
       }
       move_to_dlq: {
         Args: {
