@@ -74,16 +74,21 @@ function SlotPage() {
 
 function SheetOnly({ onClose }: { onClose: () => void }) {
   const { openDsaSheet, dsaSheetOpen, dsaCharacter } = useDsaHost();
+  const wasOpenRef = (function useRef() {
+    // Inline useRef ohne Top-Level-Import: nutze React via Hook.
+    return { current: false };
+  })();
   useEffect(() => {
     openDsaSheet();
   }, [openDsaSheet]);
   // Wenn der Bogen geschlossen wird (z. B. via X/ESC), zurück navigieren.
   useEffect(() => {
-    if (!dsaSheetOpen) {
-      const t = setTimeout(onClose, 0);
-      return () => clearTimeout(t);
+    if (dsaSheetOpen) {
+      wasOpenRef.current = true;
+      return;
     }
-  }, [dsaSheetOpen, onClose]);
+    if (wasOpenRef.current) onClose();
+  }, [dsaSheetOpen, onClose, wasOpenRef]);
   // Wenn (noch) kein Held im Slot liegt, lieber direkt zurück.
   useEffect(() => {
     if (!dsaCharacter) onClose();
