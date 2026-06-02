@@ -25,6 +25,7 @@ interface MemberRow {
   ready: boolean;
   hero_snapshot: { name?: string; className?: string; le?: number; leMax?: number } | null;
   last_seen_at: string;
+  slot: number | null;
 }
 interface RoomRow {
   id: string;
@@ -80,7 +81,7 @@ function SpielraumPage() {
           .maybeSingle(),
         supabase
           .from("dsa_group_members")
-          .select("user_id,ready,hero_snapshot,last_seen_at")
+          .select("user_id,ready,hero_snapshot,last_seen_at,slot")
           .eq("room_id", roomId),
         supabase
           .from("dsa_group_messages")
