@@ -34,7 +34,7 @@ interface MemberRow {
 function VorzimmerPage() {
   const { roomId } = useParams({ from: "/dsa/gruppe/$roomId" });
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [room, setRoom] = useState<RoomRow | null>(null);
   const [members, setMembers] = useState<MemberRow[]>([]);
   const [heroes, setHeroes] = useState<Record<SlotIndex, DsaHero | null>>({ 1: null, 2: null, 3: null });
@@ -42,6 +42,7 @@ function VorzimmerPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) {
       navigate({ to: "/dsa/gruppe" });
       return;
@@ -68,7 +69,7 @@ function VorzimmerPage() {
       alive = false;
       void supabase.removeChannel(ch);
     };
-  }, [roomId, user, navigate]);
+  }, [roomId, user, authLoading, navigate]);
 
   useEffect(() => {
     if (room?.status === "active") {
@@ -97,7 +98,9 @@ function VorzimmerPage() {
     }
   }
 
-  if (!user) return null;
+  if (authLoading || !user) {
+    return <div className="min-h-screen bg-[#1a120a] p-8 text-[#f1e6c8]">Lade …</div>;
+  }
   if (!room) return <div className="min-h-screen bg-[#1a120a] p-8 text-[#f1e6c8]">Lade Raum …</div>;
 
   const setting = DSA_SETTINGS.find((s) => s.id === room.setting);
