@@ -183,7 +183,7 @@ function GruppeLobby() {
         {loading ? (
           <p className="opacity-60">Lade …</p>
         ) : !user ? (
-          <div className="rounded border border-[#3a2c1a] bg-[#241a0e] p-6 text-center">
+          <div className="rounded border border-[#3a2c1a] bg-[#241a0e]/85 p-6 text-center backdrop-blur-sm">
             <p className="mb-4 text-sm opacity-80">
               Für den Gruppenmodus brauchst du eine Anmeldung — sonst wandert dein Held nicht zwischen Geräten.
             </p>
@@ -215,7 +215,7 @@ function GruppeLobby() {
             )}
 
             {rooms.length === 0 ? (
-              <p className="rounded border border-[#3a2c1a] bg-[#241a0e] p-6 text-center text-sm opacity-70">
+              <p className="rounded border border-[#3a2c1a] bg-[#241a0e]/85 p-6 text-center text-sm opacity-80 backdrop-blur-sm">
                 Aktuell sind keine offenen Räume verfügbar. Eröffne den ersten!
               </p>
             ) : (
@@ -227,7 +227,7 @@ function GruppeLobby() {
                   return (
                     <div
                       key={r.id}
-                      className="rounded border border-[#3a2c1a] bg-[#241a0e] p-4"
+                      className="rounded border border-[#3a2c1a] bg-[#241a0e]/85 p-4 backdrop-blur-sm"
                     >
                       <div className="mb-2 flex items-center justify-between">
                         <h3 className="font-serif text-lg leading-tight">{r.name}</h3>
