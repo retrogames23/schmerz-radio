@@ -55,6 +55,14 @@ function SpielraumPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const advanceFiredRef = useRef<string | null>(null);
+  const membersRef = useRef<MemberRow[]>([]);
+  const roomRef = useRef<RoomRow | null>(null);
+  useEffect(() => {
+    membersRef.current = members;
+  }, [members]);
+  useEffect(() => {
+    roomRef.current = room;
+  }, [room]);
 
   useEffect(() => {
     const onChange = () => setIsFullscreen(!!document.fullscreenElement);
