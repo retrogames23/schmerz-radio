@@ -264,3 +264,38 @@ function DsaFooter() {
     </footer>
   );
 }
+
+function AuthControl() {
+  const { user, signOut, loading } = useAuth();
+  const [authOpen, setAuthOpen] = useState(false);
+  if (loading) return null;
+  return (
+    <div className="text-xs">
+      {user ? (
+        <div className="flex items-center gap-2">
+          <span className="hidden sm:inline max-w-[180px] truncate opacity-70">
+            {user.email}
+          </span>
+          <button
+            type="button"
+            onClick={() => void signOut()}
+            className="inline-flex items-center gap-1 rounded border border-[#3a2c1a] bg-[#1a120a] px-2.5 py-1.5 uppercase tracking-wider hover:bg-[#3a2c1a]"
+          >
+            <LogOut className="h-3 w-3" /> Abmelden
+          </button>
+        </div>
+      ) : (
+        <>
+          <button
+            type="button"
+            onClick={() => setAuthOpen(true)}
+            className="inline-flex items-center gap-1 rounded border border-[#c9a84c] bg-[#c9a84c] px-2.5 py-1.5 font-bold uppercase tracking-wider text-[#1a120a] hover:bg-[#e0bf65]"
+          >
+            <LogIn className="h-3 w-3" /> Anmelden
+          </button>
+          <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
+        </>
+      )}
+    </div>
+  );
+}
