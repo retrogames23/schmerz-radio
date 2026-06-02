@@ -11,6 +11,7 @@ import {
 } from "@/game/dsa/llmAdventure";
 import type { DsaCharacterSummary } from "@/game/types";
 import { AP_DEFAULTS, clampAp } from "@/game/dsa/advancement";
+import { addItem, defaultGearFor, removeItem, type HeroGear } from "@/game/dsa/gear";
 
 /**
  * LLM-Tafelrunde im Gemeinschaftsraum E67. Eine einzige Route, drei
@@ -84,6 +85,43 @@ async function loadHeroSpells(
     }
   }
   return out;
+}
+
+/** Liest die Ausrüstung des Helden aus dem dsa_heroes-JSONB. */
+async function loadHeroGearAndRow(
+  admin: ReturnType<typeof createClient<any, any, any>>,
+  uid: string | null,
+  heroSlot: number,
+): Promise<{ gear: HeroGear | null; rawHero: Record<string, unknown> | null }> {
+  if (!uid) return { gear: null, rawHero: null };
+  const { data: rowData } = await admin
+    .from("dsa_heroes")
+    .select("hero")
+    .eq("user_id", uid)
+    .eq("slot", heroSlot)
+    .maybeSingle();
+  const hero = (rowData as { hero?: Record<string, unknown> } | null)?.hero ?? null;
+  if (!hero || typeof hero !== "object") return { gear: null, rawHero: null };
+  const g = (hero as { gear?: unknown }).gear;
+  if (!g || typeof g !== "object" || !Array.isArray((g as HeroGear).items)) {
+    return { gear: null, rawHero: hero };
+  }
+  return { gear: g as HeroGear, rawHero: hero };
+}
+
+async function persistHeroGear(
+  admin: ReturnType<typeof createClient<any, any, any>>,
+  uid: string,
+  heroSlot: number,
+  rawHero: Record<string, unknown> | null,
+  gear: HeroGear,
+): Promise<void> {
+  const nextHero = { ...(rawHero ?? {}), gear };
+  await admin
+    .from("dsa_heroes")
+    .update({ hero: nextHero })
+    .eq("user_id", uid)
+    .eq("slot", heroSlot);
 }
 
 /**
