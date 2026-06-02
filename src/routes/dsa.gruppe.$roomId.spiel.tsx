@@ -101,6 +101,37 @@ function SpielraumPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length]);
 
+  // Parsed transcript: walk messages in order, parse master content into
+  // speaker-tagged lines, keep latest scene tag for the header image.
+  const turns = useMemo(() => {
+    const out: Array<
+      | { id: string; kind: "master"; lines: SpokenLine[] }
+      | { id: string; kind: "player"; name: string; text: string; mine: boolean }
+      | { id: string; kind: "system"; text: string }
+    > = [];
+    let lastSceneTag: string | null = null;
+    for (const m of messages) {
+      if (m.role === "master") {
+        const parsed = parseMasterTurn(m.content);
+        if (parsed.sceneTag) lastSceneTag = parsed.sceneTag;
+        if (parsed.lines.length > 0) {
+          out.push({ id: m.id, kind: "master", lines: parsed.lines });
+        }
+      } else if (m.role === "player") {
+        out.push({
+          id: m.id,
+          kind: "player",
+          name: m.author_hero_name ?? "Spieler",
+          text: m.content,
+          mine: m.author_user_id === user?.id,
+        });
+      } else {
+        out.push({ id: m.id, kind: "system", text: m.content });
+      }
+    }
+    return { items: out, sceneTag: lastSceneTag };
+  }, [messages, user?.id]);
+
   // Countdown for collect window: starts at first pending action.
   useEffect(() => {
     if (pending.length === 0) {
@@ -161,37 +192,6 @@ function SpielraumPage() {
   void me;
   const hasPending = pending.some((p) => p.user_id === user.id);
   const isDone = room.status === "done";
-
-  // Parsed transcript: walk messages in order, parse master content into
-  // speaker-tagged lines, keep latest scene tag for the header image.
-  const turns = useMemo(() => {
-    const out: Array<
-      | { id: string; kind: "master"; lines: SpokenLine[] }
-      | { id: string; kind: "player"; name: string; text: string; mine: boolean }
-      | { id: string; kind: "system"; text: string }
-    > = [];
-    let lastSceneTag: string | null = null;
-    for (const m of messages) {
-      if (m.role === "master") {
-        const parsed = parseMasterTurn(m.content);
-        if (parsed.sceneTag) lastSceneTag = parsed.sceneTag;
-        if (parsed.lines.length > 0) {
-          out.push({ id: m.id, kind: "master", lines: parsed.lines });
-        }
-      } else if (m.role === "player") {
-        out.push({
-          id: m.id,
-          kind: "player",
-          name: m.author_hero_name ?? "Spieler",
-          text: m.content,
-          mine: m.author_user_id === user.id,
-        });
-      } else {
-        out.push({ id: m.id, kind: "system", text: m.content });
-      }
-    }
-    return { items: out, sceneTag: lastSceneTag };
-  }, [messages, user.id]);
 
   const imgSrc = resolveSceneImage(turns.sceneTag);
 
