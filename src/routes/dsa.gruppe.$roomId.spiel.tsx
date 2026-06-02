@@ -49,6 +49,7 @@ function SpielraumPage() {
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const advanceFiredRef = useRef<string | null>(null);
 
   useEffect(() => {
     const onChange = () => setIsFullscreen(!!document.fullscreenElement);
@@ -104,13 +105,16 @@ function SpielraumPage() {
   useEffect(() => {
     if (pending.length === 0) {
       setSecondsLeft(null);
+      advanceFiredRef.current = null;
       return;
     }
+    const batchKey = `${pending[0]?.user_id ?? ""}:${pending.length}`;
     const started = Date.now();
     const tick = () => {
       const left = Math.max(0, Math.round((COLLECT_WINDOW_MS - (Date.now() - started)) / 1000));
       setSecondsLeft(left);
-      if (left <= 0) {
+      if (left <= 0 && advanceFiredRef.current !== batchKey) {
+        advanceFiredRef.current = batchKey;
         void call("advance");
       }
     };
