@@ -16,9 +16,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DsaIndexRouteImport } from './routes/dsa.index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as DsaHeldenRouteImport } from './routes/dsa.helden'
+import { Route as DsaGruppeRouteImport } from './routes/dsa.gruppe'
 import { Route as DsaSlotRouteImport } from './routes/dsa.$slot'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as DsaGruppeRoomIdRouteImport } from './routes/dsa.gruppe.$roomId'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as ApiPublicNpcMemoryUpdateRouteImport } from './routes/api/public/npc-memory-update'
 import { Route as ApiPublicNpcChatRouteImport } from './routes/api/public/npc-chat'
@@ -29,6 +31,7 @@ import { Route as ApiPublicDonationCheckoutRouteImport } from './routes/api/publ
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as DsaGruppeRoomIdSpielRouteImport } from './routes/dsa.gruppe.$roomId.spiel'
 
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
@@ -65,6 +68,11 @@ const DsaHeldenRoute = DsaHeldenRouteImport.update({
   path: '/helden',
   getParentRoute: () => DsaRoute,
 } as any)
+const DsaGruppeRoute = DsaGruppeRouteImport.update({
+  id: '/gruppe',
+  path: '/gruppe',
+  getParentRoute: () => DsaRoute,
+} as any)
 const DsaSlotRoute = DsaSlotRouteImport.update({
   id: '/$slot',
   path: '/$slot',
@@ -79,6 +87,11 @@ const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
   path: '/lovable/email/suppression',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DsaGruppeRoomIdRoute = DsaGruppeRoomIdRouteImport.update({
+  id: '/$roomId',
+  path: '/$roomId',
+  getParentRoute: () => DsaGruppeRoute,
 } as any)
 const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   id: '/api/public/stripe-webhook',
@@ -135,6 +148,11 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
+const DsaGruppeRoomIdSpielRoute = DsaGruppeRoomIdSpielRouteImport.update({
+  id: '/spiel',
+  path: '/spiel',
+  getParentRoute: () => DsaGruppeRoomIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -143,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/unsubscribe': typeof UnsubscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/dsa/$slot': typeof DsaSlotRoute
+  '/dsa/gruppe': typeof DsaGruppeRouteWithChildren
   '/dsa/helden': typeof DsaHeldenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dsa/': typeof DsaIndexRoute
@@ -153,7 +172,9 @@ export interface FileRoutesByFullPath {
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
+  '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -164,6 +185,7 @@ export interface FileRoutesByTo {
   '/unsubscribe': typeof UnsubscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/dsa/$slot': typeof DsaSlotRoute
+  '/dsa/gruppe': typeof DsaGruppeRouteWithChildren
   '/dsa/helden': typeof DsaHeldenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dsa': typeof DsaIndexRoute
@@ -174,7 +196,9 @@ export interface FileRoutesByTo {
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
+  '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -187,6 +211,7 @@ export interface FileRoutesById {
   '/unsubscribe': typeof UnsubscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/dsa/$slot': typeof DsaSlotRoute
+  '/dsa/gruppe': typeof DsaGruppeRouteWithChildren
   '/dsa/helden': typeof DsaHeldenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dsa/': typeof DsaIndexRoute
@@ -197,7 +222,9 @@ export interface FileRoutesById {
   '/api/public/npc-chat': typeof ApiPublicNpcChatRoute
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
+  '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -211,6 +238,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/api/tts'
     | '/dsa/$slot'
+    | '/dsa/gruppe'
     | '/dsa/helden'
     | '/email/unsubscribe'
     | '/dsa/'
@@ -221,7 +249,9 @@ export interface FileRouteTypes {
     | '/api/public/npc-chat'
     | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
+    | '/dsa/gruppe/$roomId'
     | '/lovable/email/suppression'
+    | '/dsa/gruppe/$roomId/spiel'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -232,6 +262,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/api/tts'
     | '/dsa/$slot'
+    | '/dsa/gruppe'
     | '/dsa/helden'
     | '/email/unsubscribe'
     | '/dsa'
@@ -242,7 +273,9 @@ export interface FileRouteTypes {
     | '/api/public/npc-chat'
     | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
+    | '/dsa/gruppe/$roomId'
     | '/lovable/email/suppression'
+    | '/dsa/gruppe/$roomId/spiel'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -254,6 +287,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/api/tts'
     | '/dsa/$slot'
+    | '/dsa/gruppe'
     | '/dsa/helden'
     | '/email/unsubscribe'
     | '/dsa/'
@@ -264,7 +298,9 @@ export interface FileRouteTypes {
     | '/api/public/npc-chat'
     | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
+    | '/dsa/gruppe/$roomId'
     | '/lovable/email/suppression'
+    | '/dsa/gruppe/$roomId/spiel'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -341,6 +377,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DsaHeldenRouteImport
       parentRoute: typeof DsaRoute
     }
+    '/dsa/gruppe': {
+      id: '/dsa/gruppe'
+      path: '/gruppe'
+      fullPath: '/dsa/gruppe'
+      preLoaderRoute: typeof DsaGruppeRouteImport
+      parentRoute: typeof DsaRoute
+    }
     '/dsa/$slot': {
       id: '/dsa/$slot'
       path: '/$slot'
@@ -361,6 +404,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/lovable/email/suppression'
       preLoaderRoute: typeof LovableEmailSuppressionRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dsa/gruppe/$roomId': {
+      id: '/dsa/gruppe/$roomId'
+      path: '/$roomId'
+      fullPath: '/dsa/gruppe/$roomId'
+      preLoaderRoute: typeof DsaGruppeRoomIdRouteImport
+      parentRoute: typeof DsaGruppeRoute
     }
     '/api/public/stripe-webhook': {
       id: '/api/public/stripe-webhook'
@@ -432,17 +482,50 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dsa/gruppe/$roomId/spiel': {
+      id: '/dsa/gruppe/$roomId/spiel'
+      path: '/spiel'
+      fullPath: '/dsa/gruppe/$roomId/spiel'
+      preLoaderRoute: typeof DsaGruppeRoomIdSpielRouteImport
+      parentRoute: typeof DsaGruppeRoomIdRoute
+    }
   }
 }
 
+interface DsaGruppeRoomIdRouteChildren {
+  DsaGruppeRoomIdSpielRoute: typeof DsaGruppeRoomIdSpielRoute
+}
+
+const DsaGruppeRoomIdRouteChildren: DsaGruppeRoomIdRouteChildren = {
+  DsaGruppeRoomIdSpielRoute: DsaGruppeRoomIdSpielRoute,
+}
+
+const DsaGruppeRoomIdRouteWithChildren = DsaGruppeRoomIdRoute._addFileChildren(
+  DsaGruppeRoomIdRouteChildren,
+)
+
+interface DsaGruppeRouteChildren {
+  DsaGruppeRoomIdRoute: typeof DsaGruppeRoomIdRouteWithChildren
+}
+
+const DsaGruppeRouteChildren: DsaGruppeRouteChildren = {
+  DsaGruppeRoomIdRoute: DsaGruppeRoomIdRouteWithChildren,
+}
+
+const DsaGruppeRouteWithChildren = DsaGruppeRoute._addFileChildren(
+  DsaGruppeRouteChildren,
+)
+
 interface DsaRouteChildren {
   DsaSlotRoute: typeof DsaSlotRoute
+  DsaGruppeRoute: typeof DsaGruppeRouteWithChildren
   DsaHeldenRoute: typeof DsaHeldenRoute
   DsaIndexRoute: typeof DsaIndexRoute
 }
 
 const DsaRouteChildren: DsaRouteChildren = {
   DsaSlotRoute: DsaSlotRoute,
+  DsaGruppeRoute: DsaGruppeRouteWithChildren,
   DsaHeldenRoute: DsaHeldenRoute,
   DsaIndexRoute: DsaIndexRoute,
 }
@@ -471,3 +554,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
