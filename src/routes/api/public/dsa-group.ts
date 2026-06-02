@@ -336,8 +336,7 @@ async function runMasterAndStore(
     nextStatus = "active";
   }
   const imageTag = parsed.sceneTag ?? room.current_image_tag ?? "forest_path";
-  const idx = await nextMessageIdx(admin, room.id);
-  await appendMessage(admin, room.id, room.turn_idx + 1, idx, "master", reply, null, null);
+  await appendMessageSafe(admin, room.id, "master", reply, null, null);
   await admin
     .from("dsa_group_rooms")
     .update({
