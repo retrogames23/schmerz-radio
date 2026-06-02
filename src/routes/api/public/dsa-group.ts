@@ -647,6 +647,21 @@ export const Route = createFileRoute("/api/public/dsa-group")({
             .update({ last_seen_at: new Date().toISOString() })
             .eq("room_id", roomId)
             .eq("user_id", uid);
+          // Wenn der Gastgeber zurückkehrt und ein Sammelfenster bereits
+          // abgelaufen ist (Spiel war pausiert, weil der Host offline war),
+          // direkt den nächsten Zug auslösen, ohne auf den nächsten Tick
+          // im Browser eines anderen Spielers zu warten.
+          if (
+            uid === room.host_user_id &&
+            room.status === "active" &&
+            room.collect_started_at
+          ) {
+            const elapsed =
+              Date.now() - new Date(room.collect_started_at).getTime();
+            if (elapsed >= COLLECT_WINDOW_MS - 1000) {
+              await advanceTurn(admin, apiKey, roomId);
+            }
+          }
           return json(200, { ok: true });
         }
 
