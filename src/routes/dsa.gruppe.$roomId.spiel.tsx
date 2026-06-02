@@ -373,7 +373,13 @@ function SpielraumPage() {
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Gesammelte Aktionen ({pending.length}):{" "}
                   {pending.map((p) => p.hero_name).join(", ")}
-                  {secondsLeft != null && ` · Tjark webt in ${secondsLeft}s …`}
+                  {!showHostPause && secondsLeft != null && ` · Tjark webt in ${secondsLeft}s …`}
+                </div>
+              )}
+              {showHostPause && (
+                <div className="rounded border-2 border-[#3a2c1a]/50 bg-[#fbf2d8] px-3 py-2 font-serif text-sm text-[#2a1f10]">
+                  ⏸ Der Gastgeber ist gerade offline — das Spiel pausiert.
+                  Sobald er zurück ist, geht es weiter.
                 </div>
               )}
               {error && (
