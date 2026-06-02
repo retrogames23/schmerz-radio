@@ -533,7 +533,7 @@ export const Route = createFileRoute("/api/public/dsa-group")({
 
         // ─── join ─────────────────────────────────────────
         if (action === "join") {
-          if (room.status !== "lobby") return json(409, { error: "Raum läuft bereits." });
+          if (room.status === "done") return json(409, { error: "Raum ist beendet." });
           if (room.password_hash) {
             const pw = typeof b.password === "string" ? b.password : "";
             if (hashPw(room.id, pw) !== room.password_hash) {
