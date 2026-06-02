@@ -49,11 +49,11 @@ function GruppeLobby() {
     if (!user) return;
     let alive = true;
     async function load() {
-      const [lobbyRes, ownedRes] = await Promise.all([
+      const [lobbyRes, ownedRes, memberRes] = await Promise.all([
         supabase
           .from("dsa_group_rooms")
           .select("id, name, setting, status, max_players, password_hash, include_npc_companions, host_user_id")
-          .eq("status", "lobby")
+          .neq("status", "done")
           .order("created_at", { ascending: false }),
         supabase
           .from("dsa_group_rooms")
@@ -61,6 +61,10 @@ function GruppeLobby() {
           .eq("host_user_id", user!.id)
           .neq("status", "done")
           .order("created_at", { ascending: false }),
+        supabase
+          .from("dsa_group_members")
+          .select("room_id, dsa_group_rooms!inner(id, name, setting, status, max_players, password_hash, include_npc_companions, host_user_id)")
+          .eq("user_id", user!.id),
       ]);
       if (!alive) return;
       if (lobbyRes.error) {
@@ -71,6 +75,10 @@ function GruppeLobby() {
       for (const r of ((lobbyRes.data ?? []) as RoomRow[])) map.set(r.id, r);
       for (const r of ((ownedRes.data ?? []) as RoomRow[])) {
         if (!map.has(r.id)) map.set(r.id, r);
+      }
+      for (const m of ((memberRes.data ?? []) as unknown as { dsa_group_rooms: RoomRow | null }[])) {
+        const r = m.dsa_group_rooms;
+        if (r && r.status !== "done" && !map.has(r.id)) map.set(r.id, r);
       }
       const rows = Array.from(map.values());
       // Mitgliederzahl pro Raum nachladen.
