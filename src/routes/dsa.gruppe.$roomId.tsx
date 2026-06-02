@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Check, Crown, LogOut, Play, UserX } from "lucide-react";
+import { ArrowLeft, Check, Crown, Dices, LogOut, Play, UserX } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getFreshAccessToken } from "@/auth/freshToken";
@@ -159,30 +159,42 @@ function VorzimmerPage() {
             {SLOT_INDICES.map((slot) => {
               const h = heroes[slot];
               const picked = myMember?.slot === slot && myMember.hero_snapshot;
+              if (!h) {
+                return (
+                  <Link
+                    key={slot}
+                    to="/dsa/$slot"
+                    params={{ slot: String(slot) }}
+                    className="rounded border border-dashed border-[#3a2c1a] bg-[#241a0e] p-3 text-left text-sm hover:bg-[#3a2c1a]"
+                  >
+                    <div className="text-[10px] uppercase opacity-60">Slot {slot}</div>
+                    <p className="mt-1 inline-flex items-center gap-1.5 font-serif italic opacity-80">
+                      <Dices className="h-3.5 w-3.5" /> Held jetzt würfeln
+                    </p>
+                    <p className="mt-1 text-[11px] opacity-60">
+                      Wird automatisch in deinem Solo-Slot {slot} gespeichert.
+                    </p>
+                  </Link>
+                );
+              }
               return (
                 <button
                   key={slot}
                   type="button"
-                  disabled={!h || busy}
+                  disabled={busy}
                   onClick={() => pickHero(slot)}
                   className={`rounded border p-3 text-left text-sm ${picked ? "border-[#c9a84c] bg-[#3a2c1a]" : "border-[#3a2c1a] bg-[#241a0e] hover:bg-[#3a2c1a]"} disabled:opacity-40`}
                 >
                   <div className="text-[10px] uppercase opacity-60">Slot {slot}</div>
-                  {h ? (
-                    <>
-                      <div className="font-serif text-base">{h.name}</div>
-                      <div className="text-xs opacity-70">{h.className}</div>
-                      <div className="mt-1 text-[11px] opacity-60">LE {h.le}/{h.leMax}{h.ae != null ? ` · AE ${h.ae}` : ""}</div>
-                    </>
-                  ) : (
-                    <p className="italic opacity-60">Leer — im Solo-Bereich würfeln</p>
-                  )}
+                  <div className="font-serif text-base">{h.name}</div>
+                  <div className="text-xs opacity-70">{h.className}</div>
+                  <div className="mt-1 text-[11px] opacity-60">LE {h.le}/{h.leMax}{h.ae != null ? ` · AE ${h.ae}` : ""}</div>
                 </button>
               );
             })}
           </div>
           <p className="mt-2 text-[11px] opacity-60">
-            Noch kein Held? <Link to="/dsa/helden" className="underline">Im Solo-Bereich einen würfeln</Link> und hier zurückkommen.
+            Helden, die du hier würfelst, stehen auch im <Link to="/dsa/helden" className="underline">Solo-Bereich</Link> bereit.
           </p>
         </section>
 
