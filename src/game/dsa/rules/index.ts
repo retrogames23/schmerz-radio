@@ -2,11 +2,13 @@ import { DSA3_RULES_BLOCK } from "./mechanics";
 import { weaponsForPrompt } from "./weapons";
 import { talentsForPrompt } from "./talents";
 import { spellsForPrompt } from "./spells";
+import { armorsForPrompt } from "./armor";
 
 export * from "./mechanics";
 export * from "./weapons";
 export * from "./talents";
 export * from "./spells";
+export * from "./armor";
 
 /**
  * Kompakter Regel-Block für den System-Prompt des LLM-Meisters.
@@ -24,6 +26,8 @@ export function buildDsa3RulesBlock(): string {
     spellsForPrompt(),
     "",
     weaponsForPrompt(),
+    "",
+    armorsForPrompt(),
     "",
     "NUTZUNG IM SPIEL:",
     "  - Fordere [CHECK: <ATTR> [+/-N]] mit passendem Modifikator aus der Tabelle oben.",
