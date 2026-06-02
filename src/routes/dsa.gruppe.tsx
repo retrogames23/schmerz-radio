@@ -5,6 +5,7 @@ import { useAuth } from "@/auth/AuthContext";
 import { AuthDialog } from "@/auth/AuthDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { DSA_SETTINGS } from "@/game/dsa/llmAdventure";
+import gruppeBg from "@/assets/dsa-gruppe-bg.jpg";
 
 const TITLE = "DSA-Gruppenabenteuer – Räume und Lobby";
 const DESCRIPTION =
@@ -142,8 +143,27 @@ function GruppeLobby() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#1a120a] text-[#f1e6c8]">
-      <header className="border-b border-[#3a2c1a] bg-[#241a0e]">
+    <div className="relative min-h-screen w-full overflow-hidden bg-[#1a120a] text-[#f1e6c8]">
+      {/* Animated atmospheric background */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
+        <div
+          className="absolute inset-0 bg-cover bg-center motion-safe:animate-[gruppeKenBurns_45s_ease-in-out_infinite_alternate]"
+          style={{ backgroundImage: `url(${gruppeBg})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1a120a]/70 via-[#1a120a]/80 to-[#1a120a]/95" />
+        <div className="absolute inset-0 motion-safe:animate-[gruppeMist_30s_ease-in-out_infinite_alternate] bg-[radial-gradient(ellipse_at_50%_60%,transparent_0%,rgba(26,18,10,0.6)_70%)]" />
+      </div>
+      <style>{`
+        @keyframes gruppeKenBurns {
+          0%   { transform: scale(1.05) translate(0, 0); }
+          100% { transform: scale(1.15) translate(-1.5%, -1%); }
+        }
+        @keyframes gruppeMist {
+          0%   { opacity: 0.55; }
+          100% { opacity: 0.85; }
+        }
+      `}</style>
+      <header className="border-b border-[#3a2c1a] bg-[#241a0e]/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
             <Link
@@ -153,7 +173,6 @@ function GruppeLobby() {
               <ArrowLeft className="h-3 w-3" /> Zurück
             </Link>
             <div>
-              <div className="text-[10px] uppercase tracking-[0.3em] opacity-60">WhisperQuest</div>
               <h1 className="font-serif text-xl sm:text-2xl">Gruppen-Lobby</h1>
             </div>
           </div>
