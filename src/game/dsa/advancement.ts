@@ -13,6 +13,7 @@ import { TALENTS } from "@/game/dsa/rules/talents";
 import { SPELLS } from "@/game/dsa/rules/spells";
 import { DSA_CLASSES, type DsaClassId } from "@/game/dsa/classes";
 import type { DsaCharacterSummary, DsaHero } from "@/game/types";
+import { defaultGearFor, type HeroGear } from "@/game/dsa/gear";
 
 export const AP_MIN = 50;
 export const AP_MAX = 300;
@@ -83,7 +84,20 @@ export function upgradeToHero(c: DsaCharacterSummary | DsaHero | null): DsaHero 
       typeof h.createdAt === "string" && h.createdAt
         ? h.createdAt
         : new Date().toISOString(),
+    gear: normalizeGear(h.gear, c.classId as DsaClassId),
   };
+}
+
+function normalizeGear(g: HeroGear | undefined, classId: DsaClassId): HeroGear {
+  if (g && typeof g === "object" && Array.isArray(g.items)) {
+    return {
+      weaponId: typeof g.weaponId === "string" ? g.weaponId : null,
+      armorId: typeof g.armorId === "string" ? g.armorId : null,
+      shieldId: typeof g.shieldId === "string" ? g.shieldId : null,
+      items: g.items.slice(0, 50),
+    };
+  }
+  return defaultGearFor(classId);
 }
 
 export function availableAp(hero: DsaHero): number {
