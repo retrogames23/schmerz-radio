@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Swords, Users } from "lucide-react";
+import { LogIn, LogOut, Swords, Users } from "lucide-react";
 import { useState } from "react";
 import landingBg from "@/assets/dsa/landing-bg.jpg";
 import { ImpressumOverlay } from "@/components/game/ImpressumOverlay";
 import { OpenSourceOverlay } from "@/components/game/OpenSourceOverlay";
 import { CreditsOverlay } from "@/components/game/CreditsOverlay";
 import { DonationModal } from "@/components/donation/DonationModal";
+import { useAuth } from "@/auth/AuthContext";
+import { AuthDialog } from "@/auth/AuthDialog";
 
 const CANONICAL = "https://whisperquest.app/dsa";
 const TITLE = "DSA-Soloabenteuer mit KI-Meister – kostenlos online spielen";
@@ -113,6 +115,7 @@ function DsaLanding() {
               DSA-Soloabenteuer mit KI-Meister
             </h1>
           </div>
+          <AuthControl />
         </div>
       </header>
 
