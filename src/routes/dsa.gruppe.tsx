@@ -1,0 +1,396 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { ArrowLeft, Lock, Plus, Users, LogIn } from "lucide-react";
+import { useAuth } from "@/auth/AuthContext";
+import { AuthDialog } from "@/auth/AuthDialog";
+import { supabase } from "@/integrations/supabase/client";
+import { DSA_SETTINGS } from "@/game/dsa/llmAdventure";
+
+const TITLE = "DSA-Gruppenabenteuer – Räume und Lobby";
+const DESCRIPTION =
+  "Tritt einer DSA-Tafelrunde bei oder eröffne deinen eigenen Raum. Zwei bis vier menschliche Spieler, KI-Meister Tjark, klassische Aventurien-Atmosphäre.";
+
+export const Route = createFileRoute("/dsa/gruppe")({
+  head: () => ({
+    meta: [
+      { title: TITLE },
+      { name: "description", content: DESCRIPTION },
+      { name: "robots", content: "noindex,follow" },
+    ],
+  }),
+  component: GruppeLobby,
+});
+
+interface RoomRow {
+  id: string;
+  name: string;
+  setting: string;
+  status: string;
+  max_players: number;
+  password_hash: string | null;
+  include_npc_companions: boolean;
+  host_user_id: string;
+  member_count?: number;
+}
+
+function GruppeLobby() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const [rooms, setRooms] = useState<RoomRow[]>([]);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [joining, setJoining] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    let alive = true;
+    async function load() {
+      const { data, error: e } = await supabase
+        .from("dsa_group_rooms")
+        .select("id, name, setting, status, max_players, password_hash, include_npc_companions, host_user_id")
+        .eq("status", "lobby")
+        .order("created_at", { ascending: false });
+      if (!alive) return;
+      if (e) {
+        setError(e.message);
+        return;
+      }
+      const rows = (data ?? []) as RoomRow[];
+      // Mitgliederzahl pro Raum nachladen.
+      const ids = rows.map((r) => r.id);
+      if (ids.length > 0) {
+        const { data: members } = await supabase
+          .from("dsa_group_members")
+          .select("room_id")
+          .in("room_id", ids);
+        const counts = new Map<string, number>();
+        for (const m of (members ?? []) as { room_id: string }[]) {
+          counts.set(m.room_id, (counts.get(m.room_id) ?? 0) + 1);
+        }
+        for (const r of rows) r.member_count = counts.get(r.id) ?? 0;
+      }
+      setRooms(rows);
+    }
+    void load();
+    // Realtime: Räume aktualisieren
+    const ch = supabase
+      .channel("dsa_group_rooms_lobby")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "dsa_group_rooms" },
+        () => void load(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "dsa_group_members" },
+        () => void load(),
+      )
+      .subscribe();
+    return () => {
+      alive = false;
+      void supabase.removeChannel(ch);
+    };
+  }, [user]);
+
+  async function handleJoin(room: RoomRow) {
+    if (!user) return;
+    setError(null);
+    let password: string | null = null;
+    if (room.password_hash) {
+      const pw = window.prompt(`Passwort für „${room.name}":`);
+      if (pw == null) return;
+      password = pw;
+    }
+    setJoining(room.id);
+    try {
+      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const resp = await fetch("/api/public/dsa-group", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ action: "join", roomId: room.id, password }),
+      });
+      const data = (await resp.json()) as { ok?: boolean; error?: string };
+      if (!resp.ok || !data.ok) {
+        setError(data.error ?? "Beitritt fehlgeschlagen.");
+        return;
+      }
+      navigate({ to: "/dsa/gruppe/$roomId", params: { roomId: room.id } });
+    } finally {
+      setJoining(null);
+    }
+  }
+
+  return (
+    <div className="min-h-screen w-full bg-[#1a120a] text-[#f1e6c8]">
+      <header className="border-b border-[#3a2c1a] bg-[#241a0e]">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
+          <div className="flex items-center gap-3">
+            <Link
+              to="/dsa"
+              className="inline-flex items-center gap-1 rounded border border-[#3a2c1a] px-2 py-1 text-[10px] uppercase tracking-wider opacity-70 hover:opacity-100"
+            >
+              <ArrowLeft className="h-3 w-3" /> Zurück
+            </Link>
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.3em] opacity-60">WhisperQuest</div>
+              <h1 className="font-serif text-xl sm:text-2xl">Gruppen-Lobby</h1>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+        {loading ? (
+          <p className="opacity-60">Lade …</p>
+        ) : !user ? (
+          <div className="rounded border border-[#3a2c1a] bg-[#241a0e] p-6 text-center">
+            <p className="mb-4 text-sm opacity-80">
+              Für den Gruppenmodus brauchst du eine Anmeldung — sonst wandert dein Held nicht zwischen Geräten.
+            </p>
+            <button
+              type="button"
+              onClick={() => setAuthOpen(true)}
+              className="inline-flex items-center gap-2 rounded border-2 border-[#c9a84c] bg-[#c9a84c] px-4 py-2 text-sm font-bold uppercase tracking-wider text-[#1a120a] hover:bg-[#e0bf65]"
+            >
+              <LogIn className="h-4 w-4" /> Anmelden
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-xs uppercase tracking-[0.3em] opacity-70">Offene Räume</h2>
+              <button
+                type="button"
+                onClick={() => setCreateOpen(true)}
+                className="inline-flex items-center gap-2 rounded border-2 border-[#c9a84c] bg-[#c9a84c] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#1a120a] hover:bg-[#e0bf65]"
+              >
+                <Plus className="h-4 w-4" /> Neuen Raum eröffnen
+              </button>
+            </div>
+
+            {error && (
+              <div className="mb-4 rounded border border-red-700/60 bg-red-900/30 p-3 text-sm text-red-200">
+                {error}
+              </div>
+            )}
+
+            {rooms.length === 0 ? (
+              <p className="rounded border border-[#3a2c1a] bg-[#241a0e] p-6 text-center text-sm opacity-70">
+                Aktuell sind keine offenen Räume verfügbar. Eröffne den ersten!
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {rooms.map((r) => {
+                  const setting = DSA_SETTINGS.find((s) => s.id === r.setting);
+                  const isHost = r.host_user_id === user.id;
+                  const full = (r.member_count ?? 0) >= r.max_players;
+                  return (
+                    <div
+                      key={r.id}
+                      className="rounded border border-[#3a2c1a] bg-[#241a0e] p-4"
+                    >
+                      <div className="mb-2 flex items-center justify-between">
+                        <h3 className="font-serif text-lg leading-tight">{r.name}</h3>
+                        {r.password_hash && <Lock className="h-3.5 w-3.5 opacity-60" />}
+                      </div>
+                      <p className="text-xs opacity-70">
+                        {setting?.title ?? r.setting}
+                        {r.include_npc_companions ? " · mit Brem & Yelva" : ""}
+                      </p>
+                      <p className="mt-2 inline-flex items-center gap-1 text-[11px] uppercase tracking-wider opacity-70">
+                        <Users className="h-3 w-3" /> {r.member_count ?? 0}/{r.max_players}
+                      </p>
+                      <button
+                        type="button"
+                        disabled={joining === r.id || (full && !isHost)}
+                        onClick={() => (isHost ? navigate({ to: "/dsa/gruppe/$roomId", params: { roomId: r.id } }) : handleJoin(r))}
+                        className="mt-3 w-full rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10] disabled:opacity-40"
+                      >
+                        {isHost ? "Zum Vorzimmer" : full ? "Voll" : joining === r.id ? "Trete bei …" : "Beitreten"}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        )}
+      </main>
+
+      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
+      {createOpen && user && (
+        <CreateRoomDialog
+          onClose={() => setCreateOpen(false)}
+          onCreated={(roomId) => {
+            setCreateOpen(false);
+            navigate({ to: "/dsa/gruppe/$roomId", params: { roomId } });
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function CreateRoomDialog({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated: (roomId: string) => void;
+}) {
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [setting, setSetting] = useState<string>("city");
+  const [wishBrief, setWishBrief] = useState("");
+  const [maxPlayers, setMaxPlayers] = useState(4);
+  const [includeCompanions, setIncludeCompanions] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const selected = DSA_SETTINGS.find((s) => s.id === setting);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (name.trim().length < 3) {
+      setError("Raumname muss mindestens 3 Zeichen lang sein.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const resp = await fetch("/api/public/dsa-group", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          action: "create",
+          name: name.trim(),
+          password: password.trim() || null,
+          setting,
+          wishBrief: selected?.requiresWish ? wishBrief.trim() : null,
+          maxPlayers,
+          includeCompanions,
+        }),
+      });
+      const data = (await resp.json()) as { ok?: boolean; roomId?: string; error?: string };
+      if (!resp.ok || !data.ok || !data.roomId) {
+        setError(data.error ?? "Raum konnte nicht erstellt werden.");
+        return;
+      }
+      onCreated(data.roomId);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+      <form
+        onSubmit={submit}
+        className="w-full max-w-lg rounded border border-[#3a2c1a] bg-[#241a0e] p-6 text-[#f1e6c8]"
+      >
+        <h2 className="mb-4 font-serif text-xl">Neuen Raum eröffnen</h2>
+        <label className="mb-3 block text-sm">
+          <span className="mb-1 block text-xs uppercase tracking-wider opacity-70">Raumname</span>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            maxLength={40}
+            className="w-full rounded border border-[#3a2c1a] bg-[#1a120a] px-3 py-2 text-sm"
+            placeholder="z.B. Layards Tafel"
+            required
+          />
+        </label>
+        <label className="mb-3 block text-sm">
+          <span className="mb-1 block text-xs uppercase tracking-wider opacity-70">Passwort (optional)</span>
+          <input
+            type="text"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            maxLength={40}
+            className="w-full rounded border border-[#3a2c1a] bg-[#1a120a] px-3 py-2 text-sm"
+            placeholder="leer = offen für alle"
+          />
+        </label>
+        <label className="mb-3 block text-sm">
+          <span className="mb-1 block text-xs uppercase tracking-wider opacity-70">Setting</span>
+          <select
+            value={setting}
+            onChange={(e) => setSetting(e.target.value)}
+            className="w-full rounded border border-[#3a2c1a] bg-[#1a120a] px-3 py-2 text-sm"
+          >
+            {DSA_SETTINGS.filter((s) => !s.donorOnly || s.id === "wish").map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.title}
+              </option>
+            ))}
+          </select>
+          {selected && <p className="mt-1 text-[11px] opacity-60">{selected.blurb}</p>}
+        </label>
+        {selected?.requiresWish && (
+          <label className="mb-3 block text-sm">
+            <span className="mb-1 block text-xs uppercase tracking-wider opacity-70">Wunsch-Beschreibung</span>
+            <textarea
+              value={wishBrief}
+              onChange={(e) => setWishBrief(e.target.value)}
+              maxLength={600}
+              rows={3}
+              className="w-full rounded border border-[#3a2c1a] bg-[#1a120a] px-3 py-2 text-sm"
+              placeholder="Was sollt ihr erleben? Tjark hält sich daran, solange es zur Aventurien-Lore passt."
+            />
+          </label>
+        )}
+        <div className="mb-3 grid grid-cols-2 gap-3">
+          <label className="block text-sm">
+            <span className="mb-1 block text-xs uppercase tracking-wider opacity-70">Max. Spieler</span>
+            <select
+              value={maxPlayers}
+              onChange={(e) => setMaxPlayers(Number(e.target.value))}
+              className="w-full rounded border border-[#3a2c1a] bg-[#1a120a] px-3 py-2 text-sm"
+            >
+              {[2, 3, 4].map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+          </label>
+          <label className="flex items-end gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={includeCompanions}
+              onChange={(e) => setIncludeCompanions(e.target.checked)}
+              className="h-4 w-4 accent-[#c9a84c]"
+            />
+            <span className="text-xs">Brem &amp; Yelva als NSC-Gefährten</span>
+          </label>
+        </div>
+        {error && (
+          <p className="mb-3 rounded border border-red-700/60 bg-red-900/30 p-2 text-xs text-red-200">{error}</p>
+        )}
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded border border-[#3a2c1a] px-3 py-2 text-xs uppercase tracking-wider opacity-70 hover:opacity-100"
+          >
+            Abbrechen
+          </button>
+          <button
+            type="submit"
+            disabled={busy}
+            className="rounded border-2 border-[#c9a84c] bg-[#c9a84c] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#1a120a] hover:bg-[#e0bf65] disabled:opacity-50"
+          >
+            {busy ? "Erstelle …" : "Erstellen"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
