@@ -683,6 +683,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           };
           const memory = await loadHeroMemory(admin, uid, heroSlot);
           const knownSpells = await loadHeroSpells(admin, uid, heroSlot);
+          const gearInfo = await loadHeroGearAndRow(admin, uid, heroSlot);
           const systemPrompt = buildMasterSystemPrompt({
             setting: settingId as DsaSettingId,
             character: characterSnap,
@@ -693,6 +694,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             memory,
             knownSpells,
             wishBrief,
+            gear: gearInfo.gear,
           });
           const opener: StoredTurn = {
             role: "user",
@@ -860,6 +862,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             memory: await loadHeroMemory(admin, uid, heroSlot),
             knownSpells: await loadHeroSpells(admin, uid, heroSlot),
             wishBrief,
+            gear: (await loadHeroGearAndRow(admin, uid, heroSlot)).gear,
           });
           const minEnd = isOpenSetting ? 0 : MIN_END_ASSISTANT_TURNS;
           const result = await callMaster(apiKey, systemPrompt, history, minEnd);
@@ -883,6 +886,23 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           const imgTag = parsed.sceneTag ?? row.current_image_tag ?? "forest_path";
 
           if (parsed.outtimeWarn) offtopicStreak = 0;
+
+          // Item-Marker des Meisters auf den Helden anwenden (nur eingeloggt).
+          let appliedGear: HeroGear | null = null;
+          if (uid && (parsed.itemsAdded.length > 0 || parsed.itemsRemoved.length > 0)) {
+            try {
+              const cur = await loadHeroGearAndRow(admin, uid, heroSlot);
+              let g: HeroGear = cur.gear ?? defaultGearFor(
+                String(characterSnap.classId),
+              );
+              for (const name of parsed.itemsRemoved) g = removeItem(g, name);
+              for (const it of parsed.itemsAdded) g = addItem(g, it);
+              await persistHeroGear(admin, uid, heroSlot, cur.rawHero, g);
+              appliedGear = g;
+            } catch (e) {
+              console.error("dsa-master apply items failed", e);
+            }
+          }
 
           // AP-Vergabe nur bei Spielende.
           let apAwarded = 0;
@@ -975,6 +995,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             status: nextStatus,
             apAwarded,
             apReason,
+            gear: appliedGear,
           });
         }
 
