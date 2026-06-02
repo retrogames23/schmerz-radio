@@ -10,6 +10,8 @@ import {
 import { SPELLS } from "@/game/dsa/rules/spells";
 import { TALENTS } from "@/game/dsa/rules/talents";
 import { upgradeToHero, availableAp } from "@/game/dsa/advancement";
+import { WEAPONS } from "@/game/dsa/rules/weapons";
+import { ARMORS } from "@/game/dsa/rules/armor";
 import { DsaHeroAdvancement } from "./DsaHeroAdvancement";
 import type { DsaHero } from "@/game/types";
 
@@ -199,6 +201,69 @@ export function DsaCharacterSheet() {
             </div>
           </section>
 
+          {/* Ausrüstung — vom Meister vergeben/gestrichen */}
+          {hero.gear && (
+            <section>
+              <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.85)] pb-1">
+                Ausrüstung
+              </div>
+              {(() => {
+                const g = hero.gear!;
+                const weapon = g.weaponId ? WEAPONS[g.weaponId] : null;
+                const armor = g.armorId ? ARMORS[g.armorId] : null;
+                const shield = g.shieldId ? ARMORS[g.shieldId] : null;
+                return (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3 dsa-typed text-[13px] dsa-ink font-semibold">
+                      <GearSlot
+                        label="Waffe"
+                        value={weapon ? `${weapon.name} (TP ${weapon.tp})` : "— unbewaffnet —"}
+                      />
+                      <GearSlot
+                        label="Rüstung"
+                        value={armor ? `${armor.name} (RS ${armor.rs})` : "— keine —"}
+                      />
+                      <GearSlot
+                        label="Schild"
+                        value={shield ? `${shield.name} (PA +${shield.paBonus ?? 0})` : "—"}
+                      />
+                    </div>
+                    <div className="dsa-typed text-[11px] uppercase tracking-widest dsa-ink-faded font-bold mb-1">
+                      Inventar
+                    </div>
+                    {g.items.length === 0 ? (
+                      <div className="dsa-typed text-[13px] dsa-ink italic font-semibold">
+                        Die Taschen sind leer.
+                      </div>
+                    ) : (
+                      <ul className="dsa-typed text-[13px] dsa-ink font-semibold space-y-1">
+                        {g.items.map((it) => (
+                          <li
+                            key={it.id}
+                            className="flex items-baseline justify-between gap-3 border-b border-[rgba(20,12,4,0.45)] py-0.5"
+                          >
+                            <span className="min-w-0">
+                              <span className="font-extrabold">{it.name}</span>
+                              {(it.count ?? 1) > 1 && (
+                                <span className="ml-1 opacity-70">×{it.count}</span>
+                              )}
+                              {it.description && (
+                                <span className="italic ml-2 opacity-80">— {it.description}</span>
+                              )}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <div className="dsa-typed text-[10px] uppercase tracking-widest dsa-ink-faded font-bold mt-2 opacity-70">
+                      Vergabe und Verlust regelt der Meister.
+                    </div>
+                  </>
+                );
+              })()}
+            </section>
+          )}
+
           {/* Talente (passend zur Klasse) */}
           {profile && (
             <section>
@@ -385,4 +450,19 @@ function classTalents(classId: string): string[] {
     default:
       return ["Hiebwaffen +6", "Schild +5", "Reiten +4", "Athletik +4"];
   }
+}
+
+function GearSlot({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="dsa-typed text-[10px] uppercase tracking-widest dsa-ink-faded font-bold mb-1">
+        {label}
+      </div>
+      <div className="dsa-box-thick flex h-10 items-center justify-center px-2">
+        <span className="font-display dsa-ink font-extrabold text-[13px] truncate">
+          {value}
+        </span>
+      </div>
+    </div>
+  );
 }
