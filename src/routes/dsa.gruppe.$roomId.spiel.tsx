@@ -34,6 +34,7 @@ interface RoomRow {
   turn_idx: number;
   summary: string;
   ap_awarded: boolean;
+  host_user_id: string;
 }
 
 const COLLECT_WINDOW_MS = 20_000;
@@ -54,6 +55,14 @@ function SpielraumPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const advanceFiredRef = useRef<string | null>(null);
+  const membersRef = useRef<MemberRow[]>([]);
+  const roomRef = useRef<RoomRow | null>(null);
+  useEffect(() => {
+    membersRef.current = members;
+  }, [members]);
+  useEffect(() => {
+    roomRef.current = room;
+  }, [room]);
 
   useEffect(() => {
     const onChange = () => setIsFullscreen(!!document.fullscreenElement);
@@ -76,7 +85,7 @@ function SpielraumPage() {
       const [{ data: r }, { data: ms }, { data: msg }, { data: pa }] = await Promise.all([
         supabase
           .from("dsa_group_rooms")
-          .select("id,name,status,turn_idx,summary,ap_awarded")
+          .select("id,name,status,turn_idx,summary,ap_awarded,host_user_id")
           .eq("id", roomId)
           .maybeSingle(),
         supabase
@@ -195,7 +204,16 @@ function SpielraumPage() {
     const tick = () => {
       const left = Math.max(0, Math.round((COLLECT_WINDOW_MS - (Date.now() - started)) / 1000));
       setSecondsLeft(left);
-      if (left <= 0 && advanceFiredRef.current !== batchKey) {
+      // Wenn der Gastgeber offline ist, NICHT vorrücken — das Spiel
+      // pausiert, bis er zurück ist (er triggert dann selbst per
+      // Heartbeat das Vorrücken serverseitig).
+      const hostNow = membersRef.current.find(
+        (m) => m.user_id === roomRef.current?.host_user_id,
+      );
+      const hostAbsentNow =
+        !hostNow ||
+        Date.now() - new Date(hostNow.last_seen_at).getTime() > 60_000;
+      if (left <= 0 && advanceFiredRef.current !== batchKey && !hostAbsentNow) {
         advanceFiredRef.current = batchKey;
         void call("advance");
       }
@@ -257,6 +275,13 @@ function SpielraumPage() {
   const mySlot = me?.slot && me.slot >= 1 && me.slot <= 3 ? me.slot : null;
   const hasPending = pending.some((p) => p.user_id === user.id);
   const isDone = room.status === "done";
+
+  const hostMember = members.find((m) => m.user_id === room.host_user_id);
+  const hostAbsent =
+    !hostMember ||
+    Date.now() - new Date(hostMember.last_seen_at).getTime() > 60_000;
+  const hostIsMe = room.host_user_id === user.id;
+  const showHostPause = hostAbsent && !hostIsMe && !isDone;
 
   const imgSrc = resolveSceneImage(turns.sceneTag);
 
@@ -348,7 +373,13 @@ function SpielraumPage() {
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Gesammelte Aktionen ({pending.length}):{" "}
                   {pending.map((p) => p.hero_name).join(", ")}
-                  {secondsLeft != null && ` · Tjark webt in ${secondsLeft}s …`}
+                  {!showHostPause && secondsLeft != null && ` · Tjark webt in ${secondsLeft}s …`}
+                </div>
+              )}
+              {showHostPause && (
+                <div className="rounded border-2 border-[#3a2c1a]/50 bg-[#fbf2d8] px-3 py-2 font-serif text-sm text-[#2a1f10]">
+                  ⏸ Der Gastgeber ist gerade offline — das Spiel pausiert.
+                  Sobald er zurück ist, geht es weiter.
                 </div>
               )}
               {error && (
