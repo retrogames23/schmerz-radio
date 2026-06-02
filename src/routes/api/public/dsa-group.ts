@@ -246,6 +246,39 @@ async function nextMessageIdx(admin: AnyClient, roomId: string): Promise<number>
   return cur + 1;
 }
 
+/**
+ * Fügt eine Nachricht ein, retried bei Konflikt auf dem
+ * (room_id, idx)-Unique-Index — schützt vor Race-Conditions, in denen
+ * zwei Auswertungen gleichzeitig die nächste idx berechnen.
+ */
+async function appendMessageSafe(
+  admin: AnyClient,
+  roomId: string,
+  role: "master" | "player" | "system",
+  content: string,
+  authorUserId: string | null,
+  authorHeroName: string | null,
+): Promise<number> {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const idx = await nextMessageIdx(admin, roomId);
+    const { error } = await admin.from("dsa_group_messages").insert({
+      room_id: roomId,
+      idx,
+      role,
+      content,
+      author_user_id: authorUserId,
+      author_hero_name: authorHeroName,
+    });
+    if (!error) return idx;
+    // 23505 = unique_violation — anderer Pfad war schneller; neu rechnen.
+    if ((error as { code?: string }).code !== "23505") {
+      throw error;
+    }
+    await new Promise((r) => setTimeout(r, 25 + attempt * 25));
+  }
+  throw new Error("appendMessageSafe: konnte nach 6 Versuchen keinen freien idx finden");
+}
+
 async function loadHistoryForLLM(
   admin: AnyClient,
   roomId: string,
