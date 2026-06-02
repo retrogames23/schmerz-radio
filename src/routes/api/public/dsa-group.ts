@@ -4,7 +4,6 @@ import { createHash } from "crypto";
 import { buildGroupMasterSystemPrompt, type GroupHero } from "@/game/dsa/group/prompt";
 import {
   DSA_SETTINGS,
-  getSetting,
   parseMasterTurn,
   type DsaSettingId,
   type StoredTurn,
