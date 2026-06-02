@@ -717,4 +717,11 @@ export interface DsaHero extends DsaCharacterSummary {
   adventuresWon: number;
   /** Zeitstempel der Erschaffung (ISO-String). */
   createdAt: string;
+  /**
+   * Ausrüstung: Waffe, Rüstung, Schild, freier Item-Topf. Wird vom
+   * LLM-Meister via [ITEM+/ITEM-]-Marker und im Charakterbogen verwaltet.
+   * Optional, weil Helden vor diesem Feld existieren — `upgradeToHero`
+   * füllt Standardausrüstung beim Laden nach.
+   */
+  gear?: import("@/game/dsa/gear").HeroGear;
 }
