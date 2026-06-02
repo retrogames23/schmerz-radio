@@ -30,6 +30,9 @@ import {
   heroCombatantFromCharacter,
   type Combatant,
 } from "@/game/dsa/combat";
+import { upgradeToHero } from "@/game/dsa/advancement";
+import type { HeroGear } from "@/game/dsa/gear";
+import type { DsaHero } from "@/game/types";
 /**
  * LLM-Tafelrunde im Gemeinschaftsraum E67. Ersetzt das alte gescriptete
  * `DsaAdventureScene`. Drei Modi:
@@ -48,6 +51,7 @@ interface ServerReply {
   status: AdventureStatus;
   apAwarded?: number;
   apReason?: string;
+  gear?: HeroGear | null;
 }
 
 interface LoadedAdventure {
@@ -139,6 +143,7 @@ export function DsaLlmAdventureScene() {
     dsaHeroSlot,
     openDsaCreator,
     creditHeroAp,
+    updateHero,
   } = useDsaHost();
   const { user, loading: authLoading } = useAuth();
   const { setMoodPool, setMood } = useMusic();
@@ -282,6 +287,11 @@ export function DsaLlmAdventureScene() {
       appendMaster(data.parsed, newTag);
       if (data.imageTag) setImageTag(data.imageTag);
       if (data.parsed.mood) setMood(data.parsed.mood);
+      // Inventar-Update vom Meister auf den Helden spiegeln.
+      if (data.gear && updateHero && dsaCharacterRef.current) {
+        const cur = upgradeToHero(dsaCharacterRef.current as DsaHero);
+        if (cur) updateHero({ ...cur, gear: data.gear });
+      }
       if (data.parsed.combat && dsaCharacterRef.current) {
         // Kampfbildschirm bauen.
         const ch = dsaCharacterRef.current;
@@ -311,7 +321,7 @@ export function DsaLlmAdventureScene() {
         }
       }
     },
-    [appendMaster, setMood, creditHeroAp],
+    [appendMaster, setMood, creditHeroAp, updateHero],
   );
 
   // Mood-Pool aktivieren, solange die Tafelrunde offen ist. Beim Schließen
