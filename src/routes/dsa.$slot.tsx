@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate, useParams, useSearch, Navigate } from "@tanstack/react-router";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect, useRef } from "react";
 import { StandaloneDsaHost } from "@/components/dsa-standalone/StandaloneDsaHost";
 import { DsaCharacterSheet } from "@/components/game/DsaCharacterSheet";
+import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { parseSlot } from "@/components/dsa-standalone/slotStorage";
 
 const DsaCharacterCreator = lazy(() =>
@@ -20,14 +21,15 @@ export const Route = createFileRoute("/dsa/$slot")({
     const raw = typeof search.returnTo === "string" ? search.returnTo : "";
     // Nur interne Pfade erlauben (kein offener Redirect).
     const returnTo = raw.startsWith("/") && !raw.startsWith("//") ? raw : "";
-    return { returnTo };
+    const view = search.view === "sheet" ? "sheet" : undefined;
+    return { returnTo, view };
   },
   component: SlotPage,
 });
 
 function SlotPage() {
   const { slot: slotRaw } = useParams({ from: "/dsa/$slot" });
-  const { returnTo } = useSearch({ from: "/dsa/$slot" });
+  const { returnTo, view } = useSearch({ from: "/dsa/$slot" });
   const navigate = useNavigate();
   const slot = parseSlot(slotRaw);
   if (!slot) return <Navigate to="/dsa" />;
@@ -39,6 +41,19 @@ function SlotPage() {
   const onCharacterCreated = returnTo
     ? () => navigate({ to: returnTo })
     : undefined;
+
+  // Reiner Bogen-Modus: nur den Charakterbogen anzeigen (kein Creator,
+  // keine Abenteuer-Scene), damit das Öffnen aus dem Multiplayer-
+  // Spielraum nicht versehentlich ein Solo-Abenteuer startet.
+  if (view === "sheet") {
+    return (
+      <div className="min-h-screen w-full bg-[#1a120a]">
+        <StandaloneDsaHost slot={slot} onExit={exit}>
+          <SheetOnly onClose={exit} />
+        </StandaloneDsaHost>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full bg-[#1a120a]">
@@ -55,4 +70,21 @@ function SlotPage() {
       </StandaloneDsaHost>
     </div>
   );
+}
+
+function SheetOnly({ onClose }: { onClose: () => void }) {
+  const { openDsaSheet, dsaSheetOpen } = useDsaHost();
+  const wasOpenRef = useRef(false);
+  useEffect(() => {
+    openDsaSheet();
+  }, [openDsaSheet]);
+  // Wenn der Bogen geschlossen wird (z. B. via X/ESC), zurück navigieren.
+  useEffect(() => {
+    if (dsaSheetOpen) {
+      wasOpenRef.current = true;
+      return;
+    }
+    if (wasOpenRef.current) onClose();
+  }, [dsaSheetOpen, onClose, wasOpenRef]);
+  return <DsaCharacterSheet />;
 }
