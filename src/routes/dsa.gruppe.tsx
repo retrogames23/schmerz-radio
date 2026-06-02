@@ -253,6 +253,7 @@ function GruppeLobby() {
                   const setting = DSA_SETTINGS.find((s) => s.id === r.setting);
                   const isHost = r.host_user_id === user.id;
                   const full = (r.member_count ?? 0) >= r.max_players;
+                  const isActive = r.status !== "lobby";
                   return (
                     <div
                       key={r.id}
@@ -265,6 +266,7 @@ function GruppeLobby() {
                       <p className="text-xs opacity-70">
                         {setting?.title ?? r.setting}
                         {r.include_npc_companions ? " · mit Brem & Yelva" : ""}
+                        {isActive ? ` · läuft (${r.status})` : ""}
                       </p>
                       <p className="mt-2 inline-flex items-center gap-1 text-[11px] uppercase tracking-wider opacity-70">
                         <Users className="h-3 w-3" /> {r.member_count ?? 0}/{r.max_players}
@@ -272,11 +274,25 @@ function GruppeLobby() {
                       <div className="mt-3 flex gap-2">
                         <button
                           type="button"
-                          disabled={joining === r.id || (full && !isHost)}
-                          onClick={() => (isHost ? navigate({ to: "/dsa/gruppe/$roomId", params: { roomId: r.id } }) : handleJoin(r))}
+                          disabled={joining === r.id || (full && !isHost && !isActive)}
+                          onClick={() =>
+                            isHost || isActive
+                              ? navigate({ to: "/dsa/gruppe/$roomId", params: { roomId: r.id } })
+                              : handleJoin(r)
+                          }
                           className="flex-1 rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10] disabled:opacity-40"
                         >
-                          {isHost ? "Zum Vorzimmer" : full ? "Voll" : joining === r.id ? "Trete bei …" : "Beitreten"}
+                          {isHost
+                            ? isActive
+                              ? "Weiterspielen"
+                              : "Zum Vorzimmer"
+                            : isActive
+                              ? "Wieder einsteigen"
+                              : full
+                                ? "Voll"
+                                : joining === r.id
+                                  ? "Trete bei …"
+                                  : "Beitreten"}
                         </button>
                         {isHost && (
                           <button
