@@ -1,6 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Swords, Users } from "lucide-react";
+import { useState } from "react";
 import landingBg from "@/assets/dsa/landing-bg.jpg";
+import { ImpressumOverlay } from "@/components/game/ImpressumOverlay";
+import { OpenSourceOverlay } from "@/components/game/OpenSourceOverlay";
+import { CreditsOverlay } from "@/components/game/CreditsOverlay";
+import { DonationModal } from "@/components/donation/DonationModal";
 
 const CANONICAL = "https://whisperquest.app/dsa";
 const TITLE = "DSA-Soloabenteuer mit KI-Meister – kostenlos online spielen";
@@ -108,12 +113,6 @@ function DsaLanding() {
               DSA-Soloabenteuer mit KI-Meister
             </h1>
           </div>
-          <Link
-            to="/"
-            className="text-[10px] uppercase tracking-wider opacity-70 hover:opacity-100"
-          >
-            Zum Stammspiel
-          </Link>
         </div>
       </header>
 
@@ -173,11 +172,92 @@ function DsaLanding() {
         </div>
       </section>
 
-      <footer className="relative z-10 border-t border-[#3a2c1a] py-4 text-center text-[10px] uppercase tracking-wider opacity-60">
-        <Link to="/" className="hover:opacity-100">
-          Zum Stammspiel
-        </Link>
-      </footer>
+      <DsaFooter />
     </div>
+  );
+}
+
+function DsaFooter() {
+  const [impressumOpen, setImpressumOpen] = useState(false);
+  const [ossOpen, setOssOpen] = useState(false);
+  const [creditsOpen, setCreditsOpen] = useState(false);
+  const [donationOpen, setDonationOpen] = useState(false);
+
+  return (
+    <footer className="relative z-10 border-t border-[#3a2c1a] bg-[#1a120a]/80 px-4 py-6 sm:px-6">
+      <div className="mx-auto max-w-3xl space-y-4 text-center">
+        <p className="text-sm leading-relaxed text-[#f1e6c8]/80">
+          Dieses DSA-Online-Abenteuer ist ein Spiel innerhalb des
+          Point&amp;Click-Adventures{" "}
+          <a
+            href="https://whisperquest.app/"
+            className="underline decoration-[#c9a84c]/60 underline-offset-2 hover:text-[#c9a84c]"
+          >
+            Whisper Quest
+          </a>
+          , kann aber auch unabhängig gespielt werden.
+        </p>
+
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] uppercase tracking-[0.2em] text-[#f1e6c8]/70">
+          <button
+            type="button"
+            onClick={() => setDonationOpen(true)}
+            className="transition hover:text-[#c9a84c]"
+          >
+            ☕ Buy me a coffee
+          </button>
+          <span aria-hidden="true" className="opacity-40">·</span>
+          <a
+            href="https://lovable.dev/invite/LN0I260"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 transition hover:text-[#c9a84c]"
+          >
+            <span className="text-base leading-none">♥</span>
+            <span>Built with Lovable</span>
+          </a>
+          <span aria-hidden="true" className="opacity-40">·</span>
+          <button
+            type="button"
+            onClick={() => setImpressumOpen(true)}
+            className="transition hover:text-[#c9a84c]"
+          >
+            Impressum
+          </button>
+          <span aria-hidden="true" className="opacity-40">·</span>
+          <button
+            type="button"
+            onClick={() => setCreditsOpen(true)}
+            className="transition hover:text-[#c9a84c]"
+          >
+            Inspirationen &amp; Dank
+          </button>
+          <span aria-hidden="true" className="opacity-40">·</span>
+          <a
+            href="mailto:stephan.doerner@posteo.de"
+            className="transition hover:text-[#c9a84c]"
+          >
+            Kontakt: stephan.doerner@posteo.de
+          </a>
+          <span aria-hidden="true" className="opacity-40">·</span>
+          <button
+            type="button"
+            onClick={() => setOssOpen(true)}
+            className="transition hover:text-[#c9a84c]"
+          >
+            Freie-Software-Komponenten &amp; Lizenzen
+          </button>
+        </div>
+      </div>
+
+      <ImpressumOverlay open={impressumOpen} onClose={() => setImpressumOpen(false)} />
+      <OpenSourceOverlay open={ossOpen} onClose={() => setOssOpen(false)} />
+      <CreditsOverlay open={creditsOpen} onClose={() => setCreditsOpen(false)} />
+      <DonationModal
+        open={donationOpen}
+        onClose={() => setDonationOpen(false)}
+        variant="manual"
+      />
+    </footer>
   );
 }
