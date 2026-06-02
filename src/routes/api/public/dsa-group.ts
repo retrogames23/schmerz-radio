@@ -724,8 +724,7 @@ export const Route = createFileRoute("/api/public/dsa-group")({
             .eq("user_id", uid);
 
           // Spieler-Zeile auch ins Transkript als info.
-          const idx = await nextMessageIdx(admin, roomId);
-          await appendMessage(admin, roomId, room.turn_idx, idx, "player", text, uid, me.hero_snapshot.name);
+          await appendMessageSafe(admin, roomId, "player", text, uid, me.hero_snapshot.name);
 
           // Sammelfenster setzen, falls erste Aktion der Runde.
           if (!room.collect_started_at) {
