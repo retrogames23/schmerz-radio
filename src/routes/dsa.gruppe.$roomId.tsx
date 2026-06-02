@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Check, Crown, LogOut, Play, UserX } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { getFreshAccessToken } from "@/auth/freshToken";
 import {
   SLOT_INDICES,
   type SlotIndex,
@@ -81,7 +82,11 @@ function VorzimmerPage() {
     setBusy(true);
     setError(null);
     try {
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const token = await getFreshAccessToken();
+      if (!token) {
+        setError("Bitte melde dich erneut an.");
+        return false;
+      }
       const resp = await fetch("/api/public/dsa-group", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
