@@ -327,7 +327,11 @@ function CreateRoomDialog({
     setBusy(true);
     setError(null);
     try {
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const token = await getFreshAccessToken();
+      if (!token) {
+        setError("Bitte melde dich erneut an, bevor du einen Raum erstellst.");
+        return;
+      }
       const resp = await fetch("/api/public/dsa-group", {
         method: "POST",
         headers: {
