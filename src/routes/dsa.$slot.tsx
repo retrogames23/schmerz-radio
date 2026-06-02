@@ -73,7 +73,7 @@ function SlotPage() {
 }
 
 function SheetOnly({ onClose }: { onClose: () => void }) {
-  const { openDsaSheet, dsaSheetOpen, dsaCharacter } = useDsaHost();
+  const { openDsaSheet, dsaSheetOpen } = useDsaHost();
   const wasOpenRef = useRef(false);
   useEffect(() => {
     openDsaSheet();
@@ -86,9 +86,5 @@ function SheetOnly({ onClose }: { onClose: () => void }) {
     }
     if (wasOpenRef.current) onClose();
   }, [dsaSheetOpen, onClose, wasOpenRef]);
-  // Wenn (noch) kein Held im Slot liegt, lieber direkt zurück.
-  useEffect(() => {
-    if (!dsaCharacter) onClose();
-  }, [dsaCharacter, onClose]);
   return <DsaCharacterSheet />;
 }
