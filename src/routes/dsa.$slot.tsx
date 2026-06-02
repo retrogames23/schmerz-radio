@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useParams, useSearch, Navigate } from "@tanstack/react-router";
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect, useRef } from "react";
 import { StandaloneDsaHost } from "@/components/dsa-standalone/StandaloneDsaHost";
 import { DsaCharacterSheet } from "@/components/game/DsaCharacterSheet";
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
@@ -74,10 +74,7 @@ function SlotPage() {
 
 function SheetOnly({ onClose }: { onClose: () => void }) {
   const { openDsaSheet, dsaSheetOpen, dsaCharacter } = useDsaHost();
-  const wasOpenRef = (function useRef() {
-    // Inline useRef ohne Top-Level-Import: nutze React via Hook.
-    return { current: false };
-  })();
+  const wasOpenRef = useRef(false);
   useEffect(() => {
     openDsaSheet();
   }, [openDsaSheet]);
