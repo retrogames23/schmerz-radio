@@ -618,17 +618,13 @@ export const Route = createFileRoute("/api/public/dsa-group")({
             .update({ status: "active" })
             .eq("id", roomId);
 
-          // Eröffnung anfordern.
-          const setting = getSetting(room.setting)!;
-          const opener: StoredTurn = {
-            role: "user",
+          // Eröffnung anfordern (Cue nur an den Meister, nicht ins Transkript).
+          const opener = {
             content:
               "(SPIELLEITER-CUE: Eröffne das Gruppenabenteuer. Begrüße kurz alle Helden namentlich (1 [TJARK]-Satz), weise darauf hin, dass jeder seine Aktion eintippt und du ALLE Aktionen einer Runde gemeinsam auswertest. Setze die Szene mit [SCENE: …] in 2–4 Sätzen. Schließe mit einer offenen Frage „Was tut ihr?“.)",
           };
-          const idx = await nextMessageIdx(admin, roomId);
-          await appendMessage(admin, roomId, 0, idx, "system", opener.content, null, null);
           const freshRoom = (await fetchRoom(admin, roomId))!;
-          const r = await runMasterAndStore(admin, apiKey, freshRoom, members, null);
+          const r = await runMasterAndStore(admin, apiKey, freshRoom, members, opener);
           if (!r.ok) {
             // Rollback Status, damit der Host es erneut versuchen kann.
             await admin.from("dsa_group_rooms").update({ status: "lobby" }).eq("id", roomId);
