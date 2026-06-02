@@ -276,9 +276,11 @@ function GruppeLobby() {
                           type="button"
                           disabled={joining === r.id || (full && !isHost && !isActive)}
                           onClick={() =>
-                            isHost || isActive
-                              ? navigate({ to: "/dsa/gruppe/$roomId", params: { roomId: r.id } })
-                              : handleJoin(r)
+                            isActive
+                              ? navigate({ to: "/dsa/gruppe/$roomId/spiel", params: { roomId: r.id } })
+                              : isHost
+                                ? navigate({ to: "/dsa/gruppe/$roomId", params: { roomId: r.id } })
+                                : handleJoin(r)
                           }
                           className="flex-1 rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10] disabled:opacity-40"
                         >

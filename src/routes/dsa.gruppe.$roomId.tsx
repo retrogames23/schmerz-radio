@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, useNavigate, useParams, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate, Outlet, useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Check, Crown, Dices, LogOut, Play, UserX } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
@@ -73,11 +73,11 @@ function VorzimmerPage() {
     };
   }, [roomId, user, authLoading, navigate]);
 
-  useEffect(() => {
-    if (room?.status === "active") {
-      navigate({ to: "/dsa/gruppe/$roomId/spiel", params: { roomId } });
-    }
-  }, [room?.status, roomId, navigate]);
+  // Bei aktiven/abgeschlossenen Räumen direkt ins Spiel — kein
+  // Vorzimmer-Flash, keine "Start"-Buttons, die 409 werfen.
+  if (room && room.status !== "lobby" && !pathname.endsWith("/spiel")) {
+    return <Navigate to="/dsa/gruppe/$roomId/spiel" params={{ roomId }} replace />;
+  }
 
   async function call(action: string, extra: Record<string, unknown> = {}) {
     setBusy(true);

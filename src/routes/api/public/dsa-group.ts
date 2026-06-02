@@ -246,6 +246,39 @@ async function nextMessageIdx(admin: AnyClient, roomId: string): Promise<number>
   return cur + 1;
 }
 
+/**
+ * Fügt eine Nachricht ein, retried bei Konflikt auf dem
+ * (room_id, idx)-Unique-Index — schützt vor Race-Conditions, in denen
+ * zwei Auswertungen gleichzeitig die nächste idx berechnen.
+ */
+async function appendMessageSafe(
+  admin: AnyClient,
+  roomId: string,
+  role: "master" | "player" | "system",
+  content: string,
+  authorUserId: string | null,
+  authorHeroName: string | null,
+): Promise<number> {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const idx = await nextMessageIdx(admin, roomId);
+    const { error } = await admin.from("dsa_group_messages").insert({
+      room_id: roomId,
+      idx,
+      role,
+      content,
+      author_user_id: authorUserId,
+      author_hero_name: authorHeroName,
+    });
+    if (!error) return idx;
+    // 23505 = unique_violation — anderer Pfad war schneller; neu rechnen.
+    if ((error as { code?: string }).code !== "23505") {
+      throw error;
+    }
+    await new Promise((r) => setTimeout(r, 25 + attempt * 25));
+  }
+  throw new Error("appendMessageSafe: konnte nach 6 Versuchen keinen freien idx finden");
+}
+
 async function loadHistoryForLLM(
   admin: AnyClient,
   roomId: string,
@@ -303,8 +336,7 @@ async function runMasterAndStore(
     nextStatus = "active";
   }
   const imageTag = parsed.sceneTag ?? room.current_image_tag ?? "forest_path";
-  const idx = await nextMessageIdx(admin, room.id);
-  await appendMessage(admin, room.id, room.turn_idx + 1, idx, "master", reply, null, null);
+  await appendMessageSafe(admin, room.id, "master", reply, null, null);
   await admin
     .from("dsa_group_rooms")
     .update({
@@ -692,8 +724,7 @@ export const Route = createFileRoute("/api/public/dsa-group")({
             .eq("user_id", uid);
 
           // Spieler-Zeile auch ins Transkript als info.
-          const idx = await nextMessageIdx(admin, roomId);
-          await appendMessage(admin, roomId, room.turn_idx, idx, "player", text, uid, me.hero_snapshot.name);
+          await appendMessageSafe(admin, roomId, "player", text, uid, me.hero_snapshot.name);
 
           // Sammelfenster setzen, falls erste Aktion der Runde.
           if (!room.collect_started_at) {
@@ -751,8 +782,20 @@ async function advanceTurn(
   apiKey: string,
   roomId: string,
 ): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
-  const room = await fetchRoom(admin, roomId);
-  if (!room) return { ok: false, status: 404, error: "Raum weg." };
+  // Atomar das Sammelfenster zuklappen — nur ein Aufrufer darf
+  // weitermachen, sonst entstehen doppelte Master-Wenden.
+  const { data: claimed } = await admin
+    .from("dsa_group_rooms")
+    .update({ collect_started_at: null })
+    .eq("id", roomId)
+    .not("collect_started_at", "is", null)
+    .select("*")
+    .maybeSingle();
+  const room = (claimed as RoomRow | null) ?? null;
+  if (!room) {
+    // Sammelfenster war bereits abgeräumt → anderer Pfad hat übernommen.
+    return { ok: true };
+  }
   const members = await fetchMembers(admin, roomId);
   const { data: pa } = await admin
     .from("dsa_group_pending_actions")
