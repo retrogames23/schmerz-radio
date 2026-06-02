@@ -405,7 +405,6 @@ export const Route = createFileRoute("/api/public/dsa-group")({
         const { data: u, error: authErr } = await userClient.auth.getUser(userToken);
         if (authErr || !u?.user?.id) return json(401, { error: "Ungültiges Token." });
         const uid = u.user.id;
-        const userEmail = u.user.email ?? "";
 
         let body: unknown;
         try {
