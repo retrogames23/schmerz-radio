@@ -14,6 +14,7 @@ import {
   type SpellFocus,
 } from "@/game/dsa/combat";
 import { SPELLS } from "@/game/dsa/rules/spells";
+import type { CombatIntent } from "@/game/dsa/combatIntent";
 import { CombatantCard } from "./dsa/CombatantCard";
 import { ActionIndicator } from "./dsa/ActionIndicator";
 import { DieBox } from "./dsa/DieBox";
@@ -44,11 +45,13 @@ export function DsaCombatInteractive({
   heroes,
   foes,
   player,
+  intent,
   onDone,
 }: {
   heroes: Combatant[];
   foes: Combatant[];
   player: PlayerStats;
+  intent?: CombatIntent | null;
   onDone: (r: CombatDoneResult) => void;
 }) {
   // Persistenter State des Kampfes (mutiert von resolveRound).
@@ -56,6 +59,7 @@ export function DsaCombatInteractive({
     createCombatState(
       heroes.map((h) => ({ ...h })),
       foes.map((f) => ({ ...f })),
+      intent ?? null,
     ),
   );
   const [tactic, setTactic] = useState<Tactic>("balanced");
@@ -86,6 +90,7 @@ export function DsaCombatInteractive({
     if (!queueExhausted) return;
     const newEvents = resolveRound(stateRef.current, tacticRef.current, player, {
       spellFocus: spellFocusRef.current,
+      intent: intent ?? null,
     });
     if (newEvents.length === 0) return;
     setEvents((prev) => [...prev, ...newEvents]);
