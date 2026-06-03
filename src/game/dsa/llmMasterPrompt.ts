@@ -1,5 +1,5 @@
 import { DSA_LORE_BRIEF } from "./llmLore";
-import { DSA_SCENE_TAGS } from "./sceneImages";
+import { DSA_SCENE_TAGS, formatSceneCatalogForPrompt } from "./sceneImages";
 import { ENEMY_STATS } from "./combat";
 import { getSetting, type DsaSettingId } from "./llmAdventure";
 import { DSA_MOODS } from "@/audio/dsaMusic";
@@ -67,7 +67,7 @@ export function buildMasterSystemPrompt({ setting, character, summary, offtopicS
   const isSandbox = setting === "sandbox";
   const isWish = setting === "wish";
   const isOpen = isSandbox || isWish;
-  const sceneTagList = DSA_SCENE_TAGS.join(", ");
+  const sceneCatalog = formatSceneCatalogForPrompt();
   const enemyIdList = Object.keys(ENEMY_STATS).join(", ");
   const moodList = DSA_MOODS.join(", ");
   const attrLine = (Object.entries(character.attrs) as [string, number][])
@@ -335,7 +335,9 @@ AUSGABEFORMAT — STRIKT:
     [YELVA] Deine Mutter war Diebin, Brem.
 
   Optionale Marker (alle in eckigen Klammern, je in eigener Zeile):
-    [SCENE: <tag>]            wechselt die Hintergrundillustration. Erlaubte Tags: ${sceneTagList}.
+    [SCENE: <tag>]            wechselt die Hintergrundillustration. Wähle aus diesem Katalog (jeder Tag
+                              hat eine Faustregel, WANN er passt):
+${sceneCatalog}
                               SEHR STRIKT: [SCENE] ist die Ausnahme, NICHT die Regel. Standardverhalten = KEIN [SCENE].
                               Setze [SCENE: …] NUR dann, wenn ein Tag den aktuellen Schauplatz UND die Stimmung
                               eindeutig, wörtlich und unverwechselbar trifft. Beispiel: Eine Hafengasse bei Nacht ist
