@@ -12,6 +12,7 @@ import {
 import type { DsaCharacterSummary } from "@/game/types";
 import { AP_DEFAULTS } from "@/game/dsa/advancement";
 import { defaultGearFor, type HeroGear } from "@/game/dsa/gear";
+import { callChatWithLoreTool } from "@/game/dsa/lore/tool";
 
 /**
  * Server-Route für das DSA-Gruppenabenteuer (Mehrspieler-Modus).
