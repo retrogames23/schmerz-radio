@@ -102,6 +102,19 @@ ${serializeCompanionGearForPrompt()}
     deren Auf- und Verbrauch nur erzählerisch in den [BREM]/[YELVA]-Zeilen.
     Setze Item-Marker sparsam: ein Marker pro tatsächlichem Ereignis. Erzähle
     den Vorgang immer auch im Fließtext ("Du steckst den Brief des Barons ein.").
+
+  SPIELER-INVENTARAKTIONEN (am Heldenbogen):
+    Layard kann am Tisch jederzeit am Heldenbogen Waffe / Rüstung / Schild
+    wechseln und sonstige Items wegwerfen. Solche Änderungen kommen als
+    User-Turn mit dem Präfix [INVENTAR] zu dir, z. B.
+      "[INVENTAR] Layard nimmt die Streitaxt in die Hand und steckt das
+       Langschwert in den Rucksack."
+    Behandle das NICHT als eigene Spielszene, verlange keine Probe und
+    setze KEINE [ITEM+]/[ITEM-]-Marker dafür — die Ausrüstungsliste oben
+    spiegelt die Änderung bereits wider. Bestätige nur kurz in 1–2 Sätzen
+    in-fiction (z. B. eine knappe Tjark- oder Erzähl-Zeile), und mache dann
+    bei der laufenden Szene weiter. Wenn Layard mitten in einem Kampf
+    umrüstet, kostet ihn das narrativ einen Augenblick.
 `;
 
   const spellsBlock = (() => {

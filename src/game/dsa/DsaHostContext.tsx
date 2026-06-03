@@ -54,6 +54,13 @@ export interface DsaHostValue {
    * Speicher des Slots).
    */
   updateHero?: (hero: DsaHero) => void;
+
+  /**
+   * Schickt dem laufenden LLM-Meister eine Out-of-Band-Notiz (z. B. wenn
+   * Layard am Heldenbogen die Waffe wechselt oder ein Item wegwirft).
+   * Optional — nur Pfade mit aktiver Master-Session implementieren das.
+   */
+  notifyMaster?: (note: string) => void;
 }
 
 const DsaHostOverrideContext = createContext<DsaHostValue | null>(null);

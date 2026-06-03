@@ -225,6 +225,130 @@ export function removeItem(gear: HeroGear, idOrName: string): HeroGear {
   return { ...gear, items };
 }
 
+/** Wirft das Item mit der gegebenen id raus (genaues Match). */
+export function discardItemById(gear: HeroGear, id: string): HeroGear {
+  const idx = gear.items.findIndex((it) => it.id === id);
+  if (idx < 0) return gear;
+  const items = [...gear.items];
+  items.splice(idx, 1);
+  return { ...gear, items };
+}
+
+/**
+ * Rüstet eine Waffe aus dem Inventar aus. Die bisherige Hauptwaffe wandert
+ * zurück ins Inventar (mit weaponId-Marker, damit man sie wieder anlegen
+ * kann). Items ohne weaponId-Marker bleiben unverändert.
+ */
+export function equipWeapon(gear: HeroGear, itemId: string): HeroGear {
+  const idx = gear.items.findIndex((it) => it.id === itemId && it.weaponId);
+  if (idx < 0) return gear;
+  const target = gear.items[idx];
+  const items = gear.items.filter((_, i) => i !== idx);
+  const prevId = gear.weaponId;
+  if (prevId) {
+    const w = WEAPONS[prevId];
+    if (w && items.length < MAX_GEAR_ITEMS) {
+      items.push({
+        id: `weapon_${prevId}`,
+        name: w.name,
+        description: `Waffe · TP ${w.tp}`,
+        weaponId: prevId,
+      });
+    }
+  }
+  return { ...gear, weaponId: target.weaponId!, items };
+}
+
+/** Legt die Waffe ab — Slot wird leer, Waffe als Item ins Inventar. */
+export function unequipWeapon(gear: HeroGear): HeroGear {
+  const prevId = gear.weaponId;
+  if (!prevId) return gear;
+  const w = WEAPONS[prevId];
+  const items = [...gear.items];
+  if (w && items.length < MAX_GEAR_ITEMS) {
+    items.push({
+      id: `weapon_${prevId}`,
+      name: w.name,
+      description: `Waffe · TP ${w.tp}`,
+      weaponId: prevId,
+    });
+  }
+  return { ...gear, weaponId: null, items };
+}
+
+/** Rüstet eine Rüstung aus dem Inventar an; bisherige wandert zurück. */
+export function equipArmor(gear: HeroGear, itemId: string): HeroGear {
+  const idx = gear.items.findIndex((it) => it.id === itemId && it.armorId);
+  if (idx < 0) return gear;
+  const target = gear.items[idx];
+  const items = gear.items.filter((_, i) => i !== idx);
+  const prevId = gear.armorId;
+  if (prevId) {
+    const a = ARMORS[prevId];
+    if (a && items.length < MAX_GEAR_ITEMS) {
+      items.push({
+        id: `armor_${prevId}`,
+        name: a.name,
+        description: `Rüstung · RS ${a.rs}`,
+        armorId: prevId,
+      });
+    }
+  }
+  return { ...gear, armorId: target.armorId!, items };
+}
+
+export function unequipArmor(gear: HeroGear): HeroGear {
+  const prevId = gear.armorId;
+  if (!prevId) return gear;
+  const a = ARMORS[prevId];
+  const items = [...gear.items];
+  if (a && items.length < MAX_GEAR_ITEMS) {
+    items.push({
+      id: `armor_${prevId}`,
+      name: a.name,
+      description: `Rüstung · RS ${a.rs}`,
+      armorId: prevId,
+    });
+  }
+  return { ...gear, armorId: null, items };
+}
+
+export function equipShield(gear: HeroGear, itemId: string): HeroGear {
+  const idx = gear.items.findIndex((it) => it.id === itemId && it.shieldId);
+  if (idx < 0) return gear;
+  const target = gear.items[idx];
+  const items = gear.items.filter((_, i) => i !== idx);
+  const prevId = gear.shieldId;
+  if (prevId) {
+    const s = ARMORS[prevId];
+    if (s && items.length < MAX_GEAR_ITEMS) {
+      items.push({
+        id: `shield_${prevId}`,
+        name: s.name,
+        description: `Schild · PA+${s.paBonus ?? 0}`,
+        shieldId: prevId,
+      });
+    }
+  }
+  return { ...gear, shieldId: target.shieldId!, items };
+}
+
+export function unequipShield(gear: HeroGear): HeroGear {
+  const prevId = gear.shieldId;
+  if (!prevId) return gear;
+  const s = ARMORS[prevId];
+  const items = [...gear.items];
+  if (s && items.length < MAX_GEAR_ITEMS) {
+    items.push({
+      id: `shield_${prevId}`,
+      name: s.name,
+      description: `Schild · PA+${s.paBonus ?? 0}`,
+      shieldId: prevId,
+    });
+  }
+  return { ...gear, shieldId: null, items };
+}
+
 /** Kompakte Textzeile für den System-Prompt. */
 export function serializeGearForPrompt(gear: HeroGear): string {
   const weapon = gear.weaponId && WEAPONS[gear.weaponId];
