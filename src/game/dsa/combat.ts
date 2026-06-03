@@ -507,11 +507,11 @@ export const TACTIC_LABELS: Record<Tactic, { title: string; blurb: string }> = {
   },
   aggressive: {
     title: "Aggressiver Vorstoß",
-    blurb: "+2 AT · +2 TP · −3 PA. Schneller fertig, aber gefährlicher.",
+    blurb: "+2 AT · +2 TP · −4 PA. Schneller fertig, aber spürbar gefährlicher.",
   },
   defensive: {
     title: "Defensives Taktieren",
-    blurb: "+3 PA · −2 AT · −2 TP. Dauert länger, sicherer.",
+    blurb: "+4 PA · −2 AT. Dauert länger, aber deutlich sicherer.",
   },
   cunning: {
     title: "Umgebung nutzen",
@@ -753,9 +753,9 @@ export function resolveRound(
   if (tactic === "balanced") {
     mods.heroAt += 1; mods.heroPa += 1;
   } else if (tactic === "aggressive") {
-    mods.heroAt += 2; mods.heroTp += 2; mods.heroPa -= 3;
+    mods.heroAt += 2; mods.heroTp += 2; mods.heroPa -= 4;
   } else if (tactic === "defensive") {
-    mods.heroPa += 3; mods.heroAt -= 2; mods.heroTp -= 2;
+    mods.heroPa += 4; mods.heroAt -= 2;
   } else if (tactic === "cunning") {
     const roll = d20();
     const success = roll <= player.KL && roll !== 20;
