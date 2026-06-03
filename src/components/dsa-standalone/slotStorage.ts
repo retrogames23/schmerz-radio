@@ -1,8 +1,14 @@
 import type { DsaCharacterSummary, DsaHero } from "@/game/types";
 import { upgradeToHero } from "@/game/dsa/advancement";
 
-export type SlotIndex = 1 | 2 | 3;
-export const SLOT_INDICES: SlotIndex[] = [1, 2, 3];
+export type SlotIndex = 1 | 2 | 3 | 4 | 5 | 6;
+export const SLOT_INDICES: SlotIndex[] = [1, 2, 3, 4, 5, 6];
+/** Slots 1-3 stehen allen zur Verfügung, 4-6 nur Unterstützer*innen. */
+export const FREE_SLOT_INDICES: SlotIndex[] = [1, 2, 3];
+export const DONOR_SLOT_INDICES: SlotIndex[] = [4, 5, 6];
+export function isDonorSlot(slot: SlotIndex): boolean {
+  return slot >= 4;
+}
 
 const KEY_PREFIX = "dsa.standalone.slot-";
 const SESSION_KEY_PREFIX = "dsa.standalone.session-";
@@ -51,6 +57,9 @@ const SLOT_UUIDS: Record<SlotIndex, string> = {
   1: "d5a51071-0000-4000-8000-000000000001",
   2: "d5a51072-0000-4000-8000-000000000002",
   3: "d5a51073-0000-4000-8000-000000000003",
+  4: "d5a51074-0000-4000-8000-000000000004",
+  5: "d5a51075-0000-4000-8000-000000000005",
+  6: "d5a51076-0000-4000-8000-000000000006",
 };
 export function slotSessionId(slot: SlotIndex): string {
   if (typeof window === "undefined") return SLOT_UUIDS[slot];
@@ -200,6 +209,6 @@ export function saveSlotHero(slot: SlotIndex, hero: DsaHero | null): void {
 
 export function parseSlot(raw: unknown): SlotIndex | null {
   const n = typeof raw === "string" ? Number.parseInt(raw, 10) : Number(raw);
-  if (n === 1 || n === 2 || n === 3) return n;
+  if (n === 1 || n === 2 || n === 3 || n === 4 || n === 5 || n === 6) return n;
   return null;
 }

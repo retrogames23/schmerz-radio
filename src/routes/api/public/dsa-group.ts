@@ -581,7 +581,7 @@ export const Route = createFileRoute("/api/public/dsa-group")({
         if (action === "pickHero") {
           if (room.status !== "lobby") return json(409, { error: "Spiel läuft bereits." });
           const slotN = Number(b.slot);
-          if (!(slotN === 1 || slotN === 2 || slotN === 3)) {
+          if (!(slotN >= 1 && slotN <= 6)) {
             return json(400, { error: "Ungültiger Slot." });
           }
           const hero = b.hero;

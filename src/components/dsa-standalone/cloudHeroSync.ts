@@ -38,13 +38,15 @@ function rowToHero(row: DsaHeroRow): DsaHero | null {
 export async function cloudFetchAllHeroes(): Promise<
   Record<SlotIndex, DsaHero | null>
 > {
-  const out: Record<SlotIndex, DsaHero | null> = { 1: null, 2: null, 3: null };
+  const out: Record<SlotIndex, DsaHero | null> = {
+    1: null, 2: null, 3: null, 4: null, 5: null, 6: null,
+  };
   const { data, error } = await supabase
     .from("dsa_heroes")
     .select("slot, hero, ap_total, ap_spent, adventures_played, adventures_won");
   if (error || !data) return out;
   for (const row of data as DsaHeroRow[]) {
-    if (row.slot === 1 || row.slot === 2 || row.slot === 3) {
+    if (row.slot >= 1 && row.slot <= 6) {
       out[row.slot as SlotIndex] = rowToHero(row);
     }
   }
