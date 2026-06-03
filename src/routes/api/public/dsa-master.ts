@@ -13,6 +13,7 @@ import {
 import type { DsaCharacterSummary } from "@/game/types";
 import { AP_DEFAULTS, clampAp } from "@/game/dsa/advancement";
 import { addItem, defaultGearFor, removeItem, type HeroGear } from "@/game/dsa/gear";
+import { callChatWithLoreTool } from "@/game/dsa/lore/tool";
 
 /**
  * LLM-Tafelrunde im Gemeinschaftsraum E67. Eine einzige Route, drei
