@@ -12,6 +12,16 @@ export interface GearItem {
   description?: string;
   /** Stückzahl (Default 1). */
   count?: number;
+  /**
+   * Optionale Marker: Wenn ein Item gleichzeitig eine ausrüstbare Waffe,
+   * Rüstung oder ein Schild ist, zeigt diese ID auf den Eintrag in
+   * WEAPONS / ARMORS. Wird vom Heldenbogen verwendet, um „Ausrüsten"
+   * anzubieten. Standard-Inventar und vom Meister vergebene Story-Items
+   * lassen das Feld leer.
+   */
+  weaponId?: string;
+  armorId?: string;
+  shieldId?: string;
 }
 
 export interface HeroGear {
