@@ -310,6 +310,22 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   function ensureWatcher() {
     if (watchTimerRef.current) return;
     watchTimerRef.current = window.setInterval(() => {
+      // Singleton-Wachhund: außerhalb eines Crossfades darf IMMER nur ein
+      // Audio-Element klingen. Falls aus irgendeinem Grund (Race, Autoplay-
+      // Unlock, schneller Override/Mood-Wechsel) doch beide gleichzeitig
+      // spielen, das nicht-aktive sofort hart stummschalten und pausieren.
+      if (!fadeTimerRef.current) {
+        const a = aRef.current;
+        const b = bRef.current;
+        if (a && b && !a.paused && !b.paused) {
+          const inactive = activeRef.current === "a" ? b : a;
+          // eslint-disable-next-line no-console
+          console.warn("[music] duplicate playback detected, pausing inactive element");
+          inactive.volume = 0;
+          inactive.pause();
+          inactive.currentTime = 0;
+        }
+      }
       // Standard: Watcher pausiert bei ausgeschalteter Musik.
       // Forced Override (Cutscene) läuft trotzdem und muss überwacht
       // werden, damit `playOnce` sich sauber auflöst.
@@ -383,6 +399,14 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
         if (fadeTimerRef.current) {
           window.clearInterval(fadeTimerRef.current);
           fadeTimerRef.current = null;
+        }
+        const a = aRef.current;
+        const b = bRef.current;
+        const inactive = toKey === "a" ? b : a;
+        if (inactive && !inactive.paused) {
+          inactive.volume = 0;
+          inactive.pause();
+          inactive.currentTime = 0;
         }
       }
     }, FADE_TICK_MS);
@@ -496,6 +520,16 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
         if (fadeTimerRef.current) {
           window.clearInterval(fadeTimerRef.current);
           fadeTimerRef.current = null;
+        }
+        // Defensive: stellt sicher, dass nach Fade-Ende garantiert
+        // nur das neue aktive Element klingt.
+        const a = aRef.current;
+        const b = bRef.current;
+        const inactive = toKey === "a" ? b : a;
+        if (inactive && !inactive.paused) {
+          inactive.volume = 0;
+          inactive.pause();
+          inactive.currentTime = 0;
         }
       }
     }, FADE_TICK_MS);
