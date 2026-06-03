@@ -1,104 +1,55 @@
+## Ziel
 
-# DSA-Gruppenabenteuer mit menschlichen Gefährten
+Brem und Yelva bekommen je eine knappe, aber tragfähige Hintergrundgeschichte mit einem klaren **Bruch** im Lebenslauf. Die Storys speisen Tjarks Erzählung und ihre eigenen [BREM]/[YELVA]-Beiträge, ohne den lockeren Tisch-Ton zu kippen.
 
-Solo bleibt vollständig erhalten. Daneben entsteht ein zweiter Spielmodus für 2–4 menschliche Spieler mit Tjark als gemeinsamem KI-Meister.
+## Vorschlag 1 — Brem
 
-## Was sich ändert (UI)
+**Name:** Brem Halbgroschen, Streuner, ~28, geboren in Festum (Nordmarken-Hafenviertel).
 
-### Landingpage `/dsa`
-- Erster Button wird umbenannt: **„DSA-Solo-Abenteuer mit KI-Gefährten starten"** → führt wie bisher zu `/dsa/helden`.
-- Zweiter Button **„DSA-Gruppenabenteuer mit menschlichen Gefährten starten"** → führt zu `/dsa/gruppe` (Lobby).
-- FAQ-Block bekommt 1–2 ergänzende Fragen zum Gruppenmodus.
+**Kurzbiographie:**
+- Sohn einer Phex-gefälligen Beutelschneiderin („Mira Halbgroschen“) und eines unbekannten thorwalschen Seefahrers. Wuchs in einer Schmugglerschenke nahe der Festumer Hafenmauer auf, lernte Würfeln vor dem Lesen.
+- Mit 14 in eine Gauner-„Zunft“ aufgenommen, die im Schatten der echten Phex-Kirche operierte. Spezialität: Markt-Beutelschnitt und „Botengänge“ für einen Hesinde-nahen Antiquar, der gestohlene Bücher umschlug.
+- **Der Bruch:** Mit 22 sollte Brem einen schlafenden Hesinde-Geweihten bestehlen, der ein verbotenes Borbarad-Manuskript hütete. Brem nahm das Buch — und ließ es im letzten Moment am Altar liegen, weil ihm beim Lesen der ersten Zeile schlecht wurde. Seine Zunft erfuhr es. Seine Mutter deckte ihn, wurde dafür von den eigenen Leuten verraten und sitzt seither in den Festumer Kerkern.
+- Seitdem zieht Brem südwärts, nimmt kleine Aufträge, sucht heimlich nach dem Bestechungsgeld, das seine Mutter freikaufen würde — und tut nach außen so, als sei ihm alles egal.
 
-### Neue Lobby-Seite `/dsa/gruppe`
-- Liste **offener Räume**: Name, Setting-Icon, Spieler X/4, Schloss-Symbol bei Passwort, „Beitreten"-Knopf.
-- Knopf **„Neuen Raum eröffnen"** → Dialog:
-  - Raumname (Pflicht, 3–40 Zeichen)
-  - Passwort (optional)
-  - Setting wählen (gleiche Liste wie Solo: Stadt, Wildnis, Episch, Dungeon, Hof, Würfel der Götter, Sandbox, Wunsch)
-  - Wunsch-Freitext, falls Setting „Wunsch"
-  - Checkbox **„Brem & Yelva als NPC-Gefährten mitlaufen lassen"**
-  - max. Spielerzahl (2–4)
+**Brüche & Spielbarkeit:**
+- *Pragmatiker mit Schuldkonto:* Trocken, geldgierig wirkend — in Wahrheit spart er für eine Frau, von der er nie spricht.
+- *Phex ja, aber leise:* Er flucht bei Phex, betritt aber keine Tempel. Mit Hesinde-Geweihten geht er um wie mit heißem Brei.
+- *Borbarad-Allergie:* Bei Andeutungen über Schwarze Magie wird er sonst nicht zickig — hier schon. Yelva merkt das und neckt ihn dafür, ohne den Grund zu kennen.
+- *Mutter-Witz:* Yelvas „Deine Mutter war Diebin, Brem.“ bekommt einen doppelten Boden — Brem grinst und antwortet, aber innerlich trifft es.
 
-### Raum-Vorzimmer `/dsa/gruppe/$roomId`
-- Liste der bisher beigetretenen Spieler mit ihren Helden (Name, Klasse, LE, AE, AP).
-- Jeder Spieler wählt einen Helden aus seinen Slot-1–3 **oder** klickt „Neuen Helden würfeln" (öffnet bestehenden Creator, speichert in einen freien Slot).
-- Jeder Spieler hat einen **„Bereit"**-Knopf. Host sieht zusätzlich **„Abenteuer starten"** (aktiv, sobald alle bereit sind und mind. 2 Spieler im Raum).
-- Host kann Raum schließen / einen Spieler kicken.
-- Beim Start wird der Snapshot jedes gewählten Helden eingefroren (analog zum Solo) und das Abenteuer beginnt.
+## Vorschlag 2 — Yelva
 
-### Spielraum `/dsa/gruppe/$roomId/spiel`
-- Geteilte Erzählung in der Mitte (Tjarks Text + alle Spielereingaben mit Spielernamen davor).
-- Eigener Charakterbogen rechts (wie Solo).
-- Liste der **Mitspieler-Charaktere** mit Kurzwerten (LE, AE, Status) — keine fremde Inventar/Talent-Details.
-- Eingabefeld unten: jederzeit tippbar; Tjark-Antwort wartet kurz auf weitere Eingaben (siehe Spielfluss).
-- Statusbanner: „Tjark webt eure Aktionen zusammen…" während der LLM-Anfrage.
+**Name:** Yelva nin' Salwiel („vom singenden Wasser“), Auelfe, ~135 Jahre (für eine Elfe Mitte 30), aus der Sippe der Salwiel am Großen Fluss zwischen Donnerbach und Honingen.
 
-## Konzept (Mechanik)
+**Kurzbiographie:**
+- Aufgewachsen in einer Auenelfen-Sippe, die nach dem Trallop-Vertrag in losen Sommerlagern am Großen Fluss zog. Lernte Bogen, Heilen und das Lied wie alle anderen — galt aber früh als die *Neugierige*, die in Honinger Tavernen verschwand und mit menschlichen Gassenkindern Reime tauschte.
+- Mit ~80 verliebte sich Yelva in einen menschlichen Praios-Adepten, der sie heimlich mit ins Tempelarchiv nahm. Sie las dort von ihrer eigenen Sippe in einer alten Chronik — und stieß auf einen Eintrag, den Elfen nicht lesen sollen: Ihre Sippenältesten hatten vor 200 Jahren ein menschliches Dorf verdursten lassen, weil es einen Flussarm umleitete. Schweigen wurde als „Harmonie“ verkauft.
+- **Der Bruch:** Sie stellte die Ältesten zur Rede. Diese verlangten Schweigen im Namen des Liedes. Yelva sang stattdessen die Wahrheit in einem Heimat-Lied — vor versammelter Sippe. Sie wurde nicht verstoßen, sondern *fortgesungen*: eine sanfte, aber endgültige Bitte, zu gehen. Der Praios-Adept hat sie nie wieder gesehen; sie nimmt an, dass die Sippe ihn auf dem Heimweg verschwinden ließ. Beweisen kann sie es nicht.
+- Seitdem hält sie sich an Menschen, weil sie unter Elfen nicht mehr klar sieht — fürchtet aber, dass die Trauer um den Adepten und der Hass auf die eigenen Ältesten sie *badoc* werden lassen.
 
-**Spielfluss — freie Reihenfolge:**
-- Spieler tippen jederzeit Aktionen ein. Sobald die erste Aktion in einer „Runde" landet, startet ein **Sammelfenster von ~20 Sekunden** (sichtbarer Countdown). Innerhalb des Fensters können andere Spieler nachziehen.
-- Nach Ablauf (oder wenn alle aktiven Spieler eine Aktion abgegeben haben) ruft der Server Tjark **einmal** mit allen gesammelten Aktionen auf. Tjark verarbeitet sie als eine zusammenhängende Szene, würfelt für jeden Held einzeln, beschreibt das Ergebnis pro Charakter und stellt die nächste Frage.
-- Im Kampf bleibt es bei freier Reihenfolge, Tjark sortiert intern nach INI und beschreibt es entsprechend.
+**Brüche & Spielbarkeit:**
+- *Sippe-Thema:* Wenn jemand naiv von „den Elfen“ schwärmt, wird Yelva spitz. Sie verteidigt Elfen nach außen, glaubt selbst aber nicht mehr alles.
+- *Praios-Reflex:* Praios-Geweihte machen sie still. Sie redet nicht darüber, aber wer sie kennt, merkt es.
+- *Brem necken als Selbstschutz:* Brems lockere Art ist ihr Anker gegen das eigene Grübeln. Daher die Frotzelei.
+- *Magie mit Risiko:* Jeder größere Zauber ist für sie ein leiser Test, ob das Lied sie noch trägt — sie sagt es nicht, aber Tjark darf gelegentlich andeuten, dass sie nach einem starken Zauber einen Moment lauscht.
 
-**Helden:** Spieler können einen ihrer drei Solo-Slot-Helden mitbringen **oder** neu würfeln. Beim Start des Abenteuers wird ein **Snapshot** in den Raum gespeichert (wie Solo-Snapshot), damit zwischenzeitliche Solo-Änderungen das Gruppenspiel nicht durcheinanderbringen.
+## Umsetzung im Code
 
-**AP-Belohnung:** Jeder Held bekommt nach Abenteuerende die **volle AP-Gutschrift** (gleicher Mechanismus wie Solo, einmal pro Held). Das Solo-Save wird beim Beenden mit AP, Inventar-Änderungen und Adventure-Zähler aktualisiert.
+Neue Datei `src/game/dsa/lore/companions.ts` mit zwei Exporten:
+- `DSA_BREM_BRIEF` — Kompakter Lore-Block (~25 Zeilen) im Stil der bestehenden Lore-Dateien: Herkunft, der Bruch, Spielleitplanken (was Tjark/Brem sagt / nicht sagt), 3–4 Beispielzeilen.
+- `DSA_YELVA_BACKSTORY` — Analog für Yelva. Wird **zusätzlich** zum bestehenden `DSA_AUELFEN_BRIEF` eingebunden, nicht statt.
 
-**Brem & Yelva:** Wird beim Raumanlegen aktiviert/deaktiviert. Wenn aktiv, behandelt Tjark sie wie im Solo (NPC-Gefährten mit eigenem Inventar im Prompt). Default: aus.
+Einbindung:
+- `src/game/dsa/llmMasterPrompt.ts` — beide Briefs in den Solo-Master-Prompt einfügen, dort wo schon `DSA_LORE_BRIEF` referenziert wird.
+- `src/game/dsa/group/prompt.ts` — selbe Briefs nur einfügen, wenn `includeCompanions === true`.
+- `src/game/dsa/lore/index.ts` — Re-Export beider Konstanten.
 
-**Disconnect:** Wenn ein Spieler länger als ~60 s nicht heartbeatet, markiert der Server seinen Charakter als „abwesend". Tjark bekommt im nächsten System-Hint: „Spieler X ist abwesend, schreibe seinen Helden plausibel kurz aus der Szene (Wache halten, Pferde versorgen, beten)." Kommt der Spieler zurück, schreibt Tjark ihn wieder ein.
+Memory:
+- Neuer Eintrag unter `mem/features/companion-backstories.md` mit den Kern-Fakten (Brems Mutter in Festumer Kerker, Yelvas „fortgesungen“, Praios-Adept, Borbarad-Allergie), damit spätere Änderungen die Storys nicht aus Versehen brechen. Im Index unter „Memories“ verlinken.
 
-**Passwortschutz:** Optionales Klartextpasswort wird gehasht (bcrypt-light über server fn) und nur beim Beitrittsversuch geprüft.
+## Offene Frage
 
-**Lebensdauer:** Räume ohne Aktivität (kein Heartbeat aller Spieler) werden nach 6 h als „beendet" markiert und aus der Lobby-Liste entfernt. Beendete Abenteuer bleiben im Verlauf der teilnehmenden Helden.
+Brems Hintergrund verankert ihn in **Festum / Nordmarken** mit Phex-Zunft + Borbarad-Touch. Yelva bekommt eine **Praios-Liebes-Episode** und einen moralischen Bruch mit ihrer Sippe.
 
-## Technisches Konzept
-
-```text
-src/routes/
-  dsa.index.tsx               → 2 Buttons + 1 FAQ-Eintrag
-  dsa.gruppe.tsx              → Lobby (Räume listen, eröffnen)
-  dsa.gruppe.$roomId.tsx      → Vorzimmer (Held wählen, bereit)
-  dsa.gruppe.$roomId.spiel.tsx→ Spielraum
-src/components/dsa-group/
-  RoomList.tsx, CreateRoomDialog.tsx, RoomLobby.tsx,
-  HeroPicker.tsx, GroupAdventureScene.tsx, PartyPanel.tsx
-src/game/dsa/group/
-  prompt.ts        (Master-Prompt-Variante für Mehrspieler)
-  turnCollector.ts (Sammelfenster-Logik clientseitig)
-src/routes/api/public/
-  dsa-group.ts     (Server-Route: create/join/leave/ready/start,
-                    submit-action, advance-turn, finish)
-```
-
-**Datenmodell (neue Tabellen, alle mit GRANT + RLS):**
-- `dsa_group_rooms` — id, host_user_id, name, password_hash (nullable), setting, wish_brief, include_npc_companions, max_players, status (`lobby` | `active` | `done`), session_id, current_image_tag, summary, created_at, updated_at.
-- `dsa_group_members` — room_id, user_id, slot (1–3 oder 0=temporär), hero_snapshot (jsonb), ready, last_seen_at, joined_at, position. PK (room_id, user_id).
-- `dsa_group_messages` — room_id, idx, role (`master` | `player` | `system`), author_user_id (nullable), author_hero_name, content, created_at.
-- `dsa_group_pending_actions` — room_id, turn_idx, user_id, hero_name, action, created_at. PK (room_id, turn_idx, user_id).
-
-RLS: nur Mitglieder eines Raums dürfen lesen/schreiben (Helper-Funktion `is_room_member(room_id, uid)`); Host darf Raum schließen; Lobby-Liste (nur Räume mit `status='lobby'` und `password_hash IS NULL OR limited fields`) ist auch für anonyme Auth-User sichtbar (nur Name/Setting/Spielerzahl, nie der Hash).
-
-**Echtzeit:** Supabase Realtime auf den vier Tabellen (`ADD TABLE ... TO PUBLICATION supabase_realtime`). Client abonniert Channel pro Raum für Nachrichten, Mitglieder, Pending-Actions.
-
-**Server-Route `/api/public/dsa-group`** (TanStack server route, mit Auth-Verifikation per Bearer-Token):
-- `create`, `join` (mit Passwort), `leave`, `setReady`, `start`
-- `submitAction` (legt in `dsa_group_pending_actions` ab; wenn alle aktiven Spieler abgegeben haben oder Timeout abgelaufen ist, ruft Tjark auf)
-- `advanceTurn` (Tjark-Aufruf via Lovable AI, schreibt Master-Message und leert Pending)
-- `finish` (vergibt AP an alle Helden, schreibt Snapshots zurück in `dsa_heroes` der jeweiligen Spieler)
-- Wiederverwendet `llmMasterPrompt.ts` mit Erweiterung: Gruppen-Header („Helden in dieser Tafelrunde: …"), Aktionsblock („Diese Runde haben gehandelt: X tut A, Y tut B, Z ist abwesend").
-
-**Reuse:** Marker-System (`[ITEM+ …]`, `[SCENE: …]`, `[MOOD: …]`, Probenmarker) bleibt unverändert. Inventar-/AP-Änderungen werden pro Held an dessen `dsa_heroes`-Zeile zurückgeschrieben (Tjark referenziert Helden über `[HERO: Name][ITEM+: …]`).
-
-**Login-Pflicht:** Gruppenmodus erfordert eingeloggte Spieler (sonst keine Cross-Device-Persistenz und keine RLS-Identität). Anon-Login wird im Solo erlaubt, im Gruppenmodus blockiert mit Hinweis „Bitte zuerst anmelden".
-
-## Umfang dieses Plans
-Großes Feature — wird in einer Build-Phase umgesetzt:
-1. Migration (4 Tabellen + Realtime + Helper-Funktion).
-2. Landingpage-Buttons + Lobby-Route + CreateRoomDialog.
-3. Vorzimmer mit HeroPicker und Ready-Logik.
-4. Spielraum mit Sammelfenster + Server-Route + Master-Prompt-Erweiterung.
-5. AP-Auszahlung am Ende + Verlaufseintrag bei allen Helden.
-
-Kein Eingriff in Solo-Code außer der Landingpage und einer Wiederverwendung von `llmMasterPrompt.ts` (additiv).
+Soll ich diese beiden Storys so umsetzen, oder willst du an einer der beiden noch schrauben (z.B. anderer Bruch für Brem, andere Region für Yelvas Sippe, keine Liebesgeschichte)?
