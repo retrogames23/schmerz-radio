@@ -175,7 +175,7 @@ export const Route = createFileRoute("/api/public/npc-memory-update")({
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                model: "google/gemini-3-flash-preview",
+                model: AI_MODEL_MAIN,
                 messages: [
                   { role: "system", content: sysPrompt },
                   {

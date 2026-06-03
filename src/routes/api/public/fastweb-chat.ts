@@ -233,7 +233,7 @@ export const Route = createFileRoute("/api/public/fastweb-chat")({
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                model: "google/gemini-3-flash-preview",
+                model: AI_MODEL_MAIN,
                 messages: [
                   { role: "system", content: guard },
                   { role: "system", content: systemPrompt },

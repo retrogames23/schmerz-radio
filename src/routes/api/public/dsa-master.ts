@@ -165,7 +165,7 @@ ${transcript.slice(-6000)}`;
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: AI_MODEL_MAIN,
         messages: [
           { role: "system", content: sys },
           { role: "user", content: user },
@@ -325,7 +325,7 @@ async function maybeSummarize(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: AI_MODEL_MAIN,
         messages: [
           {
             role: "system",
@@ -369,7 +369,7 @@ async function callMaster(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: AI_MODEL_MAIN,
         messages: [
           {
             role: "system",
