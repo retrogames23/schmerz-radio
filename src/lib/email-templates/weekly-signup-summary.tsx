@@ -42,9 +42,7 @@ const WeeklySignupSummaryEmail = ({
 }: Props) => (
   <Html lang="de" dir="ltr">
     <Head />
-    <Preview>
-      {signups.length} neue Accounts in den letzten 7 Tagen
-    </Preview>
+    <Preview>{`${signups.length} neue Accounts in den letzten 7 Tagen`}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Heading style={h1}>Wöchentliche Account-Zusammenfassung</Heading>
