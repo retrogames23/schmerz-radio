@@ -63,7 +63,7 @@ const WeeklySignupSummaryEmail = ({
           <>
             <Heading style={h2}>Neue Registrierungen</Heading>
             {signups.map((s, i) => (
-              <Text key={i} style={row}>
+              <Text key={String(i)} style={row}>
                 <strong>{s.email || "(keine Email)"}</strong>
                 <br />
                 <span style={muted}>{fmt(s.created_at)}</span>
