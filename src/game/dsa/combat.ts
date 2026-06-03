@@ -763,6 +763,31 @@ export function resolveRound(
     }
   }
 
+  // ── Yelva wirkt einen expliziten Hauszauber (Wunsch des Spielers) ─
+  const yelvaManualSpell = !!roundIntent?.yelvaSpellId;
+  if (intent?.yelvaSpellId && (!state.yelvaSpellResolved || yelvaManualSpell)) {
+    const yelva = state.heroes.find((h) => h.id === "yelva");
+    if (yelva && alive(yelva)) {
+      const spell = SPELLS.find((s) => s.id === intent.yelvaSpellId);
+      const zfw = spell ? yelva.spells?.[spell.id] : undefined;
+      if (spell && typeof zfw === "number" && (yelva.ae ?? 0) >= spellCost(spell)) {
+        if (!yelvaManualSpell) state.yelvaSpellResolved = true;
+        resolveYelvaSpell(yelva, spell, zfw, state, all, events);
+      } else if (spell) {
+        if (!yelvaManualSpell) state.yelvaSpellResolved = true;
+        const reason = typeof zfw !== "number"
+          ? `Yelva kennt ${spell.name} nicht.`
+          : `Yelva hat nicht genug Astralenergie für ${spell.name}.`;
+        events.push({
+          kind: "spell-fizzle",
+          text: reason,
+          snapshot: snapshotW(all),
+          actorId: yelva.id,
+        });
+      }
+    }
+  }
+
   // Taktik-spezifische Eröffnungs-Probe.
   // balanced / aggressive / defensive sind rein narrativ — gleiche Werte,
   // unterschiedlicher Erzählton (siehe Tjark-Master-Prompt). Cunning und
