@@ -410,7 +410,7 @@ export function companionCombatants(intent?: CombatIntent | null): Combatant[] {
       at += 1;
       pa = Math.max(1, pa - 1);
     }
-    return {
+    const base: Combatant = {
       id: c.id,
       name: c.name,
       side: "hero",
@@ -426,6 +426,17 @@ export function companionCombatants(intent?: CombatIntent | null): Combatant[] {
       role,
       rangedWeapon,
     };
+    // Yelva ist Auelfe — sie hat AsP und ein kleines Hauszauber-Repertoire.
+    // Eigenschaften sind Standard-Elfenwerte und reichen für die drei
+    // 3W20-Spruchproben (MU/IN/CH bzw. KL/IN/CH).
+    if (c.id === "yelva") {
+      base.classId = "elf";
+      base.ae = 24;
+      base.aeMax = 24;
+      base.spells = { ...YELVA_DEFAULT_SPELLS };
+      base.attrs = { MU: 12, KL: 13, IN: 14, CH: 14, FF: 13, GE: 13, KO: 11, KK: 10 };
+    }
+    return base;
   });
 }
 
