@@ -33,6 +33,7 @@ import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lova
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as DsaGruppeRoomIdSpielRouteImport } from './routes/dsa.gruppe.$roomId.spiel'
+import { Route as ApiPublicHooksWeeklySignupSummaryRouteImport } from './routes/api/public/hooks/weekly-signup-summary'
 
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
@@ -159,6 +160,12 @@ const DsaGruppeRoomIdSpielRoute = DsaGruppeRoomIdSpielRouteImport.update({
   path: '/spiel',
   getParentRoute: () => DsaGruppeRoomIdRoute,
 } as any)
+const ApiPublicHooksWeeklySignupSummaryRoute =
+  ApiPublicHooksWeeklySignupSummaryRouteImport.update({
+    id: '/api/public/hooks/weekly-signup-summary',
+    path: '/api/public/hooks/weekly-signup-summary',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -181,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -206,6 +214,7 @@ export interface FileRoutesByTo {
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -233,6 +242,7 @@ export interface FileRoutesById {
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/api/public/stripe-webhook'
     | '/dsa/gruppe/$roomId'
     | '/lovable/email/suppression'
+    | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -286,6 +297,7 @@ export interface FileRouteTypes {
     | '/api/public/stripe-webhook'
     | '/dsa/gruppe/$roomId'
     | '/lovable/email/suppression'
+    | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -312,6 +324,7 @@ export interface FileRouteTypes {
     | '/api/public/stripe-webhook'
     | '/dsa/gruppe/$roomId'
     | '/lovable/email/suppression'
+    | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -334,6 +347,7 @@ export interface RootRouteChildren {
   ApiPublicNpcMemoryUpdateRoute: typeof ApiPublicNpcMemoryUpdateRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicHooksWeeklySignupSummaryRoute: typeof ApiPublicHooksWeeklySignupSummaryRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
@@ -509,6 +523,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DsaGruppeRoomIdSpielRouteImport
       parentRoute: typeof DsaGruppeRoomIdRoute
     }
+    '/api/public/hooks/weekly-signup-summary': {
+      id: '/api/public/hooks/weekly-signup-summary'
+      path: '/api/public/hooks/weekly-signup-summary'
+      fullPath: '/api/public/hooks/weekly-signup-summary'
+      preLoaderRoute: typeof ApiPublicHooksWeeklySignupSummaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -568,6 +589,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicNpcMemoryUpdateRoute: ApiPublicNpcMemoryUpdateRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicHooksWeeklySignupSummaryRoute:
+    ApiPublicHooksWeeklySignupSummaryRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
