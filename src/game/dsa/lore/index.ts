@@ -6,11 +6,17 @@ import { buildGodsBlock } from "./gods";
 import { buildRegionsBlockForSetting } from "./regions";
 import { buildBestiaryBlock, DSA_BESTIARY } from "./bestiary";
 import { DSA_AUELFEN_BRIEF } from "./auelfen";
+import { DSA_BREM_BACKSTORY, DSA_YELVA_BACKSTORY } from "./companions";
 import type { DsaSettingId } from "../llmAdventure";
 
 export * from "./gods";
 export * from "./regions";
-export { DSA_BESTIARY, DSA_AUELFEN_BRIEF };
+export { DSA_BESTIARY, DSA_AUELFEN_BRIEF, DSA_BREM_BACKSTORY, DSA_YELVA_BACKSTORY };
+
+/** Brem + Yelva Backstories als ein Block — für Solo und Gruppe (mit Begleitern). */
+export function buildCompanionBackstoriesBlock(): string {
+  return [DSA_BREM_BACKSTORY, "", DSA_YELVA_BACKSTORY].join("\n");
+}
 
 /** Immer mitgesendeter Lore-Kern (Tagesgeschehen, Wirtschaft, Kalender, Sprache, Götter). */
 export function buildCoreLoreAppend(): string {

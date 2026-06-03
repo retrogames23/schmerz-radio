@@ -4,7 +4,7 @@ import { ENEMY_STATS } from "./combat";
 import { getSetting, type DsaSettingId } from "./llmAdventure";
 import { DSA_MOODS } from "@/audio/dsaMusic";
 import { buildDsa3RulesBlock, SPELLS } from "./rules";
-import { buildCoreLoreAppend, buildContextualLoreBlock } from "./lore";
+import { buildCoreLoreAppend, buildContextualLoreBlock, buildCompanionBackstoriesBlock } from "./lore";
 import type { DsaCharacterSummary } from "@/game/types";
 import {
   defaultGearFor,
@@ -224,6 +224,8 @@ RUHEPHASE — JETZT AKTIV (Mittelteil des Abenteuers):
 ${DSA_LORE_BRIEF}
 
 ${buildCoreLoreAppend()}
+
+${buildCompanionBackstoriesBlock()}
 
 ${buildContextualLoreBlock({ setting, enemyIds: Object.keys(ENEMY_STATS) })}
 
