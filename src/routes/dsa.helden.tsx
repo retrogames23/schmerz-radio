@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Dices, LogIn, LogOut, ScrollText, Trash2, ArrowLeft } from "lucide-react";
+import { Dices, LogIn, LogOut, ScrollText, Trash2, ArrowLeft, Lock } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
 import { AuthDialog } from "@/auth/AuthDialog";
 import {
@@ -8,6 +8,7 @@ import {
   loadSlotHero,
   saveSlotHero,
   slotSessionId,
+  isDonorSlot,
   type SlotIndex,
 } from "@/components/dsa-standalone/slotStorage";
 import {
@@ -18,6 +19,7 @@ import {
 } from "@/components/dsa-standalone/cloudHeroSync";
 import type { DsaHero } from "@/game/types";
 import { availableAp } from "@/game/dsa/advancement";
+import { useDonationStatus } from "@/hooks/useDonationStatus";
 
 const CANONICAL = "https://whisperquest.app/dsa/helden";
 const TITLE = "DSA-Tafelrunde – Helden- und Abenteuerverwaltung";
@@ -41,9 +43,10 @@ export const Route = createFileRoute("/dsa/helden")({
 function DsaHeroManager() {
   const navigate = useNavigate();
   const { user, signOut, loading } = useAuth();
+  const donation = useDonationStatus();
   const [authOpen, setAuthOpen] = useState(false);
   const [slots, setSlots] = useState<Record<SlotIndex, DsaHero | null>>(
-    () => ({ 1: null, 2: null, 3: null }),
+    () => ({ 1: null, 2: null, 3: null, 4: null, 5: null, 6: null }),
   );
 
   useEffect(() => {
@@ -52,6 +55,9 @@ function DsaHeroManager() {
       1: loadSlotHero(1),
       2: loadSlotHero(2),
       3: loadSlotHero(3),
+      4: loadSlotHero(4),
+      5: loadSlotHero(5),
+      6: loadSlotHero(6),
     });
     if (!user) return;
     // Eingeloggt → Cloud ist die Wahrheit. Spiegeln in localStorage,
@@ -125,6 +131,8 @@ function DsaHeroManager() {
     navigate({ to: "/dsa/$slot", params: { slot: String(slot) } });
   }
 
+  const donorLocked = !donation.unlocked;
+
   return (
     <div className="min-h-screen w-full bg-[#1a120a] text-[#f1e6c8]">
       <header className="border-b border-[#3a2c1a] bg-[#241a0e]">
@@ -185,16 +193,33 @@ function DsaHeroManager() {
           Speicherplätze
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {SLOT_INDICES.map((slot) => (
-            <SlotCard
-              key={slot}
-              slot={slot}
-              character={slots[slot]}
-              onPlay={() => goToSlot(slot)}
-              onDelete={() => handleDelete(slot)}
-            />
-          ))}
+          {SLOT_INDICES.map((slot) => {
+            const locked = isDonorSlot(slot) && donorLocked && !slots[slot];
+            return (
+              <SlotCard
+                key={slot}
+                slot={slot}
+                character={slots[slot]}
+                locked={locked}
+                donorOnly={isDonorSlot(slot)}
+                onPlay={() => {
+                  if (locked) return;
+                  goToSlot(slot);
+                }}
+                onDelete={() => handleDelete(slot)}
+              />
+            );
+          })}
         </div>
+        {donorLocked && (
+          <p className="mt-4 text-[11px] leading-snug opacity-70">
+            <Lock className="inline h-3 w-3 mr-1" />
+            Slots 4–6 sind Unterstützer*innen vorbehalten —
+            {user
+              ? " unterstütze das Projekt einmalig, um sie freizuschalten."
+              : " melde dich an und unterstütze das Projekt, um sie freizuschalten."}
+          </p>
+        )}
       </section>
 
       <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
@@ -205,20 +230,34 @@ function DsaHeroManager() {
 function SlotCard({
   slot,
   character,
+  locked,
+  donorOnly,
   onPlay,
   onDelete,
 }: {
   slot: SlotIndex;
   character: DsaHero | null;
+  locked: boolean;
+  donorOnly: boolean;
   onPlay: () => void;
   onDelete: () => void;
 }) {
   return (
-    <div className="dsa-paper relative overflow-hidden rounded-md px-4 py-5 text-[#2a1f10] shadow-xl">
+    <div
+      className={
+        "dsa-paper relative overflow-hidden rounded-md px-4 py-5 text-[#2a1f10] shadow-xl " +
+        (locked ? "opacity-70" : "")
+      }
+    >
       <div className="mb-3 flex items-center justify-between">
         <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-60">
           Slot {slot}
         </span>
+        {donorOnly && (
+          <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-[#6b4a1a]">
+            {locked && <Lock className="h-3 w-3" />} Unterstützer*in
+          </span>
+        )}
         {character && (
           <button
             type="button"
@@ -253,6 +292,7 @@ function SlotCard({
           <button
             type="button"
             onClick={onPlay}
+            disabled={locked}
             className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10]"
           >
             <ScrollText className="h-3.5 w-3.5" strokeWidth={2.5} />
@@ -263,15 +303,19 @@ function SlotCard({
         <>
           <p className="font-serif italic opacity-60">Leer</p>
           <p className="mt-1 text-xs opacity-60">
-            Keine Heldin, kein Held, kein Bogen.
+            {locked
+              ? "Bonus-Slot für Unterstützer*innen."
+              : "Keine Heldin, kein Held, kein Bogen."}
           </p>
           <button
             type="button"
             onClick={onPlay}
+            disabled={locked}
+            title={locked ? "Nur für Unterstützer*innen — bitte unterstütze das Projekt, um diesen Slot freizuschalten." : undefined}
             className="mt-6 inline-flex w-full items-center justify-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#f1d99a]"
           >
-            <Dices className="h-3.5 w-3.5" strokeWidth={2.5} />
-            Neuen Helden würfeln
+            {locked ? <Lock className="h-3.5 w-3.5" strokeWidth={2.5} /> : <Dices className="h-3.5 w-3.5" strokeWidth={2.5} />}
+            {locked ? "Gesperrt" : "Neuen Helden würfeln"}
           </button>
         </>
       )}
