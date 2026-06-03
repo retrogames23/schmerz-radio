@@ -1010,6 +1010,96 @@ function pickFoeTargetW(foes: WoundedCombatant[]): WoundedCombatant | null {
   return live.sort((a, b) => a.le - b.le)[0];
 }
 
+/**
+ * Rollenbewusste Zielwahl der Gegner: Frontlinie wird stark bevorzugt;
+ * Backline/Support nur, wenn keine Frontkämpfer mehr stehen.
+ */
+function pickHeroTargetW(heroes: WoundedCombatant[]): WoundedCombatant | null {
+  const live = heroes.filter(alive);
+  if (live.length === 0) return null;
+  const front = live.filter((h) => (h.role ?? "frontline") === "frontline");
+  const support = live.filter((h) => h.role === "support");
+  const pool = front.length > 0 ? front : support.length > 0 ? support : live;
+  return pool.sort((a, b) => a.le - b.le)[0];
+}
+
+/**
+ * Variante von resolveLayardSpell, die einen vom Spieler ausdrücklich
+ * gewünschten Spruch verarbeitet (statt nach Priorität zu wählen).
+ */
+function resolveLayardSpellExplicit(
+  layard: WoundedCombatant,
+  foe: WoundedCombatant,
+  spell: SpellDef,
+  zfw: number,
+  all: WoundedCombatant[],
+  events: CombatEvent[],
+): void {
+  const cost = spellCost(spell);
+  const attrs = layard.attrs;
+  if (!attrs) {
+    events.push({
+      kind: "spell-fizzle",
+      text: `${layard.name} kann ${spell.name} ohne Eigenschaftswerte nicht stabilisieren.`,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+    });
+    return;
+  }
+  const ownSchool = spellOwnSchool(layard.classId, spell);
+  const modBuf = ownSchool ? 3 : 0;
+  const rolls: number[] = [d20(), d20(), d20()];
+  let bufferLeft = zfw + modBuf;
+  const dice = rolls.map((r, i) => {
+    const attrId = spell.probe[i] as AttributeId;
+    const target = attrs[attrId] ?? 10;
+    const fail = r > target;
+    if (fail) bufferLeft -= r - target;
+    return { label: `${attrId} (W20)`, value: r, target, success: !fail };
+  });
+  const ones = rolls.filter((r) => r === 1).length;
+  const twenties = rolls.filter((r) => r === 20).length;
+  let success: boolean;
+  if (twenties >= 2) success = false;
+  else if (ones >= 2) success = true;
+  else success = bufferLeft >= 0;
+  const aeCost = success ? cost : Math.ceil(cost / 2);
+  layard.ae = Math.max(0, (layard.ae ?? 0) - aeCost);
+  if (!success) {
+    events.push({
+      kind: "spell-fail",
+      text: `${layard.name} wirkt ${spell.name} (Wunsch) — Probe misslingt. AsP −${aeCost} → ${layard.ae}.`,
+      dice,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+      targetId: foe.id,
+    });
+    return;
+  }
+  const { rolls: tpRolls, dmg, rsApplied } = spellDamage(spell, zfw, foe.rs);
+  foe.le = Math.max(0, foe.le - dmg);
+  events.push({
+    kind: "spell-cast",
+    text: `${layard.name} wirkt ${spell.name}${ownSchool ? " (Hauszauber)" : ""} auf ${foe.name}. ${dmg} TP (RS ${rsApplied}). AsP −${aeCost} → ${layard.ae}. ${foe.name}: ${foe.le}/${foe.leMax} LE.`,
+    dice: [
+      ...dice,
+      ...tpRolls.map((r, i) => ({ label: `TP W${i + 1}`, value: r })),
+    ],
+    snapshot: snapshotW(all),
+    actorId: layard.id,
+    targetId: foe.id,
+  });
+  if (foe.le <= 0) {
+    events.push({
+      kind: "downed",
+      text: `${foe.name} ist kampfunfähig.`,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+      targetId: foe.id,
+    });
+  }
+}
+
 // ────────────────────────────────────────────────────────────────
 // Kampfzauber für Layard (Tactic "spell").
 // ────────────────────────────────────────────────────────────────
