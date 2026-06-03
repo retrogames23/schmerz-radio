@@ -237,6 +237,7 @@ export function DsaCharacterCreator() {
       leMax: le,
       ae,
       rerolled: rollCount > 1,
+      geschlecht: chosenGender,
     });
     setFlag("dsaCharacterRolled");
     setFlag("dsaSeatedAtTable");
