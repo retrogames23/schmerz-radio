@@ -154,6 +154,47 @@ export function StandaloneDsaHost({
     [slot, user],
   );
 
+  // Schickt eine kurze Notiz an den laufenden LLM-Meister (z. B. bei
+  // Umrüsten am Heldenbogen). Best effort — wenn keine Session läuft,
+  // wirft der Server 404; wir schlucken den Fehler still.
+  const notifyMaster = useCallback(
+    (note: string) => {
+      const text = `[INVENTAR] ${note}`.slice(0, 480);
+      void (async () => {
+        try {
+          const { getFreshAccessToken } = await import("@/auth/freshToken");
+          const token = await getFreshAccessToken().catch(() => null);
+          const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+          };
+          if (token) headers.Authorization = `Bearer ${token}`;
+          let anonId: string | null = null;
+          if (!token) {
+            try {
+              anonId = window.localStorage.getItem("dsa.anonId");
+            } catch {
+              anonId = null;
+            }
+          }
+          await fetch("/api/public/dsa-master", {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              action: "say",
+              text,
+              heroSlot: slot,
+              sessionId,
+              ...(token ? {} : { anonId: anonId ?? "anon000000000000" }),
+            }),
+          });
+        } catch {
+          /* still */
+        }
+      })();
+    },
+    [slot, sessionId],
+  );
+
   const value = useMemo<DsaHostValue>(() => {
     return {
       dsaCharacter: character,
@@ -196,8 +237,9 @@ export function StandaloneDsaHost({
       flagsToken: slot,
       creditHeroAp,
       updateHero,
+      notifyMaster,
     };
-  }, [character, setCharacter, sheetOpen, view, slot, sessionId, onExit, onCharacterCreated, creditHeroAp, updateHero]);
+  }, [character, setCharacter, sheetOpen, view, slot, sessionId, onExit, onCharacterCreated, creditHeroAp, updateHero, notifyMaster]);
 
   return (
     <DsaHostOverrideProvider value={value}>{children}</DsaHostOverrideProvider>
