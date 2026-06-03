@@ -620,6 +620,12 @@ export function DsaLlmAdventureScene() {
                     onClick={() => {
                       setCombat(pendingCombat);
                       setPendingCombat(null);
+                      // Während des interaktiven Kampfes auf Kampfmusik
+                      // umschalten. Tjark setzt im Combat-Zug oft kein
+                      // eigenes [MOOD: combat], also forcieren wir das
+                      // hier; nach dem Kampf liefert der nächste Master-
+                      // Zug ohnehin einen neuen Mood.
+                      try { setMood("combat"); } catch { /* pool inaktiv */ }
                     }}
                     className="inline-flex items-center gap-2 rounded border-2 border-[#6b1a0e] bg-[#6b1a0e] px-4 py-2.5 text-sm font-bold uppercase tracking-wider text-[#f1e6c8] shadow-[0_2px_0_rgba(0,0,0,0.35)] hover:-translate-y-px transition-transform"
                   >
