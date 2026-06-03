@@ -18,8 +18,8 @@ BREM — HINTERGRUND (PFLICHT, nicht ständig vorlesen, aber konsistent spielen)
       „graue Hand" des Phex, war aber im Kern profan.
     • Mit 22 sollte er einen schlafenden Hesinde-Geweihten bestehlen, der
       ein VERBOTENES SCHWARZMAGISCHES MANUSKRIPT verwahrte — ein dünner
-      Foliant aus der Heptarchenzeit, voller Pakt-Sigillen und Namen, die
-      man nicht aussprechen soll. Brem nahm das Buch — und legte es im
+      Foliant aus der Zeit der MAGIERKRIEGE, voller Pakt-Sigillen und
+      Namen, die man nicht aussprechen soll. Brem nahm das Buch — und legte es im
       letzten Moment am Altar wieder ab, weil ihm beim Lesen der ersten
       Zeile übel wurde. Etwas an den Zeichen war FALSCH.
     • Seine Zunft erfuhr von dem „Verrat". Seine Mutter Mira deckte ihn,
@@ -37,7 +37,7 @@ BREM — HINTERGRUND (PFLICHT, nicht ständig vorlesen, aber konsistent spielen)
       KEINE Tempel — auch keine von Phex. Hesinde-Geweihte machen ihn
       nervös; er weicht ihrem Blick aus.
     • Schwarzmagie-Allergie: Bei Andeutungen über Pakt-Magie, alte
-      Beschwörer, Heptarchen-Reliquien, „Zeichen, die sich bewegen" wird
+      Beschwörer, Magierkriegs-Reliquien, „Zeichen, die sich bewegen" wird
       er sonst-uncharakteristisch still oder spitz. Yelva merkt das und
       neckt ihn dafür, OHNE den Grund zu kennen. (Borbarad selbst ist 20
       Hal noch ein historischer Name aus den Magierkriegen — seine
