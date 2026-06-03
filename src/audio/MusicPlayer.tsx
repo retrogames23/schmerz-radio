@@ -436,6 +436,28 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
 
   function crossfadeToSrc(src: string, durationSeconds = MANUAL_FADE_SECONDS) {
     if (!aRef.current || !bRef.current) return;
+    // Wenn noch ein Crossfade läuft, schließen wir den vorherigen
+    // synchron ab: der bisherige "from" (kaum noch hörbar) wird pausiert,
+    // der bisherige "to" (gerade aufgeblendet) wird zum neuen aktiven
+    // Element. So fadet das nächste Crossfade von dem aus, was wirklich
+    // klingt — und es kann nicht passieren, dass am Ende beide Elemente
+    // gleichzeitig hörbar bleiben.
+    if (fadeTimerRef.current) {
+      window.clearInterval(fadeTimerRef.current);
+      fadeTimerRef.current = null;
+      const prevFromKey = activeRef.current;
+      const prevToKey = prevFromKey === "a" ? "b" : "a";
+      const prevFrom = prevFromKey === "a" ? aRef.current : bRef.current;
+      const prevTo = prevToKey === "a" ? aRef.current : bRef.current;
+      // Bisherigen "from" hart stumm schalten und pausieren.
+      prevFrom.volume = 0;
+      prevFrom.pause();
+      // Bisheriger "to" (das, was gerade akustisch hochkommt) ist jetzt
+      // das aktive Element. Lautstärke auf den aktuellen IST-Wert lassen,
+      // damit der nächste Fade nahtlos von dort abblendet.
+      activeRef.current = prevToKey;
+      void prevTo; // nur zur Klarheit
+    }
     const fromKey = activeRef.current;
     const toKey = fromKey === "a" ? "b" : "a";
     const from = fromKey === "a" ? aRef.current : bRef.current;
@@ -447,6 +469,10 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
       // Laufende Wiedergabe weiterführen, nur sicherstellen, dass aktiv ist.
       return;
     }
+    // Defensive: vorher pausieren, damit ein noch nicht ganz beendeter
+    // alter Track auf diesem Element nicht weiterspielt, während der
+    // neue gerade lädt.
+    to.pause();
     to.src = src;
     to.currentTime = 0;
     to.volume = 0;
