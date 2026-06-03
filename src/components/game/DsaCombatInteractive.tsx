@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronRight, Pause, Play } from "lucide-react";
+import { ChevronRight, Pause, Play, Send } from "lucide-react";
 import { CloseButton } from "./CloseButton";
 import {
   createCombatState,
@@ -14,7 +14,7 @@ import {
   type SpellFocus,
 } from "@/game/dsa/combat";
 import { SPELLS } from "@/game/dsa/rules/spells";
-import type { CombatIntent } from "@/game/dsa/combatIntent";
+import { mergeCombatIntents, parseCombatIntent, type CombatIntent } from "@/game/dsa/combatIntent";
 import { CombatantCard } from "./dsa/CombatantCard";
 import { ActionIndicator } from "./dsa/ActionIndicator";
 import { DieBox } from "./dsa/DieBox";
@@ -68,6 +68,9 @@ export function DsaCombatInteractive({
   const [paused, setPaused] = useState(false);
   const [fast, setFast] = useState(false);
   const [events, setEvents] = useState<CombatEvent[]>([]);
+  const [commandText, setCommandText] = useState("");
+  const [commandError, setCommandError] = useState<string | null>(null);
+  const [commandNotes, setCommandNotes] = useState<string[]>(() => intent?.notes ?? []);
   const [step, setStep] = useState(0);
   const [phase, setPhase] = useState<CombatState["phase"]>("ongoing");
   const [hitFlash, setHitFlash] = useState<string | null>(null);
