@@ -18,7 +18,7 @@ export const NAME_POOL: Record<DsaClassId, { männlich: string[]; weiblich: stri
     weiblich: [
       "Sigwine von Salzgar", "Brynja Greifenklau", "Hilde von Tannstein", "Roana von Eberstamm",
       "Rondrigane von Wertlingen", "Alrike zu Rabenmund", "Walpurga von Hartsteen", "Mechthild von Ehrenstein",
-      "Yppolita von Trottberg", "Gernot... Genoveva von Garlischgrötz", "Cuana ui Bennain", "Bospera von Falkenhag",
+      "Yppolita von Trottberg", "Genoveva von Garlischgrötz", "Cuana ui Bennain", "Bospera von Falkenhag",
       "Irmenella Sturmfels", "Hjalda von Notmark", "Praiodane vom Eberstamm", "Eolwyn von Albenhus",
     ],
   },
