@@ -82,6 +82,7 @@ export function DsaCharacterSheet() {
   function onPortraitFile(file: File) {
     if (!updateHero) return;
     if (!file.type.startsWith("image/")) return;
+    const heroName = dsaCharacter?.name ?? "Der Held";
     const reader = new FileReader();
     reader.onload = () => {
       const img = new Image();
@@ -99,7 +100,7 @@ export function DsaCharacterSheet() {
         const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
         updateHero({ ...hero, portraitDataUrl: dataUrl });
         notifyMaster?.(
-          `${dsaCharacter.name} hat ein neues Porträt am Heldenbrief befestigt.`,
+          `${heroName} hat ein neues Porträt am Heldenbrief befestigt.`,
         );
       };
       img.src = String(reader.result);
