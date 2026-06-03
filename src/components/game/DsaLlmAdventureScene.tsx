@@ -34,6 +34,14 @@ import { parseCombatIntent, type CombatIntent } from "@/game/dsa/combatIntent";
 import { upgradeToHero } from "@/game/dsa/advancement";
 import type { HeroGear } from "@/game/dsa/gear";
 import type { DsaHero } from "@/game/types";
+import { useCoarsePointer } from "@/hooks/useCoarsePointer";
+
+const ENTER_SUBMIT_KEY = "dsa:composer:enterSubmits";
+function readEnterSubmits(): boolean {
+  if (typeof localStorage === "undefined") return true;
+  const v = localStorage.getItem(ENTER_SUBMIT_KEY);
+  return v === null ? true : v === "1";
+}
 /**
  * LLM-Tafelrunde im Gemeinschaftsraum E67. Ersetzt das alte gescriptete
  * `DsaAdventureScene`. Drei Modi:
@@ -162,6 +170,13 @@ export function DsaLlmAdventureScene() {
   >([]);
   const [composerText, setComposerText] = useState("");
   const [busy, setBusy] = useState(false);
+  const isCoarse = useCoarsePointer();
+  const [enterSubmits, setEnterSubmits] = useState<boolean>(() => readEnterSubmits());
+  useEffect(() => {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem(ENTER_SUBMIT_KEY, enterSubmits ? "1" : "0");
+    }
+  }, [enterSubmits]);
   const [error, setError] = useState<string | null>(null);
   const [combat, setCombat] = useState<CombatBridge | null>(null);
   const [pendingCombat, setPendingCombat] = useState<CombatBridge | null>(null);
