@@ -12,6 +12,7 @@ import {
   serializeGearForPrompt,
   type HeroGear,
 } from "./gear";
+import { buildBfTimeAnchorPrompt } from "./time";
 
 export interface HeroChronicleEntry {
   setting: string;
@@ -158,6 +159,8 @@ ${known}
     Übernachtungs-Szene ("Am Morgen fühlst du dich klarer — +4 AsP, +3 LE").`;
   })();
 
+  const wishTimeAnchorBlock = isWish ? buildBfTimeAnchorPrompt(wishBrief) : "";
+
   const memoryBlock = (() => {
     if (!memory) return "";
     const chron = (memory.chronicle ?? []).slice(-6);
@@ -239,6 +242,7 @@ SPIELERWUNSCH (PFLICHT BEACHTEN):
   """
   ${wishBrief.trim()}
   """
+${wishTimeAnchorBlock}
 ` : ""}
 
 SETTING DIESES ABENTEUERS — ${s?.title ?? "freie Wahl"}:

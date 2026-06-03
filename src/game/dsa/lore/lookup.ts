@@ -107,6 +107,41 @@ ANREDEN — REGIONAL ABWEICHEND:
     Brogarim"). "Bei Angroschs Hammer!" als Schwur.
 `.trim();
 
+const ZEITRECHNUNG_BASIS = `
+ZEITRECHNUNG — AVENTURIEN:
+  BF = "nach Bosparans Fall" (= Untergang der Stadt Bosparan, NICHT Gründung).
+  Hal = Regierungsjahr Kaiser Hals. 1 Hal = 993 BF, 20 Hal = 1012 BF.
+  Umrechnung nur während Hals Regentschaft: Hal-Jahr + 992 = BF-Jahr.
+  Für BF-Jahre nach ca. 1020 BF NICHT in Hal umrechnen und Kaiser Hal NICHT weiterregieren lassen.
+  Wenn eine Differenz gebraucht wird, rechne deterministisch: BF-Jahr minus 1012 = Jahre nach 20 Hal.
+  Beispiel: 2027 BF liegt 1015 Jahre nach 20 Hal/1012 BF — nicht 110 Jahre.
+`.trim();
+
+function zeitrechnungForBfYear(year: number): string {
+  const after20Hal = year - 1012;
+  const after1Hal = year - 993;
+  const relation20Hal = after20Hal === 0
+    ? "genau im Jahr 20 Hal (= 1012 BF)"
+    : after20Hal > 0
+      ? `${after20Hal} Jahre nach 20 Hal (= 1012 BF)`
+      : `${Math.abs(after20Hal)} Jahre vor 20 Hal (= 1012 BF)`;
+  const relation1Hal = after1Hal === 0
+    ? "genau im Jahr 1 Hal (= 993 BF)"
+    : after1Hal > 0
+      ? `${after1Hal} Jahre nach 1 Hal (= 993 BF)`
+      : `${Math.abs(after1Hal)} Jahre vor 1 Hal (= 993 BF)`;
+  const halNote = year >= 993 && year <= 1012
+    ? `Innerhalb von Hals Regierungszeit entspricht das ${year - 992} Hal.`
+    : `Nicht als Hal-Jahr ausdrücken; Kaiser Hal regiert hier nicht plausibel weiter.`;
+  return [
+    `ZEITANKER — ${year} BF`,
+    `${year} BF liegt ${relation20Hal}.`,
+    `${year} BF liegt außerdem ${relation1Hal}.`,
+    halNote,
+    `BF bedeutet "nach Bosparans Fall", nicht "nach Gründung".`,
+  ].join("\n");
+}
+
 // --------- Helper für Detail-Texte ---------
 
 function godDetail(g: GodBrief): string {
@@ -148,6 +183,7 @@ export const LORE_TOPICS: string[] = [
   "welt.tagesgeschehen",
   "welt.wirtschaft",
   "welt.kalender",
+  "zeitrechnung",
   "welt.sprache",
   "welt.auelfen",
   "companions.brem",
@@ -188,6 +224,7 @@ export function resolveLoreTopic(topic: string): string {
     case "welt.tagesgeschehen": return DSA_CURRENT_AFFAIRS_20HAL;
     case "welt.wirtschaft": return DSA_ECONOMY_BRIEF;
     case "welt.kalender": return DSA_CALENDAR_BRIEF;
+    case "zeitrechnung": return ZEITRECHNUNG_BASIS;
     case "welt.sprache": return DSA_LANGUAGE_BRIEF;
     case "welt.auelfen": return DSA_AUELFEN_BRIEF;
     case "companions.brem": return DSA_BREM_BACKSTORY;
@@ -270,9 +307,16 @@ export function resolveLoreTopic(topic: string): string {
       const m = DSA_BESTIARY[id];
       return m ? `${id}: ${m}` : `Unbekanntes Monster '${id}'. Versuche "liste.monster".`;
     }
+    if (kind === "zeitrechnung" && id.startsWith("bf.")) {
+      const yearRaw = id.slice(3);
+      const year = Number.parseInt(yearRaw, 10);
+      return Number.isFinite(year) && year > 0 && year < 10000
+        ? zeitrechnungForBfYear(year)
+        : `Ungültiges BF-Jahr '${yearRaw}'. Nutze z. B. "zeitrechnung.bf.2027".`;
+    }
   }
 
-  return `Unbekanntes Topic '${topic}'. Erlaubte Präfixe: anreden.*, welt.*, companions.*, liste.*, gott.<id>, region.<id>, zauber.<id>, waffe.<id>, ruestung.<id>, talent.<id>, monster.<id>.`;
+  return `Unbekanntes Topic '${topic}'. Erlaubte Präfixe: anreden.*, welt.*, zeitrechnung, zeitrechnung.bf.<jahr>, companions.*, liste.*, gott.<id>, region.<id>, zauber.<id>, waffe.<id>, ruestung.<id>, talent.<id>, monster.<id>.`;
 }
 
 /**
@@ -282,7 +326,7 @@ export function resolveLoreTopic(topic: string): string {
 export const LORE_TOPIC_HINT = `
 Verfügbare Topics für dsaLore({ topic }):
   ANREDEN: anreden.adel, anreden.klerus, anreden.magier, anreden.akademiker, anreden.regional
-  WELT:    welt.tagesgeschehen, welt.wirtschaft, welt.kalender, welt.sprache, welt.auelfen
+  WELT:    welt.tagesgeschehen, welt.wirtschaft, welt.kalender, welt.sprache, welt.auelfen, zeitrechnung, zeitrechnung.bf.<jahr>
   GEFÄHRTEN: companions.brem, companions.yelva
   INDIZES: liste.goetter, liste.regionen, liste.zauber, liste.waffen, liste.ruestungen, liste.talente, liste.monster
   DETAIL:  gott.<id>, region.<id>, zauber.<id>, waffe.<id>, ruestung.<id>, talent.<id>, monster.<id>
