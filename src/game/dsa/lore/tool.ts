@@ -14,7 +14,7 @@ export const DSA_LORE_TOOL_SPEC = {
     name: "dsaLore",
     description:
       "Schlägt aventurisches Detailwissen nach (Anreden, Götter, Regionen, Zauber, Waffen, Rüstungen, Talente, Monster, Welt-Kontext, Gefährten-Backstories). " +
-      "Ruf das Tool auf, BEVOR du eine Aussage triffst, bei der du unsicher bist — speziell bei Titeln/Anreden, Geografie, Götter-Details oder Spielregeln. " +
+      "Ruf das Tool auf, BEVOR du eine Aussage triffst, bei der du unsicher bist — speziell bei Titeln/Anreden, Geografie, Götter-Details, Zeitrechnung/Jahresdifferenzen oder Spielregeln. " +
       LORE_TOPIC_HINT,
     parameters: {
       type: "object",
@@ -22,7 +22,7 @@ export const DSA_LORE_TOOL_SPEC = {
         topic: {
           type: "string",
           description:
-            "Genau eines der erlaubten Topics, z. B. 'anreden.klerus', 'region.greifenfurt', 'gott.praios', 'zauber.fulminictus'. Bei Unsicherheit zuerst 'liste.*' aufrufen.",
+            "Genau eines der erlaubten Topics, z. B. 'anreden.klerus', 'region.greifenfurt', 'gott.praios', 'zauber.fulminictus', 'zeitrechnung.bf.2027'. Bei Unsicherheit zuerst 'liste.*' bzw. 'zeitrechnung' aufrufen.",
         },
       },
       required: ["topic"],
