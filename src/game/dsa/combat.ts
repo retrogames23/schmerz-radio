@@ -750,13 +750,11 @@ export function resolveRound(
   }
 
   // Taktik-spezifische Eröffnungs-Probe.
-  if (tactic === "balanced") {
-    mods.heroAt += 1; mods.heroPa += 1;
-  } else if (tactic === "aggressive") {
-    mods.heroAt += 2; mods.heroTp += 2; mods.heroPa -= 4;
-  } else if (tactic === "defensive") {
-    mods.heroPa += 4; mods.heroAt -= 2;
-  } else if (tactic === "cunning") {
+  // balanced / aggressive / defensive sind rein narrativ — gleiche Werte,
+  // unterschiedlicher Erzählton (siehe Tjark-Master-Prompt). Cunning und
+  // Flucht bleiben mechanisch, weil sie als Sonder-Aktion eine Probe
+  // auslösen und einen echten Effekt bzw. Kampfabbruch ermöglichen.
+  if (tactic === "cunning") {
     const roll = d20();
     const success = roll <= player.KL && roll !== 20;
     events.push({
