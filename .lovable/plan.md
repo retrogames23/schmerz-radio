@@ -1,55 +1,73 @@
 ## Ziel
 
-Brem und Yelva bekommen je eine knappe, aber tragfähige Hintergrundgeschichte mit einem klaren **Bruch** im Lebenslauf. Die Storys speisen Tjarks Erzählung und ihre eigenen [BREM]/[YELVA]-Beiträge, ohne den lockeren Tisch-Ton zu kippen.
+Das Kampf-Overlay soll nicht mehr nur eine abstrakte Taktik auswerten, sondern auch die unmittelbar vor Kampfbeginn formulierten Befehle berücksichtigen:
 
-## Vorschlag 1 — Brem
+- „Yelva, bleib hinten und leg Pfeile auf“ soll ihre Rolle im Kampf tatsächlich ändern.
+- Befehle wie „Yelva, blend den Gegner“ sollen sichtbare Kampfwert-Auswirkungen haben.
+- Magiebegabte Helden sollen ihre bekannten Zauber per Prompt im Kampf einsetzen können.
+- Magier/Elfen/Druiden dürfen nicht mehr fälschlich als unmagisch behandelt werden, wenn ihr Zauberbuch vorhanden oder ableitbar ist.
 
-**Name:** Brem Halbgroschen, Streuner, ~28, geboren in Festum (Nordmarken-Hafenviertel).
+## Befund
 
-**Kurzbiographie:**
-- Sohn einer Phex-gefälligen Beutelschneiderin („Mira Halbgroschen“) und eines unbekannten thorwalschen Seefahrers. Wuchs in einer Schmugglerschenke nahe der Festumer Hafenmauer auf, lernte Würfeln vor dem Lesen.
-- Mit 14 in eine Gauner-„Zunft“ aufgenommen, die im Schatten der echten Phex-Kirche operierte. Spezialität: Markt-Beutelschnitt und „Botengänge“ für einen Hesinde-nahen Antiquar, der gestohlene Bücher umschlug.
-- **Der Bruch:** Mit 22 sollte Brem einen schlafenden Hesinde-Geweihten bestehlen, der ein verbotenes Borbarad-Manuskript hütete. Brem nahm das Buch — und ließ es im letzten Moment am Altar liegen, weil ihm beim Lesen der ersten Zeile schlecht wurde. Seine Zunft erfuhr es. Seine Mutter deckte ihn, wurde dafür von den eigenen Leuten verraten und sitzt seither in den Festumer Kerkern.
-- Seitdem zieht Brem südwärts, nimmt kleine Aufträge, sucht heimlich nach dem Bestechungsgeld, das seine Mutter freikaufen würde — und tut nach außen so, als sei ihm alles egal.
+- Der LLM-Meister löst Kämpfe nicht selbst aus; er setzt nur `[COMBAT: ...]`. Danach übernimmt `DsaCombatInteractive` deterministisch.
+- Dieses Overlay bekommt aktuell nur `heroes`, `foes`, `player`, aber keine freie Spieleranweisung aus dem Dialog.
+- Yelva/Brem werden immer mit festen Standardwerten erzeugt; Formation/Rolle wird nicht gespeichert.
+- Gegner wählen als Ziel aktuell meist den schwächsten Helden. Dadurch landet Yelva trotz „bleib hinten“ plausibilitätswidrig in der ersten Reihe.
+- Kampfzauber existieren nur für Layard über Magie-Taktiken, aber nicht als konkrete Prompt-Absicht („ich wirke Ignifaxius“, „ich blende ihn“).
+- Die Magier-Fehlmeldung entsteht wahrscheinlich, weil manche Pfade nur `DsaCharacterSummary` nutzen. Dieser Snapshot enthält kein `spells`; `upgradeToHero/defaultSpells` füllt das Zauberbuch erst später. Wenn `loadHeroSpells` nichts liefert, interpretiert der Prompt das als „nicht magiebegabt“.
 
-**Brüche & Spielbarkeit:**
-- *Pragmatiker mit Schuldkonto:* Trocken, geldgierig wirkend — in Wahrheit spart er für eine Frau, von der er nie spricht.
-- *Phex ja, aber leise:* Er flucht bei Phex, betritt aber keine Tempel. Mit Hesinde-Geweihten geht er um wie mit heißem Brei.
-- *Borbarad-Allergie:* Bei Andeutungen über Schwarze Magie wird er sonst nicht zickig — hier schon. Yelva merkt das und neckt ihn dafür, ohne den Grund zu kennen.
-- *Mutter-Witz:* Yelvas „Deine Mutter war Diebin, Brem.“ bekommt einen doppelten Boden — Brem grinst und antwortet, aber innerlich trifft es.
+## Plan
 
-## Vorschlag 2 — Yelva
+1. **Combat-Intent-Datenmodell ergänzen**
+   - Einen kleinen Typ für Kampfbefehle einführen, z. B.:
+     - Layard: gewünschter Zauber / Magiefokus / defensive Position
+     - Yelva: `backline`, `ranged`, `blind`, `protective`
+     - Brem: `flank`, `protect`, `cunning`, `holdBack`
+   - Keine offene LLM-Mechanik: nur eine feste, sichere Menge an erkannten Absichten.
 
-**Name:** Yelva nin' Salwiel („vom singenden Wasser“), Auelfe, ~135 Jahre (für eine Elfe Mitte 30), aus der Sippe der Salwiel am Großen Fluss zwischen Donnerbach und Honingen.
+2. **Freie Spielerprompts vor Kampfbeginn auswerten**
+   - Beim Eingang eines `[COMBAT]` im Client die letzte Spieler-Eingabe auswerten.
+   - Zusätzlich die letzten sichtbaren Meister-/Yelva-/Brem-Zeilen berücksichtigen, falls die LLM den Befehl gerade bestätigt hat.
+   - Einfache deutsche Heuristiken reichen zunächst:
+     - „Yelva/Elfe … hinten“, „bleib hinten“, „Deckung“, „Pfeile“, „Bogen“ → Yelva bleibt hinten und nutzt Fernkampf.
+     - „Yelva … blenden“, „blend(e)“ → Yelva versucht einen Blend-/Ablenkungseffekt.
+     - „Brem … flank“, „ablenken“, „hinterhalt“, „trick“ → Brem stört Gegner statt stumpf zuzustechen.
+     - „ich wirke <Zaubername>“, „Ignifaxius“, „Fulminictus“, „Balsam“, „Blitz“ → konkreter Layard-Zauberwunsch.
 
-**Kurzbiographie:**
-- Aufgewachsen in einer Auenelfen-Sippe, die nach dem Trallop-Vertrag in losen Sommerlagern am Großen Fluss zog. Lernte Bogen, Heilen und das Lied wie alle anderen — galt aber früh als die *Neugierige*, die in Honinger Tavernen verschwand und mit menschlichen Gassenkindern Reime tauschte.
-- Mit ~80 verliebte sich Yelva in einen menschlichen Praios-Adepten, der sie heimlich mit ins Tempelarchiv nahm. Sie las dort von ihrer eigenen Sippe in einer alten Chronik — und stieß auf einen Eintrag, den Elfen nicht lesen sollen: Ihre Sippenältesten hatten vor 200 Jahren ein menschliches Dorf verdursten lassen, weil es einen Flussarm umleitete. Schweigen wurde als „Harmonie“ verkauft.
-- **Der Bruch:** Sie stellte die Ältesten zur Rede. Diese verlangten Schweigen im Namen des Liedes. Yelva sang stattdessen die Wahrheit in einem Heimat-Lied — vor versammelter Sippe. Sie wurde nicht verstoßen, sondern *fortgesungen*: eine sanfte, aber endgültige Bitte, zu gehen. Der Praios-Adept hat sie nie wieder gesehen; sie nimmt an, dass die Sippe ihn auf dem Heimweg verschwinden ließ. Beweisen kann sie es nicht.
-- Seitdem hält sie sich an Menschen, weil sie unter Elfen nicht mehr klar sieht — fürchtet aber, dass die Trauer um den Adepten und der Hass auf die eigenen Ältesten sie *badoc* werden lassen.
+3. **Gefährtenrollen mechanisch wirksam machen**
+   - `Combatant` um Rolle/Position erweitern (`frontline`, `backline`, `support`).
+   - Zielauswahl der Gegner anpassen:
+     - Frontlinie wird bevorzugt angegriffen.
+     - Backline wird deutlich seltener Ziel, außer alle Frontkämpfer liegen oder es gibt Fernkämpfer-Gegner.
+   - Yelva im Backline-Modus:
+     - weniger Parade-/Nahkampf-Interaktion,
+     - bleibt mit Elfenbogen auf Distanz,
+     - wird im Log auch so beschrieben.
+   - Brem/Yelva-Aktionen bekommen je nach Befehl kleine, transparente Modifikatoren statt nur Flavour.
 
-**Brüche & Spielbarkeit:**
-- *Sippe-Thema:* Wenn jemand naiv von „den Elfen“ schwärmt, wird Yelva spitz. Sie verteidigt Elfen nach außen, glaubt selbst aber nicht mehr alles.
-- *Praios-Reflex:* Praios-Geweihte machen sie still. Sie redet nicht darüber, aber wer sie kennt, merkt es.
-- *Brem necken als Selbstschutz:* Brems lockere Art ist ihr Anker gegen das eigene Grübeln. Daher die Frotzelei.
-- *Magie mit Risiko:* Jeder größere Zauber ist für sie ein leiser Test, ob das Lied sie noch trägt — sie sagt es nicht, aber Tjark darf gelegentlich andeuten, dass sie nach einem starken Zauber einen Moment lauscht.
+4. **Blend-/Kontrollzauber als Kampfwert-Effekt abbilden**
+   - Für „blenden“ einen klaren Effekt implementieren: z. B. ein Gegner erhält für 1 Runde `AT -3` und `PA -2` oder verliert seinen Angriff bei sehr gutem Erfolg.
+   - Der Effekt erscheint im Kampfprotokoll mit Würfel-/Erfolgsinformation.
+   - Falls der Effekt von Yelva kommt, wird er als Yelvas Aktion dargestellt und nicht Layard zugeschrieben.
 
-## Umsetzung im Code
+5. **Konkrete Zauber per Prompt für Layard ermöglichen**
+   - Neben „Magie niedrig/mittel/hoch“ ein konkretes `requestedSpellId` an `resolveRound` übergeben.
+   - Wenn Layard den Zauber kennt und genug AsP hat, wird genau dieser Zauber zuerst versucht.
+   - Wenn der Zauber nicht bekannt/zu teuer ist, erscheint eine klare Logzeile statt falscher Meisterbehauptung.
+   - Schadens-/Heilzauber laufen weiter deterministisch über die vorhandenen DSA3-Proben.
 
-Neue Datei `src/game/dsa/lore/companions.ts` mit zwei Exporten:
-- `DSA_BREM_BRIEF` — Kompakter Lore-Block (~25 Zeilen) im Stil der bestehenden Lore-Dateien: Herkunft, der Bruch, Spielleitplanken (was Tjark/Brem sagt / nicht sagt), 3–4 Beispielzeilen.
-- `DSA_YELVA_BACKSTORY` — Analog für Yelva. Wird **zusätzlich** zum bestehenden `DSA_AUELFEN_BRIEF` eingebunden, nicht statt.
+6. **Magiebegabung/Zauberbuch robust machen**
+   - Server-Prompt: Wenn `knownSpells` leer ist, aber die Klasse magisch ist und AE vorhanden sind, Default-Zauber der Klasse verwenden statt „nicht magiebegabt“.
+   - Client-Kampf: vor `heroCombatantFromCharacter` immer `upgradeToHero` nutzen, damit Magier/Elf/Druide sicher `spells` und Default-Ausrüstung haben.
+   - `loadHeroSpells` ggf. mit Default-Fallback ergänzen, falls alte/teilweise gespeicherte Helden keinen `spells`-Block haben.
 
-Einbindung:
-- `src/game/dsa/llmMasterPrompt.ts` — beide Briefs in den Solo-Master-Prompt einfügen, dort wo schon `DSA_LORE_BRIEF` referenziert wird.
-- `src/game/dsa/group/prompt.ts` — selbe Briefs nur einfügen, wenn `includeCompanions === true`.
-- `src/game/dsa/lore/index.ts` — Re-Export beider Konstanten.
+7. **UI minimal anpassen**
+   - Im Taktik-Picker eine kurze Zeile anzeigen, wenn ein freier Kampfbefehl erkannt wurde, z. B. „Befehl erkannt: Yelva bleibt hinten · Layard wirkt Ignifaxius“.
+   - Keine neue komplizierte Befehlseingabe im Overlay; die normale Prompt-Eingabe vor dem Kampf bleibt die Quelle.
 
-Memory:
-- Neuer Eintrag unter `mem/features/companion-backstories.md` mit den Kern-Fakten (Brems Mutter in Festumer Kerker, Yelvas „fortgesungen“, Praios-Adept, Borbarad-Allergie), damit spätere Änderungen die Storys nicht aus Versehen brechen. Im Index unter „Memories“ verlinken.
-
-## Offene Frage
-
-Brems Hintergrund verankert ihn in **Festum / Nordmarken** mit Phex-Zunft + Borbarad-Touch. Yelva bekommt eine **Praios-Liebes-Episode** und einen moralischen Bruch mit ihrer Sippe.
-
-Soll ich diese beiden Storys so umsetzen, oder willst du an einer der beiden noch schrauben (z.B. anderer Bruch für Brem, andere Region für Yelvas Sippe, keine Liebesgeschichte)?
+8. **Validierung**
+   - Mit gezielten lokalen Checks für die Parser-Fälle prüfen:
+     - „Yelva bleib hinten und leg Pfeile auf“ → Yelva Backline/Ranged.
+     - „Yelva blende den Anführer“ → Gegner-Modifikator erscheint.
+     - Magier mit Default-Zaubern → Prompt sagt nicht mehr „unmagisch“.
+     - „Ich wirke Ignifaxius“ → Kampf versucht Ignifaxius, zieht AsP ab und protokolliert Probe/Schaden.

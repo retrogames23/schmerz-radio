@@ -6,6 +6,8 @@ import type { AttributeId } from "./rules/mechanics";
 import { WEAPONS } from "./rules/weapons";
 import { ARMORS } from "./rules/armor";
 import type { HeroGear } from "./gear";
+import type { CombatIntent, CompanionIntent } from "./combatIntent";
+import { EMPTY_COMBAT_INTENT } from "./combatIntent";
 
 /**
  * Vereinfachte DSA-Kampfregeln für die automatischen Tafelrunden-Kämpfe.
@@ -22,6 +24,9 @@ import type { HeroGear } from "./gear";
  */
 
 export type CombatantSide = "hero" | "foe";
+
+/** Position einer Figur im Kampf. */
+export type CombatantRole = "frontline" | "backline" | "support";
 
 export interface Combatant {
   id: string;
@@ -57,6 +62,10 @@ export interface Combatant {
   spells?: Record<string, number>;
   /** Klassen-ID für Hauszauber-Erleichterung. */
   classId?: DsaClassId;
+  /** Position in der Schlachtordnung. Default: frontline. */
+  role?: CombatantRole;
+  /** Bevorzugte Fernkampf-Variante (für Log-Beschreibung). */
+  rangedWeapon?: string;
 }
 
 export interface EnemyStat {
@@ -373,21 +382,51 @@ export const COMPANION_STATS: ReadonlyArray<EnemyStat & { id: string }> = [
   },
 ];
 
-export function companionCombatants(): Combatant[] {
-  return COMPANION_STATS.map((c) => ({
-    id: c.id,
-    name: c.name,
-    side: "hero",
-    le: c.le,
-    leMax: c.le,
-    at: c.at,
-    pa: c.pa,
-    tpDice: c.tpDice,
-    tpBonus: c.tpBonus,
-    rs: c.rs,
-    iniBase: c.iniBase,
-    weapon: c.weapon,
-  }));
+export function companionCombatants(intent?: CombatIntent | null): Combatant[] {
+  const i = intent ?? EMPTY_COMBAT_INTENT;
+  return COMPANION_STATS.map((c) => {
+    const own: CompanionIntent | undefined =
+      c.id === "yelva" ? i.yelva : c.id === "brem" ? i.brem : undefined;
+    const role: CombatantRole = own?.backline
+      ? "backline"
+      : own?.protect
+        ? "support"
+        : "frontline";
+    let at = c.at;
+    let pa = c.pa;
+    let weapon = c.weapon;
+    let rangedWeapon: string | undefined;
+    if (own?.ranged) {
+      // Fernkampf: leichte AT-Stärkung (geübter Schuss), keine Nahkampf-Parade.
+      at = c.at + 1;
+      pa = Math.max(1, c.pa - 1);
+      rangedWeapon = c.id === "yelva" ? "Elfenbogen" : "Wurfdolch";
+      weapon = rangedWeapon;
+    }
+    if (own?.protect) {
+      pa += 2; // konzentriert sich aufs Parieren
+    }
+    if (own?.flank) {
+      at += 1;
+      pa = Math.max(1, pa - 1);
+    }
+    return {
+      id: c.id,
+      name: c.name,
+      side: "hero",
+      le: c.le,
+      leMax: c.le,
+      at,
+      pa,
+      tpDice: c.tpDice,
+      tpBonus: c.tpBonus,
+      rs: c.rs,
+      iniBase: c.iniBase,
+      weapon,
+      role,
+      rangedWeapon,
+    };
+  });
 }
 
 function d6(): number {
@@ -509,6 +548,11 @@ export interface WoundedCombatant extends Combatant {
   /** 0..3 — ab 3 ist die Heldenfigur endgültig kampfunfähig.
    *  Gegner führen keine Wunden — sie fallen einfach bei LE ≤ 0. */
   wounds: number;
+  /** Temporäre Effekte (z. B. geblendet) — laufen rundenweise aus. */
+  atMod?: number;
+  paMod?: number;
+  effectRoundsLeft?: number;
+  effectLabel?: string;
 }
 
 export interface CombatState {
@@ -520,6 +564,12 @@ export interface CombatState {
   fallenHeroes: { id: string; name: string }[];
   /** Letzte tatsächlich verwendete Taktik — beeinflusst die Konsequenz-Auswahl. */
   lastTactic: Tactic;
+  /** Freie Spielerwünsche aus dem letzten Prompt vor dem Kampf. */
+  intent?: CombatIntent | null;
+  /** Wurde die einmalige Yelva-Blendaktion bereits aufgelöst? */
+  blindResolved?: boolean;
+  /** Hat Layard seinen Wunsch-Zauber bereits einmal abgesetzt? */
+  layardSpellResolved?: boolean;
 }
 
 export interface PlayerStats {
@@ -534,6 +584,7 @@ function wrap(c: Combatant): WoundedCombatant {
 export function createCombatState(
   heroes: Combatant[],
   foes: Combatant[],
+  intent?: CombatIntent | null,
 ): CombatState {
   return {
     heroes: heroes.map(wrap),
@@ -543,6 +594,9 @@ export function createCombatState(
     consequenceKind: null,
     fallenHeroes: [],
     lastTactic: "balanced",
+    intent: intent ?? null,
+    blindResolved: false,
+    layardSpellResolved: false,
   };
 }
 
@@ -586,15 +640,29 @@ export function resolveRound(
   state: CombatState,
   tactic: Tactic,
   player: PlayerStats,
-  opts?: { spellFocus?: SpellFocus },
+  opts?: { spellFocus?: SpellFocus; intent?: CombatIntent | null },
 ): CombatEvent[] {
   if (state.phase !== "ongoing") return [];
   state.lastTactic = tactic;
   state.round += 1;
+  const intent = opts?.intent ?? state.intent ?? null;
   const events: CombatEvent[] = [];
   const all = [...state.heroes, ...state.foes];
 
   const mods: RoundModifiers = { heroAt: 0, heroPa: 0, heroTp: 0, foeAt: 0, foePa: 0 };
+
+  // Abklingende Effekte (z. B. Geblendet) rundenweise reduzieren.
+  for (const c of [...state.foes, ...state.heroes]) {
+    if ((c.effectRoundsLeft ?? 0) > 0) {
+      c.effectRoundsLeft = (c.effectRoundsLeft ?? 0) - 1;
+      if ((c.effectRoundsLeft ?? 0) <= 0) {
+        c.atMod = 0;
+        c.paMod = 0;
+        c.effectLabel = undefined;
+        c.effectRoundsLeft = 0;
+      }
+    }
+  }
 
   // Runden-Header
   events.push({
@@ -602,6 +670,42 @@ export function resolveRound(
     text: `── Runde ${state.round} · ${TACTIC_LABELS[tactic].title} ──`,
     snapshot: snapshotW(all),
   });
+
+  // ── Yelvas Blend-/Ablenkungs-Aktion (einmalig pro Kampf) ───────
+  if (intent?.yelva.blind && !state.blindResolved) {
+    const yelva = state.heroes.find((h) => h.id === "yelva");
+    const foeTarget = pickFoeTargetW(state.foes);
+    if (yelva && alive(yelva) && foeTarget) {
+      const roll = d20();
+      // Stellvertretende CH-Probe (Yelva = elfengewandt, Default 13).
+      const target = 13;
+      const success = roll <= target && roll !== 20;
+      state.blindResolved = true;
+      if (success) {
+        foeTarget.atMod = -3;
+        foeTarget.paMod = -2;
+        foeTarget.effectRoundsLeft = 2;
+        foeTarget.effectLabel = "geblendet";
+        events.push({
+          kind: "ini",
+          text: `Yelva wirft Staub und Lichtfunken in das Gesicht von ${foeTarget.name} — geblendet! (AT −3, PA −2 für 2 Runden)`,
+          dice: [{ label: "Yelva CH", value: roll, target, success: true }],
+          snapshot: snapshotW(all),
+          actorId: yelva.id,
+          targetId: foeTarget.id,
+        });
+      } else {
+        events.push({
+          kind: "ini",
+          text: `Yelva versucht ${foeTarget.name} zu blenden — daneben.`,
+          dice: [{ label: "Yelva CH", value: roll, target, success: false }],
+          snapshot: snapshotW(all),
+          actorId: yelva.id,
+          targetId: foeTarget.id,
+        });
+      }
+    }
+  }
 
   // Taktik-spezifische Eröffnungs-Probe.
   if (tactic === "aggressive") {
@@ -642,6 +746,41 @@ export function resolveRound(
   // in dieser Runde, läuft aber VOR der Initiative ab (Zauber sind schnell,
   // und so kann sich das Schadensfenster vor den Gegner-Aktionen öffnen).
   let layardSkipMelee = false;
+
+  // ── Expliziter Spielerwunsch: Layard wirkt diesen Spruch ─────────
+  if (intent?.layardSpellId && !state.layardSpellResolved) {
+    const layard = state.heroes.find((h) => h.id === "hero");
+    if (layard && alive(layard)) {
+      const spell = SPELLS.find((s) => s.id === intent.layardSpellId);
+      const zfw = spell ? layard.spells?.[spell.id] : undefined;
+      if (spell && typeof zfw === "number" && (layard.ae ?? 0) >= spellCost(spell)) {
+        state.layardSpellResolved = true;
+        layardSkipMelee = true;
+        if (spell.id === "balsam_salabunde") {
+          resolveLayardBalsam(layard, all, events);
+        } else {
+          const foeTarget = pickWeakestW(state.foes);
+          if (foeTarget) {
+            resolveLayardSpellExplicit(layard, foeTarget, spell, zfw, all, events);
+          }
+        }
+      } else if (spell) {
+        // Bekannter Spruch, aber nicht bezahlbar / kein Ziel: einmaliger
+        // Hinweis, dann ausschalten (kein Endlos-Spam).
+        state.layardSpellResolved = true;
+        const reason = typeof zfw !== "number"
+          ? `Layard kennt ${spell.name} nicht.`
+          : `Layard hat nicht genug Astralenergie für ${spell.name}.`;
+        events.push({
+          kind: "spell-fizzle",
+          text: reason,
+          snapshot: snapshotW(all),
+          actorId: layard.id,
+        });
+      }
+    }
+  }
+
   if (tactic === "spell") {
     layardSkipMelee = true;
     const layard = state.heroes.find((h) => h.id === "hero");
@@ -714,15 +853,17 @@ export function resolveRound(
     if (layardSkipMelee && isLayard(actor)) continue;
 
     const target =
-      actor.side === "hero" ? pickFoeTargetW(state.foes) : pickWeakestW(state.heroes);
+      actor.side === "hero" ? pickFoeTargetW(state.foes) : pickHeroTargetW(state.heroes);
     if (!target) continue;
 
     // Wunden-Malus auf AT/PA: −2 pro Wunde des Akteurs/Verteidigers.
     const actorAtMod =
       -2 * actor.wounds +
+      (actor.atMod ?? 0) +
       (actor.side === "foe" ? mods.foeAt : isLayard(actor) ? mods.heroAt : 0);
     const targetPaMod =
       -2 * target.wounds +
+      (target.paMod ?? 0) +
       (target.side === "foe" ? mods.foePa : isLayard(target) ? mods.heroPa : 0);
     const actorTpMod =
       -2 * actor.wounds + (isLayard(actor) ? mods.heroTp : 0);
@@ -867,6 +1008,96 @@ function pickFoeTargetW(foes: WoundedCombatant[]): WoundedCombatant | null {
   const live = foes.filter(alive);
   if (live.length === 0) return null;
   return live.sort((a, b) => a.le - b.le)[0];
+}
+
+/**
+ * Rollenbewusste Zielwahl der Gegner: Frontlinie wird stark bevorzugt;
+ * Backline/Support nur, wenn keine Frontkämpfer mehr stehen.
+ */
+function pickHeroTargetW(heroes: WoundedCombatant[]): WoundedCombatant | null {
+  const live = heroes.filter(alive);
+  if (live.length === 0) return null;
+  const front = live.filter((h) => (h.role ?? "frontline") === "frontline");
+  const support = live.filter((h) => h.role === "support");
+  const pool = front.length > 0 ? front : support.length > 0 ? support : live;
+  return pool.sort((a, b) => a.le - b.le)[0];
+}
+
+/**
+ * Variante von resolveLayardSpell, die einen vom Spieler ausdrücklich
+ * gewünschten Spruch verarbeitet (statt nach Priorität zu wählen).
+ */
+function resolveLayardSpellExplicit(
+  layard: WoundedCombatant,
+  foe: WoundedCombatant,
+  spell: SpellDef,
+  zfw: number,
+  all: WoundedCombatant[],
+  events: CombatEvent[],
+): void {
+  const cost = spellCost(spell);
+  const attrs = layard.attrs;
+  if (!attrs) {
+    events.push({
+      kind: "spell-fizzle",
+      text: `${layard.name} kann ${spell.name} ohne Eigenschaftswerte nicht stabilisieren.`,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+    });
+    return;
+  }
+  const ownSchool = spellOwnSchool(layard.classId, spell);
+  const modBuf = ownSchool ? 3 : 0;
+  const rolls: number[] = [d20(), d20(), d20()];
+  let bufferLeft = zfw + modBuf;
+  const dice = rolls.map((r, i) => {
+    const attrId = spell.probe[i] as AttributeId;
+    const target = attrs[attrId] ?? 10;
+    const fail = r > target;
+    if (fail) bufferLeft -= r - target;
+    return { label: `${attrId} (W20)`, value: r, target, success: !fail };
+  });
+  const ones = rolls.filter((r) => r === 1).length;
+  const twenties = rolls.filter((r) => r === 20).length;
+  let success: boolean;
+  if (twenties >= 2) success = false;
+  else if (ones >= 2) success = true;
+  else success = bufferLeft >= 0;
+  const aeCost = success ? cost : Math.ceil(cost / 2);
+  layard.ae = Math.max(0, (layard.ae ?? 0) - aeCost);
+  if (!success) {
+    events.push({
+      kind: "spell-fail",
+      text: `${layard.name} wirkt ${spell.name} (Wunsch) — Probe misslingt. AsP −${aeCost} → ${layard.ae}.`,
+      dice,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+      targetId: foe.id,
+    });
+    return;
+  }
+  const { rolls: tpRolls, dmg, rsApplied } = spellDamage(spell, zfw, foe.rs);
+  foe.le = Math.max(0, foe.le - dmg);
+  events.push({
+    kind: "spell-cast",
+    text: `${layard.name} wirkt ${spell.name}${ownSchool ? " (Hauszauber)" : ""} auf ${foe.name}. ${dmg} TP (RS ${rsApplied}). AsP −${aeCost} → ${layard.ae}. ${foe.name}: ${foe.le}/${foe.leMax} LE.`,
+    dice: [
+      ...dice,
+      ...tpRolls.map((r, i) => ({ label: `TP W${i + 1}`, value: r })),
+    ],
+    snapshot: snapshotW(all),
+    actorId: layard.id,
+    targetId: foe.id,
+  });
+  if (foe.le <= 0) {
+    events.push({
+      kind: "downed",
+      text: `${foe.name} ist kampfunfähig.`,
+      snapshot: snapshotW(all),
+      actorId: layard.id,
+      targetId: foe.id,
+    });
+  }
 }
 
 // ────────────────────────────────────────────────────────────────
