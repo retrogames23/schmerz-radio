@@ -52,7 +52,11 @@ function VorzimmerPage() {
     let alive = true;
     async function loadAll() {
       const [{ data: r }, { data: ms }, h] = await Promise.all([
-        supabase.from("dsa_group_rooms").select("*").eq("id", roomId).maybeSingle(),
+        supabase
+          .from("dsa_group_rooms")
+          .select("id, name, setting, status, max_players, include_npc_companions, host_user_id")
+          .eq("id", roomId)
+          .maybeSingle(),
         supabase.from("dsa_group_members").select("user_id, ready, hero_snapshot, slot").eq("room_id", roomId),
         cloudFetchAllHeroes(),
       ]);
