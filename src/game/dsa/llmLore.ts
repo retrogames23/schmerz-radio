@@ -30,6 +30,13 @@ REGIONEN (knappe Marker — nur was zum Setting passt, nennen):
   Maraskan — exotisch, Rur & Gror, vergiftete Klingen, Aufstand gegen das Reich.
   Khôm-Wüste, Echsensümpfe Echasarra, Yetiland — Wildnis-Ränder.
 
+GEOGRAFIE — WICHTIGE FIXPUNKTE (NIEMALS verwechseln!):
+  - Die TROLLZACKEN sind ein wildes Hochgebirge im NORDOSTEN Aventuriens, zwischen Bornland/Svelltland und den Orklanden. Goblins, Eiswölfe, Trolle. Weit weg vom Mittelreich-Kernland.
+  - GREIFENFURT liegt im NORDWEST-Mittelreich (Markgrafschaft an der Orkfront, Übergang zu den Nordmarken). Von dort aus zieht man gen Westen/Nordwesten gegen Orks, NICHT in die Trollzacken.
+  - Zwischen Trollzacken und Greifenfurt liegen Hunderte Meilen: Svelltland, Bornland, Nordlande, Tobrien — keine Reise von einem Tag oder einer Woche.
+  - Die TROLLBERGE sind KEIN aventurischer Eigenname — sage entweder "Trollzacken" (Nordost) oder, bei anderen Bergen, präzise "Eisenwald", "Hohe Pforte", "Steineichenwald", "Finsterkamm" je nach Region. Im Greifenfurter Umland: Steineichenwald, Finsterkamm, Hügelland des Reichsforsts — KEINE "Zacken der Trollberge".
+  - Faustregel: Wenn die Helden in Richtung GREIFENFURT reisen, liegen vor ihnen das nördliche Mittelreich, die Nordmarken, der Reichsforst — NICHT die Trollzacken.
+
 WÄHRUNG: Dukat (Gold) = 10 Silbertaler = 100 Heller = 1000 Kreuzer. Übliche Tagesgage Söldner: 1 D.
 
 MAGIE & KLASSEN (Held-Erschaffung steht fest; nicht ändern):
