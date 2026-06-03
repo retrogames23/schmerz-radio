@@ -238,6 +238,33 @@ function stripEndMarker(reply: string): string {
   return reply.replace(/^\s*\[END:\s*(?:victory|defeat|aborted)\s*\]\s*$/gim, "").trim();
 }
 
+/**
+ * Heuristik: erkennt narrative Abschluss-Floskeln im Meistertext, wenn die
+ * LLM den [END: ...]-Marker vergessen hat. Greift nur als Notnagel — die
+ * Pflicht zum Marker bleibt im Prompt bestehen. Liefert das wahrscheinliche
+ * End-Ergebnis oder null.
+ */
+function detectImplicitEnd(reply: string): "victory" | "defeat" | "aborted" | null {
+  const t = reply.toLowerCase();
+  // Klassischer Outtime-Abschluss vom Meister an Layard.
+  const closure =
+    /(damit\s+(schlie(?:ß|ss)en|endet|enden))\s+wir\s+(das\s+)?(kapitel|abenteuer|spiel|heute)/i.test(reply) ||
+    /(damit\s+endet|hier\s+endet|so\s+endet)\s+(unser|dein|das)\s+(abenteuer|kapitel)/i.test(reply) ||
+    /abenteuer\s+(ist\s+)?(zu\s+ende|vorbei|beendet|abgeschlossen)/i.test(reply) ||
+    /kapitel\s+(ist\s+)?(zu\s+ende|beendet|geschlossen|abgeschlossen)/i.test(reply) ||
+    /wir\s+pausieren\s+das\s+spiel\s+(hier|jetzt)/i.test(reply) ||
+    /ende\s+(des|dieses)\s+abenteuers/i.test(reply) ||
+    /(epi(?:sches|sodisches|log)|finale).{0,80}(p(?:ä|ae)uschen|pause|ruhepause|wohlverdient)/i.test(reply);
+  if (!closure) return null;
+  if (/(stirbt|f(?:ä|ae)llt\s+tot|unterliegt\s+endg(?:ü|ue)ltig|niederlage|verloren\s+ist\s+alles)/i.test(t)) {
+    return "defeat";
+  }
+  if (/(bricht\s+ab|verl(?:ä|ae)sst\s+den\s+tisch|outtime\s+beendet)/i.test(t)) {
+    return "aborted";
+  }
+  return "victory";
+}
+
 const ALLOWED_SETTINGS = new Set<string>(DSA_SETTINGS.map((s) => s.id));
 
 const VALID_ATTR_KEYS = ["MU", "KL", "CH", "FF", "GE", "IN", "KK"] as const;
@@ -846,6 +873,18 @@ export const Route = createFileRoute("/api/public/dsa-master")({
               reply = "[TJARK] Noch ist das nicht vorbei. Eine neue Spur liegt offen, und Brem trommelt schon ungeduldig mit den Fingern auf den Tisch.";
             }
             parsed = parseMasterTurn(reply);
+          }
+          // Notnagel: Meister beschreibt narrativen Abschluss, hat aber den
+          // [END: ...]-Marker vergessen → ableiten, damit Layard die
+          // Abschluss-Optionen (Datei speichern, neues Abenteuer) sieht.
+          if (
+            !parsed.end &&
+            (isOpenSetting || assistantTurns + 1 >= MIN_END_ASSISTANT_TURNS)
+          ) {
+            const implied = detectImplicitEnd(reply);
+            if (implied) {
+              parsed = { ...parsed, end: implied };
+            }
           }
           history.push({ role: "assistant", content: reply });
 
