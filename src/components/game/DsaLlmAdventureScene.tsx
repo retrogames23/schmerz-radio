@@ -169,6 +169,9 @@ export function DsaLlmAdventureScene() {
   const [imageZoomed, setImageZoomed] = useState(false);
   const turnIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  // Nach dem Laden eines bestehenden Abenteuers einmal ans Ende springen,
+  // damit der Spieler dort weiterliest, wo er aufgehört hat.
+  const scrollToEndPendingRef = useRef(false);
 
   // Vollbild (Desktop) – analog zur Stammspiel-TopBar.
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -265,6 +268,7 @@ export function DsaLlmAdventureScene() {
         if (adv.status !== "active") {
           setEndState(adv.status);
         }
+        if (restored.length > 0) scrollToEndPendingRef.current = true;
         setMode({ kind: "play" });
       } catch (e) {
         if (cancelled) return;
@@ -280,6 +284,18 @@ export function DsaLlmAdventureScene() {
 
   // Bewusst kein Auto-Scroll: der Spieler bleibt an der zuletzt gelesenen
   // Stelle und scrollt nach unten, wenn er die Reaktion sehen will.
+
+  // Ausnahme: beim erneuten Öffnen eines fortgeschrittenen Abenteuers
+  // einmalig ans Ende springen.
+  useEffect(() => {
+    if (!scrollToEndPendingRef.current) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    scrollToEndPendingRef.current = false;
+    requestAnimationFrame(() => {
+      el.scrollTop = el.scrollHeight;
+    });
+  }, [turns, mode]);
 
   const handleServerReply = useCallback(
     (data: ServerReply) => {
