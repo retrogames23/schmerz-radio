@@ -912,7 +912,7 @@ function SettingPicker({
                 title={
                   locked
                     ? user
-                      ? "Nur für Unterstützer:innen — bitte spende, um diese Abenteuerart freizuschalten."
+                     ? "Nur für Unterstützer:innen — bitte unterstütze das Projekt, um diese Abenteuerart freizuschalten."
                       : "Bitte melde dich an und unterstütze das Projekt, um diese Abenteuerart freizuschalten."
                     : undefined
                 }
@@ -930,7 +930,7 @@ function SettingPicker({
                   <h3 className="font-serif text-base font-bold">{s.title}</h3>
                   {s.donorOnly && (
                     <span className="ml-auto inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-[#6b4a1a]">
-                      {locked && <Lock className="h-3 w-3" />} Spender*in
+                       {locked && <Lock className="h-3 w-3" />} Unterstützer*in
                     </span>
                   )}
                 </div>
@@ -943,7 +943,7 @@ function SettingPicker({
           <p className="mt-3 text-[11px] leading-snug text-[#2a1f10]/70">
             <Lock className="inline h-3 w-3 mr-1" />
             Sandbox- und Wunsch-Abenteuer sind Unterstützer:innen vorbehalten —
-            {user ? " spende einmalig, um sie freizuschalten." : " melde dich an und spende, um sie freizuschalten."}
+            {user ? " unterstütze das Projekt einmalig, um sie freizuschalten." : " melde dich an und unterstütze das Projekt, um sie freizuschalten."}
           </p>
         )}
         {wishOpen && (

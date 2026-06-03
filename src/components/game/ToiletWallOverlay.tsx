@@ -114,8 +114,8 @@ export function ToiletWallOverlay() {
         </div>
         <p className="mt-1 font-mono-crt text-[10px] uppercase tracking-widest text-muted-foreground">
           {donation.unlocked
-            ? "Spender*innen-Code aktiv – deine Kritzelei bleibt für immer."
-            : "Deine Kritzelei verblasst nach 48 h. Mit Spender*innen-Code bleibt sie für immer."}
+            ? "Unterstützer*innen-Code aktiv – deine Kritzelei bleibt für immer."
+            : "Deine Kritzelei verblasst nach 48 h. Mit Unterstützer*innen-Code bleibt sie für immer."}
         </p>
         {err && <p className="mt-1 font-mono-crt text-xs text-rust">{err}</p>}
       </div>

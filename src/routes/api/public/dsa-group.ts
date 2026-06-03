@@ -463,7 +463,7 @@ export const Route = createFileRoute("/api/public/dsa-group")({
               .maybeSingle();
             if (!(prof as { donation_unlocked?: boolean } | null)?.donation_unlocked) {
               return json(402, {
-                error: "Diese Abenteuerart ist Spender*innen vorbehalten.",
+                error: "Diese Abenteuerart ist Unterstützer*innen vorbehalten.",
                 code: "donation_required",
               });
             }
