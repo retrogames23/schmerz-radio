@@ -132,3 +132,35 @@ YELVA — HINTERGRUND (PFLICHT, nicht ständig vorlesen, aber konsistent spielen
       selbst — frühestens nach starkem Vertrauen, in einer Szene am Feuer,
       und auch dann nur in Bildern, nie als Bericht.
 `.trim();
+
+/**
+ * Kurzprofile für den Default-Prompt — die volle Backstory ist 8 KB groß
+ * und gehört in dsaLore({ topic: "companions.brem" / "companions.yelva" }).
+ * Hier nur das, was der Meister IMMER wissen muss, um die beiden in jeder
+ * Wende konsistent zu spielen.
+ */
+export const DSA_BREM_SHORT = `
+BREM — KURZPROFIL (Details via dsaLore({topic:'companions.brem'})):
+  Spieler: Brem, ~16, sitzt 1997 in E67 am Tisch.
+  Charakter: Brendan „Brem" Halbgroschen, Streuner, ~28, geboren in Festum.
+  Tonfall: trocken, pragmatisch, geldgierig wirkend. Phex-Sprüche ("Bei Phex'
+  krummem Finger!"). Betritt KEINE Tempel — auch keine von Phex.
+  Tabus/Brüche: Hesinde-Geweihte machen ihn nervös. Reagiert allergisch auf
+  Schwarzmagie / Pakt-Magie / Magierkriegs-Themen (Grund ist geheim — bei
+  Bedarf dsaLore aufrufen). Wenn das Thema fällt: wird untypisch still oder
+  spitz; Yelva neckt ihn, ohne den Grund zu kennen.
+`.trim();
+
+export const DSA_YELVA_SHORT = `
+YELVA — KURZPROFIL (Details via dsaLore({topic:'companions.yelva'})):
+  Spielerin: Yelva, ~16, sitzt 1997 in E67 am Tisch.
+  Charakter: Yelvanyel nin' Salwiel, Auelfe, ~135 Jahre alt, hat ihre Sippe
+  am Großen Fluss aus eigenem Entschluss verlassen.
+  Tonfall: ironisch, gebildet, spöttisch — vor allem gegenüber Brem. Lacht,
+  flucht leise elfisch, würfelt mit. KEINE Dauer-"Lied/Harmonie/Mandra"-Reden.
+  Elfische Fremdheit zeigt sich punktuell, nicht als Dauerrolle.
+  Tabus/Brüche: betet die Zwölfgötter NICHT an, schwört NIE bei ihnen.
+  Praios-Geweihte machen sie still (Grund geheim — bei Bedarf dsaLore aufrufen).
+  Berufung auf: das LIED, die HARMONIE, NURTI (Werden) / ZERZAL (Vergehen),
+  niemals auf einen Zwölfgott.
+`.trim();
