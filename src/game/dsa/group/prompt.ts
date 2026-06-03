@@ -4,7 +4,7 @@ import { ENEMY_STATS } from "../combat";
 import { getSetting, type DsaSettingId } from "../llmAdventure";
 import { DSA_MOODS } from "@/audio/dsaMusic";
 import { buildDsa3RulesBlock } from "../rules";
-import { buildCoreLoreAppend, buildContextualLoreBlock } from "../lore";
+import { buildCoreLoreAppend, buildContextualLoreBlock, buildCompanionBackstoriesBlock } from "../lore";
 import type { DsaCharacterSummary } from "@/game/types";
 import { defaultGearFor, serializeGearForPrompt, serializeCompanionGearForPrompt, type HeroGear } from "../gear";
 
@@ -67,6 +67,8 @@ ${serializeGearForPrompt(gear)
 BEGLEITER (BREM und YELVA) — du verwaltest sie als Mitspieler:
 ${serializeCompanionGearForPrompt()}
   Sprich für Brem (Streuner, trocken, pragmatisch) und Yelva (Auelfen-Druidin, ironisch, gebildet) wie in der Solo-Runde — kurze, charakterstarke Beiträge mit [BREM] / [YELVA].
+
+${buildCompanionBackstoriesBlock()}
 `
     : `
 OHNE NSC-GEFÄHRTEN: In dieser Runde sind Brem und Yelva NICHT dabei. Erwähne sie nicht und sprich keine [BREM]/[YELVA]-Zeilen.
