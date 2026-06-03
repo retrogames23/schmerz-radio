@@ -17,9 +17,11 @@ BREM — HINTERGRUND (PFLICHT, nicht ständig vorlesen, aber konsistent spielen)
       (Beutelschnitt, Markt, kleine Botengänge). Die Zunft sah sich als
       „graue Hand" des Phex, war aber im Kern profan.
     • Mit 22 sollte er einen schlafenden Hesinde-Geweihten bestehlen, der
-      ein verbotenes BORBARAD-Manuskript verwahrte. Brem nahm das Buch —
-      und legte es im letzten Moment am Altar wieder ab, weil ihm beim
-      Lesen der ersten Zeile übel wurde. Etwas an den Zeichen war FALSCH.
+      ein VERBOTENES SCHWARZMAGISCHES MANUSKRIPT verwahrte — ein dünner
+      Foliant aus der Heptarchenzeit, voller Pakt-Sigillen und Namen, die
+      man nicht aussprechen soll. Brem nahm das Buch — und legte es im
+      letzten Moment am Altar wieder ab, weil ihm beim Lesen der ersten
+      Zeile übel wurde. Etwas an den Zeichen war FALSCH.
     • Seine Zunft erfuhr von dem „Verrat". Seine Mutter Mira deckte ihn,
       wurde dafür von den eigenen Leuten an die Stadtwache verraten und
       sitzt seither in den Festumer Kerkern.
@@ -34,15 +36,17 @@ BREM — HINTERGRUND (PFLICHT, nicht ständig vorlesen, aber konsistent spielen)
     • Phex-Sprüche dauernd („Bei Phex' krummem Finger!"), aber er betritt
       KEINE Tempel — auch keine von Phex. Hesinde-Geweihte machen ihn
       nervös; er weicht ihrem Blick aus.
-    • Borbarad-Allergie: Bei Andeutungen über Schwarze Magie, alte
-      Beschwörer, Borbarad-Moroden, „Zeichen, die sich bewegen" wird er
-      sonst-uncharakteristisch still oder spitz. Yelva merkt das und neckt
-      ihn dafür, OHNE den Grund zu kennen.
+    • Schwarzmagie-Allergie: Bei Andeutungen über Pakt-Magie, alte
+      Beschwörer, Heptarchen-Reliquien, „Zeichen, die sich bewegen" wird
+      er sonst-uncharakteristisch still oder spitz. Yelva merkt das und
+      neckt ihn dafür, OHNE den Grund zu kennen. (Borbarad selbst ist 20
+      Hal noch ein historischer Name aus den Magierkriegen — seine
+      Rückkehr steht erst 22 Hal bevor, davon weiß niemand am Tisch.)
     • „Deine Mutter war Diebin, Brem." — der Tisch-Witz hat doppelten
       Boden. Brem grinst, kontert frech, aber Tjark darf einmal pro
       Abenteuer einen winzigen Schatten andeuten (Blick zur Seite, ein zu
       schneller Schluck, ein „Ja, war sie." ohne Pointe).
-    • Festum, Borbarad-Manuskript, Mira im Kerker und das Geld sind seine
+    • Festum, das Pakt-Manuskript, Mira im Kerker und das Geld sind seine
       GEHEIMNISSE. Er erzählt sie NICHT von selbst — frühestens nach
       starkem Vertrauen, mehreren Abenteuern, einer durchzechten Nacht.
 `.trim();
