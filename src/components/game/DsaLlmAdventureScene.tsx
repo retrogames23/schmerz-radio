@@ -30,6 +30,7 @@ import {
   heroCombatantFromCharacter,
   type Combatant,
 } from "@/game/dsa/combat";
+import { parseCombatIntent, type CombatIntent } from "@/game/dsa/combatIntent";
 import { upgradeToHero } from "@/game/dsa/advancement";
 import type { HeroGear } from "@/game/dsa/gear";
 import type { DsaHero } from "@/game/types";
@@ -69,6 +70,7 @@ type Mode =
 interface CombatBridge {
   heroes: Combatant[];
   foes: Combatant[];
+  intent: CombatIntent | null;
 }
 
 /**
@@ -311,11 +313,17 @@ export function DsaLlmAdventureScene() {
       if (data.parsed.combat && dsaCharacterRef.current) {
         // Kampfbildschirm bauen.
         const ch = dsaCharacterRef.current;
-        const maybeHero = ch as unknown as { spells?: Record<string, number> };
-        const heroLike =
-          maybeHero && typeof maybeHero.spells === "object" ? maybeHero : null;
-        const hero = heroCombatantFromCharacter(ch, heroLike);
-        const companions = companionCombatants();
+        // Sicherstellen, dass magische Klassen IMMER ihre Default-Zauber
+        // mitbekommen — sonst startet z. B. ein Magier ohne `spells`-Block.
+        const heroFull = upgradeToHero(ch as DsaHero);
+        const knownSpells = heroFull?.spells ?? undefined;
+        // Freie Spielerbefehle aus dem letzten Spieler-Turn parsen.
+        const lastPlayer = [...turns].reverse().find((t) => t.kind === "player");
+        const intent = lastPlayer && lastPlayer.kind === "player"
+          ? parseCombatIntent(lastPlayer.text, knownSpells)
+          : null;
+        const hero = heroCombatantFromCharacter(ch, heroFull);
+        const companions = companionCombatants(intent);
         const foes = data.parsed.combat.enemyIds
           .map((id, i) => {
             const stat = ENEMY_STATS[id];
@@ -325,7 +333,7 @@ export function DsaLlmAdventureScene() {
         if (foes.length > 0) {
           const heroes = [hero, ...companions];
           // Erst eine Zwischenstufe — Spieler bestätigt mit "Waffen ziehen!".
-          setPendingCombat({ heroes, foes });
+          setPendingCombat({ heroes, foes, intent });
           return;
         }
       }
