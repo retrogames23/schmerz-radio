@@ -548,6 +548,11 @@ export interface WoundedCombatant extends Combatant {
   /** 0..3 — ab 3 ist die Heldenfigur endgültig kampfunfähig.
    *  Gegner führen keine Wunden — sie fallen einfach bei LE ≤ 0. */
   wounds: number;
+  /** Temporäre Effekte (z. B. geblendet) — laufen rundenweise aus. */
+  atMod?: number;
+  paMod?: number;
+  effectRoundsLeft?: number;
+  effectLabel?: string;
 }
 
 export interface CombatState {
@@ -559,6 +564,12 @@ export interface CombatState {
   fallenHeroes: { id: string; name: string }[];
   /** Letzte tatsächlich verwendete Taktik — beeinflusst die Konsequenz-Auswahl. */
   lastTactic: Tactic;
+  /** Freie Spielerwünsche aus dem letzten Prompt vor dem Kampf. */
+  intent?: CombatIntent | null;
+  /** Wurde die einmalige Yelva-Blendaktion bereits aufgelöst? */
+  blindResolved?: boolean;
+  /** Hat Layard seinen Wunsch-Zauber bereits einmal abgesetzt? */
+  layardSpellResolved?: boolean;
 }
 
 export interface PlayerStats {
@@ -573,6 +584,7 @@ function wrap(c: Combatant): WoundedCombatant {
 export function createCombatState(
   heroes: Combatant[],
   foes: Combatant[],
+  intent?: CombatIntent | null,
 ): CombatState {
   return {
     heroes: heroes.map(wrap),
@@ -582,6 +594,9 @@ export function createCombatState(
     consequenceKind: null,
     fallenHeroes: [],
     lastTactic: "balanced",
+    intent: intent ?? null,
+    blindResolved: false,
+    layardSpellResolved: false,
   };
 }
 
