@@ -170,6 +170,7 @@ export type Database = {
           collect_started_at: string | null
           created_at: string
           current_image_tag: string
+          has_password: boolean | null
           host_user_id: string
           id: string
           include_npc_companions: boolean
@@ -189,6 +190,7 @@ export type Database = {
           collect_started_at?: string | null
           created_at?: string
           current_image_tag?: string
+          has_password?: boolean | null
           host_user_id: string
           id?: string
           include_npc_companions?: boolean
@@ -208,6 +210,7 @@ export type Database = {
           collect_started_at?: string | null
           created_at?: string
           current_image_tag?: string
+          has_password?: boolean | null
           host_user_id?: string
           id?: string
           include_npc_companions?: boolean
