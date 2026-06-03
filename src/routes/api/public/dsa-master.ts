@@ -624,7 +624,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             if (!uid) {
               return json(401, {
               error:
-                  "Diese Abenteuerart ist Spender*innen vorbehalten. Bitte melde dich an und unterstütze das Projekt.",
+                  "Diese Abenteuerart ist Unterstützer*innen vorbehalten. Bitte melde dich an und unterstütze das Projekt.",
                 code: "donation_required",
               });
             }
@@ -636,7 +636,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             if (!prof?.donation_unlocked) {
               return json(402, {
               error:
-                  "Diese Abenteuerart ist Spender*innen vorbehalten. Bitte unterstütze das Projekt, um sie freizuschalten.",
+                  "Diese Abenteuerart ist Unterstützer*innen vorbehalten. Bitte unterstütze das Projekt, um sie freizuschalten.",
                 code: "donation_required",
               });
             }
