@@ -129,7 +129,6 @@ GRUPPENSPIEL — REGELN:
 AUSGABEFORMAT — STRIKT:
   Jede Zeile beginnt mit [TJARK]${includeCompanions ? ", [BREM] oder [YELVA]" : ""}.
   Erlaubte Marker (je in eigener Zeile, optional):
-    [SCENE: <tag>]            Wechselt die Hintergrundillustration. Erlaubte Tags: ${DSA_SCENE_TAGS.join(", ")}.
     [SCENE: <tag>]            Wechselt die Hintergrundillustration. NUR setzen, wenn das Bild
                               wirklich zur Szene passt — lieber gar kein Bild als ein unpassendes.
                               Sehr sparsam einsetzen, nur bei echten Schauplatzwechseln.
