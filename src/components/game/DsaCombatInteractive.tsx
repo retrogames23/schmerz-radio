@@ -363,6 +363,50 @@ export function DsaCombatInteractive({
                   ))}
                 </div>
               </section>
+
+              {phase === "ongoing" && (
+                <section className="dsa-box-thick p-3 sm:p-4">
+                  <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.7)] pb-1">
+                    Kampfbefehl / Zauber
+                  </div>
+                  {commandNotes.length > 0 && (
+                    <div className="mb-2 dsa-typed text-[11px] leading-snug dsa-ink-faded">
+                      {commandNotes.slice(-3).map((n, i) => (
+                        <div key={`${n}-${i}`}>· {n}</div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex items-end gap-2">
+                    <textarea
+                      value={commandText}
+                      onChange={(e) => setCommandText(e.target.value.slice(0, 220))}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                          e.preventDefault();
+                          handleCommandSubmit();
+                        }
+                      }}
+                      rows={2}
+                      placeholder="z. B. Ich wirke Ignifaxius. Yelva, blende den Söldner. Brem, flankiere."
+                      className="flex-1 resize-none rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 font-sans text-sm leading-relaxed text-[#2a1f10] placeholder:text-[#2a1f10]/40 focus:outline-none focus:ring-2 focus:ring-[#3a2c1a]/40"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleCommandSubmit}
+                      disabled={!commandText.trim()}
+                      className="inline-flex items-center justify-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10] disabled:opacity-50"
+                    >
+                      <Send className="h-3.5 w-3.5" strokeWidth={2.5} />
+                      Befehlen
+                    </button>
+                  </div>
+                  {commandError && (
+                    <div className="mt-2 text-xs font-bold text-[#6b1a0e]">
+                      {commandError}
+                    </div>
+                  )}
+                </section>
+              )}
             </>
           )}
         </div>
