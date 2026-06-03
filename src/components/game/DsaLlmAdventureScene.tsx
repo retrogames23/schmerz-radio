@@ -675,24 +675,26 @@ export function DsaLlmAdventureScene() {
                     disabled={busy || !!pendingCombat}
                     className="flex-1 resize-none rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 font-sans text-base leading-relaxed text-[#2a1f10] placeholder:text-[#2a1f10]/40 focus:outline-none focus:ring-2 focus:ring-[#3a2c1a]/40 disabled:opacity-50"
                   />
-                  <button
-                    type="button"
-                    onClick={() => void handleSend()}
-                    disabled={busy || !composerText.trim() || !!pendingCombat}
-                    className="inline-flex items-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10] disabled:opacity-50"
-                  >
-                    <Send className="h-3.5 w-3.5" strokeWidth={2.5} />
-                    Sagen
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => void handleSend({ outtime: true })}
-                    disabled={busy || !composerText.trim() || !!pendingCombat}
-                    title="Als Outtime-Frage an Tjark (Regeln, Welt, Meta) schicken"
-                    className="inline-flex items-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a] disabled:opacity-50"
-                  >
-                    Outtime
-                  </button>
+                  <div className="flex flex-col gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void handleSend({ outtime: true })}
+                      disabled={busy || !composerText.trim() || !!pendingCombat}
+                      title="Als Outtime-Frage an Tjark (Regeln, Welt, Meta) schicken"
+                      className="inline-flex items-center justify-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a] disabled:opacity-50"
+                    >
+                      Outtime
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void handleSend()}
+                      disabled={busy || !composerText.trim() || !!pendingCombat}
+                      className="inline-flex items-center justify-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10] disabled:opacity-50"
+                    >
+                      <Send className="h-3.5 w-3.5" strokeWidth={2.5} />
+                      Sagen
+                    </button>
+                  </div>
                 </div>
                 <div className="mt-2 flex justify-between text-[10px] uppercase tracking-wider text-[#2a1f10]/60">
                   <button
