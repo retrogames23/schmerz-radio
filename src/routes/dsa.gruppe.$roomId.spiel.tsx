@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getFreshAccessToken } from "@/auth/freshToken";
 import { parseMasterTurn, type SpokenLine } from "@/game/dsa/llmAdventure";
 import { resolveSceneImage } from "@/game/dsa/sceneImages";
+import { portraitFor } from "@/game/dsa/portraits";
 
 export const Route = createFileRoute("/dsa/gruppe/$roomId/spiel")({
   component: SpielraumPage,
@@ -23,7 +24,15 @@ interface MessageRow {
 interface MemberRow {
   user_id: string;
   ready: boolean;
-  hero_snapshot: { name?: string; className?: string; le?: number; leMax?: number } | null;
+  hero_snapshot: {
+    name?: string;
+    className?: string;
+    classId?: string;
+    geschlecht?: string;
+    portraitDataUrl?: string;
+    le?: number;
+    leMax?: number;
+  } | null;
   last_seen_at: string;
   slot: number | null;
 }
@@ -449,20 +458,36 @@ function SpielraumPage() {
             <ul className="space-y-2 text-xs text-[#2a1f10]">
               {members.map((m) => {
                 const stale = Date.now() - new Date(m.last_seen_at).getTime() > 60_000;
+                const snap = m.hero_snapshot;
+                const portraitSrc =
+                  snap?.portraitDataUrl ||
+                  (snap?.classId
+                    ? portraitFor(snap.classId, snap.geschlecht)
+                    : null);
                 return (
                   <li
                     key={m.user_id}
-                    className="rounded border-2 border-[#3a2c1a]/40 bg-[#fbf2d8] px-2 py-1.5"
+                    className="flex items-stretch gap-2 rounded border-2 border-[#3a2c1a]/40 bg-[#fbf2d8] px-2 py-1.5"
                   >
-                    <div className="font-serif text-sm">{m.hero_snapshot?.name ?? "?"}</div>
-                    <div className="opacity-70">{m.hero_snapshot?.className}</div>
-                    <div className="mt-1 flex items-center justify-between">
-                      <span>
-                        LE {m.hero_snapshot?.le ?? "?"}/{m.hero_snapshot?.leMax ?? "?"}
-                      </span>
-                      {stale && (
-                        <span className="text-[10px] uppercase text-amber-700">abwesend</span>
-                      )}
+                    {portraitSrc ? (
+                      <img
+                        src={portraitSrc}
+                        alt={snap?.name ? `Porträt von ${snap.name}` : "Porträt"}
+                        className="h-14 w-14 flex-none rounded border border-[#3a2c1a]/40 object-cover sepia-[0.35]"
+                        loading="lazy"
+                      />
+                    ) : null}
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate font-serif text-sm">{snap?.name ?? "?"}</div>
+                      <div className="truncate opacity-70">{snap?.className}</div>
+                      <div className="mt-1 flex items-center justify-between gap-2">
+                        <span>
+                          LE {snap?.le ?? "?"}/{snap?.leMax ?? "?"}
+                        </span>
+                        {stale && (
+                          <span className="text-[10px] uppercase text-amber-700">abwesend</span>
+                        )}
+                      </div>
                     </div>
                   </li>
                 );
