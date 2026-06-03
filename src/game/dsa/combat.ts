@@ -7,7 +7,7 @@ import { WEAPONS } from "./rules/weapons";
 import { ARMORS } from "./rules/armor";
 import type { HeroGear } from "./gear";
 import type { CombatIntent, CompanionIntent } from "./combatIntent";
-import { EMPTY_COMBAT_INTENT, mergeCombatIntents } from "./combatIntent";
+import { EMPTY_COMBAT_INTENT, mergeCombatIntents, YELVA_DEFAULT_SPELLS } from "./combatIntent";
 
 /**
  * Vereinfachte DSA-Kampfregeln für die automatischen Tafelrunden-Kämpfe.
