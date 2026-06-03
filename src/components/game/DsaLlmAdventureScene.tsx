@@ -34,6 +34,14 @@ import { parseCombatIntent, type CombatIntent } from "@/game/dsa/combatIntent";
 import { upgradeToHero } from "@/game/dsa/advancement";
 import type { HeroGear } from "@/game/dsa/gear";
 import type { DsaHero } from "@/game/types";
+import { useCoarsePointer } from "@/hooks/useCoarsePointer";
+
+const ENTER_SUBMIT_KEY = "dsa:composer:enterSubmits";
+function readEnterSubmits(): boolean {
+  if (typeof localStorage === "undefined") return true;
+  const v = localStorage.getItem(ENTER_SUBMIT_KEY);
+  return v === null ? true : v === "1";
+}
 /**
  * LLM-Tafelrunde im Gemeinschaftsraum E67. Ersetzt das alte gescriptete
  * `DsaAdventureScene`. Drei Modi:
@@ -162,6 +170,13 @@ export function DsaLlmAdventureScene() {
   >([]);
   const [composerText, setComposerText] = useState("");
   const [busy, setBusy] = useState(false);
+  const isCoarse = useCoarsePointer();
+  const [enterSubmits, setEnterSubmits] = useState<boolean>(() => readEnterSubmits());
+  useEffect(() => {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem(ENTER_SUBMIT_KEY, enterSubmits ? "1" : "0");
+    }
+  }, [enterSubmits]);
   const [error, setError] = useState<string | null>(null);
   const [combat, setCombat] = useState<CombatBridge | null>(null);
   const [pendingCombat, setPendingCombat] = useState<CombatBridge | null>(null);
@@ -690,6 +705,21 @@ export function DsaLlmAdventureScene() {
                   <textarea
                     value={composerText}
                     onChange={(e) => setComposerText(e.target.value.slice(0, 500))}
+                    onKeyDown={(e) => {
+                      if (
+                        e.key === "Enter" &&
+                        !e.shiftKey &&
+                        !e.nativeEvent.isComposing &&
+                        !isCoarse &&
+                        enterSubmits &&
+                        !busy &&
+                        !pendingCombat &&
+                        composerText.trim()
+                      ) {
+                        e.preventDefault();
+                        void handleSend();
+                      }
+                    }}
                     placeholder={
                       pendingCombat
                         ? "Ein Kampf bahnt sich an — zieh die Waffen, um fortzufahren."
@@ -728,6 +758,17 @@ export function DsaLlmAdventureScene() {
                   >
                     <LogOut className="h-3 w-3" /> Vom Tisch aufstehen
                   </button>
+                  {!isCoarse && (
+                    <label className="hidden sm:inline-flex items-center gap-1.5 cursor-pointer select-none normal-case tracking-normal text-[11px] text-[#2a1f10]/70 hover:text-[#2a1f10]">
+                      <input
+                        type="checkbox"
+                        checked={enterSubmits}
+                        onChange={(e) => setEnterSubmits(e.target.checked)}
+                        className="h-3 w-3 accent-[#3a2c1a]"
+                      />
+                      Enter = Abschicken
+                    </label>
+                  )}
                   <span>{composerText.length}/500</span>
                 </div>
               </div>
