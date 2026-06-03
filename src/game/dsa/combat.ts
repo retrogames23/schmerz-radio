@@ -604,6 +604,33 @@ export function createCombatState(
   };
 }
 
+function applyRoundCompanionIntent(state: CombatState, intent: CombatIntent): void {
+  const apply = (id: "yelva" | "brem", own: CompanionIntent) => {
+    const c = state.heroes.find((h) => h.id === id);
+    if (!c || !alive(c)) return;
+    if (own.backline || own.ranged) c.role = "backline";
+    if (own.protect) {
+      c.role = "support";
+      c.paMod = Math.max(c.paMod ?? 0, 2);
+      c.effectRoundsLeft = Math.max(c.effectRoundsLeft ?? 0, 2);
+      c.effectLabel = "deckt die Gruppe";
+    }
+    if (own.flank) {
+      c.role = "frontline";
+      c.atMod = Math.max(c.atMod ?? 0, 1);
+      c.paMod = Math.min(c.paMod ?? 0, -1);
+      c.effectRoundsLeft = Math.max(c.effectRoundsLeft ?? 0, 2);
+      c.effectLabel = "flankiert";
+    }
+    if (own.ranged) {
+      c.rangedWeapon = id === "yelva" ? "Elfenbogen" : "Wurfdolch";
+      c.weapon = c.rangedWeapon;
+    }
+  };
+  apply("yelva", intent.yelva);
+  apply("brem", intent.brem);
+}
+
 function snapshotW(all: WoundedCombatant[]): { id: string; le: number }[] {
   return all.map((c) =>
     c.ae !== undefined ? { id: c.id, le: c.le, ae: c.ae } : { id: c.id, le: c.le },
