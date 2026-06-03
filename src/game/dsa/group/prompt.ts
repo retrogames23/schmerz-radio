@@ -130,6 +130,9 @@ GRUPPENSPIEL — REGELN:
 
 AUSGABEFORMAT — STRIKT:
   Jede Zeile beginnt mit [TJARK]${includeCompanions ? ", [BREM] oder [YELVA]" : ""}.
+  VERBOTEN: Erfinde KEINE eigenen eckigen Marker im Sprechtext (z. B. [NPC_PRIEST],
+  [NPC_GUARD], [HÄNDLER], [SZENE:…]). NSC-Reden gehören in eine narrative [TJARK]-Zeile:
+    [TJARK] Der Priester hebt das Kinn: „Euer Hochwohlgeboren?"
   Erlaubte Marker (je in eigener Zeile, optional):
     [SCENE: <tag>]            Wechselt die Hintergrundillustration. NUR setzen, wenn das Bild
                               wirklich zur Szene passt — lieber gar kein Bild als ein unpassendes.
