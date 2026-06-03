@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { CloseButton } from "./CloseButton";
 import { ATTR_LABEL, ATTR_ORDER, type Attr } from "@/game/dsa/dice";
@@ -12,6 +12,17 @@ import { TALENTS } from "@/game/dsa/rules/talents";
 import { upgradeToHero, availableAp } from "@/game/dsa/advancement";
 import { WEAPONS } from "@/game/dsa/rules/weapons";
 import { ARMORS } from "@/game/dsa/rules/armor";
+import {
+  equipWeapon,
+  unequipWeapon,
+  equipArmor,
+  unequipArmor,
+  equipShield,
+  unequipShield,
+  discardItemById,
+  type HeroGear,
+} from "@/game/dsa/gear";
+import { portraitFor } from "@/game/dsa/portraits";
 import { DsaHeroAdvancement } from "./DsaHeroAdvancement";
 import type { DsaHero } from "@/game/types";
 
@@ -21,8 +32,10 @@ import type { DsaHero } from "@/game/types";
  * lesend. Lässt sich per Knopf (TopBar) oder Taste „C" öffnen/schließen.
  */
 export function DsaCharacterSheet() {
-  const { dsaSheetOpen, closeDsaSheet, dsaCharacter, updateHero } = useDsaHost();
+  const { dsaSheetOpen, closeDsaSheet, dsaCharacter, updateHero, notifyMaster } =
+    useDsaHost();
   const [advanceOpen, setAdvanceOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Tastenkürzel C zum Ein-/Ausblenden — wird zentral in Game.tsx gehandhabt,
   // hier nur ESC zum Schließen.
@@ -53,6 +66,53 @@ export function DsaCharacterSheet() {
   const hero = upgradeToHero(dsaCharacter as DsaHero) as DsaHero;
   const ap = availableAp(hero);
   const canAdvance = !!updateHero;
+  const canEditGear = !!updateHero && !!hero.gear;
+  const geschlecht =
+    (dsaCharacter as unknown as { geschlecht?: string }).geschlecht ?? "m";
+  const portraitUrl =
+    (dsaCharacter as unknown as { portraitDataUrl?: string }).portraitDataUrl ??
+    portraitFor(dsaCharacter.classId, geschlecht);
+
+  function applyGear(next: HeroGear, note: string) {
+    if (!updateHero) return;
+    updateHero({ ...hero, gear: next });
+    notifyMaster?.(note);
+  }
+
+  function onPortraitFile(file: File) {
+    if (!updateHero) return;
+    if (!file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const max = 512;
+        const scale = Math.min(1, max / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        ctx.drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+        updateHero({ ...hero, portraitDataUrl: dataUrl });
+        notifyMaster?.(
+          `${dsaCharacter.name} hat ein neues Porträt am Heldenbrief befestigt.`,
+        );
+      };
+      img.src = String(reader.result);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function resetPortrait() {
+    if (!updateHero) return;
+    const next = { ...hero };
+    delete (next as { portraitDataUrl?: string }).portraitDataUrl;
+    updateHero(next);
+  }
   type LearnedTalent = { name: string; value: number; probe: readonly string[] };
   const learnedTalents: LearnedTalent[] = Object.entries(hero.talents ?? {})
     .flatMap(([id, value]) => {
@@ -70,17 +130,19 @@ export function DsaCharacterSheet() {
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-start sm:items-center justify-center overflow-y-auto bg-black/85 p-3 sm:p-6"
+      className="fixed inset-0 z-[60] overflow-y-auto bg-black/85 p-3 sm:p-6"
       onClick={(e) => {
         // Klick aufs Backdrop schließt — Klick im Bogen selbst nicht.
         if (e.target === e.currentTarget) closeDsaSheet();
       }}
     >
-      <div className="dsa-adventure-shell relative my-auto w-full max-w-3xl rounded-md shadow-2xl flex flex-col max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-3rem)]">
-        <CloseButton onClick={closeDsaSheet} />
+      <div className="dsa-adventure-shell relative mx-auto w-full max-w-3xl rounded-md shadow-2xl">
+        <div className="sticky top-2 z-10 flex justify-end pr-2 pt-2 -mb-8">
+          <CloseButton onClick={closeDsaSheet} />
+        </div>
 
         {/* Header */}
-        <div className="dsa-adventure-header shrink-0 px-5 sm:px-6 pt-5 pb-3 border-b-2 border-[rgba(30,18,8,0.85)]">
+        <div className="dsa-adventure-header px-5 sm:px-6 pt-5 pb-3 border-b-2 border-[rgba(30,18,8,0.85)]">
           <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold">
             Charakterbogen · DSA 3
           </div>
@@ -123,24 +185,64 @@ export function DsaCharacterSheet() {
           )}
         </div>
 
-        {/* Body */}
-        <div className="dsa-adventure-body min-h-0 flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
-          {/* Eigenschaften + LE/AE */}
-          <section>
-            <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.85)] pb-1">
-              Eigenschaftswerte
+        {/* Body — gesamter Bogen scrollt (kein inneres Scrollen mehr) */}
+        <div className="dsa-adventure-body p-5 sm:p-6 space-y-5">
+          {/* Porträt + Stammdaten */}
+          <section className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-center sm:items-start">
+            <div className="flex flex-col items-center gap-2">
+              <div className="dsa-portrait-frame h-40 w-32 sm:h-44 sm:w-36 overflow-hidden">
+                <img src={portraitUrl} alt={`Porträt von ${dsaCharacter.name}`} />
+              </div>
+              {canAdvance && (
+                <div className="flex flex-col items-center gap-1">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) onPortraitFile(f);
+                      e.target.value = "";
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="dsa-mini-btn"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    Eigenes Bild
+                  </button>
+                  {(dsaCharacter as unknown as { portraitDataUrl?: string })
+                    .portraitDataUrl && (
+                    <button
+                      type="button"
+                      className="dsa-mini-btn"
+                      onClick={resetPortrait}
+                    >
+                      Standard
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
-            <div className="grid grid-cols-7 gap-1 sm:gap-2">
-              {ATTR_ORDER.map((a) => (
-                <ReadAttr
-                  key={a}
-                  attr={a}
-                  value={(dsaCharacter.attrs as Record<string, number>)[a] ?? 0}
-                />
-              ))}
+            <div className="flex-1 min-w-0 w-full">
+              <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.85)] pb-1">
+                Eigenschaftswerte
+              </div>
+              <div className="grid grid-cols-7 gap-1 sm:gap-2">
+                {ATTR_ORDER.map((a) => (
+                  <ReadAttr
+                    key={a}
+                    attr={a}
+                    value={(dsaCharacter.attrs as Record<string, number>)[a] ?? 0}
+                  />
+                ))}
+              </div>
             </div>
           </section>
 
+          {/* Eigenschaften + LE/AE */}
           <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <Stat
               label="Lebensenergie"
@@ -218,14 +320,41 @@ export function DsaCharacterSheet() {
                       <GearSlot
                         label="Waffe"
                         value={weapon ? `${weapon.name} (TP ${weapon.tp})` : "— unbewaffnet —"}
+                        onUnequip={
+                          canEditGear && g.weaponId
+                            ? () =>
+                                applyGear(
+                                  unequipWeapon(g),
+                                  `${dsaCharacter.name} legt ${weapon?.name ?? "die Waffe"} ab.`,
+                                )
+                            : undefined
+                        }
                       />
                       <GearSlot
                         label="Rüstung"
                         value={armor ? `${armor.name} (RS ${armor.rs})` : "— keine —"}
+                        onUnequip={
+                          canEditGear && g.armorId
+                            ? () =>
+                                applyGear(
+                                  unequipArmor(g),
+                                  `${dsaCharacter.name} legt ${armor?.name ?? "die Rüstung"} ab.`,
+                                )
+                            : undefined
+                        }
                       />
                       <GearSlot
                         label="Schild"
                         value={shield ? `${shield.name} (PA +${shield.paBonus ?? 0})` : "—"}
+                        onUnequip={
+                          canEditGear && g.shieldId
+                            ? () =>
+                                applyGear(
+                                  unequipShield(g),
+                                  `${dsaCharacter.name} hängt ${shield?.name ?? "den Schild"} an den Gürtel.`,
+                                )
+                            : undefined
+                        }
                       />
                     </div>
                     <div className="dsa-typed text-[11px] uppercase tracking-widest dsa-ink-faded font-bold mb-1">
@@ -240,7 +369,7 @@ export function DsaCharacterSheet() {
                         {g.items.map((it) => (
                           <li
                             key={it.id}
-                            className="flex items-baseline justify-between gap-3 border-b border-[rgba(20,12,4,0.45)] py-0.5"
+                            className="flex items-center justify-between gap-3 border-b border-[rgba(20,12,4,0.45)] py-1"
                           >
                             <span className="min-w-0">
                               <span className="font-extrabold">{it.name}</span>
@@ -251,12 +380,72 @@ export function DsaCharacterSheet() {
                                 <span className="italic ml-2 opacity-80">— {it.description}</span>
                               )}
                             </span>
+                            {canEditGear && (
+                              <span className="flex shrink-0 gap-1">
+                                {it.weaponId && (
+                                  <button
+                                    type="button"
+                                    className="dsa-mini-btn"
+                                    onClick={() =>
+                                      applyGear(
+                                        equipWeapon(g, it.id),
+                                        `${dsaCharacter.name} rüstet ${it.name} als Waffe aus.`,
+                                      )
+                                    }
+                                  >
+                                    Anlegen
+                                  </button>
+                                )}
+                                {it.armorId && (
+                                  <button
+                                    type="button"
+                                    className="dsa-mini-btn"
+                                    onClick={() =>
+                                      applyGear(
+                                        equipArmor(g, it.id),
+                                        `${dsaCharacter.name} zieht ${it.name} an.`,
+                                      )
+                                    }
+                                  >
+                                    Anlegen
+                                  </button>
+                                )}
+                                {it.shieldId && (
+                                  <button
+                                    type="button"
+                                    className="dsa-mini-btn"
+                                    onClick={() =>
+                                      applyGear(
+                                        equipShield(g, it.id),
+                                        `${dsaCharacter.name} nimmt ${it.name} in die Hand.`,
+                                      )
+                                    }
+                                  >
+                                    Anlegen
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  className="dsa-mini-btn is-danger"
+                                  title="Item wegwerfen"
+                                  onClick={() => {
+                                    if (!window.confirm(`„${it.name}" wirklich wegwerfen?`)) return;
+                                    applyGear(
+                                      discardItemById(g, it.id),
+                                      `${dsaCharacter.name} wirft ${it.name} weg.`,
+                                    );
+                                  }}
+                                >
+                                  Weg
+                                </button>
+                              </span>
+                            )}
                           </li>
                         ))}
                       </ul>
                     )}
                     <div className="dsa-typed text-[10px] uppercase tracking-widest dsa-ink-faded font-bold mt-2 opacity-70">
-                      Vergabe und Verlust regelt der Meister.
+                      Der Meister erfährt jede Änderung am Inventar.
                     </div>
                   </>
                 );
@@ -356,7 +545,7 @@ export function DsaCharacterSheet() {
         </div>
 
         {/* Footer */}
-        <div className="dsa-adventure-footer shrink-0 flex items-center justify-between px-5 sm:px-6 py-3 text-xs">
+        <div className="dsa-adventure-footer flex items-center justify-between px-5 sm:px-6 py-3 text-xs">
           <span className="opacity-80">
             Drücke <kbd className="px-1 border border-current rounded">C</kbd>{" "}
             oder <kbd className="px-1 border border-current rounded">Esc</kbd>{" "}
@@ -452,11 +641,24 @@ function classTalents(classId: string): string[] {
   }
 }
 
-function GearSlot({ label, value }: { label: string; value: string }) {
+function GearSlot({
+  label,
+  value,
+  onUnequip,
+}: {
+  label: string;
+  value: string;
+  onUnequip?: () => void;
+}) {
   return (
     <div>
-      <div className="dsa-typed text-[10px] uppercase tracking-widest dsa-ink-faded font-bold mb-1">
-        {label}
+      <div className="dsa-typed text-[10px] uppercase tracking-widest dsa-ink-faded font-bold mb-1 flex items-center justify-between gap-2">
+        <span>{label}</span>
+        {onUnequip && (
+          <button type="button" className="dsa-mini-btn" onClick={onUnequip}>
+            Ablegen
+          </button>
+        )}
       </div>
       <div className="dsa-box-thick flex h-10 items-center justify-center px-2">
         <span className="font-display dsa-ink font-extrabold text-[13px] truncate">
