@@ -369,9 +369,10 @@ export function DsaLlmAdventureScene() {
     }
   }
 
-  const handleSend = useCallback(async () => {
-    const text = composerText.trim();
-    if (!text || busy || endState) return;
+  const handleSend = useCallback(async (opts?: { outtime?: boolean }) => {
+    const raw = composerText.trim();
+    if (!raw || busy || endState) return;
+    const text = opts?.outtime && !/^outtime[:\s]/i.test(raw) ? `Outtime: ${raw}` : raw;
     setComposerText("");
     setBusy(true);
     setError(null);
@@ -662,7 +663,7 @@ export function DsaLlmAdventureScene() {
                     placeholder={
                       pendingCombat
                         ? "Ein Kampf bahnt sich an — zieh die Waffen, um fortzufahren."
-                        : `Was tut ${dsaCharacter.name}? (Klick auf „Senden")`
+                        : `Was tut ${dsaCharacter.name}? (Klick auf „Sagen")`
                     }
                     rows={2}
                     disabled={busy || !!pendingCombat}
@@ -676,6 +677,15 @@ export function DsaLlmAdventureScene() {
                   >
                     <Send className="h-3.5 w-3.5" strokeWidth={2.5} />
                     Sagen
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void handleSend({ outtime: true })}
+                    disabled={busy || !composerText.trim() || !!pendingCombat}
+                    title="Als Outtime-Frage an Tjark (Regeln, Welt, Meta) schicken"
+                    className="inline-flex items-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a] disabled:opacity-50"
+                  >
+                    Outtime
                   </button>
                 </div>
                 <div className="mt-2 flex justify-between text-[10px] uppercase tracking-wider text-[#2a1f10]/60">
