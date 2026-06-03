@@ -694,6 +694,13 @@ export interface DsaCharacterSummary {
   leMax: number;
   ae: number | null;
   rerolled: boolean;
+  /** "m" | "w" (oder freier Text). Steuert u.a. die Porträt-Auswahl. */
+  geschlecht?: string;
+  /**
+   * Eigenes hochgeladenes Porträt als Data-URL (JPEG/PNG, max ~512px,
+   * vom Client herunterskaliert). Hat Vorrang vor dem Klassen-Default.
+   */
+  portraitDataUrl?: string;
 }
 
 /**

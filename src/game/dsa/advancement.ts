@@ -66,6 +66,13 @@ export function upgradeToHero(c: DsaCharacterSummary | DsaHero | null): DsaHero 
     leMax: typeof c.leMax === "number" ? c.leMax : c.le,
     ae: c.ae,
     rerolled: !!c.rerolled,
+    geschlecht: typeof (c as { geschlecht?: unknown }).geschlecht === "string"
+      ? (c as { geschlecht: string }).geschlecht
+      : undefined,
+    portraitDataUrl:
+      typeof (c as { portraitDataUrl?: unknown }).portraitDataUrl === "string"
+        ? (c as { portraitDataUrl: string }).portraitDataUrl
+        : undefined,
     apTotal: typeof h.apTotal === "number" ? Math.max(0, h.apTotal) : 0,
     apSpent: typeof h.apSpent === "number" ? Math.max(0, h.apSpent) : 0,
     talents:
