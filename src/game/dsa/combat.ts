@@ -640,15 +640,29 @@ export function resolveRound(
   state: CombatState,
   tactic: Tactic,
   player: PlayerStats,
-  opts?: { spellFocus?: SpellFocus },
+  opts?: { spellFocus?: SpellFocus; intent?: CombatIntent | null },
 ): CombatEvent[] {
   if (state.phase !== "ongoing") return [];
   state.lastTactic = tactic;
   state.round += 1;
+  const intent = opts?.intent ?? state.intent ?? null;
   const events: CombatEvent[] = [];
   const all = [...state.heroes, ...state.foes];
 
   const mods: RoundModifiers = { heroAt: 0, heroPa: 0, heroTp: 0, foeAt: 0, foePa: 0 };
+
+  // Abklingende Effekte (z. B. Geblendet) rundenweise reduzieren.
+  for (const c of [...state.foes, ...state.heroes]) {
+    if ((c.effectRoundsLeft ?? 0) > 0) {
+      c.effectRoundsLeft = (c.effectRoundsLeft ?? 0) - 1;
+      if ((c.effectRoundsLeft ?? 0) <= 0) {
+        c.atMod = 0;
+        c.paMod = 0;
+        c.effectLabel = undefined;
+        c.effectRoundsLeft = 0;
+      }
+    }
+  }
 
   // Runden-Header
   events.push({
@@ -656,6 +670,42 @@ export function resolveRound(
     text: `── Runde ${state.round} · ${TACTIC_LABELS[tactic].title} ──`,
     snapshot: snapshotW(all),
   });
+
+  // ── Yelvas Blend-/Ablenkungs-Aktion (einmalig pro Kampf) ───────
+  if (intent?.yelva.blind && !state.blindResolved) {
+    const yelva = state.heroes.find((h) => h.id === "yelva");
+    const foeTarget = pickFoeTargetW(state.foes);
+    if (yelva && alive(yelva) && foeTarget) {
+      const roll = d20();
+      // Stellvertretende CH-Probe (Yelva = elfengewandt, Default 13).
+      const target = 13;
+      const success = roll <= target && roll !== 20;
+      state.blindResolved = true;
+      if (success) {
+        foeTarget.atMod = -3;
+        foeTarget.paMod = -2;
+        foeTarget.effectRoundsLeft = 2;
+        foeTarget.effectLabel = "geblendet";
+        events.push({
+          kind: "ini",
+          text: `Yelva wirft Staub und Lichtfunken in das Gesicht von ${foeTarget.name} — geblendet! (AT −3, PA −2 für 2 Runden)`,
+          dice: [{ label: "Yelva CH", value: roll, target, success: true }],
+          snapshot: snapshotW(all),
+          actorId: yelva.id,
+          targetId: foeTarget.id,
+        });
+      } else {
+        events.push({
+          kind: "ini",
+          text: `Yelva versucht ${foeTarget.name} zu blenden — daneben.`,
+          dice: [{ label: "Yelva CH", value: roll, target, success: false }],
+          snapshot: snapshotW(all),
+          actorId: yelva.id,
+          targetId: foeTarget.id,
+        });
+      }
+    }
+  }
 
   // Taktik-spezifische Eröffnungs-Probe.
   if (tactic === "aggressive") {
@@ -696,6 +746,41 @@ export function resolveRound(
   // in dieser Runde, läuft aber VOR der Initiative ab (Zauber sind schnell,
   // und so kann sich das Schadensfenster vor den Gegner-Aktionen öffnen).
   let layardSkipMelee = false;
+
+  // ── Expliziter Spielerwunsch: Layard wirkt diesen Spruch ─────────
+  if (intent?.layardSpellId && !state.layardSpellResolved) {
+    const layard = state.heroes.find((h) => h.id === "hero");
+    if (layard && alive(layard)) {
+      const spell = SPELLS.find((s) => s.id === intent.layardSpellId);
+      const zfw = spell ? layard.spells?.[spell.id] : undefined;
+      if (spell && typeof zfw === "number" && (layard.ae ?? 0) >= spellCost(spell)) {
+        state.layardSpellResolved = true;
+        layardSkipMelee = true;
+        if (spell.id === "balsam_salabunde") {
+          resolveLayardBalsam(layard, all, events);
+        } else {
+          const foeTarget = pickWeakestW(state.foes);
+          if (foeTarget) {
+            resolveLayardSpellExplicit(layard, foeTarget, spell, zfw, all, events);
+          }
+        }
+      } else if (spell) {
+        // Bekannter Spruch, aber nicht bezahlbar / kein Ziel: einmaliger
+        // Hinweis, dann ausschalten (kein Endlos-Spam).
+        state.layardSpellResolved = true;
+        const reason = typeof zfw !== "number"
+          ? `Layard kennt ${spell.name} nicht.`
+          : `Layard hat nicht genug Astralenergie für ${spell.name}.`;
+        events.push({
+          kind: "spell-fizzle",
+          text: reason,
+          snapshot: snapshotW(all),
+          actorId: layard.id,
+        });
+      }
+    }
+  }
+
   if (tactic === "spell") {
     layardSkipMelee = true;
     const layard = state.heroes.find((h) => h.id === "hero");
