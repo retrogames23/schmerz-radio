@@ -434,7 +434,7 @@ export function companionCombatants(intent?: CombatIntent | null): Combatant[] {
       base.ae = 24;
       base.aeMax = 24;
       base.spells = { ...YELVA_DEFAULT_SPELLS };
-      base.attrs = { MU: 12, KL: 13, IN: 14, CH: 14, FF: 13, GE: 13, KO: 11, KK: 10 };
+      base.attrs = { MU: 12, KL: 13, IN: 14, CH: 14, FF: 13, GE: 13, KK: 10 };
     }
     return base;
   });
