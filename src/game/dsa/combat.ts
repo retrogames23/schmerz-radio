@@ -584,6 +584,8 @@ export interface CombatState {
   blindResolved?: boolean;
   /** Hat Layard seinen Wunsch-Zauber bereits einmal abgesetzt? */
   layardSpellResolved?: boolean;
+  /** Hat Yelva ihren Wunsch-Zauber bereits einmal abgesetzt? */
+  yelvaSpellResolved?: boolean;
 }
 
 export interface PlayerStats {
