@@ -599,6 +599,48 @@
   animation: dsa-stamp-in 0.35s ease-out;
 }
 
+/* ── Porträt-Rahmen im Heldenbrief (Sepia / DSA3) ───────────────── */
+.dsa-portrait-frame {
+  border: 2.5px solid rgba(30, 18, 8, 0.9);
+  background:
+    linear-gradient(160deg, rgba(255,250,225,0.6), rgba(200,170,110,0.25)),
+    #e9dab2;
+  box-shadow:
+    inset 0 0 12px rgba(80, 50, 10, 0.35),
+    0 2px 6px rgba(0,0,0,0.25);
+  padding: 4px;
+  filter: sepia(0.15) contrast(1.02);
+}
+.dsa-portrait-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(0.35) saturate(0.85) contrast(1.05);
+}
+.dsa-mini-btn {
+  font-family: "Special Elite", "Courier New", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  padding: 2px 8px;
+  border: 1.5px solid rgba(30, 18, 8, 0.85);
+  background: rgba(255, 250, 230, 0.55);
+  color: #1a1208;
+  border-radius: 2px;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+.dsa-mini-btn:hover:not(:disabled) {
+  background: rgba(255, 230, 170, 0.9);
+  transform: translateY(-1px);
+}
+.dsa-mini-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.dsa-mini-btn.is-danger { border-color: #6b1a0e; color: #6b1a0e; }
+.dsa-mini-btn.is-danger:hover:not(:disabled) {
+  background: rgba(107, 26, 14, 0.12);
+}
+
 /* ── DSA-Landing-Hintergrund: sanftes Ken-Burns + Schwanken ──────── */
 @keyframes dsa-landing-drift {
   0%   { transform: scale(1.08) translate3d(0, 0, 0); }
