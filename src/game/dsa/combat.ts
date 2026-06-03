@@ -503,7 +503,7 @@ export type SpellFocus = "offense" | "healing" | "balanced";
 export const TACTIC_LABELS: Record<Tactic, { title: string; blurb: string }> = {
   balanced: {
     title: "Ausgewogen",
-    blurb: "Standard-Kampf, keine Sonder-Risiken.",
+    blurb: "+1 AT · +1 PA. Konzentrierter Standardkampf — verlässlich, ohne Sonder-Risiken.",
   },
   aggressive: {
     title: "Aggressiver Vorstoß",
@@ -750,7 +750,9 @@ export function resolveRound(
   }
 
   // Taktik-spezifische Eröffnungs-Probe.
-  if (tactic === "aggressive") {
+  if (tactic === "balanced") {
+    mods.heroAt += 1; mods.heroPa += 1;
+  } else if (tactic === "aggressive") {
     mods.heroAt += 2; mods.heroTp += 2; mods.heroPa -= 3;
   } else if (tactic === "defensive") {
     mods.heroPa += 3; mods.heroAt -= 2; mods.heroTp -= 2;
