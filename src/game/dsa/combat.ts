@@ -503,15 +503,15 @@ export type SpellFocus = "offense" | "healing" | "balanced";
 export const TACTIC_LABELS: Record<Tactic, { title: string; blurb: string }> = {
   balanced: {
     title: "Ausgewogen",
-    blurb: "+1 AT · +1 PA. Konzentrierter Standardkampf — verlässlich, ohne Sonder-Risiken.",
+    blurb: "Konzentrierter Standardkampf. Tjark erzählt sachlich, ohne Pathos.",
   },
   aggressive: {
     title: "Aggressiver Vorstoß",
-    blurb: "+2 AT · +2 TP · −4 PA. Schneller fertig, aber spürbar gefährlicher.",
+    blurb: "Du gehst nach vorn. Tjark erzählt blutig, kurz, treibend — Klingen suchen Fleisch.",
   },
   defensive: {
     title: "Defensives Taktieren",
-    blurb: "+4 PA · −2 AT. Dauert länger, aber deutlich sicherer.",
+    blurb: "Du gibst dem Feind die Initiative. Tjark erzählt belagernd, zäh, abwartend — du hältst stand.",
   },
   cunning: {
     title: "Umgebung nutzen",
@@ -750,13 +750,11 @@ export function resolveRound(
   }
 
   // Taktik-spezifische Eröffnungs-Probe.
-  if (tactic === "balanced") {
-    mods.heroAt += 1; mods.heroPa += 1;
-  } else if (tactic === "aggressive") {
-    mods.heroAt += 2; mods.heroTp += 2; mods.heroPa -= 4;
-  } else if (tactic === "defensive") {
-    mods.heroPa += 4; mods.heroAt -= 2;
-  } else if (tactic === "cunning") {
+  // balanced / aggressive / defensive sind rein narrativ — gleiche Werte,
+  // unterschiedlicher Erzählton (siehe Tjark-Master-Prompt). Cunning und
+  // Flucht bleiben mechanisch, weil sie als Sonder-Aktion eine Probe
+  // auslösen und einen echten Effekt bzw. Kampfabbruch ermöglichen.
+  if (tactic === "cunning") {
     const roll = d20();
     const success = roll <= player.KL && roll !== 20;
     events.push({
