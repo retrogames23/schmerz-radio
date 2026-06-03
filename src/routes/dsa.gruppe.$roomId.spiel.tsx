@@ -149,9 +149,19 @@ function SpielraumPage() {
       .subscribe();
     // Heartbeat every 25s
     const hb = setInterval(() => void call("heartbeat"), 25_000);
+    // Sofort einmal pingen, sonst zeigt die Liste den eigenen Spieler
+    // bis zum ersten Intervall-Tick als „abwesend" (Schwelle 60 s,
+    // Intervall 25 s — passt, solange `last_seen_at` beim Mount frisch
+    // ist; nach Tab-Parken durch Mobile-Safari ist es das nicht mehr).
+    void call("heartbeat");
+    const onVis = () => {
+      if (document.visibilityState === "visible") void call("heartbeat");
+    };
+    document.addEventListener("visibilitychange", onVis);
     return () => {
       alive = false;
       clearInterval(hb);
+      document.removeEventListener("visibilitychange", onVis);
       void supabase.removeChannel(ch);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
