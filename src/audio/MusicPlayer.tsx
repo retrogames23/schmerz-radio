@@ -400,6 +400,14 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
           window.clearInterval(fadeTimerRef.current);
           fadeTimerRef.current = null;
         }
+        const a = aRef.current;
+        const b = bRef.current;
+        const inactive = toKey === "a" ? b : a;
+        if (inactive && !inactive.paused) {
+          inactive.volume = 0;
+          inactive.pause();
+          inactive.currentTime = 0;
+        }
       }
     }, FADE_TICK_MS);
   }
