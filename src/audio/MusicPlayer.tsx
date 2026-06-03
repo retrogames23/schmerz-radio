@@ -448,7 +448,6 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
       const prevFromKey = activeRef.current;
       const prevToKey = prevFromKey === "a" ? "b" : "a";
       const prevFrom = prevFromKey === "a" ? aRef.current : bRef.current;
-      const prevTo = prevToKey === "a" ? aRef.current : bRef.current;
       // Bisherigen "from" hart stumm schalten und pausieren.
       prevFrom.volume = 0;
       prevFrom.pause();
@@ -456,7 +455,6 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
       // das aktive Element. Lautstärke auf den aktuellen IST-Wert lassen,
       // damit der nächste Fade nahtlos von dort abblendet.
       activeRef.current = prevToKey;
-      void prevTo; // nur zur Klarheit
     }
     const fromKey = activeRef.current;
     const toKey = fromKey === "a" ? "b" : "a";
