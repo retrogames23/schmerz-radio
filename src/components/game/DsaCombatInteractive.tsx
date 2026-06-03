@@ -199,6 +199,30 @@ export function DsaCombatInteractive({
   const toggleFast = useCallback(() => setFast((f) => !f), []);
   const togglePause = useCallback(() => setPaused((p) => !p), []);
 
+  const handleCommandSubmit = useCallback(() => {
+    const raw = commandText.trim();
+    if (!raw || phase !== "ongoing") return;
+    const layard = stateRef.current.heroes.find((h) => h.id === "hero") ?? null;
+    const parsed = parseCombatIntent(raw, layard?.spells ?? null);
+    const tacticCommand = detectTacticCommand(raw, layard);
+    if (tacticCommand) setTactic(tacticCommand);
+    const notes = [
+      ...(parsed.notes.length > 0 ? parsed.notes : []),
+      ...(tacticCommand ? [`Taktik: ${TACTIC_LABELS[tacticCommand].title}`] : []),
+    ];
+    if (notes.length === 0) {
+      setCommandError("Tjark versteht den Kampfbefehl nicht.");
+      return;
+    }
+    stateRef.current.roundIntent = mergeCombatIntents(
+      stateRef.current.roundIntent ?? null,
+      parsed,
+    );
+    setCommandNotes((prev) => [...prev, ...notes]);
+    setCommandText("");
+    setCommandError(null);
+  }, [commandText, phase]);
+
   const visibleEvents = useMemo(() => events.slice(0, step + 1), [events, step]);
 
   const headerLabel =
