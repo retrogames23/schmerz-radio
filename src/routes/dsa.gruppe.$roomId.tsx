@@ -39,7 +39,9 @@ function VorzimmerPage() {
   const { user, loading: authLoading } = useAuth();
   const [room, setRoom] = useState<RoomRow | null>(null);
   const [members, setMembers] = useState<MemberRow[]>([]);
-  const [heroes, setHeroes] = useState<Record<SlotIndex, DsaHero | null>>({ 1: null, 2: null, 3: null });
+  const [heroes, setHeroes] = useState<Record<SlotIndex, DsaHero | null>>({
+    1: null, 2: null, 3: null, 4: null, 5: null, 6: null,
+  });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
