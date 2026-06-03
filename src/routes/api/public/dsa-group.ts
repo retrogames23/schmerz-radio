@@ -203,10 +203,20 @@ async function membersToGroupHeroes(
     if (!m.hero_snapshot) continue;
     const stale = Date.now() - new Date(m.last_seen_at).getTime() > ABSENCE_MS;
     const gear = await loadHeroGearFor(admin, m.user_id, m.slot);
+    // Defense in depth: hero_snapshot.name kommt aus der DB, könnte aber theoretisch
+    // (z. B. nach Policy-Drift oder Altbestand) Prompt-Injection-Phrasen enthalten.
+    // Vor jedem LLM-Use erneut säubern.
+    const safeName = sanitize(m.hero_snapshot.name, 60) || "Namenlos";
+    const safeClassName = sanitize(m.hero_snapshot.className, 40) || "Abenteurer";
+    const safeSnap: DsaCharacterSummary = {
+      ...m.hero_snapshot,
+      name: safeName,
+      className: safeClassName,
+    };
     heroes.push({
       userId: m.user_id,
-      displayName: m.hero_snapshot.name,
-      character: m.hero_snapshot,
+      displayName: safeName,
+      character: safeSnap,
       gear: gear ?? defaultGearFor(String(m.hero_snapshot.classId)),
       absent: stale,
     });
@@ -729,7 +739,7 @@ export const Route = createFileRoute("/api/public/dsa-group")({
             room_id: roomId,
             user_id: uid,
             turn_idx: room.turn_idx,
-            hero_name: me.hero_snapshot.name,
+            hero_name: sanitize(me.hero_snapshot.name, 60) || "Namenlos",
             action: text,
           });
           await admin
@@ -739,7 +749,14 @@ export const Route = createFileRoute("/api/public/dsa-group")({
             .eq("user_id", uid);
 
           // Spieler-Zeile auch ins Transkript als info.
-          await appendMessageSafe(admin, roomId, "player", text, uid, me.hero_snapshot.name);
+          await appendMessageSafe(
+            admin,
+            roomId,
+            "player",
+            text,
+            uid,
+            sanitize(me.hero_snapshot.name, 60) || "Namenlos",
+          );
 
           // Sammelfenster setzen, falls erste Aktion der Runde.
           if (!room.collect_started_at) {
