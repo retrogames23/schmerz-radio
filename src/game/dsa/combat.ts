@@ -197,6 +197,39 @@ export const ENEMY_STATS: Record<string, EnemyStat> = {
     intro:
       "Du erkennst die gebrochene Nase sofort. „Ich hab dir geschworen, wir sehen uns wieder.“",
   },
+  // ── Übergriffe innerhalb der Tafelrunde ──────────────────────────
+  // Wenn Layard tatsächlich Brem oder Yelva angreift, darf der Meister
+  // diese IDs für [COMBAT: …] nutzen. Werte: kompetent, aber nicht
+  // tödlich — die beiden gehen lieber in Deckung, schreien nach Wache
+  // oder hauen ab, statt Layard kaltzumachen.
+  brem_npc: {
+    id: "brem_npc",
+    name: "Brem (verteidigt sich)",
+    le: 26,
+    at: 12,
+    pa: 12,
+    tpDice: 1,
+    tpBonus: 2,
+    rs: 1,
+    iniBase: 13,
+    weapon: "Dolch & dreckige Tricks",
+    intro:
+      "Brem springt zwei Schritte zurück, der Dolch ist plötzlich in seiner Hand. „Layard — bist du WAHNSINNIG?“",
+  },
+  yelva_npc: {
+    id: "yelva_npc",
+    name: "Yelva (verteidigt sich)",
+    le: 22,
+    at: 11,
+    pa: 12,
+    tpDice: 1,
+    tpBonus: 2,
+    rs: 1,
+    iniBase: 14,
+    weapon: "Säbel, dazu ein scharfes Wort",
+    intro:
+      "Yelvas Augen werden schmal. Der Säbel zischt aus der Scheide. „Das willst du nicht wirklich, Mensch.“",
+  },
 };
 
 /** Klassen-Profile für die Spielerableitung. Exportiert, damit der
