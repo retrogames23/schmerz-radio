@@ -1,3 +1,4 @@
+import { AI_MODEL_MAIN } from "@/lib/aiModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { npcPersonas } from "@/game/npcPersonas";
 import { createClient } from "@supabase/supabase-js";

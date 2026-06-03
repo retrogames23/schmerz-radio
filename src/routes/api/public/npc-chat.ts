@@ -1,3 +1,4 @@
+import { AI_MODEL_MAIN, AI_MODEL_LIGHT } from "@/lib/aiModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { npcPersonas } from "@/game/npcPersonas";
 import { buildSystemPrompt } from "@/game/promptBuilder";

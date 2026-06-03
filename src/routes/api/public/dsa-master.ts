@@ -1,3 +1,4 @@
+import { AI_MODEL_MAIN } from "@/lib/aiModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { buildMasterSystemPrompt, type HeroMemory, type HeroKnownNpc, type HeroChronicleEntry } from "@/game/dsa/llmMasterPrompt";
