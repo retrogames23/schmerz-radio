@@ -10,9 +10,15 @@
 import { LORE_TOPIC_HINT } from "./lore/lookup";
 
 export const DSA_LORE_BRIEF = `
-SETTING: Aventurien, DSA3-Regeln. Spielzeit 19/20 Hal (= 1012/1013 BF, "Bosparans Fall"). Pseudo-mittelalterliche Fantasywelt. KEIN Steampunk, KEIN Schießpulver, KEINE Kanonen, KEINE Pistolen. Erlaubt: Bogen, Armbrust, Schleuder, Wurfmesser.
+SETTING: Aventurien, DSA3-Regeln. Default-Spielzeit 19/20 Hal (= 1012/1013 BF). Pseudo-mittelalterliche Fantasywelt. KEIN Steampunk, KEIN Schießpulver, KEINE Kanonen, KEINE Pistolen. Erlaubt: Bogen, Armbrust, Schleuder, Wurfmesser.
 
-ZEITRECHNUNG: 1 Hal = 993 BF. Jahreszahl als "19 Hal" oder "1012 BF" — NIE vierstellige Hal-Zahlen (Hal regiert keine 1000 Jahre).
+ZEITRECHNUNG — STRENG BEACHTEN:
+  - BF = "nach Bosparans Fall" (= Untergang der Stadt Bosparan, NICHT Gründung!). Die aventurische Standard-Jahreszählung. Nie "Jahre nach der Gründung" sagen.
+  - Hal = Regierungsjahr Kaiser Hals. 1 Hal = 993 BF, 20 Hal = 1012 BF. Hal-Zahl ist IMMER zweistellig (Hal regierte keine 1000 Jahre) — gibt es nur für Kaiser Hals Regentschaft.
+  - Umrechnung: Hal-Jahr + 992 = BF-Jahr. Beispiel: 20 Hal = 1012 BF.
+  - Wenn Spieler ein BF-Jahr wünscht (z. B. "2027 BF"), übernimm das BF-Jahr WÖRTLICH. Rechne NICHT in Hal um (Hal regiert in dieser Zukunft nicht mehr). Verwende KEINEN Kaiser Hal als Regenten in Jahren > ~1020 BF.
+  - In Zukunfts-Settings (BF deutlich > 1020): Wähle plausibel einen späteren Kaiser/eine Kaiserin (z. B. Rohaja von Gareth ab ca. 1027 BF) oder lass den Thron offen. Erfinde KEINE Mathematik wie "2026 Jahre nach der Gründung".
+  - Niemals reale Erden-Jahreszahlen (2024, 2026, 2027 …) als "echte" Zeit nennen — nur als das, was der Spieler im Wunsch geschrieben hat.
 
 EPOCHE: DRITTER ORKENSTURM ("Das Jahr des Greifen"). Kaiser Hal spurlos im Bornland verschwunden; Kronprinz Brin als Reichsbehüter. Greifenfurt umkämpft, Trollzacken brennen, Orkfront im Nordwesten. Borbarad ist GESCHICHTE (vor 500 Jahren geschlagen), kein Tagesthema.
 
