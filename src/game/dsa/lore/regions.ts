@@ -212,3 +212,22 @@ export function buildRegionsBlockForSetting(setting: DsaSettingId): string {
     ...briefs,
   ].join("\n\n");
 }
+
+/**
+ * Kurzfassung der Region (eine Zeile pro Eintrag) — für den Default-
+ * Prompt. Detailansicht via dsaLore({ topic: "region.<id>" }).
+ */
+function regionBlockShort(r: RegionBrief): string {
+  return `  ${r.id.padEnd(20)} ${r.name}\n` +
+    `    Hauptorte: ${r.hauptorte.split(",")[0]?.trim() ?? r.hauptorte}. ${r.notiz}`;
+}
+
+export function buildRegionsBlockShortForSetting(setting: DsaSettingId): string {
+  const ids = SETTING_TO_REGIONS[setting] ?? SETTING_TO_REGIONS.random;
+  const lines = ids.map((id) => regionBlockShort(DSA_REGIONS[id]));
+  return [
+    "REGIONEN-AUSWAHL FÜR DIESES SETTING — Kurzliste",
+    "(Wähle EINE als Schauplatz; Details via dsaLore({topic:'region.<id>'})):",
+    ...lines,
+  ].join("\n");
+}

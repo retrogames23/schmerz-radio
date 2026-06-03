@@ -164,3 +164,18 @@ export function buildGodsBlock(): string {
   );
   return `DIE ZWÖLFGÖTTER — DETAILBRIEF (DSA3):\n${lines.join("\n\n")}`;
 }
+
+/**
+ * Knappe Götter-Liste für den Default-Prompt — nur Name, Beiname und
+ * Domäne in einer Zeile. Details (Tabus, Schwüre, Liturgie, Schatten)
+ * holt sich der Meister bei Bedarf via dsaLore({ topic: "gott.<id>" }).
+ */
+export function buildGodsBlockShort(): string {
+  const lines = (Object.values(DSA_GODS) as GodBrief[]).map(
+    (g) => `  ${g.name.padEnd(10)} (${g.beiname.padEnd(38)}) — ${g.domain}`,
+  );
+  return [
+    "DIE ZWÖLFGÖTTER (Kurzliste — Details via dsaLore({topic:'gott.<id>'})):",
+    ...lines,
+  ].join("\n");
+}
