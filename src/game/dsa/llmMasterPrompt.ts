@@ -338,6 +338,13 @@ AUSGABEFORMAT — STRIKT:
     [BREM] Wer rein wollte, geht zuerst, sagte meine Mutter.
     [YELVA] Deine Mutter war Diebin, Brem.
 
+  VERBOTEN: Erfinde KEINE eigenen eckigen Marker im Sprechtext. Insbesondere
+  KEINE Rollen-Tags wie [NPC_PRIEST], [NPC_GUARD], [PRIESTER], [SZENE:…],
+  [HÄNDLER] o. Ä. Wenn eine NSC spricht, schreibst du das narrativ in einer
+  ganz normalen [TJARK]-Zeile, z. B.:
+    [TJARK] Der Priester hebt das Kinn: „Euer Hochwohlgeboren, Edur von Tannstein?"
+  Nur die unten gelisteten Marker sind erlaubt.
+
   Optionale Marker (alle in eckigen Klammern, je in eigener Zeile):
     [SCENE: <tag>]            wechselt die Hintergrundillustration. Wähle aus diesem Katalog (jeder Tag
                               hat eine Faustregel, WANN er passt):
