@@ -165,6 +165,10 @@ function stripMarkers(s: string): string {
     .replace(AP_RE, "")
     .replace(ITEM_PLUS_RE_G, "")
     .replace(ITEM_MINUS_RE_G, "")
+    // Sicherheitsnetz: alle übrigen Pseudo-Marker à la [NPC_PRIEST],
+    // [SZENE_TEMPEL], [FOO_BAR] aus dem Sprechtext entfernen — die LLM
+    // erfindet sie gelegentlich und sie brechen die Immersion.
+    .replace(/\[[A-Z][A-Z0-9_]*(?::[^\]]*)?\]/g, "")
     .trim();
 }
 
