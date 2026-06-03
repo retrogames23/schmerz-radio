@@ -477,6 +477,22 @@ function SideLabel({ label, align }: { label: string; align: "left" | "right" })
   );
 }
 
+function detectTacticCommand(text: string, layard: Combatant | null): Tactic | null {
+  const lower = text.toLowerCase();
+  const knowsCombatSpell = Object.keys(layard?.spells ?? {}).some((id) =>
+    ["ignifaxius", "blitz_dich_find", "fulminictus"].includes(id),
+  );
+  if (/(flieh|flucht|einsch(?:ü|ue)chter|zur(?:ü|ue)ckziehen|wegrennen)/i.test(lower)) return "flee";
+  if (/(defensiv|deckung|parier|vorsichtig|schild)/i.test(lower)) return "defensive";
+  if (/(aggressiv|vorsto(?:ß|ss)|drauf|angriff|attacke)/i.test(lower)) return "aggressive";
+  if (/(umgebung|list|sand|stuhl|krug|trick|ablenk)/i.test(lower)) return "cunning";
+  if (/(keine magie|asp sparen|astralenergie sparen|ohne zauber)/i.test(lower)) return knowsCombatSpell ? "magic-none" : "balanced";
+  if (/(viel magie|alles an magie|volle magie|zauberfeuer)/i.test(lower)) return knowsCombatSpell ? "magic-high" : null;
+  if (/(wenig magie|sparsam zauber|ein bisschen magie)/i.test(lower)) return knowsCombatSpell ? "magic-low" : null;
+  if (/(zauber|wirke|magie|ignifaxius|fulminictus|blitz)/i.test(lower)) return knowsCombatSpell ? "magic-mid" : "spell";
+  return null;
+}
+
 function TacticPicker({
   tactic,
   onChange,
