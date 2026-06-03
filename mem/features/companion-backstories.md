@@ -15,12 +15,13 @@ eingespeist.
   Vater unbekannter thorwalscher Seefahrer.
 - War in Festumer Phex-naher Diebes-„Zunft".
 - Bruch mit 22: sollte verbotenes schwarzmagisches Pakt-Manuskript aus
-  der Heptarchenzeit stehlen, ließ es liegen. Mira deckte ihn → von
-  Zunft verraten → sitzt in Festumer Kerkern.
-  HINWEIS: KEIN Borbarad-Manuskript — Borbarads Rückkehr ist erst 22 Hal
-  (*Alptraum ohne Ende*), Setting läuft 20 Hal.
+  der Zeit der Magierkriege stehlen, ließ es liegen. Mira deckte ihn →
+  von Zunft verraten → sitzt in Festumer Kerkern.
+  HINWEIS: KEIN Borbarad-Manuskript (Borbarads Rückkehr erst 22 Hal,
+  *Alptraum ohne Ende*) und KEINE Heptarchenzeit (beginnt erst 28 Hal /
+  1021 BF). Setting läuft 20 Hal — also pre-Heptarchen, post-Magierkriege.
 - Brem sammelt heimlich Bestechungsgeld für Miras Freikauf.
-- Schwarzmagie-Allergie (Pakt-Sigillen, Heptarchen-Reliquien),
+- Schwarzmagie-Allergie (Pakt-Sigillen, Magierkriegs-Reliquien),
   Phex-Sprüche aber kein Tempelbesuch, Hesinde-nervös.
 - Mutter-Witz hat doppelten Boden.
 - Alles davon ist GEHEIMNIS, nicht von selbst erzählen.
