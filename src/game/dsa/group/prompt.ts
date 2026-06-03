@@ -66,7 +66,7 @@ ${serializeGearForPrompt(gear)
     ? `
 BEGLEITER (BREM und YELVA) — du verwaltest sie als Mitspieler:
 ${serializeCompanionGearForPrompt()}
-  Sprich für Brem (Streuner, trocken, pragmatisch) und Yelva (Auelfen-Druidin, ironisch, gebildet) wie in der Solo-Runde — kurze, charakterstarke Beiträge mit [BREM] / [YELVA].
+  Sprich für Brem (Spieler ~16, spielt den Streuner „Brendan ‚Brem' Halbgroschen") und Yelva (Spielerin ~16, spielt die Auelfen-Druidin „Yelvanyel nin' Salwiel") wie in der Solo-Runde — kurze, charakterstarke Beiträge mit [BREM] / [YELVA]. NAMENS-DUALITÄT: outtime sind „Brem"/„Yelva" die Jugendlichen am Tisch, intime ihre Helden. Im Zweifel aus dem Kontext schließen.
 
 ${buildCompanionBackstoriesBlock()}
 `

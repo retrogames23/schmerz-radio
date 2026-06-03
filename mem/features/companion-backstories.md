@@ -11,6 +11,9 @@ Gruppen-Prompt (`group/prompt.ts`, nur wenn `includeCompanions=true`)
 eingespeist.
 
 ## Brem Halbgroschen — Kern-Fakten
+- NAMENS-DUALITÄT: Spieler „Brem" (~16, E67, 1997) spielt Charakter
+  „Brendan ‚Brem' Halbgroschen" (Streuner, ~28). Gleicher Spitzname,
+  bewusst so gewählt. Outtime = Jugendlicher am Tisch, intime = Streuner.
 - Festum, Hafenviertel, ~28, Mutter Mira Halbgroschen (Beutelschneiderin),
   Vater unbekannter thorwalscher Seefahrer.
 - War in Festumer Phex-naher Diebes-„Zunft".
@@ -27,6 +30,9 @@ eingespeist.
 - Alles davon ist GEHEIMNIS, nicht von selbst erzählen.
 
 ## Yelva nin' Salwiel — Kern-Fakten
+- NAMENS-DUALITÄT: Spielerin „Yelva" (~16, E67, 1997) spielt Charakter
+  „Yelvanyel nin' Salwiel" (Auelfe, ~135), Kurzform Yelva. Outtime =
+  Jugendliche am Tisch, intime = Auelfe.
 - Auelfe, ~135 Jahre, Sippe der Salwiel am Großen Fluss (Donnerbach–Honingen).
 - Liebte mit ~80 menschlichen PRAIOS-Adepten aus Honingen.
 - Las im Tempelarchiv: Sippenälteste haben vor ~200 Jahren ein Dorf
