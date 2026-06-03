@@ -581,7 +581,7 @@ function ReadAttr({ attr, value }: { attr: Attr; value: number }) {
       <div className="dsa-box-thick mt-1 flex h-12 w-full items-center justify-center">
         <span className="font-display text-2xl dsa-ink font-extrabold">{value}</span>
       </div>
-      <div className="dsa-typed text-[10px] dsa-ink font-semibold mt-1 truncate">
+      <div className="dsa-typed text-[10px] dsa-ink font-semibold mt-1 truncate hidden sm:block w-full text-center">
         {ATTR_LABEL[attr]}
       </div>
     </div>
