@@ -205,7 +205,10 @@ export function DsaCombatInteractive({
     const layard = stateRef.current.heroes.find((h) => h.id === "hero") ?? null;
     const parsed = parseCombatIntent(raw, layard?.spells ?? null);
     const tacticCommand = detectTacticCommand(raw, layard);
-    if (tacticCommand) setTactic(tacticCommand);
+    if (tacticCommand) {
+      tacticRef.current = tacticCommand;
+      setTactic(tacticCommand);
+    }
     const notes = [
       ...(parsed.notes.length > 0 ? parsed.notes : []),
       ...(tacticCommand ? [`Taktik: ${TACTIC_LABELS[tacticCommand].title}`] : []),
