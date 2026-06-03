@@ -1436,6 +1436,146 @@ function snapshot(all: Combatant[]): { id: string; le: number }[] {
   return all.map((c) => ({ id: c.id, le: c.le }));
 }
 
+/**
+ * Yelva wirkt einen ihrer Elfen-Hauszauber. Mechanisch ausgespielt werden
+ * Balsam Salabunde (heilt verwundeten Helden) und Bannbaladin (setzt einen
+ * Gegner für mehrere Runden außer Gefecht — er lässt die Waffe sinken).
+ * Andere Hauszauber sind im Kampf nicht spürbar und werden ehrlich als
+ * Fizzle protokolliert.
+ */
+function resolveYelvaSpell(
+  yelva: WoundedCombatant,
+  spell: SpellDef,
+  zfw: number,
+  state: CombatState,
+  all: WoundedCombatant[],
+  events: CombatEvent[],
+): void {
+  const attrs = yelva.attrs;
+  if (!attrs) return;
+  const cost = spellCost(spell);
+  const ownSchool = spellOwnSchool(yelva.classId, spell);
+
+  // --- Balsam Salabunde: heilt den am stärksten verwundeten Helden. ----
+  if (spell.id === "balsam_salabunde") {
+    const wounded = state.heroes
+      .filter((h) => alive(h) && h.le < h.leMax)
+      .sort((a, b) => a.le / a.leMax - b.le / b.leMax)[0];
+    if (!wounded) {
+      events.push({
+        kind: "spell-fizzle",
+        text: `Niemand braucht Heilung — Yelva spart sich Balsam Salabunde.`,
+        snapshot: snapshotW(all),
+        actorId: yelva.id,
+      });
+      return;
+    }
+    const ae = yelva.ae ?? 0;
+    const missing = wounded.leMax - wounded.le;
+    const planned = Math.max(1, Math.min(missing, zfw, ae));
+    const { dice, success, bufferLeft } = rollSpellProbe(spell, zfw, attrs, ownSchool);
+    if (!success) {
+      const lost = Math.max(1, Math.ceil(planned / 2));
+      yelva.ae = Math.max(0, ae - lost);
+      events.push({
+        kind: "spell-fail",
+        text: `Yelva singt Balsam Salabunde über ${wounded.name} — die Probe misslingt (Puffer ${bufferLeft}). AsP −${lost} → ${yelva.ae}.`,
+        dice,
+        snapshot: snapshotW(all),
+        actorId: yelva.id,
+        targetId: wounded.id,
+      });
+      return;
+    }
+    wounded.le = Math.min(wounded.leMax, wounded.le + planned);
+    wounded.wounds = Math.max(0, wounded.wounds - 1);
+    yelva.ae = Math.max(0, ae - planned);
+    events.push({
+      kind: "spell-cast",
+      text: `Yelva singt Balsam Salabunde${ownSchool ? " (Hauszauber)" : ""} über ${wounded.name}. +${planned} LE (AsP −${planned} → ${yelva.ae}). ${wounded.name}: ${wounded.le}/${wounded.leMax} LE.`,
+      dice,
+      snapshot: snapshotW(all),
+      actorId: yelva.id,
+      targetId: wounded.id,
+    });
+    return;
+  }
+
+  // --- Bannbaladin: ein Gegner verliert die Lust am Kampf. ------------
+  if (spell.id === "bannbaladin") {
+    const foeTarget = pickFoeTargetW(state.foes);
+    if (!foeTarget) return;
+    const { dice, success, bufferLeft } = rollSpellProbe(spell, zfw, attrs, ownSchool);
+    const ae = yelva.ae ?? 0;
+    const aeCost = success ? cost : Math.ceil(cost / 2);
+    yelva.ae = Math.max(0, ae - aeCost);
+    if (!success) {
+      events.push({
+        kind: "spell-fail",
+        text: `Yelva singt Bannbaladin gegen ${foeTarget.name} — er schüttelt das Lied ab (Puffer ${bufferLeft}). AsP −${aeCost} → ${yelva.ae}.`,
+        dice,
+        snapshot: snapshotW(all),
+        actorId: yelva.id,
+        targetId: foeTarget.id,
+      });
+      return;
+    }
+    // Erfolg: Gegner setzt für mehrere Runden aus (AT/PA stark reduziert)
+    // und wird mit "besänftigt" markiert.
+    foeTarget.atMod = -8;
+    foeTarget.paMod = -4;
+    foeTarget.effectRoundsLeft = 3;
+    foeTarget.effectLabel = "besänftigt";
+    events.push({
+      kind: "spell-cast",
+      text: `Yelva singt Bannbaladin${ownSchool ? " (Hauszauber)" : ""} — ${foeTarget.name} lässt die Waffe sinken (3 Runden besänftigt). AsP −${aeCost} → ${yelva.ae}.`,
+      dice,
+      snapshot: snapshotW(all),
+      actorId: yelva.id,
+      targetId: foeTarget.id,
+    });
+    return;
+  }
+
+  // --- Restliche Elfen-Hauszauber: im Kampf ohne mechanische Wirkung --
+  events.push({
+    kind: "spell-fizzle",
+    text: `Yelva wirkt ${spell.name} — im Kampfgetümmel ohne unmittelbare Wirkung.`,
+    snapshot: snapshotW(all),
+    actorId: yelva.id,
+  });
+}
+
+/** Standard-3W20-Spruchprobe, gemeinsam genutzt für Yelvas Auflösung. */
+function rollSpellProbe(
+  spell: SpellDef,
+  zfw: number,
+  attrs: Attrs,
+  ownSchool: boolean,
+): {
+  dice: { label: string; value: number; target: number; success: boolean }[];
+  success: boolean;
+  bufferLeft: number;
+} {
+  const modBuf = ownSchool ? 3 : 0;
+  const rolls: number[] = [d20(), d20(), d20()];
+  let bufferLeft = zfw + modBuf;
+  const dice = rolls.map((r, i) => {
+    const attrId = spell.probe[i] as AttributeId;
+    const target = attrs[attrId] ?? 10;
+    const fail = r > target;
+    if (fail) bufferLeft -= r - target;
+    return { label: `${attrId} (W20)`, value: r, target, success: !fail };
+  });
+  const ones = rolls.filter((r) => r === 1).length;
+  const twenties = rolls.filter((r) => r === 20).length;
+  let success: boolean;
+  if (twenties >= 2) success = false;
+  else if (ones >= 2) success = true;
+  else success = bufferLeft >= 0;
+  return { dice, success, bufferLeft };
+}
+
 function alive(c: Combatant): boolean {
   return c.le > 0;
 }
