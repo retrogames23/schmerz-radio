@@ -1,3 +1,4 @@
+import { AI_MODEL_MAIN, AI_MODEL_LIGHT } from "@/lib/aiModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { npcPersonas } from "@/game/npcPersonas";
 import { buildSystemPrompt } from "@/game/promptBuilder";
@@ -404,7 +405,7 @@ export const Route = createFileRoute("/api/public/npc-chat")({
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                model: "google/gemini-3-flash-preview",
+                model: AI_MODEL_MAIN,
                 messages,
                 temperature: 0.6,
                 max_tokens: 600,
@@ -461,7 +462,7 @@ export const Route = createFileRoute("/api/public/npc-chat")({
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                  model: "google/gemini-2.5-flash-lite",
+                  model: AI_MODEL_LIGHT,
                   messages: [
                     { role: "system", content: MARV_EMPATHY_RATER_PROMPT },
                     {

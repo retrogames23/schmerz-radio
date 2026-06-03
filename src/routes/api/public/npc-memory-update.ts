@@ -1,3 +1,4 @@
+import { AI_MODEL_MAIN } from "@/lib/aiModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { npcPersonas } from "@/game/npcPersonas";
 import { createClient } from "@supabase/supabase-js";
@@ -175,7 +176,7 @@ export const Route = createFileRoute("/api/public/npc-memory-update")({
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                model: "google/gemini-3-flash-preview",
+                model: AI_MODEL_MAIN,
                 messages: [
                   { role: "system", content: sysPrompt },
                   {
