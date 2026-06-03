@@ -7,6 +7,7 @@ import { buildDsa3RulesBlock } from "../rules";
 import { buildCoreLoreAppend, buildContextualLoreBlock, buildCompanionBackstoriesBlock } from "../lore";
 import type { DsaCharacterSummary } from "@/game/types";
 import { defaultGearFor, serializeGearForPrompt, serializeCompanionGearForPrompt, type HeroGear } from "../gear";
+import { buildBfTimeAnchorPrompt } from "../time";
 
 export interface GroupHero {
   userId: string;
@@ -61,6 +62,7 @@ ${serializeGearForPrompt(gear)
 
   const presentNames = heroes.filter((h) => !h.absent).map((h) => h.character.name).join(", ");
   const absentNames = heroes.filter((h) => h.absent).map((h) => h.character.name);
+  const wishTimeAnchorBlock = isWish ? buildBfTimeAnchorPrompt(wishBrief) : "";
 
   const companionBlock = includeCompanions
     ? `
@@ -91,6 +93,7 @@ SPIELERWUNSCH (PFLICHT BEACHTEN — vom Raumgründer formuliert):
   """
   ${wishBrief.trim()}
   """
+${wishTimeAnchorBlock}
 ` : ""}
 
 SETTING DIESES ABENTEUERS — ${s?.title ?? "freie Wahl"}:
