@@ -614,6 +614,7 @@ export function createCombatState(
     roundIntent: null,
     blindResolved: false,
     layardSpellResolved: false,
+    yelvaSpellResolved: false,
   };
 }
 
