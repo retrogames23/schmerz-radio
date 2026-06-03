@@ -853,15 +853,17 @@ export function resolveRound(
     if (layardSkipMelee && isLayard(actor)) continue;
 
     const target =
-      actor.side === "hero" ? pickFoeTargetW(state.foes) : pickWeakestW(state.heroes);
+      actor.side === "hero" ? pickFoeTargetW(state.foes) : pickHeroTargetW(state.heroes);
     if (!target) continue;
 
     // Wunden-Malus auf AT/PA: −2 pro Wunde des Akteurs/Verteidigers.
     const actorAtMod =
       -2 * actor.wounds +
+      (actor.atMod ?? 0) +
       (actor.side === "foe" ? mods.foeAt : isLayard(actor) ? mods.heroAt : 0);
     const targetPaMod =
       -2 * target.wounds +
+      (target.paMod ?? 0) +
       (target.side === "foe" ? mods.foePa : isLayard(target) ? mods.heroPa : 0);
     const actorTpMod =
       -2 * actor.wounds + (isLayard(actor) ? mods.heroTp : 0);
