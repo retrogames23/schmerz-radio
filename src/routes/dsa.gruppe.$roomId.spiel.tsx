@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getFreshAccessToken } from "@/auth/freshToken";
 import { parseMasterTurn, type SpokenLine } from "@/game/dsa/llmAdventure";
 import { resolveSceneImage } from "@/game/dsa/sceneImages";
+import { portraitFor } from "@/game/dsa/portraits";
 
 export const Route = createFileRoute("/dsa/gruppe/$roomId/spiel")({
   component: SpielraumPage,
@@ -23,7 +24,15 @@ interface MessageRow {
 interface MemberRow {
   user_id: string;
   ready: boolean;
-  hero_snapshot: { name?: string; className?: string; le?: number; leMax?: number } | null;
+  hero_snapshot: {
+    name?: string;
+    className?: string;
+    classId?: string;
+    geschlecht?: string;
+    portraitDataUrl?: string;
+    le?: number;
+    leMax?: number;
+  } | null;
   last_seen_at: string;
   slot: number | null;
 }
