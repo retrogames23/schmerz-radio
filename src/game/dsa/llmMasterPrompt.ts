@@ -4,6 +4,7 @@ import { ENEMY_STATS } from "./combat";
 import { getSetting, type DsaSettingId } from "./llmAdventure";
 import { DSA_MOODS } from "@/audio/dsaMusic";
 import { buildDsa3RulesBlock, SPELLS } from "./rules";
+import { defaultSpells, isMagicClass } from "./advancement";
 import { buildCoreLoreAppend, buildContextualLoreBlock, buildCompanionBackstoriesBlock } from "./lore";
 import type { DsaCharacterSummary } from "@/game/types";
 import {
@@ -119,7 +120,12 @@ ${serializeCompanionGearForPrompt()}
 `;
 
   const spellsBlock = (() => {
-    const entries = Object.entries(knownSpells ?? {}).filter(([, z]) => typeof z === "number" && z >= 0);
+    let entries = Object.entries(knownSpells ?? {}).filter(([, z]) => typeof z === "number" && z >= 0);
+    // Fallback: magiebegabte Klasse, aber keine Spruchliste geladen
+    // (z. B. Altcharakter ohne `spells`-Feld) → Standard-Hauszauber der Klasse.
+    if (entries.length === 0 && character.ae !== null && isMagicClass(character.classId)) {
+      entries = Object.entries(defaultSpells(character.classId));
+    }
     if (character.ae === null || entries.length === 0) {
       return `
 MAGIE — PFLICHT:

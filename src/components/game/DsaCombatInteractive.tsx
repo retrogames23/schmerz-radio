@@ -276,6 +276,19 @@ export function DsaCombatInteractive({
           </div>
 
           {(!hasStarted || paused) && phase === "ongoing" && (
+            <>
+            {intent && intent.notes.length > 0 && (
+              <div className="dsa-typed text-xs dsa-ink-faded border-l-2 border-[rgba(20,12,4,0.5)] pl-2 mb-2">
+                <div className="uppercase tracking-[0.25em] font-bold mb-1 dsa-ink">
+                  Erkannte Befehle
+                </div>
+                <ul className="space-y-0.5">
+                  {intent.notes.map((n, i) => (
+                    <li key={i}>· {n}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <TacticPicker
               tactic={tactic}
               onChange={setTactic}
@@ -288,6 +301,7 @@ export function DsaCombatInteractive({
               confirmLabel={!hasStarted ? "Kampf beginnen" : "Weiterkämpfen"}
               layard={stateRef.current.heroes.find((h) => h.id === "hero") ?? null}
             />
+            </>
           )}
 
           {hasStarted && (
