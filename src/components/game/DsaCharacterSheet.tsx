@@ -138,7 +138,7 @@ export function DsaCharacterSheet() {
       }}
     >
       <div className="dsa-adventure-shell relative mx-auto w-full max-w-3xl rounded-md shadow-2xl">
-        <div className="sticky top-2 z-10 flex justify-end pr-2 pt-2 -mb-8">
+        <div className="sticky top-2 z-[90] flex justify-end pr-14 pt-2 -mb-8">
           <CloseButton onClick={closeDsaSheet} />
         </div>
 
