@@ -567,6 +567,8 @@ export interface CombatState {
   lastTactic: Tactic;
   /** Freie Spielerwünsche aus dem letzten Prompt vor dem Kampf. */
   intent?: CombatIntent | null;
+  /** Freie Spielerwünsche für die nächste Runde, während der Kampf läuft. */
+  roundIntent?: CombatIntent | null;
   /** Wurde die einmalige Yelva-Blendaktion bereits aufgelöst? */
   blindResolved?: boolean;
   /** Hat Layard seinen Wunsch-Zauber bereits einmal abgesetzt? */
@@ -596,6 +598,7 @@ export function createCombatState(
     fallenHeroes: [],
     lastTactic: "balanced",
     intent: intent ?? null,
+    roundIntent: null,
     blindResolved: false,
     layardSpellResolved: false,
   };
