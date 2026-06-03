@@ -7,7 +7,7 @@ import { WEAPONS } from "./rules/weapons";
 import { ARMORS } from "./rules/armor";
 import type { HeroGear } from "./gear";
 import type { CombatIntent, CompanionIntent } from "./combatIntent";
-import { EMPTY_COMBAT_INTENT } from "./combatIntent";
+import { EMPTY_COMBAT_INTENT, mergeCombatIntents } from "./combatIntent";
 
 /**
  * Vereinfachte DSA-Kampfregeln für die automatischen Tafelrunden-Kämpfe.
@@ -439,6 +439,7 @@ function d20(): number {
 export type CombatEventKind =
   | "round-start"
   | "ini"
+  | "command"
   | "attack-hit"
   | "attack-miss"
   | "parry-success"
@@ -566,6 +567,8 @@ export interface CombatState {
   lastTactic: Tactic;
   /** Freie Spielerwünsche aus dem letzten Prompt vor dem Kampf. */
   intent?: CombatIntent | null;
+  /** Freie Spielerwünsche für die nächste Runde, während der Kampf läuft. */
+  roundIntent?: CombatIntent | null;
   /** Wurde die einmalige Yelva-Blendaktion bereits aufgelöst? */
   blindResolved?: boolean;
   /** Hat Layard seinen Wunsch-Zauber bereits einmal abgesetzt? */
@@ -595,9 +598,37 @@ export function createCombatState(
     fallenHeroes: [],
     lastTactic: "balanced",
     intent: intent ?? null,
+    roundIntent: null,
     blindResolved: false,
     layardSpellResolved: false,
   };
+}
+
+function applyRoundCompanionIntent(state: CombatState, intent: CombatIntent): void {
+  const apply = (id: "yelva" | "brem", own: CompanionIntent) => {
+    const c = state.heroes.find((h) => h.id === id);
+    if (!c || !alive(c)) return;
+    if (own.backline || own.ranged) c.role = "backline";
+    if (own.protect) {
+      c.role = "support";
+      c.paMod = Math.max(c.paMod ?? 0, 2);
+      c.effectRoundsLeft = Math.max(c.effectRoundsLeft ?? 0, 2);
+      c.effectLabel = "deckt die Gruppe";
+    }
+    if (own.flank) {
+      c.role = "frontline";
+      c.atMod = Math.max(c.atMod ?? 0, 1);
+      c.paMod = Math.min(c.paMod ?? 0, -1);
+      c.effectRoundsLeft = Math.max(c.effectRoundsLeft ?? 0, 2);
+      c.effectLabel = "flankiert";
+    }
+    if (own.ranged) {
+      c.rangedWeapon = id === "yelva" ? "Elfenbogen" : "Wurfdolch";
+      c.weapon = c.rangedWeapon;
+    }
+  };
+  apply("yelva", intent.yelva);
+  apply("brem", intent.brem);
 }
 
 function snapshotW(all: WoundedCombatant[]): { id: string; le: number }[] {
@@ -645,7 +676,9 @@ export function resolveRound(
   if (state.phase !== "ongoing") return [];
   state.lastTactic = tactic;
   state.round += 1;
-  const intent = opts?.intent ?? state.intent ?? null;
+  const roundIntent = state.roundIntent ?? null;
+  const intent = mergeCombatIntents(opts?.intent ?? state.intent ?? null, roundIntent);
+  state.roundIntent = null;
   const events: CombatEvent[] = [];
   const all = [...state.heroes, ...state.foes];
 
@@ -670,6 +703,15 @@ export function resolveRound(
     text: `── Runde ${state.round} · ${TACTIC_LABELS[tactic].title} ──`,
     snapshot: snapshotW(all),
   });
+
+  if (roundIntent?.notes.length) {
+    applyRoundCompanionIntent(state, roundIntent);
+    events.push({
+      kind: "command",
+      text: `Kampfbefehl: ${roundIntent.notes.join(" · ")}`,
+      snapshot: snapshotW(all),
+    });
+  }
 
   // ── Yelvas Blend-/Ablenkungs-Aktion (einmalig pro Kampf) ───────
   if (intent?.yelva.blind && !state.blindResolved) {
@@ -748,13 +790,14 @@ export function resolveRound(
   let layardSkipMelee = false;
 
   // ── Expliziter Spielerwunsch: Layard wirkt diesen Spruch ─────────
-  if (intent?.layardSpellId && !state.layardSpellResolved) {
+  const manualSpellThisRound = !!roundIntent?.layardSpellId;
+  if (intent?.layardSpellId && (!state.layardSpellResolved || manualSpellThisRound)) {
     const layard = state.heroes.find((h) => h.id === "hero");
     if (layard && alive(layard)) {
       const spell = SPELLS.find((s) => s.id === intent.layardSpellId);
       const zfw = spell ? layard.spells?.[spell.id] : undefined;
       if (spell && typeof zfw === "number" && (layard.ae ?? 0) >= spellCost(spell)) {
-        state.layardSpellResolved = true;
+        if (!manualSpellThisRound) state.layardSpellResolved = true;
         layardSkipMelee = true;
         if (spell.id === "balsam_salabunde") {
           resolveLayardBalsam(layard, all, events);
@@ -767,7 +810,7 @@ export function resolveRound(
       } else if (spell) {
         // Bekannter Spruch, aber nicht bezahlbar / kein Ziel: einmaliger
         // Hinweis, dann ausschalten (kein Endlos-Spam).
-        state.layardSpellResolved = true;
+        if (!manualSpellThisRound) state.layardSpellResolved = true;
         const reason = typeof zfw !== "number"
           ? `Layard kennt ${spell.name} nicht.`
           : `Layard hat nicht genug Astralenergie für ${spell.name}.`;

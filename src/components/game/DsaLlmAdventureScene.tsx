@@ -785,6 +785,7 @@ export function DsaLlmAdventureScene() {
             KL: dsaCharacter.attrs.KL ?? 11,
             CH: dsaCharacter.attrs.CH ?? 11,
           }}
+          intent={combat.intent}
           onDone={(r) => void handleCombatDone(r)}
         />
       )}

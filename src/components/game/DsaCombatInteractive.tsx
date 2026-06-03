@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronRight, Pause, Play } from "lucide-react";
+import { ChevronRight, Pause, Play, Send } from "lucide-react";
 import { CloseButton } from "./CloseButton";
 import {
   createCombatState,
@@ -14,7 +14,7 @@ import {
   type SpellFocus,
 } from "@/game/dsa/combat";
 import { SPELLS } from "@/game/dsa/rules/spells";
-import type { CombatIntent } from "@/game/dsa/combatIntent";
+import { mergeCombatIntents, parseCombatIntent, type CombatIntent } from "@/game/dsa/combatIntent";
 import { CombatantCard } from "./dsa/CombatantCard";
 import { ActionIndicator } from "./dsa/ActionIndicator";
 import { DieBox } from "./dsa/DieBox";
@@ -68,6 +68,9 @@ export function DsaCombatInteractive({
   const [paused, setPaused] = useState(false);
   const [fast, setFast] = useState(false);
   const [events, setEvents] = useState<CombatEvent[]>([]);
+  const [commandText, setCommandText] = useState("");
+  const [commandError, setCommandError] = useState<string | null>(null);
+  const [commandNotes, setCommandNotes] = useState<string[]>(() => intent?.notes ?? []);
   const [step, setStep] = useState(0);
   const [phase, setPhase] = useState<CombatState["phase"]>("ongoing");
   const [hitFlash, setHitFlash] = useState<string | null>(null);
@@ -195,6 +198,33 @@ export function DsaCombatInteractive({
 
   const toggleFast = useCallback(() => setFast((f) => !f), []);
   const togglePause = useCallback(() => setPaused((p) => !p), []);
+
+  const handleCommandSubmit = useCallback(() => {
+    const raw = commandText.trim();
+    if (!raw || phase !== "ongoing") return;
+    const layard = stateRef.current.heroes.find((h) => h.id === "hero") ?? null;
+    const parsed = parseCombatIntent(raw, layard?.spells ?? null);
+    const tacticCommand = detectTacticCommand(raw, layard);
+    if (tacticCommand) {
+      tacticRef.current = tacticCommand;
+      setTactic(tacticCommand);
+    }
+    const notes = [
+      ...(parsed.notes.length > 0 ? parsed.notes : []),
+      ...(tacticCommand ? [`Taktik: ${TACTIC_LABELS[tacticCommand].title}`] : []),
+    ];
+    if (notes.length === 0) {
+      setCommandError("Tjark versteht den Kampfbefehl nicht.");
+      return;
+    }
+    stateRef.current.roundIntent = mergeCombatIntents(
+      stateRef.current.roundIntent ?? null,
+      parsed,
+    );
+    setCommandNotes((prev) => [...prev, ...notes]);
+    setCommandText("");
+    setCommandError(null);
+  }, [commandText, phase]);
 
   const visibleEvents = useMemo(() => events.slice(0, step + 1), [events, step]);
 
@@ -336,6 +366,50 @@ export function DsaCombatInteractive({
                   ))}
                 </div>
               </section>
+
+              {phase === "ongoing" && (
+                <section className="dsa-box-thick p-3 sm:p-4">
+                  <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.7)] pb-1">
+                    Kampfbefehl / Zauber
+                  </div>
+                  {commandNotes.length > 0 && (
+                    <div className="mb-2 dsa-typed text-[11px] leading-snug dsa-ink-faded">
+                      {commandNotes.slice(-3).map((n, i) => (
+                        <div key={`${n}-${i}`}>· {n}</div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex items-end gap-2">
+                    <textarea
+                      value={commandText}
+                      onChange={(e) => setCommandText(e.target.value.slice(0, 220))}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                          e.preventDefault();
+                          handleCommandSubmit();
+                        }
+                      }}
+                      rows={2}
+                      placeholder="z. B. Ich wirke Ignifaxius. Yelva, blende den Söldner. Brem, flankiere."
+                      className="flex-1 resize-none rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 font-sans text-sm leading-relaxed text-[#2a1f10] placeholder:text-[#2a1f10]/40 focus:outline-none focus:ring-2 focus:ring-[#3a2c1a]/40"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleCommandSubmit}
+                      disabled={!commandText.trim()}
+                      className="inline-flex items-center justify-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10] disabled:opacity-50"
+                    >
+                      <Send className="h-3.5 w-3.5" strokeWidth={2.5} />
+                      Befehlen
+                    </button>
+                  </div>
+                  {commandError && (
+                    <div className="mt-2 text-xs font-bold text-[#6b1a0e]">
+                      {commandError}
+                    </div>
+                  )}
+                </section>
+              )}
             </>
           )}
         </div>
@@ -404,6 +478,22 @@ function SideLabel({ label, align }: { label: string; align: "left" | "right" })
       {label}
     </div>
   );
+}
+
+function detectTacticCommand(text: string, layard: Combatant | null): Tactic | null {
+  const lower = text.toLowerCase();
+  const knowsCombatSpell = Object.keys(layard?.spells ?? {}).some((id) =>
+    ["ignifaxius", "blitz_dich_find", "fulminictus"].includes(id),
+  );
+  if (/(flieh|flucht|einsch(?:ü|ue)chter|zur(?:ü|ue)ckziehen|wegrennen)/i.test(lower)) return "flee";
+  if (/(defensiv|deckung|parier|vorsichtig|schild)/i.test(lower)) return "defensive";
+  if (/(aggressiv|vorsto(?:ß|ss)|drauf|angriff|attacke)/i.test(lower)) return "aggressive";
+  if (/(umgebung|list|sand|stuhl|krug|trick|ablenk)/i.test(lower)) return "cunning";
+  if (/(keine magie|asp sparen|astralenergie sparen|ohne zauber)/i.test(lower)) return knowsCombatSpell ? "magic-none" : "balanced";
+  if (/(viel magie|alles an magie|volle magie|zauberfeuer)/i.test(lower)) return knowsCombatSpell ? "magic-high" : null;
+  if (/(wenig magie|sparsam zauber|ein bisschen magie)/i.test(lower)) return knowsCombatSpell ? "magic-low" : null;
+  if (/(zauber|wirke|magie|ignifaxius|fulminictus|blitz)/i.test(lower)) return knowsCombatSpell ? "magic-mid" : "spell";
+  return null;
 }
 
 function TacticPicker({

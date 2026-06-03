@@ -50,6 +50,33 @@ export const EMPTY_COMBAT_INTENT: CombatIntent = {
   notes: [],
 };
 
+export function mergeCombatIntents(
+  base?: CombatIntent | null,
+  override?: CombatIntent | null,
+): CombatIntent | null {
+  if (!base && !override) return null;
+  const b = base ?? EMPTY_COMBAT_INTENT;
+  const o = override ?? EMPTY_COMBAT_INTENT;
+  return {
+    layardSpellId: o.layardSpellId ?? b.layardSpellId,
+    yelva: {
+      backline: b.yelva.backline || o.yelva.backline,
+      ranged: b.yelva.ranged || o.yelva.ranged,
+      blind: b.yelva.blind || o.yelva.blind,
+      protect: b.yelva.protect || o.yelva.protect,
+      flank: b.yelva.flank || o.yelva.flank,
+    },
+    brem: {
+      backline: b.brem.backline || o.brem.backline,
+      ranged: b.brem.ranged || o.brem.ranged,
+      blind: b.brem.blind || o.brem.blind,
+      protect: b.brem.protect || o.brem.protect,
+      flank: b.brem.flank || o.brem.flank,
+    },
+    notes: [...b.notes, ...o.notes],
+  };
+}
+
 const COMPANION_ALIASES: Record<"yelva" | "brem", string[]> = {
   yelva: ["yelva", "yelvanyel", "elfe", "elfin", "auelfe", "elf "],
   brem: ["brem", "brendan", "streuner", "halbgroschen"],
