@@ -6,6 +6,8 @@ import type { AttributeId } from "./rules/mechanics";
 import { WEAPONS } from "./rules/weapons";
 import { ARMORS } from "./rules/armor";
 import type { HeroGear } from "./gear";
+import type { CombatIntent, CompanionIntent } from "./combatIntent";
+import { EMPTY_COMBAT_INTENT } from "./combatIntent";
 
 /**
  * Vereinfachte DSA-Kampfregeln für die automatischen Tafelrunden-Kämpfe.
@@ -22,6 +24,9 @@ import type { HeroGear } from "./gear";
  */
 
 export type CombatantSide = "hero" | "foe";
+
+/** Position einer Figur im Kampf. */
+export type CombatantRole = "frontline" | "backline" | "support";
 
 export interface Combatant {
   id: string;
@@ -57,6 +62,10 @@ export interface Combatant {
   spells?: Record<string, number>;
   /** Klassen-ID für Hauszauber-Erleichterung. */
   classId?: DsaClassId;
+  /** Position in der Schlachtordnung. Default: frontline. */
+  role?: CombatantRole;
+  /** Bevorzugte Fernkampf-Variante (für Log-Beschreibung). */
+  rangedWeapon?: string;
 }
 
 export interface EnemyStat {
