@@ -874,6 +874,18 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             }
             parsed = parseMasterTurn(reply);
           }
+          // Notnagel: Meister beschreibt narrativen Abschluss, hat aber den
+          // [END: ...]-Marker vergessen → ableiten, damit Layard die
+          // Abschluss-Optionen (Datei speichern, neues Abenteuer) sieht.
+          if (
+            !parsed.end &&
+            (isOpenSetting || assistantTurns + 1 >= MIN_END_ASSISTANT_TURNS)
+          ) {
+            const implied = detectImplicitEnd(reply);
+            if (implied) {
+              parsed = { ...parsed, end: implied };
+            }
+          }
           history.push({ role: "assistant", content: reply });
 
           let nextStatus: AdventureStatus = "active";
