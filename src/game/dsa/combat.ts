@@ -382,21 +382,51 @@ export const COMPANION_STATS: ReadonlyArray<EnemyStat & { id: string }> = [
   },
 ];
 
-export function companionCombatants(): Combatant[] {
-  return COMPANION_STATS.map((c) => ({
-    id: c.id,
-    name: c.name,
-    side: "hero",
-    le: c.le,
-    leMax: c.le,
-    at: c.at,
-    pa: c.pa,
-    tpDice: c.tpDice,
-    tpBonus: c.tpBonus,
-    rs: c.rs,
-    iniBase: c.iniBase,
-    weapon: c.weapon,
-  }));
+export function companionCombatants(intent?: CombatIntent | null): Combatant[] {
+  const i = intent ?? EMPTY_COMBAT_INTENT;
+  return COMPANION_STATS.map((c) => {
+    const own: CompanionIntent | undefined =
+      c.id === "yelva" ? i.yelva : c.id === "brem" ? i.brem : undefined;
+    const role: CombatantRole = own?.backline
+      ? "backline"
+      : own?.protect
+        ? "support"
+        : "frontline";
+    let at = c.at;
+    let pa = c.pa;
+    let weapon = c.weapon;
+    let rangedWeapon: string | undefined;
+    if (own?.ranged) {
+      // Fernkampf: leichte AT-Stärkung (geübter Schuss), keine Nahkampf-Parade.
+      at = c.at + 1;
+      pa = Math.max(1, c.pa - 1);
+      rangedWeapon = c.id === "yelva" ? "Elfenbogen" : "Wurfdolch";
+      weapon = rangedWeapon;
+    }
+    if (own?.protect) {
+      pa += 2; // konzentriert sich aufs Parieren
+    }
+    if (own?.flank) {
+      at += 1;
+      pa = Math.max(1, pa - 1);
+    }
+    return {
+      id: c.id,
+      name: c.name,
+      side: "hero",
+      le: c.le,
+      leMax: c.le,
+      at,
+      pa,
+      tpDice: c.tpDice,
+      tpBonus: c.tpBonus,
+      rs: c.rs,
+      iniBase: c.iniBase,
+      weapon,
+      role,
+      rangedWeapon,
+    };
+  });
 }
 
 function d6(): number {
