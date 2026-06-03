@@ -29,7 +29,7 @@ interface RoomRow {
   setting: string;
   status: string;
   max_players: number;
-  password_hash: string | null;
+  has_password: boolean;
   include_npc_companions: boolean;
   host_user_id: string;
   member_count?: number;
@@ -52,18 +52,18 @@ function GruppeLobby() {
       const [lobbyRes, ownedRes, memberRes] = await Promise.all([
         supabase
           .from("dsa_group_rooms")
-          .select("id, name, setting, status, max_players, password_hash, include_npc_companions, host_user_id")
+          .select("id, name, setting, status, max_players, has_password, include_npc_companions, host_user_id")
           .neq("status", "done")
           .order("created_at", { ascending: false }),
         supabase
           .from("dsa_group_rooms")
-          .select("id, name, setting, status, max_players, password_hash, include_npc_companions, host_user_id")
+          .select("id, name, setting, status, max_players, has_password, include_npc_companions, host_user_id")
           .eq("host_user_id", user!.id)
           .neq("status", "done")
           .order("created_at", { ascending: false }),
         supabase
           .from("dsa_group_members")
-          .select("room_id, dsa_group_rooms!inner(id, name, setting, status, max_players, password_hash, include_npc_companions, host_user_id)")
+          .select("room_id, dsa_group_rooms!inner(id, name, setting, status, max_players, has_password, include_npc_companions, host_user_id)")
           .eq("user_id", user!.id),
       ]);
       if (!alive) return;
@@ -121,7 +121,7 @@ function GruppeLobby() {
     if (!user) return;
     setError(null);
     let password: string | null = null;
-    if (room.password_hash) {
+    if (room.has_password) {
       const pw = window.prompt(`Passwort für „${room.name}":`);
       if (pw == null) return;
       password = pw;
@@ -269,7 +269,7 @@ function GruppeLobby() {
                     >
                       <div className="mb-2 flex items-center justify-between">
                         <h3 className="font-serif text-lg leading-tight">{r.name}</h3>
-                        {r.password_hash && <Lock className="h-3.5 w-3.5 opacity-60" />}
+                        {r.has_password && <Lock className="h-3.5 w-3.5 opacity-60" />}
                       </div>
                       <p className="text-xs opacity-70">
                         {setting?.title ?? r.setting}
