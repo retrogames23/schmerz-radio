@@ -1,5 +1,5 @@
 import { DSA_LORE_BRIEF } from "../llmLore";
-import { DSA_SCENE_TAGS } from "../sceneImages";
+import { formatSceneCatalogForPrompt } from "../sceneImages";
 import { ENEMY_STATS } from "../combat";
 import { getSetting, type DsaSettingId } from "../llmAdventure";
 import { DSA_MOODS } from "@/audio/dsaMusic";
@@ -129,8 +129,11 @@ GRUPPENSPIEL — REGELN:
 AUSGABEFORMAT — STRIKT:
   Jede Zeile beginnt mit [TJARK]${includeCompanions ? ", [BREM] oder [YELVA]" : ""}.
   Erlaubte Marker (je in eigener Zeile, optional):
-    [SCENE: <tag>]            Wechselt die Hintergrundillustration. Erlaubte Tags: ${DSA_SCENE_TAGS.join(", ")}.
+    [SCENE: <tag>]            Wechselt die Hintergrundillustration. NUR setzen, wenn das Bild
+                              wirklich zur Szene passt — lieber gar kein Bild als ein unpassendes.
                               Sehr sparsam einsetzen, nur bei echten Schauplatzwechseln.
+                              Verfügbare Tags (Tag — wann nutzen):
+${formatSceneCatalogForPrompt()}
     [CHECK: <ATTR> [+/-N]]    Eigenschaftsprobe für die Gruppe.
     [MOOD: <id>]              Musikstimmung. Erlaubt: ${DSA_MOODS.join(", ")}.
     [END: victory|defeat|aborted]  Beendet das Abenteuer (frühestens nach ~30 Meisterwenden).
