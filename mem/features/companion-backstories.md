@@ -14,10 +14,14 @@ eingespeist.
 - Festum, Hafenviertel, ~28, Mutter Mira Halbgroschen (Beutelschneiderin),
   Vater unbekannter thorwalscher Seefahrer.
 - War in Festumer Phex-naher Diebes-„Zunft".
-- Bruch mit 22: sollte BORBARAD-Manuskript stehlen, ließ es liegen.
-  Mira deckte ihn → von Zunft verraten → sitzt in Festumer Kerkern.
+- Bruch mit 22: sollte verbotenes schwarzmagisches Pakt-Manuskript aus
+  der Heptarchenzeit stehlen, ließ es liegen. Mira deckte ihn → von
+  Zunft verraten → sitzt in Festumer Kerkern.
+  HINWEIS: KEIN Borbarad-Manuskript — Borbarads Rückkehr ist erst 22 Hal
+  (*Alptraum ohne Ende*), Setting läuft 20 Hal.
 - Brem sammelt heimlich Bestechungsgeld für Miras Freikauf.
-- Borbarad-Allergie, Phex-Sprüche aber kein Tempelbesuch, Hesinde-nervös.
+- Schwarzmagie-Allergie (Pakt-Sigillen, Heptarchen-Reliquien),
+  Phex-Sprüche aber kein Tempelbesuch, Hesinde-nervös.
 - Mutter-Witz hat doppelten Boden.
 - Alles davon ist GEHEIMNIS, nicht von selbst erzählen.
 
