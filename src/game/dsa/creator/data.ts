@@ -9,36 +9,108 @@ export type Geschlecht = "männlich" | "weiblich";
 /** Ein paar typische DSA3-Vornamen je Klasse + Geschlecht. */
 export const NAME_POOL: Record<DsaClassId, { männlich: string[]; weiblich: string[] }> = {
   krieger: {
-    männlich: ["Hjalmar von Salzgar", "Edur von Tannstein", "Roban Greifenklau", "Aldred von Eberstamm"],
-    weiblich: ["Sigwine von Salzgar", "Brynja Greifenklau", "Hilde von Tannstein", "Roana von Eberstamm"],
+    männlich: [
+      "Hjalmar von Salzgar", "Edur von Tannstein", "Roban Greifenklau", "Aldred von Eberstamm",
+      "Praiodan vom Eberstamm", "Garlef von Wertlingen", "Answin zu Rabenmund", "Folkward von Hartsteen",
+      "Reto von Trottberg", "Wulfhelm von Garlischgrötz", "Cuanu ui Bennain", "Bosper von Falkenhag",
+      "Storko von Ehrenstein", "Hartmuth Sturmfels", "Brin von Notmark", "Eolan von Albenhus",
+    ],
+    weiblich: [
+      "Sigwine von Salzgar", "Brynja Greifenklau", "Hilde von Tannstein", "Roana von Eberstamm",
+      "Rondrigane von Wertlingen", "Alrike zu Rabenmund", "Walpurga von Hartsteen", "Mechthild von Ehrenstein",
+      "Yppolita von Trottberg", "Genoveva von Garlischgrötz", "Cuana ui Bennain", "Bospera von Falkenhag",
+      "Irmenella Sturmfels", "Hjalda von Notmark", "Praiodane vom Eberstamm", "Eolwyn von Albenhus",
+    ],
   },
   streuner: {
-    männlich: ["Knut Schattenstrich", "Marek Pfennigfuchs", "Dietrich Krummfinger"],
-    weiblich: ["Lisbeth Schattenstrich", "Mara Pfennigfuchs", "Yala Krummfinger"],
+    männlich: [
+      "Knut Schattenstrich", "Marek Pfennigfuchs", "Dietrich Krummfinger",
+      "Hagen Rattenpfote", "Olwin Dreifaltig", "Garmin Spitzohr", "Tibor Nimmersatt",
+      "Jorge Halbschatten", "Pjotr Silberzahn", "Kunz Wegelagerer", "Erbo Kröte",
+      "Sven Glücksstern", "Hadu der Schiefe", "Quentor Hehler",
+    ],
+    weiblich: [
+      "Lisbeth Schattenstrich", "Mara Pfennigfuchs", "Yala Krummfinger",
+      "Tinka Rattenpfote", "Esmer Dreifaltig", "Garmina Spitzohr", "Tibora Nimmersatt",
+      "Jorga Halbschatten", "Pjotra Silberzahn", "Kunigunde Wegelagerin", "Erba Kröte",
+      "Svenja Glücksstern", "Haduwig die Schiefe", "Quenta Hehlerin",
+    ],
   },
   magier: {
-    männlich: ["Wendelmir der Genaue", "Halmir vom Drachenstein", "Aldebrand der Stille"],
-    weiblich: ["Wendelmira die Genaue", "Halma vom Drachenstein", "Aldebranda die Stille"],
+    männlich: [
+      "Wendelmir der Genaue", "Halmir vom Drachenstein", "Aldebrand der Stille",
+      "Saldor Foslarin", "Rakorium Muntagonus", "Khadan ben Khefu", "Galottas Adept Korian",
+      "Thargunitoth-Schüler Brandil", "Eslam ibn Yakuban", "Olnar Eisenfels",
+      "Pherengar von Khunchom", "Tsaiane Sonnenstaub", "Hesindian von Punin",
+    ],
+    weiblich: [
+      "Wendelmira die Genaue", "Halma vom Drachenstein", "Aldebranda die Stille",
+      "Saldora Foslarin", "Rakoria Muntagona", "Khadana bint Khefu", "Koriane Sterndeuterin",
+      "Brandila Tiefsicht", "Yasmina bint Yakuban", "Olnara Eisenfels",
+      "Pherengara von Khunchom", "Tsaiane Sonnenstaub", "Hesindiane von Punin",
+    ],
   },
   elf: {
-    männlich: ["Niamhal Silberlied", "Faenor Mondhauch", "Cael Tiefwurzel"],
-    weiblich: ["Niamhuin Silberlied", "Faelin Mondhauch", "Caela Tiefwurzel"],
+    männlich: [
+      "Niamhal Silberlied", "Faenor Mondhauch", "Cael Tiefwurzel",
+      "Quellwasser nin' Mereth", "Aerdana vom Sternenpfad", "Lyriel Windkuss", "Salwain Tautropf",
+      "Galador Schattenhain", "Iliad nin' Fenwasil", "Tirion Morgenwind", "Erinya Blattlicht",
+      "Mond-Trinker", "Sturm-Reiter", "Wolken-Tänzer",
+    ],
+    weiblich: [
+      "Niamhuin Silberlied", "Faelin Mondhauch", "Caela Tiefwurzel",
+      "Quellwasser nin' Salwiel", "Aerdana vom Sternenpfad", "Lyriene Windkuss", "Salwiane Tautropf",
+      "Galadrielle Schattenhain", "Iliane nin' Fenwasil", "Tiriana Morgenwind", "Erinya Blattlicht",
+      "Mond-Sängerin", "Sturm-Reiterin", "Wolken-Tänzerin",
+    ],
   },
   zwerg: {
-    männlich: ["Angbar, Sohn des Angrosch", "Torin Steinaxt", "Brogar Erzhand"],
-    weiblich: ["Anga, Tochter des Angrosch", "Torina Steinaxt", "Brogina Erzhand"],
+    männlich: [
+      "Angbar, Sohn des Angrosch", "Torin Steinaxt", "Brogar Erzhand",
+      "Arombolosch Hammerschlag", "Grimbur Eisenbart", "Thorbosch Tiefgräber", "Ingramosch Goldfaust",
+      "Xorlosch Felsbeißer", "Durak Schildwart", "Bardo Runenritzer", "Glimbron Schwarzkiesel",
+    ],
+    weiblich: [
+      "Anga, Tochter des Angrosch", "Torina Steinaxt", "Brogina Erzhand",
+      "Arombolinde Hammerschlag", "Grimba Eisenbart", "Thorbosa Tiefgräberin", "Ingrama Goldfaust",
+      "Xorla Felsbeißerin", "Duraka Schildwartin", "Barda Runenritzerin", "Glimbra Schwarzkiesel",
+    ],
   },
   gaukler: {
-    männlich: ["Tjelvar mit dem doppelten Gesicht", "Riko Buntfuß", "Faldur Lautenklang"],
-    weiblich: ["Tjelva mit dem doppelten Gesicht", "Rika Buntfuß", "Faldura Lautenklang"],
+    männlich: [
+      "Tjelvar mit dem doppelten Gesicht", "Riko Buntfuß", "Faldur Lautenklang",
+      "Salim al'Schelm", "Tarsan Schellenklang", "Brindar Funkenwurf", "Hadu Maskenwechsler",
+      "Ferro vom Phexcaer-Markt", "Ognan Feuerschlucker", "Vitus Sonnenrad", "Aldo Tausendzunge",
+    ],
+    weiblich: [
+      "Tjelva mit dem doppelten Gesicht", "Rika Buntfuß", "Faldura Lautenklang",
+      "Salimah al'Schelmin", "Tarsane Schellenklang", "Brindara Funkenwurf", "Haduwig Maskenwechslerin",
+      "Ferra vom Phexcaer-Markt", "Ognara Feuerschluckerin", "Vita Sonnenrad", "Alda Tausendzunge",
+    ],
   },
   thorwaler: {
-    männlich: ["Asleif Walfangsohn", "Garm Eisbart", "Sven Sturmhand"],
-    weiblich: ["Asleif Walfangstochter", "Gerda Eisbart", "Svenja Sturmhand"],
+    männlich: [
+      "Asleif Walfangsohn", "Garm Eisbart", "Sven Sturmhand",
+      "Beorn Drachentöter", "Hjalle Salzhaar", "Ulfgar Mövenfreund", "Ragnar Ottaskjamm",
+      "Knut Wellenreiter", "Birka Hochmast", "Tjure Robbenstecher", "Eik Brandungssohn",
+    ],
+    weiblich: [
+      "Asleif Walfangstochter", "Gerda Eisbart", "Svenja Sturmhand",
+      "Beorna Drachentöterin", "Hjalla Salzhaar", "Ulfgara Mövenfreundin", "Ragna Ottaskjamm",
+      "Knuta Wellenreiterin", "Birka Hochmast", "Tjura Robbenstecherin", "Eika Brandungstochter",
+    ],
   },
   druide: {
-    männlich: ["Brandil von der Eiche", "Ailwin Mistelzweig", "Tarvil Hainwacht"],
-    weiblich: ["Brandila von der Eiche", "Ailwina Mistelzweig", "Tarvila Hainwacht"],
+    männlich: [
+      "Brandil von der Eiche", "Ailwin Mistelzweig", "Tarvil Hainwacht",
+      "Maurvan Wurzelbruder", "Ulwen Rabenstimme", "Cethelin Mondsichel", "Garwen Krähenruf",
+      "Bran Beerenzunge", "Tairon Steinkreis", "Olwen Fünfblatt", "Eldur Erlenweh",
+    ],
+    weiblich: [
+      "Brandila von der Eiche", "Ailwina Mistelzweig", "Tarvila Hainwacht",
+      "Maurvana Wurzelschwester", "Ulwena Rabenstimme", "Cethelinde Mondsichel", "Garwina Krähenruf",
+      "Brana Beerenzunge", "Tairona Steinkreis", "Olwena Fünfblatt", "Eldura Erlenweh",
+    ],
   },
 };
 
