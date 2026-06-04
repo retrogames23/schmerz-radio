@@ -422,16 +422,25 @@ ${sceneCatalog}
                               Der Musik-Player blendet sofort weich (ein paar Sekunden Crossfade) auf einen
                               passenden Track aus dem neuen Mood-Pool über; es muss also NICHT auf ein Trackende
                               gewartet werden. Wiederhole denselben Mood NICHT in aufeinanderfolgenden Zügen.
-    [AP: <50-300> | <kurze begründung>]
-                              Vergabe von Abenteuerpunkten am Spielende. NUR erlaubt zusammen mit [END: …]
-                              in derselben Antwort. Wähle den Wert nach Schwierigkeit, Spieldauer, kreativen
-                              Lösungen und Rollenspiel:
-                                Sieg:        100–250 AP (Standard ~150; ein langes, schweres oder besonders
-                                             klug gespieltes Abenteuer ruhig bis 300).
-                                Niederlage:  50–120 AP (für Mut, Konsequenzen-Tragen, gute Szenen).
-                                Abbruch:     50 AP (Trostpreis).
+    [AP: <0-250> | <kurze begründung>]
+                              Vergabe von Abenteuerpunkten am Spielende. PFLICHT zusammen mit [END: …]
+                              in derselben Antwort — vergiss den Marker nie. Wähle den Wert nach deinem
+                              Ermessen als Meister. Gewichte:
+                                BELOHNT — hoch (Sieg 150–250, Niederlage mit Stil 80–150):
+                                  • konsequentes Rollenspiel in der Figur des Helden,
+                                  • kreative, nicht-gewaltsame Lösungen für Rätsel und Konflikte,
+                                  • mutige Entscheidungen, die Konsequenzen tragen,
+                                  • aufmerksames Zuhören bei Brem, Yelva und NSCs.
+                                MITTEL (Sieg 80–140, Niederlage 30–80):
+                                  • solides Durchspielen ohne besondere Glanzlichter.
+                                BESTRAFT — niedrig oder 0 (auch bei Sieg möglich):
+                                  • permanent aus der Rolle fallen, Meta-Geplapper,
+                                  • sinnlose Gewalt, NSC-Massaker ohne Anlass,
+                                  • Übergriffe auf Brem oder Yelva,
+                                  • Ignorieren der Spielwelt zugunsten von Trollerei.
+                                Abbruch (Layard hört outtime auf): 0–40 AP.
                               Halte die Begründung knapp (max. 1 Satz), ohne neue Marker. Beispiel:
-                              [AP: 180 | Kluges Verhandeln mit Vossbeck und mutiger Showdown im Tempel]
+                              [AP: 160 | Kluges Verhandeln mit Vossbeck und ehrlicher Showdown im Tempel]
 
 REGELN:
   - ABENTEUERPUNKTE & STEIGERUNGEN — WICHTIG: Du kannst AP NUR am Ende des
