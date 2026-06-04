@@ -293,9 +293,11 @@ function SpielraumPage() {
     }
   }
 
-  async function submitAction() {
-    const txt = draft.trim();
-    if (!txt) return;
+  async function submitAction(opts?: { outtime?: boolean }) {
+    const raw = draft.trim();
+    if (!raw) return;
+    const txt =
+      opts?.outtime && !/^outtime[:\s]/i.test(raw) ? `Outtime: ${raw}` : raw;
     setDraft("");
     await call("submitAction", { text: txt });
   }
@@ -431,7 +433,16 @@ function SpielraumPage() {
                     value={draft}
                     onChange={(e) => setDraft(e.target.value.slice(0, 500))}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
+                      if (
+                        e.key === "Enter" &&
+                        !e.shiftKey &&
+                        !e.nativeEvent.isComposing &&
+                        !isCoarse &&
+                        enterSubmits &&
+                        !hasPending &&
+                        !busy &&
+                        draft.trim()
+                      ) {
                         e.preventDefault();
                         void submitAction();
                       }
@@ -445,18 +456,41 @@ function SpielraumPage() {
                     disabled={hasPending || busy}
                     className="flex-1 resize-none rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 font-sans text-base leading-relaxed text-[#2a1f10] placeholder:text-[#2a1f10]/40 focus:outline-none focus:ring-2 focus:ring-[#3a2c1a]/40 disabled:opacity-50"
                   />
-                  <button
-                    type="button"
-                    onClick={submitAction}
-                    disabled={hasPending || busy || !draft.trim()}
-                    className="inline-flex items-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10] disabled:opacity-50"
-                  >
-                    <Send className="h-3.5 w-3.5" strokeWidth={2.5} />
-                    Sagen
-                  </button>
+                  <div className="flex flex-col gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void submitAction({ outtime: true })}
+                      disabled={hasPending || busy || !draft.trim()}
+                      title="Als Outtime-Frage an Tjark (Regeln, Welt, Meta) schicken"
+                      className="inline-flex items-center justify-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a] disabled:opacity-50"
+                    >
+                      Outtime
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void submitAction()}
+                      disabled={hasPending || busy || !draft.trim()}
+                      className="inline-flex items-center justify-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10] disabled:opacity-50"
+                    >
+                      <Send className="h-3.5 w-3.5" strokeWidth={2.5} />
+                      Sagen
+                    </button>
+                  </div>
                 </div>
-                <div className="mt-2 text-right text-[10px] uppercase tracking-wider text-[#2a1f10]/60">
-                  {draft.length}/500
+                <div className="mt-2 flex justify-between text-[10px] uppercase tracking-wider text-[#2a1f10]/60">
+                  <span />
+                  {!isCoarse && (
+                    <label className="hidden sm:inline-flex items-center gap-1.5 cursor-pointer select-none normal-case tracking-normal text-[11px] text-[#2a1f10]/70 hover:text-[#2a1f10]">
+                      <input
+                        type="checkbox"
+                        checked={enterSubmits}
+                        onChange={(e) => setEnterSubmits(e.target.checked)}
+                        className="h-3 w-3 accent-[#3a2c1a]"
+                      />
+                      Enter = Abschicken
+                    </label>
+                  )}
+                  <span>{draft.length}/500</span>
                 </div>
               </div>
             ) : (
