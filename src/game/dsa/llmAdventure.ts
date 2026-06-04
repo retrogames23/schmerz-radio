@@ -140,8 +140,6 @@ export interface ParsedMasterTurn {
   itemsAdded: { name: string; description?: string; count?: number }[];
   /** Vom Meister gestrichene Items (per Name / Teilstring / ID). */
   itemsRemoved: string[];
-  /** Vom Meister gesetzter neuer Aufenthaltsort (Rohname, ungeprüft). */
-  location: string | null;
 }
 
 const SPEAKER_RE = /^\s*\[(TJARK|BREM|YELVA)\]\s*/i;
@@ -154,8 +152,6 @@ const MOOD_RE = /\[MOOD:\s*([a-z_]+)\s*\]/i;
 const AP_RE = /\[AP:\s*(\d{1,4})\s*(?:\|\s*([^\]]+))?\]/i;
 const ITEM_PLUS_RE_G = /\[ITEM\+:\s*([^\]]+?)\s*\]/gi;
 const ITEM_MINUS_RE_G = /\[ITEM-:\s*([^\]]+?)\s*\]/gi;
-const LOCATION_RE = /\[LOCATION:\s*([^\]]+?)\s*\]/i;
-
 /** Entfernt jegliche Marker aus dem reinen Sprechtext einer Zeile. */
 function stripMarkers(s: string): string {
   return s
@@ -168,7 +164,6 @@ function stripMarkers(s: string): string {
     .replace(AP_RE, "")
     .replace(ITEM_PLUS_RE_G, "")
     .replace(ITEM_MINUS_RE_G, "")
-    .replace(LOCATION_RE, "")
     // Sicherheitsnetz: alle übrigen Pseudo-Marker à la [NPC_PRIEST],
     // [SZENE_TEMPEL], [FOO_BAR] aus dem Sprechtext entfernen — die LLM
     // erfindet sie gelegentlich und sie brechen die Immersion.
@@ -221,9 +216,6 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
     if (payload) itemsRemoved.push(payload);
     if (itemsRemoved.length >= 6) break;
   }
-  const locationMatch = LOCATION_RE.exec(text);
-  const location = locationMatch ? locationMatch[1].trim().slice(0, 60) : null;
-
   const sceneTag =
     sceneMatch && DSA_SCENE_TAGS.includes(sceneMatch[1].toLowerCase())
       ? sceneMatch[1].toLowerCase()
@@ -292,7 +284,6 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
     ap,
     itemsAdded,
     itemsRemoved,
-    location,
   };
 }
 

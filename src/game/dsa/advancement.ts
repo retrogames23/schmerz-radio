@@ -92,10 +92,6 @@ export function upgradeToHero(c: DsaCharacterSummary | DsaHero | null): DsaHero 
         ? h.createdAt
         : new Date().toISOString(),
     gear: normalizeGear(h.gear, c.classId as DsaClassId),
-    currentLocation:
-      typeof (h as { currentLocation?: unknown }).currentLocation === "string"
-        ? (h as { currentLocation: string }).currentLocation
-        : undefined,
   };
 }
 
