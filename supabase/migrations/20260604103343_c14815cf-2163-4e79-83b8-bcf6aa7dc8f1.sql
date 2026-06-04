@@ -1,0 +1,1 @@
+ALTER TABLE public.dsa_heroes ADD COLUMN IF NOT EXISTS current_location TEXT;
