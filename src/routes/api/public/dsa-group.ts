@@ -793,6 +793,72 @@ export const Route = createFileRoute("/api/public/dsa-group")({
           return json(200, { ok: true });
         }
 
+        // ─── getState ─────────────────────────────────────
+        // Liefert Raum + Mitglieder + ggf. Pending Actions in EINEM
+        // Roundtrip via service_role. Umgeht alle RLS-/Cache-Sichtbarkeits-
+        // Effekte auf dem Client. Nur Raum-Teilnehmer dürfen Mitspieler
+        // sehen; Nicht-Mitglieder sehen nur Raum-Metadaten (für die
+        // Beitritts-Entscheidung), aber keine Mitspieler-Liste.
+        if (action === "getState") {
+          const members = await fetchMembers(admin, roomId);
+          const me = members.find((m) => m.user_id === uid) ?? null;
+          const isMember = !!me;
+          const isHost = uid === room.host_user_id;
+          const safeRoom = {
+            id: room.id,
+            name: room.name,
+            setting: room.setting,
+            status: room.status,
+            host_user_id: room.host_user_id,
+            max_players: room.max_players,
+            include_npc_companions: room.include_npc_companions,
+            wish_brief: room.wish_brief,
+            turn_idx: room.turn_idx,
+            ap_awarded: room.ap_awarded,
+            current_image_tag: room.current_image_tag,
+            has_password: !!room.password_hash,
+            collect_started_at: room.collect_started_at,
+          };
+          if (!isMember && !isHost) {
+            return json(200, {
+              ok: true,
+              room: safeRoom,
+              members: [],
+              me: null,
+              isMember: false,
+              isHost: false,
+              memberCount: members.length,
+            });
+          }
+          const safeMembers = members.map((m) => ({
+            user_id: m.user_id,
+            slot: m.slot,
+            position: m.position,
+            ready: m.ready,
+            last_seen_at: m.last_seen_at,
+            hero_snapshot: m.hero_snapshot,
+          }));
+          let pending: Array<{ user_id: string; hero_name: string; action: string }> = [];
+          if (room.status === "active") {
+            const { data: pa } = await admin
+              .from("dsa_group_pending_actions")
+              .select("user_id,hero_name,action")
+              .eq("room_id", roomId)
+              .eq("turn_idx", room.turn_idx);
+            pending = (pa ?? []) as typeof pending;
+          }
+          return json(200, {
+            ok: true,
+            room: safeRoom,
+            members: safeMembers,
+            me: safeMembers.find((m) => m.user_id === uid) ?? null,
+            isMember,
+            isHost,
+            memberCount: members.length,
+            pending,
+          });
+        }
+
         return json(400, { error: "Unbekannte Aktion." });
       },
     },

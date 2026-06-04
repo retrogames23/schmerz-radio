@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Navigate, Outlet, useNavigate, useParams, useRouterState } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { ArrowLeft, Check, Crown, Dices, LogOut, Play, UserX } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ArrowLeft, Check, Crown, Dices, LogOut, Play, RefreshCw, UserX } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getFreshAccessToken } from "@/auth/freshToken";
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/dsa/gruppe/$roomId")({
   component: VorzimmerPage,
 });
 
-interface RoomRow {
+interface RoomState {
   id: string;
   name: string;
   setting: string;
@@ -25,10 +25,10 @@ interface RoomRow {
   include_npc_companions: boolean;
   host_user_id: string;
 }
-interface MemberRow {
+interface MemberState {
   user_id: string;
   ready: boolean;
-  hero_snapshot: unknown;
+  hero_snapshot: { name?: string; className?: string } | null;
   slot: number;
 }
 
@@ -37,13 +37,44 @@ function VorzimmerPage() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { user, loading: authLoading } = useAuth();
-  const [room, setRoom] = useState<RoomRow | null>(null);
-  const [members, setMembers] = useState<MemberRow[]>([]);
+  const [room, setRoom] = useState<RoomState | null>(null);
+  const [members, setMembers] = useState<MemberState[]>([]);
+  const [me, setMe] = useState<MemberState | null>(null);
   const [heroes, setHeroes] = useState<Record<SlotIndex, DsaHero | null>>({
     1: null, 2: null, 3: null, 4: null, 5: null, 6: null,
   });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const aliveRef = useRef(true);
+
+  const loadState = useCallback(async () => {
+    const token = await getFreshAccessToken();
+    if (!token) {
+      setError("Bitte melde dich erneut an.");
+      return;
+    }
+    const resp = await fetch("/api/public/dsa-group", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ action: "getState", roomId }),
+    });
+    const data = (await resp.json()) as {
+      ok?: boolean;
+      error?: string;
+      room?: RoomState;
+      members?: MemberState[];
+      me?: MemberState | null;
+    };
+    if (!aliveRef.current) return;
+    if (!resp.ok || !data.ok || !data.room) {
+      setError(data.error ?? "Raum konnte nicht geladen werden.");
+      return;
+    }
+    setRoom(data.room);
+    setMembers(data.members ?? []);
+    setMe(data.me ?? null);
+  }, [roomId]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -51,33 +82,23 @@ function VorzimmerPage() {
       navigate({ to: "/dsa/gruppe" });
       return;
     }
-    let alive = true;
-    async function loadAll() {
-      const [{ data: r }, { data: ms }, h] = await Promise.all([
-        supabase
-          .from("dsa_group_rooms")
-          .select("id, name, setting, status, max_players, include_npc_companions, host_user_id")
-          .eq("id", roomId)
-          .maybeSingle(),
-        supabase.from("dsa_group_members").select("user_id, ready, hero_snapshot, slot").eq("room_id", roomId),
-        cloudFetchAllHeroes(),
-      ]);
-      if (!alive) return;
-      setRoom(r as RoomRow | null);
-      setMembers((ms ?? []) as MemberRow[]);
+    aliveRef.current = true;
+    setLoading(true);
+    void Promise.all([loadState(), cloudFetchAllHeroes()]).then(([, h]) => {
+      if (!aliveRef.current) return;
       setHeroes(h);
-    }
-    void loadAll();
+      setLoading(false);
+    });
     const ch = supabase
       .channel(`dsa_group_room_${roomId}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "dsa_group_rooms", filter: `id=eq.${roomId}` }, () => void loadAll())
-      .on("postgres_changes", { event: "*", schema: "public", table: "dsa_group_members", filter: `room_id=eq.${roomId}` }, () => void loadAll())
+      .on("postgres_changes", { event: "*", schema: "public", table: "dsa_group_rooms", filter: `id=eq.${roomId}` }, () => void loadState())
+      .on("postgres_changes", { event: "*", schema: "public", table: "dsa_group_members", filter: `room_id=eq.${roomId}` }, () => void loadState())
       .subscribe();
     return () => {
-      alive = false;
+      aliveRef.current = false;
       void supabase.removeChannel(ch);
     };
-  }, [roomId, user, authLoading, navigate]);
+  }, [roomId, user, authLoading, navigate, loadState]);
 
   // Bei aktiven/abgeschlossenen Räumen direkt ins Spiel — kein
   // Vorzimmer-Flash, keine "Start"-Buttons, die 409 werfen.
@@ -104,6 +125,8 @@ function VorzimmerPage() {
         setError(data.error ?? "Fehler.");
         return false;
       }
+      // Sofort frischen Server-State nachladen — nicht auf Realtime warten.
+      await loadState();
       return true;
     } finally {
       setBusy(false);
@@ -114,15 +137,15 @@ function VorzimmerPage() {
     return <Outlet />;
   }
 
-  if (authLoading || !user) {
+  if (authLoading || !user || loading) {
     return <div className="min-h-screen bg-[#1a120a] p-8 text-[#f1e6c8]">Lade …</div>;
   }
   if (!room) return <div className="min-h-screen bg-[#1a120a] p-8 text-[#f1e6c8]">Lade Raum …</div>;
 
   const setting = DSA_SETTINGS.find((s) => s.id === room.setting);
   const isHost = room.host_user_id === user.id;
-  const myMember = members.find((m) => m.user_id === user.id);
-  const allReady = members.length >= 2 && members.every((m) => m.ready && m.hero_snapshot);
+  const myMember = me ?? members.find((m) => m.user_id === user.id) ?? null;
+  const allReady = members.length >= 2 && members.every((m) => m.ready && !!m.hero_snapshot);
 
   async function pickHero(slot: SlotIndex) {
     const hero = heroes[slot];
@@ -206,7 +229,18 @@ function VorzimmerPage() {
         </section>
 
         <section className="mb-6">
-          <h2 className="mb-2 text-xs uppercase tracking-[0.3em] opacity-70">Mitspieler ({members.length}/{room.max_players})</h2>
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-xs uppercase tracking-[0.3em] opacity-70">Mitspieler ({members.length}/{room.max_players})</h2>
+            <button
+              type="button"
+              onClick={() => void loadState()}
+              disabled={busy}
+              title="Aktualisieren"
+              className="inline-flex items-center gap-1 rounded border border-[#3a2c1a] px-2 py-1 text-[10px] uppercase tracking-wider opacity-70 hover:opacity-100 disabled:opacity-40"
+            >
+              <RefreshCw className="h-3 w-3" /> Aktualisieren
+            </button>
+          </div>
           <div className="space-y-2">
             {members.map((m) => {
               const snap = m.hero_snapshot as { name?: string; className?: string } | null;
