@@ -70,7 +70,7 @@ interface BuildArgs {
  * Vollständiger System-Prompt für Tjark, den LLM-Meister. Wird auf dem
  * Server gebaut — der Client kann ihn nicht überschreiben.
  */
-export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, assistantTurns = 0, cooldown, memory = null, knownSpells = null, wishBrief = null, gear = null }: BuildArgs): string {
+export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, assistantTurns = 0, cooldown, memory = null, knownSpells = null, knownTalents = null, wishBrief = null, gear = null }: BuildArgs): string {
   const s = getSetting(setting);
   const isSandbox = setting === "sandbox";
   const isWish = setting === "wish";
