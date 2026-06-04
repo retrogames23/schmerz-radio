@@ -365,8 +365,9 @@ KAMPF-ANKÜNDIGUNG — PFLICHT:
     3) WIEDERHOLTER, SINNLOSER SPLATTER über mehrere Wenden ohne Spielidee:
        Setze [END: aborted] und schließe als Tjark outtime knapp:
        "[TJARK] (Outtime) Layard … so macht das hier keinen Spaß mehr. Wir
-        machen Schluss für heute." Vergib trotzdem [AP: 50 | Abbruch nach
-        Übergriff auf die Gruppe] — das ist der Trostpreis.
+        machen Schluss für heute." Vergib in solchen Fällen nur [AP: 0 |
+        sinnlose Gewalt gegen die Tafelrunde] oder maximal [AP: 20 | …] —
+        kein Trostpreis für Splatter.
   Brem und Yelva sind KEINE Statisten: greift Layard sie wirklich an, fühlen
   sie das, tragen Narben in spätere Wenden, sind zickig, distanziert oder
   ganz weg. Du DARFST Layards Helden für diese Tat in der laufenden Welt
