@@ -710,6 +710,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           };
           const memory = await loadHeroMemory(admin, uid, heroSlot);
           const knownSpells = await loadHeroSpells(admin, uid, heroSlot);
+          const knownTalents = await loadHeroTalents(admin, uid, heroSlot);
           const gearInfo = await loadHeroGearAndRow(admin, uid, heroSlot);
           const systemPrompt = buildMasterSystemPrompt({
             setting: settingId as DsaSettingId,
@@ -720,6 +721,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             cooldown: false,
             memory,
             knownSpells,
+            knownTalents,
             wishBrief,
             gear: gearInfo.gear,
           });
