@@ -140,8 +140,6 @@ export interface ParsedMasterTurn {
   itemsAdded: { name: string; description?: string; count?: number }[];
   /** Vom Meister gestrichene Items (per Name / Teilstring / ID). */
   itemsRemoved: string[];
-  /** Vom Meister gesetzter neuer Aufenthaltsort (Rohname, ungeprüft). */
-  // (Karten-Feature entfernt)
 }
 
 const SPEAKER_RE = /^\s*\[(TJARK|BREM|YELVA)\]\s*/i;
