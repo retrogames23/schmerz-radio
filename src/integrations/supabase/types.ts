@@ -235,7 +235,6 @@ export type Database = {
           ap_total: number
           chronicle: Json
           created_at: string
-          current_location: string | null
           hero: Json
           id: string
           npcs: Json
@@ -250,7 +249,6 @@ export type Database = {
           ap_total?: number
           chronicle?: Json
           created_at?: string
-          current_location?: string | null
           hero: Json
           id?: string
           npcs?: Json
@@ -265,7 +263,6 @@ export type Database = {
           ap_total?: number
           chronicle?: Json
           created_at?: string
-          current_location?: string | null
           hero?: Json
           id?: string
           npcs?: Json

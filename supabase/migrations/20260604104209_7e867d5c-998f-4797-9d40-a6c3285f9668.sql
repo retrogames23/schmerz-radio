@@ -1,0 +1,1 @@
+ALTER TABLE public.dsa_heroes DROP COLUMN IF EXISTS current_location;
