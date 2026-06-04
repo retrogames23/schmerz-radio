@@ -1538,6 +1538,41 @@ function resolveYelvaSpell(
   }
 
   // --- Restliche Elfen-Hauszauber: im Kampf ohne mechanische Wirkung --
+  // --- Blitz dich find: Schadenszauber, Rüstung halbiert. ----------
+  if (spell.id === "blitz_dich_find") {
+    const foeTarget = pickFoeTargetW(state.foes);
+    if (!foeTarget) return;
+    const { dice, success, bufferLeft } = rollSpellProbe(spell, zfw, attrs, ownSchool);
+    const ae = yelva.ae ?? 0;
+    const aeCost = success ? cost : Math.ceil(cost / 2);
+    yelva.ae = Math.max(0, ae - aeCost);
+    if (!success) {
+      events.push({
+        kind: "spell-fail",
+        text: `Yelva singt Blitz dich find auf ${foeTarget.name} — der Blitz verpufft (Puffer ${bufferLeft}). AsP −${aeCost} → ${yelva.ae}.`,
+        dice,
+        snapshot: snapshotW(all),
+        actorId: yelva.id,
+        targetId: foeTarget.id,
+      });
+      return;
+    }
+    const raw = d6() + zfw;
+    const rs = Math.floor((foeTarget.rs ?? 0) / 2);
+    const dmg = Math.max(1, raw - rs);
+    foeTarget.le = Math.max(0, foeTarget.le - dmg);
+    events.push({
+      kind: "spell-cast",
+      text: `Yelva singt Blitz dich find${ownSchool ? " (Hauszauber)" : ""} — Blitz trifft ${foeTarget.name} für ${dmg} TP (1W+${zfw}=${raw}, halbe RS ${rs}). AsP −${aeCost} → ${yelva.ae}.`,
+      dice,
+      snapshot: snapshotW(all),
+      actorId: yelva.id,
+      targetId: foeTarget.id,
+    });
+    return;
+  }
+
+  // --- Restliche Elfen-Hauszauber: im Kampf ohne mechanische Wirkung --
   events.push({
     kind: "spell-fizzle",
     text: `Yelva wirkt ${spell.name} — im Kampfgetümmel ohne unmittelbare Wirkung.`,
