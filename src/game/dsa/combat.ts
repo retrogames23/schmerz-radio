@@ -514,15 +514,15 @@ export type SpellFocus = "offense" | "healing" | "balanced";
 export const TACTIC_LABELS: Record<Tactic, { title: string; blurb: string }> = {
   balanced: {
     title: "Ausgewogen",
-    blurb: "Konzentrierter Standardkampf. Tjark erzählt sachlich, ohne Pathos.",
+    blurb: "Konzentrierter Standardkampf. Sachlich, ohne Pathos.",
   },
   aggressive: {
     title: "Aggressiver Vorstoß",
-    blurb: "Du gehst nach vorn. Tjark erzählt blutig, kurz, treibend — Klingen suchen Fleisch.",
+    blurb: "Du gehst nach vorn. Blutig, kurz, treibend — Klingen suchen Fleisch.",
   },
   defensive: {
     title: "Defensives Taktieren",
-    blurb: "Du gibst dem Feind die Initiative. Tjark erzählt belagernd, zäh, abwartend — du hältst stand.",
+    blurb: "Du gibst dem Feind die Initiative. Belagernd, zäh, abwartend — du hältst stand.",
   },
   cunning: {
     title: "Umgebung nutzen",
