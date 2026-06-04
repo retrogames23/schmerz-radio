@@ -369,7 +369,7 @@ async function awardApToHeroes(
 ): Promise<void> {
   const ap = AP_DEFAULTS[end];
   for (const m of members) {
-    if (!m.hero_snapshot || m.slot < 1 || m.slot > 3) continue;
+    if (!m.hero_snapshot || m.slot < 1 || m.slot > 6) continue;
     const { data } = await admin
       .from("dsa_heroes")
       .select("ap_total, adventures_played, adventures_won")
