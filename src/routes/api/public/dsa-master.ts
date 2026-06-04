@@ -890,6 +890,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             cooldown,
             memory: await loadHeroMemory(admin, uid, heroSlot),
             knownSpells: await loadHeroSpells(admin, uid, heroSlot),
+            knownTalents: await loadHeroTalents(admin, uid, heroSlot),
             wishBrief,
             gear: (await loadHeroGearAndRow(admin, uid, heroSlot)).gear,
           });
