@@ -229,7 +229,18 @@ function VorzimmerPage() {
         </section>
 
         <section className="mb-6">
-          <h2 className="mb-2 text-xs uppercase tracking-[0.3em] opacity-70">Mitspieler ({members.length}/{room.max_players})</h2>
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-xs uppercase tracking-[0.3em] opacity-70">Mitspieler ({members.length}/{room.max_players})</h2>
+            <button
+              type="button"
+              onClick={() => void loadState()}
+              disabled={busy}
+              title="Aktualisieren"
+              className="inline-flex items-center gap-1 rounded border border-[#3a2c1a] px-2 py-1 text-[10px] uppercase tracking-wider opacity-70 hover:opacity-100 disabled:opacity-40"
+            >
+              <RefreshCw className="h-3 w-3" /> Aktualisieren
+            </button>
+          </div>
           <div className="space-y-2">
             {members.map((m) => {
               const snap = m.hero_snapshot as { name?: string; className?: string } | null;
