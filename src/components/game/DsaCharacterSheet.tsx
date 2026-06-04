@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { CloseButton } from "./CloseButton";
 import { ATTR_LABEL, ATTR_ORDER, type Attr } from "@/game/dsa/dice";
-import { DSA_CLASSES } from "@/game/dsa/classes";
+import { DSA_CLASSES, classBlurb, classDisplayName } from "@/game/dsa/classes";
 import {
   CLASS_COMBAT_PROFILES,
   heroCombatantFromCharacter,
@@ -152,13 +152,13 @@ export function DsaCharacterSheet() {
               {dsaCharacter.name}
             </h2>
             <span className="dsa-typed text-sm dsa-ink font-bold">
-              · {dsaCharacter.className}
+              · {cls ? classDisplayName(cls, dsaCharacter.geschlecht) : dsaCharacter.className}
               {cls?.magic ? " · magiebegabt" : ""}
             </span>
           </div>
           {cls?.blurb && (
             <p className="dsa-typed mt-2 text-sm italic dsa-ink leading-snug font-semibold">
-              {cls.blurb}
+              {classBlurb(cls, dsaCharacter.geschlecht)}
             </p>
           )}
           {canAdvance && (
