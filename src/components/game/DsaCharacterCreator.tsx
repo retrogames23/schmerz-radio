@@ -14,6 +14,7 @@ import {
 import {
   DEFAULT_NAME,
   DSA_CLASSES,
+  classDisplayName,
   qualifiesFor,
   type DsaClass,
   type DsaClassId,
@@ -230,7 +231,7 @@ export function DsaCharacterCreator() {
     const finalName = chosenName.trim() || DEFAULT_NAME[chosenClass.id];
     setDsaCharacter({
       classId: chosenClass.id,
-      className: chosenClass.name,
+      className: classDisplayName(chosenClass, chosenGender),
       name: finalName,
       attrs: { ...fullAttrs },
       le,

@@ -13,6 +13,8 @@ export type DsaClassId =
 export interface DsaClass {
   id: DsaClassId;
   name: string;
+  /** Weibliche Form des Klassennamens (z. B. „Thorwalerin"). */
+  nameW?: string;
   /** Mindestwerte (>=). */
   min?: Partial<Attrs>;
   /** Höchstwerte (<=). */
@@ -21,76 +23,102 @@ export interface DsaClass {
   magic: boolean;
   /** Kurzbeschreibung im Charakterbogen. */
   blurb: string;
+  /** Kurzbeschreibung, weibliche Variante. Fällt auf `blurb` zurück. */
+  blurbW?: string;
 }
 
 export const DSA_CLASSES: ReadonlyArray<DsaClass> = [
   {
     id: "krieger",
     name: "Krieger",
+    nameW: "Kriegerin",
     min: { MU: 12, KK: 12 },
     magic: false,
     blurb:
       "Schwert, Schild, gerade Linie. Kann etwas einstecken und ziemlich viel austeilen.",
+    blurbW:
+      "Schwert, Schild, gerade Linie. Hält den Schlag aus und schlägt zwei zurück.",
   },
   {
     id: "streuner",
     name: "Streuner",
+    nameW: "Streunerin",
     min: { MU: 11, GE: 11 },
     max: { CH: 13 },
     magic: false,
     blurb:
       "Schloss, Beutel, schneller Rückzug. Lebt davon, dass keiner so genau weiß, was er gerade tut.",
+    blurbW:
+      "Schloss, Beutel, schneller Rückzug. Lebt davon, dass keiner so genau weiß, was sie gerade tut.",
   },
   {
     id: "magier",
     name: "Magier",
+    nameW: "Magierin",
     min: { MU: 12, KL: 13 },
     max: { KK: 14 },
     magic: true,
     blurb:
       "Studierter Akademist. Kennt die Formeln, hasst Schmutz, vergisst nie eine Schuld.",
+    blurbW:
+      "Studierte Akademistin. Kennt die Formeln, hasst Schmutz, vergisst nie eine Schuld.",
   },
   {
     id: "elf",
     name: "Elf",
+    nameW: "Elfe",
     min: { MU: 12, IN: 13, GE: 13 },
     max: { KK: 13 },
     magic: true,
     blurb:
       "Bogen, Lieder, ein wenig Magie. Versteht die Welt anders — und meistens besser, sagt sie selbst.",
+    blurbW:
+      "Bogen, Lieder, ein wenig Magie. Versteht die Welt anders — und meistens besser, sagt sie selbst.",
   },
   {
     id: "zwerg",
     name: "Zwerg",
+    nameW: "Zwergin",
     min: { MU: 12, KK: 12 },
     max: { CH: 13 },
     magic: false,
     blurb:
       "Axt, Bart, Sturheit. Geht nicht zurück, nur tiefer. Nimmt jede Beleidigung persönlich.",
+    blurbW:
+      "Axt, geflochtenes Haar, Sturheit. Geht nicht zurück, nur tiefer. Nimmt jede Beleidigung persönlich.",
   },
   {
     id: "gaukler",
     name: "Gaukler",
+    nameW: "Gauklerin",
     min: { CH: 13, FF: 12 },
     magic: false,
     blurb:
       "Drei Bälle, ein Lied, ein falscher Name. Verlässt jede Stadt, bevor man ihn wirklich kennt.",
+    blurbW:
+      "Drei Bälle, ein Lied, ein falscher Name. Verlässt jede Stadt, bevor man sie wirklich kennt.",
   },
   {
     id: "thorwaler",
     name: "Thorwaler",
+    nameW: "Thorwalerin",
     min: { MU: 13, KK: 14 },
     magic: false,
     blurb:
       "Salzwasser im Bart, Axt im Gürtel, Met im Bauch. Verhandelt selten zweimal über denselben Preis.",
+    blurbW:
+      "Salzwasser im Haar, Axt im Gürtel, Met im Bauch. Verhandelt selten zweimal über denselben Preis.",
   },
   {
     id: "druide",
     name: "Druide",
+    nameW: "Druidin",
     min: { MU: 12, KL: 13, IN: 13 },
     magic: true,
     blurb:
       "Sichelmesser, Mistel, ein Eichenhain irgendwo. Spricht mit Tieren, wenn die Menschen ihn nerven.",
+    blurbW:
+      "Sichelmesser, Mistel, ein Eichenhain irgendwo. Spricht mit Tieren, wenn die Menschen sie nerven.",
   },
 ];
 
@@ -98,6 +126,24 @@ export function getClass(id: DsaClassId): DsaClass {
   const c = DSA_CLASSES.find((x) => x.id === id);
   if (!c) throw new Error(`Unknown DSA class: ${id}`);
   return c;
+}
+
+/** Weibliche/männliche Form des Klassennamens. */
+export function classDisplayName(
+  cls: Pick<DsaClass, "name" | "nameW">,
+  geschlecht?: string | null,
+): string {
+  const isW = String(geschlecht ?? "").toLowerCase().startsWith("w");
+  return isW && cls.nameW ? cls.nameW : cls.name;
+}
+
+/** Geschlechtsangepasste Kurzbeschreibung. */
+export function classBlurb(
+  cls: Pick<DsaClass, "blurb" | "blurbW">,
+  geschlecht?: string | null,
+): string {
+  const isW = String(geschlecht ?? "").toLowerCase().startsWith("w");
+  return isW && cls.blurbW ? cls.blurbW : cls.blurb;
 }
 
 /** Erfüllt die Eigenschaftsmap die Voraussetzungen der Klasse? */
