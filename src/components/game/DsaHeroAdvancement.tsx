@@ -11,6 +11,7 @@ import {
   listSpellsForClass,
   type Advancement,
 } from "@/game/dsa/advancement";
+import { autoAdvance } from "@/game/dsa/autoAdvance";
 import type { DsaHero } from "@/game/types";
 
 /**
@@ -35,6 +36,16 @@ export function DsaHeroAdvancement({
     const cost = previewCost(hero, a);
     if (ap < cost) return;
     const next = applyAdvancement(hero, a);
+    if (next !== hero) onChange(next);
+  }
+
+  function handleAutoAdvance() {
+    if (ap <= 0) return;
+    const ok = window.confirm(
+      `Soll Tjark deinen Helden für dich steigern? Verfügbare AP: ${ap}.\n\nDie KI verteilt die Punkte sinnvoll und ausgeglichen — bevorzugt deine Klassen-Stärken, vertieft gelernte Talente und Hauszauber. Neue Talente oder Zauber lernt sie nicht.`,
+    );
+    if (!ok) return;
+    const next = autoAdvance(hero);
     if (next !== hero) onChange(next);
   }
 
@@ -90,12 +101,32 @@ export function DsaHeroAdvancement({
           <span className="opacity-80">
             Steigerungen werden sofort gespeichert.
           </span>
-          <button
-            onClick={onClose}
-            className="underline-offset-2 hover:underline"
-          >
-            Fertig
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleAutoAdvance}
+              disabled={ap <= 0}
+              className={
+                "dsa-typed text-[11px] uppercase tracking-widest font-bold px-3 py-1.5 border-2 rounded-sm " +
+                (ap > 0
+                  ? "border-[rgba(30,18,8,0.85)] dsa-ink hover:bg-black/5"
+                  : "border-[rgba(20,12,4,0.3)] opacity-40 cursor-not-allowed dsa-ink")
+              }
+              title={
+                ap > 0
+                  ? "Die KI verteilt deine AP sinnvoll und ausgeglichen."
+                  : "Keine AP zum Verteilen."
+              }
+            >
+              KI steigert
+            </button>
+            <button
+              onClick={onClose}
+              className="underline-offset-2 hover:underline"
+            >
+              Fertig
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { getSetting, type DsaSettingId } from "./llmAdventure";
 import { DSA_MOODS } from "@/audio/dsaMusic";
 import { buildDsa3RulesBlock, SPELLS } from "./rules";
 import { defaultSpells, isMagicClass } from "./advancement";
+import { TALENTS } from "./rules/talents";
 import { buildCoreLoreAppend, buildContextualLoreBlock, buildCompanionBackstoriesBlock } from "./lore";
 import type { DsaCharacterSummary } from "@/game/types";
 import {
@@ -49,6 +50,11 @@ interface BuildArgs {
    */
   knownSpells?: Record<string, number> | null;
   /**
+   * Vom Helden gelernte Talente (Talent-ID → TaW). Wird in den Prompt
+   * gespiegelt, damit der Meister Probenwerte und Erschwernisse kennt.
+   */
+  knownTalents?: Record<string, number> | null;
+  /**
    * Freitext-Wunsch des Spielers (nur bei Setting "wish"). Wird in den
    * Prompt eingespeist, damit der Meister das Abenteuer daran ausrichtet.
    */
@@ -64,7 +70,7 @@ interface BuildArgs {
  * Vollständiger System-Prompt für Tjark, den LLM-Meister. Wird auf dem
  * Server gebaut — der Client kann ihn nicht überschreiben.
  */
-export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, assistantTurns = 0, cooldown, memory = null, knownSpells = null, wishBrief = null, gear = null }: BuildArgs): string {
+export function buildMasterSystemPrompt({ setting, character, summary, offtopicStreak, assistantTurns = 0, cooldown, memory = null, knownSpells = null, knownTalents = null, wishBrief = null, gear = null }: BuildArgs): string {
   const s = getSetting(setting);
   const isSandbox = setting === "sandbox";
   const isWish = setting === "wish";
@@ -167,6 +173,32 @@ ${known}
 
   const wishTimeAnchorBlock = isWish ? buildBfTimeAnchorPrompt(wishBrief) : "";
 
+  const talentsBlock = (() => {
+    const entries = Object.entries(knownTalents ?? {}).filter(
+      ([, v]) => typeof v === "number" && Number.isFinite(v),
+    );
+    if (entries.length === 0) return "";
+    const lines = entries
+      .map(([id, taw]) => {
+        const def = TALENTS.find((t) => t.id === id);
+        if (!def) return `  • ${id} (TaW ${taw})`;
+        return `  • ${def.name} (TaW ${taw}, Probe ${def.probe.join("/")})`;
+      })
+      .sort()
+      .join("\n");
+    return `
+TALENTE — PFLICHT BEACHTEN:
+  ${character.name} hat folgende Talente gelernt. Berücksichtige die TaW bei
+  jeder Probe (3W20 auf die Talent-Probe, TaW als Puffer für Überwürfe):
+  hohe Werte (≥ 8) sind klare Stärken — erleichtere die Probe oder lass sie
+  bei Routineanwendungen ganz weg. Niedrige Werte (≤ 2) sind brüchig —
+  erschwere oder lass die Aktion scheitern, wenn der Druck hoch ist.
+  Fertigkeiten, die NICHT in dieser Liste stehen, beherrscht der Held nicht;
+  fordere dafür keine Talentprobe, sondern höchstens eine reine Eigenschafts-
+  probe ([CHECK: <ATTR>]) mit Erschwernis.
+${lines}`;
+  })();
+
   const memoryBlock = (() => {
     if (!memory) return "";
     const chron = (memory.chronicle ?? []).slice(-6);
@@ -254,6 +286,7 @@ ${wishTimeAnchorBlock}
 SETTING DIESES ABENTEUERS — ${s?.title ?? "freie Wahl"}:
 ${s?.masterHint ?? "Setze einen passenden Auftakt."}
 ${isOpen ? "" : cooldownBlock}${memoryBlock}${spellsBlock}
+${talentsBlock}
 ${inventoryBlock}
 LAYARDS CHARAKTER:
   Name: ${character.name}
@@ -332,8 +365,9 @@ KAMPF-ANKÜNDIGUNG — PFLICHT:
     3) WIEDERHOLTER, SINNLOSER SPLATTER über mehrere Wenden ohne Spielidee:
        Setze [END: aborted] und schließe als Tjark outtime knapp:
        "[TJARK] (Outtime) Layard … so macht das hier keinen Spaß mehr. Wir
-        machen Schluss für heute." Vergib trotzdem [AP: 50 | Abbruch nach
-        Übergriff auf die Gruppe] — das ist der Trostpreis.
+        machen Schluss für heute." Vergib in solchen Fällen nur [AP: 0 |
+        sinnlose Gewalt gegen die Tafelrunde] oder maximal [AP: 20 | …] —
+        kein Trostpreis für Splatter.
   Brem und Yelva sind KEINE Statisten: greift Layard sie wirklich an, fühlen
   sie das, tragen Narben in spätere Wenden, sind zickig, distanziert oder
   ganz weg. Du DARFST Layards Helden für diese Tat in der laufenden Welt
@@ -389,16 +423,25 @@ ${sceneCatalog}
                               Der Musik-Player blendet sofort weich (ein paar Sekunden Crossfade) auf einen
                               passenden Track aus dem neuen Mood-Pool über; es muss also NICHT auf ein Trackende
                               gewartet werden. Wiederhole denselben Mood NICHT in aufeinanderfolgenden Zügen.
-    [AP: <50-300> | <kurze begründung>]
-                              Vergabe von Abenteuerpunkten am Spielende. NUR erlaubt zusammen mit [END: …]
-                              in derselben Antwort. Wähle den Wert nach Schwierigkeit, Spieldauer, kreativen
-                              Lösungen und Rollenspiel:
-                                Sieg:        100–250 AP (Standard ~150; ein langes, schweres oder besonders
-                                             klug gespieltes Abenteuer ruhig bis 300).
-                                Niederlage:  50–120 AP (für Mut, Konsequenzen-Tragen, gute Szenen).
-                                Abbruch:     50 AP (Trostpreis).
+    [AP: <0-250> | <kurze begründung>]
+                              Vergabe von Abenteuerpunkten am Spielende. PFLICHT zusammen mit [END: …]
+                              in derselben Antwort — vergiss den Marker nie. Wähle den Wert nach deinem
+                              Ermessen als Meister. Gewichte:
+                                BELOHNT — hoch (Sieg 150–250, Niederlage mit Stil 80–150):
+                                  • konsequentes Rollenspiel in der Figur des Helden,
+                                  • kreative, nicht-gewaltsame Lösungen für Rätsel und Konflikte,
+                                  • mutige Entscheidungen, die Konsequenzen tragen,
+                                  • aufmerksames Zuhören bei Brem, Yelva und NSCs.
+                                MITTEL (Sieg 80–140, Niederlage 30–80):
+                                  • solides Durchspielen ohne besondere Glanzlichter.
+                                BESTRAFT — niedrig oder 0 (auch bei Sieg möglich):
+                                  • permanent aus der Rolle fallen, Meta-Geplapper,
+                                  • sinnlose Gewalt, NSC-Massaker ohne Anlass,
+                                  • Übergriffe auf Brem oder Yelva,
+                                  • Ignorieren der Spielwelt zugunsten von Trollerei.
+                                Abbruch (Layard hört outtime auf): 0–40 AP.
                               Halte die Begründung knapp (max. 1 Satz), ohne neue Marker. Beispiel:
-                              [AP: 180 | Kluges Verhandeln mit Vossbeck und mutiger Showdown im Tempel]
+                              [AP: 160 | Kluges Verhandeln mit Vossbeck und ehrlicher Showdown im Tempel]
 
 REGELN:
   - ABENTEUERPUNKTE & STEIGERUNGEN — WICHTIG: Du kannst AP NUR am Ende des

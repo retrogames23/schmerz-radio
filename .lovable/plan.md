@@ -1,73 +1,78 @@
+
 ## Ziel
 
-Das Kampf-Overlay soll nicht mehr nur eine abstrakte Taktik auswerten, sondern auch die unmittelbar vor Kampfbeginn formulierten Befehle berücksichtigen:
+Steigerungs-Loop auf die beschriebenen Regeln bringen:
 
-- „Yelva, bleib hinten und leg Pfeile auf“ soll ihre Rolle im Kampf tatsächlich ändern.
-- Befehle wie „Yelva, blend den Gegner“ sollen sichtbare Kampfwert-Auswirkungen haben.
-- Magiebegabte Helden sollen ihre bekannten Zauber per Prompt im Kampf einsetzen können.
-- Magier/Elfen/Druiden dürfen nicht mehr fälschlich als unmagisch behandelt werden, wenn ihr Zauberbuch vorhanden oder ableitbar ist.
+1. AP-Vergabe 0–250 nach Ermessen des LLM-Meisters, mit klarer Anweisung was belohnt/bestraft wird.
+2. Manuelle Steigerung wie bisher, zusätzlich „KI steigert" als Ein-Klick-Alternative.
+3. Werte aus dem Heldenbogen (aktuelle Attribute, Talente, Zauber) sind dem Meister bekannt und werden im laufenden Spiel genutzt.
 
-## Befund
+Speicherung und Anzeige funktionieren bereits (cloudUpsertHero + Sheet-Anzeige) — wird nur dort angefasst, wo Felder dazukommen.
 
-- Der LLM-Meister löst Kämpfe nicht selbst aus; er setzt nur `[COMBAT: ...]`. Danach übernimmt `DsaCombatInteractive` deterministisch.
-- Dieses Overlay bekommt aktuell nur `heroes`, `foes`, `player`, aber keine freie Spieleranweisung aus dem Dialog.
-- Yelva/Brem werden immer mit festen Standardwerten erzeugt; Formation/Rolle wird nicht gespeichert.
-- Gegner wählen als Ziel aktuell meist den schwächsten Helden. Dadurch landet Yelva trotz „bleib hinten“ plausibilitätswidrig in der ersten Reihe.
-- Kampfzauber existieren nur für Layard über Magie-Taktiken, aber nicht als konkrete Prompt-Absicht („ich wirke Ignifaxius“, „ich blende ihn“).
-- Die Magier-Fehlmeldung entsteht wahrscheinlich, weil manche Pfade nur `DsaCharacterSummary` nutzen. Dieser Snapshot enthält kein `spells`; `upgradeToHero/defaultSpells` füllt das Zauberbuch erst später. Wenn `loadHeroSpells` nichts liefert, interpretiert der Prompt das als „nicht magiebegabt“.
+## Änderungen
 
-## Plan
+### 1) AP-Spanne 0–250 (statt 50–300)
 
-1. **Combat-Intent-Datenmodell ergänzen**
-   - Einen kleinen Typ für Kampfbefehle einführen, z. B.:
-     - Layard: gewünschter Zauber / Magiefokus / defensive Position
-     - Yelva: `backline`, `ranged`, `blind`, `protective`
-     - Brem: `flank`, `protect`, `cunning`, `holdBack`
-   - Keine offene LLM-Mechanik: nur eine feste, sichere Menge an erkannten Absichten.
+`src/game/dsa/advancement.ts`
+- `AP_MIN = 0`, `AP_MAX = 250`.
+- `AP_DEFAULTS`: `victory: 120`, `defeat: 40`, `aborted: 0`
+  (Fallback nur, wenn der Meister keinen `[AP:…]`-Marker setzt — der Prompt fordert ihn aber immer ein).
 
-2. **Freie Spielerprompts vor Kampfbeginn auswerten**
-   - Beim Eingang eines `[COMBAT]` im Client die letzte Spieler-Eingabe auswerten.
-   - Zusätzlich die letzten sichtbaren Meister-/Yelva-/Brem-Zeilen berücksichtigen, falls die LLM den Befehl gerade bestätigt hat.
-   - Einfache deutsche Heuristiken reichen zunächst:
-     - „Yelva/Elfe … hinten“, „bleib hinten“, „Deckung“, „Pfeile“, „Bogen“ → Yelva bleibt hinten und nutzt Fernkampf.
-     - „Yelva … blenden“, „blend(e)“ → Yelva versucht einen Blend-/Ablenkungseffekt.
-     - „Brem … flank“, „ablenken“, „hinterhalt“, „trick“ → Brem stört Gegner statt stumpf zuzustechen.
-     - „ich wirke <Zaubername>“, „Ignifaxius“, „Fulminictus“, „Balsam“, „Blitz“ → konkreter Layard-Zauberwunsch.
+`src/game/dsa/llmMasterPrompt.ts` (AP-Marker-Doku + Regelblock)
+- `[AP: <0-250> | <begründung>]`-Spanne und Richtwerte neu formulieren:
+  - **Gutes Rollenspiel & kreative Rätsel-/Konfliktlösungen** → hoher Wert (Sieg 150–250, Niederlage mit Stil 80–150).
+  - **Solides Durchspielen** → mittlerer Wert (Sieg ~100–150).
+  - **Aus der Rolle fallen / Meta-Geplapper / sinnlose Gewalt** → niedriger Wert oder 0 (auch bei Sieg möglich).
+  - Abbruch durch Layard → 0–40.
+- Bestehende „Mid-Adventure keine AP versprechen"-Klausel bleibt.
 
-3. **Gefährtenrollen mechanisch wirksam machen**
-   - `Combatant` um Rolle/Position erweitern (`frontline`, `backline`, `support`).
-   - Zielauswahl der Gegner anpassen:
-     - Frontlinie wird bevorzugt angegriffen.
-     - Backline wird deutlich seltener Ziel, außer alle Frontkämpfer liegen oder es gibt Fernkämpfer-Gegner.
-   - Yelva im Backline-Modus:
-     - weniger Parade-/Nahkampf-Interaktion,
-     - bleibt mit Elfenbogen auf Distanz,
-     - wird im Log auch so beschrieben.
-   - Brem/Yelva-Aktionen bekommen je nach Befehl kleine, transparente Modifikatoren statt nur Flavour.
+### 2) Master liest aktuelle Heldenwerte
 
-4. **Blend-/Kontrollzauber als Kampfwert-Effekt abbilden**
-   - Für „blenden“ einen klaren Effekt implementieren: z. B. ein Gegner erhält für 1 Runde `AT -3` und `PA -2` oder verliert seinen Angriff bei sehr gutem Erfolg.
-   - Der Effekt erscheint im Kampfprotokoll mit Würfel-/Erfolgsinformation.
-   - Falls der Effekt von Yelva kommt, wird er als Yelvas Aktion dargestellt und nicht Layard zugeschrieben.
+Aktuell bekommt der Prompt nur `attrs`, `LE/AE` und `knownSpells`. Aktuelle Talentwerte fehlen, obwohl Layard sie steigert.
 
-5. **Konkrete Zauber per Prompt für Layard ermöglichen**
-   - Neben „Magie niedrig/mittel/hoch“ ein konkretes `requestedSpellId` an `resolveRound` übergeben.
-   - Wenn Layard den Zauber kennt und genug AsP hat, wird genau dieser Zauber zuerst versucht.
-   - Wenn der Zauber nicht bekannt/zu teuer ist, erscheint eine klare Logzeile statt falscher Meisterbehauptung.
-   - Schadens-/Heilzauber laufen weiter deterministisch über die vorhandenen DSA3-Proben.
+`src/game/dsa/llmMasterPrompt.ts`
+- `BuildArgs` um `knownTalents?: Record<string, number> | null` erweitern.
+- Neuer Block „TALENTE — PFLICHT BEACHTEN": kompakte Liste der gelernten Talente mit TaW und Probe (analog Spells-Block, Titel + Werte aus `TALENTS`). Hinweis im Prompt: „Bei Proben (`[CHECK: …]` oder Probenfragen Layards) berücksichtige diese TaW — niedrige Talente sind erschwert, hohe erleichtert; rufe für nicht-gelernte Fertigkeiten keine Talentprobe auf."
+- Spell-Block bleibt, AsP wird wie gehabt aus `character.ae` gespeist.
 
-6. **Magiebegabung/Zauberbuch robust machen**
-   - Server-Prompt: Wenn `knownSpells` leer ist, aber die Klasse magisch ist und AE vorhanden sind, Default-Zauber der Klasse verwenden statt „nicht magiebegabt“.
-   - Client-Kampf: vor `heroCombatantFromCharacter` immer `upgradeToHero` nutzen, damit Magier/Elf/Druide sicher `spells` und Default-Ausrüstung haben.
-   - `loadHeroSpells` ggf. mit Default-Fallback ergänzen, falls alte/teilweise gespeicherte Helden keinen `spells`-Block haben.
+`src/routes/api/public/dsa-master.ts`
+- Neben `loadHeroSpells` analog `loadHeroTalents(admin, uid, slot)` ergänzen, das `hero.talents` aus `dsa_heroes.hero` liest.
+- An beiden Build-Stellen (Opener + Folge-Turn, Zeilen ~685 und ~861) `knownTalents` mitgeben.
+- `characterSnap.attrs` schon heute aus `dsa_heroes.hero` → bleibt: gesteigerte Attribute landen automatisch im Prompt.
 
-7. **UI minimal anpassen**
-   - Im Taktik-Picker eine kurze Zeile anzeigen, wenn ein freier Kampfbefehl erkannt wurde, z. B. „Befehl erkannt: Yelva bleibt hinten · Layard wirkt Ignifaxius“.
-   - Keine neue komplizierte Befehlseingabe im Overlay; die normale Prompt-Eingabe vor dem Kampf bleibt die Quelle.
+### 3) KI-Auto-Steigern
 
-8. **Validierung**
-   - Mit gezielten lokalen Checks für die Parser-Fälle prüfen:
-     - „Yelva bleib hinten und leg Pfeile auf“ → Yelva Backline/Ranged.
-     - „Yelva blende den Anführer“ → Gegner-Modifikator erscheint.
-     - Magier mit Default-Zaubern → Prompt sagt nicht mehr „unmagisch“.
-     - „Ich wirke Ignifaxius“ → Kampf versucht Ignifaxius, zieht AsP ab und protokolliert Probe/Schaden.
+Rein deterministisch im Client (kein LLM-Aufruf nötig, billig und nachvollziehbar). Nutzt die existierende `applyAdvancement`-Pipeline, damit Buchführung (`apSpent`, LE/AE-Folgen) konsistent bleibt.
+
+`src/game/dsa/autoAdvance.ts` (neu)
+- Reine Funktion `autoAdvance(hero: DsaHero): DsaHero`.
+- Strategie (greedy, deterministisch):
+  - Solange `availableAp(hero) > 0` und mind. eine bezahlbare Steigerung existiert:
+    - Kandidatenset bilden: alle Attribute, alle gelernten Talente + sinnvolle Klassen-Talente (aus `defaultTalents`), bei Magierklassen Hauszauber.
+    - Gewichtung: Klassen-Kernattribute (z. B. Krieger: KK/MU, Magier: KL/IN, Streuner: GE/FF, Elf: GE/IN, …) bevorzugt; Talente/Zauber der eigenen Schule vor Fremdzaubern.
+    - Pro Iteration die Steigerung mit bestem Verhältnis `Gewicht / previewCost` wählen, die noch bezahlbar ist und unter weichen Caps bleibt (Attribut ≤ 16, Talent ≤ 12, Zauber ≤ 12), um Ausgewogenheit zu sichern.
+    - Bei Klassen mit Magie ca. 30 % der AP für Zauber reservieren (Budget grob aufteilen, bis kein Kandidat mehr bezahlbar ist).
+  - Abbruchschutz: maximal 200 Iterationen.
+
+`src/components/game/DsaHeroAdvancement.tsx`
+- Im Header neben „Fertig" zweiter Button **„KI steigern"**:
+  - Bestätigungs-Dialog („Soll Tjark deinen Helden für dich steigern? Verfügbare AP: N").
+  - Bei OK: `onChange(autoAdvance(hero))`, Overlay bleibt offen, damit Layard das Ergebnis sehen kann.
+- Disabled, wenn `availableAp(hero) === 0`.
+
+### 4) Sicherstellen, dass Speicherung greift
+
+`StandaloneDsaHost.updateHero` schreibt bereits lokal + (eingeloggt) in `dsa_heroes`. AP werden durch `creditHeroAp` nach `[END]` gutgeschrieben. Nichts zu ändern — nur kurzes Verifizieren der Sheet-Anzeige (verfügbare AP / gesamt / ausgegeben).
+
+## Technische Hinweise
+
+- DB-Schema bleibt unverändert; gelernte Talente liegen schon in `dsa_heroes.hero.talents` (JSON).
+- Keine neuen Secrets.
+- `autoAdvance` ist pure TS — kein Server-Roundtrip, kein LLM-Credit-Verbrauch.
+- Übersetzte AP-Beispiele im Prompt synchron zur neuen Spanne halten (`[AP: 180 | …]` → `[AP: 160 | …]`-Beispiel).
+
+## Out of Scope
+
+- Kein Umbau des Steigerungs-UI über das KI-Knopf-Add-on hinaus.
+- Keine Änderungen an Kampf/Combat-Intent.
+- Keine Multiplayer/Group-Anpassungen (Group nutzt weiterhin `AP_DEFAULTS` ohne `[AP:…]`-Marker — passt durch neue Defaults automatisch).

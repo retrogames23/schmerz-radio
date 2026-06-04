@@ -89,6 +89,35 @@ async function loadHeroSpells(
   return out;
 }
 
+/**
+ * Liest die gelernten Talente (Talent-ID → TaW) des Helden — wird in
+ * den Master-Prompt eingespeist, damit Proben mit realistischer
+ * Erschwernis ausgespielt werden.
+ */
+async function loadHeroTalents(
+   admin: ReturnType<typeof createClient<any, any, any>>,
+   uid: string | null,
+   heroSlot: number,
+): Promise<Record<string, number> | null> {
+  if (!uid) return null;
+  const { data: rowData } = await admin
+    .from("dsa_heroes")
+    .select("hero")
+    .eq("user_id", uid)
+    .eq("slot", heroSlot)
+    .maybeSingle();
+  const row = rowData as { hero?: { talents?: Record<string, number> } } | null;
+  const talents = row?.hero?.talents;
+  if (!talents || typeof talents !== "object") return null;
+  const out: Record<string, number> = {};
+  for (const [id, v] of Object.entries(talents)) {
+    if (/^[a-z0-9_]+$/.test(id) && typeof v === "number" && Number.isFinite(v)) {
+      out[id] = Math.max(-5, Math.min(20, Math.round(v)));
+    }
+  }
+  return out;
+}
+
 /** Liest die Ausrüstung des Helden aus dem dsa_heroes-JSONB. */
 async function loadHeroGearAndRow(
   admin: ReturnType<typeof createClient<any, any, any>>,
@@ -681,6 +710,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           };
           const memory = await loadHeroMemory(admin, uid, heroSlot);
           const knownSpells = await loadHeroSpells(admin, uid, heroSlot);
+          const knownTalents = await loadHeroTalents(admin, uid, heroSlot);
           const gearInfo = await loadHeroGearAndRow(admin, uid, heroSlot);
           const systemPrompt = buildMasterSystemPrompt({
             setting: settingId as DsaSettingId,
@@ -691,6 +721,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             cooldown: false,
             memory,
             knownSpells,
+            knownTalents,
             wishBrief,
             gear: gearInfo.gear,
           });
@@ -859,6 +890,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             cooldown,
             memory: await loadHeroMemory(admin, uid, heroSlot),
             knownSpells: await loadHeroSpells(admin, uid, heroSlot),
+            knownTalents: await loadHeroTalents(admin, uid, heroSlot),
             wishBrief,
             gear: (await loadHeroGearAndRow(admin, uid, heroSlot)).gear,
           });
