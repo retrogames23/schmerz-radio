@@ -74,6 +74,13 @@ function SpielraumPage() {
   const advanceFiredRef = useRef<string | null>(null);
   const membersRef = useRef<MemberRow[]>([]);
   const roomRef = useRef<RoomRow | null>(null);
+  const isCoarse = useCoarsePointer();
+  const [enterSubmits, setEnterSubmits] = useState<boolean>(() => readEnterSubmits());
+  useEffect(() => {
+    try {
+      localStorage.setItem(ENTER_SUBMIT_KEY, enterSubmits ? "1" : "0");
+    } catch { /* ignore */ }
+  }, [enterSubmits]);
   useEffect(() => {
     membersRef.current = members;
   }, [members]);
