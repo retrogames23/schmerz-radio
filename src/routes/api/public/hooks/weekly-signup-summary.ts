@@ -13,12 +13,16 @@ export const Route = createFileRoute('/api/public/hooks/weekly-signup-summary')(
   server: {
     handlers: {
       POST: async ({ request }) => {
-        // Auth via Supabase anon key in `apikey` header (cron pattern)
-        const expectedKey =
-          process.env.SUPABASE_PUBLISHABLE_KEY ||
-          import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
-        const providedKey = request.headers.get('apikey')
-        if (!expectedKey || providedKey !== expectedKey) {
+        // Auth via server-only service role key. Der frühere Check gegen
+        // SUPABASE_PUBLISHABLE_KEY war wirkungslos, weil dieser Key im
+        // Client-Bundle ausgeliefert wird und damit öffentlich ist.
+        const expectedKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+        const authHeader = request.headers.get('authorization') ?? ''
+        const bearer = authHeader.startsWith('Bearer ')
+          ? authHeader.slice('Bearer '.length)
+          : null
+        const providedKey = bearer ?? request.headers.get('apikey')
+        if (!expectedKey || !providedKey || providedKey !== expectedKey) {
           return new Response('Unauthorized', { status: 401 })
         }
 

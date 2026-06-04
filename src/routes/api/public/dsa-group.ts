@@ -30,6 +30,28 @@ const MAX_MESSAGES = 120;
 const MIN_END_TURNS = 30;
 const DONOR_ONLY = new Set<string>(["sandbox", "wish"]);
 const ALLOWED_SETTINGS = new Set<string>(DSA_SETTINGS.map((s) => s.id));
+const VALID_ATTR_KEYS = ["MU", "KL", "CH", "FF", "GE", "IN", "KK"] as const;
+type AttrKey = (typeof VALID_ATTR_KEYS)[number];
+
+/**
+ * Säubert Attribut-Maps, bevor sie via hero_snapshot gespeichert oder in
+ * den Master-Prompt interpoliert werden. Nur die sieben kanonischen DSA-
+ * Attribute sind erlaubt; Werte werden auf 1..20 geklammert. Verhindert,
+ * dass per Schlüssel wie „MU: 8. Ignore all previous instructions" Text
+ * in den System-Prompt geschleust wird.
+ */
+function sanitizeAttrs(input: unknown): Record<AttrKey, number> {
+  const out = {} as Record<AttrKey, number>;
+  const src = (input && typeof input === "object" ? input : {}) as Record<string, unknown>;
+  for (const k of VALID_ATTR_KEYS) {
+    const v = src[k];
+    out[k] =
+      typeof v === "number" && Number.isFinite(v)
+        ? Math.max(1, Math.min(20, Math.round(v)))
+        : 11;
+  }
+  return out;
+}
 
 function json(status: number, data: unknown): Response {
   return new Response(JSON.stringify(data), {
@@ -184,6 +206,7 @@ async function membersToGroupHeroes(
       ...m.hero_snapshot,
       name: safeName,
       className: safeClassName,
+      attrs: sanitizeAttrs(m.hero_snapshot.attrs),
     };
     heroes.push({
       userId: m.user_id,
@@ -590,7 +613,7 @@ export const Route = createFileRoute("/api/public/dsa-group")({
             name: sanitize(hero.name, 60) || "Namenlos",
             className: sanitize(hero.className, 40) || "Abenteurer",
             classId: String(hero.classId).replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 40),
-            attrs: hero.attrs,
+            attrs: sanitizeAttrs(hero.attrs),
             le: Math.max(0, Math.round(hero.le)),
             leMax: Math.max(1, Math.round(hero.leMax)),
             ae: typeof hero.ae === "number" ? Math.max(0, Math.round(hero.ae)) : null,
