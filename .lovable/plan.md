@@ -1,49 +1,30 @@
-## Ziel
-Den DSA-Gruppenraum nicht weiter flicken, sondern den Lobby-/Vorzimmer-Flow so umbauen, dass Raumdaten, Mitglieder, Heldwahl und Bereit-Status zuverlässig aus einer einzigen Server-Quelle kommen.
+## Änderungen
 
-## Was ich neu baue
+### 1. Composer im Gruppen-Spielraum erweitern (`src/routes/dsa.gruppe.$roomId.spiel.tsx`)
 
-1. **Eine zentrale Gruppenraum-API**
-   - Die bestehende `/api/public/dsa-group`-Route bleibt als Backend-Einstieg erhalten.
-   - Ich ergänze/vereinheitliche eine `state`-Aktion, die Raum, Mitglieder, Nachrichten, Pending Actions und eigene Helden serverseitig lädt.
-   - Der Browser muss dann nicht mehr direkt mehrere Tabellen lesen und kann nicht mehr durch fehlende Grants/RLS-Sichtbarkeit in falsche Zustände fallen.
+Bisher gibt es im Gruppen-Spielraum nur eine `Sagen`-Schaltfläche. Im Solo-Modus (`DsaLlmAdventureScene.tsx`) existiert daneben bereits ein **Outtime**-Knopf (stellt dem Meister eine Meta-/Regel-Frage; intern wird `Outtime: …` vor den Text gehängt) und eine Checkbox **„Enter = Abschicken"** mit Persistenz über `localStorage` (`dsa:composer:enterSubmits`).
 
-2. **Vorzimmer komplett neu verkabeln**
-   - `src/routes/dsa.gruppe.$roomId.tsx` wird auf den neuen Server-State umgestellt.
-   - Held auswählen, Bereit toggeln, Raum verlassen, Spieler entfernen und Starten laden nach jeder Aktion den frischen Server-State nach.
-   - Die UI zeigt klar: aktueller Spieler, gewählter Held, Bereit-Status, Fehler vom Server und einen manuellen Aktualisieren-Knopf.
-   - Keine lokale Vermutung mehr wie „myMember fehlt also kein Held gewählt“.
+Diese beiden Elemente werden 1:1 in den Gruppen-Composer übernommen:
 
-3. **Lobby robuster machen**
-   - `src/routes/dsa.gruppe.tsx` bekommt ebenfalls einen API-State für Räume, statt Räume/Mitglieder direkt per Client aus mehreren Tabellen zusammenzubauen.
-   - Raumliste, Mitgliederzahl, Beitreten, Löschen und Weiterleiten werden serverseitig konsistent.
+- Outtime-Knopf links neben „Sagen", gleiches Styling. Beim Klick wird `submitAction` mit `Outtime: <text>` aufgerufen (Prefix nur setzen, wenn nicht schon vorhanden — wie in der Solo-Variante).
+- Checkbox „Enter = Abschicken" in der Fußzeile, gleiches Layout wie im Solo-Composer (versteckt auf groben Pointern via `useCoarsePointer`). State wird aus demselben `localStorage`-Key gelesen/geschrieben, damit die Einstellung über Solo und Gruppe hinweg geteilt ist.
+- `onKeyDown` der Textarea respektiert `enterSubmits` und ignoriert Composing-Events (`e.nativeEvent.isComposing`), analog zur Solo-Implementierung.
 
-4. **Spielraum an denselben State anbinden**
-   - `src/routes/dsa.gruppe.$roomId.spiel.tsx` lädt Raum, Mitglieder, Nachrichten und Pending Actions über dieselbe API.
-   - Aktionen wie `heartbeat`, `submitAction`, `advance` bleiben serverseitig, aber die Anzeige hängt nicht mehr an direkten Client-Tabellenabfragen.
+### 2. Eröffnungstext des Meisters entschärfen (`src/routes/api/public/dsa-group.ts`, Zeile ~702)
 
-5. **Datenbank-Zugriff reparieren, falls nötig**
-   - Ich füge eine Migration für die fehlenden Data-API-GRANTs auf den DSA-Gruppentabellen hinzu bzw. stelle sie sicher.
-   - Wichtig: Die RLS-Regeln bleiben restriktiv; die neue API nutzt serverseitige Prüfung, damit keine fremden Räume sichtbar werden.
+Aktuell steht im Spielleiter-Cue:
 
-## Technische Umsetzung
+> „… weise darauf hin, dass jeder seine Aktion eintippt und du ALLE Aktionen einer Runde gemeinsam auswertest."
 
-- Serverroute ergänzt Aktionen wie:
-  - `listRooms`
-  - `getRoomState`
-  - bestehend: `create`, `join`, `leave`, `deleteRoom`, `kick`, `pickHero`, `setReady`, `start`, `heartbeat`, `submitAction`, `advance`
-- State-Antworten enthalten nur sichere Felder:
-  - Raum-Metadaten ohne Passwort-Hash
-  - Mitglieder nur für berechtigte Raumteilnehmer
-  - eigene Helden nur für den angemeldeten Nutzer
-- Realtime bleibt als Trigger zum Nachladen erhalten, aber nicht mehr als alleinige Wahrheit.
-- Der konkrete Bug bei Raum `c7a26018-2b73-4cc4-bb7f-5a00fb318826`: Die Datenbank zeigt bereits `picked=1` und `ready=1`, aber der Client sieht den Mitgliedsstatus nicht zuverlässig. Der Umbau behebt genau diese Diskrepanz.
+Daraus macht das LLM Sätze wie „achtet stets darauf, eure Taten gemeinsam einzureichen", was Spieler glauben lässt, sie müssten sich absprechen. Sie müssen nicht — jeder reicht unabhängig ein, der Meister wartet nur kurz und fasst dann zusammen.
 
-## Validierung
+Der Cue wird so umformuliert, dass dieser falsche Eindruck nicht entsteht. Neuer Text (sinngemäß, ohne „gemeinsam"):
 
-- Raumliste lädt für eingeloggte Nutzer.
-- Raum erstellen und betreten funktioniert.
-- Held wählen aktualisiert sofort den eigenen Slot im Vorzimmer.
-- Bereit-Knopf erkennt den gewählten Helden zuverlässig.
-- Host sieht Start erst, wenn alle bereit sind.
-- Spielraum zeigt Gruppe und Aktionen aus demselben Server-State.
+> „(SPIELLEITER-CUE: Eröffne das Gruppenabenteuer. Begrüße kurz alle Helden namentlich in genau einer [TJARK]-Zeile. Erkläre knapp, dass jeder selbst eintippt, was sein Held tut — eine Absprache ist nicht nötig; du wartest kurz, sammelst die Aktionen ein und erzählst dann alles in einem Zug weiter. Setze die Szene mit [SCENE: …] in 2–4 Sätzen. Schließe mit einer offenen Frage „Was tut ihr?".)"
+
+Die interne Regel in `src/game/dsa/group/prompt.ts` (Zeile 107, „Pro Runde reichen die Spieler PARALLEL Aktionen ein …") bleibt unverändert — sie ist sachlich korrekt und nur fürs Modell.
+
+## Nicht geändert
+
+- Lobby-Bildschirm (`dsa.gruppe.$roomId.tsx`) — dort gibt es keinen Composer.
+- Solo-Composer, Server-Routen, RLS, Migrationen.
