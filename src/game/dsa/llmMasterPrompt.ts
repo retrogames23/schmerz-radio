@@ -5,6 +5,7 @@ import { getSetting, type DsaSettingId } from "./llmAdventure";
 import { DSA_MOODS } from "@/audio/dsaMusic";
 import { buildDsa3RulesBlock, SPELLS } from "./rules";
 import { defaultSpells, isMagicClass } from "./advancement";
+import { TALENTS } from "./rules/talents";
 import { buildCoreLoreAppend, buildContextualLoreBlock, buildCompanionBackstoriesBlock } from "./lore";
 import type { DsaCharacterSummary } from "@/game/types";
 import {
@@ -48,6 +49,11 @@ interface BuildArgs {
    * Meister den Helden tatsächlich wirken lassen. Leer/undef = unmagisch.
    */
   knownSpells?: Record<string, number> | null;
+  /**
+   * Vom Helden gelernte Talente (Talent-ID → TaW). Wird in den Prompt
+   * gespiegelt, damit der Meister Probenwerte und Erschwernisse kennt.
+   */
+  knownTalents?: Record<string, number> | null;
   /**
    * Freitext-Wunsch des Spielers (nur bei Setting "wish"). Wird in den
    * Prompt eingespeist, damit der Meister das Abenteuer daran ausrichtet.
