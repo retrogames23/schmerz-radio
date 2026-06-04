@@ -699,7 +699,7 @@ export const Route = createFileRoute("/api/public/dsa-group")({
           // Eröffnung anfordern (Cue nur an den Meister, nicht ins Transkript).
           const opener = {
             content:
-              "(SPIELLEITER-CUE: Eröffne das Gruppenabenteuer. Begrüße kurz alle Helden namentlich (1 [TJARK]-Satz), weise darauf hin, dass jeder seine Aktion eintippt und du ALLE Aktionen einer Runde gemeinsam auswertest. Setze die Szene mit [SCENE: …] in 2–4 Sätzen. Schließe mit einer offenen Frage „Was tut ihr?“.)",
+              "(SPIELLEITER-CUE: Eröffne das Gruppenabenteuer. Begrüße kurz alle Helden namentlich in genau einer [TJARK]-Zeile. Erkläre knapp, dass jeder selbst eintippt, was sein Held tut — eine Absprache untereinander ist nicht nötig; du wartest kurz, sammelst die eingehenden Aktionen ein und erzählst dann alles in einem Zug weiter. Setze die Szene mit [SCENE: …] in 2–4 Sätzen. Schließe mit einer offenen Frage „Was tut ihr?“.)",
           };
           const freshRoom = (await fetchRoom(admin, roomId))!;
           const r = await runMasterAndStore(admin, apiKey, freshRoom, members, opener);
