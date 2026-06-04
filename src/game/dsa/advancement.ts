@@ -15,13 +15,13 @@ import { DSA_CLASSES, type DsaClassId } from "@/game/dsa/classes";
 import type { DsaCharacterSummary, DsaHero } from "@/game/types";
 import { defaultGearFor, type HeroGear } from "@/game/dsa/gear";
 
-export const AP_MIN = 50;
-export const AP_MAX = 300;
+export const AP_MIN = 0;
+export const AP_MAX = 250;
 
 /** Defaults, falls der Meister keinen [AP:…]-Marker setzt. */
 export const AP_DEFAULTS: Record<"victory" | "defeat" | "aborted", number> = {
-  victory: 150,
-  defeat: 60,
+  victory: 120,
+  defeat: 40,
   aborted: 0,
 };
 
