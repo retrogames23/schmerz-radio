@@ -174,9 +174,9 @@ export function DsaCharacterSheet() {
                 onClick={() => setAdvanceOpen(true)}
                 disabled={ap <= 0}
                 className={
-                  "dsa-typed text-[11px] uppercase tracking-widest font-bold px-3 py-1.5 border-2 rounded-sm " +
+                  "dsa-typed text-[12px] uppercase tracking-widest font-bold px-3 py-1.5 border-2 rounded-sm " +
                   (ap > 0
-                    ? "bg-[rgba(30,18,8,0.85)] text-[#f1e6c8] border-[rgba(30,18,8,0.85)] hover:bg-[rgba(30,18,8,1)]"
+                    ? "bg-[#1e1208] text-[#fff8e1] border-[#1e1208] hover:bg-black [text-shadow:0_1px_0_rgba(0,0,0,0.6)]"
                     : "dsa-ink border-[rgba(30,18,8,0.4)] opacity-50 cursor-not-allowed")
                 }
               >
