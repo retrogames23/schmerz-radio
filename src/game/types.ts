@@ -731,10 +731,4 @@ export interface DsaHero extends DsaCharacterSummary {
    * füllt Standardausrüstung beim Laden nach.
    */
   gear?: import("@/game/dsa/gear").HeroGear;
-  /**
-   * Aktueller Aufenthaltsort des Helden in Aventurien (frei einlesbarer
-   * Ortsname; wird vom LLM-Meister via [LOCATION: …]-Marker gesetzt).
-   * Für den Karten-Marker wird der Name gegen `DSA_PLACES` gematcht.
-   */
-  currentLocation?: string;
 }
