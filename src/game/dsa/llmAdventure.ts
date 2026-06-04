@@ -221,6 +221,8 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
     if (payload) itemsRemoved.push(payload);
     if (itemsRemoved.length >= 6) break;
   }
+  const locationMatch = LOCATION_RE.exec(text);
+  const location = locationMatch ? locationMatch[1].trim().slice(0, 60) : null;
 
   const sceneTag =
     sceneMatch && DSA_SCENE_TAGS.includes(sceneMatch[1].toLowerCase())
@@ -290,6 +292,7 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
     ap,
     itemsAdded,
     itemsRemoved,
+    location,
   };
 }
 
