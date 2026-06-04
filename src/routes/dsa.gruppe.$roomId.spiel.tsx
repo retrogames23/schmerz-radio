@@ -7,6 +7,14 @@ import { getFreshAccessToken } from "@/auth/freshToken";
 import { parseMasterTurn, type SpokenLine } from "@/game/dsa/llmAdventure";
 import { resolveSceneImage } from "@/game/dsa/sceneImages";
 import { portraitFor } from "@/game/dsa/portraits";
+import { useCoarsePointer } from "@/hooks/useCoarsePointer";
+
+const ENTER_SUBMIT_KEY = "dsa:composer:enterSubmits";
+function readEnterSubmits(): boolean {
+  if (typeof localStorage === "undefined") return true;
+  const v = localStorage.getItem(ENTER_SUBMIT_KEY);
+  return v === null ? true : v === "1";
+}
 
 export const Route = createFileRoute("/dsa/gruppe/$roomId/spiel")({
   component: SpielraumPage,
