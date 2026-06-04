@@ -173,6 +173,32 @@ ${known}
 
   const wishTimeAnchorBlock = isWish ? buildBfTimeAnchorPrompt(wishBrief) : "";
 
+  const talentsBlock = (() => {
+    const entries = Object.entries(knownTalents ?? {}).filter(
+      ([, v]) => typeof v === "number" && Number.isFinite(v),
+    );
+    if (entries.length === 0) return "";
+    const lines = entries
+      .map(([id, taw]) => {
+        const def = TALENTS.find((t) => t.id === id);
+        if (!def) return `  • ${id} (TaW ${taw})`;
+        return `  • ${def.name} (TaW ${taw}, Probe ${def.probe.join("/")})`;
+      })
+      .sort()
+      .join("\n");
+    return `
+TALENTE — PFLICHT BEACHTEN:
+  ${character.name} hat folgende Talente gelernt. Berücksichtige die TaW bei
+  jeder Probe (3W20 auf die Talent-Probe, TaW als Puffer für Überwürfe):
+  hohe Werte (≥ 8) sind klare Stärken — erleichtere die Probe oder lass sie
+  bei Routineanwendungen ganz weg. Niedrige Werte (≤ 2) sind brüchig —
+  erschwere oder lass die Aktion scheitern, wenn der Druck hoch ist.
+  Fertigkeiten, die NICHT in dieser Liste stehen, beherrscht der Held nicht;
+  fordere dafür keine Talentprobe, sondern höchstens eine reine Eigenschafts-
+  probe ([CHECK: <ATTR>]) mit Erschwernis.
+${lines}`;
+  })();
+
   const memoryBlock = (() => {
     if (!memory) return "";
     const chron = (memory.chronicle ?? []).slice(-6);
@@ -260,6 +286,7 @@ ${wishTimeAnchorBlock}
 SETTING DIESES ABENTEUERS — ${s?.title ?? "freie Wahl"}:
 ${s?.masterHint ?? "Setze einen passenden Auftakt."}
 ${isOpen ? "" : cooldownBlock}${memoryBlock}${spellsBlock}
+${talentsBlock}
 ${inventoryBlock}
 LAYARDS CHARAKTER:
   Name: ${character.name}
