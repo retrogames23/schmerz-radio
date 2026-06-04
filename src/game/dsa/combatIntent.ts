@@ -97,6 +97,7 @@ export const YELVA_DEFAULT_SPELLS: Record<string, number> = {
   bannbaladin: 5,
   adlerauge: 6,
   odem_arcanum: 5,
+  blitz_dich_find: 5,
 };
 
 const BACKLINE_RE = /(hinten|hintergrund|zur(?:ü|ue)ck|deckung|distanz|abseits|nicht in (?:die )?erste reihe)/i;

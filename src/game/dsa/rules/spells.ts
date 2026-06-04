@@ -43,7 +43,7 @@ export const SPELLS: SpellDef[] = [
     range: "Sicht",
     target: "Sicht",
     effect: "Elektrischer Blitz, 1W+ZfW Schaden, Rüstung halb wirksam.",
-    schools: ["magier"],
+    schools: ["magier", "elf"],
   },
   {
     id: "ignifaxius",
