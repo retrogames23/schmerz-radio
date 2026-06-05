@@ -1,0 +1,1 @@
+REVOKE SELECT (password_hash) ON public.dsa_group_rooms FROM anon, authenticated;
