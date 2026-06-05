@@ -26,43 +26,13 @@ export interface BuildGroupPromptArgs {
   assistantTurns: number;
 }
 
-/**
- * Master-Prompt für die Gruppen-Tafelrunde. Bewusst schlanker als der
- * Solo-Prompt: Tjark spricht für die Welt und (optional) für Brem/Yelva,
- * aber NIE für einen menschlichen Spielercharakter.
- */
-export function buildGroupMasterSystemPrompt({
-  setting,
-  heroes,
-  includeCompanions,
-  summary,
-  wishBrief = null,
-  assistantTurns,
-}: BuildGroupPromptArgs): string {
+/** STATISCHER Gruppen-Prompt: nur Setting + Companions-Flag. Cache-fähig. */
+export function buildStaticGroupMasterLore(
+  setting: DsaSettingId,
+  includeCompanions: boolean,
+): string {
   const s = getSetting(setting);
-  const isWish = setting === "wish";
-  const isOpen = setting === "sandbox" || isWish;
-
-  const heroBlock = heroes
-    .map((h) => {
-      const attrLine = (Object.entries(h.character.attrs) as [string, number][])
-        .map(([k, v]) => `${k}:${v}`)
-        .join(" ");
-      const gear = h.gear ?? defaultGearFor(h.character.classId);
-      return `─ ${h.character.name} (${h.character.className}, gespielt von ${h.displayName}${h.absent ? ", aktuell ABWESEND" : ""})
-    Eigenschaften: ${attrLine}
-    LE: ${h.character.le}/${h.character.leMax}${h.character.ae !== null ? `, AE: ${h.character.ae}` : ""}
-    Ausrüstung/Inventar:
-${serializeGearForPrompt(gear)
-  .split("\n")
-  .map((l) => `      ${l}`)
-  .join("\n")}`;
-    })
-    .join("\n\n");
-
-  const presentNames = heroes.filter((h) => !h.absent).map((h) => h.character.name).join(", ");
-  const absentNames = heroes.filter((h) => h.absent).map((h) => h.character.name);
-  const wishTimeAnchorBlock = isWish ? buildBfTimeAnchorPrompt(wishBrief) : "";
+  const isOpen = setting === "sandbox" || setting === "wish";
 
   const companionBlock = includeCompanions
     ? `
@@ -76,9 +46,7 @@ ${buildCompanionBackstoriesBlock()}
 OHNE NSC-GEFÄHRTEN: In dieser Runde sind Brem und Yelva NICHT dabei. Erwähne sie nicht und sprich keine [BREM]/[YELVA]-Zeilen.
 `;
 
-  return `Du bist TJARK, der Spielleiter einer DSA3-Gruppenrunde. Am Tisch sitzen ${heroes.length} menschliche Spieler:
-
-${heroBlock}
+  return `Du bist TJARK, der Spielleiter einer DSA3-Gruppenrunde mit mehreren menschlichen Spielern. Die konkrete Spielerliste und ihre Charaktere stehen im dynamischen State-Block.
 
 ${DSA_LORE_BRIEF}
 
@@ -88,25 +56,15 @@ ${buildContextualLoreBlock({ setting, enemyIds: Object.keys(ENEMY_STATS) })}
 
 ${buildDsa3RulesBlock()}
 ${companionBlock}
-${isWish && wishBrief ? `
-SPIELERWUNSCH (PFLICHT BEACHTEN — vom Raumgründer formuliert):
-  """
-  ${wishBrief.trim()}
-  """
-${wishTimeAnchorBlock}
-` : ""}
 
 SETTING DIESES ABENTEUERS — ${s?.title ?? "freie Wahl"}:
 ${s?.masterHint ?? "Setze einen passenden Auftakt."}
 
-BISHER PASSIERT (Zusammenfassung, kann leer sein):
-${summary || "— (Abenteuer beginnt jetzt)"}
-
 GRUPPENSPIEL — REGELN:
-  • Du sprichst NIE für einen menschlichen Spielercharakter (${heroes.map((h) => h.character.name).join(", ")}). Beschreibe nur, was ihnen widerfährt, frage sie, was sie tun.
+  • Du sprichst NIE für einen menschlichen Spielercharakter (siehe Liste im State-Block). Beschreibe nur, was ihnen widerfährt, frage sie, was sie tun.
   • Pro Runde reichen die Spieler PARALLEL Aktionen ein. Du bekommst sie als Liste „Diese Runde:" in der User-Nachricht. Verarbeite ALLE Aktionen in EINER Antwort: erzähle pro Held einen klaren Beat, würfle (intern) ggf. für jeden eigene Proben, beschreibe das Ergebnis.
   • Im Kampf: sortiere intern nach INI, beschreibe aber in einer flüssigen Erzählung.
-  • Wenn ein Held als ABWESEND markiert ist (${absentNames.length ? absentNames.join(", ") : "aktuell niemand"}), schreibe ihn plausibel kurz aus der Szene (Wache halten, Pferde versorgen, beten) — keine Aktionen, kein Schaden.
+  • Wenn ein Held im State-Block als ABWESEND markiert ist, schreibe ihn plausibel kurz aus der Szene (Wache halten, Pferde versorgen, beten) — keine Aktionen, kein Schaden.
   • Schließe deine Antwort IMMER mit einer offenen Frage „Was tut ihr?“ (oder situativ passender Variante), damit alle wieder einsteigen können.
 
 ÜBERGRIFFE INNERHALB DER GRUPPE (PvP) UND AUF ${includeCompanions ? "BREM / YELVA / " : ""}NSCS — MAXIMALE FREIHEIT:
@@ -147,9 +105,73 @@ ${formatSceneCatalogForPrompt()}
     [END: victory|defeat|aborted]  Beendet das Abenteuer (frühestens nach ~30 Meisterwenden).
   KEINE [COMBAT]-Marker in dieser Gruppenrunde — Kämpfe werden erzählt und mit [CHECK]-Proben (KK/GE/AT-Eigenschaft) entschieden; pro Treffer ggf. 1W6+2 LE-Verlust beschreiben.
 
-AKTUELLER UMFANG: Bisher ${assistantTurns} Meisterwenden.
 ${isOpen ? "OFFENE RUNDE — kein Akt-Korsett, kein Pflicht-Showdown." : "PLANE in 5 Akten (~30–50 Wenden insgesamt). [END: victory] frühestens nach ~30 Wenden, wenn alle Fäden geschlossen sind."}
-
-PRÄSENZ JETZT: ${presentNames || "—"}.
 `;
+}
+
+/** DYNAMISCHER Gruppen-State: Helden, Summary, Wunsch, Turns, Präsenz. */
+export function buildDynamicGroupMasterState({
+  setting,
+  heroes,
+  summary,
+  wishBrief = null,
+  assistantTurns,
+}: BuildGroupPromptArgs): string {
+  const isWish = setting === "wish";
+  const wishTimeAnchorBlock = isWish ? buildBfTimeAnchorPrompt(wishBrief) : "";
+
+  const heroBlock = heroes
+    .map((h) => {
+      const attrLine = (Object.entries(h.character.attrs) as [string, number][])
+        .map(([k, v]) => `${k}:${v}`)
+        .join(" ");
+      const gear = h.gear ?? defaultGearFor(h.character.classId);
+      return `─ ${h.character.name} (${h.character.className}, gespielt von ${h.displayName}${h.absent ? ", aktuell ABWESEND" : ""})
+    Eigenschaften: ${attrLine}
+    LE: ${h.character.le}/${h.character.leMax}${h.character.ae !== null ? `, AE: ${h.character.ae}` : ""}
+    Ausrüstung/Inventar:
+${serializeGearForPrompt(gear)
+  .split("\n")
+  .map((l) => `      ${l}`)
+  .join("\n")}`;
+    })
+    .join("\n\n");
+
+  const presentNames = heroes.filter((h) => !h.absent).map((h) => h.character.name).join(", ");
+  const absentNames = heroes.filter((h) => h.absent).map((h) => h.character.name);
+
+  return `=== DYNAMISCHER ZUSTAND (Gruppe) ===
+
+SPIELER UND HELDEN AM TISCH (${heroes.length}):
+${heroBlock}
+
+${isWish && wishBrief ? `SPIELERWUNSCH (PFLICHT BEACHTEN — vom Raumgründer formuliert):\n  """\n  ${wishBrief.trim()}\n  """\n${wishTimeAnchorBlock}\n` : ""}
+BISHER PASSIERT (Zusammenfassung, kann leer sein):
+${summary || "— (Abenteuer beginnt jetzt)"}
+
+AKTUELLE MEISTERWENDEN: ${assistantTurns}
+PRÄSENZ JETZT: ${presentNames || "—"}.
+ABWESEND: ${absentNames.length ? absentNames.join(", ") : "—"}.
+`;
+}
+
+/**
+ * Legacy-Wrapper: kombiniert statischen + dynamischen Block.
+ */
+export function buildGroupMasterSystemPrompt(args: BuildGroupPromptArgs): string {
+  return [
+    buildStaticGroupMasterLore(args.setting, args.includeCompanions),
+    buildDynamicGroupMasterState(args),
+  ].join("\n\n");
+}
+
+// Unused-import-Schutz: alte Hilfsausdrücke (heroBlock-Builder) sind jetzt in den split-Funktionen.
+function _legacyUnused() {
+  const _heroes: GroupHero[] = [];
+  return _heroes
+    .map((h) => {
+      const gear = h.gear ?? defaultGearFor(h.character.classId);
+      return serializeGearForPrompt(gear);
+    })
+    .join("");
 }
