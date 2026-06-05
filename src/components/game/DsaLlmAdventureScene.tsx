@@ -576,6 +576,7 @@ export function DsaLlmAdventureScene() {
               </h2>
             </div>
             <div className="flex shrink-0 items-center gap-2 mr-10">
+              <DsaModelSwitcher />
               <button
                 type="button"
                 onClick={toggleFullscreen}
