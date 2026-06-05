@@ -42,3 +42,83 @@ export function openRouterHeaders(apiKey: string): Record<string, string> {
     "X-Title": OPENROUTER_APP_TITLE,
   };
 }
+
+/**
+ * Auswählbare Master-Modelle für DSA. Nur Unterstützer*innen
+ * (donation_unlocked=true) dürfen vom Default abweichen — Standard-
+ * spieler*innen bleiben zwingend auf AI_MODEL_DSA_MASTER.
+ *
+ * Reihenfolge bestimmt die Anzeige im UI-Switcher.
+ */
+export interface DsaMasterModelOption {
+  id: string;
+  label: string;
+  short: string;
+  hint: string;
+  donorOnly: boolean;
+}
+
+export const DSA_MASTER_MODELS: DsaMasterModelOption[] = [
+  {
+    id: AI_MODEL_DSA_MASTER, // openai/gpt-5.4-mini
+    label: "GPT-5.4 mini (Standard)",
+    short: "GPT-5.4m",
+    hint: "Schnell, günstig, solides Deutsch — die Voreinstellung.",
+    donorOnly: false,
+  },
+  {
+    id: "anthropic/claude-3.5-haiku",
+    label: "Claude 3.5 Haiku",
+    short: "Haiku",
+    hint: "Atmosphärisch, sehr gutes Deutsch, schnell. Empfohlen.",
+    donorOnly: true,
+  },
+  {
+    id: "anthropic/claude-sonnet-4",
+    label: "Claude Sonnet 4 (Premium)",
+    short: "Sonnet 4",
+    hint: "Beste DSA-Treue & Erzählkunst — teurer, lohnt sich für Highlights.",
+    donorOnly: true,
+  },
+  {
+    id: "deepseek/deepseek-chat",
+    label: "DeepSeek Chat",
+    short: "DeepSeek",
+    hint: "Sehr günstig, kreatives Storytelling.",
+    donorOnly: true,
+  },
+  {
+    id: "google/gemini-2.5-flash",
+    label: "Gemini 2.5 Flash",
+    short: "Gemini",
+    hint: "Schnell, günstig, solides Deutsch.",
+    donorOnly: true,
+  },
+  {
+    id: "mistralai/mistral-large",
+    label: "Mistral Large",
+    short: "Mistral",
+    hint: "EU-Anbieter, starkes Deutsch.",
+    donorOnly: true,
+  },
+];
+
+const DSA_MODEL_IDS = new Set(DSA_MASTER_MODELS.map((m) => m.id));
+
+/**
+ * Wählt das tatsächlich zu verwendende Modell für eine Anfrage aus.
+ * - kein/unbekanntes Modell oder Nicht-Spender mit donorOnly-Wahl
+ *   → Fallback auf den Default (AI_MODEL_DSA_MASTER).
+ * - Spender (donor=true) dürfen jedes Modell aus der Allowlist nutzen.
+ */
+export function resolveDsaMasterModel(
+  requested: unknown,
+  donor: boolean,
+): string {
+  if (typeof requested !== "string" || !DSA_MODEL_IDS.has(requested)) {
+    return AI_MODEL_DSA_MASTER;
+  }
+  const opt = DSA_MASTER_MODELS.find((m) => m.id === requested)!;
+  if (opt.donorOnly && !donor) return AI_MODEL_DSA_MASTER;
+  return opt.id;
+}

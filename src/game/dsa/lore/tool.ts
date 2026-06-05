@@ -59,12 +59,13 @@ type ChatMessage =
 export async function callChatWithLoreTool(
   apiKey: string,
   messages: ChatMessage[],
-  options: { temperature: number; max_tokens: number },
+  options: { temperature: number; max_tokens: number; model?: string },
 ): Promise<
   | { ok: true; reply: string }
   | { ok: false; status: number; error: string }
 > {
   const working: ChatMessage[] = [...messages];
+  const model = options.model || AI_MODEL_DSA_MASTER;
 
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
     let upstream: Response;
@@ -73,7 +74,7 @@ export async function callChatWithLoreTool(
         method: "POST",
         headers: openRouterHeaders(apiKey),
         body: JSON.stringify({
-          model: AI_MODEL_DSA_MASTER,
+          model,
           messages: working,
           tools: [DSA_LORE_TOOL_SPEC],
           tool_choice: "auto",
