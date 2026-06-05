@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollText, Loader2, Send, LogOut, Dices, Swords, Maximize2, Minimize2, FileDown, Play, Lock, Sparkles } from "lucide-react";
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
+import { DsaModelSwitcher } from "@/components/game/dsa/DsaModelSwitcher";
+import { getDsaModel } from "@/lib/dsaModelPreference";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useAuth } from "@/auth/AuthContext";
 import { useDonationStatus } from "@/hooks/useDonationStatus";
@@ -120,6 +122,7 @@ async function authedPost(
     body: JSON.stringify({
       ...body,
       sessionId,
+      model: getDsaModel(),
       ...(token ? {} : { anonId: getAnonId() }),
     }),
   });
@@ -132,6 +135,7 @@ async function authedPost(
     body: JSON.stringify({
       ...body,
       sessionId,
+      model: getDsaModel(),
     }),
   });
 }
@@ -576,6 +580,7 @@ export function DsaLlmAdventureScene() {
               </h2>
             </div>
             <div className="flex shrink-0 items-center gap-2 mr-10">
+              <DsaModelSwitcher />
               <button
                 type="button"
                 onClick={toggleFullscreen}

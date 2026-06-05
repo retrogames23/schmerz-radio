@@ -2,6 +2,7 @@ import {
   AI_MODEL_DSA_MASTER,
   OPENROUTER_CHAT_URL,
   openRouterHeaders,
+  resolveDsaMasterModel,
 } from "@/lib/aiModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
@@ -425,6 +426,7 @@ async function callMaster(
   dynamicState: string,
   history: StoredTurn[],
   minAssistantTurns: number,
+  model: string,
 ): Promise<{ ok: true; reply: string } | { ok: false; status: number; error: string }> {
   return callChatWithLoreTool(
     apiKey,
@@ -438,7 +440,7 @@ async function callMaster(
       { role: "system", content: dynamicState },
       ...history.slice(-10).map((m) => ({ role: m.role, content: m.content })),
     ],
-    { temperature: 0.8, max_tokens: 950 },
+    { temperature: 0.8, max_tokens: 950, model },
   );
 }
 
@@ -526,6 +528,19 @@ export const Route = createFileRoute("/api/public/dsa-master")({
         const admin = createClient(supabaseUrl, serviceKey, {
           auth: { persistSession: false, autoRefreshToken: false },
         });
+
+        // Donor-Status für Modell-Switcher: Nur Unterstützer*innen
+        // dürfen vom Default-Modell abweichen. Anonyme sind nie Spender.
+        let isDonor = false;
+        if (uid) {
+          const { data: prof } = await admin
+            .from("profiles")
+            .select("donation_unlocked")
+            .eq("user_id", uid)
+            .maybeSingle();
+          isDonor = !!(prof as { donation_unlocked?: boolean } | null)?.donation_unlocked;
+        }
+        const chosenModel = resolveDsaMasterModel(b.model, isDonor);
 
         // ── load ──────────────────────────────────────────
         if (action === "load") {
@@ -741,7 +756,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
               "(SPIELLEITER-CUE: Eröffne das Abenteuer. Wende dich ZUERST als Tjark kurz direkt an Layard (1–2 Sätze, [TJARK]-Zeile) und weise ihn darauf hin, dass er dich jederzeit mit dem Stichwort »Outtime« ansprechen kann, wenn er Regelfragen oder Fragen zur Welt Aventuriens hat — und dass du für manche In-World-Wissensfragen (Etikette, Heraldik, Götter, Geschichte, Magiekunde) eine passende Probe verlangen kannst. DANACH setze die Szene mit [SCENE: …], beschreibe in 2–4 Sätzen, wo Layards Charakter mit Brem und Yelva steht und was sie umgibt. Schließe mit einer offenen Frage an die Gruppe oder einer ersten Beobachtung. Noch kein Kampf.)",
           };
           const minEnd = DONOR_ONLY_SETTINGS.has(settingId) ? 0 : MIN_END_ASSISTANT_TURNS;
-          const result = await callMaster(apiKey, staticLore, dynamicState, [opener], minEnd);
+          const result = await callMaster(apiKey, staticLore, dynamicState, [opener], minEnd, chosenModel);
           if (!result.ok) return json(result.status, { error: result.error });
           const parsed = parseMasterTurn(result.reply);
           const initialMessages: StoredTurn[] = [
@@ -906,7 +921,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             gear: (await loadHeroGearAndRow(admin, uid, heroSlot)).gear,
           });
           const minEnd = isOpenSetting ? 0 : MIN_END_ASSISTANT_TURNS;
-          const result = await callMaster(apiKey, staticLore, dynamicState, history, minEnd);
+          const result = await callMaster(apiKey, staticLore, dynamicState, history, minEnd, chosenModel);
           if (!result.ok) return json(result.status, { error: result.error });
           let reply = result.reply;
           let parsed = parseMasterTurn(reply);

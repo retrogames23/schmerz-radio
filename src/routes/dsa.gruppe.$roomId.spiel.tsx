@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { getDsaModel } from "@/lib/dsaModelPreference";
 import { ArrowLeft, Loader2, Maximize2, Minimize2, ScrollText, Send } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -269,7 +270,7 @@ function SpielraumPage() {
       let resp = await fetch("/api/public/dsa-group", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ action, roomId, ...extra }),
+        body: JSON.stringify({ action, roomId, model: getDsaModel(), ...extra }),
       });
       if (resp.status === 401) {
         token = await getFreshAccessToken(true);
@@ -277,7 +278,7 @@ function SpielraumPage() {
           resp = await fetch("/api/public/dsa-group", {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ action, roomId, ...extra }),
+            body: JSON.stringify({ action, roomId, model: getDsaModel(), ...extra }),
           });
         }
       }

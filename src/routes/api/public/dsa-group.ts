@@ -16,6 +16,7 @@ import type { DsaCharacterSummary } from "@/game/types";
 import { AP_DEFAULTS } from "@/game/dsa/advancement";
 import { defaultGearFor, type HeroGear } from "@/game/dsa/gear";
 import { callChatWithLoreTool } from "@/game/dsa/lore/tool";
+import { resolveDsaMasterModel } from "@/lib/aiModel";
 
 /**
  * Server-Route für das DSA-Gruppenabenteuer (Mehrspieler-Modus).
@@ -120,6 +121,7 @@ async function callMaster(
   dynamicState: string,
   history: StoredTurn[],
   minAssistantTurns: number,
+  model: string,
 ): Promise<{ ok: true; reply: string } | { ok: false; status: number; error: string }> {
   return callChatWithLoreTool(
     apiKey,
@@ -132,11 +134,30 @@ async function callMaster(
       { role: "system", content: dynamicState },
       ...history.slice(-10).map((m) => ({ role: m.role, content: m.content })),
     ],
-    { temperature: 0.8, max_tokens: 1100 },
+    { temperature: 0.8, max_tokens: 1100, model },
   );
 }
 
 type AnyClient = ReturnType<typeof createClient<any, any, any>>;
+
+/**
+ * Ermittelt das tatsächlich zu verwendende DSA-Master-Modell für einen
+ * Raum. Maßgeblich ist der Donor-Status des Gastgebers (er bezahlt die
+ * Cloud-Quote). Nicht-Spender-Hosts bekommen immer den Default.
+ */
+async function resolveRoomModel(
+  admin: AnyClient,
+  hostUserId: string,
+  requested: unknown,
+): Promise<string> {
+  const { data: prof } = await admin
+    .from("profiles")
+    .select("donation_unlocked")
+    .eq("user_id", hostUserId)
+    .maybeSingle();
+  const donor = !!(prof as { donation_unlocked?: boolean } | null)?.donation_unlocked;
+  return resolveDsaMasterModel(requested, donor);
+}
 
 interface RoomRow {
   id: string;
@@ -317,6 +338,7 @@ async function runMasterAndStore(
   room: RoomRow,
   members: MemberRow[],
   userTurn: { content: string } | null,
+  model: string,
 ): Promise<{ ok: true; reply: string; nextStatus: "active" | "victory" | "defeat" | "aborted"; imageTag: string } | { ok: false; status: number; error: string }> {
   const heroes = await membersToGroupHeroes(admin, members);
   const assistantTurns = room.turn_idx;
@@ -336,7 +358,7 @@ async function runMasterAndStore(
   const history = await loadHistoryForLLM(admin, room.id);
   if (userTurn) history.push({ role: "user", content: userTurn.content });
   const minEnd = isOpen ? 0 : MIN_END_TURNS;
-  const result = await callMaster(apiKey, staticLore, dynamicState, history, minEnd);
+  const result = await callMaster(apiKey, staticLore, dynamicState, history, minEnd, model);
   if (!result.ok) return result;
   const parsed = parseMasterTurn(result.reply);
   let reply = result.reply;
@@ -674,7 +696,8 @@ export const Route = createFileRoute("/api/public/dsa-group")({
             const elapsed =
               Date.now() - new Date(room.collect_started_at).getTime();
             if (elapsed >= COLLECT_WINDOW_MS - 1000) {
-              await advanceTurn(admin, apiKey, roomId);
+              const model = await resolveRoomModel(admin, room.host_user_id, b.model);
+              await advanceTurn(admin, apiKey, roomId, model);
             }
           }
           return json(200, { ok: true });
@@ -712,7 +735,8 @@ export const Route = createFileRoute("/api/public/dsa-group")({
               "(SPIELLEITER-CUE: Eröffne das Gruppenabenteuer. Begrüße kurz alle Helden namentlich in genau einer [TJARK]-Zeile. Erkläre knapp, dass jeder selbst eintippt, was sein Held tut — eine Absprache untereinander ist nicht nötig; du wartest kurz, sammelst die eingehenden Aktionen ein und erzählst dann alles in einem Zug weiter. Setze die Szene mit [SCENE: …] in 2–4 Sätzen. Schließe mit einer offenen Frage „Was tut ihr?“.)",
           };
           const freshRoom = (await fetchRoom(admin, roomId))!;
-          const r = await runMasterAndStore(admin, apiKey, freshRoom, members, opener);
+          const model = await resolveRoomModel(admin, room.host_user_id, b.model);
+          const r = await runMasterAndStore(admin, apiKey, freshRoom, members, opener, model);
           if (!r.ok) {
             // Rollback Status, damit der Host es erneut versuchen kann.
             await admin.from("dsa_group_rooms").update({ status: "lobby" }).eq("id", roomId);
@@ -783,7 +807,8 @@ export const Route = createFileRoute("/api/public/dsa-group")({
           );
           const allSubmitted = present.length > 0 && present.every((m) => submittedIds.has(m.user_id));
           if (allSubmitted) {
-            const r = await advanceTurn(admin, apiKey, roomId);
+            const model = await resolveRoomModel(admin, room.host_user_id, b.model);
+            const r = await advanceTurn(admin, apiKey, roomId, model);
             if (!r.ok) return json(r.status, { error: r.error });
           }
           return json(200, { ok: true });
@@ -798,7 +823,8 @@ export const Route = createFileRoute("/api/public/dsa-group")({
           if (elapsed < COLLECT_WINDOW_MS - 1000) {
             return json(200, { ok: true, skipped: true });
           }
-          const r = await advanceTurn(admin, apiKey, roomId);
+          const model = await resolveRoomModel(admin, room.host_user_id, b.model);
+          const r = await advanceTurn(admin, apiKey, roomId, model);
           if (!r.ok) return json(r.status, { error: r.error });
           return json(200, { ok: true });
         }
@@ -884,6 +910,7 @@ async function advanceTurn(
   admin: AnyClient,
   apiKey: string,
   roomId: string,
+  model: string,
 ): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
   // Wenn der Gastgeber offline ist, pausieren wir das Spiel komplett:
   // kein Vorrücken, kein LLM-Call, das Sammelfenster bleibt stehen.
@@ -961,7 +988,7 @@ async function advanceTurn(
     };
   }
 
-  const r = await runMasterAndStore(admin, apiKey, room, members, userTurn);
+  const r = await runMasterAndStore(admin, apiKey, room, members, userTurn, model);
   if (!r.ok) return r;
 
   // Pending leeren.
