@@ -140,6 +140,25 @@ async function callMaster(
 
 type AnyClient = ReturnType<typeof createClient<any, any, any>>;
 
+/**
+ * Ermittelt das tatsächlich zu verwendende DSA-Master-Modell für einen
+ * Raum. Maßgeblich ist der Donor-Status des Gastgebers (er bezahlt die
+ * Cloud-Quote). Nicht-Spender-Hosts bekommen immer den Default.
+ */
+async function resolveRoomModel(
+  admin: AnyClient,
+  hostUserId: string,
+  requested: unknown,
+): Promise<string> {
+  const { data: prof } = await admin
+    .from("profiles")
+    .select("donation_unlocked")
+    .eq("user_id", hostUserId)
+    .maybeSingle();
+  const donor = !!(prof as { donation_unlocked?: boolean } | null)?.donation_unlocked;
+  return resolveDsaMasterModel(requested, donor);
+}
+
 interface RoomRow {
   id: string;
   name: string;
