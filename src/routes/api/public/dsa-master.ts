@@ -1,4 +1,8 @@
-import { AI_MODEL_MAIN } from "@/lib/aiModel";
+import {
+  AI_MODEL_DSA_MASTER,
+  OPENROUTER_CHAT_URL,
+  openRouterHeaders,
+} from "@/lib/aiModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { buildMasterSystemPrompt, type HeroMemory, type HeroKnownNpc, type HeroChronicleEntry } from "@/game/dsa/llmMasterPrompt";
@@ -192,11 +196,11 @@ ${knownNpcLines || "(keine)"}
 TRANSKRIPT (gekürzt):
 ${transcript.slice(-6000)}`;
   try {
-    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const resp = await fetch(OPENROUTER_CHAT_URL, {
       method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      headers: openRouterHeaders(apiKey),
       body: JSON.stringify({
-        model: AI_MODEL_MAIN,
+        model: AI_MODEL_DSA_MASTER,
         messages: [
           { role: "system", content: sys },
           { role: "user", content: user },
@@ -376,14 +380,11 @@ async function maybeSummarize(
     .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
     .join("\n");
   try {
-    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const resp = await fetch(OPENROUTER_CHAT_URL, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
+      headers: openRouterHeaders(apiKey),
       body: JSON.stringify({
-        model: AI_MODEL_MAIN,
+        model: AI_MODEL_DSA_MASTER,
         messages: [
           {
             role: "system",
@@ -437,8 +438,8 @@ export const Route = createFileRoute("/api/public/dsa-master")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const apiKey = process.env.LOVABLE_API_KEY;
-        if (!apiKey) return json(500, { error: "AI Gateway nicht konfiguriert." });
+        const apiKey = process.env.OPENROUTER_API_KEY;
+        if (!apiKey) return json(500, { error: "OPENROUTER_API_KEY nicht konfiguriert." });
 
         // Origin-Guard wie npc-chat
         const origin = request.headers.get("origin");

@@ -6,7 +6,11 @@
  */
 
 import { resolveLoreTopic, LORE_TOPIC_HINT } from "./lookup";
-import { AI_MODEL_MAIN } from "@/lib/aiModel";
+import {
+  AI_MODEL_DSA_MASTER,
+  OPENROUTER_CHAT_URL,
+  openRouterHeaders,
+} from "@/lib/aiModel";
 
 export const DSA_LORE_TOOL_SPEC = {
   type: "function" as const,
@@ -65,14 +69,11 @@ export async function callChatWithLoreTool(
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
     let upstream: Response;
     try {
-      upstream = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      upstream = await fetch(OPENROUTER_CHAT_URL, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
+        headers: openRouterHeaders(apiKey),
         body: JSON.stringify({
-          model: AI_MODEL_MAIN,
+          model: AI_MODEL_DSA_MASTER,
           messages: working,
           tools: [DSA_LORE_TOOL_SPEC],
           tool_choice: "auto",

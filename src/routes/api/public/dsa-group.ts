@@ -394,8 +394,8 @@ export const Route = createFileRoute("/api/public/dsa-group")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const apiKey = process.env.LOVABLE_API_KEY;
-        if (!apiKey) return json(500, { error: "AI Gateway nicht konfiguriert." });
+        const apiKey = process.env.OPENROUTER_API_KEY;
+        if (!apiKey) return json(500, { error: "OPENROUTER_API_KEY nicht konfiguriert." });
 
         const origin = request.headers.get("origin");
         if (origin) {
