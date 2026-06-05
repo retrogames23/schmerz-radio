@@ -165,13 +165,3 @@ export function buildGroupMasterSystemPrompt(args: BuildGroupPromptArgs): string
   ].join("\n\n");
 }
 
-// Unused-import-Schutz: alte Hilfsausdrücke (heroBlock-Builder) sind jetzt in den split-Funktionen.
-function _legacyUnused() {
-  const _heroes: GroupHero[] = [];
-  return _heroes
-    .map((h) => {
-      const gear = h.gear ?? defaultGearFor(h.character.classId);
-      return serializeGearForPrompt(gear);
-    })
-    .join("");
-}
