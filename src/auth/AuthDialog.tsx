@@ -57,7 +57,7 @@ export function AuthDialog({ open, onClose }: Props) {
   };
 
   return (
-    <div className="absolute inset-0 z-[80] flex items-center justify-center bg-black/90 px-4">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center overflow-y-auto bg-black/90 px-4 py-8">
       <div className="fade-in w-full max-w-md rounded-sm border border-amber-glow/50 bg-background p-6 shadow-[0_0_60px_rgba(0,0,0,0.85)]">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-display text-lg uppercase tracking-[0.3em] text-amber-glow amber-glow">
