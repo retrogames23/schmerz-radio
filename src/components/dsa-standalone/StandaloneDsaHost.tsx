@@ -86,6 +86,17 @@ export function StandaloneDsaHost({
       if (activeSid) {
         setSlotSessionId(slot, activeSid);
         setSessionIdState(activeSid);
+      } else {
+        // Cloud kennt für diesen Slot KEIN laufendes Abenteuer. Eine
+        // evtl. lokal hinterlegte SessionId stammt dann von einem
+        // früheren Helden in diesem Slot (z. B. Tarsane wurde auf einem
+        // anderen Gerät in Slot 4 verschoben, der alte Slot-4-Held lebte
+        // hier zuvor). Würden wir die alte ID weiterverwenden, lüden wir
+        // das Abenteuer des falschen Charakters. Stattdessen rotieren
+        // wir die SessionId, damit der Picker für ein neues Abenteuer
+        // erscheint.
+        const fresh = rotateSlotSessionId(slot);
+        setSessionIdState(fresh);
       }
       if (cloudHero) {
         heroRef.current = cloudHero;
