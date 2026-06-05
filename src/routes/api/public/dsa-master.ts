@@ -2,6 +2,7 @@ import {
   AI_MODEL_DSA_MASTER,
   OPENROUTER_CHAT_URL,
   openRouterHeaders,
+  resolveDsaMasterModel,
 } from "@/lib/aiModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
@@ -425,6 +426,7 @@ async function callMaster(
   dynamicState: string,
   history: StoredTurn[],
   minAssistantTurns: number,
+  model: string,
 ): Promise<{ ok: true; reply: string } | { ok: false; status: number; error: string }> {
   return callChatWithLoreTool(
     apiKey,
@@ -438,7 +440,7 @@ async function callMaster(
       { role: "system", content: dynamicState },
       ...history.slice(-10).map((m) => ({ role: m.role, content: m.content })),
     ],
-    { temperature: 0.8, max_tokens: 950 },
+    { temperature: 0.8, max_tokens: 950, model },
   );
 }
 
