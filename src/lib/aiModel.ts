@@ -28,7 +28,7 @@ export const AI_MODEL_LIGHT = "google/gemini-2.5-flash-lite";
  */
 export const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 export const OPENROUTER_CHAT_URL = `${OPENROUTER_BASE_URL}/chat/completions`;
-export const AI_MODEL_DSA_MASTER = "anthropic/claude-haiku-latest";
+export const AI_MODEL_DSA_MASTER = "anthropic/claude-haiku-4.5";
 
 /** App-Identifikation für OpenRouter-Ranking-Header (optional aber empfohlen). */
 const OPENROUTER_APP_URL = "https://whisperquest.app";
