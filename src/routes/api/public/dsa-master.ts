@@ -891,7 +891,8 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           const assistantTurns = rawMessages.filter((m) => m.role === "assistant").length;
           const cooldown = !isOpenSetting && assistantTurns >= 10 && assistantTurns <= 18;
 
-          const systemPrompt = buildMasterSystemPrompt({
+          const staticLore = buildStaticMasterLore(settingId);
+          const dynamicState = buildDynamicMasterState({
             setting: settingId,
             character: characterSnap,
             summary,
@@ -905,7 +906,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             gear: (await loadHeroGearAndRow(admin, uid, heroSlot)).gear,
           });
           const minEnd = isOpenSetting ? 0 : MIN_END_ASSISTANT_TURNS;
-          const result = await callMaster(apiKey, systemPrompt, history, minEnd);
+          const result = await callMaster(apiKey, staticLore, dynamicState, history, minEnd);
           if (!result.ok) return json(result.status, { error: result.error });
           let reply = result.reply;
           let parsed = parseMasterTurn(reply);
