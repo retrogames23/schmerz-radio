@@ -696,7 +696,8 @@ export const Route = createFileRoute("/api/public/dsa-group")({
             const elapsed =
               Date.now() - new Date(room.collect_started_at).getTime();
             if (elapsed >= COLLECT_WINDOW_MS - 1000) {
-              await advanceTurn(admin, apiKey, roomId);
+              const model = await resolveRoomModel(admin, room.host_user_id, b.model);
+              await advanceTurn(admin, apiKey, roomId, model);
             }
           }
           return json(200, { ok: true });
@@ -734,7 +735,8 @@ export const Route = createFileRoute("/api/public/dsa-group")({
               "(SPIELLEITER-CUE: Eröffne das Gruppenabenteuer. Begrüße kurz alle Helden namentlich in genau einer [TJARK]-Zeile. Erkläre knapp, dass jeder selbst eintippt, was sein Held tut — eine Absprache untereinander ist nicht nötig; du wartest kurz, sammelst die eingehenden Aktionen ein und erzählst dann alles in einem Zug weiter. Setze die Szene mit [SCENE: …] in 2–4 Sätzen. Schließe mit einer offenen Frage „Was tut ihr?“.)",
           };
           const freshRoom = (await fetchRoom(admin, roomId))!;
-          const r = await runMasterAndStore(admin, apiKey, freshRoom, members, opener);
+          const model = await resolveRoomModel(admin, room.host_user_id, b.model);
+          const r = await runMasterAndStore(admin, apiKey, freshRoom, members, opener, model);
           if (!r.ok) {
             // Rollback Status, damit der Host es erneut versuchen kann.
             await admin.from("dsa_group_rooms").update({ status: "lobby" }).eq("id", roomId);
@@ -805,7 +807,8 @@ export const Route = createFileRoute("/api/public/dsa-group")({
           );
           const allSubmitted = present.length > 0 && present.every((m) => submittedIds.has(m.user_id));
           if (allSubmitted) {
-            const r = await advanceTurn(admin, apiKey, roomId);
+            const model = await resolveRoomModel(admin, room.host_user_id, b.model);
+            const r = await advanceTurn(admin, apiKey, roomId, model);
             if (!r.ok) return json(r.status, { error: r.error });
           }
           return json(200, { ok: true });
@@ -820,7 +823,8 @@ export const Route = createFileRoute("/api/public/dsa-group")({
           if (elapsed < COLLECT_WINDOW_MS - 1000) {
             return json(200, { ok: true, skipped: true });
           }
-          const r = await advanceTurn(admin, apiKey, roomId);
+          const model = await resolveRoomModel(admin, room.host_user_id, b.model);
+          const r = await advanceTurn(admin, apiKey, roomId, model);
           if (!r.ok) return json(r.status, { error: r.error });
           return json(200, { ok: true });
         }
