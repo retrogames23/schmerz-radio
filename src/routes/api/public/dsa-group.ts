@@ -16,6 +16,7 @@ import type { DsaCharacterSummary } from "@/game/types";
 import { AP_DEFAULTS } from "@/game/dsa/advancement";
 import { defaultGearFor, type HeroGear } from "@/game/dsa/gear";
 import { callChatWithLoreTool } from "@/game/dsa/lore/tool";
+import { resolveDsaMasterModel } from "@/lib/aiModel";
 
 /**
  * Server-Route für das DSA-Gruppenabenteuer (Mehrspieler-Modus).
@@ -120,6 +121,7 @@ async function callMaster(
   dynamicState: string,
   history: StoredTurn[],
   minAssistantTurns: number,
+  model: string,
 ): Promise<{ ok: true; reply: string } | { ok: false; status: number; error: string }> {
   return callChatWithLoreTool(
     apiKey,
@@ -132,7 +134,7 @@ async function callMaster(
       { role: "system", content: dynamicState },
       ...history.slice(-10).map((m) => ({ role: m.role, content: m.content })),
     ],
-    { temperature: 0.8, max_tokens: 1100 },
+    { temperature: 0.8, max_tokens: 1100, model },
   );
 }
 
