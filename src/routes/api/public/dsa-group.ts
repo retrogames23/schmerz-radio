@@ -319,6 +319,7 @@ async function runMasterAndStore(
   room: RoomRow,
   members: MemberRow[],
   userTurn: { content: string } | null,
+  model: string,
 ): Promise<{ ok: true; reply: string; nextStatus: "active" | "victory" | "defeat" | "aborted"; imageTag: string } | { ok: false; status: number; error: string }> {
   const heroes = await membersToGroupHeroes(admin, members);
   const assistantTurns = room.turn_idx;
@@ -338,7 +339,7 @@ async function runMasterAndStore(
   const history = await loadHistoryForLLM(admin, room.id);
   if (userTurn) history.push({ role: "user", content: userTurn.content });
   const minEnd = isOpen ? 0 : MIN_END_TURNS;
-  const result = await callMaster(apiKey, staticLore, dynamicState, history, minEnd);
+  const result = await callMaster(apiKey, staticLore, dynamicState, history, minEnd, model);
   if (!result.ok) return result;
   const parsed = parseMasterTurn(result.reply);
   let reply = result.reply;
@@ -886,6 +887,7 @@ async function advanceTurn(
   admin: AnyClient,
   apiKey: string,
   roomId: string,
+  model: string,
 ): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
   // Wenn der Gastgeber offline ist, pausieren wir das Spiel komplett:
   // kein Vorrücken, kein LLM-Call, das Sammelfenster bleibt stehen.
@@ -963,7 +965,7 @@ async function advanceTurn(
     };
   }
 
-  const r = await runMasterAndStore(admin, apiKey, room, members, userTurn);
+  const r = await runMasterAndStore(admin, apiKey, room, members, userTurn, model);
   if (!r.ok) return r;
 
   // Pending leeren.
