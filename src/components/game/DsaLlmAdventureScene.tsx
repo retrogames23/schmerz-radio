@@ -377,6 +377,7 @@ export function DsaLlmAdventureScene() {
     if (!dsaCharacter || busy) return;
     setBusy(true);
     setError(null);
+    setMode({ kind: "loading" });
     try {
       const r = await authedPost(
         {
