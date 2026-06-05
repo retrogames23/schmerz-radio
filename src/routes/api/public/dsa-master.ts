@@ -5,7 +5,13 @@ import {
 } from "@/lib/aiModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
-import { buildMasterSystemPrompt, type HeroMemory, type HeroKnownNpc, type HeroChronicleEntry } from "@/game/dsa/llmMasterPrompt";
+import {
+  buildStaticMasterLore,
+  buildDynamicMasterState,
+  type HeroMemory,
+  type HeroKnownNpc,
+  type HeroChronicleEntry,
+} from "@/game/dsa/llmMasterPrompt";
 import {
   DSA_SETTINGS,
   getSetting,
