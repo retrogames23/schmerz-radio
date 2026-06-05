@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useAuth } from "./AuthContext";
 
 interface Props {
@@ -56,8 +57,10 @@ export function AuthDialog({ open, onClose }: Props) {
     if (result.error) setError(translateError(result.error));
   };
 
-  return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center overflow-y-auto bg-black/90 px-4 py-8">
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[10000] grid min-h-dvh place-items-center overflow-y-auto bg-black/90 px-4 py-6">
       <div className="fade-in w-full max-w-md rounded-sm border border-amber-glow/50 bg-background p-6 shadow-[0_0_60px_rgba(0,0,0,0.85)]">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-display text-lg uppercase tracking-[0.3em] text-amber-glow amber-glow">
@@ -186,7 +189,8 @@ export function AuthDialog({ open, onClose }: Props) {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
