@@ -3,11 +3,17 @@
  * zum allgemeinen Auelfen-Brief in den Solo- und (wenn includeCompanions)
  * Gruppen-Prompt eingebettet, damit Tjark und die beiden NSCs konsistent
  * mit Tiefe und Brüchen spielen.
+ *
+ * Aufbau pro Companion:
+ *   *_E67_FRAME   — nur die „Spieler in E67" / „Charakter in Aventurien"-
+ *                   Dualität. Wird ausschließlich im Modus `e67` mitgegeben.
+ *   *_CORE_*      — rein aventurischer Kern (Charakter, Werdegang, Brüche).
+ *                   Gilt in beiden Modi.
+ *   *_SHORT/*_BACKSTORY — Vollform = Frame + Core (für E67).
+ *                          Standalone bekommt nur Core.
  */
 
-export const DSA_BREM_BACKSTORY = `
-BREM — HINTERGRUND (PFLICHT, nicht ständig vorlesen, aber konsistent spielen):
-
+const DSA_BREM_E67_FRAME = `
   WICHTIG — ZWEI EBENEN:
     • SPIELER „Brem" — ~16 Jahre, sitzt 1997 mit Tjark und Yelva im
       Gemeinschaftsraum E67. Realer Junge aus dem Hochhaus-Komplex, isst
@@ -22,7 +28,9 @@ BREM — HINTERGRUND (PFLICHT, nicht ständig vorlesen, aber konsistent spielen)
     • INTIME (Szene in Aventurien): „Brem" = Brendan Halbgroschen. Dann
       gelten alle Brüche unten.
     • Wenn unklar: kurz aus dem Kontext klären, nicht raten.
+`.replace(/^\n|\n$/g, "");
 
+const DSA_BREM_CORE_BACKSTORY = `
   CHARAKTER — Voller Name: Brendan „Brem" Halbgroschen. Streuner, ~28, geboren in FESTUM
   (Nordmarken-Hafenviertel). Sohn der Beutelschneiderin Mira Halbgroschen
   und eines unbekannten thorwalschen Seefahrers. Wuchs in einer
@@ -65,11 +73,9 @@ BREM — HINTERGRUND (PFLICHT, nicht ständig vorlesen, aber konsistent spielen)
     • Festum, das Pakt-Manuskript, Mira im Kerker und das Geld sind seine
       GEHEIMNISSE. Er erzählt sie NICHT von selbst — frühestens nach
       starkem Vertrauen, mehreren Abenteuern, einer durchzechten Nacht.
-`.trim();
+`.replace(/^\n|\n$/g, "");
 
-export const DSA_YELVA_BACKSTORY = `
-YELVA — HINTERGRUND (PFLICHT, nicht ständig vorlesen, aber konsistent spielen):
-
+const DSA_YELVA_E67_FRAME = `
   WICHTIG — ZWEI EBENEN:
     • SPIELERIN „Yelva" — ~16 Jahre, sitzt 1997 mit Tjark und Brem im
       Gemeinschaftsraum E67. Reale Jugendliche aus dem Komplex, kann
@@ -86,7 +92,9 @@ YELVA — HINTERGRUND (PFLICHT, nicht ständig vorlesen, aber konsistent spielen
     • INTIME (Szene in Aventurien): „Yelva" = Yelvanyel nin' Salwiel. Dann
       gelten alle Brüche unten.
     • Wenn unklar: kurz aus dem Kontext klären, nicht raten.
+`.replace(/^\n|\n$/g, "");
 
+const DSA_YELVA_CORE_BACKSTORY = `
   CHARAKTER — Voller Name: Yelvanyel nin' Salwiel („vom singenden Wasser"), Kurzform „Yelva". Auelfe,
   ~135 Jahre alt (für eine Elfe Mitte 30). Aus der SIPPE DER SALWIEL,
   die in losen Sommerlagern am Großen Fluss zwischen Donnerbach und
@@ -131,7 +139,33 @@ YELVA — HINTERGRUND (PFLICHT, nicht ständig vorlesen, aber konsistent spielen
       die Ältesten sind ihre GEHEIMNISSE. Sie erzählt sie NICHT von
       selbst — frühestens nach starkem Vertrauen, in einer Szene am Feuer,
       und auch dann nur in Bildern, nie als Bericht.
-`.trim();
+`.replace(/^\n|\n$/g, "");
+
+function buildBremBackstory(mode: DsaRuntimeMode): string {
+  const body = mode === "e67"
+    ? `${DSA_BREM_E67_FRAME}\n${DSA_BREM_CORE_BACKSTORY}`
+    : DSA_BREM_CORE_BACKSTORY;
+  return `BREM — HINTERGRUND (PFLICHT, nicht ständig vorlesen, aber konsistent spielen):\n\n${body}`.trim();
+}
+
+function buildYelvaBackstory(mode: DsaRuntimeMode): string {
+  const body = mode === "e67"
+    ? `${DSA_YELVA_E67_FRAME}\n${DSA_YELVA_CORE_BACKSTORY}`
+    : DSA_YELVA_CORE_BACKSTORY;
+  return `YELVA — HINTERGRUND (PFLICHT, nicht ständig vorlesen, aber konsistent spielen):\n\n${body}`.trim();
+}
+
+/** Public Form für die `dsaLore`-Topics. Default = e67-Vollform (Rückwärts-
+ *  kompatibilität für bestehende Aufrufer). */
+export const DSA_BREM_BACKSTORY = buildBremBackstory("e67");
+export const DSA_YELVA_BACKSTORY = buildYelvaBackstory("e67");
+
+export function getBremBackstory(mode: DsaRuntimeMode = "e67"): string {
+  return mode === "e67" ? DSA_BREM_BACKSTORY : buildBremBackstory("standalone");
+}
+export function getYelvaBackstory(mode: DsaRuntimeMode = "e67"): string {
+  return mode === "e67" ? DSA_YELVA_BACKSTORY : buildYelvaBackstory("standalone");
+}
 
 /**
  * Kurzprofile für den Default-Prompt — die volle Backstory ist 8 KB groß
@@ -139,9 +173,8 @@ YELVA — HINTERGRUND (PFLICHT, nicht ständig vorlesen, aber konsistent spielen
  * Hier nur das, was der Meister IMMER wissen muss, um die beiden in jeder
  * Wende konsistent zu spielen.
  */
-export const DSA_BREM_SHORT = `
-BREM — KURZPROFIL (Details via dsaLore({topic:'companions.brem'})):
-  Spieler: Brem, ~16, sitzt 1997 in E67 am Tisch.
+const DSA_BREM_SHORT_E67_LINE = `  Spieler: Brem, ~16, sitzt 1997 in E67 am Tisch.\n`;
+const DSA_BREM_SHORT_CORE = `
   Charakter: Brendan „Brem" Halbgroschen, Streuner, ~28, geboren in Festum.
   Tonfall: trocken, pragmatisch, geldgierig wirkend. Phex-Sprüche ("Bei Phex'
   krummem Finger!"). Betritt KEINE Tempel — auch keine von Phex.
@@ -149,11 +182,10 @@ BREM — KURZPROFIL (Details via dsaLore({topic:'companions.brem'})):
   Schwarzmagie / Pakt-Magie / Magierkriegs-Themen (Grund ist geheim — bei
   Bedarf dsaLore aufrufen). Wenn das Thema fällt: wird untypisch still oder
   spitz; Yelva neckt ihn, ohne den Grund zu kennen.
-`.trim();
+`.replace(/^\n/, "");
 
-export const DSA_YELVA_SHORT = `
-YELVA — KURZPROFIL (Details via dsaLore({topic:'companions.yelva'})):
-  Spielerin: Yelva, ~16, sitzt 1997 in E67 am Tisch.
+const DSA_YELVA_SHORT_E67_LINE = `  Spielerin: Yelva, ~16, sitzt 1997 in E67 am Tisch.\n`;
+const DSA_YELVA_SHORT_CORE = `
   Charakter: Yelvanyel nin' Salwiel, Auelfe, ~135 Jahre alt, hat ihre Sippe
   am Großen Fluss aus eigenem Entschluss verlassen.
   Tonfall: ironisch, gebildet, spöttisch — vor allem gegenüber Brem. Lacht,
@@ -163,4 +195,21 @@ YELVA — KURZPROFIL (Details via dsaLore({topic:'companions.yelva'})):
   Praios-Geweihte machen sie still (Grund geheim — bei Bedarf dsaLore aufrufen).
   Berufung auf: das LIED, die HARMONIE, NURTI (Werden) / ZERZAL (Vergehen),
   niemals auf einen Zwölfgott.
-`.trim();
+`.replace(/^\n/, "");
+
+export type DsaRuntimeMode = "e67" | "standalone";
+
+export function getBremShort(mode: DsaRuntimeMode = "e67"): string {
+  const head = `BREM — KURZPROFIL (Details via dsaLore({topic:'companions.brem'})):\n`;
+  const e67Line = mode === "e67" ? DSA_BREM_SHORT_E67_LINE : "";
+  return `${head}${e67Line}${DSA_BREM_SHORT_CORE}`.trim();
+}
+export function getYelvaShort(mode: DsaRuntimeMode = "e67"): string {
+  const head = `YELVA — KURZPROFIL (Details via dsaLore({topic:'companions.yelva'})):\n`;
+  const e67Line = mode === "e67" ? DSA_YELVA_SHORT_E67_LINE : "";
+  return `${head}${e67Line}${DSA_YELVA_SHORT_CORE}`.trim();
+}
+
+/** Rückwärtskompatible Exports — entsprechen dem e67-Default. */
+export const DSA_BREM_SHORT = getBremShort("e67");
+export const DSA_YELVA_SHORT = getYelvaShort("e67");

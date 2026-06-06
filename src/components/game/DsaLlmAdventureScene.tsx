@@ -105,6 +105,7 @@ async function authedPost(
   body: Record<string, unknown>,
   sessionId: string,
   expectsSignedInUser = false,
+  runtimeMode: "e67" | "standalone" = "e67",
 ): Promise<Response> {
   const { getFreshAccessToken } = await import("@/auth/freshToken");
   const token = await getFreshAccessToken().catch(() => null);
@@ -123,6 +124,7 @@ async function authedPost(
       ...body,
       sessionId,
       model: getDsaModel(),
+      mode: runtimeMode,
       ...(token ? {} : { anonId: getAnonId() }),
     }),
   });
@@ -136,6 +138,7 @@ async function authedPost(
       ...body,
       sessionId,
       model: getDsaModel(),
+      mode: runtimeMode,
     }),
   });
 }
@@ -161,11 +164,13 @@ export function DsaLlmAdventureScene() {
     creditHeroAp,
     updateHero,
     confirmActiveSession,
+    dsaRuntimeMode,
   } = useDsaHost();
   const { user, loading: authLoading } = useAuth();
   const { setMoodPool, setMood } = useMusic();
   const heroSlot = normalizeHeroSlot(dsaHeroSlot);
   const expectsSignedInUser = !!user;
+  const runtimeMode = dsaRuntimeMode ?? "e67";
 
   const [mode, setMode] = useState<Mode>({ kind: "loading" });
   const [imageTag, setImageTag] = useState<string>("forest_path");

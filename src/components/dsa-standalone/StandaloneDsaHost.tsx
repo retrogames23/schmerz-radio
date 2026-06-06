@@ -203,6 +203,7 @@ export function StandaloneDsaHost({
               text,
               heroSlot: slot,
               sessionId,
+              mode: "standalone",
               ...(token ? {} : { anonId: anonId ?? "anon000000000000" }),
             }),
           });
@@ -266,6 +267,7 @@ export function StandaloneDsaHost({
       creditHeroAp,
       updateHero,
       notifyMaster,
+      dsaRuntimeMode: "standalone",
     };
   }, [character, setCharacter, sheetOpen, view, slot, sessionId, onExit, onCharacterCreated, creditHeroAp, updateHero, notifyMaster]);
 

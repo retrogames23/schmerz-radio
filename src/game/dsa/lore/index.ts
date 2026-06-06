@@ -2,20 +2,30 @@ import { DSA_CURRENT_AFFAIRS_20HAL } from "./currentAffairs";
 import { buildGodsBlockShort } from "./gods";
 import { buildRegionsBlockShortForSetting } from "./regions";
 import { buildBestiaryBlock, DSA_BESTIARY } from "./bestiary";
-import { DSA_BREM_SHORT, DSA_YELVA_SHORT } from "./companions";
+import { getBremShort, getYelvaShort, type DsaRuntimeMode } from "./companions";
 import type { DsaSettingId } from "../llmAdventure";
 
 export * from "./gods";
 export * from "./regions";
 export { DSA_BESTIARY };
 export { DSA_AUELFEN_BRIEF } from "./auelfen";
-export { DSA_BREM_BACKSTORY, DSA_YELVA_BACKSTORY, DSA_BREM_SHORT, DSA_YELVA_SHORT } from "./companions";
+export {
+  DSA_BREM_BACKSTORY,
+  DSA_YELVA_BACKSTORY,
+  DSA_BREM_SHORT,
+  DSA_YELVA_SHORT,
+  getBremBackstory,
+  getYelvaBackstory,
+  getBremShort,
+  getYelvaShort,
+} from "./companions";
+export type { DsaRuntimeMode } from "./companions";
 export { resolveLoreTopic, LORE_TOPICS, LORE_TOPIC_HINT } from "./lookup";
 
 /** Brem + Yelva Kurzprofile als ein Block — für Solo und Gruppe (mit Begleitern).
  *  Detailbiografien holt sich der Meister via dsaLore({topic:'companions.brem'|'companions.yelva'}). */
-export function buildCompanionBackstoriesBlock(): string {
-  return [DSA_BREM_SHORT, "", DSA_YELVA_SHORT].join("\n");
+export function buildCompanionBackstoriesBlock(mode: DsaRuntimeMode = "e67"): string {
+  return [getBremShort(mode), "", getYelvaShort(mode)].join("\n");
 }
 
 /**

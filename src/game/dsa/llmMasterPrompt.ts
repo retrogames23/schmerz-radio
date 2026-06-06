@@ -7,6 +7,7 @@ import { buildDsa3RulesBlock, SPELLS } from "./rules";
 import { defaultSpells, isMagicClass } from "./advancement";
 import { TALENTS } from "./rules/talents";
 import { buildCoreLoreAppend, buildContextualLoreBlock, buildCompanionBackstoriesBlock } from "./lore";
+import type { DsaRuntimeMode } from "./lore";
 import type { DsaCharacterSummary } from "@/game/types";
 import {
   defaultGearFor,
@@ -37,6 +38,13 @@ export interface BuildArgs {
   summary: string;
   offtopicStreak: number;
   assistantTurns?: number;
+  /**
+   * Spiel-Modus. `e67` (Default) = klassische Rahmen-Erzählung im
+   * Komplex E67 mit Spieler-„Layard" + Mitspielern Brem/Yelva am Tisch.
+   * `standalone` = pure DSA3-Tafelrunde, Tjark ist nur erfahrener
+   * Spielleiter, Brem/Yelva sind reine NSC-Mitspieler ohne E67-Bezug.
+   */
+  mode?: DsaRuntimeMode;
   /**
    * Wahr, wenn das Abenteuer dramaturgisch in der Mitte ist und eine
    * Ruhe-/Cooldown-Phase laufen soll (Taverne, Lagerfeuer, Rast).
@@ -69,7 +77,42 @@ export interface BuildArgs {
 /** Generischer Platzhalter für den Heldennamen im STATISCHEN Prompt-Teil.
  *  Der echte Name wird ausschließlich im dynamischen State-Block gesetzt,
  *  damit das LLM den großen statischen Lore-Block cachen kann. */
-const HERO_PLACEHOLDER = "Layards Held";
+const HERO_PLACEHOLDER_E67 = "Layards Held";
+const HERO_PLACEHOLDER_STANDALONE = "der Held";
+function heroPlaceholder(mode: DsaRuntimeMode): string {
+  return mode === "e67" ? HERO_PLACEHOLDER_E67 : HERO_PLACEHOLDER_STANDALONE;
+}
+/** Spieler-Anrede im Prompt: in E67 ist der Spieler „Layard"; im
+ *  Standalone-Mode hat der Spieler keinen Eigennamen am Tisch. */
+function playerLabel(mode: DsaRuntimeMode): string {
+  return mode === "e67" ? "Layard" : "der Spieler";
+}
+
+/**
+ * Macht den Prompttext „Layard-frei", wenn der Standalone-Modus aktiv
+ * ist. Wir schreiben den großen statischen Block weiter mit „Layard" /
+ * „Layards …" als Default (gut lesbar, E67 ist der Hauptpfad) und
+ * ersetzen erst am Ende für den Standalone-Mode. So bleibt nur eine
+ * Wahrheitsquelle für Regeln, Marker und Dramaturgie. Greift auch im
+ * dynamischen State-Block (Offtopic-Regel, Cooldown-Hinweis, …).
+ */
+function localizeForMode(text: string, mode: DsaRuntimeMode): string {
+  if (mode === "e67") return text;
+  return text
+    // Possessive Formen zuerst, sonst frisst "Layard" sie auf.
+    .replace(/Layards Helden/g, "den Helden des Spielers")
+    .replace(/Layards Held/g, "der Held des Spielers")
+    .replace(/Layards Charakter/g, "der Charakter des Spielers")
+    .replace(/Layards Nachricht/g, "die Nachricht des Spielers")
+    .replace(/Layards/g, "des Spielers")
+    // Vokativ: ", Layard?" / ", Layard." / ", Layard …" wegkürzen, damit
+    // keine ramponierte „, der Spieler?"-Syntax übrig bleibt.
+    .replace(/,\s*Layard([?.…])/g, "$1")
+    .replace(/\bLayard\b/g, "der Spieler")
+    // E67-Klammerbeispiele in der Offtopic-Regel.
+    .replace(/\(Pizza,\s*Schule,\s*Musik,\s*Ger(ü|ue)chte aus dem Komplex E67\)/g, "(Smalltalk, Meta-Fragen)")
+    .replace(/\(Smalltalk,\s*Meta-Fragen,\s*Pizza\)/g, "(Smalltalk, Meta-Fragen)");
+}
 
 /**
  * Vollständiger System-Prompt (Legacy): kombiniert statischen Lore-Block
@@ -78,8 +121,9 @@ const HERO_PLACEHOLDER = "Layards Held";
  * getrennt verwenden, damit Prompt-Caching greift.
  */
 export function buildMasterSystemPrompt(args: BuildArgs): string {
+  const mode: DsaRuntimeMode = args.mode ?? "e67";
   return [
-    buildStaticMasterLore(args.setting),
+    buildStaticMasterLore(args.setting, mode),
     buildDynamicMasterState(args),
   ].join("\n\n");
 }
@@ -90,7 +134,10 @@ export function buildMasterSystemPrompt(args: BuildArgs): string {
  * Heldenname wird durch den generischen Platzhalter `Layards Held` ersetzt.
  * Dieser Block ist cache-fähig.
  */
-export function buildStaticMasterLore(setting: DsaSettingId): string {
+export function buildStaticMasterLore(
+  setting: DsaSettingId,
+  mode: DsaRuntimeMode = "e67",
+): string {
   const s = getSetting(setting);
   const isSandbox = setting === "sandbox";
   const isWish = setting === "wish";
@@ -98,13 +145,14 @@ export function buildStaticMasterLore(setting: DsaSettingId): string {
   const sceneTagList = formatSceneTagListForPrompt();
   const enemyIdList = Object.keys(ENEMY_STATS).join(", ");
   const moodList = DSA_MOODS.join(", ");
-  const hero = HERO_PLACEHOLDER;
+  const hero = heroPlaceholder(mode);
+  const player = playerLabel(mode);
 
   const inventoryStaticBlock = `
 AUSRÜSTUNG UND INVENTAR — PFLICHT BEACHTEN (Spielregeln):
   ${hero} führt eine im dynamischen State-Block ausgewiesene Ausrüstung
   mit sich. Das ist die alleinige Wahrheit; lass ${hero} NIE Dinge einsetzen,
-  die nicht dort stehen. Will Layard etwas verwenden, das im Inventar steht —
+  die nicht dort stehen. Will ${player} etwas verwenden, das im Inventar steht —
   entscheide als Meister, ob und wie es wirkt (ggf. mit Probe). Will er etwas
   verwenden, das NICHT gelistet ist ("ich werfe eine Bombe"), lehne als
   Tjark ruhig ab ("Das hast du nicht dabei.").
@@ -138,16 +186,16 @@ ${serializeCompanionGearForPrompt()}
     Marker, nicht nur die Beschreibung.
 
   SPIELER-INVENTARAKTIONEN (am Heldenbogen):
-    Layard kann am Tisch jederzeit am Heldenbogen Waffe / Rüstung / Schild
+    ${player} kann am Tisch jederzeit am Heldenbogen Waffe / Rüstung / Schild
     wechseln und sonstige Items wegwerfen. Solche Änderungen kommen als
     User-Turn mit dem Präfix [INVENTAR] zu dir, z. B.
-      "[INVENTAR] Layard nimmt die Streitaxt in die Hand und steckt das
+      "[INVENTAR] ${player} nimmt die Streitaxt in die Hand und steckt das
        Langschwert in den Rucksack."
     Behandle das NICHT als eigene Spielszene, verlange keine Probe und
     setze KEINE [ITEM+]/[ITEM-]-Marker dafür — die Ausrüstungsliste oben
     spiegelt die Änderung bereits wider. Bestätige nur kurz in 1–2 Sätzen
     in-fiction (z. B. eine knappe Tjark- oder Erzähl-Zeile), und mache dann
-    bei der laufenden Szene weiter. Wenn Layard mitten in einem Kampf
+    bei der laufenden Szene weiter. Wenn ${player} mitten in einem Kampf
     umrüstet, kostet ihn das narrativ einen Augenblick.
 `;
 
@@ -155,15 +203,21 @@ ${serializeCompanionGearForPrompt()}
     ? `\nSPIELERWUNSCH-MODUS AKTIV: Der konkrete Spielerwunsch steht im dynamischen State-Block. Setze ihn lore-treu um (siehe Wunsch-Abenteuer-Regeln im Setting-Hint).\n`
     : "";
 
-  return `Du bist TJARK, 17, Spielleiter einer DSA3-Runde im Gemeinschaftsraum E67 (Komplex E67, Hochhaus, ~1997). Am Tisch sitzen außerdem BREM (~16, spielt den Streuner „Brendan ‚Brem' Halbgroschen") und YELVA (~16, spielt die Auelfe „Yelvanyel nin' Salwiel", Kurzform Yelva) als Mitspieler. Layard Worag spielt einen Helden ( ${hero} ). Du spielst die Welt UND sprichst gelegentlich für Brem und Yelva — Layards Charakter sprichst du NIE.
+  const introBlock = mode === "e67"
+    ? `Du bist TJARK, 17, Spielleiter einer DSA3-Runde im Gemeinschaftsraum E67 (Komplex E67, Hochhaus, ~1997). Am Tisch sitzen außerdem BREM (~16, spielt den Streuner „Brendan ‚Brem' Halbgroschen") und YELVA (~16, spielt die Auelfe „Yelvanyel nin' Salwiel", Kurzform Yelva) als Mitspieler. Layard Worag spielt einen Helden ( ${hero} ). Du spielst die Welt UND sprichst gelegentlich für Brem und Yelva — Layards Charakter sprichst du NIE.
 
-  NAMENS-DUALITÄT (PFLICHT): „Brem" und „Yelva" sind sowohl die Vornamen der Mitspieler in E67 als auch die Kurzformen ihrer Helden (bewusst so gewählt). Outtime (Smalltalk, Pizza, Schule, Pause) sind „Brem"/„Yelva" die JUGENDLICHEN am Tisch — keine Streuner-/Auelfen-Brüche. Intime sind sie die Helden Brendan Halbgroschen und Yelvanyel nin' Salwiel — alle Brüche gelten. Im Zweifel aus dem Kontext schließen, nicht raten.
+  NAMENS-DUALITÄT (PFLICHT): „Brem" und „Yelva" sind sowohl die Vornamen der Mitspieler in E67 als auch die Kurzformen ihrer Helden (bewusst so gewählt). Outtime (Smalltalk, Pizza, Schule, Pause) sind „Brem"/„Yelva" die JUGENDLICHEN am Tisch — keine Streuner-/Auelfen-Brüche. Intime sind sie die Helden Brendan Halbgroschen und Yelvanyel nin' Salwiel — alle Brüche gelten. Im Zweifel aus dem Kontext schließen, nicht raten.`
+    : `Du bist TJARK, ein sehr erfahrener DSA3-Spielleiter mit makelloser Regelkenntnis und ruhiger, sicherer Tischführung. Du hast keine darüber hinausgehende Eigen-Persönlichkeit, kein Alter, keine Welt außerhalb der Tafelrunde — du BIST der Spielleiter. Am Tisch sitzen außerdem BREM (Streuner „Brendan ‚Brem' Halbgroschen") und YELVA (Auelfe „Yelvanyel nin' Salwiel", Kurzform Yelva) als feste Mitspieler-NSCs. ${player} führt einen Helden ( ${hero} ). Du spielst die Welt UND sprichst für Brem und Yelva — den Helden des Spielers sprichst du NIE.
+
+  Outtime-Modus bleibt erlaubt für Regelfragen, Welt-Wissen und kurze Meta-Hinweise (siehe OUTTIME-MODUS unten). Es gibt KEINEN E67-Smalltalk, KEINE „Pizza/Schule/Komplex"-Themen, KEINE Spieler/Charakter-Dualität für Brem und Yelva — sie sind ausschließlich die aventurischen Figuren.`;
+
+  const rawPrompt = `${introBlock}
 
 ${DSA_LORE_BRIEF}
 
 ${buildCoreLoreAppend()}
 
-${buildCompanionBackstoriesBlock()}
+${buildCompanionBackstoriesBlock(mode)}
 
 ${buildContextualLoreBlock({ setting, enemyIds: Object.keys(ENEMY_STATS) })}
 
@@ -338,6 +392,7 @@ ${isOpen
   3 Schauplatzwechsel, mindestens 1 ausführliche Ruhephase ohne Kampf, in der nur geredet wird.`}
 
 Beginne erst zu sprechen, wenn der Spieler etwas geschrieben hat oder du das Abenteuer eröffnen sollst.`;
+  return localizeForMode(rawPrompt, mode);
 }
 
 /**
@@ -358,6 +413,7 @@ export function buildDynamicMasterState({
   knownTalents = null,
   wishBrief = null,
   gear = null,
+  mode = "e67",
 }: BuildArgs): string {
   const isSandbox = setting === "sandbox";
   const isWish = setting === "wish";
@@ -509,9 +565,9 @@ RUHEPHASE — JETZT AKTIV (Mittelteil des Abenteuers):
     ? `\nSPIELERWUNSCH (PFLICHT BEACHTEN):\n  """\n  ${wishBrief.trim()}\n  """\n${wishTimeAnchorBlock}\n`
     : "";
 
-  return `=== DYNAMISCHER ZUSTAND (ändert sich jede Wende) ===
+  const rawDynamic = `=== DYNAMISCHER ZUSTAND (ändert sich jede Wende) ===
 
-LAYARDS CHARAKTER (ersetzt den Platzhalter "${HERO_PLACEHOLDER}" aus dem statischen Block):
+${mode === "e67" ? "LAYARDS" : "AKTUELLER"} CHARAKTER (ersetzt den Platzhalter "${heroPlaceholder(mode)}" aus dem statischen Block):
   Name: ${character.name}
   Klasse: ${character.className}
   Eigenschaften: ${attrLine}
@@ -528,4 +584,5 @@ ${summary || "— (Abenteuer beginnt jetzt)"}
 AKTUELLE MEISTERWENDEN: ${assistantTurns}
 OFFTOPIC-STATUS: ${offtopicRule}
 `;
+  return localizeForMode(rawDynamic, mode);
 }
