@@ -256,7 +256,7 @@ export function DsaLlmAdventureScene() {
     setEndState(null);
     (async () => {
       try {
-        const r = await authedPost({ action: "load", heroSlot }, sidForLoad, expectsSignedInUser);
+        const r = await authedPost({ action: "load", heroSlot }, sidForLoad, expectsSignedInUser, runtimeMode);
         if (cancelled) return;
         if (!r.ok) {
           const j = await r.json().catch(() => ({ error: "Konnte Stand nicht laden." }));
@@ -403,6 +403,7 @@ export function DsaLlmAdventureScene() {
         },
         startedSid,
         expectsSignedInUser,
+        runtimeMode,
       );
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
@@ -437,7 +438,7 @@ export function DsaLlmAdventureScene() {
     const myId = nextId();
     setTurns((t) => [...t, { id: myId, kind: "player", text }]);
     try {
-      const r = await authedPost({ action: "say", text, heroSlot }, getDsaSessionId(), expectsSignedInUser);
+      const r = await authedPost({ action: "say", text, heroSlot }, getDsaSessionId(), expectsSignedInUser, runtimeMode);
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
         setError(j.error || "Tjark schweigt.");
@@ -492,6 +493,7 @@ export function DsaLlmAdventureScene() {
         },
         getDsaSessionId(),
         expectsSignedInUser,
+        runtimeMode,
       );
       if (!r.ok) {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
@@ -511,7 +513,7 @@ export function DsaLlmAdventureScene() {
   async function handleAbortAndPickNew() {
     setBusy(true);
     try {
-      await authedPost({ action: "abort", heroSlot }, getDsaSessionId(), expectsSignedInUser);
+      await authedPost({ action: "abort", heroSlot }, getDsaSessionId(), expectsSignedInUser, runtimeMode);
     } catch {
       /* ignore */
     }
@@ -532,7 +534,7 @@ export function DsaLlmAdventureScene() {
   async function handleResume() {
     setBusy(true);
     try {
-      await authedPost({ action: "resume", heroSlot }, getDsaSessionId(), expectsSignedInUser);
+      await authedPost({ action: "resume", heroSlot }, getDsaSessionId(), expectsSignedInUser, runtimeMode);
       setEndState(null);
       setEndAp(null);
     } catch (e) {
