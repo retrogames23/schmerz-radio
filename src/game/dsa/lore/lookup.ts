@@ -26,6 +26,7 @@ import { SPELLS } from "../rules/spells";
 import { WEAPONS } from "../rules/weapons";
 import { ARMORS } from "../rules/armor";
 import { TALENTS } from "../rules/talents";
+import { DSA_SCENE_CATALOG } from "../sceneImages";
 
 // --------- Anreden-Detailwissen (vorher Teil von llmLore.ts) ----------
 
@@ -117,6 +118,28 @@ ZEITRECHNUNG — AVENTURIEN:
   Beispiel: 2027 BF liegt 1015 Jahre nach 20 Hal/1012 BF — nicht 110 Jahre.
 `.trim();
 
+const AP_KRITERIEN = `
+AP-VERGABE — KRITERIEN (für den [AP: …]-Marker am Spielende):
+
+  BELOHNT — hoch (Sieg 150–250, Niederlage mit Stil 80–150):
+    • konsequentes Rollenspiel in der Figur des Helden,
+    • kreative, nicht-gewaltsame Lösungen für Rätsel und Konflikte,
+    • mutige Entscheidungen, die Konsequenzen tragen,
+    • aufmerksames Zuhören bei Brem, Yelva und NSCs.
+
+  MITTEL (Sieg 80–140, Niederlage 30–80):
+    • solides Durchspielen ohne besondere Glanzlichter.
+
+  BESTRAFT — niedrig oder 0 (auch bei Sieg möglich):
+    • permanent aus der Rolle fallen, Meta-Geplapper,
+    • sinnlose Gewalt, NSC-Massaker ohne Anlass,
+    • Übergriffe auf Brem oder Yelva,
+    • Ignorieren der Spielwelt zugunsten von Trollerei.
+
+  Abbruch (Layard hört outtime auf): 0–40 AP.
+  Begründung max. 1 Satz, keine zusätzlichen Marker.
+`.trim();
+
 function zeitrechnungForBfYear(year: number): string {
   const after20Hal = year - 1012;
   const after1Hal = year - 993;
@@ -188,6 +211,7 @@ export const LORE_TOPICS: string[] = [
   "welt.auelfen",
   "companions.brem",
   "companions.yelva",
+  "ap.kriterien",
   // Listen
   "liste.goetter",
   "liste.regionen",
@@ -204,6 +228,7 @@ export const LORE_TOPICS: string[] = [
   ...Object.keys(ARMORS).map((id) => `ruestung.${id}`),
   ...TALENTS.map((t) => `talent.${t.id}`),
   ...Object.keys(DSA_BESTIARY).map((id) => `monster.${id}`),
+  ...Object.keys(DSA_SCENE_CATALOG).map((id) => `scene.${id}`),
 ];
 
 /**
@@ -229,6 +254,7 @@ export function resolveLoreTopic(topic: string): string {
     case "welt.auelfen": return DSA_AUELFEN_BRIEF;
     case "companions.brem": return DSA_BREM_BACKSTORY;
     case "companions.yelva": return DSA_YELVA_BACKSTORY;
+    case "ap.kriterien": return AP_KRITERIEN;
   }
 
   // Indizes
@@ -307,6 +333,12 @@ export function resolveLoreTopic(topic: string): string {
       const m = DSA_BESTIARY[id];
       return m ? `${id}: ${m}` : `Unbekanntes Monster '${id}'. Versuche "liste.monster".`;
     }
+    if (kind === "scene") {
+      const sc = DSA_SCENE_CATALOG[id];
+      return sc
+        ? `SCENE-Tag '${id}': ${sc.use}`
+        : `Unbekannter Scene-Tag '${id}'. Verfügbare Tags stehen im System-Prompt unter [SCENE: <tag>].`;
+    }
     if (kind === "zeitrechnung" && id.startsWith("bf.")) {
       const yearRaw = id.slice(3);
       const year = Number.parseInt(yearRaw, 10);
@@ -328,7 +360,8 @@ Verfügbare Topics für dsaLore({ topic }):
   ANREDEN: anreden.adel, anreden.klerus, anreden.magier, anreden.akademiker, anreden.regional
   WELT:    welt.tagesgeschehen, welt.wirtschaft, welt.kalender, welt.sprache, welt.auelfen, zeitrechnung, zeitrechnung.bf.<jahr>
   GEFÄHRTEN: companions.brem, companions.yelva
+  REGELN:  ap.kriterien
   INDIZES: liste.goetter, liste.regionen, liste.zauber, liste.waffen, liste.ruestungen, liste.talente, liste.monster
-  DETAIL:  gott.<id>, region.<id>, zauber.<id>, waffe.<id>, ruestung.<id>, talent.<id>, monster.<id>
+  DETAIL:  gott.<id>, region.<id>, zauber.<id>, waffe.<id>, ruestung.<id>, talent.<id>, monster.<id>, scene.<tag>
            — wenn du eine <id> nicht kennst, ruf zuerst die passende liste.* auf.
 `.trim();
