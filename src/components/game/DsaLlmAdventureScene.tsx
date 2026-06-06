@@ -294,6 +294,7 @@ export function DsaLlmAdventureScene() {
         }
         if (restored.length > 0) scrollToEndPendingRef.current = true;
         setMode({ kind: "play" });
+        confirmActiveSession?.(sidForLoad);
       } catch (e) {
         if (cancelled) return;
         console.error("dsa-llm load failed", e);
