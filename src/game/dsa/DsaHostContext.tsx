@@ -61,6 +61,15 @@ export interface DsaHostValue {
    * Optional — nur Pfade mit aktiver Master-Session implementieren das.
    */
   notifyMaster?: (note: string) => void;
+
+  /**
+   * Wird von der LLM-Abenteuer-Szene aufgerufen, sobald ein neues
+   * Abenteuer erfolgreich am Server gestartet wurde. Verhindert, dass
+   * eine später eintreffende Cloud-Synchronisation die SessionId
+   * rotiert und damit das frisch gestartete Abenteuer "verliert".
+   * Optional — nur Standalone-Host implementiert es.
+   */
+  confirmActiveSession?: (sessionId: string) => void;
 }
 
 const DsaHostOverrideContext = createContext<DsaHostValue | null>(null);

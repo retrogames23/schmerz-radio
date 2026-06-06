@@ -59,6 +59,12 @@ export function StandaloneDsaHost({
   // LLM-Scene) ein erneutes Laden auslösen, wenn nach dem Login die
   // Cloud-SessionId vom anderen Gerät übernommen wird.
   const [sessionId, setSessionIdState] = useState<string>(() => slotSessionId(slot));
+  // Wenn die Szene ein neues Abenteuer gestartet hat, sperrt dieser Ref
+  // die SID-Rotation aus der Cloud-Hydration. Andernfalls kann eine
+  // verspätet eintreffende `cloudFetchActiveSessionId`-Antwort die SID
+  // rotieren, die der Start gerade erfolgreich verwendet hat — der Spieler
+  // landet dann zurück im Setting-Picker.
+  const sessionConfirmedRef = useRef(false);
 
   // Wenn der Slot wechselt (Navigation), Inhalt neu laden.
   useEffect(() => {
@@ -69,6 +75,7 @@ export function StandaloneDsaHost({
     setView(c ? "adventure" : "creator");
     setSheetOpen(false);
     setSessionIdState(slotSessionId(slot));
+    sessionConfirmedRef.current = false;
   }, [slot]);
 
   // Eingeloggt? Dann ist die Cloud die Wahrheit: Hero + laufende
@@ -86,7 +93,8 @@ export function StandaloneDsaHost({
       if (activeSid) {
         setSlotSessionId(slot, activeSid);
         setSessionIdState(activeSid);
-      } else {
+        sessionConfirmedRef.current = true;
+      } else if (!sessionConfirmedRef.current) {
         // Cloud kennt für diesen Slot KEIN laufendes Abenteuer. Eine
         // evtl. lokal hinterlegte SessionId stammt dann von einem
         // früheren Helden in diesem Slot (z. B. Tarsane wurde auf einem
@@ -242,6 +250,15 @@ export function StandaloneDsaHost({
 
       getDsaSessionId: () => sessionId,
       dsaHeroSlot: slot,
+      confirmActiveSession: (sid: string) => {
+        // Die Szene meldet: ein Abenteuer läuft jetzt unter dieser SID.
+        // Ab hier darf die Cloud-Hydration die SID nicht mehr rotieren.
+        sessionConfirmedRef.current = true;
+        if (sid !== sessionId) {
+          setSlotSessionId(slot, sid);
+          setSessionIdState(sid);
+        }
+      },
       setFlag: () => {
         /* Stammspiel-Flags spielen im Standalone keine Rolle. */
       },
