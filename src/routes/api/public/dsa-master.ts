@@ -279,6 +279,37 @@ function stripEndMarker(reply: string): string {
 }
 
 /**
+ * Letzte Säuberung der Modell-Antwort, bevor sie geparst, gespeichert oder
+ * an den Client geschickt wird. Entfernt interne Reasoning-Sektionen
+ * (z. B. DeepSeek `<think>…</think>`) sowie Reste von Tool-Aufrufen oder
+ * System-Steuerzeichen, damit das Point&Click-Frontend keine Fragmente
+ * sieht. NICHT die [TJARK]/[BREM]/[YELVA]/[SCENE]/[COMBAT]/[END]-Marker
+ * berühren — die gehören zum sichtbaren Spielprotokoll.
+ */
+function sanitizeReply(reply: string): string {
+  if (!reply) return "";
+  let out = reply;
+  // 1) Interne Gedankengänge moderner Reasoning-Modelle
+  out = out.replace(/<think>[\s\S]*?<\/think>/gi, "");
+  out = out.replace(/<thinking>[\s\S]*?<\/thinking>/gi, "");
+  out = out.replace(/<reasoning>[\s\S]*?<\/reasoning>/gi, "");
+  out = out.replace(/<reflection>[\s\S]*?<\/reflection>/gi, "");
+  out = out.replace(/<scratchpad>[\s\S]*?<\/scratchpad>/gi, "");
+  // Unvollständige Öffnungstags ohne passendes Ende abschneiden
+  out = out.replace(/<(?:think|thinking|reasoning|reflection|scratchpad)>[\s\S]*$/i, "");
+  // 2) Reste von Tool-/Funktion-Aufrufen
+  out = out.replace(/<tool_call>[\s\S]*?<\/tool_call>/gi, "");
+  out = out.replace(/<tool_response>[\s\S]*?<\/tool_response>/gi, "");
+  out = out.replace(/<function_calls?>[\s\S]*?<\/function_calls?>/gi, "");
+  out = out.replace(/<\|tool_calls?_begin\|>[\s\S]*?<\|tool_calls?_end\|>/gi, "");
+  // 3) Chat-Template-Steuerzeichen (ChatML, Llama, DeepSeek, etc.)
+  out = out.replace(/<\|im_(?:start|end)\|>(?:\s*(?:system|assistant|user))?/gi, "");
+  out = out.replace(/<\|(?:begin_of_text|end_of_text|eot_id|start_header_id|end_header_id|bos|eos)\|>/gi, "");
+  out = out.replace(/<\|[a-z_]+\|>/gi, "");
+  return out.trim();
+}
+
+/**
  * Heuristik: erkennt narrative Abschluss-Floskeln im Meistertext, wenn die
  * LLM den [END: ...]-Marker vergessen hat. Greift nur als Notnagel — die
  * Pflicht zum Marker bleibt im Prompt bestehen. Liefert das wahrscheinliche
