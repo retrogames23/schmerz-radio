@@ -70,6 +70,15 @@ export interface DsaHostValue {
    * Optional — nur Standalone-Host implementiert es.
    */
   confirmActiveSession?: (sessionId: string) => void;
+
+  /**
+   * Laufzeit-Modus für die LLM-Tafelrunde:
+   *  - `"e67"` (Default): klassische E67-Rahmung mit Spieler-„Layard",
+   *    Mitspielern Brem/Yelva mit Spieler-/Charakter-Dualität.
+   *  - `"standalone"`: pure DSA3-Tafelrunde, kein E67-Rahmen.
+   * Wird vom Client an `dsa-master`/`dsa-group` durchgereicht.
+   */
+  dsaRuntimeMode?: "e67" | "standalone";
 }
 
 const DsaHostOverrideContext = createContext<DsaHostValue | null>(null);
