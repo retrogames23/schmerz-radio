@@ -89,6 +89,32 @@ function playerLabel(mode: DsaRuntimeMode): string {
 }
 
 /**
+ * Macht den Prompttext „Layard-frei", wenn der Standalone-Modus aktiv
+ * ist. Wir schreiben den großen statischen Block weiter mit „Layard" /
+ * „Layards …" als Default (gut lesbar, E67 ist der Hauptpfad) und
+ * ersetzen erst am Ende für den Standalone-Mode. So bleibt nur eine
+ * Wahrheitsquelle für Regeln, Marker und Dramaturgie. Greift auch im
+ * dynamischen State-Block (Offtopic-Regel, Cooldown-Hinweis, …).
+ */
+function localizeForMode(text: string, mode: DsaRuntimeMode): string {
+  if (mode === "e67") return text;
+  return text
+    // Possessive Formen zuerst, sonst frisst "Layard" sie auf.
+    .replace(/Layards Helden/g, "den Helden des Spielers")
+    .replace(/Layards Held/g, "der Held des Spielers")
+    .replace(/Layards Charakter/g, "der Charakter des Spielers")
+    .replace(/Layards Nachricht/g, "die Nachricht des Spielers")
+    .replace(/Layards/g, "des Spielers")
+    // Vokativ: ", Layard?" / ", Layard." / ", Layard …" wegkürzen, damit
+    // keine ramponierte „, der Spieler?"-Syntax übrig bleibt.
+    .replace(/,\s*Layard([?.…])/g, "$1")
+    .replace(/\bLayard\b/g, "der Spieler")
+    // E67-Klammerbeispiele in der Offtopic-Regel.
+    .replace(/\(Pizza,\s*Schule,\s*Musik,\s*Ger(ü|ue)chte aus dem Komplex E67\)/g, "(Smalltalk, Meta-Fragen)")
+    .replace(/\(Smalltalk,\s*Meta-Fragen,\s*Pizza\)/g, "(Smalltalk, Meta-Fragen)");
+}
+
+/**
  * Vollständiger System-Prompt (Legacy): kombiniert statischen Lore-Block
  * und dynamischen State-Block. Wird nur noch von Altcode genutzt; neue
  * Aufrufer sollten `buildStaticMasterLore` + `buildDynamicMasterState`
@@ -366,6 +392,7 @@ ${isOpen
   3 Schauplatzwechsel, mindestens 1 ausführliche Ruhephase ohne Kampf, in der nur geredet wird.`}
 
 Beginne erst zu sprechen, wenn der Spieler etwas geschrieben hat oder du das Abenteuer eröffnen sollst.`;
+  return localizeForMode(rawPrompt, mode);
 }
 
 /**
@@ -386,6 +413,7 @@ export function buildDynamicMasterState({
   knownTalents = null,
   wishBrief = null,
   gear = null,
+  mode = "e67",
 }: BuildArgs): string {
   const isSandbox = setting === "sandbox";
   const isWish = setting === "wish";
