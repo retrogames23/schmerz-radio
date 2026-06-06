@@ -565,9 +565,9 @@ RUHEPHASE — JETZT AKTIV (Mittelteil des Abenteuers):
     ? `\nSPIELERWUNSCH (PFLICHT BEACHTEN):\n  """\n  ${wishBrief.trim()}\n  """\n${wishTimeAnchorBlock}\n`
     : "";
 
-  return `=== DYNAMISCHER ZUSTAND (ändert sich jede Wende) ===
+  const rawDynamic = `=== DYNAMISCHER ZUSTAND (ändert sich jede Wende) ===
 
-LAYARDS CHARAKTER (ersetzt den Platzhalter "${HERO_PLACEHOLDER}" aus dem statischen Block):
+${mode === "e67" ? "LAYARDS" : "AKTUELLER"} CHARAKTER (ersetzt den Platzhalter "${heroPlaceholder(mode)}" aus dem statischen Block):
   Name: ${character.name}
   Klasse: ${character.className}
   Eigenschaften: ${attrLine}
@@ -584,4 +584,5 @@ ${summary || "— (Abenteuer beginnt jetzt)"}
 AKTUELLE MEISTERWENDEN: ${assistantTurns}
 OFFTOPIC-STATUS: ${offtopicRule}
 `;
+  return localizeForMode(rawDynamic, mode);
 }
