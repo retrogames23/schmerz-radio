@@ -1,51 +1,199 @@
+## Was SillyTavern für uns relevant macht
 
-# Sonnet-Kosten senken (DSA-Meister)
+SillyTavern (ST) ist im Kern ein Prompt-Komponist für Rollenspiel-LLMs. Drei seiner Mechaniken sind direkt portierbar und treffen genau die vier Schwerpunkte:
 
-Sonnet 4 ist über OpenRouter ~4× teurer als Haiku (Input ~$3 vs $0,80 / MTok, Output ~$15 vs $4). Selbst mit funktionierendem Prompt-Cache (Read ~$0,30 / MTok) bleibt jeder Zug teuer, weil unser Meister-Prompt sehr groß ist und Tool-Loops + Output-Tokens linear mitskalieren.
+1. **World Info / Lorebooks** — keyword-getriggerte Lore-Snippets, die nur dann in den Prompt fließen, wenn die letzten N Nachrichten den Trigger nennen. Scan-Tiefe, Aktivierungstyp (constant/selective/vectorized), Insertion-Position und Token-Budget sind konfigurierbar. → spart Tokens, hält Welt konsistent, erzeugt Wieder-Entdeckungs-Gefühl.
+2. **Author's Note (Depth-Injection)** — ein kurzer Pacing-/Ton-Block, der NICHT vorne im System-Prompt steht, sondern bei Tiefe N (z.B. 2 Turns vor Ende) eingefügt wird. „Sticky" Anweisungen, die nicht im Kontext-Drift verpuffen. → bessere Story-Pacing-Kontrolle.
+3. **Vector-Memory / Summarize-Extension** — alte Szenen werden eingebettet, semantisch durchsucht und nur relevante Stücke werden rein-rotiert. → Helden begegnen wirklich „wieder" was sie schon mal getroffen haben, ohne den Volltext zu schleppen.
 
-Ich schlage zwei Stufen vor — du wählst, wie tief wir schneiden.
+Was wir bereits ähnlich machen: `dsaLore`-Tool-Call (≈ ST „lookup on demand"), Heldengedächtnis (Chronik + NSCs), Summarizer. Was fehlt: **automatische Keyword-Triggerung**, **Vektor-Memory für Szenen-Details**, **getrennter Pacing-Director**, **Lore-Budget pro Wende**.
 
-## Stufe A — Sonnet behalten, Pro-Call-Kosten halbieren
+---
 
-Reine Server-Änderungen in `src/routes/api/public/dsa-master.ts`, `src/routes/api/public/dsa-group.ts`, `src/game/dsa/lore/tool.ts` und `src/game/dsa/llmMasterPrompt.ts`. Keine UX-Änderung.
+## Vier Schwerpunkte → konkrete Maßnahmen
 
-1. **`max_tokens` pro Modell skalieren.** Heute global 950. Für Sonnet auf 600 senken (Antworten sind meist 2–4 Sätze + Marker — 600 reicht locker). Haiku bleibt 950. Spart bei Sonnet ~35 % Output-Kosten.
+### a) Stimmige, konsistente Welt
 
-2. **Tool-Loop für Sonnet auf 2 Runden kappen** (statt 4). Jede zusätzliche Runde ist ein voller Prompt-Roundtrip. Optional radikaler: für Sonnet `tool_choice: "none"` setzen — Sonnet kennt die Lore aus dem statischen Block ohnehin gut und braucht `dsaLore` viel seltener als Haiku. Spart pro Tool-Round-Trip ~1× vollen Cache-Read.
+**A1 — Lorebook-Layer ("dsaWorldInfo")**
+Neue Datei `src/game/dsa/lore/worldInfo.ts`. Pro Eintrag:
+```ts
+{ id, keywords: ["Punin","Hesinde-Tempel"], scanDepth: 6,
+  content: "…", priority: 100, position: "before_state",
+  budgetTokens: 120, mode: "selective" | "constant" }
+```
+Vor jeder Master-Wende läuft `selectActiveWorldInfo(history, depth=6)`:
+scannt die letzten 6 Nachrichten case-insensitive auf Keywords,
+sortiert getroffene Einträge nach Priorität, kürzt auf Gesamt-Token-Budget
+(z.B. 600 Tokens). Wird VOR dem dynamischen State-Block injiziert.
 
-3. **History-Fenster modellabhängig.** Sonnet: letzte 6 Nachrichten statt 10. Haiku: bleibt 10. Spart bei jedem Sonnet-Call mehrere hundert Tokens un-cached Input.
+Inhalte (Startset): bekannte Städte (Punin, Greifenfurt, Gareth, Festum, Khunchom),
+Gilden/Orden (Hesinde-Akademie, Praios-Inquisition), Reise-Routen, lokale
+Bräuche, regionale Anreden. Quelle: bestehende `regions.ts` + handgeschriebene
+Tiefe pro Ort.
 
-4. **Statischen Lore-Block schlanker machen** (wirkt auf ALLE Modelle, hilft Sonnet aber am meisten, weil Cache-Read teurer):
-   - Den ausführlichen `[AP: ...]`-Block (~30 Zeilen Gewichtungen) auf eine knappe Tabelle eindampfen — Details landen in einem `ap.kriterien`-Lore-Topic.
-   - `[SCENE: …]`-Katalog mit Faustregeln pro Tag → bisher inline; stattdessen nur die Tag-Liste + ein Verweis „Bei Unsicherheit `dsaLore({topic:'scene.<tag>'})` aufrufen".
-   - `buildCoreLoreAppend()` und `buildCompanionBackstoriesBlock()` prüfen, was wirklich pro Zug nötig ist — Companion-Backstories sind seltenes Lookup-Material, gehören in das Lore-Tool, nicht in den statischen Prompt.
-   - Erwartung: statischer Block von heute ~ größenordnungsmäßig 8–12k Tokens auf 4–6k.
+**A2 — Geografie-Sanity-Layer**
+Eine `geographyConstraints`-Liste mit harten Fakten (z.B. „Trollzacken liegen
+≥ 200 Meilen NÖ von Greifenfurt"). Wird IMMER injiziert, wenn ein Reise-/Distanz-
+Keyword fällt. Verhindert „die Trollberge bei Greifenfurt"-Klassiker.
 
-5. **Kosten-Telemetrie.** Im Server jeden Call mit `usage`-Feld von OpenRouter loggen (input/output/cached_read Tokens, Modell, Tool-Rounds). Aktuell fliegen Kosten blind — danach sehen wir pro Slot, wo das Geld wirklich hingeht, und können gezielt nachschärfen.
+**A3 — Götter-Kontext-Trigger**
+Wenn in den letzten 4 Nachrichten ein Gottesname fällt, automatisch das
+entsprechende `gott.<id>`-Detail injizieren (statt auf Meister-Tool-Call zu
+warten). So passieren weniger Götter-Halluzinationen.
 
-Realistische Erwartung Stufe A bei Sonnet: **~50–60 % weniger Credits pro Zug** (kombinierter Effekt aus kürzerem Prompt, weniger Tool-Roundtrips, kleinerem `max_tokens` und kürzerem History-Fenster).
+### b) Pragmatischer Token-Einsatz
 
-## Stufe B — Sonnet aus dem Switcher entfernen (Nuklearoption)
+**B1 — Statischen Block schrumpfen**
+Heute trägt `buildStaticMasterLore` die komplette Begleiter-Backstory, das
+gesamte Bestiarium und alle Scene-Tags inline. SillyTavern-Stil:
+- Companion-Backstories raus aus dem statischen Block → in `worldInfo` mit
+  Constant-Mode (immer rein, aber gekürzt) ODER selective bei Erwähnung.
+- Bestiarium: nur die für das Setting wirklich relevanten Gegner-IDs als
+  Kurzliste; Details on demand via `dsaLore` ODER via Lorebook-Trigger
+  beim Auftauchen.
+- Scene-Tags: kompakte Tag-Liste bleibt, ausführliche Use-Beschreibung wandert
+  in `scene.<tag>`-Topics (sind schon da, müssen nur konsequenter verwendet
+  werden — den Inline-Block kürzen).
 
-Falls Stufe A nicht reicht oder du das Risiko der Premium-Modellwahl nicht mehr tragen willst:
+Erwartung: statischer Block −30 bis −40%.
 
-1. `anthropic/claude-sonnet-4` aus `DSA_MASTER_MODELS` in `src/lib/aiModel.ts` streichen.
-2. `resolveDsaMasterModel` fällt automatisch auf Haiku zurück; keine Spielstände kaputt.
-3. Im UI-Switcher (`DsaModelSwitcher.tsx`) bleibt Haiku als Default + die billigeren Donor-Modelle (GPT-5.4 mini, DeepSeek, Gemini 2.5 Flash, Mistral Large).
-4. Eine kurze Notiz im Switcher: „Premium-Modus pausiert — wird wieder freigeschaltet, sobald Kosten kalkulierbar sind."
+**B2 — Token-Budget pro Wende loggen**
+Erweitern, was schon in `[dsa-cost]` geloggt wird: zusätzlich pro Wende
+ausgeben, wieviel auf WorldInfo, dynamic state, history entfallen. Erlaubt
+gezieltes Trimmen, statt blind zu raten.
 
-Effekt: Sonnet-Kosten gehen auf 0. Spender, die Sonnet aktiv gewählt hatten, landen auf Haiku.
+**B3 — Author's Note statt „Letzte Anweisung vor deiner Antwort"-Block**
+Wir hängen heute postHistoryReminder an die letzte User-Nachricht. Das ist
+schon der ST-Stil — sauberer machen: konfigurierbares Author's-Note-Modul,
+das je nach Phase (Akt 1, Cooldown, Akt 5, Combat-Bridge) unterschiedliche
+Pacing-Direktiven injiziert. Spart Tokens im großen statischen Block, weil
+phasenspezifische Regeln dort raus dürfen.
 
-## Empfehlung
+**B4 — Adaptives History-Fenster**
+Statt fixer `historyWindow` pro Modell: ältere Wenden, die der Summarizer
+schon gefressen hat, komplett raus. Plus: User-Wenden mit reinem `[INVENTAR]`-
+Präfix nach 4 Wenden raus (sind selbsterledigt, müssen nicht im Kontext bleiben).
 
-Erst **Stufe A vollständig umsetzen + Telemetrie aktivieren**. Wenn die Logs nach 1–2 Spieltagen zeigen, dass Sonnet immer noch unverhältnismäßig viel kostet (z. B. > 3× Haiku pro Zug), zusätzlich **Stufe B** ziehen.
+### c) Gefühl, eine Welt zu ENTDECKEN
+
+**C1 — Vector-Memory für vergangene Szenen** *(größerer Schritt)*
+Neue Tabelle `dsa_scene_memories(adventure_id, embedding vector(768),
+summary text, scene_tag, npcs text[], created_at)`. Nach jedem Akt-Wechsel
+(oder alle ~6 Wenden) speichert ein leichter „Szenen-Chronist" eine 2-Satz-
+Zusammenfassung + Embedding. Vor jeder Master-Wende: Embed der letzten
+Layard-Nachricht → Top-3 ähnliche Memories aus DIESEM oder FRÜHEREN
+Abenteuern desselben Helden → als „ECHOS DER VERGANGENHEIT"-Block injizieren.
+
+Effekt: Layard erwähnt eine „Schenke am Hafen" → Meister erinnert sich
+plötzlich an die Schenke aus Akt 3 vor zwei Abenteuern, inklusive der Wirtin,
+die ihn anschrie. Echtes Welt-Wiedersehen statt aufgewärmter Chronik-Zeile.
+
+Lovable AI Gateway hat Embeddings; pgvector existiert in Postgres.
+
+**C2 — Procedural NSCs mit Persistenz**
+Wenn der Meister einen NSC einführt (Format-Regel: „[NPC_INTRO: name | rolle | quirk]"
+als neuer Marker), wird er beim Parsen abgegriffen und in den Heldengedächtnis-
+NSCs persistiert — auch ohne Spielende, nicht erst durch den Chronicler.
+Wiedersehen wird wahrscheinlicher, weil mehr NSCs persistieren.
+
+**C3 — „Discovery"-Lore-Trigger**
+Worldinfo-Einträge mit `mode: "discovery"`: feuern nur EINMAL pro Held — der
+erste Besuch in Punin liefert die volle stimmungsvolle Beschreibung; alle
+späteren Besuche kriegen nur eine knappe „du kennst Punin"-Variante. Speichert
+sich pro `dsa_heroes.discoveries text[]`.
+
+### d) Story-Pacing & gut erzählte Geschichte
+
+**D1 — Director-Modul (eigener LLM-Call, leicht)**
+Alle 6–8 Master-Wenden läuft ein billiger Director-Call (Haiku/Flash, ~300
+Tokens Input, 80 out): bekommt die letzten 8 Wenden + den Akt-Plan und
+liefert eine kurze Author's-Note für die nächste Master-Wende:
+```
+DIRECTOR HINT (für die nächste Wende):
+  Phase: Akt 2 → Akt 3 Übergang
+  Was fehlt: emotionaler Beat zwischen Brem und Layard
+  Vorschlag: Yelva spricht eine Erinnerung an, die Brem unangenehm ist
+```
+Wird als Author's Note bei Depth 1 injiziert (= direkt vor Meister-Antwort).
+Kosten: ~1 Cent pro Stunde Spiel, dafür spürbar bessere Beat-Struktur.
+
+**D2 — Akt-Plan pro Abenteuer materialisieren**
+Heute lebt der Akt-Plan nur als Fließtext im Prompt. Stattdessen: beim
+`action="start"` erzeugt ein Vorlauf-Call einen 5-Akt-Plot-Outline (5 mal 2
+Sätze) und speichert ihn in `dsa_llm_adventures.act_plan jsonb`. In jeder
+Master-Wende wird NUR der gerade aktive Akt + der nächste Akt injiziert
+(Token-sparend, dramaturgisch fokussiert). Der Akt-Übergang wird via
+Director (D1) gesteuert.
+
+**D3 — Pacing-Marker im Output**
+Neuer Pflichtmarker am Ende jeder Meister-Antwort: `[BEAT: setup|rise|peak|fall|rest]`.
+Server liest ihn, zählt Beat-Verteilung, kann den Director füttern und im UI
+(später) als unsichtbares Pacing-Telemetrie verwenden. Verhindert „nur peak,
+peak, peak"-Sequenzen.
+
+**D4 — „No-Railroad"-Author's-Note**
+Wenn der Spieler 3 Wenden hintereinander vom Plan abweicht, injiziert die
+Author's Note: „Layard verlässt den Akt-Plan — folge IHM, nicht dem Plan.
+Improvisiere die nächste Szene aus seinem letzten Satz heraus." Statt
+zwanghaft zurückzuziehen.
+
+---
+
+## Empfohlene Reihenfolge (Implementierungsphasen)
+
+**Phase 1 — Tokens & Welt (low risk, hoher Impact):**
+A1 (Lorebook-Layer), A2 (Geo-Sanity), A3 (Götter-Trigger), B1 (Static-Trim),
+B2 (Cost-Log), B3 (Author's-Note-Modul). Reine Server-Refactors, kein DB-Schema.
+
+**Phase 2 — Pacing:**
+D2 (Akt-Plan in DB → eine Migration), D3 (Beat-Marker), D4 (No-Railroad-Note).
+
+**Phase 3 — Discovery (größter Schritt):**
+C1 (Vector-Memory → pgvector + Embeddings über Lovable AI), C2 (NPC-Persistenz),
+C3 (Discovery-Trigger), D1 (Director-Call).
+
+Phase 1 ist isoliert testbar und liefert sofort spürbare Token-Ersparnis +
+Welt-Konsistenz. Phase 2 baut darauf auf. Phase 3 ist das „SillyTavern-on-
+Steroids"-Stück und sollte zuletzt kommen, weil DB-Schema-Änderungen + Embedding-
+Kosten dranhängen.
+
+---
 
 ## Technische Details
 
-- Modell-aware Limits sauber über eine kleine Map in `aiModel.ts` (`MODEL_LIMITS: Record<string, {maxTokens:number; historyWindow:number; maxToolRounds:number; useTools:boolean}>`), damit beide Routen denselben Switch nutzen.
-- `callMaster` in beiden Routen liest aus dieser Map; `callChatWithLoreTool` bekommt `maxToolRounds` und `useTools` als Parameter.
-- Telemetrie: OpenRouter liefert in der Response `usage.prompt_tokens`, `usage.completion_tokens` und (bei aktivem Cache) `usage.prompt_tokens_details.cached_tokens`. Ein `console.log(JSON.stringify({model, action, tool_rounds, usage}))` pro Call reicht — landet in den Worker-Logs.
-- Lore-Trim: zuerst eine Längen-Messung von `buildStaticMasterLore("city")` einbauen (einmaliger `console.log` im Dev-Build, in Zeichen UND geschätzten Tokens ≈ Zeichen/3.5), damit wir vor/nach dem Trim sehen, was es bringt.
-- Beim Lore-Trim das `lookup.ts` um Topics `ap.kriterien`, `scene.<tag>`, `companion.backstory.<name>` erweitern.
+- **Lorebook-Datenmodell:** TypeScript-Modul, keine Datenbank. Einträge als
+  reines `const`-Array, damit man sie wie Code reviewen kann.
+- **Keyword-Scanner:** simples lowercase-Substring-Match auf den letzten N
+  Nachrichten. Keine Regex-Hölle. SillyTavern verwendet das genauso.
+- **Token-Budget:** grobe Heuristik `chars/3.5 ≈ tokens`, reicht für Worker-
+  side Trimming.
+- **Author's-Note-Injection:** dem bestehenden `tail`-Block in `callMaster`
+  beibringen, mehrere Module zu konkatenieren. Reihenfolge: dynamicState
+  → worldInfo → directorHint → postHistoryReminder.
+- **Vector-Memory:** Tabelle mit `vector(768)`, pgvector-Extension aktivieren,
+  Embeddings via Lovable-AI-Gateway (`text-embedding-3-small`-Äquivalent oder
+  Gemini). Pro Memory ~200 Tokens; Embedding-Kosten praktisch null.
+- **Director-Call:** Haiku/Flash, fester max_tokens=120, temperature=0.4.
+- **act_plan-Migration:** `alter table dsa_llm_adventures add column act_plan jsonb;`
+  inkl. GRANT-Refresh, damit RLS-Policies greifen.
+- **Beat-Marker-Parser:** erweitert `parseMasterTurn` um optionalen Beat.
 
-Soll ich Stufe A bauen — und wenn ja, mit oder ohne den optionalen Schritt 2b (`tool_choice: "none"` für Sonnet)?
+---
+
+## Was NICHT empfohlen wird
+
+- **Volle SillyTavern-Übernahme** (Persona-System, Quick-Replies, Extensions-
+  API): überdimensioniert für ein Single-Master-Setup mit fester Tafelrunde.
+- **Streaming-Output**: ist ein UX-Thema, kein RPG-Qualitäts-Thema, separat.
+- **Vector-Suche über Lore-Texte selbst** (wie ST's „Smart Context"): unsere
+  Lore ist klein genug für Keyword-Triggering, Vektor wäre Overkill und
+  unkontrollierbar. Vektor nur für VERGANGENE Spielszenen.
+
+---
+
+## Frage vor Umsetzung
+
+Soll ich **Phase 1 komplett** als Build umsetzen, oder lieber zuerst nur
+**A1+A2+A3 (Lorebook + Welt-Konsistenz)** ausliefern und Token-Trim
+(B1–B3) als separate Runde danach? Phase 1 als Ganzes ist ~1 größerer
+Build, A1–A3 alleine ist deutlich kleiner und sicherer reviewbar.
