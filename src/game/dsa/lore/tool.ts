@@ -19,6 +19,7 @@ export const DSA_LORE_TOOL_SPEC = {
     description:
       "Schlägt aventurisches Detailwissen nach (Anreden, Götter, Regionen, Zauber, Waffen, Rüstungen, Talente, Monster, Welt-Kontext, Gefährten-Backstories). " +
       "Ruf das Tool auf, BEVOR du eine Aussage triffst, bei der du unsicher bist — speziell bei Titeln/Anreden, Geografie, Götter-Details, Zeitrechnung/Jahresdifferenzen oder Spielregeln. " +
+      "Budget: maximal 1–2 Aufrufe pro Meisterwende. Danach erzähle, auch wenn du noch unsicher bist — lieber generisch beschreiben als die Wende verbrennen. " +
       LORE_TOPIC_HINT,
     parameters: {
       type: "object",
@@ -202,6 +203,39 @@ export async function callChatWithLoreTool(
     return { ok: true, reply: content };
   }
 
+  // Tool-Budget erschöpft: ein letzter Versuch ohne Tools, damit das
+  // Modell zwingend Text liefert statt die Wende zu verbrennen.
+  working.push({
+    role: "system",
+    content:
+      "Tool-Budget erschöpft. Antworte jetzt mit deiner Meister-Erzählung — keine weiteren dsaLore-Aufrufe. Bei Unsicherheit lieber generisch beschreiben.",
+  });
+  try {
+    const upstream = await fetch(OPENROUTER_CHAT_URL, {
+      method: "POST",
+      headers: openRouterHeaders(apiKey),
+      body: JSON.stringify({
+        model,
+        messages: working,
+        temperature: options.temperature,
+        max_tokens: options.max_tokens,
+        stream: false,
+      }),
+    });
+    if (!upstream.ok) {
+      return { ok: false, status: 502, error: "AI-Dienst antwortet nicht (Fallback)." };
+    }
+    const data = (await upstream.json()) as {
+      choices?: Array<{ message?: { content?: string | null } }>;
+    };
+    const content = (data.choices?.[0]?.message?.content ?? "").trim();
+    if (content) {
+      console.log(`[dsa-cost] ${JSON.stringify({ label, model, fallback: true })}`);
+      return { ok: true, reply: content };
+    }
+  } catch (e) {
+    console.error("dsaLore fallback failed", e);
+  }
   return {
     ok: false,
     status: 502,
