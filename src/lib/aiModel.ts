@@ -122,3 +122,47 @@ export function resolveDsaMasterModel(
   if (opt.donorOnly && !donor) return AI_MODEL_DSA_MASTER;
   return opt.id;
 }
+
+/**
+ * Pro-Modell-Limits für DSA-Meister-Calls. Senkt bei teuren Modellen
+ * (Sonnet 4) systematisch die Kostenstellen, ohne den Default für Haiku
+ * zu verändern:
+ *   - max_tokens (Output)
+ *   - historyWindow (Anzahl mitgesendeter Chat-Nachrichten)
+ *   - maxToolRounds (dsaLore-Loop-Tiefe)
+ *   - useTools (dsaLore überhaupt anbieten)
+ */
+export interface ModelLimits {
+  maxTokens: number;
+  historyWindow: number;
+  maxToolRounds: number;
+  useTools: boolean;
+}
+
+const DEFAULT_LIMITS: ModelLimits = {
+  maxTokens: 950,
+  historyWindow: 10,
+  maxToolRounds: 4,
+  useTools: true,
+};
+
+const MODEL_LIMITS_MAP: Record<string, Partial<ModelLimits>> = {
+  // Premium-Modell — pro Token am teuersten, also am stärksten gedrosselt.
+  "anthropic/claude-sonnet-4": {
+    maxTokens: 600,
+    historyWindow: 6,
+    maxToolRounds: 2,
+    useTools: true,
+  },
+  // Default-Modell — bleibt großzügig.
+  "anthropic/claude-3.5-haiku": {
+    maxTokens: 950,
+    historyWindow: 10,
+    maxToolRounds: 4,
+    useTools: true,
+  },
+};
+
+export function getModelLimits(model: string): ModelLimits {
+  return { ...DEFAULT_LIMITS, ...(MODEL_LIMITS_MAP[model] ?? {}) };
+}
