@@ -26,6 +26,7 @@ import type { DsaCharacterSummary } from "@/game/types";
 import { AP_DEFAULTS, clampAp } from "@/game/dsa/advancement";
 import { addItem, defaultGearFor, removeItem, type HeroGear } from "@/game/dsa/gear";
 import { callChatWithLoreTool } from "@/game/dsa/lore/tool";
+import { selectActiveWorldInfo } from "@/game/dsa/lore/worldInfo";
 
 /**
  * LLM-Tafelrunde im Gemeinschaftsraum E67. Eine einzige Route, drei
@@ -472,6 +473,7 @@ async function callMaster(
   history: StoredTurn[],
   minAssistantTurns: number,
   model: string,
+  worldInfoBlock: string = "",
 ): Promise<{ ok: true; reply: string } | { ok: false; status: number; error: string }> {
   // Cache-Strategie: Anthropic/OpenRouter verwirft den Prompt-Cache, sobald
   // sich ein einziges Zeichen in der System-Nachricht ändert. Deshalb fassen
@@ -497,7 +499,28 @@ async function callMaster(
   const trimmed = history
     .slice(-limits.historyWindow)
     .map((m) => ({ role: m.role, content: m.content }));
-  const tail = `[SYSTEM-STATUS]\n${dynamicState}\n\n${postHistoryReminder}`;
+  const wi = worldInfoBlock ? `${worldInfoBlock}\n\n` : "";
+  const tail = `${wi}[SYSTEM-STATUS]\n${dynamicState}\n\n${postHistoryReminder}`;
+
+  // B2 — Cost-Telemetrie pro Turn-Vorbereitung: zeigt Anteile von
+  // staticLore (gecached), worldInfo, dynamicState und History.
+  try {
+    const historyChars = trimmed.reduce((sum, m) => sum + m.content.length, 0);
+    console.log(
+      `[dsa-cost] turn-prep ${JSON.stringify({
+        label: "master:turn",
+        model,
+        staticLoreChars: staticLore.length,
+        worldInfoChars: worldInfoBlock.length,
+        dynamicStateChars: dynamicState.length,
+        historyChars,
+        historyMsgs: trimmed.length,
+      })}`,
+    );
+  } catch {
+    /* logging never fails the call */
+  }
+
   let chatMessages;
   if (trimmed.length === 0) {
     chatMessages = [systemMessage, { role: "user" as const, content: tail }];
