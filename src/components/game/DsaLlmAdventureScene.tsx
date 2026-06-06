@@ -457,7 +457,7 @@ export function DsaLlmAdventureScene() {
     } finally {
       setBusy(false);
     }
-  }, [composerText, busy, endState, nextId, handleServerReply, heroSlot, getDsaSessionId, expectsSignedInUser]);
+  }, [composerText, busy, endState, nextId, handleServerReply, heroSlot, getDsaSessionId, expectsSignedInUser, runtimeMode]);
 
   async function handleCombatDone(res: CombatDoneResult) {
     if (!combat || !dsaCharacter) return;
