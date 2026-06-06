@@ -387,6 +387,7 @@ export function DsaLlmAdventureScene() {
     setError(null);
     setMode({ kind: "loading" });
     try {
+      const startedSid = getDsaSessionId();
       const r = await authedPost(
         {
           action: "start",
@@ -395,7 +396,7 @@ export function DsaLlmAdventureScene() {
           character: dsaCharacter,
           ...(wishBrief ? { wishBrief } : {}),
         },
-        getDsaSessionId(),
+        startedSid,
         expectsSignedInUser,
       );
       if (!r.ok) {
@@ -408,6 +409,10 @@ export function DsaLlmAdventureScene() {
       setTurns([]);
       setSettingId(settingId);
       setMode({ kind: "play" });
+      // SID gegen Cloud-Hydration sperren: ein verspätet eintreffender
+      // `cloudFetchActiveSessionId`-Aufruf darf die SID nicht rotieren,
+      // sonst landet der Spieler nach dem Start wieder im Picker.
+      confirmActiveSession?.(startedSid);
       handleServerReply(data);
     } catch (e) {
       console.error("dsa-llm start failed", e);
