@@ -160,6 +160,7 @@ export function DsaLlmAdventureScene() {
     openDsaCreator,
     creditHeroAp,
     updateHero,
+    confirmActiveSession,
   } = useDsaHost();
   const { user, loading: authLoading } = useAuth();
   const { setMoodPool, setMood } = useMusic();
