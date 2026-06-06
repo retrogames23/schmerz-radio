@@ -151,7 +151,7 @@ const MODEL_LIMITS_MAP: Record<string, Partial<ModelLimits>> = {
   "anthropic/claude-sonnet-4": {
     maxTokens: 600,
     historyWindow: 6,
-    maxToolRounds: 2,
+    maxToolRounds: 3,
     useTools: true,
   },
   // Default-Modell — bleibt großzügig.
