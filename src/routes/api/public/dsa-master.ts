@@ -960,7 +960,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           const minEnd = isOpenSetting ? 0 : MIN_END_ASSISTANT_TURNS;
           const result = await callMaster(apiKey, staticLore, dynamicState, history, minEnd, chosenModel);
           if (!result.ok) return json(result.status, { error: result.error });
-          let reply = result.reply;
+          let reply = sanitizeReply(result.reply);
           let parsed = parseMasterTurn(reply);
           if (parsed.end && !isOpenSetting && assistantTurns + 1 < MIN_END_ASSISTANT_TURNS) {
             reply = stripEndMarker(reply);
