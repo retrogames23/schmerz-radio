@@ -41,6 +41,14 @@ const MAX_TOOL_ROUNDS = 4;
 type ChatMessage =
   | { role: "system" | "user" | "assistant"; content: string }
   | {
+      role: "system";
+      content: Array<{
+        type: "text";
+        text: string;
+        cache_control?: { type: "ephemeral" };
+      }>;
+    }
+  | {
       role: "assistant";
       content: string | null;
       tool_calls?: Array<{
