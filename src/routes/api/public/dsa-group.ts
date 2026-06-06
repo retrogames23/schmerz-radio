@@ -143,6 +143,32 @@ async function callMaster(
   );
 }
 
+/**
+ * Letzte Säuberung der Modell-Antwort. Entfernt interne Reasoning-Sektionen
+ * (z. B. DeepSeek `<think>…</think>`) und Reste von Tool-Aufrufen oder
+ * Chat-Template-Steuerzeichen, bevor der Text geparst und an die DB/den
+ * Client geschickt wird. Spielerseitige Marker ([TJARK]/[BREM]/[YELVA]/
+ * [SCENE]/[CHECK]/[END]) bleiben unberührt.
+ */
+function sanitizeReply(reply: string): string {
+  if (!reply) return "";
+  let out = reply;
+  out = out.replace(/<think>[\s\S]*?<\/think>/gi, "");
+  out = out.replace(/<thinking>[\s\S]*?<\/thinking>/gi, "");
+  out = out.replace(/<reasoning>[\s\S]*?<\/reasoning>/gi, "");
+  out = out.replace(/<reflection>[\s\S]*?<\/reflection>/gi, "");
+  out = out.replace(/<scratchpad>[\s\S]*?<\/scratchpad>/gi, "");
+  out = out.replace(/<(?:think|thinking|reasoning|reflection|scratchpad)>[\s\S]*$/i, "");
+  out = out.replace(/<tool_call>[\s\S]*?<\/tool_call>/gi, "");
+  out = out.replace(/<tool_response>[\s\S]*?<\/tool_response>/gi, "");
+  out = out.replace(/<function_calls?>[\s\S]*?<\/function_calls?>/gi, "");
+  out = out.replace(/<\|tool_calls?_begin\|>[\s\S]*?<\|tool_calls?_end\|>/gi, "");
+  out = out.replace(/<\|im_(?:start|end)\|>(?:\s*(?:system|assistant|user))?/gi, "");
+  out = out.replace(/<\|(?:begin_of_text|end_of_text|eot_id|start_header_id|end_header_id|bos|eos)\|>/gi, "");
+  out = out.replace(/<\|[a-z_]+\|>/gi, "");
+  return out.trim();
+}
+
 type AnyClient = ReturnType<typeof createClient<any, any, any>>;
 
 /**
@@ -365,8 +391,9 @@ async function runMasterAndStore(
   const minEnd = isOpen ? 0 : MIN_END_TURNS;
   const result = await callMaster(apiKey, staticLore, dynamicState, history, minEnd, model);
   if (!result.ok) return result;
-  const parsed = parseMasterTurn(result.reply);
-  let reply = result.reply;
+  const cleanedReply = sanitizeReply(result.reply);
+  const parsed = parseMasterTurn(cleanedReply);
+  let reply = cleanedReply;
   let nextStatus: "active" | "victory" | "defeat" | "aborted" = "active";
   if (parsed.end === "victory") nextStatus = "victory";
   else if (parsed.end === "defeat") nextStatus = "defeat";
