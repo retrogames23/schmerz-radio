@@ -339,6 +339,19 @@ function detectImplicitEnd(reply: string): "victory" | "defeat" | "aborted" | nu
 
 const ALLOWED_SETTINGS = new Set<string>(DSA_SETTINGS.map((s) => s.id));
 
+/** Einmaliges Log der statischen Lore-Größe pro Setting — hilft beim
+ *  Sichtprüfen, ob ein Prompt-Trim wirklich angekommen ist. */
+const _loredSize = new Set<string>();
+function logLoreSizeOnce(setting: string, text: string): void {
+  if (_loredSize.has(setting)) return;
+  _loredSize.add(setting);
+  const chars = text.length;
+  const approxTokens = Math.round(chars / 3.5);
+  console.log(
+    `[dsa-cost] staticLore ${JSON.stringify({ setting, chars, approxTokens })}`,
+  );
+}
+
 const VALID_ATTR_KEYS = ["MU", "KL", "CH", "FF", "GE", "IN", "KK"] as const;
 type AttrKey = (typeof VALID_ATTR_KEYS)[number];
 
