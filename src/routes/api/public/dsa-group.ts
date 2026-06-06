@@ -16,7 +16,7 @@ import type { DsaCharacterSummary } from "@/game/types";
 import { AP_DEFAULTS } from "@/game/dsa/advancement";
 import { defaultGearFor, type HeroGear } from "@/game/dsa/gear";
 import { callChatWithLoreTool } from "@/game/dsa/lore/tool";
-import { resolveDsaMasterModel } from "@/lib/aiModel";
+import { getModelLimits, resolveDsaMasterModel } from "@/lib/aiModel";
 
 /**
  * Server-Route für das DSA-Gruppenabenteuer (Mehrspieler-Modus).
@@ -141,7 +141,13 @@ async function callMaster(
     ],
   };
 
-  const trimmed = history.slice(-10).map((m) => ({ role: m.role, content: m.content }));
+  const limits = getModelLimits(model);
+  // Gruppe: Output darf knapper ausfallen als bei der Solo-Variante, weil
+  // ein Meisterzug nur EINE Reaktion auf das Spielerbündel ist.
+  const maxTokens = Math.min(limits.maxTokens + 150, 1100);
+  const trimmed = history
+    .slice(-limits.historyWindow)
+    .map((m) => ({ role: m.role, content: m.content }));
   const tail = `[SYSTEM-STATUS]\n${dynamicState}\n\n${postHistoryReminder}`;
   let chatMessages;
   if (trimmed.length === 0) {
@@ -152,7 +158,14 @@ async function callMaster(
     chatMessages = [systemMessage, ...trimmed.slice(0, -1), enhancedLast];
   }
 
-  return callChatWithLoreTool(apiKey, chatMessages, { temperature: 0.8, max_tokens: 1100, model });
+  return callChatWithLoreTool(apiKey, chatMessages, {
+    temperature: 0.8,
+    max_tokens: maxTokens,
+    model,
+    maxToolRounds: limits.maxToolRounds,
+    useTools: limits.useTools,
+    callLabel: "group:turn",
+  });
 }
 
 /**

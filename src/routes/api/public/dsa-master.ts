@@ -1,6 +1,7 @@
 import {
   AI_MODEL_DSA_MASTER,
   OPENROUTER_CHAT_URL,
+  getModelLimits,
   openRouterHeaders,
   resolveDsaMasterModel,
 } from "@/lib/aiModel";
@@ -479,7 +480,10 @@ async function callMaster(
     ],
   };
 
-  const trimmed = history.slice(-10).map((m) => ({ role: m.role, content: m.content }));
+  const limits = getModelLimits(model);
+  const trimmed = history
+    .slice(-limits.historyWindow)
+    .map((m) => ({ role: m.role, content: m.content }));
   const tail = `[SYSTEM-STATUS]\n${dynamicState}\n\n${postHistoryReminder}`;
   let chatMessages;
   if (trimmed.length === 0) {
@@ -490,7 +494,14 @@ async function callMaster(
     chatMessages = [systemMessage, ...trimmed.slice(0, -1), enhancedLast];
   }
 
-  return callChatWithLoreTool(apiKey, chatMessages, { temperature: 0.8, max_tokens: 950, model });
+  return callChatWithLoreTool(apiKey, chatMessages, {
+    temperature: 0.8,
+    max_tokens: limits.maxTokens,
+    model,
+    maxToolRounds: limits.maxToolRounds,
+    useTools: limits.useTools,
+    callLabel: "master:turn",
+  });
 }
 
 export const Route = createFileRoute("/api/public/dsa-master")({
