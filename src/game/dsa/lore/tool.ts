@@ -19,6 +19,7 @@ export const DSA_LORE_TOOL_SPEC = {
     description:
       "Schlägt aventurisches Detailwissen nach (Anreden, Götter, Regionen, Zauber, Waffen, Rüstungen, Talente, Monster, Welt-Kontext, Gefährten-Backstories). " +
       "Ruf das Tool auf, BEVOR du eine Aussage triffst, bei der du unsicher bist — speziell bei Titeln/Anreden, Geografie, Götter-Details, Zeitrechnung/Jahresdifferenzen oder Spielregeln. " +
+      "Budget: maximal 1–2 Aufrufe pro Meisterwende. Danach erzähle, auch wenn du noch unsicher bist — lieber generisch beschreiben als die Wende verbrennen. " +
       LORE_TOPIC_HINT,
     parameters: {
       type: "object",
