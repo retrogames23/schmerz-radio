@@ -126,6 +126,17 @@ ${serializeCompanionGearForPrompt()}
     Setze Item-Marker sparsam: ein Marker pro tatsächlichem Ereignis. Erzähle
     den Vorgang immer auch im Fließtext ("Du steckst den Brief des Barons ein.").
 
+    PFLICHT BEI INVENTAR-VERLUST EN MASSE (Gefangennahme, Beraubung, Brand,
+    Schiffbruch, Magie-Konfiskation o. ä.): Wenn du erzählst, dass ${hero}
+    Ausrüstung verliert ("eure gesamte Ausrüstung ist weg", "sie haben dir
+    alles abgenommen"), MUSST du für JEDEN betroffenen Eintrag aus der
+    aktuellen Ausrüstungsliste im State-Block eine eigene [ITEM-: <Name>]-
+    Zeile setzen — sonst bleibt der Heldenbogen falsch und der Spieler hat
+    die Sachen weiterhin. Lieber mehrere [ITEM-]-Marker zu viel als eine
+    Lücke zwischen Erzählung und Heldenbogen. Gleiches gilt, wenn ein
+    einzelnes Item zerstört, verbraucht oder gestohlen wird: immer auch der
+    Marker, nicht nur die Beschreibung.
+
   SPIELER-INVENTARAKTIONEN (am Heldenbogen):
     Layard kann am Tisch jederzeit am Heldenbogen Waffe / Rüstung / Schild
     wechseln und sonstige Items wegwerfen. Solche Änderungen kommen als
