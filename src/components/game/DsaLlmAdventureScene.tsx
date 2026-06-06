@@ -105,6 +105,7 @@ async function authedPost(
   body: Record<string, unknown>,
   sessionId: string,
   expectsSignedInUser = false,
+  runtimeMode: "e67" | "standalone" = "e67",
 ): Promise<Response> {
   const { getFreshAccessToken } = await import("@/auth/freshToken");
   const token = await getFreshAccessToken().catch(() => null);
@@ -123,6 +124,7 @@ async function authedPost(
       ...body,
       sessionId,
       model: getDsaModel(),
+      mode: runtimeMode,
       ...(token ? {} : { anonId: getAnonId() }),
     }),
   });
@@ -136,6 +138,7 @@ async function authedPost(
       ...body,
       sessionId,
       model: getDsaModel(),
+      mode: runtimeMode,
     }),
   });
 }
