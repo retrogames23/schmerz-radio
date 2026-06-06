@@ -810,6 +810,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           const knownTalents = await loadHeroTalents(admin, uid, heroSlot);
           const gearInfo = await loadHeroGearAndRow(admin, uid, heroSlot);
           const staticLore = buildStaticMasterLore(settingId as DsaSettingId);
+          logLoreSizeOnce(settingId, staticLore);
           const dynamicState = buildDynamicMasterState({
             setting: settingId as DsaSettingId,
             character: characterSnap,
@@ -981,6 +982,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           const cooldown = !isOpenSetting && assistantTurns >= 10 && assistantTurns <= 18;
 
           const staticLore = buildStaticMasterLore(settingId);
+          logLoreSizeOnce(settingId, staticLore);
           const dynamicState = buildDynamicMasterState({
             setting: settingId,
             character: characterSnap,
