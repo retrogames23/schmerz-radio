@@ -142,9 +142,15 @@ function findSpellInText(
 }
 
 /** Zerteilt einen Befehlstext in Klauseln und liefert nur die, die einen
- *  bestimmten Gefährten beim Namen / per Rolle ansprechen. */
+ *  bestimmten Gefährten beim Namen / per Rolle ansprechen.
+ *
+ *  Wichtig: Eine direkte Anrede ("Yelva, bleib im Hintergrund!") wird im
+ *  Deutschen durch ein Komma vom eigentlichen Befehl getrennt. Wir splitten
+ *  daher nur an satzbeendenden Zeichen (.!?;\n und Gedankenstrich) — Kommas
+ *  bleiben Teil derselben Klausel, sonst verliert "bleib im Hintergrund"
+ *  seinen Bezug zum Namen. */
 function clausesMentioning(text: string, aliases: string[]): string[] {
-  const parts = text.split(/(?<=[.!?])\s+|,|—|–|;|\n/);
+  const parts = text.split(/(?<=[.!?])\s+|—|–|;|\n/);
   const out: string[] = [];
   for (const p of parts) {
     const lower = p.toLowerCase();
