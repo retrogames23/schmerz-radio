@@ -211,7 +211,7 @@ ${serializeCompanionGearForPrompt()}
 
   Outtime-Modus bleibt erlaubt für Regelfragen, Welt-Wissen und kurze Meta-Hinweise (siehe OUTTIME-MODUS unten). Es gibt KEINEN E67-Smalltalk, KEINE „Pizza/Schule/Komplex"-Themen, KEINE Spieler/Charakter-Dualität für Brem und Yelva — sie sind ausschließlich die aventurischen Figuren.`;
 
-  return `${introBlock}
+  const rawPrompt = `${introBlock}
 
 ${DSA_LORE_BRIEF}
 
