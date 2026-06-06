@@ -1,6 +1,7 @@
 import {
   AI_MODEL_DSA_MASTER,
   OPENROUTER_CHAT_URL,
+  getModelLimits,
   openRouterHeaders,
   resolveDsaMasterModel,
 } from "@/lib/aiModel";
@@ -338,6 +339,19 @@ function detectImplicitEnd(reply: string): "victory" | "defeat" | "aborted" | nu
 
 const ALLOWED_SETTINGS = new Set<string>(DSA_SETTINGS.map((s) => s.id));
 
+/** Einmaliges Log der statischen Lore-Größe pro Setting — hilft beim
+ *  Sichtprüfen, ob ein Prompt-Trim wirklich angekommen ist. */
+const _loredSize = new Set<string>();
+function logLoreSizeOnce(setting: string, text: string): void {
+  if (_loredSize.has(setting)) return;
+  _loredSize.add(setting);
+  const chars = text.length;
+  const approxTokens = Math.round(chars / 3.5);
+  console.log(
+    `[dsa-cost] staticLore ${JSON.stringify({ setting, chars, approxTokens })}`,
+  );
+}
+
 const VALID_ATTR_KEYS = ["MU", "KL", "CH", "FF", "GE", "IN", "KK"] as const;
 type AttrKey = (typeof VALID_ATTR_KEYS)[number];
 
@@ -479,7 +493,10 @@ async function callMaster(
     ],
   };
 
-  const trimmed = history.slice(-10).map((m) => ({ role: m.role, content: m.content }));
+  const limits = getModelLimits(model);
+  const trimmed = history
+    .slice(-limits.historyWindow)
+    .map((m) => ({ role: m.role, content: m.content }));
   const tail = `[SYSTEM-STATUS]\n${dynamicState}\n\n${postHistoryReminder}`;
   let chatMessages;
   if (trimmed.length === 0) {
@@ -490,7 +507,14 @@ async function callMaster(
     chatMessages = [systemMessage, ...trimmed.slice(0, -1), enhancedLast];
   }
 
-  return callChatWithLoreTool(apiKey, chatMessages, { temperature: 0.8, max_tokens: 950, model });
+  return callChatWithLoreTool(apiKey, chatMessages, {
+    temperature: 0.8,
+    max_tokens: limits.maxTokens,
+    model,
+    maxToolRounds: limits.maxToolRounds,
+    useTools: limits.useTools,
+    callLabel: "master:turn",
+  });
 }
 
 export const Route = createFileRoute("/api/public/dsa-master")({
@@ -786,6 +810,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           const knownTalents = await loadHeroTalents(admin, uid, heroSlot);
           const gearInfo = await loadHeroGearAndRow(admin, uid, heroSlot);
           const staticLore = buildStaticMasterLore(settingId as DsaSettingId);
+          logLoreSizeOnce(settingId, staticLore);
           const dynamicState = buildDynamicMasterState({
             setting: settingId as DsaSettingId,
             character: characterSnap,
@@ -957,6 +982,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           const cooldown = !isOpenSetting && assistantTurns >= 10 && assistantTurns <= 18;
 
           const staticLore = buildStaticMasterLore(settingId);
+          logLoreSizeOnce(settingId, staticLore);
           const dynamicState = buildDynamicMasterState({
             setting: settingId,
             character: characterSnap,

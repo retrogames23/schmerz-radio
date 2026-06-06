@@ -229,6 +229,21 @@ export function formatSceneCatalogForPrompt(): string {
 }
 
 /**
+ * Sehr kompakte Variante des Katalogs für den Default-Prompt: nur die
+ * Tag-Liste in 8er-Gruppen, ohne Beschreibung. Detail-`use`-Hinweise
+ * holt sich der Meister bei Bedarf via `dsaLore({topic:'scene.<tag>'})`.
+ * Spart pro Meisterzug ca. 11–13k Zeichen im (gecachten) System-Prompt.
+ */
+export function formatSceneTagListForPrompt(): string {
+  const tags = Object.keys(DSA_SCENE_CATALOG);
+  const lines: string[] = [];
+  for (let i = 0; i < tags.length; i += 8) {
+    lines.push("      " + tags.slice(i, i + 8).join(", "));
+  }
+  return lines.join("\n");
+}
+
+/**
  * Liefert die zum Tag passende Illustration oder `null`, wenn kein
  * passendes Bild im Pool existiert. Der Aufrufer rendert dann kein Bild.
  */
