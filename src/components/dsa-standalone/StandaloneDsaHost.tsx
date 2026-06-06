@@ -266,6 +266,7 @@ export function StandaloneDsaHost({
       creditHeroAp,
       updateHero,
       notifyMaster,
+      dsaRuntimeMode: "standalone",
     };
   }, [character, setCharacter, sheetOpen, view, slot, sessionId, onExit, onCharacterCreated, creditHeroAp, updateHero, notifyMaster]);
 
