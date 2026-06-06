@@ -16,6 +16,7 @@ import type { DsaCharacterSummary } from "@/game/types";
 import { AP_DEFAULTS } from "@/game/dsa/advancement";
 import { defaultGearFor, type HeroGear } from "@/game/dsa/gear";
 import { callChatWithLoreTool } from "@/game/dsa/lore/tool";
+import { selectActiveWorldInfo } from "@/game/dsa/lore/worldInfo";
 import { getModelLimits, resolveDsaMasterModel } from "@/lib/aiModel";
 
 /**
@@ -122,6 +123,7 @@ async function callMaster(
   history: StoredTurn[],
   minAssistantTurns: number,
   model: string,
+  worldInfoBlock: string = "",
 ): Promise<{ ok: true; reply: string } | { ok: false; status: number; error: string }> {
   // Cache-Strategie: siehe dsa-master.ts. Schutzschicht + staticLore in EINER
   // unveränderlichen System-Nachricht (cache_control: ephemeral); volatiler
@@ -148,7 +150,27 @@ async function callMaster(
   const trimmed = history
     .slice(-limits.historyWindow)
     .map((m) => ({ role: m.role, content: m.content }));
-  const tail = `[SYSTEM-STATUS]\n${dynamicState}\n\n${postHistoryReminder}`;
+  const wi = worldInfoBlock ? `${worldInfoBlock}\n\n` : "";
+  const tail = `${wi}[SYSTEM-STATUS]\n${dynamicState}\n\n${postHistoryReminder}`;
+
+  // B2 — Cost-Telemetrie pro Turn-Vorbereitung.
+  try {
+    const historyChars = trimmed.reduce((sum, m) => sum + m.content.length, 0);
+    console.log(
+      `[dsa-cost] turn-prep ${JSON.stringify({
+        label: "group:turn",
+        model,
+        staticLoreChars: staticLore.length,
+        worldInfoChars: worldInfoBlock.length,
+        dynamicStateChars: dynamicState.length,
+        historyChars,
+        historyMsgs: trimmed.length,
+      })}`,
+    );
+  } catch {
+    /* logging never fails the call */
+  }
+
   let chatMessages;
   if (trimmed.length === 0) {
     chatMessages = [systemMessage, { role: "user" as const, content: tail }];
@@ -414,7 +436,19 @@ async function runMasterAndStore(
   const history = await loadHistoryForLLM(admin, room.id);
   if (userTurn) history.push({ role: "user", content: userTurn.content });
   const minEnd = isOpen ? 0 : MIN_END_TURNS;
-  const result = await callMaster(apiKey, staticLore, dynamicState, history, minEnd, model);
+  const wiGroup = selectActiveWorldInfo({
+    recentMessages: history,
+    extraScanText: [room.summary, room.wish_brief ?? ""].filter(Boolean).join("\n"),
+  });
+  const result = await callMaster(
+    apiKey,
+    staticLore,
+    dynamicState,
+    history,
+    minEnd,
+    model,
+    wiGroup.block,
+  );
   if (!result.ok) return result;
   const cleanedReply = sanitizeReply(result.reply);
   const parsed = parseMasterTurn(cleanedReply);
