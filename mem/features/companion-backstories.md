@@ -1,14 +1,32 @@
 ---
 name: Brem & Yelva Backstories
-description: Kern-Fakten der Hintergrundgeschichten von Brem und Yelva — für konsistente Erzählung, nicht ohne Anlass ändern.
+description: Kern-Fakten der Hintergrundgeschichten von Brem und Yelva (e67-Modus) plus standalone-Variante ohne E67-Rahmen.
 type: feature
 ---
 
 Vollständige Lore-Blöcke leben in `src/game/dsa/lore/companions.ts`
-(`DSA_BREM_BACKSTORY`, `DSA_YELVA_BACKSTORY`) und werden via
-`buildCompanionBackstoriesBlock()` in Solo- (`llmMasterPrompt.ts`) und
-Gruppen-Prompt (`group/prompt.ts`, nur wenn `includeCompanions=true`)
-eingespeist.
+(`DSA_BREM_BACKSTORY`, `DSA_YELVA_BACKSTORY`) und sind aufgeteilt in
+`*_E67_FRAME` (Spieler-am-Tisch / Namens-Dualität) und `*_CORE_BACKSTORY`
+(reiner Aventurien-Charakter). `getBremShort(mode)` / `getYelvaShort(mode)`
+liefern die modusabhängige Variante. Eingespeist via
+`buildCompanionBackstoriesBlock(mode)` in Solo- (`llmMasterPrompt.ts`) und
+Gruppen-Prompt (`group/prompt.ts`, nur wenn `includeCompanions=true`).
+
+## Runtime-Modus
+- `e67` (Default) — klassischer Rahmen: Spieler „Layard" + Mitspieler
+  Brem/Yelva am Tisch in Komplex E67, 1997. Outtime/Intime-Dualität aktiv.
+  Tjark ist der erfahrene Spielleiter mit eigener Persönlichkeit.
+- `standalone` — pure DSA3-Tafelrunde. Kein E67, kein Layard, keine
+  Alter-Ego-Dualität. Brem/Yelva sind reine Aventurien-NSCs. Tjark ist
+  nur "erfahrener Spielleiter mit perfekter DSA3-Kenntnis", ohne weitere
+  Persönlichkeit. Outtime-Konzept bleibt nur für Regelfragen erhalten.
+  Wird von `StandaloneDsaHost` gesetzt, via `DsaHostContext.dsaRuntimeMode`
+  durchgereicht und vom Client an `/api/public/dsa-master` als `mode`
+  mitgeschickt. Server reicht ihn an `buildStaticMasterLore(setting, mode)`
+  und `buildDynamicMasterState({ ..., mode })` weiter.
+  `localizeForMode()` in `llmMasterPrompt.ts` ersetzt zudem im statischen
+  Lore-Block Begriffe wie "Layard", "Komplex E67", "Pizza", "Schule" durch
+  neutrale Aventurien-Begriffe.
 
 ## Brem Halbgroschen — Kern-Fakten
 - NAMENS-DUALITÄT: Spieler „Brem" (~16, E67, 1997) spielt Charakter

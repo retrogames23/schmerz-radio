@@ -588,6 +588,8 @@ export const Route = createFileRoute("/api/public/dsa-master")({
         }
         const heroSlotRaw = typeof b.heroSlot === "number" ? b.heroSlot : 1;
         const heroSlot = heroSlotRaw === 1 || heroSlotRaw === 2 || heroSlotRaw === 3 ? heroSlotRaw : 1;
+        const runtimeMode: "e67" | "standalone" =
+          b.mode === "standalone" ? "standalone" : "e67";
 
         // Anonyme Spieler identifizieren sich über eine stabile, im
         // Browser gespeicherte ID. Genau eines von beidem ist gesetzt.
@@ -809,7 +811,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           const knownSpells = await loadHeroSpells(admin, uid, heroSlot);
           const knownTalents = await loadHeroTalents(admin, uid, heroSlot);
           const gearInfo = await loadHeroGearAndRow(admin, uid, heroSlot);
-          const staticLore = buildStaticMasterLore(settingId as DsaSettingId);
+          const staticLore = buildStaticMasterLore(settingId as DsaSettingId, runtimeMode);
           logLoreSizeOnce(settingId, staticLore);
           const dynamicState = buildDynamicMasterState({
             setting: settingId as DsaSettingId,
@@ -823,6 +825,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             knownTalents,
             wishBrief,
             gear: gearInfo.gear,
+            mode: runtimeMode,
           });
           const opener: StoredTurn = {
             role: "user",
@@ -981,7 +984,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           const assistantTurns = rawMessages.filter((m) => m.role === "assistant").length;
           const cooldown = !isOpenSetting && assistantTurns >= 10 && assistantTurns <= 18;
 
-          const staticLore = buildStaticMasterLore(settingId);
+          const staticLore = buildStaticMasterLore(settingId, runtimeMode);
           logLoreSizeOnce(settingId, staticLore);
           const dynamicState = buildDynamicMasterState({
             setting: settingId,
@@ -995,6 +998,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             knownTalents: await loadHeroTalents(admin, uid, heroSlot),
             wishBrief,
             gear: (await loadHeroGearAndRow(admin, uid, heroSlot)).gear,
+            mode: runtimeMode,
           });
           const minEnd = isOpenSetting ? 0 : MIN_END_ASSISTANT_TURNS;
           const result = await callMaster(apiKey, staticLore, dynamicState, history, minEnd, chosenModel);
