@@ -203,6 +203,7 @@ export function StandaloneDsaHost({
               text,
               heroSlot: slot,
               sessionId,
+              mode: "standalone",
               ...(token ? {} : { anonId: anonId ?? "anon000000000000" }),
             }),
           });
