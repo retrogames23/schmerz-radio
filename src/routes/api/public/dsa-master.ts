@@ -794,10 +794,11 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           const minEnd = DONOR_ONLY_SETTINGS.has(settingId) ? 0 : MIN_END_ASSISTANT_TURNS;
           const result = await callMaster(apiKey, staticLore, dynamicState, [opener], minEnd, chosenModel);
           if (!result.ok) return json(result.status, { error: result.error });
-          const parsed = parseMasterTurn(result.reply);
+          const cleanReply = sanitizeReply(result.reply);
+          const parsed = parseMasterTurn(cleanReply);
           const initialMessages: StoredTurn[] = [
             opener,
-            { role: "assistant", content: result.reply },
+            { role: "assistant", content: cleanReply },
           ];
           const imgTag = parsed.sceneTag ?? setting.openingTag;
           const savePayload = {
@@ -833,7 +834,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             return json(500, { error: "Speichern fehlgeschlagen." });
           }
           return json(200, {
-            reply: result.reply,
+            reply: cleanReply,
             parsed,
             imageTag: imgTag,
             status: "active",
