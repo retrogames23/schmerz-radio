@@ -856,7 +856,21 @@ export const Route = createFileRoute("/api/public/dsa-master")({
               "(SPIELLEITER-CUE: Eröffne das Abenteuer. Wende dich ZUERST als Tjark kurz direkt an Layard (1–2 Sätze, [TJARK]-Zeile) und weise ihn darauf hin, dass er dich jederzeit mit dem Stichwort »Outtime« ansprechen kann, wenn er Regelfragen oder Fragen zur Welt Aventuriens hat — und dass du für manche In-World-Wissensfragen (Etikette, Heraldik, Götter, Geschichte, Magiekunde) eine passende Probe verlangen kannst. DANACH setze die Szene mit [SCENE: …], beschreibe in 2–4 Sätzen, wo Layards Charakter mit Brem und Yelva steht und was sie umgibt. Schließe mit einer offenen Frage an die Gruppe oder einer ersten Beobachtung. Noch kein Kampf.)",
           };
           const minEnd = DONOR_ONLY_SETTINGS.has(settingId) ? 0 : MIN_END_ASSISTANT_TURNS;
-          const result = await callMaster(apiKey, staticLore, dynamicState, [opener], minEnd, chosenModel);
+          // WorldInfo (A1+A2+A3): nur auf den Opener-Cue + Wish-Brief
+          // scannen — Constants (Geo-Sanity) sind eh dabei.
+          const wiStart = selectActiveWorldInfo({
+            recentMessages: [opener],
+            extraScanText: wishBrief ?? "",
+          });
+          const result = await callMaster(
+            apiKey,
+            staticLore,
+            dynamicState,
+            [opener],
+            minEnd,
+            chosenModel,
+            wiStart.block,
+          );
           if (!result.ok) return json(result.status, { error: result.error });
           const cleanReply = sanitizeReply(result.reply);
           const parsed = parseMasterTurn(cleanReply);
@@ -1024,7 +1038,21 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             mode: runtimeMode,
           });
           const minEnd = isOpenSetting ? 0 : MIN_END_ASSISTANT_TURNS;
-          const result = await callMaster(apiKey, staticLore, dynamicState, history, minEnd, chosenModel);
+          // WorldInfo (A1+A2+A3): scannt die letzten 6 Nachrichten +
+          // die laufende Zusammenfassung + optionalen Wish-Brief.
+          const wiTurn = selectActiveWorldInfo({
+            recentMessages: history,
+            extraScanText: [summary, wishBrief ?? ""].filter(Boolean).join("\n"),
+          });
+          const result = await callMaster(
+            apiKey,
+            staticLore,
+            dynamicState,
+            history,
+            minEnd,
+            chosenModel,
+            wiTurn.block,
+          );
           if (!result.ok) return json(result.status, { error: result.error });
           let reply = sanitizeReply(result.reply);
           let parsed = parseMasterTurn(reply);
