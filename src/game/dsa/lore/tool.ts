@@ -35,8 +35,9 @@ export const DSA_LORE_TOOL_SPEC = {
   },
 };
 
-/** Max. Tool-Roundtrips pro Meisterwende — schützt vor Endlosschleifen. */
-const MAX_TOOL_ROUNDS = 4;
+/** Default-Max. Tool-Roundtrips pro Meisterwende — schützt vor Endlosschleifen.
+ *  Aufrufer können den Wert pro Modell drücken (siehe getModelLimits). */
+const DEFAULT_MAX_TOOL_ROUNDS = 4;
 
 type ChatMessage =
   | { role: "system" | "user" | "assistant"; content: string }
@@ -67,15 +68,29 @@ type ChatMessage =
 export async function callChatWithLoreTool(
   apiKey: string,
   messages: ChatMessage[],
-  options: { temperature: number; max_tokens: number; model?: string },
+  options: {
+    temperature: number;
+    max_tokens: number;
+    model?: string;
+    /** Pro-Call-Override für die Tool-Loop-Tiefe. */
+    maxToolRounds?: number;
+    /** false → `tools`/`tool_choice` weglassen; spart bei großen Modellen
+     *  einen vollen Prompt-Roundtrip, wenn das Modell die Lore eh kennt. */
+    useTools?: boolean;
+    /** Optionales Telemetrie-Label fürs Log (z. B. "master:say"). */
+    callLabel?: string;
+  },
 ): Promise<
   | { ok: true; reply: string }
   | { ok: false; status: number; error: string }
 > {
   const working: ChatMessage[] = [...messages];
   const model = options.model || AI_MODEL_DSA_MASTER;
+  const maxRounds = Math.max(1, options.maxToolRounds ?? DEFAULT_MAX_TOOL_ROUNDS);
+  const useTools = options.useTools !== false;
+  const label = options.callLabel ?? "dsa-master";
 
-  for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
+  for (let round = 0; round < maxRounds; round++) {
     let upstream: Response;
     try {
       upstream = await fetch(OPENROUTER_CHAT_URL, {
@@ -84,8 +99,9 @@ export async function callChatWithLoreTool(
         body: JSON.stringify({
           model,
           messages: working,
-          tools: [DSA_LORE_TOOL_SPEC],
-          tool_choice: "auto",
+          ...(useTools
+            ? { tools: [DSA_LORE_TOOL_SPEC], tool_choice: "auto" as const }
+            : {}),
           temperature: options.temperature,
           max_tokens: options.max_tokens,
           stream: false,
@@ -113,6 +129,14 @@ export async function callChatWithLoreTool(
           }>;
         };
       }>;
+      usage?: {
+        prompt_tokens?: number;
+        completion_tokens?: number;
+        total_tokens?: number;
+        prompt_tokens_details?: { cached_tokens?: number };
+        cache_creation_input_tokens?: number;
+        cache_read_input_tokens?: number;
+      };
     };
     try {
       data = (await upstream.json()) as typeof data;
@@ -123,7 +147,28 @@ export async function callChatWithLoreTool(
     const toolCalls = msg?.tool_calls;
     const content = (msg?.content ?? "").trim();
 
-    if (toolCalls && toolCalls.length > 0) {
+    // Kosten-Telemetrie pro Roundtrip — landet im Worker-Log.
+    try {
+      const u = data.usage ?? {};
+      console.log(
+        `[dsa-cost] ${JSON.stringify({
+          label,
+          model,
+          round,
+          maxRounds,
+          useTools,
+          prompt: u.prompt_tokens ?? null,
+          completion: u.completion_tokens ?? null,
+          cached: u.prompt_tokens_details?.cached_tokens ?? u.cache_read_input_tokens ?? null,
+          cacheCreate: u.cache_creation_input_tokens ?? null,
+          toolCall: toolCalls?.length ?? 0,
+        })}`,
+      );
+    } catch {
+      /* logging never fails the call */
+    }
+
+    if (useTools && toolCalls && toolCalls.length > 0) {
       // Assistant-Nachricht mit tool_calls anhängen (content darf leer/null sein).
       working.push({
         role: "assistant",
