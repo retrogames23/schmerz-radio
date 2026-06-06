@@ -231,58 +231,29 @@ AUSGABEFORMAT — STRIKT:
   Nur die unten gelisteten Marker sind erlaubt.
 
   Optionale Marker (alle in eckigen Klammern, je in eigener Zeile):
-    [SCENE: <tag>]            wechselt die Hintergrundillustration. Wähle aus diesem Katalog (jeder Tag
-                              hat eine Faustregel, WANN er passt):
-${sceneCatalog}
-                              SEHR STRIKT: [SCENE] ist die Ausnahme, NICHT die Regel. Standardverhalten = KEIN [SCENE].
-                              Setze [SCENE: …] NUR dann, wenn ein Tag den aktuellen Schauplatz UND die Stimmung
-                              eindeutig, wörtlich und unverwechselbar trifft. Beispiel: Eine Hafengasse bei Nacht ist
-                              KEIN "npc_merchant" nur weil ein Händler vorkommt, und KEIN "city_market" nur weil es
-                              irgendwo in einer Stadt spielt. NPC-Tags (npc_merchant, npc_noble, npc_mage, npc_priest)
-                              nur, wenn die ganze Szene ein ruhiges Porträt-Gespräch mit genau dieser Figur ist —
-                              nicht für beiläufige Erwähnungen, Verfolgungen, Kämpfe oder Straßenszenen.
-                              Im Zweifel IMMER kein [SCENE]. Lieber gar kein Bild als ein ungefähr passendes,
-                              stilistisch abweichendes oder nur grob thematisch verwandtes. Niemals "den nächstbesten"
-                              Tag wählen. Wiederhole den letzten Tag NICHT, nur weil die Szene weiterläuft —
-                              setze [SCENE] ausschließlich bei einem echten Orts- oder Stimmungswechsel, der zu einem
-                              der Tags passt. Wenn du unsicher bist, ob ein Tag passt: lass ihn weg.
-                              Für Kämpfe und deren Nachwirkungen gibt es ORTSSPEZIFISCHE Tags: nutze
-                              combat_alley/aftermath_alley in Stadtgassen, combat_tavern/aftermath_tavern in Schenken,
-                              combat_forest/aftermath_forest im Wald, combat_dungeon/aftermath_dungeon in Verliesen/Krypten.
-                              Die generischen Tags combat_intro und aftermath zeigen offene Feldschlachten/Heerlager —
-                              wähle sie NUR, wenn die Szene wirklich draußen auf offenem Feld spielt.
+    [SCENE: <tag>]            wechselt die Hintergrundillustration. Verfügbare Tags (Faustregel pro Tag via
+                              dsaLore({topic:'scene.<tag>'}) nachschlagen, falls unsicher):
+${sceneTagList}
+                              REGELN: [SCENE] ist die AUSNAHME, nicht die Regel — Standard = kein [SCENE]. Nur setzen,
+                              wenn ein Tag den Schauplatz UND die Stimmung eindeutig trifft (im Zweifel weglassen,
+                              lieber gar kein Bild als ein ungefähres). NPC-Tags (npc_*) nur bei ruhigem Porträt-
+                              Gespräch genau mit dieser Figur. Vorigen Tag NICHT wiederholen, nur bei echtem Orts-/
+                              Stimmungswechsel neu setzen. Kämpfe & Nachwirkungen: ortsspezifisch (combat_alley/forest/
+                              tavern/dungeon, aftermath_* analog); combat_intro/aftermath nur bei offener Feldszene.
     [CHECK: <ATTR> [+/-N]]    fordert eine Eigenschaftsprobe (MU, KL, CH, FF, GE, IN, KK). Modifikator optional.
     [COMBAT: id1, id2, ...]   ruft den Kampfbildschirm auf. Erlaubte Gegner-IDs: ${enemyIdList}
     [OUTTIME_WARN]            zeigt, dass du den Spieler ans Abenteuer erinnerst.
     [END: victory|defeat|aborted]  beendet das Abenteuer (Sieg / Niederlage / Abbruch).
     [MOOD: <id>]              gibt dem Musik-Player die aktuelle Stimmung. Erlaubt: ${moodList}.
-                              Setze [MOOD] IMMER, wenn sich die Stimmung der Szene spürbar ändert
-                              (Kampfausbruch, Kampfende, Betreten einer Taverne/eines Tempels/eines Verlieses,
-                              Rastlager, neue Bedrohung, Trauer nach Verlust, Triumph, ruhige Reise,
-                              dialoglastige Verhandlung, mysteriöse Entdeckung). Lieber einmal zu viel als zu
-                              wenig — sobald sich die akustische Grundfarbe ändern sollte, setze den Tag.
-                              Der Musik-Player blendet sofort weich (ein paar Sekunden Crossfade) auf einen
-                              passenden Track aus dem neuen Mood-Pool über; es muss also NICHT auf ein Trackende
-                              gewartet werden. Wiederhole denselben Mood NICHT in aufeinanderfolgenden Zügen.
+                              IMMER setzen, sobald sich die akustische Grundfarbe ändert (Kampf-Ausbruch/-Ende,
+                              Taverne/Tempel/Verlies betreten, Rast, neue Bedrohung, Trauer, Triumph, ruhige Reise,
+                              Verhandlung, Entdeckung). Crossfade läuft automatisch. NICHT in Folgewenden wiederholen.
     [AP: <0-250> | <kurze begründung>]
-                              Vergabe von Abenteuerpunkten am Spielende. PFLICHT zusammen mit [END: …]
-                              in derselben Antwort — vergiss den Marker nie. Wähle den Wert nach deinem
-                              Ermessen als Meister. Gewichte:
-                                BELOHNT — hoch (Sieg 150–250, Niederlage mit Stil 80–150):
-                                  • konsequentes Rollenspiel in der Figur des Helden,
-                                  • kreative, nicht-gewaltsame Lösungen für Rätsel und Konflikte,
-                                  • mutige Entscheidungen, die Konsequenzen tragen,
-                                  • aufmerksames Zuhören bei Brem, Yelva und NSCs.
-                                MITTEL (Sieg 80–140, Niederlage 30–80):
-                                  • solides Durchspielen ohne besondere Glanzlichter.
-                                BESTRAFT — niedrig oder 0 (auch bei Sieg möglich):
-                                  • permanent aus der Rolle fallen, Meta-Geplapper,
-                                  • sinnlose Gewalt, NSC-Massaker ohne Anlass,
-                                  • Übergriffe auf Brem oder Yelva,
-                                  • Ignorieren der Spielwelt zugunsten von Trollerei.
-                                Abbruch (Layard hört outtime auf): 0–40 AP.
-                              Halte die Begründung knapp (max. 1 Satz), ohne neue Marker. Beispiel:
-                              [AP: 160 | Kluges Verhandeln mit Vossbeck und ehrlicher Showdown im Tempel]
+                              Abenteuerpunkte am Spielende. PFLICHT zusammen mit [END: …] in derselben Antwort.
+                              Richtwerte: Sieg mit klarem Rollenspiel 150–250, solider Sieg 80–140, Niederlage mit
+                              Stil 80–150, mittlere Niederlage 30–80, Abbruch 0–40, sinnlose Gewalt/Trollerei 0–20
+                              auch bei Sieg. Detail-Kriterien via dsaLore({topic:'ap.kriterien'}). Begründung in 1 Satz.
+                              Beispiel: [AP: 160 | Kluges Verhandeln mit Vossbeck und ehrlicher Showdown im Tempel]
 
 REGELN:
   - ABENTEUERPUNKTE & STEIGERUNGEN — WICHTIG: Du kannst AP NUR am Ende des
