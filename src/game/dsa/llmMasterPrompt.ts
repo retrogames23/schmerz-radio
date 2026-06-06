@@ -1,5 +1,5 @@
 import { DSA_LORE_BRIEF } from "./llmLore";
-import { DSA_SCENE_TAGS, formatSceneCatalogForPrompt } from "./sceneImages";
+import { DSA_SCENE_TAGS, formatSceneTagListForPrompt } from "./sceneImages";
 import { ENEMY_STATS } from "./combat";
 import { getSetting, type DsaSettingId } from "./llmAdventure";
 import { DSA_MOODS } from "@/audio/dsaMusic";
@@ -95,7 +95,7 @@ export function buildStaticMasterLore(setting: DsaSettingId): string {
   const isSandbox = setting === "sandbox";
   const isWish = setting === "wish";
   const isOpen = isSandbox || isWish;
-  const sceneCatalog = formatSceneCatalogForPrompt();
+  const sceneTagList = formatSceneTagListForPrompt();
   const enemyIdList = Object.keys(ENEMY_STATS).join(", ");
   const moodList = DSA_MOODS.join(", ");
   const hero = HERO_PLACEHOLDER;
