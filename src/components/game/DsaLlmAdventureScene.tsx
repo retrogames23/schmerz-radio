@@ -125,7 +125,10 @@ async function authedPost(
       sessionId,
       model: getDsaModel(),
       mode: runtimeMode,
-      ...(token ? {} : { anonId: getAnonId() }),
+      // Always send anonId so server can claim legacy anon rows for this
+      // user (cross-device continuation of adventures that were started
+      // before login).
+      anonId: getAnonId(),
     }),
   });
   if (response.status !== 401 || !token) return response;
@@ -139,6 +142,7 @@ async function authedPost(
       sessionId,
       model: getDsaModel(),
       mode: runtimeMode,
+      anonId: getAnonId(),
     }),
   });
 }
