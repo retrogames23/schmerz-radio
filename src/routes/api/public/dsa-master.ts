@@ -610,15 +610,24 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           return json(400, { error: "Ungültige Session-ID." });
         }
         const heroSlotRaw = typeof b.heroSlot === "number" ? b.heroSlot : 1;
-        const heroSlot = heroSlotRaw === 1 || heroSlotRaw === 2 || heroSlotRaw === 3 ? heroSlotRaw : 1;
+        const heroSlot =
+          heroSlotRaw === 1 ||
+          heroSlotRaw === 2 ||
+          heroSlotRaw === 3 ||
+          heroSlotRaw === 4 ||
+          heroSlotRaw === 5 ||
+          heroSlotRaw === 6
+            ? heroSlotRaw
+            : 1;
         const runtimeMode: "e67" | "standalone" =
           b.mode === "standalone" ? "standalone" : "e67";
 
         // Anonyme Spieler identifizieren sich über eine stabile, im
-        // Browser gespeicherte ID. Genau eines von beidem ist gesetzt.
+        // Browser gespeicherte ID. Eingeloggte Spieler senden sie weiter
+        // mit, damit der Server Alt-Abenteuer dieser anon_id ihrem User
+        // zuordnen kann (Cross-Device-Fortsetzung).
         const anonIdRaw = typeof b.anonId === "string" ? b.anonId : "";
-        const anonId =
-          !uid && /^[0-9a-zA-Z_-]{8,64}$/.test(anonIdRaw) ? anonIdRaw : null;
+        const anonId = /^[0-9a-zA-Z_-]{8,64}$/.test(anonIdRaw) ? anonIdRaw : null;
         if (!uid && !anonId) {
           return json(400, { error: "Anonyme ID fehlt." });
         }
@@ -626,6 +635,19 @@ export const Route = createFileRoute("/api/public/dsa-master")({
         const admin = createClient(supabaseUrl, serviceKey, {
           auth: { persistSession: false, autoRefreshToken: false },
         });
+
+        // Cross-Device-Adoption: Wenn der Spieler eingeloggt ist UND
+        // diesem Browser bereits eine anon_id gehört, übernimm alle
+        // herrenlosen Abenteuer dieser anon_id für seinen User-Account.
+        // Best effort – Fehler werden geloggt, blockieren aber nichts.
+        if (uid && anonId) {
+          const { error: adoptErr } = await admin
+            .from("dsa_llm_adventures")
+            .update({ user_id: uid })
+            .eq("anon_id", anonId)
+            .is("user_id", null);
+          if (adoptErr) console.warn("dsa adopt anon failed", adoptErr);
+        }
 
         // Donor-Status für Modell-Switcher: Nur Unterstützer*innen
         // dürfen vom Default-Modell abweichen. Anonyme sind nie Spender.
@@ -729,7 +751,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
         if (action === "start") {
           // Anonyme: nur ein Abenteuer insgesamt. Existiert bereits eins
           // (egal welcher Status), gibts den Spendenhinweis.
-          if (anonId) {
+          if (anonId && !uid) {
             const { data: existing } = await admin
               .from("dsa_llm_adventures")
               .select("session_id, status")

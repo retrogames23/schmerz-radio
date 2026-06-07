@@ -37,7 +37,7 @@ function SlotPage() {
   const exit = () =>
     returnTo
       ? navigate({ to: returnTo })
-      : navigate({ to: "/dsa" });
+      : navigate({ to: "/dsa/helden" });
   const onCharacterCreated = returnTo
     ? () => navigate({ to: returnTo })
     : undefined;

@@ -188,12 +188,10 @@ export function StandaloneDsaHost({
           };
           if (token) headers.Authorization = `Bearer ${token}`;
           let anonId: string | null = null;
-          if (!token) {
-            try {
-              anonId = window.localStorage.getItem("dsa.anonId");
-            } catch {
-              anonId = null;
-            }
+          try {
+            anonId = window.localStorage.getItem("dsa.anonId");
+          } catch {
+            anonId = null;
           }
           await fetch("/api/public/dsa-master", {
             method: "POST",
@@ -204,7 +202,7 @@ export function StandaloneDsaHost({
               heroSlot: slot,
               sessionId,
               mode: "standalone",
-              ...(token ? {} : { anonId: anonId ?? "anon000000000000" }),
+              anonId: anonId ?? "anon000000000000",
             }),
           });
         } catch {

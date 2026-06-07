@@ -125,7 +125,10 @@ async function authedPost(
       sessionId,
       model: getDsaModel(),
       mode: runtimeMode,
-      ...(token ? {} : { anonId: getAnonId() }),
+      // Always send anonId so server can claim legacy anon rows for this
+      // user (cross-device continuation of adventures that were started
+      // before login).
+      anonId: getAnonId(),
     }),
   });
   if (response.status !== 401 || !token) return response;
@@ -139,6 +142,7 @@ async function authedPost(
       sessionId,
       model: getDsaModel(),
       mode: runtimeMode,
+      anonId: getAnonId(),
     }),
   });
 }
@@ -909,6 +913,14 @@ function SettingPicker({
         <p className="text-xs uppercase tracking-[0.3em] opacity-60 mt-6 mb-3">
           Setting wählen
         </p>
+        {isDonor && (
+          <div className="mb-3 flex items-center justify-between gap-2 rounded border border-[#3a2c1a]/40 bg-[#fbf2d8] px-3 py-2">
+            <span className="text-[11px] uppercase tracking-wider text-[#2a1f10]/80">
+              KI-Meister vor dem Start wählen
+            </span>
+            <DsaModelSwitcher />
+          </div>
+        )}
         {error && (
           <div className="mb-3 rounded border-2 border-red-900/40 bg-red-100/60 px-3 py-2 text-sm text-red-900">
             {error}
