@@ -102,12 +102,10 @@ function DsaHeroManager() {
       const { getFreshAccessToken } = await import("@/auth/freshToken");
       const token = await getFreshAccessToken().catch(() => null);
       let anonId: string | null = null;
-      if (!token) {
-        try {
-          anonId = window.localStorage.getItem("dsa.anonId");
-        } catch {
-          anonId = null;
-        }
+      try {
+        anonId = window.localStorage.getItem("dsa.anonId");
+      } catch {
+        anonId = null;
       }
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -119,7 +117,7 @@ function DsaHeroManager() {
         body: JSON.stringify({
           action: "abort",
           sessionId: sessionIdToDelete,
-          ...(token ? {} : { anonId: anonId ?? "anon000000000000" }),
+          anonId: anonId ?? "anon000000000000",
         }),
       });
     } catch {
