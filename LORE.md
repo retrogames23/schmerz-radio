@@ -244,8 +244,21 @@ gesehen hat. Das ist die Perspektive, aus der die Welt im Spiel sichtbar wird.
 Nur Lore-relevante Eckdaten. Tonfall, Verhaltensregeln und exakte Stimme
 stehen weiterhin in `src/game/npcPersonas.ts`.
 
-- **Layard** — Spielerfigur. Autor im Quadranten E67. Empfindet zu
-  wenig. Hört Schmerz-Radio.
+- **Layard Worag** — Spielerfigur. Wohnt in E67-2611. Empfindet zu wenig.
+  Hört Schmerz-Radio.
+  - **Beruf heute:** kleiner Sachbearbeiter im Quadrantenamt (Sektor 28).
+    Stempel, Formulare, Transferbögen — er kennt das Räderwerk, in dem er
+    selbst ein Rad ist. Erklärt, warum er 4317-K, Kowalk-Briefe und
+    Wartungssperren ohne Murren liest.
+  - **Früher:** Autor. Zwei dünne Bände in den späten 80ern bei einem
+    Mandats-Kleinverlag — niedrige Auflage, höfliche Rezensionen, dann
+    Stille. Schreibt heute kaum noch; gelegentlich Notizen, die er nicht
+    wieder aufschlägt. Erklärt seine innere Stimme und die genaue,
+    beobachtende Erzählhaltung des Spiels.
+  - **Diese Doppelung ist Kanon und kann ausgespielt werden** (Schreibmaschine
+    im Wohnungs-Decor, ein dünner Band im Wandregal neben dem Almanach,
+    Philippe/Helka erinnern sich vage). Erfindung weiterer Werke,
+    Verlagsnamen oder Pseudonyme ist nicht erlaubt, bis hier festgelegt.
 - **Insa Bauerfeind** — Leitstellen-Disponentin Sektor 28. Höflich,
   bestimmend, kennt die Paragraphen besser als die Verfasser.
 - **Philippe** — Nachbar in 2613. Wärmer als der Sektor erlaubt. Trinkt
@@ -283,3 +296,6 @@ vorgetragene Härte, Verwaltung als Tragödie und Geborgenheit zugleich.
 
 - **2026-05-01** — Erstfassung. Divergenzpunkt 1924 (Bucharin), Schmerz-Radio
   als private Bastler-Technologie, Mandatsgebiet Mitteleuropa.
+- **2026-06-07** — Layards Biografie präzisiert: Hauptberuf Sachbearbeiter
+  im Quadrantenamt, früher Autor (zwei Bände in den späten 80ern). Ersetzt
+  die alte Einzeilen-Angabe »Autor im Quadranten E67«.
