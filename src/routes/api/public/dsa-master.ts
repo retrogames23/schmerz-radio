@@ -751,7 +751,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
         if (action === "start") {
           // Anonyme: nur ein Abenteuer insgesamt. Existiert bereits eins
           // (egal welcher Status), gibts den Spendenhinweis.
-          if (anonId) {
+          if (anonId && !uid) {
             const { data: existing } = await admin
               .from("dsa_llm_adventures")
               .select("session_id, status")
