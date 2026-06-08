@@ -46,6 +46,12 @@ export type InventoryItemId =
   | "quittungForged4317"
   | "tillaTransfer"
   | "miraDoorNote"
+  // Akt-I-Bürokratie-Duell — „Formblatt 17/V auf Vorsprache"
+  // Brust händigt es nach drei gewonnenen Trainingsfällen aus;
+  // Kowalk kann eine Fälschung produzieren (gleiche Wirkung an Vossbecks
+  // Tür, kosmetische Folge im Endduell).
+  | "formblatt17V"
+  | "formblatt17VForged"
   // Schmerz-Radio-Erweiterung (Akt I)
   | "antennaWire"
   | "amplifierAntenna"
@@ -249,6 +255,12 @@ export type StoryFlag =
   | "duelTrainingWon2"
   | "duelTrainingWon3"
   | "vossbeckSummoned"
+  // Brust hat das Formblatt 17/V (echt) ausgehändigt — Layard hält es im
+  // Inventar. Verhindert Doppel-Ausgabe bei Re-Win.
+  | "gotFormblatt17V"
+  // Vossbeck hat im Endduell den Tagescode in Layards Terminal gelegt.
+  // Folgt aus `duelEndgameWon` und setzt automatisch `calledForCode`.
+  | "vossbeckGaveCode"
   | "metVossbeck"
   | "duelEndgameWon"
   | "duelEndgameLost"

@@ -1,199 +1,104 @@
-## Was SillyTavern für uns relevant macht
+## Ziel
 
-SillyTavern (ST) ist im Kern ein Prompt-Komponist für Rollenspiel-LLMs. Drei seiner Mechaniken sind direkt portierbar und treffen genau die vier Schwerpunkte:
+Den verworrenen 4317/Rohrpost-Pfad zum Tür-Code durch eine klare, in einer bürokratischen Welt sofort einleuchtende Kausalkette ersetzen:
 
-1. **World Info / Lorebooks** — keyword-getriggerte Lore-Snippets, die nur dann in den Prompt fließen, wenn die letzten N Nachrichten den Trigger nennen. Scan-Tiefe, Aktivierungstyp (constant/selective/vectorized), Insertion-Position und Token-Budget sind konfigurierbar. → spart Tokens, hält Welt konsistent, erzeugt Wieder-Entdeckungs-Gefühl.
-2. **Author's Note (Depth-Injection)** — ein kurzer Pacing-/Ton-Block, der NICHT vorne im System-Prompt steht, sondern bei Tiefe N (z.B. 2 Turns vor Ende) eingefügt wird. „Sticky" Anweisungen, die nicht im Kontext-Drift verpuffen. → bessere Story-Pacing-Kontrolle.
-3. **Vector-Memory / Summarize-Extension** — alte Szenen werden eingebettet, semantisch durchsucht und nur relevante Stücke werden rein-rotiert. → Helden begegnen wirklich „wieder" was sie schon mal getroffen haben, ohne den Volltext zu schleppen.
-
-Was wir bereits ähnlich machen: `dsaLore`-Tool-Call (≈ ST „lookup on demand"), Heldengedächtnis (Chronik + NSCs), Summarizer. Was fehlt: **automatische Keyword-Triggerung**, **Vektor-Memory für Szenen-Details**, **getrennter Pacing-Director**, **Lore-Budget pro Wende**.
-
----
-
-## Vier Schwerpunkte → konkrete Maßnahmen
-
-### a) Stimmige, konsistente Welt
-
-**A1 — Lorebook-Layer ("dsaWorldInfo")**
-Neue Datei `src/game/dsa/lore/worldInfo.ts`. Pro Eintrag:
-```ts
-{ id, keywords: ["Punin","Hesinde-Tempel"], scanDepth: 6,
-  content: "…", priority: 100, position: "before_state",
-  budgetTokens: 120, mode: "selective" | "constant" }
 ```
-Vor jeder Master-Wende läuft `selectActiveWorldInfo(history, depth=6)`:
-scannt die letzten 6 Nachrichten case-insensitive auf Keywords,
-sortiert getroffene Einträge nach Priorität, kürzt auf Gesamt-Token-Budget
-(z.B. 600 Tokens). Wird VOR dem dynamischen State-Block injiziert.
-
-Inhalte (Startset): bekannte Städte (Punin, Greifenfurt, Gareth, Festum, Khunchom),
-Gilden/Orden (Hesinde-Akademie, Praios-Inquisition), Reise-Routen, lokale
-Bräuche, regionale Anreden. Quelle: bestehende `regions.ts` + handgeschriebene
-Tiefe pro Ort.
-
-**A2 — Geografie-Sanity-Layer**
-Eine `geographyConstraints`-Liste mit harten Fakten (z.B. „Trollzacken liegen
-≥ 200 Meilen NÖ von Greifenfurt"). Wird IMMER injiziert, wenn ein Reise-/Distanz-
-Keyword fällt. Verhindert „die Trollberge bei Greifenfurt"-Klassiker.
-
-**A3 — Götter-Kontext-Trigger**
-Wenn in den letzten 4 Nachrichten ein Gottesname fällt, automatisch das
-entsprechende `gott.<id>`-Detail injizieren (statt auf Meister-Tool-Call zu
-warten). So passieren weniger Götter-Halluzinationen.
-
-### b) Pragmatischer Token-Einsatz
-
-**B1 — Statischen Block schrumpfen**
-Heute trägt `buildStaticMasterLore` die komplette Begleiter-Backstory, das
-gesamte Bestiarium und alle Scene-Tags inline. SillyTavern-Stil:
-- Companion-Backstories raus aus dem statischen Block → in `worldInfo` mit
-  Constant-Mode (immer rein, aber gekürzt) ODER selective bei Erwähnung.
-- Bestiarium: nur die für das Setting wirklich relevanten Gegner-IDs als
-  Kurzliste; Details on demand via `dsaLore` ODER via Lorebook-Trigger
-  beim Auftauchen.
-- Scene-Tags: kompakte Tag-Liste bleibt, ausführliche Use-Beschreibung wandert
-  in `scene.<tag>`-Topics (sind schon da, müssen nur konsequenter verwendet
-  werden — den Inline-Block kürzen).
-
-Erwartung: statischer Block −30 bis −40%.
-
-**B2 — Token-Budget pro Wende loggen**
-Erweitern, was schon in `[dsa-cost]` geloggt wird: zusätzlich pro Wende
-ausgeben, wieviel auf WorldInfo, dynamic state, history entfallen. Erlaubt
-gezieltes Trimmen, statt blind zu raten.
-
-**B3 — Author's Note statt „Letzte Anweisung vor deiner Antwort"-Block**
-Wir hängen heute postHistoryReminder an die letzte User-Nachricht. Das ist
-schon der ST-Stil — sauberer machen: konfigurierbares Author's-Note-Modul,
-das je nach Phase (Akt 1, Cooldown, Akt 5, Combat-Bridge) unterschiedliche
-Pacing-Direktiven injiziert. Spart Tokens im großen statischen Block, weil
-phasenspezifische Regeln dort raus dürfen.
-
-**B4 — Adaptives History-Fenster**
-Statt fixer `historyWindow` pro Modell: ältere Wenden, die der Summarizer
-schon gefressen hat, komplett raus. Plus: User-Wenden mit reinem `[INVENTAR]`-
-Präfix nach 4 Wenden raus (sind selbsterledigt, müssen nicht im Kontext bleiben).
-
-### c) Gefühl, eine Welt zu ENTDECKEN
-
-**C1 — Vector-Memory für vergangene Szenen** *(größerer Schritt)*
-Neue Tabelle `dsa_scene_memories(adventure_id, embedding vector(768),
-summary text, scene_tag, npcs text[], created_at)`. Nach jedem Akt-Wechsel
-(oder alle ~6 Wenden) speichert ein leichter „Szenen-Chronist" eine 2-Satz-
-Zusammenfassung + Embedding. Vor jeder Master-Wende: Embed der letzten
-Layard-Nachricht → Top-3 ähnliche Memories aus DIESEM oder FRÜHEREN
-Abenteuern desselben Helden → als „ECHOS DER VERGANGENHEIT"-Block injizieren.
-
-Effekt: Layard erwähnt eine „Schenke am Hafen" → Meister erinnert sich
-plötzlich an die Schenke aus Akt 3 vor zwei Abenteuern, inklusive der Wirtin,
-die ihn anschrie. Echtes Welt-Wiedersehen statt aufgewärmter Chronik-Zeile.
-
-Lovable AI Gateway hat Embeddings; pgvector existiert in Postgres.
-
-**C2 — Procedural NSCs mit Persistenz**
-Wenn der Meister einen NSC einführt (Format-Regel: „[NPC_INTRO: name | rolle | quirk]"
-als neuer Marker), wird er beim Parsen abgegriffen und in den Heldengedächtnis-
-NSCs persistiert — auch ohne Spielende, nicht erst durch den Chronicler.
-Wiedersehen wird wahrscheinlicher, weil mehr NSCs persistieren.
-
-**C3 — „Discovery"-Lore-Trigger**
-Worldinfo-Einträge mit `mode: "discovery"`: feuern nur EINMAL pro Held — der
-erste Besuch in Punin liefert die volle stimmungsvolle Beschreibung; alle
-späteren Besuche kriegen nur eine knappe „du kennst Punin"-Variante. Speichert
-sich pro `dsa_heroes.discoveries text[]`.
-
-### d) Story-Pacing & gut erzählte Geschichte
-
-**D1 — Director-Modul (eigener LLM-Call, leicht)**
-Alle 6–8 Master-Wenden läuft ein billiger Director-Call (Haiku/Flash, ~300
-Tokens Input, 80 out): bekommt die letzten 8 Wenden + den Akt-Plan und
-liefert eine kurze Author's-Note für die nächste Master-Wende:
+Insa  →  „Vossbeck gibt den Code, gehen Sie hin — aber sprechen Sie vorher mit Kowalk.“
+Vossbeck  →  „Ohne Formblatt 17/V auf Vorsprache keine Audienz.“
+Kowalk  →  „Formblätter hat nur Brust. Und Brust gibt sie nur an Satisfaktionsfähige.“
+Brust  →  Drei Trainingsfälle (Duell I) → Formblatt 17/V.
+Vossbeck  →  Endduell → Tür-Code.
 ```
-DIRECTOR HINT (für die nächste Wende):
-  Phase: Akt 2 → Akt 3 Übergang
-  Was fehlt: emotionaler Beat zwischen Brem und Layard
-  Vorschlag: Yelva spricht eine Erinnerung an, die Brem unangenehm ist
+
+Tilla Kowalks Verlegungs-Geschichte (Rohrpost an E70-K, Philippes alte 4317, Quittungs-Fälschung) bleibt erhalten, wird aber **vom Tür-Code entkoppelt** und in eine **freiwillige Nebenakte** überführt, die weiterhin Miras Akt-II-State speist. Die Fälschungs-Mechanik bleibt erhalten, wird aber **auf das Formblatt 17/V umgewidmet**: Wer das Duell scheut oder verliert, kann mit Kowalks Hilfe ein Formblatt fälschen.
+
+## Neuer Hauptpfad — Schritt für Schritt
+
+1. **Insa am Telefon (erster Code-Anruf):** Keine Erwähnung von Vorgang 4317, keine „Vorgangsblock auf Ihrer Adresse“-Erklärung mehr. Stattdessen: „Codes für Sektor-Türen vergibt nicht die Leitstelle, sondern Oberverwalter Vossbeck persönlich. Sein Büro: 3603, neben der Kantine. Insider-Tipp: gehen Sie nicht direkt rein. Sprechen Sie vorher mit Frau Kowalk, linker Tresen, Kantine 3602. Sie weiß, wie man bei Vossbeck reinkommt.“
+
+2. **Vossbeck-Erstbesuch (3603):** Vossbeck schaut nicht auf. „Ohne Formblatt 17/V auf Vorsprache keine Audienz. Türschild lesen. Tür zu.“ — kurz, kalt, abweisend. Flag `vossbeckRefusedNoForm` gesetzt.
+
+3. **Kowalk in 3602:** Erklärt die ungeschriebene Regel: Vossbeck hütet die Tür-Codes, aber er sieht nur, wer ein Formblatt 17/V vorlegt. Diese Formblätter verwaltet sein Stellvertreter Herr Brust — am rechten Tresen, drei Schritte weiter. Brust gibt sie nicht jedem; er prüft, ob der Vorsprecher „satisfaktionsfähig“ ist, also dem Oberverwalter standhalten kann. Wer das Phrasen-Duell mit Brust besteht, kriegt das Formblatt. — Optionaler Zusatz-Tipp: „Sollten Sie bei Brust durchfallen, kommen Sie wieder zu mir. Ich kenne einen anderen Weg.“ (Hook für Fälschungspfad.)
+
+4. **Brust + Duell I (Training A/B/C):** Bleibt mechanisch erhalten. Reward ändert sich: statt verbaler Weiterleitung („Tür 3603, klopfen Sie nicht“) händigt Brust am Ende ein **physisches Inventar-Item** aus — `formblatt17V` (Formblatt 17/V auf Vorsprache, gegengezeichnet Brust). Brusts letzte Zeile bleibt im Ton, nennt aber explizit das Formblatt: „Drei in Folge. Hier — Formblatt Siebzehn-V, gegengezeichnet. Vossbeck sitzt nebenan. Sie kennen den Weg. Klopfen Sie trotzdem.“
+
+5. **Vossbeck zweites Gespräch (mit Formblatt):** Vossbeck nimmt das Formblatt entgegen. Endduell wie bisher. Bei Sieg gibt er den **Tür-Code direkt heraus** (kein Insa-Rückruf mehr nötig) — bzw. lehnt den Code-Antrag ab, wenn man verliert (drei Versuche wie bisher).
+
+6. **Insa-Rückruf entfällt für den Code:** `idCode4` … `idCode7` werden umgebaut: der Code-Ausgabe-Block wandert von Insa zu Vossbeck. Insa bleibt die Anlaufstelle für die *Information*, dass Vossbeck zuständig ist, und für die Bram-Burn-Sequenz.
+
+## Tilla als optionale Nebenakte
+
+- Kowalks „kQuest“-Choices (4317-K, Tilla, Marteau, Pneumatik) bleiben erreichbar, aber **nicht mehr gegated durch den Tür-Code-Bedarf**. Stattdessen freigeschaltet, sobald `metKowalk` gesetzt ist und Layard nach Tilla oder „der Stelle hinterm Tresen“ fragt (eigene Einstiegs-Choice „Wer ist Tilla?“ statt „Vorgang 4317“).
+- Belohnung der Nebenakte: Mira-State wie bisher (`receivedTillaTransfer` → `getMiraEndState`-Effekte in Akt II). Kein Tür-Code, kein Pflicht-Charakter.
+- Die Bedingung „4317 muss von Vossbeck freigegeben sein, damit E70-K die 4317-K annimmt“ entfällt — Kowalk schickt direkt los, ODER der Spieler nutzt weiterhin den Fälschungspfad (für den emotional konsequenteren Bogen mit Philippe). Beide Wege bleiben spielbar, getrennt voneinander.
+
+## Fälschungs-Mechanik umgewidmet
+
+- Kowalks `kForge`-Pfad bleibt strukturell erhalten, **fälscht aber jetzt das Formblatt 17/V**, nicht eine Quittung. Item-Resultat: `formblatt17VForged`.
+- Trigger: Layard hat das Duell bei Brust dreimal nicht durchziehen wollen oder verloren (Flag `brustDuelFailedOrSkipped`) **oder** spricht Kowalk aktiv darauf an („Brust gibt mir nichts. Gibt es einen anderen Weg?“).
+- Zutaten passen sich an: Bleistiftstummel (bleibt), Quittungsblanko → **Formblatt-Blanko** (neu, liegt in Brusts Tresen-Schublade als Look-Hotspot, klaubar wenn Brust kurz abgelenkt ist), Trockensiegel-Abdruck Schicht A von Philippes alter Vollmacht (bleibt).
+- Vossbeck akzeptiert das gefälschte Formblatt zur Audienz — merkt aber während des Endduells ggf. an, dass „das Kürzel auf Ihrem Formblatt sieht aus wie meins von vor zwei Jahren“ (kleine Eskalation, kein Game-Over). Der Tilla-Strang bleibt davon entkoppelt: Philippes 4317-Vollmacht wird beim Siegelabdruck nicht verbraucht.
+
+## Betroffene Dateien (Code-Ebene)
+
 ```
-Wird als Author's Note bei Depth 1 injiziert (= direkt vor Meister-Antwort).
-Kosten: ~1 Cent pro Stunde Spiel, dafür spürbar bessere Beat-Struktur.
+src/game/dialogs/insa.ts
+  ├─ idCode1..7 umschreiben: kein Vorgangsblock, kein 4317-Hinweis,
+  │  kein Kowalk-Block-Hinweis. Stattdessen: Verweis auf Vossbeck +
+  │  Insider-Tipp Kowalk.
+  ├─ Doppelung in idCode-Pfad B raus.
+  └─ Burn-Anruf (idCallAfterBurn…): Code-Ausgabe-Pfad entfernen oder
+     auf „Vossbeck hat Ihnen den Code doch gegeben, oder?“ umschreiben.
 
-**D2 — Akt-Plan pro Abenteuer materialisieren**
-Heute lebt der Akt-Plan nur als Fließtext im Prompt. Stattdessen: beim
-`action="start"` erzeugt ein Vorlauf-Call einen 5-Akt-Plot-Outline (5 mal 2
-Sätze) und speichert ihn in `dsa_llm_adventures.act_plan jsonb`. In jeder
-Master-Wende wird NUR der gerade aktive Akt + der nächste Akt injiziert
-(Token-sparend, dramaturgisch fokussiert). Der Akt-Übergang wird via
-Director (D1) gesteuert.
+src/game/dialogs/cafeteria.ts
+  ├─ cafeteriaKowalk Einstiegs-Choices neu sortieren:
+  │   • Hauptpfad-Choice „Vossbeck — wie komme ich da rein?“  → Brust/Formblatt-Erklärung
+  │   • Nebenakte-Choice „Wer ist Tilla?“ → bestehender k-Strang, aber entkoppelt
+  │   • Fälschungs-Choice „Brust gibt mir nichts.“ → kForge-Pfad (Formblatt-Fälschung)
+  ├─ kPath/kQuest/kForge: 4317-Texte umschreiben, Item-Erzeugung
+  │  von quittungForged4317 → formblatt17VForged (für Fälschungspfad).
+  └─ Gating (`receivedTillaTransfer`, `forgedQuittung4317`) auf
+     Mira-State-Pfad beschränken; aus Tür-Code-Pfad entfernen.
 
-**D3 — Pacing-Marker im Output**
-Neuer Pflichtmarker am Ende jeder Meister-Antwort: `[BEAT: setup|rise|peak|fall|rest]`.
-Server liest ihn, zählt Beat-Verteilung, kann den Director füttern und im UI
-(später) als unsichtbares Pacing-Telemetrie verwenden. Verhindert „nur peak,
-peak, peak"-Sequenzen.
+src/game/dialogs/bureaucracyDuel.ts
+  ├─ Brusts Outro (cafeteriaTrainingC-Sieg) händigt formblatt17V als
+  │  Item aus, statt nur „Tür 3603, klopfen Sie nicht“ zu sagen.
+  ├─ vossbeckUnready/vossbeckNoBusiness: Texte neu — „kein Formblatt“
+  │  statt „nicht satisfaktionsfähig“.
+  └─ vossbeckDuel: Bei Sieg gibt Vossbeck den Tür-Code direkt heraus
+     (showText + setFlag) statt nur „4317 freigegeben“.
 
-**D4 — „No-Railroad"-Author's-Note**
-Wenn der Spieler 3 Wenden hintereinander vom Plan abweicht, injiziert die
-Author's Note: „Layard verlässt den Akt-Plan — folge IHM, nicht dem Plan.
-Improvisiere die nächste Szene aus seinem letzten Satz heraus." Statt
-zwanghaft zurückzuziehen.
+src/game/scenes/kantinenverwaltung3603.ts
+  └─ vossbeckSpot.onUse: Eingangsprüfung jetzt
+     `api.hasItem("formblatt17V") || api.hasItem("formblatt17VForged")`
+     statt `vossbeckSummoned`-Flag. Ohne Formblatt → vossbeckNoBusiness.
 
----
+src/components/game/PneumaticTubeOverlay.tsx
+  └─ Bleibt funktional erhalten (für Tilla-Nebenakte), aber kein
+     Tür-Code-Gating mehr daran hängen. Texte unverändert.
 
-## Empfohlene Reihenfolge (Implementierungsphasen)
+src/game/scenes/communalE67.ts
+  └─ Brusts Tresen erhält neuen Look-Hotspot „Formblatt-Schublade“
+     für den Fälschungspfad (Blanko klauen, wenn Brust abgelenkt).
 
-**Phase 1 — Tokens & Welt (low risk, hoher Impact):**
-A1 (Lorebook-Layer), A2 (Geo-Sanity), A3 (Götter-Trigger), B1 (Static-Trim),
-B2 (Cost-Log), B3 (Author's-Note-Modul). Reine Server-Refactors, kein DB-Schema.
+src/game/types.ts (Items / Flags)
+  ├─ Neue Items: formblatt17V, formblatt17VForged, formblatt17VBlank
+  └─ Neue Flags: vossbeckRefusedNoForm, brustDuelFailedOrSkipped
+     Alte Flags belassen, wo sie die Tilla-Nebenakte/Mira-State steuern.
 
-**Phase 2 — Pacing:**
-D2 (Akt-Plan in DB → eine Migration), D3 (Beat-Marker), D4 (No-Railroad-Note).
+src/game/hints.ts + LORE.md
+  └─ Hint-Reihenfolge und Akt-I-Beschreibung an neuen Pfad anpassen.
+```
 
-**Phase 3 — Discovery (größter Schritt):**
-C1 (Vector-Memory → pgvector + Embeddings über Lovable AI), C2 (NPC-Persistenz),
-C3 (Discovery-Trigger), D1 (Director-Call).
+## Was bleibt unverändert
 
-Phase 1 ist isoliert testbar und liefert sofort spürbare Token-Ersparnis +
-Welt-Konsistenz. Phase 2 baut darauf auf. Phase 3 ist das „SillyTavern-on-
-Steroids"-Stück und sollte zuletzt kommen, weil DB-Schema-Änderungen + Embedding-
-Kosten dranhängen.
+- Mechanik des Duells (Phrasen, Konter, Lernen aus Fehlern, drei Trainings + Endduell).
+- Brusts und Vossbecks Charakterstimmen, Vossbecks Bleistift-Geste.
+- Pneumatik-Rohrpost-Overlay und Tillas emotionaler Bogen.
+- Akt-II-Bridge (Miras State, Insa-Wiederbesuch in der Leitstelle).
+- Bram-Burn-Sequenz und Insas Rolle als Vermittlerin / Trösterin.
 
----
+## Offene Designfragen für später
 
-## Technische Details
-
-- **Lorebook-Datenmodell:** TypeScript-Modul, keine Datenbank. Einträge als
-  reines `const`-Array, damit man sie wie Code reviewen kann.
-- **Keyword-Scanner:** simples lowercase-Substring-Match auf den letzten N
-  Nachrichten. Keine Regex-Hölle. SillyTavern verwendet das genauso.
-- **Token-Budget:** grobe Heuristik `chars/3.5 ≈ tokens`, reicht für Worker-
-  side Trimming.
-- **Author's-Note-Injection:** dem bestehenden `tail`-Block in `callMaster`
-  beibringen, mehrere Module zu konkatenieren. Reihenfolge: dynamicState
-  → worldInfo → directorHint → postHistoryReminder.
-- **Vector-Memory:** Tabelle mit `vector(768)`, pgvector-Extension aktivieren,
-  Embeddings via Lovable-AI-Gateway (`text-embedding-3-small`-Äquivalent oder
-  Gemini). Pro Memory ~200 Tokens; Embedding-Kosten praktisch null.
-- **Director-Call:** Haiku/Flash, fester max_tokens=120, temperature=0.4.
-- **act_plan-Migration:** `alter table dsa_llm_adventures add column act_plan jsonb;`
-  inkl. GRANT-Refresh, damit RLS-Policies greifen.
-- **Beat-Marker-Parser:** erweitert `parseMasterTurn` um optionalen Beat.
-
----
-
-## Was NICHT empfohlen wird
-
-- **Volle SillyTavern-Übernahme** (Persona-System, Quick-Replies, Extensions-
-  API): überdimensioniert für ein Single-Master-Setup mit fester Tafelrunde.
-- **Streaming-Output**: ist ein UX-Thema, kein RPG-Qualitäts-Thema, separat.
-- **Vector-Suche über Lore-Texte selbst** (wie ST's „Smart Context"): unsere
-  Lore ist klein genug für Keyword-Triggering, Vektor wäre Overkill und
-  unkontrollierbar. Vektor nur für VERGANGENE Spielszenen.
-
----
-
-## Frage vor Umsetzung
-
-Soll ich **Phase 1 komplett** als Build umsetzen, oder lieber zuerst nur
-**A1+A2+A3 (Lorebook + Welt-Konsistenz)** ausliefern und Token-Trim
-(B1–B3) als separate Runde danach? Phase 1 als Ganzes ist ~1 größerer
-Build, A1–A3 alleine ist deutlich kleiner und sicherer reviewbar.
+- Wie heißt das Formblatt offiziell („17/V“ ist Platzhalter — alternativ „Vorsprache-Schein VS-3“ oder „Audienzantrag AA-67“).
+- Soll Vossbeck im Endduell sichtbar reagieren, wenn das Formblatt gefälscht ist (zusätzliche Konter-Linie), oder bleibt das eine reine kosmetische Anmerkung ohne mechanischen Effekt.
