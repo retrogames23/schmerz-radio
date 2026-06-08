@@ -46,7 +46,25 @@ function resolveTraining(api: GameApi, fallNum: 1 | 2 | 3): void {
     if (fallNum === 2) api.setFlag("duelTrainingWon2");
     if (fallNum === 3) api.setFlag("duelTrainingWon3");
     const streak = api.bumpBrustWinStreak();
-    if (streak >= 3) api.setFlag("vossbeckSummoned");
+    if (streak >= 3) {
+      api.setFlag("vossbeckSummoned");
+      // Brust händigt das Formblatt 17/V auf Vorsprache aus — der einzige
+      // legitime Zugang zu Vossbecks Audienzraum 3603.
+      if (!api.hasFlag("gotFormblatt17V")) {
+        api.setFlag("gotFormblatt17V");
+        if (
+          !api.hasItem("formblatt17V") &&
+          !api.hasItem("formblatt17VForged")
+        ) {
+          api.addItem({
+            id: "formblatt17V",
+            name: "Formblatt 17/V auf Vorsprache",
+            description:
+              "Ein dünnes, beige-graues Behördenformular. Aufdruck: »FORMBLATT 17/V · ANTRAG AUF VORSPRACHE BEI OBERVERWALTER«. Unten rechts mit Tinte: »Brust, Schicht B«, sauber gegengezeichnet. Damit darf Layard Tür 3603 betreten und Vossbeck ansprechen.",
+          });
+        }
+      }
+    }
     api.startDialog("duelTrainingResult");
   } else {
     api.resetBrustWinStreak();
@@ -59,6 +77,12 @@ function resolveEndgame(api: GameApi): void {
   api.resetDuelHits();
   if (hits >= 2) {
     api.setFlag("duelEndgameWon");
+    // Vossbeck legt den Sektor-Code direkt ins Terminal — kein zweiter Insa-
+    // Anruf nötig. `calledForCode` ist die Wahrheitsquelle für Terminal/Keypad.
+    if (!api.hasFlag("vossbeckGaveCode")) {
+      api.setFlag("vossbeckGaveCode");
+      api.setFlag("calledForCode");
+    }
     api.startDialog("duelEndgameResult");
   } else {
     // Drei Versuche bei Vossbeck zugelassen — siehe vossbeckAttempt*Lost.
@@ -409,29 +433,6 @@ const duelTrainingResultBranching: DialogTree = {
       subtext:
         "»Beurkunden« mit dem leisen Zittern eines Mannes, der das Wort lange im Spiegel geübt hat.",
       requires: ["vossbeckSummoned"],
-      hiddenWhen: ["gotFormblatt17V"],
-      action: (api) => {
-        api.setFlag("gotFormblatt17V");
-        if (!api.hasItem("formblatt17V") && !api.hasItem("formblatt17VForged")) {
-          api.addItem({
-            id: "formblatt17V",
-            name: "Formblatt 17/V auf Vorsprache",
-            description:
-              "Ein dünnes, beige-graues Behördenformular. Aufdruck: »FORMBLATT 17/V · ANTRAG AUF VORSPRACHE BEI OBERVERWALTER«. Unten rechts mit Tinte: »Brust, Schicht B«, sauber gegengezeichnet. Damit darf Layard Tür 3603 betreten und Vossbeck ansprechen.",
-          });
-        }
-      },
-      next: "checkWon2",
-      end: true,
-    },
-    // Repeat-Visit: Layard hat das Formblatt bereits, kommt aber nochmal mit
-    // einem dritten Trainingssieg an. Brust beurkundet, hält das Formblatt
-    // aber nicht doppelt heraus.
-    checkWon3Repeat: {
-      id: "checkWon3Repeat",
-      speaker: "BRUST",
-      text: "Drei in Folge. Erneut korrekt notiert. — Ihr Formblatt Siebzehn-V haben Sie. Vossbeck wartet, Tür 3603.",
-      requires: ["vossbeckSummoned", "gotFormblatt17V"],
       next: "checkWon2",
       end: true,
     },
@@ -588,12 +589,14 @@ const duelEndgameResult: DialogTree = {
       subtext:
         "Er sagt es ohne Hohn. Der Bleistift bleibt senkrecht, aber er liegt jetzt waagerecht auf der Akte.",
       requires: ["duelEndgameWon"],
-      action: (api) => {
-        if (!api.hasFlag("vossbeckGaveCode")) {
-          api.setFlag("vossbeckGaveCode");
-          api.setFlag("calledForCode");
-        }
-      },
+      next: "codeDelivered",
+      end: true,
+    },
+    codeDelivered: {
+      id: "codeDelivered",
+      speaker: "SYSTEM",
+      text: "[ Im Terminal liegt jetzt eine Nachricht der Leitstelle. Datum: 06.11.1997. Code-Format: ohne Punkte. Acht Ziffern. ]",
+      requires: ["duelEndgameWon"],
       next: "checkLost",
       end: true,
     },
