@@ -255,6 +255,12 @@ export type StoryFlag =
   | "duelTrainingWon2"
   | "duelTrainingWon3"
   | "vossbeckSummoned"
+  // Brust hat das Formblatt 17/V (echt) ausgehändigt — Layard hält es im
+  // Inventar. Verhindert Doppel-Ausgabe bei Re-Win.
+  | "gotFormblatt17V"
+  // Vossbeck hat im Endduell den Tagescode in Layards Terminal gelegt.
+  // Folgt aus `duelEndgameWon` und setzt automatisch `calledForCode`.
+  | "vossbeckGaveCode"
   | "metVossbeck"
   | "duelEndgameWon"
   | "duelEndgameLost"
