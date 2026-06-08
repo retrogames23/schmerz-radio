@@ -46,6 +46,12 @@ export type InventoryItemId =
   | "quittungForged4317"
   | "tillaTransfer"
   | "miraDoorNote"
+  // Akt-I-Bürokratie-Duell — „Formblatt 17/V auf Vorsprache"
+  // Brust händigt es nach drei gewonnenen Trainingsfällen aus;
+  // Kowalk kann eine Fälschung produzieren (gleiche Wirkung an Vossbecks
+  // Tür, kosmetische Folge im Endduell).
+  | "formblatt17V"
+  | "formblatt17VForged"
   // Schmerz-Radio-Erweiterung (Akt I)
   | "antennaWire"
   | "amplifierAntenna"
