@@ -455,6 +455,11 @@ const ICON_MAP: Record<InventoryItemId, () => React.ReactElement> = {
   quittungBlankoB: QuittungBlankoIcon,
   quittungForged4317: QuittungForgedIcon,
   tillaTransfer: TillaTransferIcon,
+  // Bürokratie-Duell — Formblatt 17/V auf Vorsprache (echt und gefälscht).
+  // Visuell identisch (Brusts Unterschrift sitzt sauber bzw. nachgereibt) —
+  // genau das ist der ganze Witz an der Fälschung.
+  formblatt17V: QuittungBlankoIcon,
+  formblatt17VForged: QuittungForgedIcon,
   miraDoorNote: FlyerIcon,
   // Schmerz-Radio-Erweiterung — vorerst aus dem bestehenden Bestand.
   antennaWire: TuningCrystalIcon,
