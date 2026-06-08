@@ -405,10 +405,33 @@ const duelTrainingResultBranching: DialogTree = {
     checkWon3: {
       id: "checkWon3",
       speaker: "BRUST",
-      text: "Drei in Folge. Korrekt notiert. — Ich beurkunde das. Tür 3603, nebenan. Oberinspektor Vossbeck. Sie kennen den Weg.",
+      text: "Drei in Folge. Korrekt notiert. — Ich beurkunde das. Hier, Bewohner Worag: Formblatt Siebzehn-V auf Vorsprache, gegengezeichnet Brust. Damit dürfen Sie bei Oberverwalter Vossbeck vorsprechen, Tür 3603 nebenan. Ohne Formblatt lässt er Sie nicht einmal auf den Stuhl.",
       subtext:
         "»Beurkunden« mit dem leisen Zittern eines Mannes, der das Wort lange im Spiegel geübt hat.",
       requires: ["vossbeckSummoned"],
+      hiddenWhen: ["gotFormblatt17V"],
+      action: (api) => {
+        api.setFlag("gotFormblatt17V");
+        if (!api.hasItem("formblatt17V") && !api.hasItem("formblatt17VForged")) {
+          api.addItem({
+            id: "formblatt17V",
+            name: "Formblatt 17/V auf Vorsprache",
+            description:
+              "Ein dünnes, beige-graues Behördenformular. Aufdruck: »FORMBLATT 17/V · ANTRAG AUF VORSPRACHE BEI OBERVERWALTER«. Unten rechts mit Tinte: »Brust, Schicht B«, sauber gegengezeichnet. Damit darf Layard Tür 3603 betreten und Vossbeck ansprechen.",
+          });
+        }
+      },
+      next: "checkWon2",
+      end: true,
+    },
+    // Repeat-Visit: Layard hat das Formblatt bereits, kommt aber nochmal mit
+    // einem dritten Trainingssieg an. Brust beurkundet, hält das Formblatt
+    // aber nicht doppelt heraus.
+    checkWon3Repeat: {
+      id: "checkWon3Repeat",
+      speaker: "BRUST",
+      text: "Drei in Folge. Erneut korrekt notiert. — Ihr Formblatt Siebzehn-V haben Sie. Vossbeck wartet, Tür 3603.",
+      requires: ["vossbeckSummoned", "gotFormblatt17V"],
       next: "checkWon2",
       end: true,
     },
@@ -561,17 +584,23 @@ const duelEndgameResult: DialogTree = {
     checkWon: {
       id: "checkWon",
       speaker: "VOSSBECK",
-      text: "Bewohner Worag. Sie sind im Behörden-Ton zu Hause. — Vorgang Vollmacht 4317: freigegeben. Quittung 4317-K kann raus. Frau Kowalk übernimmt das Weitere.",
+      text: "Bewohner Worag. Sie sind im Behörden-Ton zu Hause. — Antrag auf Tagescode für Sektor-Tür E67/E71: bewilligt. Ich lege den Code in Ihr Terminal-Postfach. Datum, ohne Punkte. Acht Ziffern.",
       subtext:
         "Er sagt es ohne Hohn. Der Bleistift bleibt senkrecht, aber er liegt jetzt waagerecht auf der Akte.",
       requires: ["duelEndgameWon"],
+      action: (api) => {
+        if (!api.hasFlag("vossbeckGaveCode")) {
+          api.setFlag("vossbeckGaveCode");
+          api.setFlag("calledForCode");
+        }
+      },
       next: "checkLost",
       end: true,
     },
     checkLost: {
       id: "checkLost",
       speaker: "VOSSBECK",
-      text: "Abschlägig beschieden. Vorgang Vollmacht 4317 bleibt — bis auf weiteres — bei mir.",
+      text: "Abschlägig beschieden. Antrag auf Tagescode bleibt — bis auf weiteres — unbearbeitet. Drei Versuche sind aufgebraucht.",
       subtext:
         "Drei Versuche sind aufgebraucht. Was jetzt noch geht, geht nicht über Vossbeck.",
       requires: ["duelEndgameLost"],
