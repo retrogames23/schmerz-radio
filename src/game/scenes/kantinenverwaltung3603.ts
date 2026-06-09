@@ -27,11 +27,11 @@ export const kantinenverwaltung3603Scenes: Record<string, Scene> = {
         label: "Oberinspektor Vossbeck",
         kind: "talk",
         onUse: (api) => {
-          if (!api.hasFlag("knowsVossbeckPath")) {
-            api.startDialog("vossbeckNoBusiness");
-            return;
-          }
-          if (!api.hasFlag("vossbeckSummoned")) {
+          const hasForm =
+            api.hasItem("formblatt17V") || api.hasItem("formblatt17VForged");
+          if (!hasForm) {
+            // Ohne Formblatt 17/V auf Vorsprache schaut Vossbeck gar nicht
+            // erst auf. Egal, ob Layard schon Trainingssiege bei Brust hat.
             const streak = api.getBrustWinStreak();
             api.startDialog(
               streak >= 2

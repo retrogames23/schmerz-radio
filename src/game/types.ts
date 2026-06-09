@@ -261,6 +261,9 @@ export type StoryFlag =
   // Vossbeck hat im Endduell den Tagescode in Layards Terminal gelegt.
   // Folgt aus `duelEndgameWon` und setzt automatisch `calledForCode`.
   | "vossbeckGaveCode"
+  // Insa hat Layard am Telefon zu Vossbeck (und vorher Kowalk) geschickt.
+  // Schaltet die Code-Erklärungs-Choice bei Kowalk frei.
+  | "insaSentToKowalkForCode"
   | "metVossbeck"
   | "duelEndgameWon"
   | "duelEndgameLost"

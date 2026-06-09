@@ -13,20 +13,29 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
           "Sie hat die Liste nicht angesehen. Sie kennt die Leute auf E67.",
         choices: [
           {
-            // Nach Vossbeck-Sieg: Tillas 4317-K kann legitim raus. Kowalk
-            // schickt sie selbst, sobald Layard Bescheid gibt.
-            text: "[ Vossbeck hat 4317 freigegeben. Können wir Tillas 4317-K rausschicken? ]",
+            // Neuer Hauptpfad: Insa hat Layard zu Kowalk geschickt, weil
+            // sie den Tagescode für die Sektor-Tür braucht.
+            text: "Frau Kowalk — Insa sagt, Sie wissen, wie man bei Vossbeck reinkommt. Ich brauche einen Tagescode für die Sektor-Tür.",
+            next: "kCode1",
+            requires: ["insaSentToKowalkForCode"],
+            hiddenWhen: ["knowsVossbeckPath"],
+          },
+          {
+            // Tilla-Nebenakte: sobald Layard die Akte verstanden hat,
+            // schickt Kowalk die 4317-K von sich aus. Vossbecks Freigabe
+            // ist dafür nicht mehr nötig — der Tür-Code läuft anders.
+            text: "[ Frau Kowalk — schicken wir Tillas 4317-K raus? ]",
             next: "kStampedTilla1",
-            requires: ["duelEndgameWon", "insaGaveTransferTask"],
+            requires: ["gotTillaTransferInfo"],
             hiddenWhen: ["forgedQuittung4317", "receivedTillaTransfer"],
           },
           {
             // Notausgang nach drei Niederlagen bei Vossbeck — Kowalk
-            // tritt von sich aus an Layard heran, wenn er noch nicht
-            // mit ihr darüber gesprochen hat.
-            text: "[ Frau Kowalk … wegen 4317-K. Ich habe Vossbeck nicht geschlagen. ]",
+            // bietet einen gefälschten Formblatt 17/V an, mit dem Layard
+            // trotzdem in Vossbecks Audienz kommt.
+            text: "[ Frau Kowalk … Brust gibt mir kein Formblatt. Gibt es einen anderen Weg? ]",
             next: "kForge1",
-            requires: ["duelEndgameLost", "insaGaveTransferTask"],
+            requires: ["knowsVossbeckPath"],
             hiddenWhen: ["kowalkOfferedForgery", "usedForgeryRoute"],
           },
           {
@@ -53,9 +62,13 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             hiddenWhen: ["gotB3Ration"],
           },
           {
-            text: "Frau Kowalk — Vorgang 4317. Auf meiner Adresse hängt ein Block. Insa sagt, Sie kennen die Akte.",
+            // Optionale Nebenakte: Layard fragt aktiv nach Tilla. Sichtbar,
+            // sobald er sie überhaupt erwähnt bekommen hat (von Philippe
+            // oder Kowalk selbst) ODER Insa den alten 4317-Block angetippt
+            // hat. Kein Gating mehr durch den Code-Pfad.
+            text: "Frau Kowalk — wer ist Tilla? Ihre Tochter, oder?",
             next: "kInsa1",
-            requires: ["insaGaveTransferTask"],
+            requires: ["kowalkToldHerDaughter"],
             hiddenWhen: ["gotTillaTransferInfo"],
           },
           {
@@ -84,6 +97,61 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             next: "kBye",
           },
         ],
+      },
+      // ── Neuer Hauptpfad: Vossbeck/Brust/Formblatt für den Tagescode ──
+      kCode1: {
+        id: "kCode1",
+        speaker: "KOWALK",
+        text: "Tagescode. Hat sie wieder die alte Leier vom »wir geben keine Codes raus« gefahren? Korrekt. Vossbeck nebenan in 3603 macht das jetzt. — Aber gehen Sie da nicht einfach rein.",
+        subtext: "Sie wischt den Tresen einmal trocken, obwohl der Tresen trocken ist.",
+        next: "kCode2",
+      },
+      kCode2: {
+        id: "kCode2",
+        speaker: "KOWALK",
+        text: "Vossbeck nimmt keinen Bewohner an, der ohne Formblatt 17/V auf Vorsprache kommt. Türschild lesen, fertig. Und die Formblätter hat ausschließlich Herr Brust — am rechten Tresen, drei Schritte weiter.",
+        next: "kCode3",
+      },
+      kCode3: {
+        id: "kCode3",
+        speaker: "KOWALK",
+        text: "Brust gibt das Formblatt nicht jedem. Er prüft, ob Sie satisfaktionsfähig sind — also ob Sie Vossbeck im Behörden-Ton standhalten. Sie machen einen Trainingsfall mit ihm: er eröffnet mit einer Bewohner-Phrase, Sie kontern aus dem Phrasenbuch. Drei Trainingsfälle in Folge sauber durch — Formblatt in der Hand. Vorher nicht.",
+        subtext: "Brust hält das für eine ehrenvolle Aufgabe. Lassen Sie ihn in dem Glauben, Worag — Sie brauchen ihn.",
+        next: "kCode4",
+      },
+      kCode4: {
+        id: "kCode4",
+        speaker: "KOWALK",
+        text: "Mit dem Formblatt dürfen Sie bei Vossbeck vorsprechen. Dann läuft das Endduell — drei Runden, zwei Treffer. Bei Sieg legt Vossbeck den Code direkt in Ihr Terminal-Postfach.",
+        choices: [
+          {
+            text: "Verstanden. Ich rede mit Brust.",
+            action: (api) => {
+              api.setFlag("knowsVossbeckPath");
+            },
+            next: "kCode5",
+          },
+          {
+            text: "Und wenn ich bei Brust durchfalle?",
+            next: "kCodeForgeHint",
+            action: (api) => {
+              api.setFlag("knowsVossbeckPath");
+            },
+          },
+        ],
+      },
+      kCode5: {
+        id: "kCode5",
+        speaker: "KOWALK",
+        text: "Tun Sie das. Brust steht da hinten und wartet — der hat heute nicht viel.",
+        next: "k0",
+      },
+      kCodeForgeHint: {
+        id: "kCodeForgeHint",
+        speaker: "KOWALK",
+        text: "Dann kommen Sie wieder zu mir. Ich kenne einen anderen Weg — er ist nicht stolz, aber er funktioniert. Mehr sage ich erst, wenn es nötig wird.",
+        subtext: "Sie schaut nicht zu Brust hinüber. Aber ihr Blick streift ihn.",
+        next: "k0",
       },
       kSmall1: {
         id: "kSmall1",
@@ -729,7 +797,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       v2: {
         id: "v2",
         speaker: "VOSSBECK",
-        text: "Bewohner Worag. Vorgang Vollmacht 4317. Drei Trainingssiege bei Brust — dokumentiert, gegengezeichnet.",
+        text: "Bewohner Worag. Antrag auf Tagescode für Sektor-Tür E67/E71. Formblatt Siebzehn-V auf Vorsprache — vorgelegt, gegengezeichnet.",
         hiddenWhen: ["metVossbeck"],
         next: "v3",
       },
@@ -751,14 +819,14 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       v4: {
         id: "v4",
         speaker: "VOSSBECK",
-        text: "Worag. Sie wollen Vorgang Vollmacht 4317 verhandelt sehen.",
+        text: "Worag. Sie wollen einen Tagescode für die Sektor-Tür.",
         hiddenWhen: ["duelEndgameWon"],
         next: "v5",
       },
       v5: {
         id: "v5",
         speaker: "VOSSBECK",
-        text: "Drei Runden. Drei Treffer in Folge — und ich gebe die Ration frei. Drei Fehler — und der Vorgang ist abschlägig beschieden. Permanent.",
+        text: "Drei Runden. Zwei Treffer — und ich gebe den Code frei. Sonst wird der Antrag heute abschlägig beschieden. Sie haben drei Versuche, dann ist er es permanent.",
         hiddenWhen: ["duelEndgameWon"],
         next: "v6",
       },
@@ -817,26 +885,26 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       u1: {
         id: "u1",
         speaker: "VOSSBECK",
-        text: "Fallnummer.",
+        text: "Formblatt.",
         next: "u2",
       },
       u2: {
         id: "u2",
         speaker: "VOSSBECK",
-        text: "Vier-Drei-Eins-Sieben. Vorgang Vollmacht 4317. Bewohner Worag. — Habe ich auf dem Tisch.",
+        text: "Sie haben keines. Siebzehn-V auf Vorsprache, gegengezeichnet Schicht B. Ohne das schaue ich nicht in Akten. Türschild lesen.",
         subtext: "Er sagt es, ohne aufzusehen. Der Bleistift bleibt senkrecht.",
         next: "u3",
       },
       u3: {
         id: "u3",
         speaker: "VOSSBECK",
-        text: "Trainingssiege bei Herrn Brust: keine dokumentiert. Drei brauchen Sie — sonst sind Sie hier nicht satisfaktionsfähig. Ich verhandle nicht mit Bewohnern, die mir noch im selben Satz aus der Hand fressen.",
+        text: "Formblätter Siebzehn-V verwaltet Herr Brust am rechten Tresen nebenan. Er gibt sie nur an Bewohner heraus, die sich vorher als satisfaktionsfähig erwiesen haben.",
         next: "u4",
       },
       u4: {
         id: "u4",
         speaker: "VOSSBECK",
-        text: "Drei in Folge bei Brust. Vorher nicht. — Tür ist da.",
+        text: "Erst Brust. Dann Formblatt. Dann ich. — Tür ist da.",
         end: true,
       },
     },
@@ -846,10 +914,10 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
     start: "u0",
     lines: {
       u0: { id: "u0", speaker: "SYSTEM", text: "[ Vossbeck blättert weiter, ohne den Bleistift abzulegen. ]", next: "u1" },
-      u1: { id: "u1", speaker: "VOSSBECK", text: "Fallnummer.", next: "u2" },
-      u2: { id: "u2", speaker: "VOSSBECK", text: "Vier-Drei-Eins-Sieben. Vorgang Vollmacht 4317. Bewohner Worag. — Habe ich auf dem Tisch.", subtext: "Er sagt es, ohne aufzusehen. Der Bleistift bleibt senkrecht.", next: "u3" },
-      u3: { id: "u3", speaker: "VOSSBECK", text: "Trainingssiege bei Herrn Brust: einen dokumentiert — Sie brauchen drei. Ich verhandle nicht mit Bewohnern, die nicht satisfaktionsfähig sind.", next: "u4" },
-      u4: { id: "u4", speaker: "VOSSBECK", text: "Zwei fehlen noch. Vorher nicht. — Tür ist da.", end: true },
+      u1: { id: "u1", speaker: "VOSSBECK", text: "Formblatt.", next: "u2" },
+      u2: { id: "u2", speaker: "VOSSBECK", text: "Sie haben keines. Siebzehn-V auf Vorsprache. Ohne das nichts.", subtext: "Er sagt es, ohne aufzusehen. Der Bleistift bleibt senkrecht.", next: "u3" },
+      u3: { id: "u3", speaker: "VOSSBECK", text: "Brust hat Ihnen einen ersten Trainingssieg notiert. Zwei fehlen — dann gibt er Ihnen das Formblatt.", next: "u4" },
+      u4: { id: "u4", speaker: "VOSSBECK", text: "Zurück zum Tresen. Tür ist da.", end: true },
     },
   },
   vossbeckUnreadyTwo: {
@@ -857,10 +925,10 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
     start: "u0",
     lines: {
       u0: { id: "u0", speaker: "SYSTEM", text: "[ Vossbeck blättert weiter, ohne den Bleistift abzulegen. ]", next: "u1" },
-      u1: { id: "u1", speaker: "VOSSBECK", text: "Fallnummer.", next: "u2" },
-      u2: { id: "u2", speaker: "VOSSBECK", text: "Vier-Drei-Eins-Sieben. Vorgang Vollmacht 4317. Bewohner Worag. — Habe ich auf dem Tisch.", subtext: "Er sagt es, ohne aufzusehen. Der Bleistift bleibt senkrecht.", next: "u3" },
-      u3: { id: "u3", speaker: "VOSSBECK", text: "Trainingssiege bei Herrn Brust: zwei dokumentiert — einen noch. Ich verhandle nicht mit Bewohnern, die nicht satisfaktionsfähig sind.", next: "u4" },
-      u4: { id: "u4", speaker: "VOSSBECK", text: "Einen noch bei Brust. Vorher nicht. — Tür ist da.", end: true },
+      u1: { id: "u1", speaker: "VOSSBECK", text: "Formblatt.", next: "u2" },
+      u2: { id: "u2", speaker: "VOSSBECK", text: "Sie haben keines. Siebzehn-V auf Vorsprache. Ohne das nichts.", subtext: "Er sagt es, ohne aufzusehen. Der Bleistift bleibt senkrecht.", next: "u3" },
+      u3: { id: "u3", speaker: "VOSSBECK", text: "Brust hat Ihnen zwei Trainingssiege notiert. Einen noch — dann gibt er Ihnen das Formblatt.", next: "u4" },
+      u4: { id: "u4", speaker: "VOSSBECK", text: "Zurück zum Tresen. Tür ist da.", end: true },
     },
   },
   // Layard kennt den Vorgang noch gar nicht — Vossbeck schickt ihn weg,

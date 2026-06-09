@@ -194,148 +194,41 @@ export const insaDialogs: Record<string, DialogTree> = {
       idCode1: {
         id: "idCode1",
         speaker: "INSA",
-        text: "Den Code. — Eine Sekunde, Herr Worag. Ich schaue auf Ihre Vorgangsspur. — Es ist da eine Sache.",
-        subtext: "Tastenklacken. Sie liest etwas, das ihr nicht gefällt.",
+        text: "Den Code. — Da muss ich Sie enttäuschen, Worag: Sektor-Codes gibt die Leitstelle nicht heraus. Nicht mehr seit '95. Das macht Oberverwalter Vossbeck persönlich, Etage 3, Tür 3603 — direkt neben der Kantine 3602.",
+        subtext: "Sie sagt es, als hätte sie den Satz schon hundertmal aufgesagt. Vermutlich hat sie das.",
         next: "idCode2",
       },
       idCode2: {
         id: "idCode2",
         speaker: "INSA",
-        text: "Den Verantwortlichen fürs Zentrale Netz kann ich Ihnen geben, falls noch etwas hängt. Aber egal was — ohne sauberen Status komme ich an Ihren Code nicht heran.",
-        choices: [
-          {
-            text: "Verbinden Sie mich. Ich versuche es noch.",
-            next: "idNet1",
-          },
-          {
-            text: "Lassen wir das Netz. Was hängt bei mir?",
-            // Engine resolved nach Sichtbarkeit:
-            //  - Vorgang erledigt (receivedTillaTransfer) → idPflichtSkip
-            //    sichtbar → idCode4 (Code-Ausgabe).
-            //  - Vorgang offen → idPflichtSkip hidden, Engine läuft über
-            //    idPflichtCheck → idPflicht1..4 (4317-Hinweis).
-            next: "idPflichtSkip",
-          },
-        ],
-      },
-      // Verzweigung: Ist Layards Stamm-Vorgang 4317 sauber abgeschlossen
-      // (receivedTillaTransfer)? Dann gibt Insa den Code heraus. Wenn nicht,
-      // weist sie auf die offene Akte hin und verweist auf Frau Kowalk.
-      idPflichtCheck: {
-        id: "idPflichtCheck",
-        speaker: "SYSTEM",
-        text: "[ Insa scrollt durch eine Liste, dreht den Bildschirm leicht weg. ]",
-        hiddenWhen: ["receivedTillaTransfer"],
-        next: "idPflicht1",
-      },
-      // Hinweis-Pfad — nur wenn Vorgang 4317 noch offen ist.
-      idPflicht1: {
-        id: "idPflicht1",
-        speaker: "INSA",
-        text: "Bei Ihnen ist ein Vorgang als offen markiert, Herr Worag. Stamm-Vorgang Vier-Drei-Eins-Sieben. An Ihrer Adresse mitverknüpft, weil 2613 und 2611 in einer Sammelakte hängen.",
-        subtext: "Sie sagt das ohne Schärfe. Es ist eine Standzeile aus ihrem Pult.",
-        hiddenWhen: ["receivedTillaTransfer"],
-        next: "idPflicht2",
-      },
-      idPflicht2: {
-        id: "idPflicht2",
-        speaker: "INSA",
-        text: "Solange das so bleibt, läuft Ihr Protokoll bei der Annahme nicht durch. Der Code für die Sektor-Tür ist bei mir aus dem gleichen Grund gesperrt — Vorgangsblock auf Ihrem Datensatz.",
-        subtext: "Sie sagt »gesperrt«, als wäre es ein Wetterbericht.",
-        hiddenWhen: ["receivedTillaTransfer"],
-        next: "idPflicht2b",
-      },
-      idPflicht2b: {
-        id: "idPflicht2b",
-        speaker: "INSA",
-        text: "Ich habe Ihnen die Vorgangs-Notiz schon ins Terminal gelegt — kommt automatisch, sobald ein Block auftaucht. Da steht alles drin, was Sie wissen müssen, um es zu räumen.",
-        subtext: "»Kommt automatisch.« Sie betont es so, als wollte sie sagen: nicht von mir.",
-        hiddenWhen: ["receivedTillaTransfer"],
-        next: "idPflicht3",
-      },
-      idPflicht3: {
-        id: "idPflicht3",
-        speaker: "INSA",
-        text: "Praktisch: gehen Sie in die Kantine 3602, Etage 3. Frau Kowalk am linken Tresen kennt die Akte 4317. Sie weiß, was zu tun ist, damit der Block fällt.",
+        text: "Ein Insider-Tipp, Worag: gehen Sie nicht stur durch Tür 3603. Vossbeck winkt jeden ab, der ohne Formblatt 17/V kommt. Sprechen Sie vorher mit Frau Kowalk — linker Tresen, Kantine 3602. Die weiß, wie man bei Vossbeck reinkommt.",
         subtext: "Sie sagt »Kowalk« mit einem Hauch Respekt, der ihr selbst auffällt.",
-        hiddenWhen: ["receivedTillaTransfer"],
-        next: "idPflicht4",
+        next: "idCode3",
       },
-      idPflicht4: {
-        id: "idPflicht4",
+      idCode3: {
+        id: "idCode3",
         speaker: "INSA",
-        text: "Sobald Frau Kowalk den Bogen für Sie ans Rohr gibt und die Antwort aus E70-K zurückkommt, ist Ihr Status sauber. Rufen Sie mich dann noch einmal an — ich gebe Ihnen den Code direkt. Auf Wiederhören, Herr Worag.",
-        subtext: "Kein Tonfall von Auftrag. Eher: jemand, der einen Bearbeitungsstand vorliest.",
-        hiddenWhen: ["receivedTillaTransfer"],
-        next: "idCode4",
+        text: "Sobald Vossbeck den Code freigibt, landet er direkt in Ihrem Terminal-Postfach. Sie müssen mich nicht zurückrufen. Auf Wiederhören, Worag.",
+        subtext: "Kein Tonfall von Auftrag. Eher: jemand, der einen Ablauf vorliest.",
         choices: [
           {
             text: "Verstanden. Auf Wiederhören.",
             action: (api) => {
-              // Insa hat Layard auf Vorgang 4317 / Kowalk hingewiesen.
-              // Flag bleibt aus Legacy-Gründen `insaGaveTransferTask` —
-              // gated jetzt die Kowalk-Einstiegs-Choice in der Kantine.
-              api.setFlag("insaGaveTransferTask");
+              api.setFlag("knowsVossbeckPath");
+              api.setFlag("insaSentToKowalkForCode");
+              api.setFlag("skippedExitReport");
+            },
+          },
+          {
+            text: "Eine Frage noch — was ist mit dem Netz?",
+            next: "idNet1",
+            action: (api) => {
+              api.setFlag("knowsVossbeckPath");
+              api.setFlag("insaSentToKowalkForCode");
               api.setFlag("skippedExitReport");
             },
           },
         ],
-      },
-      // Wenn Vorgang 4317 erledigt ist, geht es nahtlos zum Code-Pfad.
-      idPflichtSkip: {
-        id: "idPflichtSkip",
-        speaker: "SYSTEM",
-        text: "[ Insa schaut auf den Bildschirm, hebt eine Augenbraue. Nickt einmal. ]",
-        requires: ["receivedTillaTransfer"],
-        next: "idPflichtCheck",
-      },
-      idCode4: {
-        id: "idCode4",
-        speaker: "INSA",
-        text: "Vier-Drei-Eins-Sieben — sauber raus. Sehr ordentlich, Worag. Den Code lege ich Ihnen jetzt ins Terminal. Sie wissen schon: das Datum.",
-        subtext: "Eine Spur Anerkennung. Sie tippt schon, während sie es sagt.",
-        requires: ["receivedTillaTransfer"],
-        next: "idCode5",
-        choices: [
-          {
-            text: "Verstanden. Auf Wiederhören.",
-            next: "idCode7",
-            action: (api) => {
-              api.setFlag("skippedExitReport");
-              api.setFlag("calledForCode");
-            },
-          },
-          {
-            text: "Ich verstehe das mit dem Datum nicht.",
-            next: "idCode5",
-            action: (api) => {
-              api.setFlag("skippedExitReport");
-              api.setFlag("calledForCode");
-            },
-          },
-        ],
-      },
-      idCode5: {
-        id: "idCode5",
-        speaker: "INSA",
-        text: "Sie öffnen Ihr Terminal. Im Posteingang liegt eine Nachricht von der Leitstelle. Lesen Sie das Datum darin — und tippen Sie es ohne Punkte ein. Acht Ziffern. Nicht mehr, nicht weniger.",
-        subtext: "Sie spricht langsam. Wie zu jemandem, der lange nichts gelesen hat.",
-        requires: ["receivedTillaTransfer"],
-        next: "idCode6",
-      },
-      idCode6: {
-        id: "idCode6",
-        speaker: "INSA",
-        text: "Beispiel — wenn da steht 14.03.1985, dann tippen Sie 14031985. Verstanden, Herr Worag?",
-        requires: ["receivedTillaTransfer"],
-        next: "idCode7",
-      },
-      idCode7: {
-        id: "idCode7",
-        speaker: "SYSTEM",
-        text: "[ Im Terminal liegt jetzt eine Nachricht. Datum: 06.11.1997. Code-Format: ohne Punkte. Acht Ziffern. ]",
-        requires: ["receivedTillaTransfer"],
-        end: true,
       },
     },
   },
