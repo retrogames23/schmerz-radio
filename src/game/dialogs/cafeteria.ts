@@ -21,20 +21,21 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             hiddenWhen: ["knowsVossbeckPath"],
           },
           {
-            // Nach Vossbeck-Sieg: Tillas 4317-K kann legitim raus. Kowalk
-            // schickt sie selbst, sobald Layard Bescheid gibt.
-            text: "[ Vossbeck hat 4317 freigegeben. Können wir Tillas 4317-K rausschicken? ]",
+            // Tilla-Nebenakte: sobald Layard die Akte verstanden hat,
+            // schickt Kowalk die 4317-K von sich aus. Vossbecks Freigabe
+            // ist dafür nicht mehr nötig — der Tür-Code läuft anders.
+            text: "[ Frau Kowalk — schicken wir Tillas 4317-K raus? ]",
             next: "kStampedTilla1",
-            requires: ["duelEndgameWon", "insaGaveTransferTask"],
+            requires: ["gotTillaTransferInfo"],
             hiddenWhen: ["forgedQuittung4317", "receivedTillaTransfer"],
           },
           {
             // Notausgang nach drei Niederlagen bei Vossbeck — Kowalk
-            // tritt von sich aus an Layard heran, wenn er noch nicht
-            // mit ihr darüber gesprochen hat.
-            text: "[ Frau Kowalk … wegen 4317-K. Ich habe Vossbeck nicht geschlagen. ]",
+            // bietet einen gefälschten Formblatt 17/V an, mit dem Layard
+            // trotzdem in Vossbecks Audienz kommt.
+            text: "[ Frau Kowalk … Brust gibt mir kein Formblatt. Gibt es einen anderen Weg? ]",
             next: "kForge1",
-            requires: ["duelEndgameLost", "insaGaveTransferTask"],
+            requires: ["knowsVossbeckPath"],
             hiddenWhen: ["kowalkOfferedForgery", "usedForgeryRoute"],
           },
           {
