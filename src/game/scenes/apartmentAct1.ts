@@ -100,53 +100,11 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
           } else if (!api.hasFlag("calledInsa2")) {
             api.setFlag("calledInsa2");
             api.startDialog("insa2a");
-          } else if (
-            api.hasFlag("receivedTillaTransfer") &&
-            !api.hasFlag("calledForCode")
-          ) {
-            // Layards Vorgang 4317 ist sauber abgeschlossen — Transferbogen
-            // ist im Inventar. Insa hält Wort und legt den Code ins Postfach.
-            api.setFlag("calledForCode");
-            api.startDialog("insa2");
-          } else if (
-            api.hasFlag("calledStegmann") &&
-            api.hasFlag("centralOsUpdated") &&
-            api.hasFlag("troubleReported") &&
-            api.hasFlag("reportedExit") &&
-            !api.hasFlag("calledForCode")
-          ) {
-            // Standardweg: Stegmann ist abgearbeitet, aber der Vorgangs-
-            // Block hängt noch. Insa erinnert an die offene 4317.
-            if (api.hasFlag("sentForgedQuittung") && !api.hasFlag("receivedTillaTransfer")) {
-              // Fallback: Quittung ist raus, aber die Antwort wurde nie
-              // aktiv aus dem Rohr geholt. Bogen direkt nachreichen.
-              api.setFlag("receivedTillaTransfer");
-              api.addItem({
-                id: "tillaTransfer",
-                name: "Transferbogen E70-K → 70-2244",
-                description:
-                  "Eingehende Rohrpost-Hülse, beantwortet eine Quittung 4317-K. Inhalt: ein Transferbogen — Patientin Tilla Kowalk, von E70-K verlegt an Heim Lothenau, neue Bewohnernummer 70-2244. Stempel »ÜBERFÜHRUNG STILL«. Datum 06.11.1997.",
-              });
-              // Nachziehen: Auf den Hauptpfaden setzt Insa diesen Auftrag
-              // explizit. Hier wurde er übersprungen — ohne das Flag bleibt
-              // Kowalks Kantinen-Strang (kInsa1 → knowsVossbeckPath) tot.
-              api.setFlag("insaGaveTransferTask");
-              api.setFlag("calledForCode");
-              api.startDialog("insa2");
-            } else {
-              api.startDialog("insaWaitingForTransfer");
-            }
-          } else if (
-            api.hasFlag("insaGaveTransferTask") &&
-            !api.hasFlag("receivedTillaTransfer")
-          ) {
-            // Insa hat den Vorgangs-Hinweis schon gegeben, aber Layard
-            // war noch nicht (erfolgreich) bei Kowalk. Kurzer Reminder.
-            api.startDialog("insaReminder5610");
           } else {
-            // Alle anderen Fälle laufen über die Vermittlung Insa,
-            // die je nach Anliegen weiterverbindet bzw. den Ausgang
-            // anmahnt, bevor sie den Code freigibt.
+            // Der Code-Pfad läuft ab jetzt komplett über Vossbeck (siehe
+            // `insaDispatch.idCode*` → setzt `insaSentToKowalkForCode`).
+            // Insa bleibt Vermittlung — für Netz-Erinnerungen und den
+            // Vossbeck-Hinweis. Sie selbst gibt keinen Code mehr heraus.
             api.startDialog("insaDispatch");
           }
         },
