@@ -13,6 +13,14 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
           "Sie hat die Liste nicht angesehen. Sie kennt die Leute auf E67.",
         choices: [
           {
+            // Neuer Hauptpfad: Insa hat Layard zu Kowalk geschickt, weil
+            // sie den Tagescode für die Sektor-Tür braucht.
+            text: "Frau Kowalk — Insa sagt, Sie wissen, wie man bei Vossbeck reinkommt. Ich brauche einen Tagescode für die Sektor-Tür.",
+            next: "kCode1",
+            requires: ["insaSentToKowalkForCode"],
+            hiddenWhen: ["knowsVossbeckPath"],
+          },
+          {
             // Nach Vossbeck-Sieg: Tillas 4317-K kann legitim raus. Kowalk
             // schickt sie selbst, sobald Layard Bescheid gibt.
             text: "[ Vossbeck hat 4317 freigegeben. Können wir Tillas 4317-K rausschicken? ]",
@@ -53,9 +61,13 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             hiddenWhen: ["gotB3Ration"],
           },
           {
-            text: "Frau Kowalk — Vorgang 4317. Auf meiner Adresse hängt ein Block. Insa sagt, Sie kennen die Akte.",
+            // Optionale Nebenakte: Layard fragt aktiv nach Tilla. Sichtbar,
+            // sobald er sie überhaupt erwähnt bekommen hat (von Philippe
+            // oder Kowalk selbst) ODER Insa den alten 4317-Block angetippt
+            // hat. Kein Gating mehr durch den Code-Pfad.
+            text: "Frau Kowalk — wer ist Tilla? Ihre Tochter, oder?",
             next: "kInsa1",
-            requires: ["insaGaveTransferTask"],
+            requires: ["kowalkToldHerDaughter"],
             hiddenWhen: ["gotTillaTransferInfo"],
           },
           {
@@ -84,6 +96,61 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             next: "kBye",
           },
         ],
+      },
+      // ── Neuer Hauptpfad: Vossbeck/Brust/Formblatt für den Tagescode ──
+      kCode1: {
+        id: "kCode1",
+        speaker: "KOWALK",
+        text: "Tagescode. Hat sie wieder die alte Leier vom »wir geben keine Codes raus« gefahren? Korrekt. Vossbeck nebenan in 3603 macht das jetzt. — Aber gehen Sie da nicht einfach rein.",
+        subtext: "Sie wischt den Tresen einmal trocken, obwohl der Tresen trocken ist.",
+        next: "kCode2",
+      },
+      kCode2: {
+        id: "kCode2",
+        speaker: "KOWALK",
+        text: "Vossbeck nimmt keinen Bewohner an, der ohne Formblatt 17/V auf Vorsprache kommt. Türschild lesen, fertig. Und die Formblätter hat ausschließlich Herr Brust — am rechten Tresen, drei Schritte weiter.",
+        next: "kCode3",
+      },
+      kCode3: {
+        id: "kCode3",
+        speaker: "KOWALK",
+        text: "Brust gibt das Formblatt nicht jedem. Er prüft, ob Sie satisfaktionsfähig sind — also ob Sie Vossbeck im Behörden-Ton standhalten. Sie machen einen Trainingsfall mit ihm: er eröffnet mit einer Bewohner-Phrase, Sie kontern aus dem Phrasenbuch. Drei Trainingsfälle in Folge sauber durch — Formblatt in der Hand. Vorher nicht.",
+        subtext: "Brust hält das für eine ehrenvolle Aufgabe. Lassen Sie ihn in dem Glauben, Worag — Sie brauchen ihn.",
+        next: "kCode4",
+      },
+      kCode4: {
+        id: "kCode4",
+        speaker: "KOWALK",
+        text: "Mit dem Formblatt dürfen Sie bei Vossbeck vorsprechen. Dann läuft das Endduell — drei Runden, zwei Treffer. Bei Sieg legt Vossbeck den Code direkt in Ihr Terminal-Postfach.",
+        choices: [
+          {
+            text: "Verstanden. Ich rede mit Brust.",
+            action: (api) => {
+              api.setFlag("knowsVossbeckPath");
+            },
+            next: "kCode5",
+          },
+          {
+            text: "Und wenn ich bei Brust durchfalle?",
+            next: "kCodeForgeHint",
+            action: (api) => {
+              api.setFlag("knowsVossbeckPath");
+            },
+          },
+        ],
+      },
+      kCode5: {
+        id: "kCode5",
+        speaker: "KOWALK",
+        text: "Tun Sie das. Brust steht da hinten und wartet — der hat heute nicht viel.",
+        next: "k0",
+      },
+      kCodeForgeHint: {
+        id: "kCodeForgeHint",
+        speaker: "KOWALK",
+        text: "Dann kommen Sie wieder zu mir. Ich kenne einen anderen Weg — er ist nicht stolz, aber er funktioniert. Mehr sage ich erst, wenn es nötig wird.",
+        subtext: "Sie schaut nicht zu Brust hinüber. Aber ihr Blick streift ihn.",
+        next: "k0",
       },
       kSmall1: {
         id: "kSmall1",
