@@ -53,7 +53,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             text: "[ Hier — Bleistift, Quittungsblanko und der Siegelabdruck. ]",
             next: "kForgeHandover1",
             requires: ["kowalkOfferedForgery", "extractedSiegelAbdruck"],
-            hiddenWhen: ["forgedQuittung4317"],
+            hiddenWhen: ["usedForgeryRoute"],
           },
           {
             text: "Ich habe eine Vollmacht. Vier-Drei-Eins-Sieben.",
@@ -303,13 +303,13 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kForge2: {
         id: "kForge2",
         speaker: "KOWALK",
-        text: "Sie haben es versucht. Dreimal. Das wird Vossbeck Ihnen nicht zum vierten Mal anhören. Vorgang 4317 ist für ihn geschlossen — und damit auch der Stamm für Tilla.",
+        text: "Brust gibt Ihnen kein Formblatt 17/V. Gut. Vossbeck merkt sich Gesichter, die dreimal an seiner Tür standen — Sie kommen so nicht mehr durch.",
         next: "kForge3",
       },
       kForge3: {
         id: "kForge3",
         speaker: "KOWALK",
-        text: "Aber für eine 4317-K brauche ich seinen Stempel nicht selbst in der Hand. Ich brauche eine Quittung, die aussieht, als hätte sie ihn.",
+        text: "Aber Vossbeck schaut nicht auf den Bewohner — er schaut auf das Formblatt. Und ein Formblatt, das aussieht, als hätte Brust es gegengezeichnet, ist für ihn ein Formblatt.",
         subtext: "Sie schaut nicht weg, als sie das sagt. Es ist keine Verschwörung. Es ist Routine, die einmal benannt wird.",
         next: "kForge4",
       },
@@ -322,13 +322,13 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kForge5: {
         id: "kForge5",
         speaker: "KOWALK",
-        text: "Erstens: einen Quittungsblanko. Nehmen Sie sich einen vom Block hier. Zweitens: einen Bleistiftstummel — irgendeinen weichen, alten. Bei Bodo in 2612 liegt einer.",
+        text: "Erstens: einen Formblatt-Blanko. Brust hat einen Stapel in seiner Tresen-Schublade liegen — kommen Sie ran, wenn er kurz nicht hinschaut. Zweitens: einen Bleistiftstummel — irgendeinen weichen, alten. Bei Bodo in 2612 liegt einer.",
         next: "kForge6",
       },
       kForge6: {
         id: "kForge6",
         speaker: "KOWALK",
-        text: "Drittens: den Trockensiegel-Abdruck »Schicht A«. Den reiben Sie mit dem Bleistift im Inventar von Philippes Vollmacht 4317 ab — Carbon-Papier drauf, ein paar Striche, fertig.",
+        text: "Drittens: ein Kürzel, das Brusts Gegenzeichnung gleicht. Reiben Sie es mit dem Bleistift im Inventar von Philippes alter Vollmacht 4317 ab — Schicht A, gleicher Schwung, gleiche Tinte. Carbon-Papier drauf, ein paar Striche, fertig.",
         choices: [
           {
             text: "Verstanden. Ich besorge die drei Sachen.",
@@ -342,14 +342,14 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kForgeRecap: {
         id: "kForgeRecap",
         speaker: "KOWALK",
-        text: "Bleistiftstummel, Quittungsblanko, Trockensiegel-Abdruck von Philippes 4317. Bringen Sie mir die drei. Den Rest mache ich. — Mehr sage ich nicht, Worag.",
+        text: "Bleistiftstummel, Formblatt-Blanko aus Brusts Schublade, Kürzel-Abdruck von Philippes 4317. Bringen Sie mir die drei. Den Rest mache ich. — Mehr sage ich nicht, Worag.",
         end: true,
       },
       // ── Handover: Layard übergibt die drei Forgery-Zutaten ───────
       kForgeHandover1: {
         id: "kForgeHandover1",
         speaker: "SYSTEM",
-        text: "[ Layard schiebt drei Sachen über den Tresen: den Bleistiftstummel, einen frischen Quittungsblanko, das dünne Papier mit dem Siegelabdruck. ]",
+        text: "[ Layard schiebt drei Sachen über den Tresen: den Bleistiftstummel, einen frischen Formblatt-Blanko, das dünne Papier mit dem Kürzel-Abdruck. ]",
         next: "kForgeHandover2",
       },
       kForgeHandover2: {
@@ -362,19 +362,18 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kForgeHandover3: {
         id: "kForgeHandover3",
         speaker: "KOWALK",
-        text: "Schicht B. Code 4317-K. Empfänger E70-K. — Sieht aus, als wäre sie nie etwas anderes gewesen als echt.",
-        subtext: "Sie reicht Layard die fertige Quittung. Bleistift und Reibpapier verschwinden gleich mit unter ihrem Tuch.",
+        text: "Formblatt 17/V auf Vorsprache. Gegengezeichnet — sieht aus, als hätte Brust selbst hingekritzelt.",
+        subtext: "Sie reicht Layard das fertige Formblatt. Bleistift und Reibpapier verschwinden gleich mit unter ihrem Tuch.",
         choices: [
           {
-            text: "[ Quittung annehmen ]",
+            text: "[ Formblatt annehmen ]",
             action: (api) => {
-              api.setFlag("forgedQuittung4317");
               api.setFlag("usedForgeryRoute");
               api.addItem({
-                id: "quittungForged4317",
-                name: "Quittung 4317-K (Schicht B, fertig)",
+                id: "formblatt17VForged",
+                name: "Formblatt 17/V (gefälscht)",
                 description:
-                  "Hellblauer Carbon-Quittungsbogen, akkurat ausgefüllt: »QUITTUNG / SCHICHT B / KOPIE FÜR E70 / CODE 4317-K«. Trockensiegel-Abdruck Schicht A in der oberen Ecke. Frau Kowalk hat sie hinter der Theke fertig gemacht. Sieht aus, als wäre sie nie etwas anderes gewesen als echt.",
+                  "Cremefarbener Vorsprache-Bogen, Kopfzeile »FORMBLATT 17/V — VORSPRACHE OBERVERWALTUNG«. Unten rechts ein abgeriebenes Kürzel, das Brusts Gegenzeichnung zum Verwechseln ähnlich sieht. Frau Kowalk hat es hinter der Theke fertig gemacht.",
               });
             },
             next: "kForgeHandover4",
@@ -384,7 +383,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kForgeHandover4: {
         id: "kForgeHandover4",
         speaker: "KOWALK",
-        text: "Linkes Rohr. Ziel E70-K. Schicken Sie sie selbst ab — ich war nicht dabei.",
+        text: "Tür 3603. Klopfen Sie trotzdem. — Und Worag: ich war nicht dabei.",
         end: true,
       },
       // ── Legitimer Pfad nach Vossbeck-Sieg ─────────────────────────
