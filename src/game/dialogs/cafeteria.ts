@@ -53,7 +53,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             text: "[ Hier — Bleistift, Quittungsblanko und der Siegelabdruck. ]",
             next: "kForgeHandover1",
             requires: ["kowalkOfferedForgery", "extractedSiegelAbdruck"],
-            hiddenWhen: ["forgedQuittung4317"],
+            hiddenWhen: ["usedForgeryRoute"],
           },
           {
             text: "Ich habe eine Vollmacht. Vier-Drei-Eins-Sieben.",
