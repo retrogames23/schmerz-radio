@@ -904,8 +904,8 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           ];
           const imgTag = parsed.sceneTag ?? setting.openingTag;
           const savePayload = {
-            user_id: uid,
-            anon_id: anonId,
+            user_id: uid ?? null,
+            anon_id: uid ? null : anonId,
             session_id: sessionId,
             setting: settingId,
             hero_slot: heroSlot,
