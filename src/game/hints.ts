@@ -207,18 +207,18 @@ export const HINT_QUESTS: HintQuest[] = [
   // 11) Insa anrufen → Vorgangs-Status klären, Code anfragen
   {
     id: "act1.callInsaFor5610",
-    title: "Insa anrufen — was den Code blockiert",
+    title: "Insa anrufen — Code für die Sektor-Tür",
     priority: 11,
     isActive: (a) =>
       a.hasFlag("sawEmptyOffice") &&
-      !a.hasFlag("insaGaveTransferTask") &&
+      !a.hasFlag("insaSentToKowalkForCode") &&
       !a.hasFlag("calledForCode"),
     isResolved: (a) =>
-      a.hasFlag("insaGaveTransferTask") || a.hasFlag("calledForCode"),
+      a.hasFlag("insaSentToKowalkForCode") || a.hasFlag("calledForCode"),
     hints: [
       "Der Abschnittsverantwortliche fehlt — also gibt es jetzt nur noch eine Stelle, die deine Sache weiterbringt.",
       "Geh zurück in deine Wohnung 2611 und ruf von deinem Telefon aus die Leitstelle an.",
-      "Geh nach 2611, klick dein Telefon an und sprich mit Insa. Wähle „Ich brauche einen Code für die Sektor-Tür“ — sie wird dir sagen, was bei dir blockiert.",
+      "Geh nach 2611, klick dein Telefon an und sprich mit Insa. Wähle „Ich brauche einen Code für die Sektor-Tür“ — sie verweist dich an Oberverwalter Vossbeck (3603) und gibt einen Tipp, vorher mit Frau Kowalk zu reden.",
     ],
   },
 
@@ -240,71 +240,70 @@ export const HINT_QUESTS: HintQuest[] = [
     ],
   },
 
-  // 13a) Eigener Vorgang 4317 bei Kowalk klären
+  // 13a) Frau Kowalk in der Kantine ansprechen — Vossbeck-Pfad
   {
     id: "act1.kowalkBrief",
-    title: "Eigenen Vorgang 4317 bei Kowalk klären",
+    title: "Bei Frau Kowalk vorsprechen",
     priority: 13,
     isActive: (a) =>
-      a.hasFlag("insaGaveTransferTask") &&
-      !a.hasFlag("gotTillaTransferInfo"),
-    isResolved: (a) => a.hasFlag("gotTillaTransferInfo"),
+      a.hasFlag("insaSentToKowalkForCode") &&
+      !a.hasFlag("knowsVossbeckPath"),
+    isResolved: (a) => a.hasFlag("knowsVossbeckPath"),
     hints: [
-      "Insa hat dir gesagt: an deiner Adresse hängt ein offener Vorgang 4317. Solange der nicht weg ist, gibt sie keinen Code raus.",
-      "Frau Kowalk steht hinter dem Tresen der Kantine 3602, im Korridor 36 (Etage 3). Sie kennt die Akte 4317.",
-      "Fahr ins 3. OG, geh in die Kantine 3602 und sprich Frau Kowalk an. Wähle »Vorgang 4317 — auf meiner Adresse hängt ein Block«.",
+      "Insa hat dir gesagt: Vossbeck (3603) gibt den Tagescode — aber geh nicht direkt rein. Sprich vorher mit Frau Kowalk.",
+      "Frau Kowalk steht am linken Tresen der Kantine 3602, im Korridor 36 (Etage 3). Sie kennt die ungeschriebene Regel für Vossbeck.",
+      "Fahr ins 3. OG, geh in die Kantine 3602 und sprich Frau Kowalk an. Wähle »Insa sagt, Sie wissen, wie man bei Vossbeck reinkommt«.",
     ],
   },
-  // 13b) Vossbeck soll Vorgang 4317 freigeben (oder Forgery-Pfad)
+  // 13b) Bei Brust das Formblatt 17/V erspielen (oder Forgery-Pfad)
   {
     id: "act1.stamp4317",
-    title: "Vorgang 4317 freibekommen",
+    title: "Formblatt 17/V besorgen",
     priority: 13,
     isActive: (a) =>
-      a.hasFlag("gotTillaTransferInfo") &&
-      !a.hasFlag("forgedQuittung4317") &&
+      a.hasFlag("knowsVossbeckPath") &&
+      !a.hasItem("formblatt17V") &&
+      !a.hasItem("formblatt17VForged") &&
       !a.hasFlag("kowalkOfferedForgery"),
     isResolved: (a) =>
-      a.hasFlag("forgedQuittung4317") ||
-      a.hasFlag("kowalkOfferedForgery") ||
-      a.hasFlag("duelEndgameWon"),
+      a.hasItem("formblatt17V") ||
+      a.hasItem("formblatt17VForged") ||
+      a.hasFlag("kowalkOfferedForgery"),
     hints: [
-      "Kowalk kann Tillas 4317-K nicht abschicken, solange der Stamm-Vorgang 4317 nicht freigegeben ist. Den hat ein einziger Mann auf der Etage.",
-      "Oberinspektor Vossbeck sitzt direkt nebenan in Tür 3603. Er verhandelt nur mit Bewohnern, die im Behörden-Ton schlagfertig sind — Brust trainiert dich am Tresen der Kantine vorher.",
-      "Geh in der Kantine zu Brust am Tresen, wähl »Trainingsfall« und gewinn drei in Folge. Dann tritt Vossbeck heraus — geh nebenan in 3603 und schlag ihn im Endduell.",
+      "Vossbeck nimmt keinen Bewohner an, der ohne Formblatt 17/V kommt. Das Formblatt gibt es nur an einer Stelle — und nur nach einer Prüfung.",
+      "Herr Brust am rechten Tresen der Kantine 3602 prüft, ob du „satisfaktionsfähig“ bist. Drei Trainingsfälle in Folge gewinnen — Formblatt in der Hand.",
+      "Sprich Brust am Tresen an, wähle »Trainingsfall« und gewinn drei in Folge. Brust händigt dir dann Formblatt 17/V aus. Falls du an Brust scheiterst: zurück zu Kowalk — sie kennt einen anderen Weg.",
     ],
   },
-  // 13c) Quittung 4317-K abschicken
+  // 13c) Optional: Tillas 4317-K abschicken (Nebenakte)
   {
     id: "act1.send4317K",
-    title: "Quittung 4317-K abschicken",
-    priority: 13,
+    title: "Tillas Quittung 4317-K abschicken (optional)",
+    priority: 55,
     isActive: (a) =>
-      (a.hasFlag("duelEndgameWon") ||
-        a.hasFlag("kowalkOfferedForgery") ||
-        a.hasFlag("forgedQuittung4317")) &&
+      a.hasFlag("gotTillaTransferInfo") &&
       !a.hasItem("tillaTransfer"),
     isResolved: (a) => a.hasItem("tillaTransfer"),
     hints: [
-      "Du musst zurück zu Frau Kowalk in der Kantine 3602. Sie weiß, wie es weitergeht.",
-      "Sprich Kowalk an und nimm die fertige Quittung 4317-K entgegen. Hast du Vossbeck im Endduell geschlagen, geht das direkt im Gespräch — sie zeichnet gegen.",
-      "Schick die Quittung selbst ab: klick die Pneumatik-Rohrpost an der Wand der Kantine an (oder zieh die Quittung aus dem Inventar darauf). Empfänger E70-K, Code 4317-K. Antwort kommt zurück ans Rohr.",
+      "Tillas Akte hängt seit einem Jahr. Frau Kowalk darf die 4317-K nicht selbst abschicken — aber du kannst.",
+      "Sprich Kowalk in 3602 an und wähle »schicken wir Tillas 4317-K raus?« — sie zeichnet gegen und gibt dir die Quittung.",
+      "Klick die Pneumatik-Rohrpost an der Wand der Kantine an (oder zieh die Quittung aus dem Inventar darauf). Empfänger E70-K, Code 4317-K. Antwort kommt zurück ans Rohr.",
     ],
   },
 
-  // 14) Insa anrufen für Tagescode
+  // 14) Endduell bei Vossbeck — Tagescode erstreiten
   {
     id: "act1.callInsaForCode",
-    title: "Tagescode bei Insa abholen",
+    title: "Vossbeck im Endduell schlagen — Tagescode",
     priority: 14,
     isActive: (a) =>
-      a.hasItem("tillaTransfer") &&
+      (a.hasItem("formblatt17V") || a.hasItem("formblatt17VForged")) &&
       !a.hasFlag("calledForCode"),
     isResolved: (a) => a.hasFlag("calledForCode"),
     hints: [
-      "Dein Vorgang 4317 ist sauber raus. Der Block auf deinem Datensatz ist weg.",
-      "Geh zurück in deine Wohnung 2611 und benutze dein Telefon.",
-      "Klick in 2611 das Telefon an und ruf Insa zurück. Sie schickt dir dann den heutigen Sektor-Code in dein Postfach.",
+      "Du hast das Formblatt. Jetzt zählt nur noch das eine Gespräch — bei Vossbeck nebenan in 3603.",
+      "Vossbeck führt das Endduell: drei Runden, zwei Treffer. Bei Sieg legt er den Tagescode direkt in dein Terminal-Postfach.",
+      "Geh in Tür 3603 (Kantinenverwaltung), gib das Formblatt 17/V ab und schlag Vossbeck im Endduell. Der Code liegt anschließend in deinem CentralOS-Postfach.",
     ],
   },
 
@@ -357,9 +356,9 @@ export const HINT_QUESTS: HintQuest[] = [
       a.hasFlag("duelEndgameWon") ||
       a.hasFlag("refusedB3Favor"),
     hints: [
-      "Philippe hat dich um eine B3-Ration gebeten. In der Kantine läuft das über Vorgang 4317 — denselben, den du für Tillas Akte sowieso brauchst.",
-      "Du brauchst keinen zweiten Weg: gewinnst du das Endduell um 4317 (Tillas Quittung), gibt Vossbeck die B3 automatisch mit frei.",
-      "Spiel den 4317-Hauptpfad: Brust am Tresen → drei Trainingsfälle in Folge → Vossbeck nebenan in 3603 schlagen. Mit dem Sieg liegt die B3-Dose neben Tillas Quittung auf dem Tresen.",
+      "Philippe hat dich um eine B3-Ration gebeten. Die Kantine gibt die nicht ohne Weiteres heraus — du brauchst entweder das Endduell oder einen anderen Hebel bei Kowalk/Brust.",
+      "Gewinnst du das Endduell gegen Vossbeck (für den Tagescode), gibt er die B3-Ration automatisch mit frei. Sonst hilft nur Kowalks Kniff am Tresen.",
+      "Spiel den Vossbeck-Pfad zu Ende: Brust → drei Trainingsfälle in Folge → Vossbeck in 3603 schlagen. Mit dem Sieg liegt die B3-Dose neben dem Tagescode auf dem Tresen.",
     ],
   },
   {
@@ -369,26 +368,30 @@ export const HINT_QUESTS: HintQuest[] = [
     isActive: (a) =>
       a.hasFlag("knowsVossbeckPath"),
     isResolved: (a) =>
-      a.hasFlag("vossbeckSummoned") ||
+      a.hasItem("formblatt17V") ||
+      a.hasItem("formblatt17VForged") ||
       a.hasFlag("duelEndgameWon") ||
       a.hasFlag("gotB3Ration") ||
       a.hasFlag("refusedB3Favor"),
     hints: [
-      "Kowalk hat dir den Weg erklärt. Der nächste Schritt ist nicht Vossbeck, sondern Brust — am Tresen rechts in der Kantine 3602.",
+      "Kowalk hat dir den Weg erklärt. Der nächste Schritt ist nicht Vossbeck, sondern Brust — am rechten Tresen der Kantine 3602.",
       "Sprich Brust an und wähle „Trainingsfall“. Jeder Trainingsfall ergänzt dein Phrasenbuch — verlierst du, lernst du den Konter trotzdem (Brust nennt ihn dir selbst).",
-      "Geh in die Kantine 3602, sprich Brust an, wähle „Trainingsfall“ und gewinn drei in Folge — dann nimmt Vossbeck dich nebenan in 3603 an.",
+      "Geh in die Kantine 3602, sprich Brust an, wähle „Trainingsfall“ und gewinn drei in Folge — Brust händigt dir dann Formblatt 17/V aus, mit dem dich Vossbeck in 3603 annimmt.",
     ],
   },
   {
     id: "act1.vossbeckEndgame",
     title: "Endduell gegen Vossbeck",
     priority: 52,
-    isActive: (a) => a.hasFlag("vossbeckSummoned"),
+    isActive: (a) =>
+      a.hasItem("formblatt17V") || a.hasItem("formblatt17VForged"),
     isResolved: (a) =>
-      a.hasFlag("duelEndgameWon") || a.hasFlag("gotB3Ration"),
+      a.hasFlag("duelEndgameWon") ||
+      a.hasFlag("vossbeckGaveCode") ||
+      a.hasFlag("calledForCode"),
     hints: [
-      "Vossbeck sitzt nebenan in der Kantinenverwaltung — Tür 3603 im Korridor 36, direkt neben der Kantine. Er führt das Endduell um Philippes Vollmacht 4317.",
-      "Drei Treffer in Folge — und die B3-Ration wird freigegeben. Drei Fehler — und der Vorgang ist verloren.",
+      "Vossbeck sitzt nebenan in der Kantinenverwaltung — Tür 3603 im Korridor 36, direkt neben der Kantine. Mit dem Formblatt 17/V in der Hand nimmt er dich an.",
+      "Drei Runden, zwei Treffer. Bei Sieg legt Vossbeck den Tagescode direkt in dein Terminal-Postfach.",
       "Vossbecks Phrasen sind neu formuliert, treffen aber dieselben Muster wie Brusts (Tradition, Stapel-Bluff, Vorgesetzten-Drohung). Die Konter aus dem Training passen sinngemäß — wer dort fleißig war, hat sie im Phrasenbuch.",
     ],
   },
