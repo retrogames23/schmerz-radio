@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
-import { createHash } from "crypto";
+import { createHash, pbkdf2Sync, timingSafeEqual } from "crypto";
 import {
   buildStaticGroupMasterLore,
   buildDynamicGroupMasterState,
@@ -67,7 +67,26 @@ function json(status: number, data: unknown): Response {
 }
 
 function hashPw(roomId: string, pw: string): string {
+  // PBKDF2-SHA256, 120k iterations; `roomId` already serves as unique salt.
+  const hex = pbkdf2Sync(pw, `${roomId}::dsa-room`, 120_000, 32, "sha256").toString("hex");
+  return `pbkdf2$120000$${hex}`;
+}
+
+function legacySha256(roomId: string, pw: string): string {
   return createHash("sha256").update(`${roomId}::${pw}`).digest("hex");
+}
+
+function verifyPw(roomId: string, pw: string, stored: string): boolean {
+  if (stored.startsWith("pbkdf2$")) {
+    const candidate = hashPw(roomId, pw);
+    const a = Buffer.from(candidate);
+    const b = Buffer.from(stored);
+    return a.length === b.length && timingSafeEqual(a, b);
+  }
+  // Legacy SHA-256 hashes (pre-KDF). Accept once, callers should re-hash.
+  const a = Buffer.from(legacySha256(roomId, pw));
+  const b = Buffer.from(stored);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 function sanitize(input: unknown, maxLen: number): string {
