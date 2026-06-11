@@ -165,7 +165,7 @@ export async function callChatWithLoreTool(
         toolCall: toolCalls?.length ?? 0,
       };
       console.log(`[dsa-cost] ${JSON.stringify(payload)}`);
-      void recordModelTelemetry({
+      await recordModelTelemetry({
         model,
         label,
         round,
@@ -244,7 +244,7 @@ export async function callChatWithLoreTool(
     const content = (data.choices?.[0]?.message?.content ?? "").trim();
     if (content) {
       console.log(`[dsa-cost] ${JSON.stringify({ label, model, fallback: true })}`);
-      void recordModelTelemetry({
+      await recordModelTelemetry({
         model,
         label,
         round: null,
