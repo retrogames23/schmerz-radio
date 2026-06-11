@@ -11,6 +11,7 @@ import {
   OPENROUTER_CHAT_URL,
   openRouterHeaders,
 } from "@/lib/aiModel";
+import { recordModelTelemetry } from "./telemetry.server";
 
 export const DSA_LORE_TOOL_SPEC = {
   type: "function" as const,
@@ -151,20 +152,32 @@ export async function callChatWithLoreTool(
     // Kosten-Telemetrie pro Roundtrip — landet im Worker-Log.
     try {
       const u = data.usage ?? {};
-      console.log(
-        `[dsa-cost] ${JSON.stringify({
-          label,
-          model,
-          round,
-          maxRounds,
-          useTools,
-          prompt: u.prompt_tokens ?? null,
-          completion: u.completion_tokens ?? null,
-          cached: u.prompt_tokens_details?.cached_tokens ?? u.cache_read_input_tokens ?? null,
-          cacheCreate: u.cache_creation_input_tokens ?? null,
-          toolCall: toolCalls?.length ?? 0,
-        })}`,
-      );
+      const payload = {
+        label,
+        model,
+        round,
+        maxRounds,
+        useTools,
+        prompt: u.prompt_tokens ?? null,
+        completion: u.completion_tokens ?? null,
+        cached: u.prompt_tokens_details?.cached_tokens ?? u.cache_read_input_tokens ?? null,
+        cacheCreate: u.cache_creation_input_tokens ?? null,
+        toolCall: toolCalls?.length ?? 0,
+      };
+      console.log(`[dsa-cost] ${JSON.stringify(payload)}`);
+      void recordModelTelemetry({
+        model,
+        label,
+        round,
+        maxRounds,
+        useTools,
+        promptTokens: u.prompt_tokens ?? null,
+        completionTokens: u.completion_tokens ?? null,
+        cachedTokens: u.prompt_tokens_details?.cached_tokens ?? u.cache_read_input_tokens ?? null,
+        cacheCreateTokens: u.cache_creation_input_tokens ?? null,
+        toolCalls: toolCalls?.length ?? 0,
+        fallback: false,
+      });
     } catch {
       /* logging never fails the call */
     }
@@ -231,6 +244,19 @@ export async function callChatWithLoreTool(
     const content = (data.choices?.[0]?.message?.content ?? "").trim();
     if (content) {
       console.log(`[dsa-cost] ${JSON.stringify({ label, model, fallback: true })}`);
+      void recordModelTelemetry({
+        model,
+        label,
+        round: null,
+        maxRounds,
+        useTools,
+        promptTokens: null,
+        completionTokens: null,
+        cachedTokens: null,
+        cacheCreateTokens: null,
+        toolCalls: 0,
+        fallback: true,
+      });
       return { ok: true, reply: content };
     }
   } catch (e) {
