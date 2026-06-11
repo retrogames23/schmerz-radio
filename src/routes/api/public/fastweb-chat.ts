@@ -207,10 +207,8 @@ export const Route = createFileRoute("/api/public/fastweb-chat")({
         }
 
         const trigger = b.trigger === "player" ? "player" : "idle";
-        const playerName =
-          typeof b.playerName === "string" && b.playerName.length > 0
-            ? b.playerName.slice(0, 32)
-            : "layard_e67";
+        const playerNameClean = sanitizePromptField(b.playerName, 32);
+        const playerName = playerNameClean.length > 0 ? playerNameClean : "layard_e67";
 
         // Server-Guard: nicht überschreibbar
         const guard = [
