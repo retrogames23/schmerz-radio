@@ -935,6 +935,10 @@ export const Route = createFileRoute("/api/public/dsa-group")({
         // Wird vom Client per Timer aufgerufen, wenn das Fenster abläuft.
         if (action === "advance") {
           if (room.status !== "active") return json(409, { error: "Kein laufendes Abenteuer." });
+          const advMembers = await fetchMembers(admin, roomId);
+          if (!advMembers.some((m) => m.user_id === uid)) {
+            return json(403, { error: "Kein Mitglied dieses Raums." });
+          }
           if (!room.collect_started_at) return json(200, { ok: true, skipped: true });
           const elapsed = Date.now() - new Date(room.collect_started_at).getTime();
           if (elapsed < COLLECT_WINDOW_MS - 1000) {
