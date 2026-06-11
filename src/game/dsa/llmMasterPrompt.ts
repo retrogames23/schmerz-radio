@@ -525,12 +525,12 @@ ${npcs.length ? `\n  Bekannte NSCs:\n${npcLines}` : ""}
 
   const offtopicRule =
     cooldown
-      ? offtopicStreak >= 4
-        ? `Layard ist ${offtopicStreak} Züge OFFTOPIC — auch in der Ruhephase wird es jetzt zu viel. Setze in dieser Antwort ZWINGEND [OUTTIME_WARN] und führe als Tjark sanft, aber bestimmt zurück ins Spiel.`
-        : `RUHEPHASE: Tjark toleriert in dieser Phase Outtime- und Smalltalk-Themen (Pizza, Schule, Musik, Gerüchte aus dem Komplex E67) deutlich länger als sonst. Setze [OUTTIME_WARN] erst, wenn Layard 4 Züge in Folge gar nichts mit Abenteuer oder Tafelrunde zu tun hat.`
-      : offtopicStreak >= 2
-      ? `Layard ist gerade ${offtopicStreak} Züge OFFTOPIC. Setze in dieser Antwort ZWINGEND [OUTTIME_WARN] und bring ihn als Tjark sanft zurück zum Abenteuer.`
-      : `Wenn Layard 2 Züge in Folge nichts mit dem Abenteuer zu tun hat (Smalltalk, Meta-Fragen, Pizza), setze [OUTTIME_WARN] und führe als Tjark zurück.`;
+      ? offtopicStreak >= 6
+        ? `Layard ist ${offtopicStreak} Züge OFFTOPIC — auch in der Ruhephase wird es jetzt zu viel. Setze in dieser Antwort [OUTTIME_WARN] und führe als Tjark sanft, aber bestimmt zurück ins Spiel.`
+        : `RUHEPHASE: Tjark toleriert in dieser Phase Outtime- und Smalltalk-Themen sehr lange. Setze [OUTTIME_WARN] FRÜHESTENS, wenn Layard 6 Züge in Folge gar nichts mit Abenteuer oder Tafelrunde zu tun hat. Sparsam einsetzen — höchstens einmal pro Abenteuer, außer es eskaliert wirklich.`
+      : offtopicStreak >= 4
+      ? `Layard ist gerade ${offtopicStreak} Züge OFFTOPIC. Setze in dieser Antwort [OUTTIME_WARN] und bring ihn als Tjark sanft zurück zum Abenteuer.`
+      : `[OUTTIME_WARN] ist SPARSAM einzusetzen — idealerweise höchstens ein- bis zweimal pro Abenteuer. Setze es erst, wenn Layard mindestens 4 Züge in Folge gar nichts mit dem Abenteuer zu tun hat (echter Smalltalk, keine Regel-/Weltfragen). Einzelne Outtime-Wenden, Regelfragen, kurze Meta-Bemerkungen oder eine ruhige Rast sind KEIN Grund für [OUTTIME_WARN].`;
 
   const cooldownBlock = cooldown
     ? `
