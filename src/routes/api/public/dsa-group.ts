@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
-import { createHash } from "crypto";
+import { createHash, pbkdf2Sync, timingSafeEqual } from "crypto";
 import {
   buildStaticGroupMasterLore,
   buildDynamicGroupMasterState,
@@ -67,7 +67,26 @@ function json(status: number, data: unknown): Response {
 }
 
 function hashPw(roomId: string, pw: string): string {
+  // PBKDF2-SHA256, 120k iterations; `roomId` already serves as unique salt.
+  const hex = pbkdf2Sync(pw, `${roomId}::dsa-room`, 120_000, 32, "sha256").toString("hex");
+  return `pbkdf2$120000$${hex}`;
+}
+
+function legacySha256(roomId: string, pw: string): string {
   return createHash("sha256").update(`${roomId}::${pw}`).digest("hex");
+}
+
+function verifyPw(roomId: string, pw: string, stored: string): boolean {
+  if (stored.startsWith("pbkdf2$")) {
+    const candidate = hashPw(roomId, pw);
+    const a = Buffer.from(candidate);
+    const b = Buffer.from(stored);
+    return a.length === b.length && timingSafeEqual(a, b);
+  }
+  // Legacy SHA-256 hashes (pre-KDF). Accept once, callers should re-hash.
+  const a = Buffer.from(legacySha256(roomId, pw));
+  const b = Buffer.from(stored);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 function sanitize(input: unknown, maxLen: number): string {
@@ -664,8 +683,15 @@ export const Route = createFileRoute("/api/public/dsa-group")({
           if (room.status === "done") return json(409, { error: "Raum ist beendet." });
           if (room.password_hash) {
             const pw = typeof b.password === "string" ? b.password : "";
-            if (hashPw(room.id, pw) !== room.password_hash) {
+            if (!verifyPw(room.id, pw, room.password_hash)) {
               return json(401, { error: "Falsches Passwort." });
+            }
+            // Upgrade legacy SHA-256 hashes to PBKDF2 on first successful login.
+            if (!room.password_hash.startsWith("pbkdf2$")) {
+              await admin
+                .from("dsa_group_rooms")
+                .update({ password_hash: hashPw(room.id, pw) })
+                .eq("id", room.id);
             }
           }
           const members = await fetchMembers(admin, roomId);

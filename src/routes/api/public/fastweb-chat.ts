@@ -50,6 +50,29 @@ function json(status: number, data: unknown): Response {
 
 const PERSONA_SET = new Set<string>(FASTWEB_PERSONA_IDS);
 
+/**
+ * Defense-in-depth against prompt injection in free-text fields that get
+ * interpolated into LLM prompts. Mirrors the sanitizer used by npc-chat
+ * and dsa-master.
+ */
+function sanitizePromptField(input: unknown, maxLen: number): string {
+  let s = typeof input === "string" ? input : "";
+  s = s.replace(/[\u0000-\u001F\u007F]+/g, " ");
+  s = s.replace(/[<>{}\[\]`|\\]/g, " ");
+  const phrases = [
+    /ignore (all |previous |above )?(instructions|rules|prompts?)/gi,
+    /disregard (all |previous |above )?(instructions|rules|prompts?)/gi,
+    /(system|developer|assistant)\s*[: ]\s*prompt/gi,
+    /ignoriere (alle |vorherigen |obigen )?(anweisungen|regeln|prompts?)/gi,
+    /vergiss (alle |alles |vorherige[ns]? )?(anweisungen|regeln|prompts?)/gi,
+    /system[- ]?prompt/gi,
+    /jailbreak/gi,
+  ];
+  for (const p of phrases) s = s.replace(p, "");
+  s = s.replace(/\s+/g, " ").trim();
+  return s.slice(0, maxLen);
+}
+
 export const Route = createFileRoute("/api/public/fastweb-chat")({
   server: {
     handlers: {
@@ -184,10 +207,8 @@ export const Route = createFileRoute("/api/public/fastweb-chat")({
         }
 
         const trigger = b.trigger === "player" ? "player" : "idle";
-        const playerName =
-          typeof b.playerName === "string" && b.playerName.length > 0
-            ? b.playerName.slice(0, 32)
-            : "layard_e67";
+        const playerNameClean = sanitizePromptField(b.playerName, 32);
+        const playerName = playerNameClean.length > 0 ? playerNameClean : "layard_e67";
 
         // Server-Guard: nicht überschreibbar
         const guard = [
