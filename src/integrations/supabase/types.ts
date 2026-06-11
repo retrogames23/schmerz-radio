@@ -332,6 +332,54 @@ export type Database = {
         }
         Relationships: []
       }
+      dsa_model_telemetry: {
+        Row: {
+          cache_create_tokens: number | null
+          cached_tokens: number | null
+          completion_tokens: number | null
+          created_at: string
+          fallback: boolean
+          id: number
+          label: string | null
+          max_rounds: number | null
+          model: string
+          prompt_tokens: number | null
+          round: number | null
+          tool_calls: number | null
+          use_tools: boolean | null
+        }
+        Insert: {
+          cache_create_tokens?: number | null
+          cached_tokens?: number | null
+          completion_tokens?: number | null
+          created_at?: string
+          fallback?: boolean
+          id?: number
+          label?: string | null
+          max_rounds?: number | null
+          model: string
+          prompt_tokens?: number | null
+          round?: number | null
+          tool_calls?: number | null
+          use_tools?: boolean | null
+        }
+        Update: {
+          cache_create_tokens?: number | null
+          cached_tokens?: number | null
+          completion_tokens?: number | null
+          created_at?: string
+          fallback?: boolean
+          id?: number
+          label?: string | null
+          max_rounds?: number | null
+          model?: string
+          prompt_tokens?: number | null
+          round?: number | null
+          tool_calls?: number | null
+          use_tools?: boolean | null
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
