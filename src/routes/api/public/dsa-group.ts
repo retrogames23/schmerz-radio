@@ -683,8 +683,15 @@ export const Route = createFileRoute("/api/public/dsa-group")({
           if (room.status === "done") return json(409, { error: "Raum ist beendet." });
           if (room.password_hash) {
             const pw = typeof b.password === "string" ? b.password : "";
-            if (hashPw(room.id, pw) !== room.password_hash) {
+            if (!verifyPw(room.id, pw, room.password_hash)) {
               return json(401, { error: "Falsches Passwort." });
+            }
+            // Upgrade legacy SHA-256 hashes to PBKDF2 on first successful login.
+            if (!room.password_hash.startsWith("pbkdf2$")) {
+              await admin
+                .from("dsa_group_rooms")
+                .update({ password_hash: hashPw(room.id, pw) })
+                .eq("id", room.id);
             }
           }
           const members = await fetchMembers(admin, roomId);
