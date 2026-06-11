@@ -94,13 +94,6 @@ export const DSA_MASTER_MODELS: DsaMasterModelOption[] = [
     hint: "Schnell, günstig, solides Deutsch.",
     donorOnly: true,
   },
-  {
-    id: "mistralai/mistral-large",
-    label: "Mistral Large",
-    short: "Mistral",
-    hint: "EU-Anbieter, starkes Deutsch.",
-    donorOnly: true,
-  },
 ];
 
 const DSA_MODEL_IDS = new Set(DSA_MASTER_MODELS.map((m) => m.id));
@@ -159,6 +152,26 @@ const MODEL_LIMITS_MAP: Record<string, Partial<ModelLimits>> = {
     maxTokens: 950,
     historyWindow: 10,
     maxToolRounds: 4,
+    useTools: true,
+  },
+  // Donor-Modelle: kleineres History-Fenster spart ~30 % Prompt-Tokens
+  // ohne sichtbaren Erzähl-Bruch (Kurz-Summary im System-Prompt bleibt).
+  "openai/gpt-5.4-mini": {
+    maxTokens: 700,
+    historyWindow: 6,
+    maxToolRounds: 3,
+    useTools: true,
+  },
+  "deepseek/deepseek-chat": {
+    maxTokens: 700,
+    historyWindow: 6,
+    maxToolRounds: 3,
+    useTools: true,
+  },
+  "google/gemini-2.5-flash": {
+    maxTokens: 700,
+    historyWindow: 6,
+    maxToolRounds: 3,
     useTools: true,
   },
 };
