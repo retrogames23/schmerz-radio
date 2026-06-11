@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollText, Loader2, Send, LogOut, Dices, Swords, Maximize2, Minimize2, FileDown, Play, Lock, Sparkles } from "lucide-react";
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { DsaModelSwitcher } from "@/components/game/dsa/DsaModelSwitcher";
-import { getDsaModel } from "@/lib/dsaModelPreference";
+import { getDsaModel, getDsaModelOption } from "@/lib/dsaModelPreference";
+import { Cpu } from "lucide-react";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useAuth } from "@/auth/AuthContext";
 import { useDonationStatus } from "@/hooks/useDonationStatus";
@@ -600,7 +601,7 @@ export function DsaLlmAdventureScene() {
               </h2>
             </div>
             <div className="flex shrink-0 items-center gap-2 mr-10">
-              <DsaModelSwitcher />
+              <DsaModelBadge />
               <button
                 type="button"
                 onClick={toggleFullscreen}
