@@ -21,6 +21,7 @@ import trackLinoleumWaltz from "@/assets/music/the-linoleum-waltz.mp3";
 import trackCornerBooth from "@/assets/music/The_Corner_Booth.mp3";
 import trackVictorySpire from "@/assets/music/victory-over-the-spire.mp3";
 import trackCityForgets from "@/assets/music/The_City_Forgets.mp3";
+import trackElectro3 from "@/assets/music/Electro3.mp3";
 import { pickMoodTrack, type DsaMood } from "./dsaMusic";
 
 /**
@@ -43,6 +44,7 @@ const PLAYLIST: MusicTrack[] = [
   { title: "Steel Rain at Midnight", src: trackSteelRain },
   { title: "Wohnung", src: trackWohnung },
   { title: "Three O'Clock Skyline", src: trackThreeOClock },
+  { title: "Electro 3", src: trackElectro3 },
 ];
 
 /**
