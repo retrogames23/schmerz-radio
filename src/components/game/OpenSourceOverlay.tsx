@@ -73,7 +73,7 @@ export function OpenSourceOverlay({ open, onClose }: Props) {
               Sourcecode dieses Spiels
             </div>
             <a
-              href="https://github.com/retrogames23/adventure-whisper-quest"
+              href="https://github.com/retrogames23/schmerz-radio"
               target="_blank"
               rel="noopener noreferrer"
               className="text-amber-glow underline-offset-4 hover:underline amber-glow break-all"
