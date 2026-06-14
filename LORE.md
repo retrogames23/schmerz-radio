@@ -1,4 +1,4 @@
-# LORE — WHISPER·QUEST 
+# LORE — SCHMERZ·RADIO
 
 **Status:** Wahrheitsquelle. Bei Konflikten zwischen Code, Dialogen und diesem
 Dokument hat **dieses Dokument** Vorrang. Änderungen hier müssen bewusst und
@@ -16,7 +16,7 @@ nicht aggressiv, nicht heroisch. Verwaltung als Klang. „Cozypunk".
 
 Am 21. Januar 1924 stirbt Lenin. In unserer Zeitlinie setzt sich Stalin im
 innerparteilichen Machtkampf durch und führt die UdSSR in Zwangskollektivierung,
-Großen Terror und Gulag-System. In der Welt von WHISPER·QUEST gewinnt
+Großen Terror und Gulag-System. In der Welt von SCHMERZ·RADIO gewinnt
 **Nikolai Bucharin**, der Vertreter des „weichen", marktverträglichen
 Sozialismus.
 

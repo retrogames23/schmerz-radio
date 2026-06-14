@@ -561,9 +561,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
               originHost.startsWith("localhost:") ||
               originHost.startsWith("127.0.0.1") ||
               originHost === "schmerz-radio.com" ||
-              originHost === "www.schmerz-radio.com" ||
-              originHost === "whisperquest.app" ||
-              originHost === "www.whisperquest.app";
+              originHost === "www.schmerz-radio.com";
             if (!allowed) return json(403, { error: "Forbidden" });
           } catch {
             return json(403, { error: "Forbidden" });

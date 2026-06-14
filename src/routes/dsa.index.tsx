@@ -9,7 +9,7 @@ import { DonationModal } from "@/components/donation/DonationModal";
 import { useAuth } from "@/auth/AuthContext";
 import { AuthDialog } from "@/auth/AuthDialog";
 
-const CANONICAL = "https://whisperquest.app/dsa";
+const CANONICAL = "https://schmerz-radio.com/dsa";
 const TITLE = "DSA-Soloabenteuer mit KI-Meister – kostenlos online spielen";
 const DESCRIPTION =
   "Spiele DSA-Soloabenteuer (Das Schwarze Auge) online mit KI-Spielleiter Tjark. Helden würfeln, Pen-&-Paper-Tafelrunde in Aventurien, drei Speicherplätze – kostenlos im Browser, ohne Download.";
@@ -24,7 +24,7 @@ const FAQS: Array<{ q: string; a: string }> = [
   },
   {
     q: "Kostet das DSA-Online-Abenteuer etwas?",
-    a: "Nein. Die DSA-Tafelrunde auf WhisperQuest ist kostenlos im Browser spielbar. Ohne Anmeldung bleibt dein Held lokal in diesem Browser, mit Login synchronisieren wir deine drei Speicherplätze.",
+    a: "Nein. Die DSA-Tafelrunde auf Schmerz-Radio ist kostenlos im Browser spielbar. Ohne Anmeldung bleibt dein Held lokal in diesem Browser, mit Login synchronisieren wir deine drei Speicherplätze.",
   },
   {
     q: "In welcher Epoche Aventuriens spielt das Abenteuer?",
@@ -45,7 +45,7 @@ export const Route = createFileRoute("/dsa/")({
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
       { property: "og:url", content: CANONICAL },
-      { property: "og:site_name", content: "WhisperQuest" },
+      { property: "og:site_name", content: "Schmerz-Radio" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESCRIPTION },
@@ -67,7 +67,7 @@ export const Route = createFileRoute("/dsa/")({
           gamePlatform: "Web Browser",
           operatingSystem: "Any",
           playMode: "SinglePlayer",
-          author: { "@type": "Organization", name: "WhisperQuest" },
+          author: { "@type": "Organization", name: "Schmerz-Radio" },
           offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
         }),
       },
@@ -109,7 +109,7 @@ function DsaLanding() {
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
           <div>
             <div className="text-[10px] uppercase tracking-[0.3em] opacity-60">
-              WhisperQuest
+              Schmerz-Radio
             </div>
             <h1 className="font-serif text-xl sm:text-2xl">
               DSA-Soloabenteuer mit KI-Meister
@@ -167,7 +167,7 @@ function DsaLanding() {
       <section className="relative z-10 mx-auto max-w-3xl px-4 pb-8 sm:px-6">
         <div className="rounded border border-[#3a2c1a]/60 bg-[#1a120a]/80 p-4 text-[11px] leading-relaxed text-[#f1e6c8]/50">
           <p className="mb-2">
-            Bei WhisperQuest handelt es sich um ein rein privates, nicht-kommerzielles Fan-Projekt, das in keiner offiziellen Verbindung zu Ulisses Spiele steht.
+            Bei Schmerz-Radio handelt es sich um ein rein privates, nicht-kommerzielles Fan-Projekt, das in keiner offiziellen Verbindung zu Ulisses Spiele steht.
           </p>
           <p>
             DAS SCHWARZE AUGE, AVENTURIEN, DERE, MYRANOR, THARUN, UTHURIA, RIESLAND und THE DARK EYE sind eingetragene Marken der Ulisses Spiele GmbH. Es werden keine urheberrechtlich geschützten Texte oder offiziellen Grafiken eins zu eins vervielfältigt.
@@ -193,10 +193,10 @@ function DsaFooter() {
           Dieses DSA-Online-Abenteuer ist ein Spiel innerhalb des
           Point&amp;Click-Adventures{" "}
           <a
-            href="https://whisperquest.app/"
+            href="https://schmerz-radio.com/"
             className="underline decoration-[#c9a84c]/60 underline-offset-2 hover:text-[#c9a84c]"
           >
-            Whisper Quest
+            Schmerz-Radio
           </a>
           , kann aber auch unabhängig gespielt werden.
         </p>

@@ -552,9 +552,7 @@ export const Route = createFileRoute("/api/public/dsa-group")({
               h.startsWith("localhost:") ||
               h.startsWith("127.0.0.1") ||
               h === "schmerz-radio.com" ||
-              h === "www.schmerz-radio.com" ||
-              h === "whisperquest.app" ||
-              h === "www.whisperquest.app";
+              h === "www.schmerz-radio.com";
             if (!allowed) return json(403, { error: "Forbidden" });
           } catch {
             return json(403, { error: "Forbidden" });

@@ -31,8 +31,8 @@ export const OPENROUTER_CHAT_URL = `${OPENROUTER_BASE_URL}/chat/completions`;
 export const AI_MODEL_DSA_MASTER = "anthropic/claude-3.5-haiku";
 
 /** App-Identifikation für OpenRouter-Ranking-Header (optional aber empfohlen). */
-const OPENROUTER_APP_URL = "https://whisperquest.app";
-const OPENROUTER_APP_TITLE = "WhisperQuest";
+const OPENROUTER_APP_URL = "https://schmerz-radio.com";
+const OPENROUTER_APP_TITLE = "Schmerz-Radio";
 
 export function openRouterHeaders(apiKey: string): Record<string, string> {
   return {

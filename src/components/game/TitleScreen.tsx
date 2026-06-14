@@ -6,7 +6,7 @@ import { ImpressumOverlay } from "./ImpressumOverlay";
 import { OpenSourceOverlay } from "./OpenSourceOverlay";
 import { CreditsOverlay } from "./CreditsOverlay";
 import { DonationModal } from "@/components/donation/DonationModal";
-import titleArtwork from "@/assets/title/whisper-quest-v1.jpg";
+import titleArtwork from "@/assets/title/schmerz-radio-v1.jpg";
 import { RainOverlay } from "./RainOverlay";
 
 const PRE_ALPHA_WARNING_UI_TEXT = {
@@ -142,17 +142,17 @@ export function TitleScreen({ onStart }: Props) {
 
         <h1 className="mt-4 font-display uppercase tracking-[0.18em] text-foreground text-shadow-hard text-4xl sm:text-6xl md:text-7xl lg:text-8xl">
           <span aria-hidden="true">
-            WHISPER
+            SCHMERZ
             <span className="mx-3 amber-glow text-amber-glow">·</span>
-            QUEST
+            RADIO
           </span>
           <span className="sr-only">
-            WHISPER·QUEST – Ein Cozypunk-Point-&-Click-Adventure
+            SCHMERZ·RADIO – Ein Cozypunk-Point-&-Click-Adventure
           </span>
         </h1>
 
         <div className="mt-3 font-mono-crt text-xl text-amber-glow amber-glow sm:text-2xl">
-          Schmerz-Radio auf 104,6
+          auf 104,6
         </div>
 
         <p className="mx-auto mt-6 max-w-xl font-display text-base italic leading-relaxed text-foreground/85 sm:text-lg font-semibold">

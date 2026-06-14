@@ -9,7 +9,7 @@ import {
 } from "@react-email/components";
 import type { TemplateEntry } from "./registry";
 
-const SITE_NAME = "WHISPER·QUEST";
+const SITE_NAME = "SCHMERZ·RADIO";
 const RECIPIENT = "stephan.doerner@posteo.de";
 
 interface SignupRow {
@@ -77,7 +77,7 @@ const WeeklySignupSummaryEmail = ({
 
 export const template = {
   component: WeeklySignupSummaryEmail,
-  subject: "WHISPER·QUEST — wöchentliche Account-Zusammenfassung",
+  subject: "SCHMERZ·RADIO — wöchentliche Account-Zusammenfassung",
   displayName: "Wöchentliche Account-Zusammenfassung",
   to: RECIPIENT,
   previewData: {

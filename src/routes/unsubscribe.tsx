@@ -16,22 +16,22 @@ export const Route = createFileRoute("/unsubscribe")({
   }),
   head: () => ({
     meta: [
-      { title: "E-Mail abbestellen – WHISPER·QUEST" },
+      { title: "E-Mail abbestellen – SCHMERZ·RADIO" },
       {
         name: "description",
         content:
-          "Bestätige hier die Abmeldung von WHISPER·QUEST-E-Mails über deinen persönlichen Abmelde-Link.",
+          "Bestätige hier die Abmeldung von SCHMERZ·RADIO-E-Mails über deinen persönlichen Abmelde-Link.",
       },
       { name: "robots", content: "noindex, follow" },
-      { property: "og:title", content: "E-Mail abbestellen – WHISPER·QUEST" },
+      { property: "og:title", content: "E-Mail abbestellen – SCHMERZ·RADIO" },
       {
         property: "og:description",
-        content: "Abmeldung von WHISPER·QUEST-E-Mails bestätigen.",
+        content: "Abmeldung von SCHMERZ·RADIO-E-Mails bestätigen.",
       },
-      { property: "og:url", content: "https://whisperquest.app/unsubscribe" },
+      { property: "og:url", content: "https://schmerz-radio.com/unsubscribe" },
     ],
     links: [
-      { rel: "canonical", href: "https://whisperquest.app/unsubscribe" },
+      { rel: "canonical", href: "https://schmerz-radio.com/unsubscribe" },
     ],
   }),
   component: UnsubscribePage,
@@ -104,7 +104,7 @@ function UnsubscribePage() {
         {state.kind === "valid" && (
           <>
             <p className="text-muted-foreground">
-              Möchtest du keine E-Mails mehr von WHISPER·QUEST erhalten?
+              Möchtest du keine E-Mails mehr von SCHMERZ·RADIO erhalten?
             </p>
             <button
               onClick={confirm}

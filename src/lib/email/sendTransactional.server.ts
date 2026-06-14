@@ -3,7 +3,7 @@ import { render } from "@react-email/components";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { TEMPLATES } from "@/lib/email-templates/registry";
 
-const SITE_NAME = "WHISPER·QUEST";
+const SITE_NAME = "SCHMERZ·RADIO";
 const SENDER_DOMAIN = "notify.schmerz-radio.com";
 const FROM_DOMAIN = "schmerz-radio.com";
 

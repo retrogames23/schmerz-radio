@@ -21,7 +21,7 @@ import type { DsaHero } from "@/game/types";
 import { availableAp } from "@/game/dsa/advancement";
 import { useDonationStatus } from "@/hooks/useDonationStatus";
 
-const CANONICAL = "https://whisperquest.app/dsa/helden";
+const CANONICAL = "https://schmerz-radio.com/dsa/helden";
 const TITLE = "DSA-Tafelrunde – Helden- und Abenteuerverwaltung";
 const DESCRIPTION =
   "Verwalte deine DSA-Helden, würfle neue Charaktere und setze deine Soloabenteuer in Aventurien fort. Drei Speicherplätze für deine Tafelrunde mit KI-Meister Tjark.";
@@ -144,7 +144,7 @@ function DsaHeroManager() {
             </Link>
             <div>
               <div className="text-[10px] uppercase tracking-[0.3em] opacity-60">
-                WhisperQuest
+                Schmerz-Radio
               </div>
               <h1 className="font-serif text-xl sm:text-2xl">
                 Helden- und Abenteuerverwaltung

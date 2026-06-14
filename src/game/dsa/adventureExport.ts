@@ -180,7 +180,7 @@ export async function exportAdventureAsDocx(p: ExportPayload): Promise<void> {
   }
 
   const doc = new Document({
-    creator: "WhisperQuest DSA",
+    creator: "Schmerz-Radio DSA",
     title: `Tafelrunde ${p.character.name}`,
     sections: [{ children }],
   });

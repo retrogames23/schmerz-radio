@@ -1,5 +1,5 @@
 import { useEffect, useRef, type CSSProperties } from "react";
-import rainMask from "@/assets/title/whisper-quest-v1-rain-mask.png";
+import rainMask from "@/assets/title/schmerz-radio-v1-rain-mask.png";
 
 /**
  * Canvas-based rain overlay. Renders ~220 falling streaks with three depth

@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import { createFileRoute } from '@tanstack/react-router'
 import { TEMPLATES } from '@/lib/email-templates/registry'
 
-const SITE_NAME = 'WHISPER·QUEST'
+const SITE_NAME = 'SCHMERZ·RADIO'
 const SENDER_DOMAIN = 'notify.schmerz-radio.com'
 const FROM_DOMAIN = 'schmerz-radio.com'
 const TEMPLATE_NAME = 'weekly-signup-summary'

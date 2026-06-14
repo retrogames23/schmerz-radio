@@ -53,7 +53,7 @@ export function ImpressumOverlay({ open, onClose }: Props) {
               DSA-Fan-Projekt-Hinweis
             </p>
             <p className="mb-1.5">
-              Bei WhisperQuest handelt es sich um ein rein privates, nicht-kommerzielles Fan-Projekt, das in keiner offiziellen Verbindung zu Ulisses Spiele steht.
+              Bei Schmerz-Radio handelt es sich um ein rein privates, nicht-kommerzielles Fan-Projekt, das in keiner offiziellen Verbindung zu Ulisses Spiele steht.
             </p>
             <p>
               DAS SCHWARZE AUGE, AVENTURIEN, DERE, MYRANOR, THARUN, UTHURIA, RIESLAND und THE DARK EYE sind eingetragene Marken der Ulisses Spiele GmbH. Es werden keine urheberrechtlich geschützten Texte oder offiziellen Grafiken eins zu eins vervielfältigt.

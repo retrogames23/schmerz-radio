@@ -9,7 +9,7 @@ import {
 } from "@react-email/components";
 import type { TemplateEntry } from "./registry";
 
-const SITE_NAME = "WHISPER·QUEST";
+const SITE_NAME = "SCHMERZ·RADIO";
 
 interface DonationConfirmationProps {
   amountFormatted?: string;
@@ -32,7 +32,7 @@ const DonationConfirmationEmail = ({
           freigeschaltet — einfach wie gewohnt einloggen und weiterspielen.
         </Text>
         <Text style={text}>
-          Damit hilfst du, die Server-, KI- und Sprach-Kosten von WHISPER·QUEST
+          Damit hilfst du, die Server-, KI- und Sprach-Kosten von SCHMERZ·RADIO
           zu decken. Layard sagt: müde, aber dankbar.
         </Text>
         <Text style={footer}>— Stephan & das {SITE_NAME}-Team</Text>
@@ -43,7 +43,7 @@ const DonationConfirmationEmail = ({
 
 export const template = {
   component: DonationConfirmationEmail,
-  subject: "Danke für deine Unterstützung von WHISPER·QUEST",
+  subject: "Danke für deine Unterstützung von SCHMERZ·RADIO",
   displayName: "Unterstützungsbestätigung",
   previewData: { amountFormatted: "5,00 €" },
 } satisfies TemplateEntry;
