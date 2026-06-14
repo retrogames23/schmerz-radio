@@ -60,7 +60,7 @@ export function CreditsOverlay({ open, onClose }: Props) {
 
         <div className="space-y-5 overflow-y-auto pr-2 font-mono-crt text-sm leading-relaxed text-foreground">
           <p className="text-xs leading-relaxed text-muted-foreground">
-            Whisper Quest steht auf den Schultern riesiger. Diese Projekte,
+            Schmerz-Radio steht auf den Schultern riesiger. Diese Projekte,
             Menschen und Gemeinschaften haben das Spiel maßgeblich inspiriert
             oder es überhaupt erst ermöglicht.
           </p>
@@ -97,7 +97,7 @@ export function CreditsOverlay({ open, onClose }: Props) {
               Pauschal und von Herzen: Danke an jeden einzelnen Menschen, der
               freie Software geschrieben, gepflegt, dokumentiert oder
               weitergegeben hat. Ohne diese gewaltige gemeinsame Leistung wäre
-              ein Solo-Hobbyprojekt wie Whisper Quest technisch unmöglich.
+              ein Solo-Hobbyprojekt wie Schmerz-Radio technisch unmöglich.
               Details zu den konkret verwendeten Komponenten findest du unter
               <button
                 type="button"
@@ -112,7 +112,7 @@ export function CreditsOverlay({ open, onClose }: Props) {
 
           <p className="text-xs italic leading-relaxed text-muted-foreground">
             Alle genannten Marken und Werke gehören ihren jeweiligen
-            Rechteinhabern. Whisper Quest ist ein unabhängiges Fan-Projekt und
+            Rechteinhabern. Schmerz-Radio ist ein unabhängiges Fan-Projekt und
             steht in keiner offiziellen Verbindung zu den genannten
             Rechteinhabern.
           </p>

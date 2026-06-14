@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-const SITE = "https://whisperquest.app";
+const SITE = "https://schmerz-radio.com";
 const lastmod = new Date().toISOString().slice(0, 10);
 
 const urls = [

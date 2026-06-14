@@ -1,4 +1,4 @@
-# WHISPER·QUEST – Schmerz-Radio on 104.6
+# SCHMERZ·RADIO – on 104.6
 
 A classic cozypunk point-&-click adventure set in Quadrant E67.
 
@@ -7,13 +7,13 @@ A classic cozypunk point-&-click adventure set in Quadrant E67.
 > between versions. Save files are not guaranteed to be compatible across
 > updates.
 
-🎮 **Play the current build:** https://whisperquest.app/
+🎮 **Play the current build:** https://schmerz-radio.com/
 
 ---
 
 ## About
 
-*WHISPER·QUEST* is a hand-crafted retro adventure game with a melancholic,
+*SCHMERZ·RADIO* is a hand-crafted retro adventure game with a melancholic,
 slightly surreal tone. You play Layard Worag, resident of room 2611, somewhere
 deep inside a crumbling state housing block. A radio frequency. A neighbour
 who hasn't been seen in days. An elevator that won't go where you want.
@@ -45,7 +45,7 @@ Source code is released under the **MIT License** — see [LICENSE](./LICENSE).
 see [LICENSE-ASSETS](./LICENSE-ASSETS). Images, music, story text,
 character art and other creative content may be shared and adapted
 (including commercially) as long as you credit *"Stephan Dörner /
-WHISPER·QUEST"* and release derivative works under the same license.
+SCHMERZ·RADIO"* and release derivative works under the same license.
 
 ## Contact
 

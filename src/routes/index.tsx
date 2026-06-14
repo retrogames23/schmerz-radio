@@ -5,22 +5,22 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "WHISPER·QUEST – Cozypunk Point-&-Click-Adventure" },
+      { title: "SCHMERZ·RADIO – Cozypunk Point-&-Click-Adventure" },
       {
         name: "description",
         content:
           "Ein 2D Point & Click-Adventure über bürokratische Erstarrung und das heimliche Begehren nach echtem Erleben.",
       },
-      { property: "og:title", content: "WHISPER·QUEST – Cozypunk Adventure" },
+      { property: "og:title", content: "SCHMERZ·RADIO – Cozypunk Adventure" },
       {
         property: "og:description",
         content:
           "Ein 2D Point & Click-Adventure über bürokratische Erstarrung und das heimliche Begehren nach echtem Erleben.",
       },
-      { property: "og:url", content: "https://whisperquest.app/" },
+      { property: "og:url", content: "https://schmerz-radio.com/" },
     ],
     links: [
-      { rel: "canonical", href: "https://whisperquest.app/" },
+      { rel: "canonical", href: "https://schmerz-radio.com/" },
     ],
   }),
 });
