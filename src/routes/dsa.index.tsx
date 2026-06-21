@@ -8,6 +8,10 @@ import { CreditsOverlay } from "@/components/game/CreditsOverlay";
 import { DonationModal } from "@/components/donation/DonationModal";
 import { useAuth } from "@/auth/AuthContext";
 import { AuthDialog } from "@/auth/AuthDialog";
+import {
+  DSA_ATTRIBUTION_HEADLINE,
+  DSA_ATTRIBUTION_PARAGRAPHS,
+} from "@/lib/dsaAttribution";
 
 const CANONICAL = "https://schmerz-radio.com/dsa";
 const TITLE = "DSA-Soloabenteuer mit KI-Meister – kostenlos online spielen";
@@ -165,13 +169,15 @@ function DsaLanding() {
 
       {/* Disclaimer */}
       <section className="relative z-10 mx-auto max-w-3xl px-4 pb-8 sm:px-6">
-        <div className="rounded border border-[#3a2c1a]/60 bg-[#1a120a]/80 p-4 text-[11px] leading-relaxed text-[#f1e6c8]/50">
-          <p className="mb-2">
-            Bei Schmerz-Radio handelt es sich um ein rein privates, nicht-kommerzielles Fan-Projekt, das in keiner offiziellen Verbindung zu Ulisses Spiele steht.
+        <div className="rounded border border-[#c9a84c]/40 bg-[#1a120a]/85 p-4 text-[11px] leading-relaxed text-[#f1e6c8]/65">
+          <p className="mb-2 font-serif text-[12px] uppercase tracking-[0.18em] text-[#c9a84c]/90">
+            {DSA_ATTRIBUTION_HEADLINE}
           </p>
-          <p>
-            DAS SCHWARZE AUGE, AVENTURIEN, DERE, MYRANOR, THARUN, UTHURIA, RIESLAND und THE DARK EYE sind eingetragene Marken der Ulisses Spiele GmbH. Es werden keine urheberrechtlich geschützten Texte oder offiziellen Grafiken eins zu eins vervielfältigt.
-          </p>
+          <div className="space-y-2">
+            {DSA_ATTRIBUTION_PARAGRAPHS.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </div>
         </div>
       </section>
 

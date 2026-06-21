@@ -1,4 +1,8 @@
 import { CloseButton } from "./CloseButton";
+import {
+  DSA_ATTRIBUTION_HEADLINE,
+  DSA_ATTRIBUTION_PARAGRAPHS,
+} from "@/lib/dsaAttribution";
 
 interface Props {
   open: boolean;
@@ -116,6 +120,17 @@ export function CreditsOverlay({ open, onClose }: Props) {
             steht in keiner offiziellen Verbindung zu den genannten
             Rechteinhabern.
           </p>
+
+          <div className="rounded border border-amber-glow/30 bg-background/60 p-3">
+            <div className="mb-1.5 font-display text-sm uppercase tracking-wider text-amber-glow/90">
+              {DSA_ATTRIBUTION_HEADLINE}
+            </div>
+            <div className="space-y-1.5 text-xs leading-relaxed text-muted-foreground">
+              {DSA_ATTRIBUTION_PARAGRAPHS.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

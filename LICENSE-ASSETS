@@ -27,3 +27,31 @@ Summary:           https://creativecommons.org/licenses/by-sa/4.0/
 Note: The source code of the game is licensed separately under the
 MIT License (see LICENSE). Third-party assets bundled with the project
 (e.g. fonts) retain their original licenses.
+
+---
+
+IMPORTANT — DSA / "Das Schwarze Auge" content
+
+The CC BY-SA 4.0 license above covers ONLY assets originally created
+for SCHMERZ·RADIO by Stephan Dörner. It does NOT cover, and cannot
+grant any rights to:
+
+  - Game mechanics, rules text, terminology, attributes, talents,
+    spells, liturgies and similar material taken from the role-playing
+    system "Das Schwarze Auge" (DSA). These are used in the DSA mode
+    of SCHMERZ·RADIO with the kind permission of Ulisses Spiele GmbH
+    (Waldems), strictly limited to non-commercial use.
+
+  - World content of DSA / Aventuria (gods, regions, peoples, named
+    characters, places, lore), which remains the exclusive property
+    of the respective rights holders.
+
+  - The registered trademarks DAS SCHWARZE AUGE, AVENTURIEN, DERE,
+    MYRANOR, THARUN, UTHURIA, RIESLAND and THE DARK EYE, which belong
+    to Significant Fantasy Medienrechte GbR / Ulisses Spiele GmbH.
+
+Anyone reusing or remixing assets from this repository under CC BY-SA
+4.0 must independently ensure they have the necessary rights for any
+DSA-related content they wish to include. The Ulisses permission was
+granted to this specific fan project and does NOT extend to derivative
+works.
