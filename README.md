@@ -47,6 +47,25 @@ character art and other creative content may be shared and adapted
 (including commercially) as long as you credit *"Stephan Dörner /
 SCHMERZ·RADIO"* and release derivative works under the same license.
 
+## DSA — Used with kind permission of Ulisses Spiele
+
+The DSA mode of *SCHMERZ·RADIO* uses game mechanics from the role-playing
+system **"Das Schwarze Auge"** (DSA / The Dark Eye) with the kind permission
+of **Ulisses Spiele GmbH** (Waldems), strictly limited to non-commercial use.
+
+*DAS SCHWARZE AUGE*, *AVENTURIEN*, *DERE*, *MYRANOR*, *THARUN*, *UTHURIA*,
+*RIESLAND* and *THE DARK EYE* are registered trademarks of Significant
+Fantasy Medienrechte GbR / Ulisses Spiele GmbH. World content (gods,
+regions, peoples, named characters of Aventuria, etc.) remains the property
+of the respective rights holders and is only referenced atmospherically in
+this fan project — no official texts or artwork are reproduced verbatim.
+
+*SCHMERZ·RADIO* is and will remain free to play. Voluntary donations
+("tip jar") are not a payment for the game or its DSA portions; they only
+cover ongoing cloud and AI costs. The MIT/CC BY-SA licenses above apply to
+the code and original game assets only — they do **not** grant any rights
+to DSA-related content owned by third parties.
+
 ## Contact
 
 Developer: **Stephan Dörner**

@@ -224,6 +224,12 @@ export function DonationModal({
           Sichere Zahlung via Stripe · Quittung kommt automatisch per Mail
         </p>
 
+        <p className="mt-2 text-center text-[10px] leading-relaxed text-muted-foreground/80">
+          Freiwilliges Trinkgeld zur Deckung der Cloud- und KI-Kosten — kein
+          Entgelt für das Spiel oder dessen DSA-Anteile. Schmerz-Radio bleibt
+          kostenlos spielbar.
+        </p>
+
         <div className="mt-3 text-center">
           <a
             href="https://buymeacoffee.com/doener"

@@ -1,4 +1,8 @@
 import { CloseButton } from "./CloseButton";
+import {
+  DSA_ATTRIBUTION_HEADLINE,
+  DSA_ATTRIBUTION_PARAGRAPHS,
+} from "@/lib/dsaAttribution";
 
 interface Props {
   open: boolean;
@@ -50,14 +54,13 @@ export function ImpressumOverlay({ open, onClose }: Props) {
 
           <div className="rounded border border-amber-glow/20 bg-background/50 p-3 text-xs leading-relaxed text-muted-foreground">
             <p className="mb-1.5 font-semibold text-amber-glow/80">
-              DSA-Fan-Projekt-Hinweis
+              {DSA_ATTRIBUTION_HEADLINE}
             </p>
-            <p className="mb-1.5">
-              Bei Schmerz-Radio handelt es sich um ein rein privates, nicht-kommerzielles Fan-Projekt, das in keiner offiziellen Verbindung zu Ulisses Spiele steht.
-            </p>
-            <p>
-              DAS SCHWARZE AUGE, AVENTURIEN, DERE, MYRANOR, THARUN, UTHURIA, RIESLAND und THE DARK EYE sind eingetragene Marken der Ulisses Spiele GmbH. Es werden keine urheberrechtlich geschützten Texte oder offiziellen Grafiken eins zu eins vervielfältigt.
-            </p>
+            <div className="space-y-1.5">
+              {DSA_ATTRIBUTION_PARAGRAPHS.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+            </div>
           </div>
         </div>
       </div>
