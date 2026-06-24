@@ -6,6 +6,7 @@
  */
 
 import { resolveLoreTopic, LORE_TOPIC_HINT } from "./lookup";
+import { searchDsaRulebook } from "./rulebook.server";
 import {
   AI_MODEL_DSA_MASTER,
   OPENROUTER_CHAT_URL,
@@ -32,6 +33,30 @@ export const DSA_LORE_TOOL_SPEC = {
         },
       },
       required: ["topic"],
+      additionalProperties: false,
+    },
+  },
+};
+
+export const DSA_RULEBOOK_TOOL_SPEC = {
+  type: "function" as const,
+  function: {
+    name: "dsaRulebook",
+    description:
+      "Volltextsuche im DSA3-Grundregelwerk (semantische Suche per Embeddings). " +
+      "Nutze dieses Tool für Detailfragen zu Regeln, die NICHT in der kompakten Regelreferenz im System-Prompt stehen — z. B. Spezialregeln zu Magieresistenz, Heilung, Gift, Manöverketten, Erfahrungsstufen-Effekten, Rüstungsabzügen auf Talente, etc. " +
+      "Stelle eine konkrete Frage in eigenen Worten (z. B. 'Wie funktioniert eine Magieresistenzprobe?'). Antworten sind Auszüge aus dem Originalregelwerk — fasse sie in eigenen Worten zusammen, zitiere NIE wörtlich. " +
+      "Budget: max. 1 Aufruf pro Meisterwende. Bei einfachen Proben/Modifikatoren reicht die Tabelle im System-Prompt — kein Tool nötig.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: {
+          type: "string",
+          description:
+            "Konkrete Regelfrage in vollständigem Deutsch, max. 200 Zeichen.",
+        },
+      },
+      required: ["query"],
       additionalProperties: false,
     },
   },
@@ -102,7 +127,10 @@ export async function callChatWithLoreTool(
           model,
           messages: working,
           ...(useTools
-            ? { tools: [DSA_LORE_TOOL_SPEC], tool_choice: "auto" as const }
+            ? {
+                tools: [DSA_LORE_TOOL_SPEC, DSA_RULEBOOK_TOOL_SPEC],
+                tool_choice: "auto" as const,
+              }
             : {}),
           temperature: options.temperature,
           max_tokens: options.max_tokens,
@@ -190,21 +218,38 @@ export async function callChatWithLoreTool(
         tool_calls: toolCalls,
       });
       for (const tc of toolCalls) {
-        let topic = "";
+        let parsed: { topic?: unknown; query?: unknown } = {};
         try {
-          const parsed = JSON.parse(tc.function.arguments || "{}") as { topic?: unknown };
-          topic = typeof parsed.topic === "string" ? parsed.topic : "";
+          parsed = JSON.parse(tc.function.arguments || "{}");
         } catch {
-          topic = "";
+          parsed = {};
         }
-        const result =
-          tc.function.name === "dsaLore" && topic
+        let result: string;
+        if (tc.function.name === "dsaLore") {
+          const topic = typeof parsed.topic === "string" ? parsed.topic : "";
+          result = topic
             ? resolveLoreTopic(topic)
-            : `Unbekanntes Tool oder fehlendes Argument 'topic'. Erlaubt: dsaLore({ topic: '<…>' }).`;
+            : "Fehlendes Argument 'topic'. Beispiel: dsaLore({ topic: 'gott.praios' }).";
+        } else if (tc.function.name === "dsaRulebook") {
+          const query = typeof parsed.query === "string" ? parsed.query : "";
+          if (!query) {
+            result =
+              "Fehlendes Argument 'query'. Beispiel: dsaRulebook({ query: 'Wie funktioniert eine Magieresistenzprobe?' }).";
+          } else {
+            try {
+              result = await searchDsaRulebook(query, 4);
+            } catch (e) {
+              console.error("dsaRulebook tool failed", e);
+              result = "Regelwerk-Lookup fehlgeschlagen.";
+            }
+          }
+        } else {
+          result = `Unbekanntes Tool '${tc.function.name}'. Erlaubt: dsaLore, dsaRulebook.`;
+        }
         working.push({
           role: "tool",
           tool_call_id: tc.id,
-          content: result.slice(0, 4000),
+          content: result.slice(0, 6000),
         });
       }
       continue; // Nächste Runde: Modell antwortet auf Tool-Ergebnis.
