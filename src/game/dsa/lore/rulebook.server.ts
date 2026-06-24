@@ -60,7 +60,6 @@ export async function searchDsaRulebook(
   const { data, error } = await supabaseAdmin.rpc("match_dsa_rulebook", {
     query_embedding: embedding as unknown as string,
     match_count: Math.max(1, Math.min(k, 8)),
-    source_filter: null,
   });
   if (error) {
     console.error("[dsaRulebook] rpc error", error);
