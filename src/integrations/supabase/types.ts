@@ -380,6 +380,48 @@ export type Database = {
         }
         Relationships: []
       }
+      dsa_rulebook_chunks: {
+        Row: {
+          chunk_index: number
+          content: string
+          content_hash: string
+          created_at: string
+          embedding: string
+          id: string
+          metadata: Json
+          page_end: number
+          page_start: number
+          source: string
+          token_estimate: number | null
+        }
+        Insert: {
+          chunk_index: number
+          content: string
+          content_hash: string
+          created_at?: string
+          embedding: string
+          id?: string
+          metadata?: Json
+          page_end: number
+          page_start: number
+          source: string
+          token_estimate?: number | null
+        }
+        Update: {
+          chunk_index?: number
+          content?: string
+          content_hash?: string
+          created_at?: string
+          embedding?: string
+          id?: string
+          metadata?: Json
+          page_end?: number
+          page_start?: number
+          source?: string
+          token_estimate?: number | null
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -784,6 +826,22 @@ export type Database = {
       is_dsa_room_member: {
         Args: { _room_id: string; _user_id: string }
         Returns: boolean
+      }
+      match_dsa_rulebook: {
+        Args: {
+          match_count?: number
+          query_embedding: string
+          source_filter?: string
+        }
+        Returns: {
+          content: string
+          id: string
+          metadata: Json
+          page_end: number
+          page_start: number
+          similarity: number
+          source: string
+        }[]
       }
       move_to_dlq: {
         Args: {
