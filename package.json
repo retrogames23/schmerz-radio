@@ -24,7 +24,7 @@
     "@react-email/components": "^1.0.12",
     "@supabase/supabase-js": "^2.108.2",
     "@tailwindcss/vite": "^4.2.1",
-    "@tanstack/react-router": "1.167.5",
+    "@tanstack/react-router": "1.168.21",
     "@tanstack/react-start": "1.167.39",
     "@tanstack/router-plugin": "1.167.35",
     "@types/blueimp-md5": "^2.18.2",
