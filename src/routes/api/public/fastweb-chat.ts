@@ -189,7 +189,11 @@ export const Route = createFileRoute("/api/public/fastweb-chat")({
           ) {
             return json(400, { error: "Invalid history text" });
           }
-          history.push({ persona: mm.persona, text: mm.text });
+          const cleanText = sanitizePromptField(mm.text, 400);
+          if (!cleanText) {
+            return json(400, { error: "Invalid history text" });
+          }
+          history.push({ persona: mm.persona, text: cleanText });
         }
 
         const chooseFromRaw = Array.isArray(b.chooseFrom) ? b.chooseFrom : null;
