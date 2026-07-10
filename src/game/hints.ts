@@ -365,6 +365,26 @@ export const HINT_QUESTS: HintQuest[] = [
       "Spiel den Vossbeck-Pfad zu Ende: Brust → drei Trainingsfälle in Folge → Vossbeck in 3603 schlagen. Mit dem Sieg liegt die B3-Dose neben dem Tagescode auf dem Tresen.",
     ],
   },
+  // ── Optional: Trockensiegel-Abdruck aus der Vollmacht 4317 reiben ─
+  //   Kombination Bleistift-Stumpf + Vollmacht B3 braucht zusätzlich
+  //   ein dünnes Blatt vom Quittungsblock-B. Wer den nicht dabei hat,
+  //   bekommt in der Combine-Reaktion nur einen Hinweis — dieser Tipp
+  //   führt gezielt hin.
+  {
+    id: "act1.siegelAbdruck",
+    title: "Trockensiegel-Abdruck herausreiben (optional)",
+    priority: 53,
+    isActive: (a) =>
+      a.hasItem("pencilStub") &&
+      a.hasItem("b3Authorization") &&
+      !a.hasItem("siegelAbdruck"),
+    isResolved: (a) => a.hasItem("siegelAbdruck") || a.hasFlag("extractedSiegelAbdruck"),
+    hints: [
+      "Der Trockensiegel auf der Vollmacht 4317 lässt sich mit dem Bleistift-Stumpf abreiben — aber Layard braucht dazu ein dünnes, saugendes Blatt.",
+      "Ein Blatt aus dem Blanko-Quittungsblock-B (Kantine, Kowalk-Tresen) ist genau richtig. Ohne den Block passiert bei der Kombination Bleistift + Vollmacht gar nichts Nützliches.",
+      "Hol den Blanko-Quittungsblock-B bei Kowalk. Dann kombiniere im Inventar Bleistift-Stumpf mit der Vollmacht B3 (4317) — Layard reißt selbst ein Blatt vom Block und reibt den Trockensiegel-Abdruck heraus.",
+    ],
+  },
   {
     id: "act1.bureaucracyDuel",
     title: "Bürokratie-Duell — Trainingsfälle gegen Brust",
