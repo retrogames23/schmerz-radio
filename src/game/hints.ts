@@ -162,30 +162,15 @@ export const HINT_QUESTS: HintQuest[] = [
     priority: 8,
     isActive: (a) =>
       a.hasFlag("protocolReceived") &&
-      !a.hasFlag("elevatorTaken") &&
+      !a.hasFlag("sawEmptyOffice") &&
       // Solange die Wartungssperre 4711 aktiv ist, kann der Aufzug nicht
       // benutzt werden — dann gilt der separate Hint act1.elevatorMaint.
       !(a.hasFlag("elevatorMaintBlocked") && !a.hasFlag("elevatorMaintCleared")),
-    isResolved: (a) => a.hasFlag("elevatorTaken") || a.hasFlag("sawEmptyOffice"),
+    isResolved: (a) => a.hasFlag("sawEmptyOffice"),
     hints: [
       "Du hast jetzt etwas in der Hand, das du jemand anderem geben sollst. Der zuständige Mensch sitzt nicht auf deiner Etage.",
       "Geh in den Korridor, dann zum Aufzug am Ende des Gangs.",
-      "Verlass 2613, geh in den Korridor 26 und nimm den Aufzug. Fahr ins 3. Stockwerk.",
-    ],
-  },
-
-  // 9) Etage 3 — Büro des Abschnittsverantwortlichen ist leer
-  {
-    id: "act1.findEmptyOffice",
-    title: "Abschnittsverantwortlicher im 3. OG",
-    priority: 9,
-    isActive: (a) =>
-      a.hasFlag("elevatorTaken") && !a.hasFlag("sawEmptyOffice"),
-    isResolved: (a) => a.hasFlag("sawEmptyOffice"),
-    hints: [
-      "Auf Etage 3 sollst du jemanden treffen — du musst sein Büro suchen.",
-      "Geh den Korridor 36 ab, bis du an Tür 3601 kommst — dort hängt ein Aushang.",
-      "Geh im Korridor 36 zu Tür 3601 und lies den Aushang. Das genügt; klingeln ist möglich, aber nicht nötig.",
+      "Verlass 2613, geh in den Korridor 26 und nimm den Aufzug ins 3. Stockwerk. Geh dort den Korridor 36 ab bis Tür 3601 und lies den Aushang.",
     ],
   },
 
@@ -319,10 +304,29 @@ export const HINT_QUESTS: HintQuest[] = [
     isResolved: (a) => a.hasFlag("sectorDoorOpen"),
     hints: [
       "Du hast jetzt alles, was die Schleuse von dir verlangt: dich selbst und einen Code.",
-      "Geh durch die Lobby zur Sektor-Schleuse E67 → E71. Den Code findest du im Postfach deines CentralOS-Terminals (Mail von Insa).",
-      "Lies die Mail von Insa in deinem Terminal, geh zur Sektor-Schleuse, halte den Bewohner-Ausweis bereit und tippe den 8-stelligen Tagescode am Keypad ein.",
+      "Geh durch die Lobby zur Sektor-Schleuse E67 → E71. Den Code findest du im Postfach deines CentralOS-Terminals in 2611 (Mail von Insa). Achtung: Zwischen dir und der Lobby liegt tagsüber die Lobby-Schleuse — siehe eigener Tipp.",
+      "Lies die Mail von Insa in deinem Terminal, geh zur Sektor-Schleuse, leg deinen (schon vorhandenen) Bewohner-Ausweis in den Kartenschlitz und tippe den 8-stelligen Tagescode am Keypad ein.",
     ],
   },
+
+  // 15b) Lobby-Schleuse E67 (Tagesmodus) — kleiner Türsteher zwischen
+  //      Aufzug und Sektor-Schleuse. Kein Blocker (Auto-Eskalation nach
+  //      3 Fehlversuchen), aber ohne Tipp finden Spieler den Code nicht.
+  {
+    id: "act1.lobbyGate",
+    title: "Lobby-Schleuse E67 (Bewohner-Code)",
+    priority: 15,
+    isActive: (a) =>
+      a.hasFlag("protocolReceived") &&
+      !a.hasFlag("lobbyClearedDay"),
+    isResolved: (a) => a.hasFlag("lobbyClearedDay"),
+    hints: [
+      "Zwischen Aufzug und Sektor-Schleuse steht tagsüber eine kleine Bewohner-Schleuse. Sie will zweierlei: dich, und eine Zahl, die nur dich meint.",
+      "Leg deinen Bewohner-Ausweis in den Schlitz und tippe den 4-stelligen Bewohner-Code. Die Hausordnung §2 Abs. 7 sagt, wie er gebildet wird: aus deiner Wohnungsnummer.",
+      "Code = Wohnung mod 10 000. Layard wohnt in 2611 → Code 2611. Karte einlegen, 2611 tippen, bestätigen. Bei drei Fehlversuchen ruft Insa selbst durch und öffnet für heute.",
+    ],
+  },
+
 
   // 16) Übergang Akt I → Akt II — Ending-Screen, Weiterspielen-Button
   {
@@ -359,6 +363,26 @@ export const HINT_QUESTS: HintQuest[] = [
       "Philippe hat dich um eine B3-Ration gebeten. Die Kantine gibt die nicht ohne Weiteres heraus — du brauchst entweder das Endduell oder einen anderen Hebel bei Kowalk/Brust.",
       "Gewinnst du das Endduell gegen Vossbeck (für den Tagescode), gibt er die B3-Ration automatisch mit frei. Sonst hilft nur Kowalks Kniff am Tresen.",
       "Spiel den Vossbeck-Pfad zu Ende: Brust → drei Trainingsfälle in Folge → Vossbeck in 3603 schlagen. Mit dem Sieg liegt die B3-Dose neben dem Tagescode auf dem Tresen.",
+    ],
+  },
+  // ── Optional: Trockensiegel-Abdruck aus der Vollmacht 4317 reiben ─
+  //   Kombination Bleistift-Stumpf + Vollmacht B3 braucht zusätzlich
+  //   ein dünnes Blatt vom Quittungsblock-B. Wer den nicht dabei hat,
+  //   bekommt in der Combine-Reaktion nur einen Hinweis — dieser Tipp
+  //   führt gezielt hin.
+  {
+    id: "act1.siegelAbdruck",
+    title: "Trockensiegel-Abdruck herausreiben (optional)",
+    priority: 53,
+    isActive: (a) =>
+      a.hasItem("pencilStub") &&
+      a.hasItem("b3Authorization") &&
+      !a.hasItem("siegelAbdruck"),
+    isResolved: (a) => a.hasItem("siegelAbdruck") || a.hasFlag("extractedSiegelAbdruck"),
+    hints: [
+      "Der Trockensiegel auf der Vollmacht 4317 lässt sich mit dem Bleistift-Stumpf abreiben — aber Layard braucht dazu ein dünnes, saugendes Blatt.",
+      "Ein Blatt aus dem Blanko-Quittungsblock-B (Kantine, Kowalk-Tresen) ist genau richtig. Ohne den Block passiert bei der Kombination Bleistift + Vollmacht gar nichts Nützliches.",
+      "Hol den Blanko-Quittungsblock-B bei Kowalk. Dann kombiniere im Inventar Bleistift-Stumpf mit der Vollmacht B3 (4317) — Layard reißt selbst ein Blatt vom Block und reibt den Trockensiegel-Abdruck heraus.",
     ],
   },
   {
