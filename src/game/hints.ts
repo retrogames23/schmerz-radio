@@ -162,30 +162,15 @@ export const HINT_QUESTS: HintQuest[] = [
     priority: 8,
     isActive: (a) =>
       a.hasFlag("protocolReceived") &&
-      !a.hasFlag("elevatorTaken") &&
+      !a.hasFlag("sawEmptyOffice") &&
       // Solange die Wartungssperre 4711 aktiv ist, kann der Aufzug nicht
       // benutzt werden — dann gilt der separate Hint act1.elevatorMaint.
       !(a.hasFlag("elevatorMaintBlocked") && !a.hasFlag("elevatorMaintCleared")),
-    isResolved: (a) => a.hasFlag("elevatorTaken") || a.hasFlag("sawEmptyOffice"),
+    isResolved: (a) => a.hasFlag("sawEmptyOffice"),
     hints: [
       "Du hast jetzt etwas in der Hand, das du jemand anderem geben sollst. Der zuständige Mensch sitzt nicht auf deiner Etage.",
       "Geh in den Korridor, dann zum Aufzug am Ende des Gangs.",
-      "Verlass 2613, geh in den Korridor 26 und nimm den Aufzug. Fahr ins 3. Stockwerk.",
-    ],
-  },
-
-  // 9) Etage 3 — Büro des Abschnittsverantwortlichen ist leer
-  {
-    id: "act1.findEmptyOffice",
-    title: "Abschnittsverantwortlicher im 3. OG",
-    priority: 9,
-    isActive: (a) =>
-      a.hasFlag("elevatorTaken") && !a.hasFlag("sawEmptyOffice"),
-    isResolved: (a) => a.hasFlag("sawEmptyOffice"),
-    hints: [
-      "Auf Etage 3 sollst du jemanden treffen — du musst sein Büro suchen.",
-      "Geh den Korridor 36 ab, bis du an Tür 3601 kommst — dort hängt ein Aushang.",
-      "Geh im Korridor 36 zu Tür 3601 und lies den Aushang. Das genügt; klingeln ist möglich, aber nicht nötig.",
+      "Verlass 2613, geh in den Korridor 26 und nimm den Aufzug ins 3. Stockwerk. Geh dort den Korridor 36 ab bis Tür 3601 und lies den Aushang.",
     ],
   },
 
