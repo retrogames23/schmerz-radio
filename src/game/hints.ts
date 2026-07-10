@@ -304,10 +304,29 @@ export const HINT_QUESTS: HintQuest[] = [
     isResolved: (a) => a.hasFlag("sectorDoorOpen"),
     hints: [
       "Du hast jetzt alles, was die Schleuse von dir verlangt: dich selbst und einen Code.",
-      "Geh durch die Lobby zur Sektor-Schleuse E67 → E71. Den Code findest du im Postfach deines CentralOS-Terminals (Mail von Insa).",
-      "Lies die Mail von Insa in deinem Terminal, geh zur Sektor-Schleuse, halte den Bewohner-Ausweis bereit und tippe den 8-stelligen Tagescode am Keypad ein.",
+      "Geh durch die Lobby zur Sektor-Schleuse E67 → E71. Den Code findest du im Postfach deines CentralOS-Terminals in 2611 (Mail von Insa). Achtung: Zwischen dir und der Lobby liegt tagsüber die Lobby-Schleuse — siehe eigener Tipp.",
+      "Lies die Mail von Insa in deinem Terminal, geh zur Sektor-Schleuse, leg deinen (schon vorhandenen) Bewohner-Ausweis in den Kartenschlitz und tippe den 8-stelligen Tagescode am Keypad ein.",
     ],
   },
+
+  // 15b) Lobby-Schleuse E67 (Tagesmodus) — kleiner Türsteher zwischen
+  //      Aufzug und Sektor-Schleuse. Kein Blocker (Auto-Eskalation nach
+  //      3 Fehlversuchen), aber ohne Tipp finden Spieler den Code nicht.
+  {
+    id: "act1.lobbyGate",
+    title: "Lobby-Schleuse E67 (Bewohner-Code)",
+    priority: 15,
+    isActive: (a) =>
+      a.hasFlag("protocolReceived") &&
+      !a.hasFlag("lobbyClearedDay"),
+    isResolved: (a) => a.hasFlag("lobbyClearedDay"),
+    hints: [
+      "Zwischen Aufzug und Sektor-Schleuse steht tagsüber eine kleine Bewohner-Schleuse. Sie will zweierlei: dich, und eine Zahl, die nur dich meint.",
+      "Leg deinen Bewohner-Ausweis in den Schlitz und tippe den 4-stelligen Bewohner-Code. Die Hausordnung §2 Abs. 7 sagt, wie er gebildet wird: aus deiner Wohnungsnummer.",
+      "Code = Wohnung mod 10 000. Layard wohnt in 2611 → Code 2611. Karte einlegen, 2611 tippen, bestätigen. Bei drei Fehlversuchen ruft Insa selbst durch und öffnet für heute.",
+    ],
+  },
+
 
   // 16) Übergang Akt I → Akt II — Ending-Screen, Weiterspielen-Button
   {
