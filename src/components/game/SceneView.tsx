@@ -361,6 +361,30 @@ export function SceneView() {
         {/* Amber vignette when radio is active */}
         {radioActive && <div className="amber-vignette" />}
 
+        {/* Ambient-Effekte Kantine 3602 — Leuchtstoffröhre, Warnlicht, Dampf.
+            Rein visuell, pointer-events:none, keine Bild-Neugenerierung. */}
+        {scene === "cafeteriaE67" && (
+          <>
+            <div className="cafeteria-fluorescent" />
+            <div
+              className="cafeteria-warning-lamp"
+              style={{ left: "70.5%", top: "24%", width: "3.2%", height: "5.6%" }}
+            />
+            <div
+              className="cafeteria-steam"
+              style={{ left: "62%", top: "42%", animationDelay: "0s" }}
+            />
+            <div
+              className="cafeteria-steam"
+              style={{ left: "74%", top: "44%", animationDelay: "2.4s" }}
+            />
+            <div
+              className="cafeteria-steam"
+              style={{ left: "80%", top: "43%", animationDelay: "4.1s" }}
+            />
+          </>
+        )}
+
         {/* Mobile: Toggle für Hotspot-Rahmen (Ersatz für Leertaste) */}
         {isTouch && (
           <button
