@@ -148,8 +148,8 @@ export const ALMANACH_CHAPTERS: AlmanachChapter[] = [
       "- **Sektor-Funk.** Amateurfunk auf den hierfür freigegebenen Frequenzbändern. Viele Quadrantendächer tragen heute eine selbstgebaute Antenne.",
       "- **Aktenvereine.** Sammler historischer Formulare, besonders solcher aus der Zeit vor der PEAN-71. Eine ernsthafte Subkultur.",
       "- **Schmerz-Radio.** Ein Funkgerät, das auf 104,6 MHz arbeitet und — nach Aussage seiner Hörer — *Empfindungen* überträgt, vorwiegend unangenehme. Erfunden Mitte der 70er vom Funkamateur **Cornel Marteau**. In den 80ern als „Therapie-Spielzeug“ kurz im Handel, danach vom Markt verschwunden. Geräte stehen heute bei wenigen Sonderlingen, in Trödelläden und gelegentlich in Bewohner-Wohnungen.",
-      "> Hinweis zur **Resonanz-Hygiene** (das ist die offizielle Bezeichnung): wer Schmerz-Radio hört, sollte dies in Maßen tun. Bei *Resonanz-Überlastung* — also wenn Sie zu viel Fremdschmerz aufgenommen haben — ist die Sektorärztin zuständig, **nicht** die Leitstelle. Es handelt sich um einen medizinischen, keinen sicherheitsrelevanten Vorgang.",
-      "Das Schmerz-Radio ist im Übrigen behördlich nicht reguliert. Es kommt in keinem Paragraphen vor. Es kommt auch in den meisten Wohnungen nicht vor.",
+      "> Hinweis zur **Resonanz-Hygiene**: das ist der übergreifende Verwaltungsbegriff für alles, was im Komplex zwischen den Wänden schwingt — offiziell ein bau-akustischer Messwert, faktisch auch das soziale Klima (Streit, Trauer, Krankmeldungen). Bei einer *Resonanz-Überlastung* — gleich welcher Auslegung — ist die Sektorärztin zuständig, **nicht** die Leitstelle. Es handelt sich um einen medizinischen, keinen sicherheitsrelevanten Vorgang. Betroffen sein kann jeder Bewohner; Schmerz-Radio-Hörer sind eine sehr kleine, obskure Untergruppe.",
+      "Das Schmerz-Radio selbst ist im Übrigen behördlich nicht reguliert. Es kommt in keinem Paragraphen vor. Es kommt auch in den meisten Wohnungen nicht vor.",
     ],
   },
   {

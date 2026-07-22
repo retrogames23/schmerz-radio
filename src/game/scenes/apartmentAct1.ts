@@ -52,7 +52,7 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
               id: "painRadio",
               name: "Schmerz-Radio",
               description:
-                "Ein kleines tragbares Resonanz-Radio mit Bernstein-Skala und kurzer Teleskop-Antenne. Layards einziger verlässlicher Empfänger. Steckt jetzt in der Innentasche seines Mantels.",
+                "Ein kleines tragbares Schmerz-Radio mit Bernstein-Skala und kurzer Teleskop-Antenne — ein obskures Bastler-Gerät aus den Siebzigern, das außer Layard fast niemand mehr nutzt. Layards einziger verlässlicher Empfänger. Steckt jetzt in der Innentasche seines Mantels.",
             });
             api.showText([
               "Layard hebt das Schmerz-Radio vom Tisch und steckt es ein.",
