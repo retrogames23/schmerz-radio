@@ -31,24 +31,24 @@ export function KantinenverordnungOverlay() {
           label="Verordnung schließen"
           className="absolute right-2 top-2"
         />
-        <div className="font-display text-xs uppercase tracking-[0.3em] text-amber-glow/70">
+        <div className="font-display text-sm uppercase tracking-[0.3em] text-amber-glow/70">
           {KANTINENVERORDNUNG_TITLE}
         </div>
-        <p className="mt-2 font-mono-crt text-xs leading-relaxed text-amber-glow/80">
+        <p className="mt-2 font-mono-crt text-sm leading-relaxed text-amber-glow/80">
           {KANTINENVERORDNUNG_SUBTITLE}
         </p>
-        <p className="mt-1 font-mono-crt text-[11px] italic leading-relaxed text-amber-glow/60">
+        <p className="mt-1 font-mono-crt text-xs italic leading-relaxed text-amber-glow/60">
           {KANTINENVERORDNUNG_PREFACE}
         </p>
 
-        <div className="mt-4 max-h-[60vh] space-y-4 overflow-y-auto pr-1">
+        <div className="mt-4 max-h-[70vh] space-y-4 overflow-y-auto pr-1">
           {KANTINENVERORDNUNG_SECTIONS.map((section) => (
             <section key={section.title}>
-              <h3 className="font-display text-sm uppercase tracking-wider text-amber-glow">
+              <h3 className="font-display text-base uppercase tracking-wider text-amber-glow">
                 {section.title}
               </h3>
               {section.intro && (
-                <p className="mt-1 font-mono-crt text-[12px] italic text-amber-glow/60">
+                <p className="mt-1 font-mono-crt text-xs italic text-amber-glow/60">
                   {section.intro}
                 </p>
               )}
@@ -56,14 +56,14 @@ export function KantinenverordnungOverlay() {
                 {section.entries.map((p) => (
                   <div
                     key={p.shortLabel}
-                    className="rounded-sm border border-amber-glow/30 bg-black/30 px-3 py-2 font-mono-crt text-[12px] leading-relaxed"
+                    className="rounded-sm border border-amber-glow/30 bg-black/30 px-3 py-2 font-mono-crt text-sm leading-relaxed"
                   >
-                    <div className="font-display text-[13px] uppercase tracking-wider text-amber-glow">
+                    <div className="font-display text-sm uppercase tracking-wider text-amber-glow">
                       {p.shortLabel}
                     </div>
                     <div className="mt-1 text-amber-glow/85">{p.fullText}</div>
                     {p.marginNote && (
-                      <div className="mt-1 italic text-amber-glow/55">
+                      <div className="mt-1 text-xs italic text-amber-glow/55">
                         Randnotiz: {p.marginNote}
                       </div>
                     )}
