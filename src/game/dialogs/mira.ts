@@ -79,7 +79,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       miraOpen1: {
         id: "miraOpen1",
         speaker: "MIRA",
-        text: "Frag dich mal, warum 104,6 deinen Schmerz lindert und nicht den Grund dafür wegnimmt. Ein gutes Mittel würde das Problem lösen — nicht dich an das Problem gewöhnen. Ich glaube, das ist kein Zufall. Beweisen kann ich's nicht.",
+        text: "Frag dich mal, warum die ganze Resonanzhygiene deinen Schmerz eindämmt und nicht den Grund dafür wegnimmt. Ein gutes Mittel würde das Problem lösen — nicht dich an das Problem gewöhnen. Ich glaube, das ist kein Zufall. Beweisen kann ich's nicht.",
         choices: [
           { text: "Sprich weiter.", next: "miraOpen2" },
           {
@@ -91,7 +91,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       miraOpen2: {
         id: "miraOpen2",
         speaker: "MIRA",
-        text: "Meine These: Die Frequenz ist eine Leine. Lang genug, dass du dich frei fühlst. Kurz genug, dass du nicht aus dem Quadranten läufst. Vielleicht spinne ich. Aber zu viele Dinge passen zu gut zusammen — angefangen bei meinem Vater.",
+        text: "Meine These: Resonanzhygiene ist eine Leine. Lang genug, dass du dich frei fühlst. Kurz genug, dass du nicht aus dem Quadranten läufst. Vielleicht spinne ich. Aber zu viele Dinge passen zu gut zusammen — angefangen bei meinem Vater.",
         choices: [
           { text: "Und wer hält das andere Ende?", next: "miraOpen4" },
           { text: "Hübsches Bild. Mehr nicht.", next: "miraDeferDry" },
@@ -288,7 +288,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       mrOpen1: {
         id: "mrOpen1",
         speaker: "MIRA",
-        text: "Frag dich mal, warum 104,6 deinen Schmerz lindert und nicht den Grund dafür wegnimmt. Ein gutes Mittel würde das Problem lösen — nicht dich an das Problem gewöhnen. Ich glaube, das ist kein Zufall. Beweisen kann ich's nicht.",
+        text: "Frag dich mal, warum die ganze Resonanzhygiene deinen Schmerz eindämmt und nicht den Grund dafür wegnimmt. Ein gutes Mittel würde das Problem lösen — nicht dich an das Problem gewöhnen. Ich glaube, das ist kein Zufall. Beweisen kann ich's nicht.",
         choices: [
           { text: "Sprich weiter.", next: "mrOpen2" },
           { text: "Das ist mir jetzt zu groß. Lass gut sein.", next: "mrOpenDefer" },
@@ -425,7 +425,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       ma3: {
         id: "ma3",
         speaker: "MIRA",
-        text: "Hinter der Tür sitzt ein Knoten. Meine Vermutung: da läuft das, was hier oben auf 104,6 unterwegs ist, durch — bevor es zu jemand anderem geht. Wenn ich recht habe, hörst du dich da selbst. Gefiltert. Wenn ich falsch liege, ist es ein Trafo-Kasten.",
+        text: "Hinter der Tür sitzt ein Knoten. Meine Vermutung: da läuft das, was hier oben durchs Radio geht, hindurch — bevor es bei jemand anderem ankommt. Wenn ich recht habe, hörst du dich da selbst. Gefiltert. Wenn ich falsch liege, ist es ein Trafo-Kasten.",
         hiddenWhen: ["saw5610Door"],
         next: "ma4",
       },
@@ -487,7 +487,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       mtp4: {
         id: "mtp4",
         speaker: "MIRA",
-        text: "Und drittens — eine Frage. Wenn morgen niemand mehr 104,6 hört: Was tust du als erstes?",
+        text: "Und drittens — eine Frage. Wenn morgen die Resonanzhygiene ausfällt — kein Merkblatt, keine Sperrstunde, kein leises Sender-Rauschen: Was tust du als erstes?",
         choices: [
           { text: "Ich gehe raus. Ohne Meldung.", next: "mtpAnswerGood" },
           { text: "Ich rufe die Leitstelle und frage, was los ist.", next: "mtpAnswerBad" },

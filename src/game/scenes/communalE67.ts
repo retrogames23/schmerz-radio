@@ -329,7 +329,7 @@ export const communalE67Scenes: Record<string, Scene> = {
         y: 15.1,
         w: 50.3,
         h: 24,
-        label: "Plakat „104,6 — DEINE LEINE“",
+        label: "Plakat „RESONANZHYGIENE — DEINE LEINE“",
         kind: "look",
         onUse: (api) =>
           api.showText([
