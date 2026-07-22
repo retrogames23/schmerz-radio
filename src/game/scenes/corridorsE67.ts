@@ -187,8 +187,9 @@ export const corridorsE67Scenes: Record<string, Scene> = {
         kind: "look",
         onUse: (api) =>
           api.showText([
-            "„HÖREN HEISST GEHÖREN.“",
-            "Darunter, kleiner: „104,6 — Ihre Frequenz. Ihre Verantwortung.“",
+            "„RUHE IST TEIL DER STATIK.“",
+            "Darunter, kleiner: „Belegungsdichte einhalten. Türen leise. Ruhezeiten 22–06.“",
+            "Am Fuß: „Bei anhaltender Resonanz-Überlastung — Sektorärztin, nicht Leitstelle.“",
             "Jemand hat mit Bleistift dazugeschrieben: „und ihr Käfig.“",
           ]),
       },

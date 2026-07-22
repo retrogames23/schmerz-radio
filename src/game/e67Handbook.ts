@@ -139,8 +139,9 @@ export const HANDBOOK_CHAPTERS: HandbookChapter[] = [
     shortTitle: "§7 Resonanz-Hygiene",
     title: "§7 Resonanz-Hygiene",
     body: [
-      "Bitte verbreiten Sie „auffällig harmonische Geräusche“ nicht weiter. Diese stehen dem **Quadranten** zu, nicht dem Einzelnen.",
-      "Empfohlen: max. 2 Stunden tägliche Nutzung des Schmerz-Radios. Empfehlung — keine Pflicht.",
+      "**Resonanz-Hygiene** meint den geordneten Umgang mit allem, was im Komplex zwischen den Wänden schwingt — bau-akustisch wie sozial. Betrifft **alle** Bewohner, nicht einzelne Geräte oder Frequenzen.",
+      "Empfohlen: Ruhezeiten einhalten (22:00–06:00), Türen leise schließen, „auffällig harmonische Geräusche“ dem Quadranten überlassen, nicht dem Einzelnen. Belegungsdichte pro Wohneinheit nicht überschreiten.",
+      "Wer sich privaten Hobbys widmet, die die eigene Resonanz erhöhen (Amateurfunk, Musikhören, ältere Empfangsgeräte), tut dies in Maßen. Empfehlung — keine Pflicht.",
       "> *„Hören Sie länger, hören Sie dünner.“* — Stadtwerke-Plakat, 1994.",
     ],
   },

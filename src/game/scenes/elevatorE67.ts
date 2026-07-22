@@ -165,7 +165,7 @@ export const elevatorE67Scenes: Record<string, Scene> = {
         kind: "look",
         onUse: (api) =>
           api.showText([
-            "Aushang: „Resonanz-Hygiene — Pflichtinformation für alle Hörer.“",
+            "Aushang: „Resonanz-Hygiene — Pflichtinformation für alle Bewohner.“",
             "Aushang: „Quadrant E67 — Zuständigkeitsregelung Vertretung E71/1534.“",
             "Aushang, halb abgerissen: „… revolutionärer Umtriebe. Meldungen an 001.“",
           ]),

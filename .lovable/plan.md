@@ -1,89 +1,43 @@
-## Ziel
+# Resonanz als Weltbegriff verankern
 
-Markenname **Whisper Quest / WHISPER·QUEST / WhisperQuest** verschwindet komplett aus dem Projekt. Neuer Name überall: **Schmerz-Radio** (Display) bzw. **SCHMERZ·RADIO** in Display-Caps-Kontexten (Titelscreen, Mail-Header), passend zum bisherigen Schriftbild. Kanonische Domain wird **schmerz-radio.com**.
+Ziel: „Resonanz" wird zu einem eigenen, älteren, größeren Weltbegriff der Mandatsrats-Bürokratie. Das Schmerz-Radio bleibt eine obskure Randnische darin — nicht die Quelle des Begriffs.
 
-GitHub-Repo-URL (`github.com/retrogames23/adventure-whisper-quest`) bleibt unverändert, weil das Repo selbst nicht umbenannt wird — nur der angezeigte Linktext wird auf „Schmerz-Radio (GitHub-Repo)" geändert.
+## Kanon (neue Kurz-Definition)
 
-## Naming-Schema
+**Resonanz** ist ein absichtlich schillernder Verwaltungsbegriff des Mandatsrats, offiziell seit den späten 1950ern in Gebrauch.
 
-| Kontext | Alt | Neu |
-|---|---|---|
-| Display, normal | Whisper Quest | Schmerz-Radio |
-| Display, Caps mit Mittelpunkt | WHISPER·QUEST | SCHMERZ·RADIO |
-| Slug / einwort | WhisperQuest | SchmerzRadio |
-| Domain | whisperquest.app | schmerz-radio.com |
-| E-Mail SITE_NAME | WHISPER·QUEST | SCHMERZ·RADIO |
-| Asset-Prefix | whisper-quest-v* | schmerz-radio-v* |
+- **Technische Lesart (offiziell):** Ein bau-akustischer Messwert für Schwingungen in den Stahlbeton-Großkomplexen — Körperschall, tieffrequentes Brummen, Rückkopplungen zwischen Wohneinheiten. Wurde nach realen Schäden an frühen Wiederaufbau-Bauten eingeführt.
+- **Soziale Lesart (inoffiziell, aber allgemein bekannt):** Das emotional-akustische Klima im Komplex — Streit hinter Wänden, Weinen im Aufzug, Krankmeldungen, kollektive Unruhe, Trauerspitzen nach Todesfällen. Alles, was sich in einem dichten Betonbau von Wohnung zu Wohnung „überträgt".
+- **Der Trick:** Der Mandatsrat hält die beiden Lesarten mit Absicht unscharf. So kann man mit „Resonanz-Hygiene" formal über Bauakustik reden und faktisch Ruhezeiten, Türsiegel, Belegungsdichte, Krankmeldungen und Nachbarschafts-Konflikte regulieren, ohne je zugeben zu müssen, dass man Menschen reguliert.
+- **Resonanzindex** (in TV/Wetterberichten) ist eine Mischgröße aus Bau-Messwerten und Krankmeldungen/Beschwerden. Niemand außerhalb der Statistik-Abteilung versteht die Formel, das ist Teil der Point.
+- **Resonanz-Überlastung** ist die offizielle Diagnose der Sektorärztin — medizinischer Vorgang, nicht Sicherheitsvorgang. Kann jeden treffen, meist überarbeitete Bewohner, Trauerfälle, Konfliktparteien. Türsiegel folgen. Das hat mit dem Schmerz-Radio strukturell **nichts** zu tun.
+- **Schmerz-Radio-Bezug (klein halten):** Ein paar wenige Bastler und Sonderlinge behaupten, man könne die soziale Resonanz mit einem Empfänger tatsächlich abhören. Für die Verwaltung ist das eine kuriose Fehldeutung des Begriffs, nicht mehr. Die meisten Bewohner haben nie einen solchen Empfänger gesehen.
 
-## Änderungen — Texte & Meta
+## Was neu entsteht
 
-**SEO / Routing**
-- `src/routes/__root.tsx` — title, og:title, og:site_name, twitter:title, JSON-LD `name` + `url` (→ `https://schmerz-radio.com/`).
-- `src/routes/index.tsx` — title, og:title, og:url, canonical → `https://schmerz-radio.com/`.
-- `src/routes/unsubscribe.tsx` — title, description, og:title, og:description, og:url, canonical, Body-Text.
-- `src/routes/dsa.index.tsx` — CANONICAL, FAQ-Antwort, og:site_name, JSON-LD `author.name`, sichtbare Texte, Fußzeilen-Link → `https://schmerz-radio.com/`.
-- `src/routes/dsa.helden.tsx` — CANONICAL, sichtbarer Markenname.
-- `src/routes/sitemap[.]xml.tsx` — `SITE` → `https://schmerz-radio.com`.
-- `public/robots.txt` — Sitemap-URL → schmerz-radio.com.
-- `public/llms.txt` — Titel, Beschreibung, URL.
+- **`mem/features/resonanz.md`** — Feature-Memory mit dem Kanon oben, verlinkt aus `mem/index.md`.
+- **Update `mem/constraints/schmerz-radio.md`** — Ergänzung: „Resonanz" und „Resonanz-Hygiene" sind ausdrücklich **erlaubte** Weltbegriffe (im Gegensatz zur früheren Fassung). Verboten bleibt nur, was das Schmerz-Radio ins Zentrum rückt.
 
-**Game-UI**
-- `src/components/game/TitleScreen.tsx` — Subtitle „WHISPER·QUEST – …" → „SCHMERZ·RADIO – …".
-- `src/components/game/CreditsOverlay.tsx` — 3 Stellen Fließtext.
-- `src/components/game/OpenSourceOverlay.tsx` — 3 Stellen Fließtext, Linktext für Repo (URL bleibt).
-- `src/components/game/ImpressumOverlay.tsx` — „WhisperQuest" → „Schmerz-Radio".
-- `src/components/donation/DonationModal.tsx` — Fließtext.
+## Audit vorhandener Vorkommen (nur Konsistenz-Checks, keine großen Rewrites)
 
-**E-Mail / Server**
-- `src/lib/email-templates/donation-confirmation.tsx` — `SITE_NAME`, Subject, Body.
-- `src/lib/email-templates/weekly-signup-summary.tsx` — `SITE_NAME`, Subject.
-- `src/lib/email/sendTransactional.server.ts` — `SITE_NAME`.
-- `src/routes/api/public/hooks/weekly-signup-summary.ts` — `SITE_NAME`.
-- `src/routes/lovable/email/transactional/send.ts` — `SITE_NAME` → `"schmerz-radio"`.
+Ich gehe die im Code gefundenen Fundstellen durch und prüfe/justiere sanft — nur wo es dem neuen Kanon widerspricht:
 
-**API / Backend**
-- `src/lib/aiModel.ts` — `OPENROUTER_APP_URL` → `https://schmerz-radio.com`, `OPENROUTER_APP_TITLE` → `"SchmerzRadio"`.
-- `src/routes/api/public/dsa-group.ts`, `dsa-master.ts`, `fastweb-chat.ts` — CORS-Hostname-Whitelist: `whisperquest.app` / `www.whisperquest.app` → `schmerz-radio.com` / `www.schmerz-radio.com`.
-- `src/game/dsa/adventureExport.ts` — `creator: "WhisperQuest DSA"` → `"Schmerz-Radio DSA"`.
+- `src/game/tv/channels.ts` — passt bereits sehr gut (Wetter- & Resonanzlage, Resonanzindex, unauffällige Auffälligkeiten). Nur einzelne Formulierungen glätten, damit klar wird, dass es um Komplex-Klima geht, nicht ums Radio.
+- `src/game/e67Handbook.ts` §7 Resonanz-Hygiene — auf Doppelbegriff einnorden (Bau + soziales Klima).
+- `src/game/quadrantenAlmanach.ts` — der Absatz erklärt aktuell Resonanz-Hygiene **über** das Schmerz-Radio. Umformulieren: Resonanz-Hygiene betrifft alle Bewohner, das Radio ist nur einer von mehreren möglichen Auslösern für Überlastung.
+- `src/game/scenes/sectorAct1.ts` (Türsiegel-Erklärung, „Etikettenstreifen E67 — Resonanz — 1996–") — kleine Umschreibung: Türsiegel ist die generische medizinische Quarantäne-Kategorie, nicht speziell radiobezogen.
+- `src/game/scenes/apartmentAct1.ts` — „Resonanz-Radio" als Item-Beschreibung ist okay, aber sollte klarstellen, dass es Layards spezielles Randgerät ist.
+- `src/game/scenes/leitstelleE67.ts` + `corridorsE67.ts` + `elevatorE67.ts` (Aushänge) — Formulierung an Doppelbegriff angleichen (Pausen, Belegungsdichte, nicht: Hör-Diät).
+- `src/game/dialogs/insa.ts` (N. Sertl, C. Marteau, 1978) und `dialogs/cafeteria.ts` (Tilla „zwei Jahre bei Resonanz-Hygiene") — bleiben inhaltlich, aber „Resonanz-Hygiene" ist jetzt klar als Verwaltungs-/Medizin-Ressort lesbar.
+- `src/game/filesystemBodo.ts` — Bodos Essays bleiben (philosophische Umdeutung passt zum Doppelbegriff).
+- `src/game/fastWebChat/personas.ts` — die Zeile „Resonanz gibt es in deiner Welt nicht" für Randpersonas rausnehmen bzw. differenzieren: Resonanz **kennen** sie (steht im Wetterbericht), das Schmerz-Radio **nicht**.
 
-**Docs**
-- `README.md` — Titel, Play-URL, alle Vorkommen.
-- `LORE.md` — Titel-Header.
-- `src/assets/unused/README.md` — Asset-Notizen (Dateinamen-Erwähnungen werden mit umbenannt, siehe unten).
+## Was NICHT passiert
 
-## Änderungen — Asset-Dateien
+- Kein Umbau der Radio-Mechanik, keine neuen Szenen, keine neuen Rätsel.
+- Kein Rebranding von „Schmerz-Radio".
+- Keine erfundenen Behörden oder Zusatz-Systeme rund um Resonanz — nur die Verwaltung, die es ohnehin schon gibt.
 
-Folgende Assets umbenennen (Datei + Imports):
+## Technisches
 
-| Alt | Neu |
-|---|---|
-| `src/assets/title/whisper-quest-v1.jpg` | `src/assets/title/schmerz-radio-v1.jpg` |
-| `src/assets/title/whisper-quest-v1-rain-mask.png` | `src/assets/title/schmerz-radio-v1-rain-mask.png` |
-
-Imports anpassen in:
-- `src/components/game/TitleScreen.tsx`
-- `src/components/game/RainOverlay.tsx`
-
-Ungenutzte Assets unter `src/assets/unused/` (`whisper-quest-v2-courtyard.jpg`, `whisper-quest-v3-desk.jpg`) ebenfalls umbenennen, plus README-Eintrag.
-
-## Was nicht angefasst wird
-
-- GitHub-Repo-URL `adventure-whisper-quest` (Anzeigetext wird aber neutralisiert).
-- `routeTree.gen.ts` (auto-generiert).
-- DB-Daten, vorhandene gespeicherte Spielstände (keine schemaverändernden Migrationen).
-- `whisperquest.app` als CORS-Alias — wird **entfernt**, nicht als Übergang behalten (gemäß User-Wahl „komplett umstellen"). Falls noch jemand auf der alten Domain landet, schlägt die API stillschweigend mit CORS-Fehler fehl — vertretbar, da Cloud-DNS bereits auf schmerz-radio.com zeigt.
-
-## Technische Details
-
-- Alle URL-Ersetzungen prüfen sowohl `whisperquest.app` als auch `https://whisperquest.app/`-Varianten (mit/ohne Slash).
-- Asset-Renames erfolgen via `mv` (Git erkennt Rename automatisch).
-- Nach Renames werden die zwei Import-Statements (`TitleScreen.tsx`, `RainOverlay.tsx`) und die README-Notizen angepasst, damit der strikte Vite-Resolve nicht bricht.
-- E-Mail-Templates: `SITE_NAME`-Konstanten sind die einzige Stelle pro Datei — Subject-Strings müssen separat angepasst werden (sie enthalten den Namen literal).
-- SEO-Hinweis an dich: Such-Crawler werden den Titel-Wechsel und neuen Canonical erst beim nächsten Crawl übernehmen. Geteilte Links zeigen die alte OG-Vorschau, bis die jeweilige Plattform neu fetcht.
-
-## Verifikation
-
-Nach den Edits:
-1. `grep -ri "whisper" src/ public/ README.md LORE.md` muss leer sein (außer evtl. Repo-URL).
-2. Build muss laufen (Imports der umbenannten Assets korrekt).
-3. Visuell: TitleScreen-Subtitle, Impressum-Overlay, Credits-Overlay, Donation-Modal kurz prüfen.
+Reine Text- und Memory-Änderungen. Kein Code-Refactor, keine neuen Komponenten, keine Migration.

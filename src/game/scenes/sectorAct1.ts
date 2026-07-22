@@ -276,7 +276,7 @@ export const sectorAct1Scenes: Record<string, Scene> = {
             "„Quarantäne — Resonanz-Überlastung — bis auf Widerruf“.",
             "Layard hat denselben Zettel heute schon einmal gesehen. Vor seiner eigenen Wand.",
             "Wie viele Türen hier wohl so aussehen. Wie viele in E67. Wie viele in den anderen Quadranten.",
-            "Resonanz-Überlastung. Das ist der höfliche Name dafür, dass jemand das Schmerz-Radio zu lange aufgedreht hat. Dass jemand etwas zu deutlich gehört hat.",
+            "Resonanz-Überlastung. Der übliche Sammelbegriff der Sektorärztin — offiziell bau-akustisch, faktisch für alles, was zwischen den Wänden zu laut wird: Streit, Trauer, Krankmeldungen, ein Nachbar, der nicht mehr schläft. Was genau dahintersteckt, steht auf keinem der Zettel.",
             "Layard kennt niemanden, der quarantänisiert wurde. Er kennt aber auch keinen, der es nicht wäre, wenn man genau hinsähe.",
             "Vielleicht ist das hier kein Einzelfall. Vielleicht laufen Hunderte von diesen Türen still durch das System — gemeldet, abgehakt, versiegelt, vergessen. Eine Epidemie, die niemand so nennt, weil niemand sie zählt.",
             "Oder weil das Zählen selbst schon meldepflichtig wäre.",
