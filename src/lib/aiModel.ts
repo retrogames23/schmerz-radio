@@ -13,7 +13,7 @@
  */
 
 /** Haupt-Modell für Meister/NSC-Antworten, Free Chat, DSA. */
-export const AI_MODEL_MAIN = "google/gemini-3-flash-preview";
+export const AI_MODEL_MAIN = "google/gemini-3.6-flash";
 
 /**
  * Leichteres Modell für Hintergrund-Aufgaben (z. B. Memory-Update,
