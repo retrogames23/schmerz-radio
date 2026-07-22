@@ -30,6 +30,18 @@ export const kantinenverwaltung3603Scenes: Record<string, Scene> = {
           const hasForm =
             api.hasItem("formblatt17V") || api.hasItem("formblatt17VForged");
           if (!hasForm) {
+            // Frühbesuch ohne jeden Vorlauf: Layard weiß noch gar nicht,
+            // dass er hier richtig ist. Vossbeck wimmelt ihn ab, ohne
+            // den Brust/Formblatt-Pfad zu verraten. Wir merken uns den
+            // Frühbesuch als `triedVossbeckEarly` — Kowalk greift das
+            // später als kleinen Callback auf.
+            if (!api.hasFlag("knowsVossbeckPath")) {
+              if (!api.hasFlag("triedVossbeckEarly")) {
+                api.setFlag("triedVossbeckEarly");
+              }
+              api.startDialog("vossbeckNoBusiness");
+              return;
+            }
             // Ohne Formblatt 17/V auf Vorsprache schaut Vossbeck gar nicht
             // erst auf. Egal, ob Layard schon Trainingssiege bei Brust hat.
             const streak = api.getBrustWinStreak();
