@@ -104,9 +104,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "backHallwayS",
-        x: 10.9,
-        y: 35,
-        w: 13.5,
+        x: -0.1,
+        y: 26.2,
+        w: 24.5,
         h: 60,
         label: "Zurück in die Lobby",
         kind: "exit",
