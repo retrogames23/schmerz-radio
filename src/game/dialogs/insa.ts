@@ -214,7 +214,6 @@ export const insaDialogs: Record<string, DialogTree> = {
           {
             text: "Verstanden. Auf Wiederhören.",
             action: (api) => {
-              api.setFlag("knowsVossbeckPath");
               api.setFlag("insaSentToKowalkForCode");
               api.setFlag("skippedExitReport");
             },
@@ -223,7 +222,6 @@ export const insaDialogs: Record<string, DialogTree> = {
             text: "Eine Frage noch — was ist mit dem Netz?",
             next: "idNet1",
             action: (api) => {
-              api.setFlag("knowsVossbeckPath");
               api.setFlag("insaSentToKowalkForCode");
               api.setFlag("skippedExitReport");
             },
