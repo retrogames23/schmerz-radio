@@ -16,7 +16,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             // Neuer Hauptpfad: Insa hat Layard zu Kowalk geschickt, weil
             // sie den Tagescode für die Sektor-Tür braucht.
             text: "Frau Kowalk — Insa sagt, Sie wissen, wie man bei Vossbeck reinkommt. Ich brauche einen Tagescode für die Sektor-Tür.",
-            next: "kCode1",
+            next: "kCodePre",
             requires: ["insaSentToKowalkForCode"],
             hiddenWhen: ["knowsVossbeckPath"],
           },
@@ -99,6 +99,17 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         ],
       },
       // ── Neuer Hauptpfad: Vossbeck/Brust/Formblatt für den Tagescode ──
+      // Kleiner Callback, falls Layard vorher schon oben bei Vossbeck war.
+      // Sichtbar nur mit `triedVossbeckEarly` — sonst überspringt der
+      // Dialog diese Zeile und geht direkt zu kCode1.
+      kCodePre: {
+        id: "kCodePre",
+        speaker: "KOWALK",
+        text: "Sie waren schon oben, oder? Hat er Sie stehen lassen. Natürlich hat er. — Setzen wir das jetzt richtig auf.",
+        subtext: "Sie sagt es nicht spöttisch. Eher so, als hätte sie diese Szene diese Woche schon dreimal gesehen.",
+        requires: ["triedVossbeckEarly"],
+        next: "kCode1",
+      },
       kCode1: {
         id: "kCode1",
         speaker: "KOWALK",

@@ -275,6 +275,8 @@ export type StoryFlag =
   | "learnedAttackTuerschild"
   /** Layard hat erfahren, dass Vossbeck (in 3603) der einzige Weg zur 4317 ist. */
   | "knowsVossbeckPath"
+  /** Layard war bei Vossbeck, bevor er wusste, was er von ihm will — Kowalk-Callback. */
+  | "triedVossbeckEarly"
   // Pflicht-Verzahnung Akt I: Tilla-Quittung 4317-K hängt am Stamm 4317.
   | "needsMarteauAuthForTilla"
   // Endduell-Versuche bei Vossbeck (drei zugelassen).
