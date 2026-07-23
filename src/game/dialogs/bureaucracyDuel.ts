@@ -114,7 +114,9 @@ function attackChoices(opp: "brust" | "vossbeck"): {
     lines[respId] = {
       id: respId,
       speaker: opp === "brust" ? "BRUST" : "VOSSBECK",
-      text: ATTACK_COUNTER_LINES[id]![opp],
+      text:
+        ATTACK_COUNTER_LINES[id]![opp] +
+        (opp === "brust" ? " — Punkt Brust." : " — Punkt Verwaltung."),
       subtext:
         opp === "brust"
           ? "Brust kontert, ohne den Kopf zu heben. Punkt für ihn."
@@ -139,8 +141,8 @@ function attackChoices(opp: "brust" | "vossbeck"): {
       speaker: opp === "brust" ? "BRUST" : "VOSSBECK",
       text:
         opp === "brust"
-          ? "Ich — ich, also … (Brust schaut auf den Aushang. Findet den Satz nicht. Versucht es zweimal.) Den Vorgesetzten, ja, den könnte ich … einen Moment."
-          : "(Vossbeck setzt den Bleistift ab. Zum ersten Mal.) Den Vorgesetzten. Ich. — Notiert.",
+          ? "Ich — ich, also … (Brust schaut auf den Aushang. Findet den Satz nicht. Versucht es zweimal.) Den Vorgesetzten, ja, den könnte ich … einen Moment. — Punkt Worag."
+          : "(Vossbeck setzt den Bleistift ab. Zum ersten Mal.) Den Vorgesetzten. Ich. — Notiert. — Punkt Worag.",
       subtext:
         opp === "brust"
           ? "Bodo hatte recht. Brust stottert sichtbar. Treffer für Layard."
@@ -165,8 +167,8 @@ function attackChoices(opp: "brust" | "vossbeck"): {
       speaker: opp === "brust" ? "BRUST" : "VOSSBECK",
       text:
         opp === "brust"
-          ? "Mein Türschild — also, das Türschild — das ist der … das ist eine andere Frage. (Pause.) Weiter."
-          : "(Vossbeck schaut hoch.) Mein Türschild ist sektorintern. Nicht — also, das ist nicht hier zu klären. Weiter.",
+          ? "Mein Türschild — also, das Türschild — das ist der … das ist eine andere Frage. (Pause.) Weiter. — Punkt Worag."
+          : "(Vossbeck schaut hoch.) Mein Türschild ist sektorintern. Nicht — also, das ist nicht hier zu klären. Weiter. — Punkt Worag.",
       subtext:
         opp === "brust"
           ? "Helkas Klassiker zieht. Brust verliert kurz die Spur. Treffer."
@@ -248,7 +250,7 @@ function buildTrainingFall(
     r1Hit: {
       id: "r1Hit",
       speaker: "KOWALK",
-      text: "Sitzt.",
+      text: "Sitzt. — Punkt Worag.",
       subtext:
         "Kaum hörbar, von der Theke her. Brust kneift kurz die Augen zusammen, schweigt aber.",
       next: "r2Intro",
@@ -256,7 +258,7 @@ function buildTrainingFall(
     r1Miss: {
       id: "r1Miss",
       speaker: "BRUST",
-      text: `Falsche Antwort, Bewohner Worag. Korrekt wäre gewesen: »${r1Correct.text}« — notieren Sie sich das.`,
+      text: `Falsche Antwort, Bewohner Worag. Korrekt wäre gewesen: »${r1Correct.text}« — notieren Sie sich das. — Punkt Brust.`,
       subtext:
         "Kowalk schaut nicht hoch. Aber sie hat zugehört. Brust gibt den Konter sauber preis.",
       choices: [
@@ -275,7 +277,7 @@ function buildTrainingFall(
     r2Intro: {
       id: "r2Intro",
       speaker: "BRUST",
-      text: "Zweite Runde. Sie sind dran, Bewohner Worag. Schicken Sie eine Phrase. Mal sehen, was Sie da haben.",
+      text: "Ihre Eröffnung, Bewohner Worag.",
       choices: atk.choices,
     },
     ...atk.lines,
@@ -289,7 +291,7 @@ function buildTrainingFall(
     r3HitResolve: {
       id: "r3HitResolve",
       speaker: "KOWALK",
-      text: "Sitzt.",
+      text: "Sitzt. — Punkt Worag.",
       subtext: "Kowalk dreht den Lappen einmal um. Brust legt den Bleistift ab.",
       choices: [
         {
@@ -302,7 +304,7 @@ function buildTrainingFall(
     r3MissResolve: {
       id: "r3MissResolve",
       speaker: "BRUST",
-      text: `Falsche Antwort, Bewohner Worag. Korrekt wäre gewesen: »${r3Correct.text}«.`,
+      text: `Falsche Antwort, Bewohner Worag. Korrekt wäre gewesen: »${r3Correct.text}«. — Punkt Brust.`,
       choices: [
         {
           text: `[ »${r3Correct.shortLabel}« ins Phrasenbuch übernehmen und Fall abschließen ]`,
