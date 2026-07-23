@@ -431,7 +431,7 @@ const duelTrainingResultBranching: DialogTree = {
     checkWon2: {
       id: "checkWon2",
       speaker: "BRUST",
-      text: "Sauber durch. Zwei Trainingssiege auf Ihrem Konto. Einen noch — dann sind Sie für Vossbeck satisfaktionsfähig.",
+      text: "Notiert. Weiter.",
       requires: ["duelTrainingWon2"],
       hiddenWhen: ["vossbeckSummoned"],
       next: "checkWon1",
@@ -439,7 +439,7 @@ const duelTrainingResultBranching: DialogTree = {
     checkWon1: {
       id: "checkWon1",
       speaker: "BRUST",
-      text: "Sauber durch. Erster Trainingssieg notiert. Zwei fehlen noch.",
+      text: "Erste saubere Runde. Weiter.",
       requires: ["duelTrainingWon1"],
       hiddenWhen: ["vossbeckSummoned", "duelTrainingWon2"],
       next: "lost",
@@ -525,7 +525,7 @@ const vossbeckDuel: DialogTree = (() => {
       r2Intro: {
         id: "r2Intro",
         speaker: "VOSSBECK",
-        text: "Sie sind dran. Setzen Sie eine Phrase.",
+        text: "Ihre Eröffnung.",
         choices: atk.choices,
       },
       ...atk.lines,
