@@ -52,10 +52,7 @@ function resolveTraining(api: GameApi, fallNum: 1 | 2 | 3): void {
       // legitime Zugang zu Vossbecks Audienzraum 3603.
       if (!api.hasFlag("gotFormblatt17V")) {
         api.setFlag("gotFormblatt17V");
-        if (
-          !api.hasItem("formblatt17V") &&
-          !api.hasItem("formblatt17VForged")
-        ) {
+        if (!api.hasItem("formblatt17V") && !api.hasItem("formblatt17VForged")) {
           api.addItem({
             id: "formblatt17V",
             name: "Formblatt 17/V auf Vorsprache",
@@ -65,10 +62,8 @@ function resolveTraining(api: GameApi, fallNum: 1 | 2 | 3): void {
         }
       }
     }
-    api.startDialog("duelTrainingResult");
   } else {
     api.resetBrustWinStreak();
-    api.startDialog("duelTrainingResult");
   }
 }
 
@@ -83,7 +78,6 @@ function resolveEndgame(api: GameApi): void {
       api.setFlag("vossbeckGaveCode");
       api.setFlag("calledForCode");
     }
-    api.startDialog("duelEndgameResult");
   } else {
     // Drei Versuche bei Vossbeck zugelassen — siehe vossbeckAttempt*Lost.
     if (api.hasFlag("vossbeckAttempt2Lost")) {
@@ -93,7 +87,6 @@ function resolveEndgame(api: GameApi): void {
     } else {
       api.setFlag("vossbeckAttempt1Lost");
     }
-    api.startDialog("duelEndgameResult");
   }
 }
 
@@ -110,12 +103,7 @@ function attackChoices(opp: "brust" | "vossbeck"): {
   const choices: DialogChoice[] = [];
 
   // Linkische Eigen-Angriffe (Layard kennt sie immer; Gegner kontert sicher).
-  for (const id of [
-    "fa-hausflur",
-    "fa-anlage3",
-    "fa-sechs-wochen",
-    "fa-protokoll",
-  ]) {
+  for (const id of ["fa-hausflur", "fa-anlage3", "fa-sechs-wochen", "fa-protokoll"]) {
     const atk = FICTIONAL_ATTACKS[id];
     if (!atk) continue;
     const respId = `${opp}Resp_${id}`;
@@ -307,6 +295,7 @@ function buildTrainingFall(
         {
           text: "[ Trainingsfall abschließen ]",
           action: (a) => resolveTraining(a, fallNum),
+          nextDialog: "duelTrainingResult",
         },
       ],
     },
@@ -321,10 +310,12 @@ function buildTrainingFall(
             a.learnParagraph(r3Correct.id);
             resolveTraining(a, fallNum);
           },
+          nextDialog: "duelTrainingResult",
         },
         {
           text: "[ Übergehen und Fall abschließen ]",
           action: (a) => resolveTraining(a, fallNum),
+          nextDialog: "duelTrainingResult",
         },
       ],
     },
@@ -458,8 +449,7 @@ const duelTrainingResultBranching: DialogTree = {
       id: "lost",
       speaker: "BRUST",
       text: "Trainingsfall verfehlt, Bewohner Worag. Zählung zurück auf null. Wenn Sie wollen, von vorn — beim nächsten Mal.",
-      subtext:
-        "Kowalk legt den Lappen ab. Schaut Layard kurz an. Sagt nichts.",
+      subtext: "Kowalk legt den Lappen ab. Schaut Layard kurz an. Sagt nichts.",
       end: true,
     },
   },
@@ -510,8 +500,7 @@ const vossbeckDuel: DialogTree = (() => {
         id: "intro",
         speaker: "VOSSBECK",
         text: "Drei Runden, Bewohner Worag. Ich verwende ausschließlich Phrasen aus dem Verfahren — gegen die Brust Sie geübt haben sollte. Beginn.",
-        subtext:
-          "Vossbeck setzt den Bleistift senkrecht. Schaut zum ersten Mal nicht in die Akte.",
+        subtext: "Vossbeck setzt den Bleistift senkrecht. Schaut zum ersten Mal nicht in die Akte.",
         next: "r1Brust",
       },
       r1Brust: {
@@ -531,8 +520,7 @@ const vossbeckDuel: DialogTree = (() => {
         id: "r1Miss",
         speaker: "VOSSBECK",
         text: "Schwach, Bewohner Worag. Ich hatte mit mehr gerechnet. — Weiter.",
-        subtext:
-          "Kein Konter wird nachgereicht. Vossbeck lehrt nicht. Brust hätte das tun sollen.",
+        subtext: "Kein Konter wird nachgereicht. Vossbeck lehrt nicht. Brust hätte das tun sollen.",
         next: "r2Intro",
       },
       r2Intro: {
@@ -556,6 +544,7 @@ const vossbeckDuel: DialogTree = (() => {
           {
             text: "[ Endduell abschließen ]",
             action: (a) => resolveEndgame(a),
+            nextDialog: "duelEndgameResult",
           },
         ],
       },
@@ -567,6 +556,7 @@ const vossbeckDuel: DialogTree = (() => {
           {
             text: "[ Endduell abschließen ]",
             action: (a) => resolveEndgame(a),
+            nextDialog: "duelEndgameResult",
           },
         ],
       },
@@ -604,8 +594,7 @@ const duelEndgameResult: DialogTree = {
       id: "checkLost",
       speaker: "VOSSBECK",
       text: "Abschlägig beschieden. Antrag auf Tagescode bleibt — bis auf weiteres — unbearbeitet. Drei Versuche sind aufgebraucht.",
-      subtext:
-        "Drei Versuche sind aufgebraucht. Was jetzt noch geht, geht nicht über Vossbeck.",
+      subtext: "Drei Versuche sind aufgebraucht. Was jetzt noch geht, geht nicht über Vossbeck.",
       requires: ["duelEndgameLost"],
       next: "tryAgain",
       end: true,

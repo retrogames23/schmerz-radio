@@ -77,10 +77,7 @@ export type InventoryItemId =
   // Akt II — die alte Akte, die Insa Layard persönlich überreicht.
   | "akte1978Sertl";
 
-export type KnowledgeFlag =
-  | "responsibilityE67"
-  | "radioOrigin"
-  | "frequencyControl";
+export type KnowledgeFlag = "responsibilityE67" | "radioOrigin" | "frequencyControl";
 
 /** Identifier einer narrativen Cutscene. */
 export type CutsceneId = "paramedics" | "act2Bridge" | "sectorThreshold";
@@ -91,7 +88,7 @@ export type StoryFlag =
   | "tookPainRadio"
   | "doorbellRang"
   | "openedAlmanach"
- | "tookKantinenverordnung"
+  | "tookKantinenverordnung"
   | "metPhilippe"
   | "metPhilippeBefore"
   | "knockingHeard"
@@ -250,6 +247,8 @@ export type StoryFlag =
   | "duelStarted"
   | "duelWon"
   | "duelLost"
+  | "duelTrainingNextB"
+  | "duelTrainingNextC"
   // Bürokratie-Duell — Mehrstufiges Lernsystem (Vossbeck-Endgegner)
   | "duelTrainingWon1"
   | "duelTrainingWon2"
@@ -511,6 +510,8 @@ export interface NpcSprite {
 export interface DialogChoice {
   text: string;
   next?: string;
+  /** Wechselt nach der Action direkt in einen anderen Dialog-Baum. */
+  nextDialog?: string | ((api: GameApi) => string);
   action?: (api: GameApi) => void;
   requires?: StoryFlag[];
   hiddenWhen?: StoryFlag[];
