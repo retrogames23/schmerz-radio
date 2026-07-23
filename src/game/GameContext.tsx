@@ -172,6 +172,10 @@ interface PersistedState {
    * damit jeder Slot sein eigenes Meister-Gedächtnis behält.
    */
   dsaSessionId?: string | null;
+  /** Gelernte Konter aus dem Paragraphen-Notizbuch. */
+  learnedParagraphs?: string[];
+  /** Laufende Siegesserie bei Brust; ältere Saves hatten dieses Feld nicht. */
+  brustWinStreak?: number;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -837,6 +841,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         philippeFloor: philippeFloorRef.current,
         dsaCharacter: dsaCharacterRef.current,
         dsaSessionId: dsaSessionIdRef.current,
+        learnedParagraphs: Array.from(learnedParagraphsRef.current),
+        brustWinStreak: brustWinStreakRef.current,
       };
       const summary: SaveSummary = {
         slot,
@@ -884,6 +890,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setInventory(persisted.inventory);
     setResonance(persisted.resonance);
     setEnding(persisted.ending);
+    const restoredParagraphs = new Set(persisted.learnedParagraphs ?? []);
+    learnedParagraphsRef.current = restoredParagraphs;
+    setLearnedParagraphs(restoredParagraphs);
+    // Migration alter Spielstände: Vor der Persistenz des Zählers waren die
+    // gewonnenen Trainingsfälle nur als Flags vorhanden. Aus ihnen stellen wir
+    // die naheliegende laufende Serie wieder her, damit ein Load sie nicht auf 0
+    // zurücksetzt.
+    const restoredStreak =
+      typeof persisted.brustWinStreak === "number"
+        ? Math.max(0, Math.min(3, persisted.brustWinStreak))
+        : persisted.flags.includes("vossbeckSummoned")
+          ? 3
+          : persisted.flags.includes("duelTrainingWon2")
+            ? 2
+            : persisted.flags.includes("duelTrainingWon1")
+              ? 1
+              : 0;
+    brustWinStreakRef.current = restoredStreak;
+    duelHitsRef.current = 0;
     if (persisted.dsaCharacter) {
       const c = persisted.dsaCharacter;
       const migrated = {
