@@ -511,14 +511,14 @@ const vossbeckDuel: DialogTree = (() => {
       r1Hit: {
         id: "r1Hit",
         speaker: "VOSSBECK",
-        text: "Notiert.",
+        text: "Notiert. — Punkt Worag.",
         subtext: "Sehr trocken. Aber er senkt den Bleistift einen Millimeter.",
         next: "r2Intro",
       },
       r1Miss: {
         id: "r1Miss",
         speaker: "VOSSBECK",
-        text: "Schwach, Bewohner Worag. Ich hatte mit mehr gerechnet. — Weiter.",
+        text: "Schwach, Bewohner Worag. Ich hatte mit mehr gerechnet. — Punkt Verwaltung.",
         subtext: "Kein Konter wird nachgereicht. Vossbeck lehrt nicht. Brust hätte das tun sollen.",
         next: "r2Intro",
       },
@@ -538,7 +538,7 @@ const vossbeckDuel: DialogTree = (() => {
       r3HitResolve: {
         id: "r3HitResolve",
         speaker: "VOSSBECK",
-        text: "Notiert.",
+        text: "Notiert. — Punkt Worag.",
         choices: [
           {
             text: "[ Endduell abschließen ]",
@@ -550,7 +550,7 @@ const vossbeckDuel: DialogTree = (() => {
       r3MissResolve: {
         id: "r3MissResolve",
         speaker: "VOSSBECK",
-        text: "Schwach, Bewohner Worag.",
+        text: "Schwach, Bewohner Worag. — Punkt Verwaltung.",
         choices: [
           {
             text: "[ Endduell abschließen ]",
