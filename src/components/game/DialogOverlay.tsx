@@ -427,7 +427,7 @@ export function DialogOverlay() {
               className="w-full resize-y rounded-sm border border-dashed border-amber-glow/40 bg-background/60 px-2 py-1 font-display text-lg leading-relaxed text-foreground outline-none focus:border-amber-glow"
             />
             <div className="mt-2 text-[10px] uppercase tracking-widest text-amber-glow/60">
-              Subtext (Schmerz-Radio)
+              Subtext
             </div>
             <textarea
               key={`sub:${line.id}`}
@@ -447,7 +447,7 @@ export function DialogOverlay() {
             <p className="font-display text-lg leading-relaxed text-foreground text-shadow-hard">
               {line.text}
             </p>
-            {radioActive && line.subtext && (
+            {line.subtext && (
               <p className="slow-fade-in mt-3 font-mono-crt text-base italic text-amber-glow amber-glow">
                 ◉ {line.subtext}
               </p>
