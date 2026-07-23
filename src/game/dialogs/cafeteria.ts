@@ -9,8 +9,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "k0",
         speaker: "KOWALK",
         text: "Worag, E67, 2611. — Steht in der Liste. Was brauchen Sie?",
-        subtext:
-          "Sie hat die Liste nicht angesehen. Sie kennt die Leute auf E67.",
+        subtext: "Sie hat die Liste nicht angesehen. Sie kennt die Leute auf E67.",
         choices: [
           {
             // Neuer Hauptpfad: Insa hat Layard zu Kowalk geschickt, weil
@@ -106,7 +105,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kCodePre",
         speaker: "KOWALK",
         text: "Sie waren schon oben, oder? Hat er Sie stehen lassen. Natürlich hat er. — Setzen wir das jetzt richtig auf.",
-        subtext: "Sie sagt es nicht spöttisch. Eher so, als hätte sie diese Szene diese Woche schon dreimal gesehen.",
+        subtext:
+          "Sie sagt es nicht spöttisch. Eher so, als hätte sie diese Szene diese Woche schon dreimal gesehen.",
         requires: ["triedVossbeckEarly"],
         next: "kCode1",
       },
@@ -127,7 +127,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kCode3",
         speaker: "KOWALK",
         text: "Brust gibt das Formblatt nicht jedem. Er prüft, ob Sie satisfaktionsfähig sind — also ob Sie Vossbeck im Behörden-Ton standhalten. Sie machen einen Trainingsfall mit ihm: er eröffnet mit einer Bewohner-Phrase, Sie kontern aus dem Phrasenbuch. Drei Trainingsfälle in Folge sauber durch — Formblatt in der Hand. Vorher nicht.",
-        subtext: "Brust hält das für eine ehrenvolle Aufgabe. Lassen Sie ihn in dem Glauben, Worag — Sie brauchen ihn.",
+        subtext:
+          "Brust hält das für eine ehrenvolle Aufgabe. Lassen Sie ihn in dem Glauben, Worag — Sie brauchen ihn.",
         next: "kCode4",
       },
       kCode4: {
@@ -211,7 +212,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kInsa1",
         speaker: "KOWALK",
         text: "4317-K.",
-        subtext: "Sie wird einen Moment still. Wischt mit dem Tuch über den Tresen, obwohl der Tresen sauber ist.",
+        subtext:
+          "Sie wird einen Moment still. Wischt mit dem Tuch über den Tresen, obwohl der Tresen sauber ist.",
         next: "kInsa2",
       },
       kInsa2: {
@@ -224,7 +226,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kInsa3",
         speaker: "KOWALK",
         text: "Tilla ist die Einzige mit offener Akte. Außer Marteau — den haben sie nie geschlossen. Der lebt noch hier.",
-        subtext: "Sie sagt »Marteau« mit der Selbstverständlichkeit von jemandem, der den Namen seit zwanzig Jahren kennt.",
+        subtext:
+          "Sie sagt »Marteau« mit der Selbstverständlichkeit von jemandem, der den Namen seit zwanzig Jahren kennt.",
         choices: [
           {
             text: "[ Marteau — das ist Philippe? Mein Nachbar? ]",
@@ -241,21 +244,24 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kInsa3b",
         speaker: "KOWALK",
         text: "Philippe Marteau, 2613. Wenn er Ihnen eine 4317 gibt: das ist die alte Schicht-A-Akte. Er weiß, was die Nummer heißt.",
-        subtext: "Sie schaut Layard kurz direkt an. Etwas hängt zwischen ihnen, das sie nicht ausspricht.",
+        subtext:
+          "Sie schaut Layard kurz direkt an. Etwas hängt zwischen ihnen, das sie nicht ausspricht.",
         next: "kInsa4",
       },
       kInsa4: {
         id: "kInsa4",
         speaker: "KOWALK",
         text: "Sie brauchen einen Quittungsblanko, Schicht B. Tragen 4317-K ein, gegenzeichnen, ans linke Pneumatikrohr — Ziel E70-K. Antwort kommt zurück: Transferbogen, Bewohnernummer, Heim. Ich darf das selber nicht abschicken. Aushang. Aber Sie können.",
-        subtext: "Sie tippt zweimal mit dem Finger auf den Tresen. So lautlos, dass Brust nichts hört.",
+        subtext:
+          "Sie tippt zweimal mit dem Finger auf den Tresen. So lautlos, dass Brust nichts hört.",
         next: "kInsa5",
       },
       kInsa5: {
         id: "kInsa5",
         speaker: "KOWALK",
         text: "Aber — und das ist die Bedingung, Worag — E70-K nimmt eine 4317-K nur an, wenn der Stamm-Vorgang 4317 frisch gegengezeichnet vorliegt. Ohne den landet Ihre Quittung im Aushang. Das wird sie sehen, ohne hinzusehen.",
-        subtext: "Sie sagt »ohne hinzusehen« mit der Müdigkeit von jemandem, der das hundertmal erlebt hat.",
+        subtext:
+          "Sie sagt »ohne hinzusehen« mit der Müdigkeit von jemandem, der das hundertmal erlebt hat.",
         next: "kInsa6",
       },
       kInsa6: {
@@ -268,14 +274,16 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kInsa6b",
         speaker: "KOWALK",
         text: "Keine Angst, Worag — Sie müssen sich das nicht alles merken. Vossbeck hat den Vorgang auf dem Tisch. Sie müssen nur zu ihm durchkommen.",
-        subtext: "Sie sagt es, ohne den Tresen-Lappen aus der Hand zu legen. Es klingt, als hätte sie den Satz schon öfter zu jemandem gesagt.",
+        subtext:
+          "Sie sagt es, ohne den Tresen-Lappen aus der Hand zu legen. Es klingt, als hätte sie den Satz schon öfter zu jemandem gesagt.",
         next: "kInsa6c",
       },
       kInsa6c: {
         id: "kInsa6c",
         speaker: "KOWALK",
         text: "Und durchkommen heißt: erst Brust. Drei Trainingsfälle in Folge. Vossbeck verhandelt nur noch mit Bewohnern, die sich im Bürokratie-Alltag als schlagfertig erwiesen haben — und Brust ist heute mal wieder dran zu prüfen, wer das ist. Den Rest mache ich von hier aus.",
-        subtext: "Brust hält das für eine ehrenvolle Aufgabe. Lassen Sie ihn in dem Glauben, Worag — Sie brauchen ihn.",
+        subtext:
+          "Brust hält das für eine ehrenvolle Aufgabe. Lassen Sie ihn in dem Glauben, Worag — Sie brauchen ihn.",
         next: "kInsa6d",
       },
       kInsa6d: {
@@ -308,7 +316,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kForge1",
         speaker: "KOWALK",
         text: "Worag.",
-        subtext: "Sie sagt es so leise, dass Brust am anderen Ende der Theke nicht aufschaut. Sie zieht ihn mit dem Blick einen halben Schritt zur Seite, weg von der Ausgabe.",
+        subtext:
+          "Sie sagt es so leise, dass Brust am anderen Ende der Theke nicht aufschaut. Sie zieht ihn mit dem Blick einen halben Schritt zur Seite, weg von der Ausgabe.",
         next: "kForge2",
       },
       kForge2: {
@@ -321,7 +330,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kForge3",
         speaker: "KOWALK",
         text: "Aber Vossbeck schaut nicht auf den Bewohner — er schaut auf das Formblatt. Und ein Formblatt, das aussieht, als hätte Brust es gegengezeichnet, ist für ihn ein Formblatt.",
-        subtext: "Sie schaut nicht weg, als sie das sagt. Es ist keine Verschwörung. Es ist Routine, die einmal benannt wird.",
+        subtext:
+          "Sie schaut nicht weg, als sie das sagt. Es ist keine Verschwörung. Es ist Routine, die einmal benannt wird.",
         next: "kForge4",
       },
       kForge4: {
@@ -367,14 +377,16 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kForgeHandover2",
         speaker: "KOWALK",
         text: "Gut. Stellen Sie sich kurz so, dass Brust den Tresen nicht sieht.",
-        subtext: "Sie greift den Bogen, hält ihn flach, legt das Abdruckpapier darüber, fährt mit dem Bleistift einmal nach.",
+        subtext:
+          "Sie greift den Bogen, hält ihn flach, legt das Abdruckpapier darüber, fährt mit dem Bleistift einmal nach.",
         next: "kForgeHandover3",
       },
       kForgeHandover3: {
         id: "kForgeHandover3",
         speaker: "KOWALK",
         text: "Formblatt 17/V auf Vorsprache. Gegengezeichnet — sieht aus, als hätte Brust selbst hingekritzelt.",
-        subtext: "Sie reicht Layard das fertige Formblatt. Bleistift und Reibpapier verschwinden gleich mit unter ihrem Tuch.",
+        subtext:
+          "Sie reicht Layard das fertige Formblatt. Bleistift und Reibpapier verschwinden gleich mit unter ihrem Tuch.",
         choices: [
           {
             text: "[ Formblatt annehmen ]",
@@ -402,7 +414,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kStampedTilla1",
         speaker: "KOWALK",
         text: "4317 freigegeben. — Dann kann 4317-K raus.",
-        subtext: "Sie sagt es ohne Triumph. Eher wie jemand, der einen Eintrag von einer langen Liste streichen darf.",
+        subtext:
+          "Sie sagt es ohne Triumph. Eher wie jemand, der einen Eintrag von einer langen Liste streichen darf.",
         next: "kStampedTilla2",
       },
       kStampedTilla2: {
@@ -474,7 +487,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kAuth7",
         speaker: "KOWALK",
         text: "Brust hat das vor zwei Wochen weiterdelegiert. Bei der Vollmacht 4317 entscheidet jetzt Oberinspektor Vossbeck. Sitzt nebenan in 3603, Kantinenverwaltung. Mit Ihm reden — nicht mit uns.",
-        subtext: "Sie sagt »Vossbeck« mit der Vorsicht von jemandem, der den Namen schon einmal verloren hat.",
+        subtext:
+          "Sie sagt »Vossbeck« mit der Vorsicht von jemandem, der den Namen schon einmal verloren hat.",
         next: "kAuth8",
       },
       kAuth8: {
@@ -505,7 +519,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kSideA1",
         speaker: "KOWALK",
         text: "Marteau. — Marteau wohnt neben der Klopfwand. Ich weiß.",
-        subtext: "Sie hat die Vollmacht halb hochgehoben und tippt mit dem Finger auf die Unterschrift, bevor sie den Namen ausspricht.",
+        subtext:
+          "Sie hat die Vollmacht halb hochgehoben und tippt mit dem Finger auf die Unterschrift, bevor sie den Namen ausspricht.",
         next: "kSideA2",
       },
       kSideA2: {
@@ -617,7 +632,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kRecap",
         speaker: "KOWALK",
         text: "Brust testet, Vossbeck entscheidet. Drei Trainingsfälle in Folge bei Brust — und Sie dürfen rein. Den Rest mache ich von hier aus, Worag.",
-        subtext: "Sie sagt es ruhig. Wie jemand, der einen Tresen schon viele Bewohner überstehen sehen hat.",
+        subtext:
+          "Sie sagt es ruhig. Wie jemand, der einen Tresen schon viele Bewohner überstehen sehen hat.",
         next: "k0",
       },
       kBye: {
@@ -698,7 +714,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "bAuth3",
         speaker: "BRUST",
         text: "Oberinspektor Vossbeck nimmt Vorgänge nur von Bewohnern entgegen, die im Bürokratie-Alltag schlagfertig sind. Mir ist die Aufgabe übertragen, das zu prüfen. — Wir können einen Trainingsfall durchgehen. Drei in Folge bei mir, dann sind Sie für Vossbeck satisfaktionsfähig.",
-        subtext: "Er sagt »satisfaktionsfähig« mit der Ehrfurcht eines Mannes, der das Wort jeden Morgen einmal vor dem Spiegel übt.",
+        subtext:
+          "Er sagt »satisfaktionsfähig« mit der Ehrfurcht eines Mannes, der das Wort jeden Morgen einmal vor dem Spiegel übt.",
         choices: [
           {
             text: "Trainingsfall, ja.",
@@ -874,7 +891,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "vAfter",
         speaker: "VOSSBECK",
         text: "Herr Worag, Respekt. Sie sind im Behörden-Ton zu Hause. Haben Sie eine Fallnummer? Nein? Dann bitte ich Sie, mich meine Arbeit machen zu lassen.",
-        subtext: "Er sagt es ohne Hohn — fast kollegial. Der Bleistift bleibt senkrecht in der Hand.",
+        subtext:
+          "Er sagt es ohne Hohn — fast kollegial. Der Bleistift bleibt senkrecht in der Hand.",
         requires: ["duelEndgameWon"],
         end: true,
       },
@@ -925,10 +943,26 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
     id: "vossbeckUnreadyOne",
     start: "u0",
     lines: {
-      u0: { id: "u0", speaker: "SYSTEM", text: "[ Vossbeck blättert weiter, ohne den Bleistift abzulegen. ]", next: "u1" },
+      u0: {
+        id: "u0",
+        speaker: "SYSTEM",
+        text: "[ Vossbeck blättert weiter, ohne den Bleistift abzulegen. ]",
+        next: "u1",
+      },
       u1: { id: "u1", speaker: "VOSSBECK", text: "Formblatt.", next: "u2" },
-      u2: { id: "u2", speaker: "VOSSBECK", text: "Sie haben keines. Siebzehn-V auf Vorsprache. Ohne das nichts.", subtext: "Er sagt es, ohne aufzusehen. Der Bleistift bleibt senkrecht.", next: "u3" },
-      u3: { id: "u3", speaker: "VOSSBECK", text: "Brust hat Ihnen einen ersten Trainingssieg notiert. Zwei fehlen — dann gibt er Ihnen das Formblatt.", next: "u4" },
+      u2: {
+        id: "u2",
+        speaker: "VOSSBECK",
+        text: "Sie haben keines. Siebzehn-V auf Vorsprache. Ohne das nichts.",
+        subtext: "Er sagt es, ohne aufzusehen. Der Bleistift bleibt senkrecht.",
+        next: "u3",
+      },
+      u3: {
+        id: "u3",
+        speaker: "VOSSBECK",
+        text: "Brust hat Ihnen einen ersten Trainingssieg notiert. Zwei fehlen — dann gibt er Ihnen das Formblatt.",
+        next: "u4",
+      },
       u4: { id: "u4", speaker: "VOSSBECK", text: "Zurück zum Tresen. Tür ist da.", end: true },
     },
   },
@@ -936,10 +970,26 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
     id: "vossbeckUnreadyTwo",
     start: "u0",
     lines: {
-      u0: { id: "u0", speaker: "SYSTEM", text: "[ Vossbeck blättert weiter, ohne den Bleistift abzulegen. ]", next: "u1" },
+      u0: {
+        id: "u0",
+        speaker: "SYSTEM",
+        text: "[ Vossbeck blättert weiter, ohne den Bleistift abzulegen. ]",
+        next: "u1",
+      },
       u1: { id: "u1", speaker: "VOSSBECK", text: "Formblatt.", next: "u2" },
-      u2: { id: "u2", speaker: "VOSSBECK", text: "Sie haben keines. Siebzehn-V auf Vorsprache. Ohne das nichts.", subtext: "Er sagt es, ohne aufzusehen. Der Bleistift bleibt senkrecht.", next: "u3" },
-      u3: { id: "u3", speaker: "VOSSBECK", text: "Brust hat Ihnen zwei Trainingssiege notiert. Einen noch — dann gibt er Ihnen das Formblatt.", next: "u4" },
+      u2: {
+        id: "u2",
+        speaker: "VOSSBECK",
+        text: "Sie haben keines. Siebzehn-V auf Vorsprache. Ohne das nichts.",
+        subtext: "Er sagt es, ohne aufzusehen. Der Bleistift bleibt senkrecht.",
+        next: "u3",
+      },
+      u3: {
+        id: "u3",
+        speaker: "VOSSBECK",
+        text: "Brust hat Ihnen zwei Trainingssiege notiert. Einen noch — dann gibt er Ihnen das Formblatt.",
+        next: "u4",
+      },
       u4: { id: "u4", speaker: "VOSSBECK", text: "Zurück zum Tresen. Tür ist da.", end: true },
     },
   },
@@ -1005,7 +1055,11 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         speaker: "TJARK",
         text: "Was willst du wissen?",
         choices: [
-          { text: "Was ist das hier eigentlich?", next: "tWhat", hiddenWhen: ["askedTjarkAboutDsa"] },
+          {
+            text: "Was ist das hier eigentlich?",
+            next: "tWhat",
+            hiddenWhen: ["askedTjarkAboutDsa"],
+          },
           { text: "Wer seid ihr drei?", next: "tWho", hiddenWhen: ["askedTjarkAboutGroup"] },
           { text: "Wie funktioniert das?", next: "tRules", hiddenWhen: ["askedTjarkAboutRules"] },
           { text: "Was ist der Plan heute?", next: "tPlan", hiddenWhen: ["askedTjarkAboutPlan"] },
@@ -1043,7 +1097,11 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         speaker: "TJARK",
         text: "Und ich bin der Spielleiter. Ich werfe Steine, Räuber und gelegentlich einen Drachen. Mein Job ist, dass ihr eine gute Geschichte erlebt. Nicht, dass ihr alle überlebt.",
         choices: [
-          { text: "Beruhigend.", next: "tHub", action: (api) => api.setFlag("askedTjarkAboutGroup") },
+          {
+            text: "Beruhigend.",
+            next: "tHub",
+            action: (api) => api.setFlag("askedTjarkAboutGroup"),
+          },
         ],
       },
       tRules: {
@@ -1057,7 +1115,11 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         speaker: "TJARK",
         text: "Danach suchst du dir eine Klasse, deren Mindestwerte du erreichst. Krieger, Streuner, Magier, Elf, Zwerg, Gaukler, Thorwaler, Druide. Wenn nichts passt, wirfst du nochmal. Und nochmal, wenn du magst.",
         choices: [
-          { text: "Klingt machbar.", next: "tHub", action: (api) => api.setFlag("askedTjarkAboutRules") },
+          {
+            text: "Klingt machbar.",
+            next: "tHub",
+            action: (api) => api.setFlag("askedTjarkAboutRules"),
+          },
         ],
       },
       tPlan: {

@@ -17,15 +17,8 @@ import {
 import { useDevStep } from "@/dev/devPlaybackState";
 
 export function DialogOverlay() {
-  const {
-    dialogId,
-    dialogLineId,
-    advanceDialog,
-    closeDialog,
-    radioActive,
-    api,
-    openFreeChat,
-  } = useGame();
+  const { dialogId, dialogLineId, advanceDialog, closeDialog, radioActive, api, openFreeChat } =
+    useGame();
   const { ttsEnabled } = useSettings();
   const isCoarsePointer = useCoarsePointer();
   const dev = useDevMode();
@@ -94,12 +87,14 @@ export function DialogOverlay() {
     if (!line) return;
     if (editing) return;
     const hasChoices =
-      (line.choices?.filter((c) => {
-        if (c.requiresRadio && !radioActive) return false;
-        if (c.requires && c.requires.some((f) => !api.hasFlag(f))) return false;
-        if (c.hiddenWhen && c.hiddenWhen.some((f) => api.hasFlag(f))) return false;
-        return true;
-      }) ?? []).length > 0;
+      (
+        line.choices?.filter((c) => {
+          if (c.requiresRadio && !radioActive) return false;
+          if (c.requires && c.requires.some((f) => !api.hasFlag(f))) return false;
+          if (c.hiddenWhen && c.hiddenWhen.some((f) => api.hasFlag(f))) return false;
+          return true;
+        }) ?? []
+      ).length > 0;
     if (hasChoices) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === " " || e.key === "Enter") {
@@ -149,9 +144,28 @@ export function DialogOverlay() {
 
   // Liste der erlaubten Sprecher — synchron mit DialogLine["speaker"] in types.ts.
   const SPEAKERS: string[] = [
-    "LAYARD","INSA","PHILIPPE","SANITÄTER","SYSTEM","RADIO","MIKAEL",
-    "RECEPTION","MIRA","BODO","HELKA","ENNIS","STEGMANN","OKWU","TJARK",
-    "BREM","YELVA","KOWALK","BRUST","VOSSBECK","BRAM","MARV",
+    "LAYARD",
+    "INSA",
+    "PHILIPPE",
+    "SANITÄTER",
+    "SYSTEM",
+    "RADIO",
+    "MIKAEL",
+    "RECEPTION",
+    "MIRA",
+    "BODO",
+    "HELKA",
+    "ENNIS",
+    "STEGMANN",
+    "OKWU",
+    "TJARK",
+    "BREM",
+    "YELVA",
+    "KOWALK",
+    "BRUST",
+    "VOSSBECK",
+    "BRAM",
+    "MARV",
   ];
 
   // Vorgängerzeile finden (für „Merge ↑").
@@ -175,9 +189,7 @@ export function DialogOverlay() {
     if (text.length < 4) return;
     // Caret im Editor-Textarea bevorzugen, sonst Mitte des Textes
     // auf nächster Wortgrenze.
-    const ta = document.querySelector<HTMLTextAreaElement>(
-      "textarea[data-dlg-edit-text]",
-    );
+    const ta = document.querySelector<HTMLTextAreaElement>("textarea[data-dlg-edit-text]");
     let cut = -1;
     if (ta && document.activeElement === ta) {
       const pos = ta.selectionStart ?? -1;
@@ -201,7 +213,14 @@ export function DialogOverlay() {
       // Suche nächstgelegene Wortgrenze.
       const fwd = text.indexOf(" ", target);
       const bwd = text.lastIndexOf(" ", target);
-      cut = fwd === -1 ? bwd : (bwd === -1 ? fwd : (Math.abs(fwd - target) < Math.abs(target - bwd) ? fwd : bwd));
+      cut =
+        fwd === -1
+          ? bwd
+          : bwd === -1
+            ? fwd
+            : Math.abs(fwd - target) < Math.abs(target - bwd)
+              ? fwd
+              : bwd;
       if (cut <= 0 || cut >= text.length) cut = target;
     }
     const a = text.slice(0, cut).trimEnd();
@@ -236,11 +255,7 @@ export function DialogOverlay() {
   };
   const align = speakerAlign[line.speaker] ?? "center";
   const justifyClass =
-    align === "end"
-      ? "justify-end"
-      : align === "start"
-        ? "justify-start"
-        : "justify-center";
+    align === "end" ? "justify-end" : align === "start" ? "justify-start" : "justify-center";
 
   const speakerColor: Record<string, string> = {
     LAYARD: "text-foreground",
@@ -286,10 +301,7 @@ export function DialogOverlay() {
           }
         }}
       >
-        <span
-          className="absolute right-3 top-3"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <span className="absolute right-3 top-3" onClick={(e) => e.stopPropagation()}>
           <CloseButton
             onClick={() => {
               stopSpeech();
@@ -312,7 +324,9 @@ export function DialogOverlay() {
               className="rounded-sm border border-amber-glow/60 bg-background/80 px-2 py-0.5 font-mono-crt text-xs uppercase tracking-[0.2em] text-amber-glow"
             >
               {SPEAKERS.map((s) => (
-                <option key={s} value={s}>{s}</option>
+                <option key={s} value={s}>
+                  {s}
+                </option>
               ))}
             </select>
           ) : (
@@ -423,8 +437,7 @@ export function DialogOverlay() {
               onBlur={(e) => {
                 if (!dialogId) return;
                 const v = e.currentTarget.value.trim();
-                if (v !== (line.subtext ?? ""))
-                  setField(dialogId, line.id, { subtext: v });
+                if (v !== (line.subtext ?? "")) setField(dialogId, line.id, { subtext: v });
               }}
               className="w-full resize-y rounded-sm border border-dashed border-amber-glow/30 bg-background/60 px-2 py-1 font-mono-crt text-base italic text-amber-glow/80 outline-none focus:border-amber-glow"
             />
@@ -462,9 +475,7 @@ export function DialogOverlay() {
                 }}
                 className="group flex items-center gap-2 rounded-sm border border-border bg-secondary/60 px-3 py-2 text-left text-sm text-foreground transition hover:border-amber-glow/70 hover:bg-amber-glow/10"
               >
-                <span className="text-amber-glow opacity-60 group-hover:opacity-100">
-                  ▸
-                </span>
+                <span className="text-amber-glow opacity-60 group-hover:opacity-100">▸</span>
                 {editing ? (
                   <input
                     key={`ch:${line.id}:${i}`}
