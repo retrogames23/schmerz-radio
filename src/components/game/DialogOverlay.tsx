@@ -457,8 +457,7 @@ export function DialogOverlay() {
                         ? choice.nextDialog(api)
                         : choice.nextDialog;
                     api.startDialog(nextDialog);
-                  }
-                  else if (choice.next) advanceDialog(choice.next);
+                  } else if (choice.next) advanceDialog(choice.next);
                   else advanceDialog();
                 }}
                 className="group flex items-center gap-2 rounded-sm border border-border bg-secondary/60 px-3 py-2 text-left text-sm text-foreground transition hover:border-amber-glow/70 hover:bg-amber-glow/10"
