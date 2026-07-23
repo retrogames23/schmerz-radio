@@ -730,7 +730,19 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
               api.setFlag("duelOffered");
               api.setFlag("duelStarted");
             },
-            nextDialog: "cafeteriaTrainingA",
+            nextDialog: (api) => {
+              if (api.hasFlag("duelTrainingNextC")) {
+                api.clearFlag("duelTrainingNextC");
+                return "cafeteriaTrainingC";
+              }
+              if (api.hasFlag("duelTrainingNextB")) {
+                api.clearFlag("duelTrainingNextB");
+                api.setFlag("duelTrainingNextC");
+                return "cafeteriaTrainingB";
+              }
+              api.setFlag("duelTrainingNextB");
+              return "cafeteriaTrainingA";
+            },
           },
           {
             text: "Lieber nicht. Ich überlege es mir.",

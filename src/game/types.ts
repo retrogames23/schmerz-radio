@@ -250,6 +250,8 @@ export type StoryFlag =
   | "duelStarted"
   | "duelWon"
   | "duelLost"
+  | "duelTrainingNextB"
+  | "duelTrainingNextC"
   // Bürokratie-Duell — Mehrstufiges Lernsystem (Vossbeck-Endgegner)
   | "duelTrainingWon1"
   | "duelTrainingWon2"
@@ -512,7 +514,7 @@ export interface DialogChoice {
   text: string;
   next?: string;
   /** Wechselt nach der Action direkt in einen anderen Dialog-Baum. */
-  nextDialog?: string;
+  nextDialog?: string | ((api: GameApi) => string);
   action?: (api: GameApi) => void;
   requires?: StoryFlag[];
   hiddenWhen?: StoryFlag[];

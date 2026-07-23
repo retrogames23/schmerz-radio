@@ -451,7 +451,13 @@ export function DialogOverlay() {
                 onClick={(event) => {
                   event.stopPropagation();
                   choice.action?.(api);
-                  if (choice.nextDialog) api.startDialog(choice.nextDialog);
+                  if (choice.nextDialog) {
+                    const nextDialog =
+                      typeof choice.nextDialog === "function"
+                        ? choice.nextDialog(api)
+                        : choice.nextDialog;
+                    api.startDialog(nextDialog);
+                  }
                   else if (choice.next) advanceDialog(choice.next);
                   else advanceDialog();
                 }}
