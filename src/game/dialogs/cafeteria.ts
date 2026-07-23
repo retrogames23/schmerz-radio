@@ -126,7 +126,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kCode3: {
         id: "kCode3",
         speaker: "KOWALK",
-        text: "Brust gibt das Formblatt nicht jedem. Er prüft, ob Sie satisfaktionsfähig sind — also ob Sie Vossbeck im Behörden-Ton standhalten. Sie machen einen Trainingsfall mit ihm: er eröffnet mit einer Bewohner-Phrase, Sie kontern aus dem Phrasenbuch. Drei Trainingsfälle in Folge sauber durch — Formblatt in der Hand. Vorher nicht.",
+        text: "Brust lässt Sie nicht unvorbereitet vorsprechen. Reden Sie mit ihm — er weiß, was gemeint ist.",
         subtext:
           "Brust hält das für eine ehrenvolle Aufgabe. Lassen Sie ihn in dem Glauben, Worag — Sie brauchen ihn.",
         next: "kCode4",
@@ -134,7 +134,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kCode4: {
         id: "kCode4",
         speaker: "KOWALK",
-        text: "Mit dem Formblatt dürfen Sie bei Vossbeck vorsprechen. Dann läuft das Endduell — drei Runden, zwei Treffer. Bei Sieg legt Vossbeck den Code direkt in Ihr Terminal-Postfach.",
+        text: "Mit dem Formblatt in der Hand dürfen Sie bei Vossbeck vorsprechen. Den Code legt er Ihnen dann direkt ins Terminal-Postfach.",
         choices: [
           {
             text: "Verstanden. Ich rede mit Brust.",
@@ -281,7 +281,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kInsa6c: {
         id: "kInsa6c",
         speaker: "KOWALK",
-        text: "Und durchkommen heißt: erst Brust. Drei Trainingsfälle in Folge. Vossbeck verhandelt nur noch mit Bewohnern, die sich im Bürokratie-Alltag als schlagfertig erwiesen haben — und Brust ist heute mal wieder dran zu prüfen, wer das ist. Den Rest mache ich von hier aus.",
+        text: "Und durchkommen heißt: erst Brust. Der lässt Sie nicht unvorbereitet zu Vossbeck. Den Rest mache ich von hier aus.",
         subtext:
           "Brust hält das für eine ehrenvolle Aufgabe. Lassen Sie ihn in dem Glauben, Worag — Sie brauchen ihn.",
         next: "kInsa6d",
@@ -289,13 +289,13 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kInsa6d: {
         id: "kInsa6d",
         speaker: "KOWALK",
-        text: "Verstehen Sie das richtig: Vossbeck entscheidet nicht über Ihren Vorgang, solange er Sie nicht ernst nimmt. Er prüft zuerst, ob Sie überhaupt satisfaktionsfähig sind — ob Sie im Behörden-Ton standhalten. Erst wenn das geklärt ist, schaut er in die Akte.",
+        text: "Vossbeck schaut nicht in die Akte, solange er Sie nicht ernst nimmt. Brust weiß, wie er das prüft.",
         next: "kInsa6e",
       },
       kInsa6e: {
         id: "kInsa6e",
         speaker: "KOWALK",
-        text: "Heißt konkret: Brust eröffnet jede Runde mit einer Bewohner-Phrase. Sie kontern aus dem Phrasenbuch. Jeder Konter, den Sie sauber sitzen lassen, landet dort drin. Drei Trainingsfälle in Folge ohne dass Sie zerbröseln — und Vossbeck lässt Sie über den Vorgang reden. Vorher nicht.",
+        text: "Gehen Sie zu Brust. Er weiß, was gemeint ist.",
         choices: [
           {
             text: "Verstanden. Ich rede mit Vossbeck.",
@@ -494,13 +494,13 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kAuth8: {
         id: "kAuth8",
         speaker: "KOWALK",
-        text: "Aber Vossbeck redet nur mit Leuten, die im Bürokratie-Alltag mitreden können. Brust trainiert die Bewohner manchmal — fiktive Kantinenfälle, drei in Folge gewonnen, und Sie gelten bei Vossbeck als satisfaktionsfähig. Wer das nicht ist, läuft bei ihm gegen eine Wand. Eine sehr höfliche Wand.",
+        text: "Aber Vossbeck redet nur mit Leuten, die Brust vorher schlagfertig gefunden hat. Reden Sie mit Brust — er lässt Sie nicht unvorbereitet zu Vossbeck.",
         next: "kAuth8b",
       },
       kAuth8b: {
         id: "kAuth8b",
         speaker: "KOWALK",
-        text: "Vossbeck entscheidet erst, wenn er Sie ernst nimmt — vorher liest er Ihre Akte gar nicht. Brust eröffnet, Sie kontern aus dem Phrasenbuch, jeder Konter landet dort drin. Drei Trainingsfälle in Folge sauber durch — und Vossbeck verhandelt. Vorher nicht.",
+        text: "Bringen Sie das mit Brust hinter sich. Dann verhandelt Vossbeck.",
         choices: [
           {
             text: "Verstanden. Ich übe mit Brust.",
@@ -631,7 +631,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       kRecap: {
         id: "kRecap",
         speaker: "KOWALK",
-        text: "Brust testet, Vossbeck entscheidet. Drei Trainingsfälle in Folge bei Brust — und Sie dürfen rein. Den Rest mache ich von hier aus, Worag.",
+        text: "Brust prüft, Vossbeck entscheidet. Bringen Sie das mit Brust hinter sich. Den Rest mache ich von hier aus, Worag.",
         subtext:
           "Sie sagt es ruhig. Wie jemand, der einen Tresen schon viele Bewohner überstehen sehen hat.",
         next: "k0",
@@ -713,12 +713,12 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       bAuth3: {
         id: "bAuth3",
         speaker: "BRUST",
-        text: "Oberinspektor Vossbeck nimmt Vorgänge nur von Bewohnern entgegen, die im Bürokratie-Alltag schlagfertig sind. Mir ist die Aufgabe übertragen, das zu prüfen. — Wir können einen Trainingsfall durchgehen. Drei in Folge bei mir, dann sind Sie für Vossbeck satisfaktionsfähig.",
+        text: "Oberverwalter Vossbeck empfängt keine unvorbereiteten Bewohner. Mir ist die Prüfung übertragen. — Setzen Sie sich. Wir gehen einen Fall durch.",
         subtext:
           "Er sagt »satisfaktionsfähig« mit der Ehrfurcht eines Mannes, der das Wort jeden Morgen einmal vor dem Spiegel übt.",
         choices: [
           {
-            text: "Trainingsfall, ja.",
+            text: "Gut. Fangen wir an.",
             next: "bDuelOffer",
             action: (api) => api.setFlag("knowsVossbeckPath"),
           },
@@ -732,17 +732,17 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       bDuelOffer: {
         id: "bDuelOffer",
         speaker: "BRUST",
-        text: "Trainingsfall. Erfundene Konstellation aus dem Kantinenbetrieb. Ich eröffne mit einer typischen Bewohner-Phrase — Sie kontern. Zwei Treffer mehr als Fehler: bestanden. Drei Fehler: für heute schließen wir.",
+        text: "Erfundene Konstellation aus dem Kantinenbetrieb. Ich eröffne, Sie antworten.",
         next: "bDuelOffer2",
       },
       bDuelOffer2: {
         id: "bDuelOffer2",
         speaker: "BRUST",
-        text: "Was Sie aus jedem Fall mitnehmen, landet in Ihrem Phrasenbuch. Drei gewonnene Trainingsfälle in Folge — und Vossbeck nimmt Sie ernst. Ich darf das beurkunden.",
+        text: "Wer hier besteht, ist für Vossbeck vorsprachefähig. Ich darf das beurkunden.",
         subtext: "»Beurkunden« sagt er, als wäre es ein Ehrentitel.",
         choices: [
           {
-            text: "[ Trainingsfall beginnen ]",
+            text: "[ Beginnen ]",
             action: (api) => {
               api.setFlag("duelOffered");
               api.setFlag("duelStarted");
