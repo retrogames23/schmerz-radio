@@ -729,16 +729,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             action: (api) => {
               api.setFlag("duelOffered");
               api.setFlag("duelStarted");
-              const streak = api.getBrustWinStreak();
-              const tree =
-                streak === 0
-                  ? "cafeteriaTrainingA"
-                  : streak === 1
-                    ? "cafeteriaTrainingB"
-                    : "cafeteriaTrainingC";
-              api.startDialog(tree);
             },
-            // Dialog wechselt zum Trainingsfall-Tree.
+            nextDialog: "cafeteriaTrainingA",
           },
           {
             text: "Lieber nicht. Ich überlege es mir.",
@@ -849,10 +841,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         choices: [
           {
             text: "[ Endduell beginnen ]",
-            action: (api) => {
-              api.setFlag("metVossbeck");
-              api.startDialog("vossbeckDuel");
-            },
+            action: (api) => api.setFlag("metVossbeck"),
+            nextDialog: "vossbeckDuel",
           },
           {
             text: "Ich brauche noch einen Moment.",

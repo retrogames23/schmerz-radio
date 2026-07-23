@@ -448,15 +448,12 @@ export function DialogOverlay() {
               <button
                 key={i}
                 type="button"
-                onClick={() => {
+                onClick={(event) => {
+                  event.stopPropagation();
                   choice.action?.(api);
-                  if (choice.next) advanceDialog(choice.next);
-                  // Wenn kein `next` gesetzt ist, aber eine `action` läuft,
-                  // darf die Action die Dialog-Navigation selbst übernehmen
-                  // (z. B. `api.startDialog(...)` für einen Tree-Wechsel).
-                  // Sonst würde `advanceDialog()` den frisch gestarteten
-                  // Dialog sofort wieder schließen.
-                  else if (!choice.action) advanceDialog();
+                  if (choice.nextDialog) api.startDialog(choice.nextDialog);
+                  else if (choice.next) advanceDialog(choice.next);
+                  else advanceDialog();
                 }}
                 className="group flex items-center gap-2 rounded-sm border border-border bg-secondary/60 px-3 py-2 text-left text-sm text-foreground transition hover:border-amber-glow/70 hover:bg-amber-glow/10"
               >

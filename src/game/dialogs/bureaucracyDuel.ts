@@ -65,10 +65,8 @@ function resolveTraining(api: GameApi, fallNum: 1 | 2 | 3): void {
         }
       }
     }
-    api.startDialog("duelTrainingResult");
   } else {
     api.resetBrustWinStreak();
-    api.startDialog("duelTrainingResult");
   }
 }
 
@@ -83,7 +81,6 @@ function resolveEndgame(api: GameApi): void {
       api.setFlag("vossbeckGaveCode");
       api.setFlag("calledForCode");
     }
-    api.startDialog("duelEndgameResult");
   } else {
     // Drei Versuche bei Vossbeck zugelassen — siehe vossbeckAttempt*Lost.
     if (api.hasFlag("vossbeckAttempt2Lost")) {
@@ -93,7 +90,6 @@ function resolveEndgame(api: GameApi): void {
     } else {
       api.setFlag("vossbeckAttempt1Lost");
     }
-    api.startDialog("duelEndgameResult");
   }
 }
 
@@ -307,6 +303,7 @@ function buildTrainingFall(
         {
           text: "[ Trainingsfall abschließen ]",
           action: (a) => resolveTraining(a, fallNum),
+          nextDialog: "duelTrainingResult",
         },
       ],
     },
@@ -321,10 +318,12 @@ function buildTrainingFall(
             a.learnParagraph(r3Correct.id);
             resolveTraining(a, fallNum);
           },
+          nextDialog: "duelTrainingResult",
         },
         {
           text: "[ Übergehen und Fall abschließen ]",
           action: (a) => resolveTraining(a, fallNum),
+          nextDialog: "duelTrainingResult",
         },
       ],
     },
@@ -556,6 +555,7 @@ const vossbeckDuel: DialogTree = (() => {
           {
             text: "[ Endduell abschließen ]",
             action: (a) => resolveEndgame(a),
+            nextDialog: "duelEndgameResult",
           },
         ],
       },
@@ -567,6 +567,7 @@ const vossbeckDuel: DialogTree = (() => {
           {
             text: "[ Endduell abschließen ]",
             action: (a) => resolveEndgame(a),
+            nextDialog: "duelEndgameResult",
           },
         ],
       },

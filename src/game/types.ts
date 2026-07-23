@@ -511,6 +511,8 @@ export interface NpcSprite {
 export interface DialogChoice {
   text: string;
   next?: string;
+  /** Wechselt nach der Action direkt in einen anderen Dialog-Baum. */
+  nextDialog?: string;
   action?: (api: GameApi) => void;
   requires?: StoryFlag[];
   hiddenWhen?: StoryFlag[];
