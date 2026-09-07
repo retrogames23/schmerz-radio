@@ -1,40 +1,47 @@
-# Item-Kombinations-Rätsel für Akt I: „Regler vier klemmt“
+# Pflicht-Item-Rätsel für Akt I: „Der Code muss aufgeschrieben werden“
 
 ## Ausgangslage (geprüft)
 
-- Es gibt bereits genau **eine** echte Item-Kombination: Bleistiftstummel + Vollmacht 4317 (+ Quittungsblock) → Trockensiegel-Abdruck (`src/game/combine.ts`). Alles andere sind Reaktionstexte, wenn man ein Item auf eine Person zieht.
-- Mehrere Items werden praktisch nie gebraucht: **Ölkännchen** (nur MARV), **Vierkantschlüssel** (nur die Kellertür), Kaugummi, Maske.
-- Der Heizungspfad im Keller E67 (`src/game/scenes/kellerE67.ts`) ist heute ein einziger Klick: Wartungsbuch lesen → Regler drehen → Mira verlässt die Wohnung. Der Vertrauenspfad (drei Aushänge für Mira) bleibt die gleichwertige Alternative — deshalb darf der Heizungspfad ruhig ein echtes Rätsel sein.
+- Es gibt bislang **eine** echte Item-Kombination im Spiel: Bleistiftstummel + Vollmacht 4317 (+ Quittungsblock) → Trockensiegel-Abdruck (`src/game/combine.ts`). Sie liegt im **optionalen** Fälschungspfad bei Kowalk.
+- Der Pflichtpfad läuft laut `src/game/questGraph.ts` zwingend über: Tagescode an Miras Terminal lesen (`readTagescodeViaMira`) → Sektor-Schleuse E67 → E71 mit dem Tagescode öffnen (`sectorDoorOpen`) → Akt II.
+- Heute genügt dort ein Blick auf den Bildschirm: Der Code steht im Verteiler, das Keypad akzeptiert ihn danach. Kein Gegenstand, kein Handgriff.
+
+Genau hier setzt das neue Rätsel an — auf dem Pflichtweg, an dem **jeder** Spieler vorbeimuss.
 
 ## Das Rätsel
 
-Im Keller ist bei Regler vier (Steigstrang 46) der Alu-Drehknopf abgebrochen. Übrig ist ein **Vierkantstummel** an der Spindel: verharzt/festgerostet — und die Spindel sitzt direkt am Vorlauf, also heiß.
+An Miras Maschine zeigt der Verteiler der Leitstelle den Tagescode nur als **flüchtige Zeile**: Der Verteiler blendet sie nach wenigen Sekunden aus und schreibt sie protokollpflichtig nicht erneut aus („AUSGABE EINMALIG — VERMERK DURCH EMPFÄNGER“). Layard ist Verwaltungsangestellter: Er merkt sich nichts, er **vermerkt**.
 
-Layard braucht drei Dinge, in dieser Reihenfolge:
+Damit braucht er zwei Dinge in der Hand, bevor er den Befehl absetzt:
 
-1. **Ölkännchen auf den Regler** → das Öl kriecht in das Gewinde. („Jetzt ginge er. Wenn man ihn anfassen könnte.“)
-2. **Lappen von der Wäscheleine** (neues, im Keller aufnehmbares Item am bestehenden Hotspot „Wäscheleinen“).
-3. **Lappen + Vierkantschlüssel kombinieren** → „umwickelter Vierkantschlüssel“. Damit den Regler bedienen → Strang 46 auf Maximum, wie bisher.
+1. **Bleistiftstummel** (`pencilStub`, liegt wie gehabt in 2612).
+2. **Etwas Beschreibbares**: Blanko-Quittungsbogen Schicht B, Bodos Wartungsnotiz 5610, ein Aushang-Beleg — oder, als immer verfügbarer Notnagel, die leere Vorsatzseite des **Handbuchs E67** (hat Layard von Beginn an).
 
-Alle drei Schritte geben bei falscher Reihenfolge einen Text, der den nächsten Schritt benennt (trocken, in Layards Ton) — kein Raten.
+**Kombination:** Bleistift auf Papier ziehen → neues Item **„Notizzettel mit Tagescode“** — aber nur, wenn Layard den Code gerade vor Augen hatte. Reihenfolge und Rückmeldungen:
 
-## Warum das logisch und lore-konform ist
+- Terminal ohne Schreibzeug → „Die Zeile steht drei Sekunden. Layard hat nichts, um sie festzuhalten.“ (setzt `sawTagescodeUnnoted`, damit die Hinweise greifen)
+- Bleistift + Papier ohne vorherigen Blick auf den Verteiler → „Ein Zettel mit nichts drauf ist ein Zettel.“
+- Bleistift + Papier nach dem Blick → Layard schreibt mit, Item entsteht, Flag `notedTagescode`.
+- Am Keypad der Sektor-Schleuse ist ab jetzt der **Notizzettel** die Voraussetzung (statt nur des Flags `readTagescodeViaMira`). Ohne ihn: „Vier Ziffern. Layard hat sie gesehen. Gestern. Ungefähr.“
 
-- Betriebstechnik, die seit 1994 niemand mehr wartet: abgebrochener Knopf, festes Gewinde, heiße Steigleitung. Kein Sci-Fi, kein Resonanz-Zauber.
-- Der Vierkantschlüssel kommt von Bodo, gehört also ohnehin ins Wartungsmilieu; der Lappen hängt seit Jahren im selben Raum.
-- Layard bleibt Verwaltungsangestellter: er improvisiert vorsichtig, er bricht nichts auf.
+## Warum das funktioniert
 
-## Keine Sackgassen
+- **Zwingend:** beide Zugangswege zu Miras Maschine (Vertrauenspfad und Heizungspfad) münden in dieselbe Terminal-Szene; die Schleuse ist der einzige Ausgang aus Akt I.
+- **Logisch lösbar:** Bleistift und Handbuch sind beide unabhängig vom Rätsel erreichbar, das Handbuch besitzt Layard ohnehin. Es gibt also nie eine Sackgasse — auch nicht, wenn der Quittungsbogen längst bei Kowalk gelandet ist.
+- **Lore-konform:** „Ausgabe einmalig, Vermerk durch Empfänger“ ist genau die Verwaltungslogik des Mandatsbunds; Layards Rolle als Aktenmensch wird zum Werkzeug statt zum Hindernis.
+- **Charakter:** kein Aufbrechen, kein Hacken — er schreibt mit. Das ist die Figur.
 
-- **Ölkännchen wird nicht mehr verbraucht.** Heute verschwindet es beim Ölen von MARV; künftig bleibt es im Inventar (nur das Flag `marvOiled` wird gesetzt). Damit kann die Reihenfolge Kneipe/Keller nie zum Dead End führen.
-- Wer das Kännchen nie holt: Der Vertrauenspfad über die drei Aushänge bleibt unverändert offen — Miras Terminal ist also weiterhin garantiert erreichbar.
-- Zwei Hinweisgeber: das Wartungsbuch im Keller („Regler vier, Knopf fehlt seit 94, Spindel ölen“) und Bodo, der beim Übergeben des Vierkantschlüssels beiläufig „nichts mit bloßer Hand anfassen“ sagt.
-- Das Rätsel wird in `src/game/hints.ts` als eigene Hint-Stufe geführt, damit das Hinweissystem den Spieler nicht hängen lässt.
+## Hinweiskette (kein Ratespiel)
+
+- Miras Terminal-Text nennt die Einmal-Ausgabe schon beim ersten Zugriff.
+- Mira sagt trocken: „Mitschreiben. Die Leitstelle wiederholt sich nicht.“
+- `src/game/hints.ts` bekommt zwei Stufen: „Layard braucht Schreibzeug“ → „Der Bleistift liegt in 2612; beschreibbar ist auch die Vorsatzseite des Handbuchs.“
 
 ## Umfang (technisch)
 
-- `src/game/types.ts`: zwei neue Item-IDs (`lappen`, `vierkantschluesselUmwickelt`), Icons in `ItemIcon.tsx`.
-- `src/game/scenes/kellerE67.ts`: Wäscheleinen-Hotspot wird aufnehmbar; `heatingControl` bekommt die Zustandslogik (verharzt → geölt → bedienbar) mit den Flags `reglerVierGeoelt`, `reglerVierGaengig`.
-- `src/game/combine.ts`: Regel „Ölkännchen → heatingControl“ (Hotspot) und „Lappen + Vierkantschlüssel“ (Item-Paar); Ölkännchen bei MARV nicht mehr entfernen.
-- `src/game/hints.ts`: neue Hint-Einträge.
-- `src/game/questGraph.ts`: Heizungspfad-Schritt um die neuen Vorbedingungen ergänzen, damit `bun run quest:solve` die Kette weiter als lösbar prüft.
+- `src/game/types.ts`: neues Item `tagescodeNotiz`, neue Flags `sawTagescodeUnnoted`, `notedTagescode`; Icon in `ItemIcon.tsx`.
+- `src/components/game/Terminal.tsx`: Verteiler-Ausgabe zeigt die Einmal-Zeile, setzt `readTagescodeViaMira` weiterhin, zusätzlich `sawTagescodeUnnoted`, wenn nichts zum Mitschreiben da ist.
+- `src/game/combine.ts`: neue Item-Paar-Regel Bleistift × (Quittungsbogen | Wartungsnotiz | Aushang-Beleg | Handbuch) mit den drei oben beschriebenen Zuständen.
+- `src/components/game/Keypad.tsx`: Sektor-Schleuse verlangt den Notizzettel.
+- `src/game/hints.ts`: zwei neue Hint-Stufen.
+- `src/game/questGraph.ts`: Pflichtschritt `act1.notiereTagescode` zwischen `act1.tagescode` und `act1.sectorDoor` eintragen, damit `bun run quest:solve` die Lösbarkeit weiter beweist.
