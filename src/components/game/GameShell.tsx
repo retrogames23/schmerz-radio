@@ -148,6 +148,7 @@ function DsaMusicBridge() {
       "miraRepair",
       "miraRoom",
       "miraRoom2",
+      "miraRoom3",
     ];
     if (activeOverride && CUTSCENE_OVERRIDES.includes(activeOverride)) return;
     setOverride(target);
