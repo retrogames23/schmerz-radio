@@ -80,6 +80,20 @@ const FreeChatOverlay = lazyWithRetry(() =>
 function DsaMusicBridge() {
   const { scene, dsaAdventureOpen, dsaBeat, lobbyGateOpen } = useGame();
   const { setOverride, activeOverride } = useMusic();
+  // Miras Zimmer: beim Betreten läuft einmal „Resonanzhygiene" komplett
+  // durch (Player ausgeblendet). Danach übernimmt wieder die Playlist.
+  const miraSongStartedRef = useRef(false);
+  useEffect(() => {
+    if (scene !== "aptMira4601") {
+      miraSongStartedRef.current = false;
+      return;
+    }
+    if (dsaAdventureOpen) return;
+    if (activeOverride === "miraRoom") return;
+    if (miraSongStartedRef.current) return;
+    miraSongStartedRef.current = true;
+    setOverride("miraRoom", { playOnce: true });
+  }, [scene, dsaAdventureOpen, activeOverride, setOverride]);
   useEffect(() => {
     // Wenn die LLM-Tafelrunde offen ist, übernimmt der Mood-Pool in
     // DsaLlmAdventureScene die Musik — hier kein Override setzen.
