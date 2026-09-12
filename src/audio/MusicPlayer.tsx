@@ -26,6 +26,7 @@ import elevatorMusicAsset from "@/assets/elevator-music.mp3.asset.json";
 import morningDirectiveAsset from "@/assets/morning-directive.mp3.asset.json";
 import copperWireHourAsset from "@/assets/The_Copper_Wire_Hour.mp3.asset.json";
 import resonanzhygieneAsset from "@/assets/music/Resonanzhygiene.mp3.asset.json";
+import resonanzhygiene2Asset from "@/assets/music/Resonanzhygiene2.mp3.asset.json";
 import { pickMoodTrack, type DsaMood } from "./dsaMusic";
 
 const trackSunday = trackSundayAsset.url;
@@ -90,6 +91,10 @@ export const MUSIC_OVERRIDES = {
   miraRoom: {
     title: "Resonanzhygiene",
     src: resonanzhygieneAsset.url,
+  } as MusicTrack,
+  miraRoom2: {
+    title: "Resonanzhygiene II",
+    src: resonanzhygiene2Asset.url,
   } as MusicTrack,
 };
 export type MusicOverrideId = keyof typeof MUSIC_OVERRIDES;

@@ -80,19 +80,25 @@ const FreeChatOverlay = lazyWithRetry(() =>
 function DsaMusicBridge() {
   const { scene, dsaAdventureOpen, dsaBeat, lobbyGateOpen } = useGame();
   const { setOverride, activeOverride } = useMusic();
-  // Miras Zimmer: beim Betreten läuft einmal „Resonanzhygiene" komplett
-  // durch (Player ausgeblendet). Danach übernimmt wieder die Playlist.
-  const miraSongStartedRef = useRef(false);
+  // Miras Zimmer: beim Betreten laufen nacheinander „Resonanzhygiene" und
+  // „Resonanzhygiene II" einmal komplett durch (Player ausgeblendet).
+  // Danach übernimmt wieder die reguläre Playlist.
+  // 0 = noch nichts, 1 = Song 1 gestartet, 2 = Song 2 gestartet, 3 = fertig
+  const miraStageRef = useRef(0);
   useEffect(() => {
     if (scene !== "aptMira4601") {
-      miraSongStartedRef.current = false;
+      miraStageRef.current = 0;
       return;
     }
     if (dsaAdventureOpen) return;
-    if (activeOverride === "miraRoom") return;
-    if (miraSongStartedRef.current) return;
-    miraSongStartedRef.current = true;
-    setOverride("miraRoom", { playOnce: true });
+    if (activeOverride === "miraRoom" || activeOverride === "miraRoom2") return;
+    if (miraStageRef.current === 0) {
+      miraStageRef.current = 1;
+      setOverride("miraRoom", { playOnce: true });
+    } else if (miraStageRef.current === 1) {
+      miraStageRef.current = 2;
+      setOverride("miraRoom2", { playOnce: true });
+    }
   }, [scene, dsaAdventureOpen, activeOverride, setOverride]);
   useEffect(() => {
     // Wenn die LLM-Tafelrunde offen ist, übernimmt der Mood-Pool in
@@ -129,6 +135,7 @@ function DsaMusicBridge() {
       "act2Assignment",
       "miraRepair",
       "miraRoom",
+      "miraRoom2",
     ];
     if (activeOverride && CUTSCENE_OVERRIDES.includes(activeOverride)) return;
     setOverride(target);
