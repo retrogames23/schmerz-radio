@@ -128,6 +128,7 @@ function DsaMusicBridge() {
       "sectorThreshold",
       "act2Assignment",
       "miraRepair",
+      "miraRoom",
     ];
     if (activeOverride && CUTSCENE_OVERRIDES.includes(activeOverride)) return;
     setOverride(target);
