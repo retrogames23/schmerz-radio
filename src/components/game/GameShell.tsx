@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { lazyWithRetry } from "@/lib/lazyWithRetry";
 import { GameProvider } from "@/game/GameContext";
 import { getBook } from "@/game/books";
