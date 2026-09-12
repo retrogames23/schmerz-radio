@@ -92,6 +92,10 @@ export const MUSIC_OVERRIDES = {
     title: "Resonanzhygiene",
     src: resonanzhygieneAsset.url,
   } as MusicTrack,
+  miraRoom2: {
+    title: "Resonanzhygiene II",
+    src: resonanzhygiene2Asset.url,
+  } as MusicTrack,
 };
 export type MusicOverrideId = keyof typeof MUSIC_OVERRIDES;
 const CROSSFADE_SECONDS = 6;
