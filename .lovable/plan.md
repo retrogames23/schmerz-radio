@@ -1,47 +1,41 @@
-# Pflicht-Item-Rätsel für Akt I: „Der Code muss aufgeschrieben werden“
+# Aufräumen: Abhängigkeiten, Versionen, Assets
 
-## Ausgangslage (geprüft)
+Geprüft: Paketliste, tatsächliche Verwendung im Code, Versionsstand, Bild-/Audio-Größen, Sicherheitsscan (keine hohen/kritischen Lücken).
 
-- Es gibt bislang **eine** echte Item-Kombination im Spiel: Bleistiftstummel + Vollmacht 4317 (+ Quittungsblock) → Trockensiegel-Abdruck (`src/game/combine.ts`). Sie liegt im **optionalen** Fälschungspfad bei Kowalk.
-- Der Pflichtpfad läuft laut `src/game/questGraph.ts` zwingend über: Tagescode an Miras Terminal lesen (`readTagescodeViaMira`) → Sektor-Schleuse E67 → E71 mit dem Tagescode öffnen (`sectorDoorOpen`) → Akt II.
-- Heute genügt dort ein Blick auf den Bildschirm: Der Code steht im Verteiler, das Keypad akzeptiert ihn danach. Kein Gegenstand, kein Handgriff.
+## 1. Überflüssige Pakete entfernen (risikoarm)
 
-Genau hier setzt das neue Rätsel an — auf dem Pflichtweg, an dem **jeder** Spieler vorbeimuss.
+- `nitro` und `vite-tsconfig-paths` stehen in der Paketliste, werden aber nirgends im Projekt aufgerufen. Beide bringt die Lovable-Vite-Konfiguration selbst mit. Entfernen, danach ein Build zur Kontrolle.
+- Alles andere ist tatsächlich in Gebrauch: `docx`, `jspdf`, `blueimp-md5`, `framer-motion`, `@mlc-ai/web-llm`, `ts-morph`, `yaml`, `clsx`, `tailwind-merge`, `tw-animate-css`, `lucide-react`, Stripe- und E-Mail-Pakete. Nichts davon streichen.
 
-## Das Rätsel
+## 2. Versions-Updates (in drei Stufen, jeweils mit Build-Prüfung)
 
-An Miras Maschine zeigt der Verteiler der Leitstelle den Tagescode nur als **flüchtige Zeile**: Der Verteiler blendet sie nach wenigen Sekunden aus und schreibt sie protokollpflichtig nicht erneut aus („AUSGABE EINMALIG — VERMERK DURCH EMPFÄNGER“). Layard ist Verwaltungsangestellter: Er merkt sich nichts, er **vermerkt**.
+Stufe A — unkritische Patch-/Minor-Sprünge, sofort:
+React 19.3, `@supabase/supabase-js` 2.116, Tailwind 4.3, Stripe 22.6, `tailwind-merge` 3.6, `@types/*`, Prettier 3.9, `@mlc-ai/web-llm` 0.2.85, `@lovable.dev/cloud-auth-js` 1.2.
 
-Damit braucht er zwei Dinge in der Hand, bevor er den Befehl absetzt:
+Stufe B — Plattform-Pakete, einzeln und nacheinander:
+`@lovable.dev/vite-tanstack-config` 2.13 → 2.21, danach TanStack Router/Start auf den zugehörigen Stand. Diese drei hängen zusammen; erst die Konfiguration, dann Router und Start, nach jedem Schritt Build und ein Klick durch Spielstart, Terminal, Karte, DSA-Runde.
 
-1. **Bleistiftstummel** (`pencilStub`, liegt wie gehabt in 2612).
-2. **Etwas Beschreibbares**: Blanko-Quittungsbogen Schicht B, Bodos Wartungsnotiz 5610, ein Aushang-Beleg — oder, als immer verfügbarer Notnagel, die leere Vorsatzseite des **Handbuchs E67** (hat Layard von Beginn an).
+Stufe C — größere Hauptversionen, bewusst später oder gar nicht:
+`framer-motion` 13, `lucide-react` 1.x, ESLint 10 samt Plugins, `@vitejs/plugin-react` 6, `globals` 17. Diese ändern Schnittstellen. Empfehlung: nur die Linter-Kette (ESLint 10 + Plugins) angehen, `framer-motion` und `lucide-react` auf dem jetzigen Stand lassen, solange sie funktionieren.
 
-**Kombination:** Bleistift auf Papier ziehen → neues Item **„Notizzettel mit Tagescode“** — aber nur, wenn Layard den Code gerade vor Augen hatte. Reihenfolge und Rückmeldungen:
+## 3. Bilder und Medien
 
-- Terminal ohne Schreibzeug → „Die Zeile steht drei Sekunden. Layard hat nichts, um sie festzuhalten.“ (setzt `sawTagescodeUnnoted`, damit die Hinweise greifen)
-- Bleistift + Papier ohne vorherigen Blick auf den Verteiler → „Ein Zettel mit nichts drauf ist ein Zettel.“
-- Bleistift + Papier nach dem Blick → Layard schreibt mit, Item entsteht, Flag `notedTagescode`.
-- Am Keypad der Sektor-Schleuse ist ab jetzt der **Notizzettel** die Voraussetzung (statt nur des Flags `readTagescodeViaMira`). Ohne ihn: „Vier Ziffern. Layard hat sie gesehen. Gestern. Ungefähr.“
+`src/assets` liegt bei 51 MB. Auffällig:
 
-## Warum das funktioniert
+- `src/assets/unused` (4,8 MB) — Entwurfsbilder, die im Spiel nicht vorkommen. Aus dem Projekt nehmen, Beschreibung in der README des Ordners sichern.
+- Einzelbilder mit 1,4–1,5 MB (`scene-passage.jpg`, `scene-corridor-21.jpg`) und ein 688 KB großes PNG (`item-oil-can-scene.png`). Szenenbilder auf sinnvolle Breite verkleinern; erwartete Ersparnis grob die Hälfte des Bildvolumens ohne sichtbaren Qualitätsverlust.
+- Mögliche Karteileichen, vor dem Löschen einzeln bestätigen (können dynamisch geladen sein): `bus/passenger-1..4.png`, `dsa/dsa-npc-tjark.jpg`, `npc-vossbeck.png`, `scene-bus-28.jpg`.
 
-- **Zwingend:** beide Zugangswege zu Miras Maschine (Vertrauenspfad und Heizungspfad) münden in dieselbe Terminal-Szene; die Schleuse ist der einzige Ausgang aus Akt I.
-- **Logisch lösbar:** Bleistift und Handbuch sind beide unabhängig vom Rätsel erreichbar, das Handbuch besitzt Layard ohnehin. Es gibt also nie eine Sackgasse — auch nicht, wenn der Quittungsbogen längst bei Kowalk gelandet ist.
-- **Lore-konform:** „Ausgabe einmalig, Vermerk durch Empfänger“ ist genau die Verwaltungslogik des Mandatsbunds; Layards Rolle als Aktenmensch wird zum Werkzeug statt zum Hindernis.
-- **Charakter:** kein Aufbrechen, kein Hacken — er schreibt mit. Das ist die Figur.
+## 4. Sehr große Quelldateien (optional)
 
-## Hinweiskette (kein Ratespiel)
+`Terminal.tsx` (99 KB), `libraryBooks.ts` (79 KB), `dsa/adventure.ts` (75 KB), `AmigaWorkbench.tsx` (64 KB), `dsa/combat.ts` (59 KB), `dsa-master.ts` (54 KB). Kein Fehler, aber jede Änderung dort wird teuer. Vorschlag: nur aufteilen, wenn ohnehin an der Stelle gearbeitet wird — keine eigene Großaktion.
 
-- Miras Terminal-Text nennt die Einmal-Ausgabe schon beim ersten Zugriff.
-- Mira sagt trocken: „Mitschreiben. Die Leitstelle wiederholt sich nicht.“
-- `src/game/hints.ts` bekommt zwei Stufen: „Layard braucht Schreibzeug“ → „Der Bleistift liegt in 2612; beschreibbar ist auch die Vorsatzseite des Handbuchs.“
+## Reihenfolge
 
-## Umfang (technisch)
+1. Punkt 1 (zwei Pakete raus)
+2. Punkt 2 Stufe A
+3. Punkt 3 (Bilder)
+4. Punkt 2 Stufe B
+5. Stufe C und Punkt 4 nur nach Absprache
 
-- `src/game/types.ts`: neues Item `tagescodeNotiz`, neue Flags `sawTagescodeUnnoted`, `notedTagescode`; Icon in `ItemIcon.tsx`.
-- `src/components/game/Terminal.tsx`: Verteiler-Ausgabe zeigt die Einmal-Zeile, setzt `readTagescodeViaMira` weiterhin, zusätzlich `sawTagescodeUnnoted`, wenn nichts zum Mitschreiben da ist.
-- `src/game/combine.ts`: neue Item-Paar-Regel Bleistift × (Quittungsbogen | Wartungsnotiz | Aushang-Beleg | Handbuch) mit den drei oben beschriebenen Zuständen.
-- `src/components/game/Keypad.tsx`: Sektor-Schleuse verlangt den Notizzettel.
-- `src/game/hints.ts`: zwei neue Hint-Stufen.
-- `src/game/questGraph.ts`: Pflichtschritt `act1.notiereTagescode` zwischen `act1.tagescode` und `act1.sectorDoor` eintragen, damit `bun run quest:solve` die Lösbarkeit weiter beweist.
+Sag mir, ob ich alles bis Schritt 4 machen soll oder nur einzelne Punkte.
