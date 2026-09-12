@@ -87,6 +87,10 @@ export const MUSIC_OVERRIDES = {
     title: "The Copper Wire Hour",
     src: copperWireHourAsset.url,
   } as MusicTrack,
+  miraRoom: {
+    title: "Resonanzhygiene",
+    src: resonanzhygieneAsset.url,
+  } as MusicTrack,
 };
 export type MusicOverrideId = keyof typeof MUSIC_OVERRIDES;
 const CROSSFADE_SECONDS = 6;
