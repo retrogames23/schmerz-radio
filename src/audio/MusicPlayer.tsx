@@ -28,6 +28,7 @@ import copperWireHourAsset from "@/assets/The_Copper_Wire_Hour.mp3.asset.json";
 import resonanzhygieneAsset from "@/assets/music/Resonanzhygiene.mp3.asset.json";
 import resonanzhygiene2Asset from "@/assets/music/Resonanzhygiene2.mp3.asset.json";
 import gesetzDerNachtAsset from "@/assets/music/Das_Gesetz_der_Nacht.mp3.asset.json";
+import heartbeatRegulationsAsset from "@/assets/music/Heartbeat_Regulations.mp3.asset.json";
 import { pickMoodTrack, type DsaMood } from "./dsaMusic";
 
 const trackSunday = trackSundayAsset.url;
@@ -100,6 +101,10 @@ export const MUSIC_OVERRIDES = {
   miraRoom3: {
     title: "Das Gesetz der Nacht",
     src: gesetzDerNachtAsset.url,
+  } as MusicTrack,
+  miraRoom4: {
+    title: "Heartbeat Regulations",
+    src: heartbeatRegulationsAsset.url,
   } as MusicTrack,
 };
 export type MusicOverrideId = keyof typeof MUSIC_OVERRIDES;

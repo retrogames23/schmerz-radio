@@ -81,10 +81,11 @@ function DsaMusicBridge() {
   const { scene, dsaAdventureOpen, dsaBeat, lobbyGateOpen } = useGame();
   const { setOverride, activeOverride } = useMusic();
   // Miras Zimmer: beim Betreten laufen nacheinander „Resonanzhygiene",
-  // „Resonanzhygiene II" und „Das Gesetz der Nacht" einmal komplett durch
-  // (Player ausgeblendet). Danach übernimmt wieder die reguläre Playlist.
+  // „Resonanzhygiene II", „Das Gesetz der Nacht" und „Heartbeat
+  // Regulations" einmal komplett durch (Player ausgeblendet). Danach
+  // übernimmt wieder die reguläre Playlist.
   // 0 = noch nichts, 1 = Song 1 gestartet, 2 = Song 2 gestartet,
-  // 3 = Song 3 gestartet, 4 = fertig
+  // 3 = Song 3 gestartet, 4 = Song 4 gestartet, 5 = fertig
   const miraStageRef = useRef(0);
   useEffect(() => {
     if (scene !== "aptMira4601") {
@@ -95,7 +96,8 @@ function DsaMusicBridge() {
     if (
       activeOverride === "miraRoom" ||
       activeOverride === "miraRoom2" ||
-      activeOverride === "miraRoom3"
+      activeOverride === "miraRoom3" ||
+      activeOverride === "miraRoom4"
     )
       return;
     if (miraStageRef.current === 0) {
@@ -107,6 +109,9 @@ function DsaMusicBridge() {
     } else if (miraStageRef.current === 2) {
       miraStageRef.current = 3;
       setOverride("miraRoom3", { playOnce: true });
+    } else if (miraStageRef.current === 3) {
+      miraStageRef.current = 4;
+      setOverride("miraRoom4", { playOnce: true });
     }
   }, [scene, dsaAdventureOpen, activeOverride, setOverride]);
   useEffect(() => {
@@ -149,6 +154,7 @@ function DsaMusicBridge() {
       "miraRoom",
       "miraRoom2",
       "miraRoom3",
+      "miraRoom4",
     ];
     if (activeOverride && CUTSCENE_OVERRIDES.includes(activeOverride)) return;
     setOverride(target);
