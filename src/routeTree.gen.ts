@@ -9,42 +9,37 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as DsaRouteImport } from './routes/dsa'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DsaIndexRouteImport } from './routes/dsa.index'
-import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
-import { Route as DsaHeldenRouteImport } from './routes/dsa.helden'
-import { Route as DsaGruppeRouteImport } from './routes/dsa.gruppe'
-import { Route as DsaSlotRouteImport } from './routes/dsa.$slot'
+import { Route as DsaRouteImport } from './routes/dsa'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
-import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
-import { Route as DsaGruppeRoomIdRouteImport } from './routes/dsa.gruppe.$roomId'
-import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
-import { Route as ApiPublicNpcMemoryUpdateRouteImport } from './routes/api/public/npc-memory-update'
-import { Route as ApiPublicNpcChatRouteImport } from './routes/api/public/npc-chat'
-import { Route as ApiPublicMarvOilRouteImport } from './routes/api/public/marv-oil'
-import { Route as ApiPublicFastwebChatRouteImport } from './routes/api/public/fastweb-chat'
-import { Route as ApiPublicDsaMasterRouteImport } from './routes/api/public/dsa-master'
-import { Route as ApiPublicDsaGroupRouteImport } from './routes/api/public/dsa-group'
-import { Route as ApiPublicDonationCheckoutRouteImport } from './routes/api/public/donation-checkout'
-import { Route as ApiPublicBlockfallScoreRouteImport } from './routes/api/public/blockfall-score'
+import { Route as DsaIndexRouteImport } from './routes/dsa.index'
+import { Route as DsaSlotRouteImport } from './routes/dsa.$slot'
+import { Route as DsaGruppeRouteImport } from './routes/dsa.gruppe'
+import { Route as DsaHeldenRouteImport } from './routes/dsa.helden'
+import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as ApiPublicAuskunftRouteImport } from './routes/api/public/auskunft'
-import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
-import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
-import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
-import { Route as DsaGruppeRoomIdSpielRouteImport } from './routes/dsa.gruppe.$roomId.spiel'
+import { Route as ApiPublicBlockfallScoreRouteImport } from './routes/api/public/blockfall-score'
+import { Route as ApiPublicDonationCheckoutRouteImport } from './routes/api/public/donation-checkout'
+import { Route as ApiPublicDsaGroupRouteImport } from './routes/api/public/dsa-group'
+import { Route as ApiPublicDsaMasterRouteImport } from './routes/api/public/dsa-master'
+import { Route as ApiPublicFastwebChatRouteImport } from './routes/api/public/fastweb-chat'
+import { Route as ApiPublicMarvOilRouteImport } from './routes/api/public/marv-oil'
+import { Route as ApiPublicNpcChatRouteImport } from './routes/api/public/npc-chat'
+import { Route as ApiPublicNpcMemoryUpdateRouteImport } from './routes/api/public/npc-memory-update'
+import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
+import { Route as DsaGruppeRoomIdRouteImport } from './routes/dsa.gruppe.$roomId'
+import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiPublicHooksWeeklySignupSummaryRouteImport } from './routes/api/public/hooks/weekly-signup-summary'
+import { Route as DsaGruppeRoomIdSpielRouteImport } from './routes/dsa.gruppe.$roomId.spiel'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
+import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 
-const UnsubscribeRoute = UnsubscribeRouteImport.update({
-  id: '/unsubscribe',
-  path: '/unsubscribe',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DsaRoute = DsaRouteImport.update({
@@ -52,9 +47,19 @@ const DsaRoute = DsaRouteImport.update({
   path: '/dsa',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTtsRoute = ApiTtsRouteImport.update({
+  id: '/api/tts',
+  path: '/api/tts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DsaIndexRoute = DsaIndexRouteImport.update({
@@ -62,14 +67,9 @@ const DsaIndexRoute = DsaIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DsaRoute,
 } as any)
-const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
-  id: '/email/unsubscribe',
-  path: '/email/unsubscribe',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DsaHeldenRoute = DsaHeldenRouteImport.update({
-  id: '/helden',
-  path: '/helden',
+const DsaSlotRoute = DsaSlotRouteImport.update({
+  id: '/$slot',
+  path: '/$slot',
   getParentRoute: () => DsaRoute,
 } as any)
 const DsaGruppeRoute = DsaGruppeRouteImport.update({
@@ -77,60 +77,24 @@ const DsaGruppeRoute = DsaGruppeRouteImport.update({
   path: '/gruppe',
   getParentRoute: () => DsaRoute,
 } as any)
-const DsaSlotRoute = DsaSlotRouteImport.update({
-  id: '/$slot',
-  path: '/$slot',
+const DsaHeldenRoute = DsaHeldenRouteImport.update({
+  id: '/helden',
+  path: '/helden',
   getParentRoute: () => DsaRoute,
 } as any)
-const ApiTtsRoute = ApiTtsRouteImport.update({
-  id: '/api/tts',
-  path: '/api/tts',
+const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
+  id: '/email/unsubscribe',
+  path: '/email/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
-  id: '/lovable/email/suppression',
-  path: '/lovable/email/suppression',
+const ApiPublicAuskunftRoute = ApiPublicAuskunftRouteImport.update({
+  id: '/api/public/auskunft',
+  path: '/api/public/auskunft',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DsaGruppeRoomIdRoute = DsaGruppeRoomIdRouteImport.update({
-  id: '/$roomId',
-  path: '/$roomId',
-  getParentRoute: () => DsaGruppeRoute,
-} as any)
-const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
-  id: '/api/public/stripe-webhook',
-  path: '/api/public/stripe-webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicNpcMemoryUpdateRoute =
-  ApiPublicNpcMemoryUpdateRouteImport.update({
-    id: '/api/public/npc-memory-update',
-    path: '/api/public/npc-memory-update',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicNpcChatRoute = ApiPublicNpcChatRouteImport.update({
-  id: '/api/public/npc-chat',
-  path: '/api/public/npc-chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicMarvOilRoute = ApiPublicMarvOilRouteImport.update({
-  id: '/api/public/marv-oil',
-  path: '/api/public/marv-oil',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicFastwebChatRoute = ApiPublicFastwebChatRouteImport.update({
-  id: '/api/public/fastweb-chat',
-  path: '/api/public/fastweb-chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicDsaMasterRoute = ApiPublicDsaMasterRouteImport.update({
-  id: '/api/public/dsa-master',
-  path: '/api/public/dsa-master',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicDsaGroupRoute = ApiPublicDsaGroupRouteImport.update({
-  id: '/api/public/dsa-group',
-  path: '/api/public/dsa-group',
+const ApiPublicBlockfallScoreRoute = ApiPublicBlockfallScoreRouteImport.update({
+  id: '/api/public/blockfall-score',
+  path: '/api/public/blockfall-score',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicDonationCheckoutRoute =
@@ -139,20 +103,67 @@ const ApiPublicDonationCheckoutRoute =
     path: '/api/public/donation-checkout',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicBlockfallScoreRoute = ApiPublicBlockfallScoreRouteImport.update({
-  id: '/api/public/blockfall-score',
-  path: '/api/public/blockfall-score',
+const ApiPublicDsaGroupRoute = ApiPublicDsaGroupRouteImport.update({
+  id: '/api/public/dsa-group',
+  path: '/api/public/dsa-group',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicAuskunftRoute = ApiPublicAuskunftRouteImport.update({
-  id: '/api/public/auskunft',
-  path: '/api/public/auskunft',
+const ApiPublicDsaMasterRoute = ApiPublicDsaMasterRouteImport.update({
+  id: '/api/public/dsa-master',
+  path: '/api/public/dsa-master',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LovableEmailTransactionalSendRoute =
-  LovableEmailTransactionalSendRouteImport.update({
-    id: '/lovable/email/transactional/send',
-    path: '/lovable/email/transactional/send',
+const ApiPublicFastwebChatRoute = ApiPublicFastwebChatRouteImport.update({
+  id: '/api/public/fastweb-chat',
+  path: '/api/public/fastweb-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicMarvOilRoute = ApiPublicMarvOilRouteImport.update({
+  id: '/api/public/marv-oil',
+  path: '/api/public/marv-oil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicNpcChatRoute = ApiPublicNpcChatRouteImport.update({
+  id: '/api/public/npc-chat',
+  path: '/api/public/npc-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicNpcMemoryUpdateRoute =
+  ApiPublicNpcMemoryUpdateRouteImport.update({
+    id: '/api/public/npc-memory-update',
+    path: '/api/public/npc-memory-update',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
+  id: '/api/public/stripe-webhook',
+  path: '/api/public/stripe-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DsaGruppeRoomIdRoute = DsaGruppeRoomIdRouteImport.update({
+  id: '/$roomId',
+  path: '/$roomId',
+  getParentRoute: () => DsaGruppeRoute,
+} as any)
+const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
+  id: '/lovable/email/suppression',
+  path: '/lovable/email/suppression',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicHooksWeeklySignupSummaryRoute =
+  ApiPublicHooksWeeklySignupSummaryRouteImport.update({
+    id: '/api/public/hooks/weekly-signup-summary',
+    path: '/api/public/hooks/weekly-signup-summary',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DsaGruppeRoomIdSpielRoute = DsaGruppeRoomIdSpielRouteImport.update({
+  id: '/spiel',
+  path: '/spiel',
+  getParentRoute: () => DsaGruppeRoomIdRoute,
+} as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
 const LovableEmailTransactionalPreviewRoute =
@@ -161,21 +172,10 @@ const LovableEmailTransactionalPreviewRoute =
     path: '/lovable/email/transactional/preview',
     getParentRoute: () => rootRouteImport,
   } as any)
-const LovableEmailQueueProcessRoute =
-  LovableEmailQueueProcessRouteImport.update({
-    id: '/lovable/email/queue/process',
-    path: '/lovable/email/queue/process',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const DsaGruppeRoomIdSpielRoute = DsaGruppeRoomIdSpielRouteImport.update({
-  id: '/spiel',
-  path: '/spiel',
-  getParentRoute: () => DsaGruppeRoomIdRoute,
-} as any)
-const ApiPublicHooksWeeklySignupSummaryRoute =
-  ApiPublicHooksWeeklySignupSummaryRouteImport.update({
-    id: '/api/public/hooks/weekly-signup-summary',
-    path: '/api/public/hooks/weekly-signup-summary',
+const LovableEmailTransactionalSendRoute =
+  LovableEmailTransactionalSendRouteImport.update({
+    id: '/lovable/email/transactional/send',
+    path: '/lovable/email/transactional/send',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -381,18 +381,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/unsubscribe': {
-      id: '/unsubscribe'
-      path: '/unsubscribe'
-      fullPath: '/unsubscribe'
-      preLoaderRoute: typeof UnsubscribeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dsa': {
@@ -402,11 +395,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DsaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/tts': {
+      id: '/api/tts'
+      path: '/api/tts'
+      fullPath: '/api/tts'
+      preLoaderRoute: typeof ApiTtsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dsa/': {
@@ -416,18 +423,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DsaIndexRouteImport
       parentRoute: typeof DsaRoute
     }
-    '/email/unsubscribe': {
-      id: '/email/unsubscribe'
-      path: '/email/unsubscribe'
-      fullPath: '/email/unsubscribe'
-      preLoaderRoute: typeof EmailUnsubscribeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dsa/helden': {
-      id: '/dsa/helden'
-      path: '/helden'
-      fullPath: '/dsa/helden'
-      preLoaderRoute: typeof DsaHeldenRouteImport
+    '/dsa/$slot': {
+      id: '/dsa/$slot'
+      path: '/$slot'
+      fullPath: '/dsa/$slot'
+      preLoaderRoute: typeof DsaSlotRouteImport
       parentRoute: typeof DsaRoute
     }
     '/dsa/gruppe': {
@@ -437,95 +437,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DsaGruppeRouteImport
       parentRoute: typeof DsaRoute
     }
-    '/dsa/$slot': {
-      id: '/dsa/$slot'
-      path: '/$slot'
-      fullPath: '/dsa/$slot'
-      preLoaderRoute: typeof DsaSlotRouteImport
+    '/dsa/helden': {
+      id: '/dsa/helden'
+      path: '/helden'
+      fullPath: '/dsa/helden'
+      preLoaderRoute: typeof DsaHeldenRouteImport
       parentRoute: typeof DsaRoute
     }
-    '/api/tts': {
-      id: '/api/tts'
-      path: '/api/tts'
-      fullPath: '/api/tts'
-      preLoaderRoute: typeof ApiTtsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/email/suppression': {
-      id: '/lovable/email/suppression'
-      path: '/lovable/email/suppression'
-      fullPath: '/lovable/email/suppression'
-      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dsa/gruppe/$roomId': {
-      id: '/dsa/gruppe/$roomId'
-      path: '/$roomId'
-      fullPath: '/dsa/gruppe/$roomId'
-      preLoaderRoute: typeof DsaGruppeRoomIdRouteImport
-      parentRoute: typeof DsaGruppeRoute
-    }
-    '/api/public/stripe-webhook': {
-      id: '/api/public/stripe-webhook'
-      path: '/api/public/stripe-webhook'
-      fullPath: '/api/public/stripe-webhook'
-      preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/npc-memory-update': {
-      id: '/api/public/npc-memory-update'
-      path: '/api/public/npc-memory-update'
-      fullPath: '/api/public/npc-memory-update'
-      preLoaderRoute: typeof ApiPublicNpcMemoryUpdateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/npc-chat': {
-      id: '/api/public/npc-chat'
-      path: '/api/public/npc-chat'
-      fullPath: '/api/public/npc-chat'
-      preLoaderRoute: typeof ApiPublicNpcChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/marv-oil': {
-      id: '/api/public/marv-oil'
-      path: '/api/public/marv-oil'
-      fullPath: '/api/public/marv-oil'
-      preLoaderRoute: typeof ApiPublicMarvOilRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/fastweb-chat': {
-      id: '/api/public/fastweb-chat'
-      path: '/api/public/fastweb-chat'
-      fullPath: '/api/public/fastweb-chat'
-      preLoaderRoute: typeof ApiPublicFastwebChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/dsa-master': {
-      id: '/api/public/dsa-master'
-      path: '/api/public/dsa-master'
-      fullPath: '/api/public/dsa-master'
-      preLoaderRoute: typeof ApiPublicDsaMasterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/dsa-group': {
-      id: '/api/public/dsa-group'
-      path: '/api/public/dsa-group'
-      fullPath: '/api/public/dsa-group'
-      preLoaderRoute: typeof ApiPublicDsaGroupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/donation-checkout': {
-      id: '/api/public/donation-checkout'
-      path: '/api/public/donation-checkout'
-      fullPath: '/api/public/donation-checkout'
-      preLoaderRoute: typeof ApiPublicDonationCheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/blockfall-score': {
-      id: '/api/public/blockfall-score'
-      path: '/api/public/blockfall-score'
-      fullPath: '/api/public/blockfall-score'
-      preLoaderRoute: typeof ApiPublicBlockfallScoreRouteImport
+    '/email/unsubscribe': {
+      id: '/email/unsubscribe'
+      path: '/email/unsubscribe'
+      fullPath: '/email/unsubscribe'
+      preLoaderRoute: typeof EmailUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/auskunft': {
@@ -535,25 +458,88 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAuskunftRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/email/transactional/send': {
-      id: '/lovable/email/transactional/send'
-      path: '/lovable/email/transactional/send'
-      fullPath: '/lovable/email/transactional/send'
-      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
+    '/api/public/blockfall-score': {
+      id: '/api/public/blockfall-score'
+      path: '/api/public/blockfall-score'
+      fullPath: '/api/public/blockfall-score'
+      preLoaderRoute: typeof ApiPublicBlockfallScoreRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/email/transactional/preview': {
-      id: '/lovable/email/transactional/preview'
-      path: '/lovable/email/transactional/preview'
-      fullPath: '/lovable/email/transactional/preview'
-      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+    '/api/public/donation-checkout': {
+      id: '/api/public/donation-checkout'
+      path: '/api/public/donation-checkout'
+      fullPath: '/api/public/donation-checkout'
+      preLoaderRoute: typeof ApiPublicDonationCheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/email/queue/process': {
-      id: '/lovable/email/queue/process'
-      path: '/lovable/email/queue/process'
-      fullPath: '/lovable/email/queue/process'
-      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+    '/api/public/dsa-group': {
+      id: '/api/public/dsa-group'
+      path: '/api/public/dsa-group'
+      fullPath: '/api/public/dsa-group'
+      preLoaderRoute: typeof ApiPublicDsaGroupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/dsa-master': {
+      id: '/api/public/dsa-master'
+      path: '/api/public/dsa-master'
+      fullPath: '/api/public/dsa-master'
+      preLoaderRoute: typeof ApiPublicDsaMasterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/fastweb-chat': {
+      id: '/api/public/fastweb-chat'
+      path: '/api/public/fastweb-chat'
+      fullPath: '/api/public/fastweb-chat'
+      preLoaderRoute: typeof ApiPublicFastwebChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/marv-oil': {
+      id: '/api/public/marv-oil'
+      path: '/api/public/marv-oil'
+      fullPath: '/api/public/marv-oil'
+      preLoaderRoute: typeof ApiPublicMarvOilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/npc-chat': {
+      id: '/api/public/npc-chat'
+      path: '/api/public/npc-chat'
+      fullPath: '/api/public/npc-chat'
+      preLoaderRoute: typeof ApiPublicNpcChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/npc-memory-update': {
+      id: '/api/public/npc-memory-update'
+      path: '/api/public/npc-memory-update'
+      fullPath: '/api/public/npc-memory-update'
+      preLoaderRoute: typeof ApiPublicNpcMemoryUpdateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/stripe-webhook': {
+      id: '/api/public/stripe-webhook'
+      path: '/api/public/stripe-webhook'
+      fullPath: '/api/public/stripe-webhook'
+      preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dsa/gruppe/$roomId': {
+      id: '/dsa/gruppe/$roomId'
+      path: '/$roomId'
+      fullPath: '/dsa/gruppe/$roomId'
+      preLoaderRoute: typeof DsaGruppeRoomIdRouteImport
+      parentRoute: typeof DsaGruppeRoute
+    }
+    '/lovable/email/suppression': {
+      id: '/lovable/email/suppression'
+      path: '/lovable/email/suppression'
+      fullPath: '/lovable/email/suppression'
+      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/weekly-signup-summary': {
+      id: '/api/public/hooks/weekly-signup-summary'
+      path: '/api/public/hooks/weekly-signup-summary'
+      fullPath: '/api/public/hooks/weekly-signup-summary'
+      preLoaderRoute: typeof ApiPublicHooksWeeklySignupSummaryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dsa/gruppe/$roomId/spiel': {
@@ -563,11 +549,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DsaGruppeRoomIdSpielRouteImport
       parentRoute: typeof DsaGruppeRoomIdRoute
     }
-    '/api/public/hooks/weekly-signup-summary': {
-      id: '/api/public/hooks/weekly-signup-summary'
-      path: '/api/public/hooks/weekly-signup-summary'
-      fullPath: '/api/public/hooks/weekly-signup-summary'
-      preLoaderRoute: typeof ApiPublicHooksWeeklySignupSummaryRouteImport
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/send': {
+      id: '/lovable/email/transactional/send'
+      path: '/lovable/email/transactional/send'
+      fullPath: '/lovable/email/transactional/send'
+      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
