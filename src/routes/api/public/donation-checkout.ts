@@ -99,7 +99,7 @@ export const Route = createFileRoute("/api/public/donation-checkout")({
           (host ? `https://${host}` : "https://schmerz-radio.com");
 
         const stripe = new Stripe(stripeKey, {
-          apiVersion: "2026-04-22.dahlia",
+          apiVersion: "2026-08-26.dahlia",
         });
 
         let customerId: string | undefined;

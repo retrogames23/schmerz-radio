@@ -34,7 +34,7 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
 
         const rawBody = await request.text();
         const stripe = new Stripe(stripeKey, {
-          apiVersion: "2026-04-22.dahlia",
+          apiVersion: "2026-08-26.dahlia",
         });
 
         let event: Stripe.Event;
