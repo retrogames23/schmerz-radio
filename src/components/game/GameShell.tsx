@@ -130,6 +130,9 @@ function DsaMusicBridge() {
     // Cutscene-Overrides (Play-Once) gehören der jeweiligen Cutscene und
     // lösen sich selbst auf. Bis dahin nicht überschreiben — sonst würde
     // ein Szenenwechsel (target=null) den Song abbrechen.
+    // Miras Zimmer gehört dem Effekt oben (Resonanzhygiene I/II) — hier
+    // nichts setzen, sonst überschreibt ein Szenenwechsel den Song sofort.
+    if (scene === "aptMira4601" && !dsaAdventureOpen) return;
     const CUTSCENE_OVERRIDES = [
       "sectorThreshold",
       "act2Assignment",
