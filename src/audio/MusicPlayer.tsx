@@ -30,6 +30,7 @@ import resonanzhygiene2Asset from "@/assets/music/Resonanzhygiene2.mp3.asset.jso
 import gesetzDerNachtAsset from "@/assets/music/Das_Gesetz_der_Nacht.mp3.asset.json";
 import heartbeatRegulationsAsset from "@/assets/music/Heartbeat_Regulations.mp3.asset.json";
 import gefuehleOhneZaehneAsset from "@/assets/music/Gefuehle_ohne_Zaehne.mp3.asset.json";
+import tradingSongForStoneAsset from "@/assets/music/Trading_Song_for_Stone.mp3.asset.json";
 import { pickMoodTrack, type DsaMood } from "./dsaMusic";
 
 const trackSunday = trackSundayAsset.url;
@@ -110,6 +111,10 @@ export const MUSIC_OVERRIDES = {
   miraRoom5: {
     title: "Gefühle ohne Zähne",
     src: gefuehleOhneZaehneAsset.url,
+  } as MusicTrack,
+  miraRoom6: {
+    title: "Trading Song for Stone",
+    src: tradingSongForStoneAsset.url,
   } as MusicTrack,
 };
 export type MusicOverrideId = keyof typeof MUSIC_OVERRIDES;
