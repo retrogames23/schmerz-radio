@@ -783,9 +783,26 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     playIndex(indexRef.current - 1);
   }, [playIndex]);
 
+  const setPlaylist = useCallback((id: MusicPlaylistId) => {
+    const list = MUSIC_PLAYLISTS[id];
+    if (playlistRef.current === list) return;
+    playlistRef.current = list;
+    setActivePlaylistState(id);
+    savedIndexRef.current = null;
+    const startIndex = Math.floor(Math.random() * list.length);
+    indexRef.current = startIndex;
+    setCurrentIndex(startIndex);
+    if (!enabledRef.current) return;
+    // Override/Mood gewinnen akustisch — die neue Playlist übernimmt,
+    // sobald diese sich auflösen.
+    if (overrideRef.current || moodPoolRef.current) return;
+    crossfadeToSrc(list[startIndex].src);
+    ensureWatcher();
+  }, []);
+
   const value = useMemo<MusicCtx>(
     () => ({
-      tracks: PLAYLIST,
+      tracks: MUSIC_PLAYLISTS[activePlaylist],
       currentIndex,
       next,
       prev,
@@ -797,8 +814,10 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
       activeOverride,
       setMoodPool,
       setMood,
+      setPlaylist,
+      activePlaylist,
     }),
-    [currentIndex, next, prev, playIndex, setDuck, pause, resume, setOverride, activeOverride, setMoodPool, setMood],
+    [currentIndex, next, prev, playIndex, setDuck, pause, resume, setOverride, activeOverride, setMoodPool, setMood, setPlaylist, activePlaylist],
   );
 
   return <MusicContext.Provider value={value}>{children}</MusicContext.Provider>;
