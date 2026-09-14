@@ -141,6 +141,17 @@ export const LIBRARY_BOOKS: LibraryBook[] = [
     itemId: "buchAbsurd",
     itemName: "Absurd (Gedichtband)",
   },
+  {
+    id: "grundgesetz",
+    title:
+      "Grundgesetz für das Mandatsgebiet Mitteleuropa — Textausgabe mit Änderungsnachweis",
+    author: "Mandatsrat, Abteilung Rechtsangelegenheiten (Hrsg.)",
+    year: "1996",
+    blurb:
+      "Amtliche Textausgabe, 14., berichtigte Auflage. In Kraft gesetzt 1947 durch den Alliierten Kontrollrat, gültig „für eine Übergangszeit“ — seither einunddreißig Änderungsgesetze. Der Änderungsnachweis im Anhang ist die eigentliche Geschichte des Hauses.",
+    itemId: "buchGrundgesetz",
+    itemName: "Grundgesetz (Leihbuch)",
+  },
 ];
 
 /** Alle Titel sind ausleihbar — kein Präsenzbestand. */
