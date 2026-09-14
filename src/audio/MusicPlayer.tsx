@@ -71,6 +71,28 @@ const PLAYLIST: MusicTrack[] = [
 ];
 
 /**
+ * Miras Zimmer hat eine eigene Playlist. Sie ersetzt die Standard-
+ * Playlist, solange man im Raum ist, und lässt sich genauso bedienen
+ * (vor/zurück, Titelanzeige). Beim Verlassen des Raums übernimmt wieder
+ * die Standard-Playlist.
+ */
+const MIRA_PLAYLIST: MusicTrack[] = [
+  { title: "Resonanzhygiene", src: resonanzhygieneAsset.url },
+  { title: "Resonanzhygiene II", src: resonanzhygiene2Asset.url },
+  { title: "Das Gesetz der Nacht", src: gesetzDerNachtAsset.url },
+  { title: "Heartbeat Regulations", src: heartbeatRegulationsAsset.url },
+  { title: "Gefühle ohne Zähne", src: gefuehleOhneZaehneAsset.url },
+  { title: "Trading Song for Stone", src: tradingSongForStoneAsset.url },
+];
+
+export const MUSIC_PLAYLISTS = {
+  default: PLAYLIST,
+  mira: MIRA_PLAYLIST,
+};
+export type MusicPlaylistId = keyof typeof MUSIC_PLAYLISTS;
+
+
+/**
  * Szenen-spezifische Override-Tracks. Solange ein Override aktiv ist,
  * läuft dieser Track in Schleife und der normale Watcher springt nicht
  * weiter zur nächsten Playlist-Track. Aktuell genutzt für die
