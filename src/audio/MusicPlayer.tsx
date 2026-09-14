@@ -71,6 +71,28 @@ const PLAYLIST: MusicTrack[] = [
 ];
 
 /**
+ * Miras Zimmer hat eine eigene Playlist. Sie ersetzt die Standard-
+ * Playlist, solange man im Raum ist, und lässt sich genauso bedienen
+ * (vor/zurück, Titelanzeige). Beim Verlassen des Raums übernimmt wieder
+ * die Standard-Playlist.
+ */
+const MIRA_PLAYLIST: MusicTrack[] = [
+  { title: "Resonanzhygiene", src: resonanzhygieneAsset.url },
+  { title: "Resonanzhygiene II", src: resonanzhygiene2Asset.url },
+  { title: "Das Gesetz der Nacht", src: gesetzDerNachtAsset.url },
+  { title: "Heartbeat Regulations", src: heartbeatRegulationsAsset.url },
+  { title: "Gefühle ohne Zähne", src: gefuehleOhneZaehneAsset.url },
+  { title: "Trading Song for Stone", src: tradingSongForStoneAsset.url },
+];
+
+export const MUSIC_PLAYLISTS = {
+  default: PLAYLIST,
+  mira: MIRA_PLAYLIST,
+};
+export type MusicPlaylistId = keyof typeof MUSIC_PLAYLISTS;
+
+
+/**
  * Szenen-spezifische Override-Tracks. Solange ein Override aktiv ist,
  * läuft dieser Track in Schleife und der normale Watcher springt nicht
  * weiter zur nächsten Playlist-Track. Aktuell genutzt für die
@@ -91,30 +113,6 @@ export const MUSIC_OVERRIDES = {
   miraRepair: {
     title: "The Copper Wire Hour",
     src: copperWireHourAsset.url,
-  } as MusicTrack,
-  miraRoom: {
-    title: "Resonanzhygiene",
-    src: resonanzhygieneAsset.url,
-  } as MusicTrack,
-  miraRoom2: {
-    title: "Resonanzhygiene II",
-    src: resonanzhygiene2Asset.url,
-  } as MusicTrack,
-  miraRoom3: {
-    title: "Das Gesetz der Nacht",
-    src: gesetzDerNachtAsset.url,
-  } as MusicTrack,
-  miraRoom4: {
-    title: "Heartbeat Regulations",
-    src: heartbeatRegulationsAsset.url,
-  } as MusicTrack,
-  miraRoom5: {
-    title: "Gefühle ohne Zähne",
-    src: gefuehleOhneZaehneAsset.url,
-  } as MusicTrack,
-  miraRoom6: {
-    title: "Trading Song for Stone",
-    src: tradingSongForStoneAsset.url,
   } as MusicTrack,
 };
 export type MusicOverrideId = keyof typeof MUSIC_OVERRIDES;
@@ -168,6 +166,13 @@ interface MusicCtx {
    * Trackwechsel — der laufende Track wird NICHT unterbrochen.
    */
   setMood: (mood: DsaMood) => void;
+  /**
+   * Wechselt die aktive Playlist (z. B. auf Miras Zimmer-Playlist).
+   * Verhält sich danach exakt wie die Standard-Playlist.
+   */
+  setPlaylist: (id: MusicPlaylistId) => void;
+  /** Aktuell aktive Playlist. */
+  activePlaylist: MusicPlaylistId;
 }
 
 const MusicContext = createContext<MusicCtx | null>(null);
@@ -185,6 +190,8 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   const aRef = useRef<HTMLAudioElement | null>(null);
   const bRef = useRef<HTMLAudioElement | null>(null);
   const activeRef = useRef<"a" | "b">("a");
+  const playlistRef = useRef<MusicTrack[]>(PLAYLIST);
+  const [activePlaylist, setActivePlaylistState] = useState<MusicPlaylistId>("default");
   const initialIndex = useRef(Math.floor(Math.random() * PLAYLIST.length));
   const indexRef = useRef(initialIndex.current);
   const [currentIndex, setCurrentIndex] = useState(initialIndex.current);
@@ -327,7 +334,8 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   }, []);
 
   function pickTrack(i: number) {
-    return PLAYLIST[((i % PLAYLIST.length) + PLAYLIST.length) % PLAYLIST.length].src;
+    const list = playlistRef.current;
+    return list[((i % list.length) + list.length) % list.length].src;
   }
 
   function startPlayback() {
@@ -429,8 +437,9 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     const to = toKey === "a" ? aRef.current! : bRef.current!;
 
     indexRef.current =
-      ((indexRef.current + advanceBy) % PLAYLIST.length + PLAYLIST.length) %
-      PLAYLIST.length;
+      ((indexRef.current + advanceBy) % playlistRef.current.length +
+        playlistRef.current.length) %
+      playlistRef.current.length;
     setCurrentIndex(indexRef.current);
     to.src = pickTrack(indexRef.current);
     to.currentTime = 0;
@@ -504,7 +513,8 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
 
   const playIndex = useCallback((i: number) => {
     if (!aRef.current || !bRef.current) return;
-    const target = ((i % PLAYLIST.length) + PLAYLIST.length) % PLAYLIST.length;
+    const len = playlistRef.current.length;
+    const target = ((i % len) + len) % len;
     if (target === indexRef.current && !aRef.current.paused) return;
     const advance = target - indexRef.current;
     if (!enabledRef.current) {
@@ -749,9 +759,26 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     playIndex(indexRef.current - 1);
   }, [playIndex]);
 
+  const setPlaylist = useCallback((id: MusicPlaylistId) => {
+    const list = MUSIC_PLAYLISTS[id];
+    if (playlistRef.current === list) return;
+    playlistRef.current = list;
+    setActivePlaylistState(id);
+    savedIndexRef.current = null;
+    const startIndex = Math.floor(Math.random() * list.length);
+    indexRef.current = startIndex;
+    setCurrentIndex(startIndex);
+    if (!enabledRef.current) return;
+    // Override/Mood gewinnen akustisch — die neue Playlist übernimmt,
+    // sobald diese sich auflösen.
+    if (overrideRef.current || moodPoolRef.current) return;
+    crossfadeToSrc(list[startIndex].src);
+    ensureWatcher();
+  }, []);
+
   const value = useMemo<MusicCtx>(
     () => ({
-      tracks: PLAYLIST,
+      tracks: MUSIC_PLAYLISTS[activePlaylist],
       currentIndex,
       next,
       prev,
@@ -763,8 +790,10 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
       activeOverride,
       setMoodPool,
       setMood,
+      setPlaylist,
+      activePlaylist,
     }),
-    [currentIndex, next, prev, playIndex, setDuck, pause, resume, setOverride, activeOverride, setMoodPool, setMood],
+    [currentIndex, next, prev, playIndex, setDuck, pause, resume, setOverride, activeOverride, setMoodPool, setMood, setPlaylist, activePlaylist],
   );
 
   return <MusicContext.Provider value={value}>{children}</MusicContext.Provider>;
