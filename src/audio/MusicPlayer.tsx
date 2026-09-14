@@ -537,7 +537,8 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
 
   const playIndex = useCallback((i: number) => {
     if (!aRef.current || !bRef.current) return;
-    const target = ((i % PLAYLIST.length) + PLAYLIST.length) % PLAYLIST.length;
+    const len = playlistRef.current.length;
+    const target = ((i % len) + len) % len;
     if (target === indexRef.current && !aRef.current.paused) return;
     const advance = target - indexRef.current;
     if (!enabledRef.current) {
