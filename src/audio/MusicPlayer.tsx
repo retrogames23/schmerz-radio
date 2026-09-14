@@ -190,6 +190,13 @@ interface MusicCtx {
    * Trackwechsel — der laufende Track wird NICHT unterbrochen.
    */
   setMood: (mood: DsaMood) => void;
+  /**
+   * Wechselt die aktive Playlist (z. B. auf Miras Zimmer-Playlist).
+   * Verhält sich danach exakt wie die Standard-Playlist.
+   */
+  setPlaylist: (id: MusicPlaylistId) => void;
+  /** Aktuell aktive Playlist. */
+  activePlaylist: MusicPlaylistId;
 }
 
 const MusicContext = createContext<MusicCtx | null>(null);
