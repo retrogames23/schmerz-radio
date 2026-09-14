@@ -56,7 +56,7 @@ function TopBarImpl({ onOpenPause, onOpenHelp }: Props) {
 
         <div className="flex items-center gap-2">
           {!ending && !hideMusicSwitcher && scene !== "commonRoomE67" && scene !== "cafeteriaE67" && scene !== "pub" && scene !== "pubToilet" && scene !== "commonRoomE71" && <div
-            className={`group hidden items-center gap-1 rounded-sm border px-1.5 py-1 text-[10px] uppercase tracking-[0.2em] transition-all duration-200 sm:inline-flex ${
+            className={`group inline-flex items-center gap-1 rounded-sm border px-1.5 py-1 text-[10px] uppercase tracking-[0.2em] transition-all duration-200 ${
               musicEnabled
                 ? "border-amber-glow/30 bg-gradient-to-b from-amber-glow/10 to-transparent text-amber-glow/80 hover:border-amber-glow/60"
                 : "border-border/60 bg-secondary/30 text-muted-foreground/60"
