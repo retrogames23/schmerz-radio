@@ -214,6 +214,8 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   const aRef = useRef<HTMLAudioElement | null>(null);
   const bRef = useRef<HTMLAudioElement | null>(null);
   const activeRef = useRef<"a" | "b">("a");
+  const playlistRef = useRef<MusicTrack[]>(PLAYLIST);
+  const [activePlaylist, setActivePlaylistState] = useState<MusicPlaylistId>("default");
   const initialIndex = useRef(Math.floor(Math.random() * PLAYLIST.length));
   const indexRef = useRef(initialIndex.current);
   const [currentIndex, setCurrentIndex] = useState(initialIndex.current);
@@ -356,7 +358,8 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
   }, []);
 
   function pickTrack(i: number) {
-    return PLAYLIST[((i % PLAYLIST.length) + PLAYLIST.length) % PLAYLIST.length].src;
+    const list = playlistRef.current;
+    return list[((i % list.length) + list.length) % list.length].src;
   }
 
   function startPlayback() {
@@ -458,8 +461,9 @@ export function MusicPlayer({ children }: { children?: ReactNode }) {
     const to = toKey === "a" ? aRef.current! : bRef.current!;
 
     indexRef.current =
-      ((indexRef.current + advanceBy) % PLAYLIST.length + PLAYLIST.length) %
-      PLAYLIST.length;
+      ((indexRef.current + advanceBy) % playlistRef.current.length +
+        playlistRef.current.length) %
+      playlistRef.current.length;
     setCurrentIndex(indexRef.current);
     to.src = pickTrack(indexRef.current);
     to.currentTime = 0;
