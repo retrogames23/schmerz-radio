@@ -114,30 +114,6 @@ export const MUSIC_OVERRIDES = {
     title: "The Copper Wire Hour",
     src: copperWireHourAsset.url,
   } as MusicTrack,
-  miraRoom: {
-    title: "Resonanzhygiene",
-    src: resonanzhygieneAsset.url,
-  } as MusicTrack,
-  miraRoom2: {
-    title: "Resonanzhygiene II",
-    src: resonanzhygiene2Asset.url,
-  } as MusicTrack,
-  miraRoom3: {
-    title: "Das Gesetz der Nacht",
-    src: gesetzDerNachtAsset.url,
-  } as MusicTrack,
-  miraRoom4: {
-    title: "Heartbeat Regulations",
-    src: heartbeatRegulationsAsset.url,
-  } as MusicTrack,
-  miraRoom5: {
-    title: "Gefühle ohne Zähne",
-    src: gefuehleOhneZaehneAsset.url,
-  } as MusicTrack,
-  miraRoom6: {
-    title: "Trading Song for Stone",
-    src: tradingSongForStoneAsset.url,
-  } as MusicTrack,
 };
 export type MusicOverrideId = keyof typeof MUSIC_OVERRIDES;
 const CROSSFADE_SECONDS = 6;
