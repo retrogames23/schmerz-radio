@@ -31,6 +31,7 @@ import gesetzDerNachtAsset from "@/assets/music/Das_Gesetz_der_Nacht.mp3.asset.j
 import heartbeatRegulationsAsset from "@/assets/music/Heartbeat_Regulations.mp3.asset.json";
 import gefuehleOhneZaehneAsset from "@/assets/music/Gefuehle_ohne_Zaehne.mp3.asset.json";
 import tradingSongForStoneAsset from "@/assets/music/Trading_Song_for_Stone.mp3.asset.json";
+import unreadSignatureAsset from "@/assets/music/The_Unread_Signature.mp3.asset.json";
 import { pickMoodTrack, type DsaMood } from "./dsaMusic";
 
 const trackSunday = trackSundayAsset.url;
@@ -83,6 +84,7 @@ const MIRA_PLAYLIST: MusicTrack[] = [
   { title: "Heartbeat Regulations", src: heartbeatRegulationsAsset.url },
   { title: "Gefühle ohne Zähne", src: gefuehleOhneZaehneAsset.url },
   { title: "Trading Song for Stone", src: tradingSongForStoneAsset.url },
+  { title: "The Unread Signature", src: unreadSignatureAsset.url },
 ];
 
 export const MUSIC_PLAYLISTS = {
