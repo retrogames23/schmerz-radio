@@ -151,7 +151,17 @@ export async function callChatWithLoreTool(
       const status = upstream.status;
       console.error("dsaLore upstream error", status);
       if (status === 429) return { ok: false, status: 429, error: "Rate limited" };
-      if (status === 402) return { ok: false, status: 402, error: "AI-Kontingent erschöpft." };
+      if (status === 402 || status === 403) {
+        // 402 = Guthaben leer, 403 = Key-/Ausgabenlimit erreicht oder
+        // Modell für den Account gesperrt. Beides ist ein Kontingent-
+        // Problem und kein Rate Limit — Spieler brauchen eine klare Ansage.
+        return {
+          ok: false,
+          status: 402,
+          error:
+            "Das KI-Kontingent des Meisters ist derzeit erschöpft. Bitte später erneut versuchen.",
+        };
+      }
       return { ok: false, status: 502, error: "AI-Dienst antwortet nicht." };
     }
     let data: {
