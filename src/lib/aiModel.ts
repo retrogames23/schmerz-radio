@@ -113,33 +113,24 @@ export const DSA_MASTER_MODELS: DsaMasterModelOption[] = [
     hint: "Sehr günstig, kreatives Storytelling.",
     donorOnly: true,
   },
-  {
-    id: "google/gemini-3.1-flash-lite",
-    label: "Gemini 3.1 Flash Lite",
-    short: "Flash Lite",
-    hint: "Schnellste, günstigste Gemini-Option — für flotte, einfache Runden.",
-    donorOnly: false,
-  },
 ];
 
 const DSA_MODEL_IDS = new Set(DSA_MASTER_MODELS.map((m) => m.id));
 
 /**
  * Wählt das tatsächlich zu verwendende Modell für eine Anfrage aus.
- * - kein/unbekanntes Modell oder Nicht-Spender mit donorOnly-Wahl
- *   → Fallback auf den Default (AI_MODEL_DSA_MASTER).
- * - Spender (donor=true) dürfen jedes Modell aus der Allowlist nutzen.
+ * - Nicht-Spender: immer das günstige Gratis-Modell (AI_MODEL_DSA_FREE).
+ * - Spender (donor=true): freie Wahl aus der Allowlist, Default Luna.
  */
 export function resolveDsaMasterModel(
   requested: unknown,
   donor: boolean,
 ): string {
+  if (!donor) return AI_MODEL_DSA_FREE;
   if (typeof requested !== "string" || !DSA_MODEL_IDS.has(requested)) {
     return AI_MODEL_DSA_MASTER;
   }
-  const opt = DSA_MASTER_MODELS.find((m) => m.id === requested)!;
-  if (opt.donorOnly && !donor) return AI_MODEL_DSA_MASTER;
-  return opt.id;
+  return requested;
 }
 
 /**
