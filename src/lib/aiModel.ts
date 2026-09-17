@@ -36,6 +36,12 @@ export const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 export const OPENROUTER_CHAT_URL = `${OPENROUTER_BASE_URL}/chat/completions`;
 export const AI_MODEL_DSA_MASTER = "openai/gpt-5.6-luna";
 
+/**
+ * Gratis-Modell für alle, die (noch) nicht unterstützen. Deutlich
+ * günstiger als Luna und für Schnupper-Runden völlig ausreichend.
+ */
+export const AI_MODEL_DSA_FREE = "google/gemini-3.1-flash-lite";
+
 /** App-Identifikation für OpenRouter-Ranking-Header (optional aber empfohlen). */
 const OPENROUTER_APP_URL = "https://schmerz-radio.com";
 const OPENROUTER_APP_TITLE = "Schmerz-Radio";
@@ -67,17 +73,24 @@ export interface DsaMasterModelOption {
 export const DSA_MASTER_MODELS: DsaMasterModelOption[] = [
   {
     id: AI_MODEL_DSA_MASTER, // openai/gpt-5.6-luna
-    label: "GPT-5.6 Luna (Standard)",
+    label: "GPT-5.6 Luna (Standard für Unterstützer*innen)",
     short: "Luna",
-    hint: "Schnell, gutes Deutsch, solide Tool-Calls — die günstige Voreinstellung.",
+    hint: "Schnell, gutes Deutsch, solide Tool-Calls.",
+    donorOnly: true,
+  },
+  {
+    id: AI_MODEL_DSA_FREE, // google/gemini-3.1-flash-lite
+    label: "Gemini 3.1 Flash Lite (Gratis-Standard)",
+    short: "Flash Lite",
+    hint: "Schnellste, günstigste Option — Standard ohne Unterstützung.",
     donorOnly: false,
   },
   {
     id: "anthropic/claude-haiku-4.5",
     label: "Claude Haiku 4.5",
     short: "Haiku",
-    hint: "Sehr atmosphärische Erzählung, etwas teurer als der Standard.",
-    donorOnly: false,
+    hint: "Sehr atmosphärische Erzählung, deutlich teurer.",
+    donorOnly: true,
   },
   {
     id: "openai/gpt-5.4-mini",
@@ -100,33 +113,24 @@ export const DSA_MASTER_MODELS: DsaMasterModelOption[] = [
     hint: "Sehr günstig, kreatives Storytelling.",
     donorOnly: true,
   },
-  {
-    id: "google/gemini-3.1-flash-lite",
-    label: "Gemini 3.1 Flash Lite",
-    short: "Flash Lite",
-    hint: "Schnellste, günstigste Gemini-Option — für flotte, einfache Runden.",
-    donorOnly: false,
-  },
 ];
 
 const DSA_MODEL_IDS = new Set(DSA_MASTER_MODELS.map((m) => m.id));
 
 /**
  * Wählt das tatsächlich zu verwendende Modell für eine Anfrage aus.
- * - kein/unbekanntes Modell oder Nicht-Spender mit donorOnly-Wahl
- *   → Fallback auf den Default (AI_MODEL_DSA_MASTER).
- * - Spender (donor=true) dürfen jedes Modell aus der Allowlist nutzen.
+ * - Nicht-Spender: immer das günstige Gratis-Modell (AI_MODEL_DSA_FREE).
+ * - Spender (donor=true): freie Wahl aus der Allowlist, Default Luna.
  */
 export function resolveDsaMasterModel(
   requested: unknown,
   donor: boolean,
 ): string {
+  if (!donor) return AI_MODEL_DSA_FREE;
   if (typeof requested !== "string" || !DSA_MODEL_IDS.has(requested)) {
     return AI_MODEL_DSA_MASTER;
   }
-  const opt = DSA_MASTER_MODELS.find((m) => m.id === requested)!;
-  if (opt.donorOnly && !donor) return AI_MODEL_DSA_MASTER;
-  return opt.id;
+  return requested;
 }
 
 /**
@@ -193,10 +197,12 @@ const MODEL_LIMITS_MAP: Record<string, Partial<ModelLimits>> = {
     maxToolRounds: 3,
     useTools: true,
   },
+  // Gratis-Standard: am stärksten gedrosselt, damit Schnupper-Runden
+  // fast nichts kosten.
   "google/gemini-3.1-flash-lite": {
-    maxTokens: 700,
-    historyWindow: 6,
-    maxToolRounds: 3,
+    maxTokens: 600,
+    historyWindow: 4,
+    maxToolRounds: 2,
     useTools: true,
   },
 };

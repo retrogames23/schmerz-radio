@@ -5,6 +5,7 @@ import {
   openRouterHeaders,
   resolveDsaMasterModel,
 } from "@/lib/aiModel";
+import { isDailyBudgetReached } from "@/game/dsa/lore/dailyBudget.server";
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import {
@@ -41,7 +42,7 @@ import { selectActiveWorldInfo } from "@/game/dsa/lore/worldInfo";
 
 const HARD_LIMIT = 50;
 /** Meisterwenden pro anonymem Schnupper-Abenteuer. */
-const ANON_MAX_TURNS = 30;
+const ANON_MAX_TURNS = 20;
 const MAX_USER_INPUT = 500;
 const MAX_MESSAGES = 90;
 const SUMMARY_TRIGGER = 72; // ab dieser Länge älteste Hälfte zusammenfassen
@@ -979,6 +980,17 @@ export const Route = createFileRoute("/api/public/dsa-master")({
                 code: "donation_required",
               });
             }
+          }
+
+          // Tages-Notbremse: ist das globale Budget aufgebraucht, ruht der
+          // Meister für Gratis-Runden bis morgen. Unterstützer*innen
+          // spielen weiter.
+          if (!isDonor && (await isDailyBudgetReached())) {
+            return json(402, {
+              error:
+                "Der Meister ruht heute — das Tagesbudget für freie Runden ist aufgebraucht. Morgen geht es weiter, oder du unterstützt das Projekt und spielst sofort weiter.",
+              code: "donation_required",
+            });
           }
 
           let newTurn: StoredTurn;

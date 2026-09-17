@@ -1,5 +1,6 @@
 import {
   AI_MODEL_MAIN,
+  AI_MODEL_LIGHT,
   OPENROUTER_CHAT_URL,
   openRouterHeaders,
 } from "@/lib/aiModel";
@@ -249,14 +250,15 @@ export const Route = createFileRoute("/api/public/fastweb-chat")({
             method: "POST",
             headers: openRouterHeaders(apiKey),
             body: JSON.stringify({
-              model: AI_MODEL_MAIN,
+              // Kostenbremse: teures Haupt-Modell nur für Unterstützer*innen.
+              model: donationUnlocked ? AI_MODEL_MAIN : AI_MODEL_LIGHT,
               messages: [
                 { role: "system", content: guard },
                 { role: "system", content: systemPrompt },
                 { role: "user", content: userPrompt },
               ],
               temperature: 0.85,
-              max_tokens: 240,
+              max_tokens: donationUnlocked ? 240 : 180,
               tools: [
                 {
                   type: "function",
