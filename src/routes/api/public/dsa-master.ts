@@ -5,6 +5,7 @@ import {
   openRouterHeaders,
   resolveDsaMasterModel,
 } from "@/lib/aiModel";
+import { isDailyBudgetReached } from "@/game/dsa/lore/dailyBudget.server";
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import {
