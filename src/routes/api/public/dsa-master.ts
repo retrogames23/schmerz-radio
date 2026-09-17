@@ -981,6 +981,17 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             }
           }
 
+          // Tages-Notbremse: ist das globale Budget aufgebraucht, ruht der
+          // Meister für Gratis-Runden bis morgen. Unterstützer*innen
+          // spielen weiter.
+          if (!isDonor && (await isDailyBudgetReached())) {
+            return json(402, {
+              error:
+                "Der Meister ruht heute — das Tagesbudget für freie Runden ist aufgebraucht. Morgen geht es weiter, oder du unterstützt das Projekt und spielst sofort weiter.",
+              code: "donation_required",
+            });
+          }
+
           let newTurn: StoredTurn;
           if (action === "say") {
             const text = typeof b.text === "string" ? b.text.trim() : "";
