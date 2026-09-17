@@ -197,10 +197,12 @@ const MODEL_LIMITS_MAP: Record<string, Partial<ModelLimits>> = {
     maxToolRounds: 3,
     useTools: true,
   },
+  // Gratis-Standard: am stärksten gedrosselt, damit Schnupper-Runden
+  // fast nichts kosten.
   "google/gemini-3.1-flash-lite": {
-    maxTokens: 700,
-    historyWindow: 6,
-    maxToolRounds: 3,
+    maxTokens: 600,
+    historyWindow: 4,
+    maxToolRounds: 2,
     useTools: true,
   },
 };

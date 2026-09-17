@@ -41,7 +41,7 @@ import { selectActiveWorldInfo } from "@/game/dsa/lore/worldInfo";
 
 const HARD_LIMIT = 50;
 /** Meisterwenden pro anonymem Schnupper-Abenteuer. */
-const ANON_MAX_TURNS = 30;
+const ANON_MAX_TURNS = 20;
 const MAX_USER_INPUT = 500;
 const MAX_MESSAGES = 90;
 const SUMMARY_TRIGGER = 72; // ab dieser Länge älteste Hälfte zusammenfassen
