@@ -32,6 +32,7 @@ import heartbeatRegulationsAsset from "@/assets/music/Heartbeat_Regulations.mp3.
 import gefuehleOhneZaehneAsset from "@/assets/music/Gefuehle_ohne_Zaehne.mp3.asset.json";
 import tradingSongForStoneAsset from "@/assets/music/Trading_Song_for_Stone.mp3.asset.json";
 import unreadSignatureAsset from "@/assets/music/The_Unread_Signature.mp3.asset.json";
+import hollowLedgerAsset from "@/assets/music/The_Hollow_Ledger.mp3.asset.json";
 import { pickMoodTrack, type DsaMood } from "./dsaMusic";
 
 const trackSunday = trackSundayAsset.url;
@@ -85,6 +86,7 @@ const MIRA_PLAYLIST: MusicTrack[] = [
   { title: "Gefühle ohne Zähne", src: gefuehleOhneZaehneAsset.url },
   { title: "Trading Song for Stone", src: tradingSongForStoneAsset.url },
   { title: "The Unread Signature", src: unreadSignatureAsset.url },
+  { title: "The Hollow Ledger", src: hollowLedgerAsset.url },
 ];
 
 export const MUSIC_PLAYLISTS = {
