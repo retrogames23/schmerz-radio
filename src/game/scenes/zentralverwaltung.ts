@@ -1,6 +1,6 @@
 import zvsExteriorBg from "@/assets/scene-zvs-exterior.jpg";
 import zvsForumBg from "@/assets/scene-zvs-forum.jpg";
-import zvs5011Bg from "@/assets/scene-zvs-5011.jpg";
+import zvs5011Bg from "@/assets/scene-zvs-5011-final.png";
 import type { Scene } from "../types";
 
 /**
