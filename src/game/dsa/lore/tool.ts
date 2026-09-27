@@ -150,6 +150,13 @@ export async function callChatWithLoreTool(
     if (!upstream.ok) {
       const status = upstream.status;
       console.error("dsaLore upstream error", status);
+      if (status === 401) {
+        return {
+          ok: false,
+          status: 503,
+          error: "Der KI-Zugang des Meisters ist ungültig. Bitte die Betreiber informieren.",
+        };
+      }
       if (status === 429) return { ok: false, status: 429, error: "Rate limited" };
       if (status === 402 || status === 403) {
         // 402 = Guthaben leer, 403 = Key-/Ausgabenlimit erreicht oder
@@ -298,6 +305,13 @@ export async function callChatWithLoreTool(
       }),
     });
     if (!upstream.ok) {
+      if (upstream.status === 401) {
+        return {
+          ok: false,
+          status: 503,
+          error: "Der KI-Zugang des Meisters ist ungültig. Bitte die Betreiber informieren.",
+        };
+      }
       return { ok: false, status: 502, error: "AI-Dienst antwortet nicht (Fallback)." };
     }
     const data = (await upstream.json()) as {
