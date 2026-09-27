@@ -33,6 +33,7 @@ import gefuehleOhneZaehneAsset from "@/assets/music/Gefuehle_ohne_Zaehne.mp3.ass
 import tradingSongForStoneAsset from "@/assets/music/Trading_Song_for_Stone.mp3.asset.json";
 import unreadSignatureAsset from "@/assets/music/The_Unread_Signature.mp3.asset.json";
 import hollowLedgerAsset from "@/assets/music/The_Hollow_Ledger.mp3.asset.json";
+import beforeSnowFallsAsset from "@/assets/music/Before_the_Snow_Falls.mp3.asset.json";
 import { pickMoodTrack, type DsaMood } from "./dsaMusic";
 
 const trackSunday = trackSundayAsset.url;
@@ -89,9 +90,15 @@ const MIRA_PLAYLIST: MusicTrack[] = [
   { title: "The Hollow Ledger", src: hollowLedgerAsset.url },
 ];
 
+const CAFETERIA_PLAYLIST: MusicTrack[] = [
+  { title: "The Linoleum Waltz", src: trackLinoleumWaltz },
+  { title: "Before the Snow Falls", src: beforeSnowFallsAsset.url },
+];
+
 export const MUSIC_PLAYLISTS = {
   default: PLAYLIST,
   mira: MIRA_PLAYLIST,
+  cafeteria: CAFETERIA_PLAYLIST,
 };
 export type MusicPlaylistId = keyof typeof MUSIC_PLAYLISTS;
 
@@ -105,7 +112,6 @@ export type MusicPlaylistId = keyof typeof MUSIC_PLAYLISTS;
 export const MUSIC_OVERRIDES = {
   dsaTavern: { title: "Tavernen-Stube (DSA)", src: trackDsaTavern } as MusicTrack,
   dsaTable: { title: "The Worn Oak Table (DSA)", src: trackDsaTable } as MusicTrack,
-  cafeteria: { title: "The Linoleum Waltz", src: trackLinoleumWaltz } as MusicTrack,
   pub: { title: "The Corner Booth", src: trackCornerBooth } as MusicTrack,
   e71Nerds: { title: "Victory over the Spire", src: trackVictorySpire } as MusicTrack,
   sectorThreshold: { title: "The City Forgets", src: trackCityForgets } as MusicTrack,
