@@ -1125,3 +1125,11 @@ select,
   -webkit-user-select: text;
   user-select: text;
 }
+
+/* Auf allen eigenständigen DSA-Seiten auch Spieltexte und Dialoge markierbar
+   halten. :has erfasst zusätzlich Dialoge, die direkt unter body portaliert sind. */
+body:has([data-dsa-page]),
+body:has([data-dsa-page]) * {
+  -webkit-user-select: text;
+  user-select: text;
+}
