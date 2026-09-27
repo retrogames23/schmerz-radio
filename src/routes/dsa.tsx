@@ -18,7 +18,9 @@ function DsaLayout() {
       <MusicPlayer>
         <DsaStandaloneMusicBridge />
         <MusicToggle />
-        <Outlet />
+        <div data-dsa-page="true">
+          <Outlet />
+        </div>
       </MusicPlayer>
     </SettingsProvider>
   );
