@@ -80,18 +80,15 @@ const FreeChatOverlay = lazyWithRetry(() =>
 function DsaMusicBridge() {
   const { scene, dsaAdventureOpen, dsaBeat, lobbyGateOpen } = useGame();
   const { setOverride, activeOverride, setPlaylist } = useMusic();
-  // Miras Zimmer hat eine eigene Playlist: solange man im Raum ist,
-  // ersetzt sie die Standard-Playlist (gleiche Bedienung im Player).
-  // Beim Verlassen übernimmt wieder die Standard-Playlist.
+  // Beide Räume ersetzen die Standard-Playlist nur während des Aufenthalts.
   useEffect(() => {
-    setPlaylist(scene === "aptMira4601" ? "mira" : "default");
+    setPlaylist(scene === "aptMira4601" ? "mira" : scene === "cafeteriaE67" ? "cafeteria" : "default");
   }, [scene, setPlaylist]);
   useEffect(() => {
     // Wenn die LLM-Tafelrunde offen ist, übernimmt der Mood-Pool in
     // DsaLlmAdventureScene die Musik — hier kein Override setzen.
     const inTavern = dsaAdventureOpen && !!dsaBeat && dsaBeat.startsWith("s2");
     const inDsa = scene === "commonRoomE67" && !dsaAdventureOpen;
-    const inCafeteria = scene === "cafeteriaE67";
     const inPub = scene === "pub" || scene === "pubToilet";
     const inE71Nerds = scene === "commonRoomE71";
     const inElevator = scene === "elevator" || scene === "elevatorE71";
@@ -106,13 +103,11 @@ function DsaMusicBridge() {
           ? "dsaTavern"
           : inDsa
             ? "dsaTable"
-            : inCafeteria
-              ? "cafeteria"
-              : inPub
-                ? "pub"
-                : inE71Nerds
-                  ? "e71Nerds"
-                  : null;
+            : inPub
+              ? "pub"
+              : inE71Nerds
+                ? "e71Nerds"
+                : null;
     // Cutscene-Overrides (Play-Once) gehören der jeweiligen Cutscene und
     // lösen sich selbst auf. Bis dahin nicht überschreiben — sonst würde
     // ein Szenenwechsel (target=null) den Song abbrechen.
