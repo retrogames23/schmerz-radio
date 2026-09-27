@@ -34,6 +34,7 @@ import tradingSongForStoneAsset from "@/assets/music/Trading_Song_for_Stone.mp3.
 import unreadSignatureAsset from "@/assets/music/The_Unread_Signature.mp3.asset.json";
 import hollowLedgerAsset from "@/assets/music/The_Hollow_Ledger.mp3.asset.json";
 import beforeSnowFallsAsset from "@/assets/music/Before_the_Snow_Falls.mp3.asset.json";
+import shalnyeKoniAsset from "@/assets/music/Shalnye_Koni.mp3.asset.json";
 import { pickMoodTrack, type DsaMood } from "./dsaMusic";
 
 const trackSunday = trackSundayAsset.url;
@@ -92,6 +93,7 @@ const MIRA_PLAYLIST: MusicTrack[] = [
 
 const CAFETERIA_PLAYLIST: MusicTrack[] = [
   { title: "The Linoleum Waltz", src: trackLinoleumWaltz },
+  { title: "Шальные кони", src: shalnyeKoniAsset.url },
   { title: "Before the Snow Falls", src: beforeSnowFallsAsset.url },
 ];
 
