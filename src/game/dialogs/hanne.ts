@@ -2,403 +2,654 @@ import type { DialogChoice, DialogLine, DialogTree, StoryFlag } from "../types";
 
 /**
  * Hanne Brodersen — Wohnung 1104, Gebäude E71, Etage 1.
- * Geb. 1948 Hamburg, 1966 in die USA (Bay Area), 1972 zurück.
- * Liest Fuller, Mumford, Whole Earth Catalog, Beat-Literatur, Dylan —
- * und wendet das alles auf das Mandatsgebiet 1997 an.
+ * Geb. 1948 in Hamburg, 1966 in die USA, 1972 zurück.
  *
- * Aufbau: ein Hub mit sechs Strängen, jeder 3–5 Ebenen tief. Jede
- * Entscheidungszeile bietet „Zurück“ (zum Hub) und „Ich muss los“.
+ * Die Gespräche beginnen bei Erinnerungen und Dingen im Raum. Begriffe und
+ * Namen werden erst von Hanne eingeführt, bevor Layard danach fragen kann.
+ * Kurze Zwischenmenüs halten das Tempo beim Spieler: vertiefen, wechseln,
+ * gehen. Hanne redet viel, aber nicht mehr allein.
  */
 
 type Entry = [DialogLine["speaker"], string, string?];
 
-/** Baut eine lineare Folge; die letzte Zeile bekommt `choices`. */
 function chain(
   prefix: string,
   entries: Entry[],
   choices: DialogChoice[],
 ): Record<string, DialogLine> {
   const out: Record<string, DialogLine> = {};
-  entries.forEach(([speaker, text, subtext], i) => {
-    const id = `${prefix}_${i + 1}`;
-    const isLast = i === entries.length - 1;
+  entries.forEach(([speaker, text, subtext], index) => {
+    const id = `${prefix}_${index + 1}`;
+    const last = index === entries.length - 1;
     out[id] = {
       id,
       speaker,
       text,
       subtext,
-      next: isLast ? undefined : `${prefix}_${i + 2}`,
-      choices: isLast ? choices : undefined,
+      next: last ? undefined : `${prefix}_${index + 2}`,
+      choices: last ? choices : undefined,
     };
   });
   return out;
 }
 
 const HUB = "hb";
-const back: DialogChoice = { text: "Zurück zu etwas anderem.", next: HUB };
-const bye: DialogChoice = { text: "Ich muss los.", next: "bye" };
-const exits = [back, bye];
+const back = (text = "Lassen wir den Gedanken erst einmal liegen."): DialogChoice => ({
+  text,
+  next: HUB,
+});
+const bye = (text = "Ich muss weiter."): DialogChoice => ({
+  text,
+  next: "bye",
+});
 const go = (text: string, prefix: string, flag?: StoryFlag): DialogChoice => ({
   text,
   next: `${prefix}_1`,
-  action: flag ? (a) => a.setFlag(flag) : undefined,
+  action: flag ? (api) => api.setFlag(flag) : undefined,
 });
 
 /* ------------------------------------------------------------------ */
-/* Stränge                                                            */
+/* Amerika, Rückkehr, Brot und Gemütlichkeit                          */
 /* ------------------------------------------------------------------ */
 
 const usa = {
   ...chain(
     "us",
     [
-      ["HANNE", "Achtzehn war ich. Hamburg, Hafen, Regen, ein Vater, der Zeitungen bügelte, bevor er sie las. Ich hatte ein Ticket nach New York und eine Adresse in Berkeley, die sich als Waschsalon herausstellte."],
-      ["HANNE", "Sechsundsechzig, Herr Layard. Da hat die Westküste geglaubt, man könne das Bewusstsein umbauen wie eine Garage. Ein paar von uns haben stattdessen Garagen umgebaut. Ich war bei denen."],
-      ["LAYARD", "Und dann kamen Sie zurück. 1972. Freiwillig?"],
-      ["HANNE", "Völlig freiwillig. Ich habe Vollkornbrot vermisst. Ich meine das ernst. Und Gemütlichkeit. Und eine Sprache, in der ein Wort genau eine Sache meint und nicht drei Stimmungen."],
+      ["HANNE", "Achtzehn bin ich gewesen. Hamburg, Hafen, Regen. Mein Vater hat die Zeitung gebügelt, bevor er sie gelesen hat. Nicht aus Zwang — aus Überzeugung."],
+      ["LAYARD", "Und Sie haben das gegen Amerika eingetauscht."],
+      ["HANNE", "Gegen ein Ticket nach New York und eine Adresse in Berkeley. Die Adresse hat sich als Waschsalon herausgestellt. Das war meine erste amerikanische Lektion: Eine falsche Adresse kann trotzdem irgendwohin führen."],
+      ["LAYARD", "Warum gerade dorthin?"],
+      ["HANNE", "Weil dort Leute laut über die Zukunft gesprochen haben. Nicht nur Politiker. Studenten, Handwerker, Frauen mit Kindern, Männer in Garagen. Viel Unsinn, natürlich. Aber lebendiger Unsinn."],
     ],
     [
-      go("Und? Hat sich die Rückkehr gelohnt?", "us2"),
-      go("Was vermissen Sie jetzt — hier?", "us3"),
-      ...exits,
+      go("Was haben Sie dort tatsächlich gemacht?", "us_work"),
+      go("Und sechs Jahre später sind Sie zurückgekommen.", "us_return"),
+      back("Ich möchte erst etwas anderes fragen."),
+      bye(),
     ],
   ),
   ...chain(
-    "us2",
+    "us_work",
     [
-      ["HANNE", "Das Brot: ja. Die Sprache: ja, bis man merkt, dass präzise Sprache auch die präziseste Art ist, nichts zu sagen. Lesen Sie mal einen Bescheid der ZVS. Kein Wort falsch. Kein Satz wahr."],
-      ["HANNE", "Und die Gemütlichkeit — die ist zweischneidig. Geborgenheit ist, wenn man sich sicher fühlt. Gemütlichkeit ist, wenn man aufgehört hat, nachzusehen, ob man es ist."],
+      ["HANNE", "Erst Geschirr gespült. Dann in einer kleinen Druckerei gearbeitet. Abends haben wir in Küchen gesessen und Hefte geheftet, Schaltpläne kopiert, Adressen getauscht."],
+      ["LAYARD", "Politische Flugblätter?"],
+      ["HANNE", "Auch. Aber genauso Anleitungen: Wie man einen Ofen baut, ein Radio repariert, einen Garten auf schlechtem Boden anlegt. Mich hat beeindruckt, dass eine Idee dort oft mit einer Werkzeugliste endete."],
+      ["LAYARD", "Hier endet sie eher mit einem Zuständigkeitsvermerk."],
+      ["HANNE", "Sehen Sie. Darum dürfen Sie nicht nur höflich nicken. Sie kennen den Unterschied bereits."],
     ],
-    [go("Das klingt nach einem Vorwurf ans ganze Mandatsgebiet.", "psy"), ...exits],
+    [
+      go("Diese Hefte auf Ihrem Tisch erinnern daran?", "we", "hanneWEC"),
+      go("Was hat Sie trotzdem zurückgebracht?", "us_return"),
+      back(),
+      bye(),
+    ],
   ),
   ...chain(
-    "us3",
+    "us_return",
     [
-      ["HANNE", "Die Weite. Nicht die Landschaft — die Köpfe. Drüben hat ein Zwanzigjähriger gesagt: Ich baue einen Computer für jeden Haushalt. Und man hat ihn ausgelacht, und dann hat er es getan."],
-      ["HANNE", "Hier sagt ein Zwanzigjähriger dasselbe, und man fragt ihn, welches Formular er dafür vorgesehen hat. Niemand lacht. Das ist schlimmer."],
+      ["HANNE", "1972 bin ich zurückgekommen. Freiwillig. Das muss ich immer dazusagen, sonst klingt es wie eine Abschiebung."],
+      ["LAYARD", "Warum?"],
+      ["HANNE", "Wegen Vollkornbrot. Lachen Sie ruhig. Das amerikanische Brot ließ sich zu einer Kugel drücken und sprang wieder auf. Ich wollte etwas, das Widerstand leistet."],
+      ["LAYARD", "Nur wegen Brot fährt man nicht über einen Ozean."],
+      ["HANNE", "Nein. Wegen Gemütlichkeit auch. Und wegen einer Sprache, in der ich einen Gedanken so lange festhalten kann, bis er genau ist. Ich habe Präzision mit Wahrheit verwechselt."],
     ],
     [
-      go("Erzählen Sie von dem Computer da drüben.", "mac", "hanneMac"),
-      go("Sie meinen, hier fehlt Vision.", "fu", "hanneFuller"),
-      ...exits,
+      go("Wann haben Sie den Unterschied bemerkt?", "us_language"),
+      go("Was ist aus der vermissten Gemütlichkeit geworden?", "us_comfort"),
+      back(),
+      bye(),
+    ],
+  ),
+  ...chain(
+    "us_language",
+    [
+      ["HANNE", "Bei meinem ersten Bescheid. Kein Wort war falsch. Jeder Satz war vollständig. Und trotzdem stand am Ende nichts darin, worauf ein Mensch antworten konnte."],
+      ["LAYARD", "Ein präziser Satz kann also unaufrichtig sein."],
+      ["HANNE", "Er kann schlimmer sein. Er kann die Unaufrichtigkeit so genau vermessen, dass man sie für ein Verfahren hält."],
+      ["LAYARD", "Ich habe früher Sätze geschrieben, damit jemand etwas sieht. Heute schreibe ich Vermerke, damit etwas abgelegt werden kann."],
+      ["HANNE", "Dann wissen Sie, dass Sprache nicht harmlos ist. Ein Schriftsteller und ein Sachbearbeiter ordnen beide Wirklichkeit. Nur der eine darf zugeben, dass er es tut."],
+    ],
+    [
+      go("Und was macht diese Ordnung mit den Menschen?", "psy"),
+      back("Darüber muss ich einen Moment nachdenken."),
+      bye(),
+    ],
+  ),
+  ...chain(
+    "us_comfort",
+    [
+      ["HANNE", "Geborgenheit ist, wenn man sich sicher fühlt und trotzdem nach der Tür sehen darf. Gemütlichkeit ist manchmal nur der Moment, in dem niemand mehr nachsieht."],
+      ["LAYARD", "Sie machen aus einem Sessel eine politische Frage."],
+      ["HANNE", "Nur aus einem sehr bequemen Sessel. Das Mandatsgebiet stellt überall welche hin: warme Kantinen, freundliche Durchsagen, Vorhänge vor Beton. Nichts davon ist böse. Zusammen kann es betäuben."],
+      ["LAYARD", "Und Ihr Brot? Gehört das nicht auch zur Gemütlichkeit?"],
+      ["HANNE", "Doch. Das ist mein Widerspruch. Ich misstraue der Betäubung und backe jeden Morgen daran mit. Man muss seine Widersprüche wenigstens frisch halten."],
+    ],
+    [
+      go("Was vermissen Sie heute an Amerika?", "us_missing"),
+      back(),
+      bye(),
+    ],
+  ),
+  ...chain(
+    "us_missing",
+    [
+      ["HANNE", "Nicht Amerika. Die Weite im Denken. Dort hat ein Zwanzigjähriger gesagt: Ich baue einen Computer für jeden Haushalt. Man hat ihn ausgelacht, und dann hat jemand eine Garage aufgeschlossen."],
+      ["LAYARD", "Hier würde man nach dem vorgesehenen Haushalt fragen."],
+      ["HANNE", "Und nach der Geräteklasse. Niemand würde lachen. Das ist schlimmer, weil das Lachen immerhin einen Gedanken gehört hat."],
+    ],
+    [
+      go("Dann zeigen Sie mir Ihren Computer.", "mac", "hanneMac"),
+      go("Wer hat Sie zu diesem Blick auf Technik gebracht?", "fu", "hanneFuller"),
+      back(),
+      bye(),
     ],
   ),
 };
+
+/* ------------------------------------------------------------------ */
+/* Fuller                                                              */
+/* ------------------------------------------------------------------ */
 
 const fuller = {
   ...chain(
     "fu",
     [
-      ["HANNE", "Buckminster Fuller. Kennen Sie nicht? Natürlich nicht, er steht nicht im Verwaltungslexikon. Ingenieur, Dichter, Größenwahnsinniger im besten Sinne. Er hat gesagt, die Erde ist ein Raumschiff — und sie kam ohne Bedienungsanleitung."],
-      ["HANNE", "„Operating Manual for Spaceship Earth“, 1969. Die Idee: Wir sind alle Besatzung, keiner ist Passagier. Wer so denkt, kann keine Grenze mehr ernst nehmen, die man nicht vom Orbit aus sieht."],
-      ["LAYARD", "Das Mandatsgebiet ist ziemlich gut darin, Grenzen ernst zu nehmen."],
-      ["HANNE", "Eben. Deshalb erzähle ich es Ihnen ja."],
+      ["HANNE", "Einer davon heißt Buckminster Fuller. Ingenieur, Gestalter, Dichter, gelegentlich unerträglich überzeugt von sich. Gerade genug Größenwahn, um die Gegenwart nicht für unvermeidlich zu halten."],
+      ["LAYARD", "Was hat er anders gesehen?"],
+      ["HANNE", "Die Erde als Raumschiff. Keine Metapher für Sonntagsreden, sondern eine Arbeitsannahme: begrenzte Vorräte, gemeinsame Reise, keine Ersatzmaschine."],
+      ["LAYARD", "Und keine Bedienungsanleitung."],
+      ["HANNE", "Genau. So heißt sein Buch von 1969 sinngemäß: Bedienungsanleitung für das Raumschiff Erde. Wir sind Besatzung, nicht Passagiere. Das verändert, wer für einen Defekt zuständig ist."],
     ],
     [
-      go("Was meinte er mit „mehr mit weniger“?", "fu2"),
-      go("Und diese Kuppel da?", "fu3"),
-      go("Hat er auch etwas Brauchbares für Leute wie mich?", "fu4"),
-      ...exits,
+      go("Was folgt daraus für den Alltag?", "fu_less"),
+      go("Hat das Kuppelmodell mit ihm zu tun?", "fu_dome"),
+      go("Was kann ein Einzelner in so einem großen Schiff tun?", "fu_rudder"),
+      back(),
+      bye(),
     ],
   ),
   ...chain(
-    "fu2",
+    "fu_less",
     [
-      ["HANNE", "Ephemeralisierung. Ein schreckliches Wort für eine schöne Idee: Technik entwickelt sich dahin, mit immer weniger Material, Energie und Zeit immer mehr zu leisten. Ein Telefonkabel aus Kupfer, dann ein Glasfaden, dann gar nichts mehr — Funk."],
-      ["HANNE", "Jetzt schauen Sie sich die Verwaltung an. Die macht das Gegenteil: mit immer mehr Formularen immer weniger. Fuller hätte das Ephemeralisierung rückwärts genannt. Ich nenne es Sektor 28."],
-      ["LAYARD", "Vielleicht ist das gewollt. Wer weniger erreicht, verändert weniger."],
-      ["HANNE", "Oh. Sie sind gar nicht so harmlos, wie Ihr Mantel aussieht."],
+      ["HANNE", "Fuller beobachtet, dass Technik mit weniger Material, Energie und Zeit mehr leisten kann. Ein schweres Kupferkabel wird zum Glasfaden, ein Raum voller Rechenmaschinen zu einem Kasten auf meinem Tisch."],
+      ["LAYARD", "Fortschritt als Gewichtsverlust."],
+      ["HANNE", "Schön gesagt. Er nennt es Ephemeralisierung. Ein schreckliches Wort für eine anschauliche Bewegung: mehr Wirkung mit weniger Aufwand."],
+      ["LAYARD", "Die Verwaltung bewegt sich in die andere Richtung."],
+      ["HANNE", "Mehr Formulare, mehr Stellen, mehr Durchschläge — und am Ende erreicht eine Nachricht den Nachbartisch nicht. Ephemeralisierung rückwärts. Sektor 28 als Gegenbeweis."],
     ],
-    [go("Das klingt nach Mumford.", "mu", "hanneMumford"), back, bye],
+    [
+      go("Vielleicht ist die Wirkungslosigkeit gewollt.", "fu_less_doubt"),
+      go("Sie sprechen von Technik. Wer entscheidet, wofür sie arbeitet?", "mu", "hanneMumford"),
+      back(),
+      bye(),
+    ],
   ),
   ...chain(
-    "fu3",
+    "fu_less_doubt",
     [
-      ["HANNE", "Eine geodätische Kuppel. Fullers berühmtestes Ding. Lauter Dreiecke, weil das Dreieck die einzige Form ist, die sich nicht verbiegt, ohne zu brechen."],
-      ["HANNE", "Und dann Tensegrity — tensional integrity. Stäbe, die sich nicht berühren, gehalten nur durch Spannung. Die Stabilität kommt nicht aus der Härte der Teile, sondern aus dem Zug zwischen ihnen."],
-      ["HANNE", "Ich denke oft, dass eine Gesellschaft so funktionieren könnte. Nicht durch Druck von oben — durch Spannung zwischen Gleichen. Das Mandatsgebiet ist das Gegenmodell: ein Ziegelbau. Alles liegt auf allem, und unten trägt einer alles."],
+      ["LAYARD", "Wer weniger erreicht, verändert weniger. Vielleicht erfüllt das System genau seinen Zweck."],
+      ["HANNE", "Da ist der frühere Autor. Sie hören auf das, was ein Satz verschweigt."],
+      ["LAYARD", "Das verlernt man in der Verwaltung nicht. Man benutzt es nur anders."],
+      ["HANNE", "Dann passen Sie auf, dass das Andersbenutzen nicht zum Verlernen wird."],
     ],
-    [go("Und was ist mit Synergie?", "fu5"), back, bye],
+    [back("Lassen wir Fuller kurz ruhen."), bye()],
   ),
   ...chain(
-    "fu5",
+    "fu_dome",
     [
-      ["HANNE", "Synergetik. Das Verhalten des Ganzen lässt sich aus den Teilen nicht vorhersagen. Chrom, Nickel, Stahl: jedes für sich schwach, zusammen eine Legierung, die mehr aushält als die Summe."],
-      ["HANNE", "Die Verwaltung glaubt das Gegenteil. Sie glaubt, wenn jede Abteilung ihre Spalte richtig ausfüllt, ist das Ganze richtig. Es ist aber nur korrekt. Das ist nicht dasselbe."],
+      ["HANNE", "Ja. Eine geodätische Kuppel. Lauter Dreiecke. Ein Dreieck verändert seine Form erst, wenn eine Seite nachgibt; darum verteilt das Ganze die Last so gut."],
+      ["LAYARD", "Viele schwache Teile tragen gemeinsam mehr."],
+      ["HANNE", "Und sie tragen nicht, weil oben etwas Schweres auf ihnen liegt. Bei Fullers Tensegrity entsteht Stabilität aus Zug und Druck zwischen den Teilen."],
+      ["LAYARD", "Sie sehen darin eine Gesellschaft."],
+      ["HANNE", "Eine mögliche. Das Mandatsgebiet baut lieber Ziegelmauern: Alles liegt auf allem, und ganz unten trägt jemand, den keiner fragt."],
     ],
-    exits,
+    [
+      go("Kann man vom einzelnen Teil wirklich auf das Ganze schließen?", "fu_synergy"),
+      back("Genug Architektur für den Moment."),
+      bye(),
+    ],
   ),
   ...chain(
-    "fu4",
+    "fu_synergy",
     [
-      ["HANNE", "Ein Satz, den man ihm zuschreibt: „Man ändert die Dinge nie, indem man die bestehende Wirklichkeit bekämpft. Um etwas zu ändern, baut man ein neues Modell, das das alte überflüssig macht.“"],
-      ["HANNE", "Für einen Verwaltungsangestellten ist das der gefährlichste Satz, den es gibt. Sie dürfen nicht kämpfen — aber niemand hat Ihnen verboten, etwas Besseres zu bauen."],
-      ["HANNE", "Und Fuller hat das World Game erfunden: ein Spiel, in dem man die Welt so schnell wie möglich für hundert Prozent der Menschheit funktionieren lässt. Ohne dass jemand Schaden nimmt. Das Gegenteil eines Kriegsspiels."],
+      ["HANNE", "Gerade nicht. Fuller nennt das Synergie: Das Verhalten des Ganzen lässt sich aus den einzelnen Teilen nicht vollständig vorhersagen."],
+      ["LAYARD", "Wie bei einer Behörde. Jeder erfüllt seine Aufgabe, und gemeinsam entsteht etwas, das keiner beabsichtigt hat."],
+      ["HANNE", "Sehr gut. Die Verwaltung verwechselt Korrektheit der Teile mit Richtigkeit des Ganzen. Jede Spalte stimmt, und der Mensch verschwindet."],
+      ["LAYARD", "Dann ist das Ganze nicht mehr als die Summe. Es ist weniger."],
+      ["HANNE", "Fuller hätte Sie gemocht. Vielleicht nur fünf Minuten, aber sehr intensiv."],
     ],
-    [go("Klingt nach dem, was Walter nebenan erzählt.", "fu6"), ...exits],
+    [back(), bye()],
   ),
   ...chain(
-    "fu6",
+    "fu_rudder",
     [
-      ["HANNE", "Walter! Der mit dem Peilrahmen. Ja, Walter hat Fuller von mir. Er hat ihn nur nie zu Ende gelesen, weil er beim zweiten Kapitel angefangen hat, die Kuppel nachzulöten."],
-      ["HANNE", "Seine Partei mit dem englischen Namen — das ist Fuller für Leute, die keine Zeit haben. Gut gemeint. Wie fast alles hier."],
+      ["HANNE", "Fuller erzählt gern vom Trimmruder. Ein kleines Ruder bewegt das große, und das große dreht das Schiff. Nicht Größe entscheidet, sondern der richtige Ansatzpunkt."],
+      ["LAYARD", "Das klingt tröstlich bequem. Jeder darf sich einreden, er sitze am richtigen Punkt."],
+      ["HANNE", "Richtig. Deshalb reicht das Bild nicht. Man muss den Ansatzpunkt suchen, die Wirkung beobachten und zugeben, wenn nichts passiert."],
+      ["LAYARD", "Wo wäre meiner?"],
+      ["HANNE", "Sie bewegen Informationen. Früher als Autor, heute in Akten. Sie sitzen näher am Ruder, als Ihnen lieb sein sollte."],
     ],
-    exits,
+    [
+      go("Fuller wollte also ein neues System statt Widerstand?", "fu_model"),
+      back("Das genügt mir als Verantwortung für heute."),
+      bye(),
+    ],
+  ),
+  ...chain(
+    "fu_model",
+    [
+      ["HANNE", "Ein Satz wird ihm zugeschrieben: Man verändert etwas nicht, indem man gegen die bestehende Wirklichkeit kämpft. Man baut ein Modell, das die alte Wirklichkeit überflüssig macht."],
+      ["LAYARD", "Im Mandatsgebiet braucht ein neues Modell zuerst eine Modellgenehmigung."],
+      ["HANNE", "Dann bauen Sie klein. Fuller hat auch ein World Game entworfen: kein Kriegsspiel, sondern die Frage, wie die Welt für alle funktionieren kann, ohne jemanden zu vernichten."],
+      ["LAYARD", "Ein Spiel ohne Gegner."],
+      ["HANNE", "Mit Problemen statt Feinden. Allein diese Verschiebung wäre hier revolutionär."],
+    ],
+    [back(), bye()],
   ),
 };
+
+/* ------------------------------------------------------------------ */
+/* Mumford                                                             */
+/* ------------------------------------------------------------------ */
 
 const mumford = {
   ...chain(
     "mu",
     [
-      ["HANNE", "Lewis Mumford. Der Gegenpol zu Fuller, und darum mein Liebster. Fuller glaubte an die Technik. Mumford hat gefragt, wem sie gehorcht."],
-      ["HANNE", "„Der Mythos der Maschine“. Seine These: Die erste große Maschine der Geschichte war nicht aus Metall. Sie war aus Menschen. Pyramiden, Bewässerung, Armeen — tausende Körper, koordiniert von wenigen, wie Zahnräder."],
-      ["HANNE", "Er nannte das die Megamaschine. Und sie braucht drei Dinge: einen Gottkönig, eine Schrift, um Befehle festzuhalten, und eine Bürokratie, die sie ausführt, ohne zu fragen."],
-      ["LAYARD", "Eine Bürokratie, die ausführt, ohne zu fragen."],
-      ["HANNE", "Ich sehe, Sie haben es schon verstanden. Sie sind ein Zahnrad, Herr Layard. Ich auch. Die Frage ist nur, ob wir quietschen."],
+      ["HANNE", "Wenn Fuller fragt, was Technik ermöglichen kann, fragt Lewis Mumford, wem sie gehorcht. Ich brauche beide, sonst werde ich entweder naiv oder verbittert."],
+      ["LAYARD", "Was ist Mumfords Antwort?"],
+      ["HANNE", "Dass die mächtigste Maschine nicht unbedingt aus Metall besteht. Die Pyramiden sind gebaut worden, bevor es Motoren gab: aus tausenden Menschen, Befehlen, Listen und Strafen."],
+      ["LAYARD", "Menschen als Bauteile."],
+      ["HANNE", "Er nennt das die Megamaschine. Sie braucht einen Befehl oben, Schrift zur Übertragung und eine Bürokratie, die ausführt, ohne jedes Mal nach dem Sinn zu fragen."],
     ],
     [
-      go("Was meint er mit autoritärer und demokratischer Technik?", "mu2"),
-      go("Wer wäre hier der Gottkönig?", "mu3"),
-      go("Was ist das „Pentagon der Macht“?", "mu4"),
-      ...exits,
+      go("Wo wäre in einer modernen Megamaschine noch das Oben?", "mu_king"),
+      go("Ist denn jede große Technik autoritär?", "mu_tech"),
+      go("Wodurch erhält sich so eine Maschine?", "mu_power"),
+      back(),
+      bye(),
     ],
   ),
   ...chain(
-    "mu2",
+    "mu_king",
     [
-      ["HANNE", "1964 hat er einen Aufsatz geschrieben: „Authoritarian and Democratic Technics“. Es gibt, sagt er, seit jeher zwei Arten von Technik. Die eine ist klein, handwerklich, gehört dem, der sie benutzt. Die andere ist groß, zentral, mächtig — und macht den Benutzer zum Bediensteten."],
-      ["HANNE", "Ein Webstuhl in der Stube ist demokratisch. Eine Spinnerei mit dreitausend Spindeln ist autoritär, egal wie freundlich der Direktor ist."],
-      ["HANNE", "Und jetzt raten Sie, welche Art Technik das Mandatsgebiet verteilt. Ihr Terminal im Büro — dürfen Sie das öffnen? Reparieren? Ohne Antrag?"],
-      ["LAYARD", "Ich darf es einschalten."],
-      ["HANNE", "Na also."],
+      ["HANNE", "Früher stand dort ein Gottkönig. Heute ist es raffinierter: Der Mandatsrat ist ein Gremium, das Gremium ist ein Protokoll, das Protokoll ist ein Vordruck."],
+      ["LAYARD", "Dann befiehlt niemand."],
+      ["HANNE", "Und deshalb fühlt sich niemand verantwortlich. Die Maschine läuft, weil jeder nur den nächsten Schritt kennt."],
+      ["LAYARD", "Man kann einen Vordruck nicht stürzen."],
+      ["HANNE", "Nein. Aber man kann aufhören, ihn für Natur zu halten. Das ist unspektakulärer und schwieriger."],
     ],
-    [go("Und Ihr Computer da drüben ist die andere Sorte?", "mac", "hanneMac"), ...exits],
+    [
+      go("Wie merkt ein Zahnrad, dass es eines ist?", "mu_person"),
+      back(),
+      bye(),
+    ],
   ),
   ...chain(
-    "mu3",
+    "mu_person",
     [
-      ["HANNE", "Das ist das Raffinierte an der modernen Megamaschine. Sie braucht keinen Gottkönig mehr. Der Mandatsrat ist ein Gremium, das Gremium ist ein Protokoll, das Protokoll ist ein Vordruck."],
-      ["HANNE", "Mumford hat das vorausgesehen: Die neue Megamaschine wird von niemandem gesteuert und gerade deshalb von keinem gestoppt. Der König ist das System selbst. Man kann ihn nicht stürzen, nur nicht mehr glauben."],
+      ["HANNE", "An dem Satz: Ich habe nur getan, was vorgesehen war. Wer ihn oft genug sagt, hört irgendwann das Nur nicht mehr."],
+      ["LAYARD", "Und Sie? Sind Sie außerhalb der Maschine?"],
+      ["HANNE", "Natürlich nicht. Ich wohne in ihrem Beton, beziehe ihren Strom und kaufe ihr Mehl. Der Unterschied ist nicht Reinheit. Der Unterschied ist, ob man das Knirschen noch hört."],
+      ["LAYARD", "Sie quietschen also absichtlich."],
+      ["HANNE", "Ununterbrochen. Meine Nachbarn können das bestätigen."],
     ],
-    [go("Ginsberg hätte das Moloch genannt, oder?", "be2", "hanneBeat"), ...exits],
+    [back(), bye()],
   ),
   ...chain(
-    "mu4",
+    "mu_tech",
     [
-      ["HANNE", "Ein Wortspiel, typisch Mumford. Fünf Säulen: Power, Productivity, Profit, Property, Publicity — im Deutschen geht der Reim leider verloren. Macht, Produktivität, Profit, Besitz, Öffentlichkeit."],
-      ["HANNE", "Er dachte dabei an Amerika. Ich übersetze es fürs Mandatsgebiet: Macht, Planerfüllung, Zuteilung, Kontingent, Verlautbarung. Dasselbe Gebäude, andere Fassade."],
-      ["HANNE", "Und sein Gegenmittel war nicht Revolution, sondern das Organische: Städte im menschlichen Maß, Gärten, Nachbarschaften. „Die Stadt in der Geschichte“ — lesen Sie es. Danach sehen Sie Sektor 28 nie wieder gleich."],
+      ["HANNE", "Mumford unterscheidet autoritäre und demokratische Technik. Nicht nach dem Aussehen, sondern danach, was sie aus ihren Benutzern macht."],
+      ["LAYARD", "Ein Beispiel."],
+      ["HANNE", "Ein Werkzeug in Ihrer Hand können Sie verstehen, verändern, weitergeben. Eine riesige Anlage kann Sie auf einen einzigen Handgriff reduzieren, selbst wenn ihr Direktor freundlich ist."],
+      ["LAYARD", "Mein Terminal darf ich einschalten. Öffnen darf ich es nicht."],
+      ["HANNE", "Dann wissen Sie, wem es gehört. Ein Gerät kann auf Ihrem Tisch stehen und trotzdem gegen Sie zentralisiert sein."],
     ],
-    [go("Was hätte er über Sektor 28 gesagt?", "mu5"), ...exits],
+    [
+      go("Ist Ihr Macintosh wirklich anders?", "mac", "hanneMac"),
+      back(),
+      bye(),
+    ],
   ),
   ...chain(
-    "mu5",
+    "mu_power",
     [
-      ["HANNE", "Er hätte die Ringe gezählt und gesagt: Das ist keine Stadt, das ist ein Lager mit Postleitzahl. Eine Stadt, schrieb er, ist ein Theater des sozialen Handelns. Hier ist sie ein Wartezimmer."],
-      ["HANNE", "Aber — und das gefällt mir an ihm — er hätte auch die Kantine gesehen. Die Leute, die da trotzdem miteinander reden. Er nannte das die eigentliche Technik: Menschen, die sich etwas zu sagen haben."],
+      ["HANNE", "Mumford beschreibt später ein Fünfeck der Macht: Macht, Produktivität, Profit, Besitz und öffentliche Inszenierung. Im Englischen beginnen alle fünf Wörter mit P."],
+      ["LAYARD", "Und in Ihrer Übersetzung fürs Mandatsgebiet?"],
+      ["HANNE", "Macht, Planerfüllung, Zuteilung, Kontingent, Verlautbarung. Kein schönes Fünfeck, aber ein stabiles."],
+      ["LAYARD", "Was setzt er dagegen?"],
+      ["HANNE", "Das menschliche Maß. Städte, in denen Wege Begegnungen erlauben. Werkzeuge, die ihre Benutzer nicht verkleinern. Nachbarschaften, die mehr sind als Belegungspläne."],
     ],
-    exits,
+    [
+      go("Was würde er in Sektor 28 sehen?", "mu_city"),
+      back(),
+      bye(),
+    ],
+  ),
+  ...chain(
+    "mu_city",
+    [
+      ["HANNE", "Er würde die Ringe zählen und sagen: Das ist keine Stadt, sondern ein Lager mit Postleitzahl. Für ihn ist eine Stadt ein Theater sozialen Handelns."],
+      ["LAYARD", "Und Sektor 28?"],
+      ["HANNE", "Ein Wartezimmer. Aber er würde auch die Kantine sehen. Menschen reden dort miteinander, obwohl der Raum nur für Nahrungsaufnahme vorgesehen ist."],
+      ["LAYARD", "Das genügt schon?"],
+      ["HANNE", "Nein. Aber es ist der Moment, in dem die Maschine aus Menschen wieder Menschen werden lässt. Den darf man nicht gering schätzen."],
+    ],
+    [back(), bye()],
   ),
 };
+
+/* ------------------------------------------------------------------ */
+/* Whole Earth Catalog                                                */
+/* ------------------------------------------------------------------ */
 
 const wec = {
   ...chain(
     "we",
     [
-      ["HANNE", "Der Whole Earth Catalog. Stewart Brand, 1968. Ein Versandkatalog, in dem man nichts kaufen konnte, ohne vorher etwas zu lernen. Werkzeuge, Bücher, Ideen, Bauanleitungen für Kuppeln und für Köpfe."],
-      ["HANNE", "Auf der ersten Seite stand: „We are as gods and might as well get good at it.“ Wir sind wie Götter, also sollten wir lernen, gut darin zu sein."],
-      ["HANNE", "Und das Motto: Access to Tools. Zugang zu Werkzeugen. Nicht zu Geld, nicht zu Macht — zu Werkzeugen. Wer das Werkzeug hat, braucht keine Erlaubnis."],
+      ["HANNE", "Das ist der Whole Earth Catalog. Stewart Brand hat ihn 1968 begonnen. Ein Katalog, in dem man nichts bestellen konnte, ohne vorher etwas über die Welt zu lernen."],
+      ["LAYARD", "Werkzeuge neben Büchern."],
+      ["HANNE", "Und Bücher als Werkzeuge. Auf dem Umschlag die Erde aus dem All. Innen Öfen, Computer, Landwirtschaft, Architektur, Philosophie. Keine Trennung zwischen Denken und Machen."],
+      ["LAYARD", "Darum die Zeile ‚Access to Tools‘."],
+      ["HANNE", "Zugang zu Werkzeugen. Nicht: Wartet auf Erlaubnis. Brand schreibt auch: Wir sind wie Götter und sollten lernen, gut darin zu werden. Großspurig — aber mit Verantwortung im zweiten Halbsatz."],
     ],
     [
-      go("Wer stand noch alles darin?", "we2"),
-      go("Was stand auf der letzten Seite?", "we3"),
-      go("Gibt es so etwas im Mandatsgebiet?", "we4"),
-      ...exits,
+      go("Welche Idee darin ist Ihnen am wichtigsten?", "we_feedback"),
+      go("Wer hat für Sie noch hineingehört?", "we_people"),
+      go("Was ist aus dem Katalog geworden?", "we_last"),
+      back(),
+      bye(),
     ],
   ),
   ...chain(
-    "we2",
+    "we_feedback",
     [
-      ["HANNE", "Ach, alle. Gregory Bateson, der Anthropologe — „Ökologie des Geistes“. Für ihn war Denken kein Ding im Kopf, sondern ein Kreislauf zwischen Organismus und Umgebung. Wer den Wald zerstört, beschädigt sein eigenes Denken."],
-      ["HANNE", "Norbert Wiener, Kybernetik: Steuerung durch Rückkopplung. Ein System, das nicht auf seine Fehler hört, fährt gegen die Wand, egal wie gut es geplant ist."],
-      ["HANNE", "Marshall McLuhan — das Medium ist die Botschaft. Ivan Illich, „Werkzeuge für ein konviviales Leben“: Ein Werkzeug ist gut, solange es den Menschen dient, und schlecht, sobald der Mensch ihm dienen muss. Und Schumacher: Small is beautiful."],
+      ["HANNE", "Rückkopplung. Norbert Wiener, Kybernetik. Ein System muss die Folgen seines Handelns wahrnehmen, sonst kann es sich nicht steuern."],
+      ["LAYARD", "Wie ein Thermostat."],
+      ["HANNE", "Genau. Es wird warm, der Fühler meldet es, die Heizung drosselt. Nicht die Heizung ist klug. Entscheidend ist, dass die Meldung ankommt."],
+      ["LAYARD", "Das Mandatsgebiet sammelt sehr viele Meldungen."],
+      ["HANNE", "Aber es bestraft die Fühler. Wer Überhitzung meldet, bekommt einen Vermerk. Das ist keine Rückkopplung, sondern ein System, das seine eigenen Nerven betäubt."],
     ],
     [
-      go("Erklären Sie mir das mit der Rückkopplung.", "we5"),
-      go("Bateson — was hat er über Zwickmühlen gesagt?", "ps2"),
-      ...exits,
+      go("Und wenn eine Rückmeldung sich selbst verstärkt?", "we_feedback_loop"),
+      back(),
+      bye(),
     ],
   ),
   ...chain(
-    "we5",
+    "we_feedback_loop",
     [
-      ["HANNE", "Ein Thermostat. Es wird zu warm, der Fühler meldet es, die Heizung drosselt. Das ist Kybernetik. Das Wichtige ist nicht die Heizung, sondern dass die Meldung ankommt."],
-      ["HANNE", "Nun ist das Mandatsgebiet eine Heizung ohne Fühler. Oder schlimmer: eine Heizung, die die Fühler bestraft. Wer meldet, dass es zu warm ist, bekommt einen Vermerk."],
-      ["HANNE", "Wiener hat gewarnt: Eine Gesellschaft, die ihre Rückmeldungen unterdrückt, wird nicht stabiler. Sie wird nur blind — bis sie überhitzt."],
+      ["HANNE", "Dann schaukelt sie sich auf. Ein Mikrofon hört den Lautsprecher, der Lautsprecher verstärkt das Mikrofon, bis nur noch Pfeifen übrig ist."],
+      ["LAYARD", "Wie eine Resonanz-Überlastung."],
+      ["HANNE", "Ja. Jetzt haben Sie den Begriff eingeführt, nicht ich. Mich interessiert daran weniger das Pfeifen als die Frage, warum niemand den Regler findet."],
+      ["LAYARD", "Oder ob jemand ihn absichtlich festhält."],
+      ["HANNE", "Das ist die unangenehmere Frage. Behalten Sie sie."],
     ],
-    [go("Resonanz-Überlastung, sozusagen.", "we6"), ...exits],
+    [back("Die Frage behalte ich lieber für mich."), bye()],
   ),
   ...chain(
-    "we6",
+    "we_people",
     [
-      ["HANNE", "Sie sagen es, ich nicht. Aber ja. Wenn eine Rückkopplung nicht gedämpft wird, sondern verstärkt, schaukelt sich das System auf. Jeder Tontechniker kennt das Pfeifen."],
-      ["HANNE", "Die Frage, die mich nachts wach hält, Herr Layard: Was, wenn man das Pfeifen nicht abstellen will, sondern hören?"],
+      ["HANNE", "Gregory Bateson zum Beispiel. Er beschreibt Denken nicht als Besitz im Kopf, sondern als Kreislauf zwischen einem Wesen und seiner Umgebung."],
+      ["LAYARD", "Dann endet ein Gedanke nicht an der Schädeldecke."],
+      ["HANNE", "Genau. Wer seine Umwelt zerstört, beschädigt den Zusammenhang, in dem er überhaupt denken kann. Das ist mehr als Umweltschutz. Es ist geistige Selbsterhaltung."],
+      ["LAYARD", "Und die anderen Namen auf Ihren Zetteln?"],
+      ["HANNE", "Ivan Illich fragt, wann ein Werkzeug den Menschen beherrscht. E. F. Schumacher besteht auf menschlichem Maß. Marshall McLuhan beobachtet, dass jedes Medium uns verändert, bevor wir über seinen Inhalt streiten."],
     ],
-    exits,
+    [
+      go("Bateson hat auch über widersprüchliche Botschaften geschrieben?", "psy_bind"),
+      go("Wann beherrscht ein Werkzeug seinen Benutzer?", "we_illich"),
+      back(),
+      bye(),
+    ],
   ),
   ...chain(
-    "we3",
+    "we_illich",
     [
-      ["HANNE", "Die letzte Ausgabe, 1974. Auf der Rückseite ein Foto: eine Landstraße am frühen Morgen, so eine, auf der man trampt. Und darunter: „Stay hungry. Stay foolish.“"],
-      ["HANNE", "Bleib hungrig. Bleib töricht. Ich habe das an meinen Kühlschrank geklebt, als ich zurückkam. Der Hausmeister hat gefragt, ob das eine Diätempfehlung ist."],
-      ["HANNE", "Es ist das Gegenteil von dem, was das Mandatsgebiet will. Das will, dass wir satt und vernünftig sind. Satte, vernünftige Menschen stellen keine Fragen."],
+      ["HANNE", "Illich nennt ein Werkzeug konvivial, wenn Menschen es selbstbestimmt benutzen können, ohne andere zu Werkzeugen zu machen."],
+      ["LAYARD", "Also klein und einfach?"],
+      ["HANNE", "Nicht unbedingt. Verstehbar, zugänglich, reparierbar. Die Größe ist weniger wichtig als die Abhängigkeit, die es erzeugt."],
+      ["LAYARD", "Ein System, das nur Experten warten dürfen, verändert also auch seine Benutzer."],
+      ["HANNE", "Es erzieht sie zur Hilflosigkeit. Darum interessiert mich an Computern nicht nur, was sie können. Ich will wissen, wer den Deckel öffnen darf."],
     ],
-    exits,
+    [
+      go("Dann reden wir über Ihren Macintosh.", "mac", "hanneMac"),
+      back(),
+      bye(),
+    ],
   ),
   ...chain(
-    "we4",
+    "we_last",
     [
-      ["HANNE", "Die Bibliothek in 1101 vielleicht. Herbert ist so etwas wie ein Whole Earth Catalog auf zwei Beinen — nur dass er nie verrät, wofür man das Wissen braucht."],
-      ["HANNE", "Und das FastWeb. Das könnte es werden. Ein Katalog ohne Papier, in dem jeder schreibt und jeder liest. Brand hat davon geträumt. Aber ein Werkzeug ist nur so frei wie die Leitung, durch die es läuft."],
+      ["HANNE", "Die letzte große Ausgabe ist 1974 erschienen. Auf der Rückseite: eine leere Landstraße am frühen Morgen. Darunter steht ‚Stay hungry. Stay foolish.‘"],
+      ["LAYARD", "Hungrig bleiben. Töricht bleiben."],
+      ["HANNE", "Ich habe es nach meiner Rückkehr an den Kühlschrank geklebt. Der Hausmeister hielt es für eine Diätempfehlung."],
+      ["LAYARD", "Was bedeutet es Ihnen?"],
+      ["HANNE", "Nicht satt werden an den vorhandenen Antworten. Nicht so vernünftig werden, dass jede unmögliche Idee schon vor dem ersten Satz stirbt."],
     ],
-    [go("Wem gehört denn die Leitung?", "mac3"), ...exits],
+    [back(), bye()],
   ),
 };
 
-const beat: Record<string, DialogLine> = {
+/* ------------------------------------------------------------------ */
+/* Beats, Dylan und Sprache                                           */
+/* ------------------------------------------------------------------ */
+
+const beat = {
   ...chain(
     "be",
     [
-      ["HANNE", "Die Beats waren vor meiner Zeit, aber nicht vor meiner Lektüre. Kerouac, „Unterwegs“ — Leute, die einfach losfahren, ohne Passierschein. Hier ist das Science-Fiction."],
-      ["HANNE", "Und Dylan. „The Times They Are a-Changin’“. Er hat das 1964 als Warnung an die Väter gesungen: Steht nicht in der Tür, versperrt nicht den Flur."],
-      ["HANNE", "Ich habe es 1972 auf dem Schiff zurück gehört und gedacht: Hier stehen alle in der Tür. Und jeder hat einen Stempel für den Flur."],
+      ["HANNE", "Dylan ist der leichte Einstieg. Er klingt, als könne ein Lied eine Tür öffnen. Die Beats sind unbequemer: Kerouac, Ginsberg, Burroughs. Leute, die Sprache nicht schmücken, sondern aufschneiden."],
+      ["LAYARD", "Was suchen sie darin?"],
+      ["HANNE", "Den Punkt, an dem eine Gesellschaft in ihren eigenen Sätzen sichtbar wird. Kerouac fährt los, ohne Passierschein. Ginsberg schreit gegen eine Maschine. Burroughs zerschneidet die Anweisungen."],
+      ["LAYARD", "Und Dylan?"],
+      ["HANNE", "Warnt die Leute, die in Türen stehen und den Flur versperren. Ich habe das 1972 gehört und gedacht: Im Mandatsgebiet hat jeder in der Tür auch noch einen Stempel."],
     ],
     [
-      go("Wer war Ginsberg?", "be2"),
-      go("Und Burroughs?", "be3"),
-      go("Ist Poesie nicht einfach Trost?", "be4"),
-      ...exits,
+      go("Welche Maschine schreit Ginsberg an?", "be_ginsberg"),
+      go("Was soll das Zerschneiden bei Burroughs?", "be_burroughs"),
+      go("Kann ein Gedicht mehr als trösten?", "be_poetry"),
+      back(),
+      bye(),
     ],
   ),
   ...chain(
-    "be2",
+    "be_ginsberg",
     [
-      ["HANNE", "Allen Ginsberg, „Howl“, 1956. Das Gedicht fängt an mit: „Ich sah die besten Köpfe meiner Generation zerstört vom Wahnsinn.“ Und im zweiten Teil schreit er einen Namen: Moloch."],
-      ["HANNE", "Moloch, der Götze, dem man Kinder opfert. Bei Ginsberg ist er aus Beton, Geld und Bürotürmen. „Moloch, dessen Geist reine Maschinerie ist.“"],
-      ["HANNE", "Das ist Mumfords Megamaschine als Schrei statt als Buch. Und, Herr Layard — ich habe hier nicht ein einziges Gebäude gesehen, das kein Moloch-Gesicht hat."],
-      ["LAYARD", "E67 hat Fenster."],
+      ["HANNE", "In ‚Howl‘ sieht Ginsberg die besten Köpfe seiner Generation zerstört. Dann gibt er der zerstörenden Macht einen Namen: Moloch."],
+      ["LAYARD", "Der Götze, dem Menschen geopfert werden."],
+      ["HANNE", "Bei ihm ist Moloch aus Beton, Geld, Krieg und Bürotürmen. Sein Geist ist reine Maschinerie."],
+      ["LAYARD", "Mumfords Megamaschine als Gedicht."],
+      ["HANNE", "Als Schrei. Mumford erklärt, wie die Maschine gebaut ist. Ginsberg zeigt, wie es sich anfühlt, in ihr zu leben."],
+    ],
+    [
+      go("E67 hat immerhin Fenster.", "be_windows"),
+      back(),
+      bye(),
+    ],
+  ),
+  ...chain(
+    "be_windows",
+    [
+      ["LAYARD", "E67 hat immerhin Fenster."],
       ["HANNE", "Moloch hat auch Augen."],
+      ["SYSTEM", "Hanne lässt den Satz stehen. Aus dem Korridor dringt das Summen einer Leuchtstoffröhre."],
+      ["LAYARD", "Das war eine Ihrer vorbereiteten Antworten."],
+      ["HANNE", "Seit Jahren. Endlich hat jemand die richtige Vorlage geliefert."],
     ],
-    [go("Zurück zu Mumford.", "mu"), ...exits],
+    [back(), bye()],
   ),
   ...chain(
-    "be3",
+    "be_burroughs",
     [
-      ["HANNE", "William S. Burroughs. Unangenehmer Mann, unentbehrliche Gedanken. Für ihn war Sprache ein Virus und Gesellschaft ein System der Kontrolle — lange bevor jemand das Wort Kontrollgesellschaft gesagt hat."],
-      ["HANNE", "Seine Waffe war die Cut-up-Technik. Man schneidet einen Text auseinander und klebt ihn neu zusammen. Und plötzlich sagt er, was er eigentlich verschweigen sollte."],
-      ["HANNE", "Ich mache das mit meinen Bescheiden. Wollen Sie hören? „Ihr Antrag … wird … als nicht vorgesehen … zur Kenntnis genommen … im Interesse des Mandatsfriedens … Sie.“"],
+      ["HANNE", "William Burroughs ist ein unangenehmer Mann mit unentbehrlichen Gedanken. Für ihn ist Sprache ein Kontrollsystem. Seine Cut-up-Technik schneidet Texte auseinander und setzt sie neu zusammen."],
+      ["LAYARD", "Dadurch sollen sie wahrer werden?"],
+      ["HANNE", "Nicht wahrer. Verdächtiger. Die gewohnte Satzordnung hält vieles verborgen, weil wir sie nicht mehr lesen, sondern nur noch erkennen."],
+      ["SYSTEM", "Sie zieht einen Bescheid aus einem Buch. Die Streifen sind mit durchsichtigem Band neu zusammengesetzt."],
+      ["HANNE", "Hören Sie: ‚Ihr Antrag — wird — im Interesse des Mandatsfriedens — als nicht vorgesehen — Sie.‘ Plötzlich steht der Adressat am Ende wie der eigentliche Fehler."],
     ],
     [
-      { text: "Das ist ja unheimlich.", next: "be3b" },
-      ...exits,
+      go("Das ist unheimlich.", "be_cutup"),
+      back(),
+      bye(),
     ],
   ),
-  be3b: {
-    id: "be3b",
-    speaker: "HANNE",
-    text: "Nicht wahr? Burroughs sagte: Schneide die Wortlinien, und die Zukunft sickert durch. Ich glaube eher, die Gegenwart sickert durch. Die, die man sonst nicht lesen darf.",
-    choices: exits,
-  },
   ...chain(
-    "be4",
+    "be_cutup",
     [
-      ["HANNE", "Nein. Trost ist das, was die Verwaltung verteilt — Kantinenmusik, Lehrfilme, warme Ansprachen. Poesie ist Diagnose."],
-      ["HANNE", "Dylan, „It’s Alright, Ma (I’m Only Bleeding)“: „Wer nicht damit beschäftigt ist, geboren zu werden, ist damit beschäftigt zu sterben.“ Das ist kein Trost. Das ist ein Befund."],
-      ["HANNE", "Ein guter Vers tut, was ein guter Arzt tut: Er sagt Ihnen, wo es wehtut. Den Rest müssen Sie selbst machen."],
+      ["HANNE", "Ja. Nicht weil die Streifen die Zukunft vorhersagen. Weil die Gegenwart durch die Schnitte sickert."],
+      ["LAYARD", "Als Autor hätte ich das für einen Trick gehalten."],
+      ["HANNE", "Und als Verwaltungsangestellter?"],
+      ["LAYARD", "Für eine unzulässige Veränderung eines Schriftstücks."],
+      ["HANNE", "Sehen Sie, wie schnell ein Beruf eine Antwort findet?"],
     ],
-    exits,
+    [back(), bye()],
+  ),
+  ...chain(
+    "be_poetry",
+    [
+      ["HANNE", "Trost verteilt die Verwaltung: Kantinenmusik, Lehrfilme, warme Ansprachen. Poesie ist eher Diagnose."],
+      ["LAYARD", "Das klingt hart für etwas, das Menschen freiwillig lesen."],
+      ["HANNE", "Ein guter Vers sagt, wo es wehtut, ohne gleich ein Formular für die Heilung beizulegen."],
+      ["LAYARD", "Ich habe einmal geglaubt, Schreiben könne etwas verändern."],
+      ["HANNE", "Vielleicht hat es Sie verändert. Das ist weniger sichtbar, aber nicht nichts. Warum haben Sie aufgehört?"],
+    ],
+    [
+      go("Weil es nicht zum Leben gereicht hat.", "be_writing"),
+      back("Darauf möchte ich nicht antworten."),
+      bye(),
+    ],
+  ),
+  ...chain(
+    "be_writing",
+    [
+      ["LAYARD", "Es hat nicht zum Leben gereicht. Die Verwaltung zahlt pünktlich."],
+      ["HANNE", "Das ist keine kleine Antwort. Freiheit klingt anders, wenn die Miete fällig ist."],
+      ["LAYARD", "Sie urteilen nicht?"],
+      ["HANNE", "Doch, ständig. Aber nicht darüber. Mich interessiert eher, ob der Schreiber verschwunden ist oder nur einen sicheren Arbeitsplatz hat."],
+      ["SYSTEM", "Layard sieht zu den zerschnittenen Bescheiden. Hanne wartet, ohne die Stille zu füllen."],
+    ],
+    [back("Reden wir von etwas anderem."), bye()],
   ),
 };
+
+/* ------------------------------------------------------------------ */
+/* Macintosh, HyperCard und Netz                                      */
+/* ------------------------------------------------------------------ */
 
 const mac = {
   ...chain(
     "mac",
     [
-      ["HANNE", "Mein Macintosh! Baujahr 1994. Über drei Grenzen und einen Onkel in Kiel hierher gekommen. Fragen Sie nicht wie."],
-      ["HANNE", "1984 hat Apple ihn vorgestellt als den „Computer für den Rest von uns“. Nicht für Rechenzentren. Für Leute. Ein Werkzeug, das man in den Schoß nimmt wie ein Buch."],
-      ["HANNE", "Und das Schönste ist HyperCard. Karten, die aufeinander verweisen. Man klickt auf ein Wort und landet woanders, und von dort woanders. Wie Denken. Wie ein Gespräch mit mir, ehrlich gesagt."],
+      ["HANNE", "Mein Macintosh. Baujahr 1994. Über drei Grenzen und einen Onkel in Kiel hierhergekommen. Den genauen Reiseweg kennt nur die Verpackung."],
+      ["LAYARD", "Ein privater Computer ist hier fast auffälliger als Ihre Bücher."],
+      ["HANNE", "Darum steht er offen da. Verstecken macht Dinge nur interessanter. Apple hat den Macintosh einmal als Computer für den Rest von uns vorgestellt — nicht fürs Rechenzentrum, sondern für einen Schreibtisch."],
+      ["LAYARD", "Was tun Sie damit?"],
+      ["HANNE", "Schreiben, ordnen, scheitern. Und HyperCard. Digitale Karteikarten, die aufeinander verweisen. Man klickt auf ein Wort und landet bei der nächsten Idee."],
     ],
     [
-      go("Wer hat sich so etwas ausgedacht?", "mac2"),
-      go("Und das FastWeb — ist das dasselbe?", "mac3"),
-      ...exits,
+      go("Wer ist auf diese Art des Denkens gekommen?", "mac_engelbart"),
+      go("Ist das FastWeb nicht schon so ein Kartenstapel?", "mac_net"),
+      go("Warum lernen Sie mit neunundvierzig noch Programmieren?", "mac_learn"),
+      back(),
+      bye(),
     ],
   ),
   ...chain(
-    "mac2",
+    "mac_engelbart",
     [
-      ["HANNE", "Douglas Engelbart. 1968, ein Vortrag in San Francisco, den man heute die „Mutter aller Demos“ nennt. Maus, Fenster, Text, den zwei Leute gleichzeitig bearbeiten, über eine Leitung — alles an einem Nachmittag."],
-      ["HANNE", "Engelbarts Idee war nicht, den Menschen zu ersetzen, sondern zu verstärken. Augmenting human intellect. Stewart Brand hat bei der Demo die Kamera gehalten. Alles hängt zusammen, sehen Sie?"],
-      ["HANNE", "Und das Mandatsgebiet? Hat den Computer übernommen und die Idee zurückgeschickt. Unsere Terminals verstärken nicht den Menschen. Sie verstärken die Akte."],
+      ["HANNE", "Douglas Engelbart hat 1968 in San Francisco eine Vorführung gemacht: Maus, Fenster, verknüpfter Text, zwei Menschen arbeiten über eine Leitung am selben Dokument."],
+      ["LAYARD", "Alles an einem Nachmittag?"],
+      ["HANNE", "Fast alles, was heute noch modern wirkt. Aber seine eigentliche Idee war nicht das Gerät. Er wollte den menschlichen Verstand verstärken — augmentieren, nicht ersetzen."],
+      ["LAYARD", "Unsere Terminals verstärken eher die Akte."],
+      ["HANNE", "Genau. Das Mandatsgebiet übernimmt die Maschine und schickt den Gedanken zurück. Technik ohne Absicht ist nur Möbel mit Strom."],
     ],
-    exits,
+    [back(), bye()],
   ),
   ...chain(
-    "mac3",
+    "mac_net",
     [
-      ["HANNE", "Das ist meine Sehnsucht und meine Angst zugleich. Ein Netz, in dem jeder mit jedem spricht — das ist der Whole Earth Catalog ohne Papier. Brand hat das schon 1985 mit dem WELL ausprobiert, einer Mailbox, in der Leute aus der ganzen Bucht miteinander geredet haben."],
-      ["HANNE", "Aber Mumford flüstert mir ins Ohr: Jede Leitung hat einen Knoten, und jeder Knoten hat einen Besitzer. Ein Netz, das alle verbindet, ist auch ein Netz, das alle sieht."],
-      ["HANNE", "Burroughs würde sagen: Kontrolle war nie so bequem."],
-    ],
-    [go("Also lieber kein Netz?", "mac4"), ...exits],
-  ),
-  ...chain(
-    "mac4",
-    [
-      ["HANNE", "Doch! Unbedingt. Illich hat recht: Es kommt nicht auf das Werkzeug an, sondern darauf, wer es reparieren darf. Ein Netz, das wir selbst knüpfen, ist ein Fischernetz. Eins, das man uns knüpft, ist ein Käfig mit Löchern."],
-      ["HANNE", "Darum lerne ich Programmieren, mit neunundvierzig. Langsam, mit Wörterbuch. Wenn die Zukunft durch eine Leitung kommt, möchte ich wenigstens wissen, wie man sie abisoliert."],
-    ],
-    exits,
-  ),
-};
-
-const psy = {
-  ...chain(
-    "psy",
-    [
-      ["HANNE", "Kein Vorwurf. Eine Diagnose. Ich habe sechs Jahre unter Leuten gelebt, die sich ständig fragten, wer sie sind, und fünfundzwanzig unter Leuten, die das für eine Ordnungswidrigkeit halten."],
-      ["HANNE", "Das Mandatsgebiet hat das Unbehagen nicht abgeschafft. Es hat es eingemeindet. Wer unzufrieden ist, bekommt eine Diagnose, eine Zuteilung und einen Termin. Das Gefühl wird verwaltet, damit es nicht politisch wird."],
+      ["HANNE", "Das FastWeb könnte ein Whole Earth Catalog ohne Papier sein. Jeder liest, jeder schreibt, Wissen wandert schneller als ein Stempel."],
+      ["LAYARD", "Sie sagen ‚könnte‘."],
+      ["HANNE", "Weil jede Leitung einen Knoten hat und jeder Knoten einen Besitzer. In Kalifornien gibt es seit Jahren eine Mailbox namens WELL. Wunderbare Gespräche — und trotzdem läuft alles durch Rechner, die jemand abschalten kann."],
+      ["LAYARD", "Ein Netz verbindet alle und sieht dadurch alle."],
+      ["HANNE", "Das ist meine Sehnsucht und meine Angst im selben Kabel. Verbindung kann Gemeinschaft sein. Oder die bequemste Form der Kontrolle."],
     ],
     [
-      go("Was meinen Sie mit „verwaltet“?", "ps2"),
-      go("Und was hilft dagegen?", "ps3"),
-      ...exits,
+      go("Also lieber auf das Netz verzichten?", "mac_no"),
+      back(),
+      bye(),
     ],
   ),
   ...chain(
-    "ps2",
+    "mac_no",
     [
-      ["HANNE", "Bateson hat einen Begriff erfunden: die Doppelbindung. Ein Kind bekommt von der Mutter zwei Botschaften, die sich widersprechen — „Komm her“ mit verschränkten Armen. Was es auch tut, es ist falsch. Und es darf nicht sagen, dass die Botschaft falsch ist."],
-      ["HANNE", "Jetzt lesen Sie einen Aushang: „Bürger sind ausdrücklich ermutigt, Anliegen vorzubringen. Anliegen außerhalb der vorgesehenen Kategorien sind nicht vorgesehen.“"],
-      ["HANNE", "Das ist Doppelbindung auf Mandatsdeutsch. Und Bateson sagt: Wer lange genug darin lebt, wird entweder krank — oder sehr, sehr witzig."],
-      ["LAYARD", "Und Sie?"],
-      ["HANNE", "Ich backe Brot. Das ist meine dritte Möglichkeit."],
+      ["HANNE", "Nein. Unbedingt hinein. Aber nicht schlafend. Ein Werkzeug, das wir verstehen und reparieren können, erweitert uns. Eines, das nur über uns geführt wird, macht uns abhängig."],
+      ["LAYARD", "Ein selbst geknüpftes Netz und ein Fangnetz sehen zunächst ähnlich aus."],
+      ["HANNE", "Darum muss man die Knoten prüfen. Wer setzt die Regeln? Wer darf sprechen? Wer kann verschwinden, ohne dass seine Spur gespeichert bleibt?"],
+      ["LAYARD", "Darauf hat das FastWeb keine sichtbare Antwort."],
+      ["HANNE", "Dann ist das die erste Frage, die wir hineinschreiben sollten."],
     ],
-    exits,
+    [back(), bye()],
   ),
   ...chain(
-    "ps3",
+    "mac_learn",
     [
-      ["HANNE", "Keine Revolution. Die enden alle in neuen Formularen. Eher das, was Schumacher wollte: kleine Dinge, in menschlichem Maß. Eine Werkstatt wie bei Walter. Eine Bibliothek wie bei Herbert. Eine Malerei wie bei Setsuko nebenan."],
-      ["HANNE", "Fuller nannte sich einen Trimmruder. Am Heck eines großen Schiffs gibt es ein winziges Ruder, das das große Ruder bewegt, das das Schiff dreht. Wer klein und am richtigen Ort ist, kann den Kurs ändern."],
-      ["HANNE", "Sie, Herr Layard, sitzen ziemlich genau am Heck."],
+      ["HANNE", "Weil ich nicht möchte, dass die Zukunft nur von Leuten erklärt wird, die jünger sind als meine Schuhe."],
+      ["LAYARD", "Und weil Sie den Deckel selbst öffnen wollen."],
+      ["HANNE", "Ja. Ich lerne langsam, mit Wörterbuch und vielen Fehlern. Das ist demütigend und sehr gesund."],
+      ["LAYARD", "Was wollen Sie programmieren?"],
+      ["HANNE", "Noch nichts Großes. Einen Kartenstapel, in dem ein Gedanke nicht nach Aktenzeichen, sondern nach Zusammenhang gefunden wird. Vielleicht ist das schon politisch genug."],
     ],
-    exits,
+    [back(), bye()],
   ),
 };
 
 /* ------------------------------------------------------------------ */
+/* Psychologie und Mandatsdeutsch                                     */
+/* ------------------------------------------------------------------ */
+
+const psychology = {
+  ...chain(
+    "psy",
+    [
+      ["HANNE", "Es macht sie vorsichtig mit den eigenen Empfindungen. Unzufriedenheit wird zur persönlichen Störung, bevor sie eine gemeinsame Frage werden kann."],
+      ["LAYARD", "Sie nennen das Verwaltung von Gefühlen."],
+      ["HANNE", "Ja. Man bekommt eine Diagnose, eine Zuteilung und einen Termin. Danach ist das Unbehagen offiziell versorgt, auch wenn seine Ursache noch im Raum steht."],
+      ["LAYARD", "Und wer sich nicht versorgen lassen will?"],
+      ["HANNE", "Gilt als schwierig. Das ist ein erstaunlich wirksames Wort. Es beschreibt nie die Lage, immer die Person darin."],
+    ],
+    [
+      go("Wie hält ein Mensch solche Widersprüche aus?", "psy_bind"),
+      go("Was hilft, ohne gleich die Welt zu retten?", "psy_small"),
+      back(),
+      bye(),
+    ],
+  ),
+  ...chain(
+    "psy_bind",
+    [
+      ["HANNE", "Bateson beschreibt die Doppelbindung. Ein Mensch erhält zwei Botschaften, die sich widersprechen, und darf den Widerspruch selbst nicht benennen."],
+      ["LAYARD", "Zum Beispiel?"],
+      ["HANNE", "‚Komm her‘ — mit verschränkten Armen. Oder auf Mandatsdeutsch: ‚Bürger sind ausdrücklich ermutigt, Anliegen vorzubringen. Anliegen außerhalb der vorgesehenen Kategorien sind nicht vorgesehen.‘"],
+      ["LAYARD", "Was man auch tut, bestätigt den Fehler bei sich selbst."],
+      ["HANNE", "Und wer lange darin lebt, wird krank oder sehr witzig. Ich backe Brot. Das ist meine dritte Möglichkeit."],
+    ],
+    [back(), bye()],
+  ),
+  ...chain(
+    "psy_small",
+    [
+      ["HANNE", "Keine große Reinheit. Kleine Dinge im menschlichen Maß. Eine Werkstatt, eine Bibliothek, ein Gespräch, in dem jemand seine Meinung ändern darf."],
+      ["LAYARD", "Das klingt bescheiden nach all Ihren großen Büchern."],
+      ["HANNE", "Bescheidenheit ist nicht Kleinmut. Schumacher sagt: Small is beautiful. Nicht weil klein automatisch gut ist, sondern weil der Mensch darin noch vorkommen kann."],
+      ["LAYARD", "Und wenn das Kleine nichts am Ganzen ändert?"],
+      ["HANNE", "Dann hat es wenigstens verhindert, dass das Ganze alles wird. Auch das ist eine Wirkung."],
+    ],
+    [back(), bye()],
+  ),
+};
 
 const strands: Record<string, DialogLine> = {
   ...usa,
@@ -407,11 +658,11 @@ const strands: Record<string, DialogLine> = {
   ...wec,
   ...beat,
   ...mac,
-  ...psy,
+  ...psychology,
   bye: {
     id: "bye",
     speaker: "HANNE",
-    text: "Gehen Sie nur. Und nehmen Sie eine Scheibe Brot mit — nein, nehmen Sie keine, Sie würden sie nur als Beweismittel abgeben. Kommen Sie wieder!",
+    text: "Gehen Sie. Ein guter Gedanke braucht manchmal einen Korridor. Und wenn Sie wiederkommen, bringen Sie Zeit mit — Brot habe ich selbst.",
     end: true,
   },
 };
@@ -422,19 +673,58 @@ function hubLine(text: string): DialogLine {
     speaker: "HANNE",
     text,
     choicesFn: (api) => {
-      const c: DialogChoice[] = [];
-      const add = (flag: StoryFlag, fresh: string, again: string, prefix: string) =>
-        c.push(go(api.hasFlag(flag) ? again : fresh, prefix, flag));
-      add("hanneUSA", "Warum sind Sie damals nach Amerika gegangen?", "Erzählen Sie noch einmal von Amerika.", "us");
-      add("hanneFuller", "Wer ist dieser Fuller, von dem Sie reden?", "Noch mal Fuller.", "fu");
-      add("hanneMumford", "Was lesen Sie gerade?", "Zurück zu Mumford und der Megamaschine.", "mu");
-      add("hanneWEC", "Was sind das für Hefte da auf dem Tisch?", "Noch etwas aus dem Whole Earth Catalog.", "we");
-      add("hanneBeat", "Sie haben viele Dylan-Platten.", "Mehr über die Beats und Dylan.", "be");
-      add("hanneMac", "Ist das ein Computer? Ein privater?", "Zurück zu Ihrem Macintosh.", "mac");
-      if (api.hasFlag("hanneMumford") || api.hasFlag("hanneWEC"))
-        c.push({ text: "Was macht das alles mit den Menschen hier?", next: "psy_1" });
-      c.push(bye);
-      return c;
+      const choices: DialogChoice[] = [];
+      const add = (
+        flag: StoryFlag,
+        first: string,
+        again: string,
+        prefix: string,
+      ) => choices.push(go(api.hasFlag(flag) ? again : first, prefix, flag));
+
+      add(
+        "hanneUSA",
+        "Sie haben Hamburg und Kalifornien erwähnt. Wie kam es dazu?",
+        "Noch einmal zu Amerika und Ihrer Rückkehr.",
+        "us",
+      );
+      add(
+        "hanneWEC",
+        "Was sind das für großformatige Hefte auf dem Tisch?",
+        "Ich möchte einen Gedanken aus dem Whole Earth Catalog vertiefen.",
+        "we",
+      );
+      add(
+        "hanneMac",
+        "Der Computer dort — ist der wirklich privat?",
+        "Noch einmal zu Ihrem Macintosh und dem Netz.",
+        "mac",
+      );
+      add(
+        "hanneBeat",
+        "Sie haben fast alle Dylan-Platten. Was hören Sie in ihnen?",
+        "Noch einmal zu Dylan, den Beats und der Sprache.",
+        "be",
+      );
+      add(
+        "hanneMumford",
+        "Welches Buch liegt da mit den vielen Zetteln?",
+        "Ich möchte bei Mumfords Megamaschine weiterdenken.",
+        "mu",
+      );
+      add(
+        "hanneFuller",
+        "Das Kuppelmodell sieht nicht nach Dekoration aus.",
+        "Noch einmal zu Fuller und seinem Raumschiff.",
+        "fu",
+      );
+      if (api.hasFlag("hanneMumford") || api.hasFlag("hanneWEC")) {
+        choices.push({
+          text: "Was macht all diese Ordnung mit den Menschen hier?",
+          next: "psy_1",
+        });
+      }
+      choices.push(bye("Für heute reicht es. Ich muss weiter."));
+      return choices;
     },
   };
 }
@@ -448,38 +738,64 @@ export const hanneDialogs: Record<string, DialogTree> = {
       i1: {
         id: "i1",
         speaker: "HANNE",
-        text: "Offen! Kommen Sie rein, es zieht. Sie sind der vom Rechercheauftrag, oder? Man redet im Korridor. Man redet hier immer im Korridor, das ist das einzig Kommunikative an diesem Bau.",
-        subtext: "Eine Frau Ende vierzig, grauer Zopf, runde Brille, Leinenhemd. Sie gestikuliert schon, bevor sie fertig ist mit Begrüßen.",
+        text: "Offen! Kommen Sie rein, es zieht. Sie sind der Mann mit dem Rechercheauftrag, oder? Im Korridor spricht man darüber, weil der Korridor das einzige soziale Medium dieses Hauses ist.",
+        subtext: "Eine Frau Ende vierzig, grauer Zopf, runde Brille, Leinenhemd. Sie hält ein Brotmesser in der einen Hand und deutet mit der anderen auf einen freien Sessel.",
         next: "i2",
       },
       i2: {
         id: "i2",
+        speaker: "LAYARD",
+        text: "Layard Worag. Ich wollte nicht stören.",
+        next: "i3",
+      },
+      i3: {
+        id: "i3",
         speaker: "HANNE",
-        text: "Hanne Brodersen. Hamburg, dann Kalifornien, dann wieder hier — in der Reihenfolge, die man bereut, und der, die man nicht bereut. Ich weiß nur nicht mehr, welche welche ist. Brot? Ist von heute früh.",
+        text: "Dann sind Sie in der falschen Wohnung. Hanne Brodersen. Hamburg, dann Kalifornien, dann wieder hier. Brot? Heute früh gebacken.",
         choices: [
-          { text: "Gern. Riecht gut.", next: "i3a" },
-          { text: "Danke, nein. Ich wollte nur kurz …", next: "i3b" },
+          { text: "Gern. Es riecht gut.", next: "i4a" },
+          { text: "Danke, nein. Ich wollte nur kurz hereinschauen.", next: "i4b" },
+          { text: "Ich sollte gleich weiter.", next: "bye" },
         ],
       },
-      i3a: {
-        id: "i3a",
+      i4a: {
+        id: "i4a",
         speaker: "HANNE",
-        text: "Natürlich riecht es gut. Sauerteig, Roggen, Sonnenblumenkerne. Sechs Jahre lang habe ich in Amerika Brot gegessen, das man zu einer Kugel drücken konnte. Dafür bin ich zurückgekommen. Fast nur dafür.",
-        next: "i4",
+        text: "Roggen, Sauerteig, Sonnenblumenkerne. Sechs Jahre Amerika, und am Ende bringt mich ein Brot zurück. Das klingt lächerlich, bis man sechs Jahre lang keines hatte, das beim Schneiden Widerstand leistet.",
+        subtext: "Sie schneidet zwei ungleich dicke Scheiben ab und gibt Layard die größere.",
+        next: "i5a",
       },
-      i3b: {
-        id: "i3b",
-        speaker: "HANNE",
-        text: "Kurz. Das sagen alle. Und dann sitzen sie drei Stunden im Sessel und streiten mit mir über Lewis Mumford. Setzen Sie sich ruhig, ich verspreche nichts.",
-        next: "i4",
+      i5a: {
+        id: "i5a",
+        speaker: "LAYARD",
+        text: "Sie sind wegen Vollkornbrot zurückgekehrt?",
+        next: "i6",
       },
-      i4: {
-        id: "i4",
+      i4b: {
+        id: "i4b",
         speaker: "HANNE",
-        text: "Wissen Sie, was das Schlimme ist? Hier hat man alles, was ich drüben vermisst habe, und nichts von dem, was ich hier vermisse. Die Weite. Die Vision. Leute, die abends über Computer reden statt über Zuteilungen.",
+        text: "Kurz sagen hier alle. Dann sehen sie den Computer, die Bücher oder die Kuppel, und plötzlich ist der Nachmittag weg. Bleiben Sie stehen, wenn Ihnen das sicherer vorkommt.",
+        next: "i5b",
+      },
+      i5b: {
+        id: "i5b",
+        speaker: "LAYARD",
+        text: "Die Wohnung sieht jedenfalls nicht aus wie der Rest des Korridors.",
+        next: "i6",
+      },
+      i6: {
+        id: "i6",
+        speaker: "HANNE",
+        text: "Das ist freundlich formuliert. Ich habe hier alles gesammelt, was mich daran erinnert, dass die Gegenwart nicht die einzige denkbare Einrichtung ist.",
+        next: "i7",
+      },
+      i7: {
+        id: "i7",
+        speaker: "LAYARD",
+        text: "Und womit fängt man an?",
         next: HUB,
       },
-      [HUB]: hubLine("Also. Worüber wollen wir reden? Ich habe Zeit, ich habe Kaffee, und ich habe ungefähr vierhundert Bücher Meinung."),
+      [HUB]: hubLine("Nicht mit einer Theorie. Suchen Sie sich etwas aus, das Sie tatsächlich sehen. Der Rest kommt früh genug."),
       ...strands,
     },
   },
@@ -487,7 +803,7 @@ export const hanneDialogs: Record<string, DialogTree> = {
     id: "hanneHub",
     start: HUB,
     lines: {
-      [HUB]: hubLine("Der Mann mit dem Mantel! Setzen Sie sich. Wo waren wir stehen geblieben — oder fangen wir woanders an?"),
+      [HUB]: hubLine("Da sind Sie wieder. Setzen Sie sich, oder bleiben Sie stehen. Wir müssen nicht schneller reden, nur weil der Korridor lang ist."),
       ...strands,
     },
   },
