@@ -123,7 +123,13 @@ export type KnowledgeFlag =
   | "gfaContact"
   | "zeroIsInfinity"
   /** Der Nachbar Philippe fragt Layard systematisch aus. */
-  | "philippeProbing";
+  | "philippeProbing"
+  /** Gerüchte um 104,6 (u. a. von Hanne, 1104). */
+  | "rumorRadioRevival"
+  | "rumor1046Addiction"
+  | "rumorConspiracy"
+  /** Name und Telefonnummer des Radio-Erfinders. */
+  | "radioInventorContact";
 
 /** Hat Layard ein Wissensstück offengelegt oder verschwiegen? */
 export type DisclosureChoice = "shared" | "withheld";
@@ -173,6 +179,20 @@ export type StoryFlag =
   | "hanneWEC"
   | "hanneBeat"
   | "hanneMac"
+  /** Tiefe Gesprächsstellen bei Hanne — zählen als Vertrauen. */
+  | "hanneDeepLanguage"
+  | "hanneDeepRudder"
+  | "hanneDeepPower"
+  | "hanneDeepIllich"
+  | "hanneDeepWriting"
+  | "hanneDeepLearn"
+  | "hanneDeepBind"
+  /** Hanne hat die drei Gerüchte um 104,6 erzählt. */
+  | "hanneRumor1"
+  | "hanneRumor2"
+  | "hanneRumor3"
+  /** Hanne hat Name und Nummer des Radio-Erfinders genannt. */
+  | "hanneInventor"
   // Plakat der „Global Future Alliance“ in Wohnung 1103 angesehen / Manifest genommen
   | "sawGfaPoster"
   | "gfaManifestTaken"
