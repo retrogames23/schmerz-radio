@@ -90,6 +90,8 @@ export type InventoryItemId =
   | "condom"
   // Akt II — offizielles Schreiben zur Vor-Ort-Recherche (Vossbeck).
   | "rechercheSchreiben"
+  // Hannes Zettel mit eigenen Fuller-Übersetzungen (Wohnung 1104)
+  | "fullerZettel"
   // Manifest der „Global Future Alliance“ — von Walter Grewe (Wohnung 1103)
   | "gfaManifest"
   // Ausgeliehene Bücher der Bewohnerbibliothek 1101 (E71, Herbert)
@@ -196,6 +198,8 @@ export type StoryFlag =
   // Plakat der „Global Future Alliance“ in Wohnung 1103 angesehen / Manifest genommen
   | "sawGfaPoster"
   | "gfaManifestTaken"
+  /** Hanne hat Layard ihren Zettel mit Fuller-Übersetzungen gegeben. */
+  | "fullerZettelTaken"
   | "askedBodoPhone"
   | "askedPhilippePhone"
   | "askedEnnisPhone"

@@ -442,6 +442,9 @@ const ICON_MAP: Record<InventoryItemId, () => React.ReactElement> = {
   // Akt II — offizielles Schreiben zur Vor-Ort-Recherche. Vorerst geliehenes
   // Akten-Icon (Aushang-Stil, vergilbtes Papier).
   rechercheSchreiben: Aushang71Icon,
+  // Hannes Fuller-Zettel — handschriftlicher Zettel, vorerst geliehenes
+  // Akten-Icon (Aushang-Stil, vergilbtes Papier).
+  fullerZettel: Aushang71Icon,
   // Ausgeliehene Bücher aus der Bewohnerbibliothek 1101 (E71).
   buchSumerListen: E67HandbookIcon,
   buchSchmalspur: E67HandbookIcon,

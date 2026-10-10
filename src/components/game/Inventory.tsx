@@ -38,6 +38,8 @@ export function Inventory() {
       api.openBook(libraryBook.id);
     } else if (item.id === "gfaManifest") {
       api.openBook("gfaManifest");
+    } else if (item.id === "fullerZettel") {
+      api.openBook("fullerZettel");
     } else if (item.id === "e67Handbook") {
       openHandbook();
     } else if (item.id === "residentId") {

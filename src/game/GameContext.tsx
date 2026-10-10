@@ -29,6 +29,7 @@ import { getBook } from "./books";
 import "./books/history";
 import "./books/almanach";
 import "./books/gfaManifest";
+import "./books/fullerZettel";
 import { getLibraryReadableBook } from "./books/libraryBooks";
 
 export interface MarvSaveState {
