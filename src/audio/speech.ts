@@ -34,6 +34,7 @@ type Speaker =
   | "HERBERT"
   | "SETSUKO"
   | "WALTER"
+  | "HANNE"
   | "ZVSEMPFANG"
   | "SASSE";
 
@@ -243,6 +244,12 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
     voiceId: "onwK4e9ZLuTAKqWW03F9", // Daniel
     speed: 1.0,
     settings: { stability: 0.45, similarity_boost: 0.8, style: 0.35, use_speaker_boost: true },
+  },
+  HANNE: {
+    // Hanne Brodersen, 1104 — warm, schnell, spöttisch.
+    voiceId: "XB0fDUnXU5powFXDhCwa", // Charlotte
+    speed: 1.02,
+    settings: { stability: 0.45, similarity_boost: 0.8, style: 0.4, use_speaker_boost: true },
   },
   ZVSEMPFANG: {
     // Empfang der Zentralverwaltungsstelle — knapp, geübt, unbeteiligt.

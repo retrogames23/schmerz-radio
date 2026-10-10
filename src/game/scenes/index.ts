@@ -11,6 +11,7 @@ import { corridor21Scenes } from "./corridor21";
 import { libraryE71Scenes } from "./libraryE71";
 import { apt1102Scenes } from "./apt1102";
 import { apt1103Scenes } from "./apt1103";
+import { apt1104Scenes } from "./apt1104";
 import { kantinenverwaltung3603Scenes } from "./kantinenverwaltung3603";
 import { leitstelleE67Scenes } from "./leitstelleE67";
 import { kellerE67Scenes } from "./kellerE67";
@@ -31,6 +32,7 @@ export const scenes: Record<string, Scene> = {
   ...libraryE71Scenes,
   ...apt1102Scenes,
   ...apt1103Scenes,
+  ...apt1104Scenes,
   ...kantinenverwaltung3603Scenes,
   ...leitstelleE67Scenes,
   ...kellerE67Scenes,

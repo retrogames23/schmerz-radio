@@ -293,6 +293,7 @@ export const atmosphereWhitelist: string[] = [
   "hbFakt",
   "setsuko",
   "walter",
+  "hanne",
   "ralf",
   "okwu",
   "helka",
