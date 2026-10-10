@@ -266,7 +266,7 @@ const wec = {
   ),
 };
 
-const beat = {
+const beat: Record<string, DialogLine> = {
   ...chain(
     "be",
     [
