@@ -83,12 +83,20 @@ export const corridor11Scenes: Record<string, Scene> = {
         w: 4.9,
         h: 45,
         label: "Tür 1104",
-        kind: "look",
-        onUse: (api) =>
-          api.showText([
-            "1104. Kein Siegelband, kein rotes Statuslicht, kein Aushang.",
-            "Nur eine Tür. Das ist hier offenbar möglich.",
-          ]),
+        kind: "exit",
+        onUse: (api) => {
+          if (api.hasFlag("metHanne")) {
+            api.goTo("apt1104");
+            return;
+          }
+          api.showText(
+            [
+              "1104. Kein Siegelband, kein rotes Statuslicht, kein Aushang.",
+              "Nur eine Tür. Das ist hier offenbar möglich. Layard klopft. Von drinnen: „Offen! Es ist immer offen!“",
+            ],
+            () => api.goTo("apt1104"),
+          );
+        },
       },
       {
         id: "corridorPrints",

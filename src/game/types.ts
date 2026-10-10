@@ -11,6 +11,7 @@ export type SceneId =
   | "libraryE71"
   | "apt1102"
   | "apt1103"
+  | "apt1104"
   | "room1534"
   | "room1532"
   | "apt2613"
@@ -164,6 +165,14 @@ export type StoryFlag =
   | "walterResonanz"
   /** Walters Peilung: verstärkter Träger 104,6, NW, 300–500 m — also E67. */
   | "walterBearing"
+  /** Hanne Brodersen (Wohnung 1104, E71) kennengelernt + gehörte Gesprächsstränge. */
+  | "metHanne"
+  | "hanneUSA"
+  | "hanneFuller"
+  | "hanneMumford"
+  | "hanneWEC"
+  | "hanneBeat"
+  | "hanneMac"
   // Plakat der „Global Future Alliance“ in Wohnung 1103 angesehen / Manifest genommen
   | "sawGfaPoster"
   | "gfaManifestTaken"
@@ -678,6 +687,7 @@ export interface DialogLine {
     | "HERBERT"
     | "SETSUKO"
     | "WALTER"
+    | "HANNE"
     | "ZVSEMPFANG"
     | "SASSE";
   text: string;

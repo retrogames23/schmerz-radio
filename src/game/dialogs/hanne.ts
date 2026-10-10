@@ -427,7 +427,7 @@ function hubLine(text: string): DialogLine {
         c.push(go(api.hasFlag(flag) ? again : fresh, prefix, flag));
       add("hanneUSA", "Warum sind Sie damals nach Amerika gegangen?", "Erzählen Sie noch einmal von Amerika.", "us");
       add("hanneFuller", "Wer ist dieser Fuller, von dem Sie reden?", "Noch mal Fuller.", "fu");
-      add("hanneMumford", "Was liest du gerade? — Verzeihung: Sie.", "Zurück zu Mumford und der Megamaschine.", "mu");
+      add("hanneMumford", "Was lesen Sie gerade?", "Zurück zu Mumford und der Megamaschine.", "mu");
       add("hanneWEC", "Was sind das für Hefte da auf dem Tisch?", "Noch etwas aus dem Whole Earth Catalog.", "we");
       add("hanneBeat", "Sie haben viele Dylan-Platten.", "Mehr über die Beats und Dylan.", "be");
       add("hanneMac", "Ist das ein Computer? Ein privater?", "Zurück zu Ihrem Macintosh.", "mac");

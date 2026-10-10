@@ -16,6 +16,7 @@ import { ralfDialogs } from "./ralf";
 import { herbertDialogs } from "./herbert";
 import { setsukoDialogs } from "./setsuko";
 import { walterDialogs } from "./walter";
+import { hanneDialogs } from "./hanne";
 import { zentralverwaltungDialogs } from "./zentralverwaltung";
 import { aushangDialogs } from "./aushaenge";
 
@@ -37,6 +38,7 @@ export const dialogs: Record<string, DialogTree> = {
   ...herbertDialogs,
   ...setsukoDialogs,
   ...walterDialogs,
+  ...hanneDialogs,
   ...zentralverwaltungDialogs,
   ...aushangDialogs,
 };
