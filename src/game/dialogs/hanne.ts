@@ -859,6 +859,8 @@ function hubLine(text: string): DialogLine {
     text,
     choicesFn: (api) => {
       const choices: DialogChoice[] = [];
+      const pending = pendingHubChoice(api);
+      if (pending) choices.push(pending);
       const add = (
         flag: StoryFlag,
         first: string,
