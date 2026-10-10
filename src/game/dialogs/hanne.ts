@@ -1,4 +1,4 @@
-import type { DialogChoice, DialogLine, DialogTree, StoryFlag } from "../types";
+import type { DialogChoice, DialogLine, DialogTree, GameApi, StoryFlag } from "../types";
 
 /**
  * Hanne Brodersen — Wohnung 1104, Gebäude E71, Etage 1.
@@ -156,7 +156,45 @@ const fuller = {
     "fu",
     [
       ["HANNE", "Einer davon heißt Buckminster Fuller. Ingenieur, Gestalter, Dichter, gelegentlich unerträglich überzeugt von sich. Gerade genug Größenwahn, um die Gegenwart nicht für unvermeidlich zu halten."],
-      ["LAYARD", "Was hat er anders gesehen?"],
+    ],
+    [
+      {
+        text: "Haben Sie etwas von ihm zum Lesen hier?",
+        next: "fu_zettel_1",
+        hiddenWhen: ["fullerZettelTaken"],
+      },
+      { text: "Was hat er anders gesehen?", next: "fu2_1" },
+      back(),
+      bye(),
+    ],
+  ),
+  ...chain(
+    "fu_zettel",
+    [
+      ["HANNE", "Sogar auf Deutsch. Ich habe vor Jahren einige seiner Texte übersetzt, als ich sie Freunden hier erklären wollte. Warten Sie —"],
+      ["SYSTEM", "Hanne steht auf, zieht eine Mappe aus dem Stapel neben dem Mac und blättert, bis sie einen eng beschriebenen Zettel findet."],
+      ["HANNE", "Da. Das Hebelprinzip, das Raumschiff Erde, ein paar Aphorismen. Mein Englisch ist besser als meine Schrift, aber es reicht. Möchten Sie ihn mitnehmen?"],
+    ],
+    [
+      {
+        text: "Sehr gern. Danke.",
+        next: "fu2_1",
+        action: (a: GameApi) => {
+          a.addItem({
+            id: "fullerZettel",
+            name: "Hannes Fuller-Übersetzungen",
+            description:
+              "Ein eng beschriebener Zettel mit Hannes eigenen Übersetzungen aus Fullers Texten: das Hebelprinzip, das Raumschiff Erde, einige Aphorismen.",
+          });
+          a.setFlag("fullerZettelTaken");
+        },
+      },
+      { text: "Danke, ich merke mir das Wichtigste so.", next: "fu2_1" },
+    ],
+  ),
+  ...chain(
+    "fu2",
+    [
       ["HANNE", "Die Erde als Raumschiff. Keine Metapher für Sonntagsreden, sondern eine Arbeitsannahme: begrenzte Vorräte, gemeinsame Reise, keine Ersatzmaschine."],
       ["LAYARD", "Und keine Bedienungsanleitung."],
       ["HANNE", "Genau. So heißt sein Buch von 1969 sinngemäß: Bedienungsanleitung für das Raumschiff Erde. Wir sind Besatzung, nicht Passagiere. Das verändert, wer für einen Defekt zuständig ist."],
