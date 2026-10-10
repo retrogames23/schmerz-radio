@@ -1,50 +1,48 @@
-# Credits sparen bei OpenRouter (und Sprachausgabe)
+# Wohnung 1104 — Hanne Brodersen, die Rückkehrerin
 
-Ziel: die laufenden Kosten deutlich senken, ohne dass sich das Spiel für neugierige Erstbesucher*innen billig anfühlt. Grundidee: **günstig für alle, gut für Unterstützer*innen, hartes Netz gegen Ausreißer-Sessions.**
+## Ziel
+Hinter der bisher nur betrachtbaren Tür 1104 (Korridor 11, E71) wohnt eine neue Figur: Alt-Hippie ohne Esoterik, in einer für 1997 auffallend modernen Wohnung. Sehr gesprächig, zieht Layard nach Small Talk in lange philosophische Gespräche — jederzeit verlassbar.
 
-## 1. Sprachausgabe: klug begrenzen statt ganz sperren
+## Die Figur (Arbeitsname, gern änderbar)
+**Hanne Brodersen**, geb. 1948 in Hamburg, 1966 in die USA (Bay Area), 1972 zurück ins Mandatsgebiet.
+- Kam zurück wegen Vollkornbrot, Gemütlichkeit und der Präzision der deutschen Sprache.
+- Vermisst hier das Visionäre, die Weite, das freie Denken und die Beschäftigung mit Computertechnik.
+- Besitzt einen Apple Macintosh von 1994 (Performa/Power Mac), auf einem Tischchen neben einem zerlesenen Stapel „Whole Earth Catalog“.
+- Ton: warm, schnell, spöttisch, nie esoterisch — sie argumentiert, zitiert, widerspricht sich selbst gern.
 
-Bereits vertonte Zeilen liegen dauerhaft im Sprach-Cache und kosten nichts — die bleiben für alle hörbar. Geld kostet nur **neu erzeugte** Sprache (fast nur im KI-Chat mit NSCs und beim DSA-Meister, weil dort die Texte jedes Mal anders sind).
+## Wohnung
+- Neues Hintergrundbild: hell, aufgeräumt, Eames-artiger Sessel, Geodätenkuppel-Modell aus Strohhalmen, Bücherwände, Vollkornbrot auf Holzbrett, der Mac mit leuchtendem Bildschirm.
+- Hotspots: Hanne (Gespräch), der Macintosh (Betrachten + kurzer Kommentar von ihr), Whole-Earth-Stapel, Kuppelmodell, Brotbrett, Plattenregal (Dylan), Ausgang.
+- Tür 1104 im Korridor wird begehbar (bisheriger Betrachten-Text bleibt als Erstbeschreibung).
 
-Vorschlag:
-- Feste Spieltexte (alles, was schon einmal vertont wurde): weiter für alle.
-- Neu zu erzeugende Sprache aus KI-Antworten: nur für angemeldete Unterstützer*innen. Für alle anderen bleibt der Text sichtbar, die Vorlesen-Taste zeigt einen freundlichen Hinweis.
-- Zusätzlich ein Tageslimit an neuen Sprach-Sekunden pro Konto, damit auch Unterstützer*innen keine Kostenlawine auslösen können.
+## Dialogstruktur
+```text
+Erstbegegnung (Small Talk: Brot, Hamburg, „Sie sind der von der Bibliothek?“)
+        |
+     HUB (kehrt immer zurück, jede Ebene hat „Lassen wir das“ / „Ich muss los“)
+  ┌──────┬──────────┬───────────┬───────────┬───────────┬──────────┐
+ USA &  Fuller     Mumford     Whole Earth  Beat &     Der Mac /
+ Rückkehr                       Catalog     Dylan      Computer
+```
+Jeder Strang 3–5 Ebenen tief, mit Querverweisen zwischen den Strängen (z. B. Mumford „Megamaschine“ → Fuller „Spaceship Earth“ → Brand „Access to tools“). Jede Ebene endet im Rückbezug auf das Mandatsgebiet 1997.
 
-Effekt: die teuren, nie wiederverwendbaren Vertonungen fallen fast komplett weg, die Atmosphäre im Hauptspiel bleibt erhalten.
+Inhaltliche Kerne (reale Theorien, korrekt wiedergegeben):
+- **Fuller**: Spaceship Earth / Bedienungsanleitung, Ephemeralisierung („mehr mit weniger“), Synergetik, Tensegrity, Geodätenkuppel, World Game, „Du änderst Dinge nie, indem du gegen die bestehende Wirklichkeit kämpfst …“ — gespiegelt auf die Verwaltung, die mit mehr Formularen weniger erreicht.
+- **Mumford**: Megamaschine (Mythos der Maschine), Pentagon der Macht, autoritäre vs. demokratische Technik, „Die Stadt in der Geschichte“, Paläotechnik/Neotechnik — die Mandatsverwaltung als Megamaschine aus Menschen.
+- **Whole Earth Catalog / Stewart Brand**: „We are as gods and might as well get good at it“, „Access to tools“, Stay hungry, stay foolish (Rückseite 1974), Gregory Bateson (Ökologie des Geistes, Doppelbindung), Norbert Wiener (Kybernetik), Marshall McLuhan, Ivan Illich („Werkzeuge für ein konviviales Leben“), E. F. Schumacher (Small is beautiful).
+- **Beat & Dylan**: Ginsberg „Howl“ (Moloch!) als Brücke zu Mumford, Burroughs' Kontrollbegriff und Cut-up-Technik (sie zerschneidet Amtsbescheide), Kerouac, Dylan „The Times They Are a-Changin'“, „It's Alright, Ma“ — Poesie als Diagnose, nicht als Trost.
+- **Psychologie/Soziologie**: Batesons Doppelbindung auf Mandatsdeutsch, Kontrollgesellschaft, Gemütlichkeit als Betäubung vs. Geborgenheit.
+- **Der Mac**: HyperCard, Engelbart, „Computer für den Rest von uns“, das Netz als Whole Earth Catalog ohne Papier — ihre Sehnsucht und ihre Skepsis (Kontrolle durch Vernetzung).
 
-## 2. DSA-Meister: günstiges Standardmodell für Gratis-Runden
+Umfang: ca. 120–160 Dialogzeilen, viele Antwortoptionen. Einige Optionen erscheinen erst nach Wissen aus anderen Strängen oder nach Treffen mit Walter/Ralf/Herbert (kurze Seitenhiebe auf die Nachbarn).
 
-Heute läuft für alle dasselbe Modell (GPT-5.6 Luna). Neu:
-- **Nicht angemeldet / ohne Unterstützung:** das günstigste brauchbare Modell (Gemini 3.1 Flash Lite) — spürbar billiger, für ein Schnupper-Abenteuer völlig ausreichend.
-- **Unterstützer*innen:** Luna als Standard, Haiku und Sonnet weiter wählbar.
+## Spielauswirkung
+Rein atmosphärisch, kein Pflichträtsel; ein Flag `metHanne` und pro Strang ein „gehört“-Flag, damit der Hub bei Wiederbesuch neue Einstiege zeigt. Optional später: ein leihbares Buch (Whole Earth Catalog) — nicht Teil dieses Plans.
 
-Das macht das Schnuppern fast kostenlos und den Unterschied zur Unterstützung deutlich fühlbar.
-
-## 3. Härtere, aber faire Limits
-
-- Anonymes Schnupper-Abenteuer: **30 → 20 Meisterwenden**.
-- Angemeldet ohne Unterstützung: statt 50 Anfragen insgesamt ein **Tagesbudget von 25 Anfragen**, das sich täglich erneuert (fühlt sich großzügiger an und deckelt trotzdem).
-- Gruppenspiel: pro Raum und Tag ein gemeinsames Rundenbudget, damit ein Raum nicht stundenlang durchläuft.
-
-## 4. Kleinere Stellschrauben mit großer Wirkung
-
-- Für das Gratis-Modell: kürzeres Gedächtnisfenster (6 → 4 Nachrichten), kürzere Antworten (800 → 600), maximal 2 statt 4 Nachschlage-Runden im Regelwerk.
-- NSC-Gespräche und Fastweb-Chat laufen heute auf dem teuren Haupt-Modell; dort reicht das günstige Modell für alle außer Unterstützer*innen.
-- Antwortlängen dort von 600 auf 400 bzw. 240 auf 180 Zeichenbudget senken.
-
-## 5. Notbremse statt „Zugriff verweigert"
-
-Aus der vorhandenen Kosten-Telemetrie ein **Tages-Kostenbudget** berechnen. Ist es erreicht, antwortet der Meister mit einer freundlichen Meldung („Der Meister ruht heute") statt mit einem technischen Fehler — und Unterstützer*innen spielen weiter. So läuft der Schlüssel nie mehr komplett leer.
-
-## Erwartete Wirkung
-
-Zusammen sollten die Punkte 1–4 die Kosten pro Gratis-Session grob um **80–90 %** senken; Punkt 5 verhindert, dass ein einzelner Tag das Guthaben aufbraucht.
-
-## Technische Umsetzung
-
-- `src/lib/aiModel.ts`: neuer Export `AI_MODEL_DSA_FREE = "google/gemini-3.1-flash-lite"`; `resolveDsaMasterModel(requested, donor)` fällt für Nicht-Spender auf das Free-Modell zurück; Limits-Eintrag Free: `maxTokens 600, historyWindow 4, maxToolRounds 2`.
-- `src/routes/api/public/dsa-master.ts` / `dsa-group.ts`: `ANON_MAX_TURNS 30 → 20`; `HARD_LIMIT` durch eine tagesbasierte Zählung ersetzen (neue RPC `try_increment_daily_request_count` mit `last_reset_date` in `profiles`); Donor-Flag an die Modellwahl durchreichen.
-- `src/routes/api/tts.ts`: neuer Pflicht-Parameter `dynamic: boolean`. Bei `dynamic=true` Auth prüfen (`donation_unlocked`) plus Tagesbudget in Zeichen; Cache-Treffer aus `tts-cache` weiterhin ohne Auth ausliefern. Client (`src/audio/speech.ts`, NSC-/DSA-Aufrufe) setzt das Flag und blendet die Vorlesen-Taste sonst mit Hinweis aus.
-- `src/routes/api/public/npc-chat.ts` / `fastweb-chat.ts`: `AI_MODEL_MAIN` nur für Spender, sonst `AI_MODEL_LIGHT`; `max_tokens` 600 → 400 bzw. 240 → 180.
-- Tagesbudget-Notbremse: Aggregat über die bestehende Telemetrie-Tabelle (Summe Tokens des laufenden Tages), Schwelle als Konstante; bei Überschreitung 402 mit eigenem `code: "budget_reached"`.
+## Technische Details
+- `src/game/scenes/apt1104.ts` (analog `apt1103.ts`), registriert in `scenes/index.ts`; `"apt1104"` in `SceneId` in `types.ts`; Flags `metHanne`, `hanneFuller`, `hanneMumford`, `hanneWEC`, `hanneBeat`, `hanneMac`, `hanneUSA`.
+- `door1104` in `corridor11.ts` bekommt `api.goTo("apt1104")`.
+- `src/game/dialogs/hanne.ts` mit `hanneIntro`, `hanneHub` und Strang-Bäumen; in `dialogs/index.ts` eingebunden. Jede Choice-Liste enthält einen Exit zum Hub bzw. ein Dialogende.
+- Neues Bild `src/assets/scene-apt-1104.jpg` (Imagegen, Stil der bestehenden Szenen).
+- Persona-Eintrag in `npcPersonas.ts` für den Freitext-Chat, falls andere Nachbarn ihn haben.
+- Danach `bun run scripts/solve-check.mjs` und `lore-check.mjs`; LORE.md um Hanne ergänzen.
