@@ -440,7 +440,7 @@ stehen weiterhin in `src/game/npcPersonas.ts`.
 - **Herbert** — Bibliothekar der Bewohnerbibliothek 1101 in E71. Leiht Bücher
   aus, spricht wenig, legt lieber den Finger auf eine Zeile.
 - **Setsuko Arai** — Künstlerin, E71/1102 (gegenüber der Bibliothek).
-- **Hanne Brodersen** — geb. 1948 Hamburg, 1966–1972 in Kalifornien, E71/1104. Alt-Hippie ohne Esoterik, Macintosh von 1994, liest Fuller, Mumford, Whole Earth Catalog, Bateson, Illich, Beats und Dylan und deutet damit das Mandatsgebiet 1997. Rein atmosphärisch.
+- **Hanne Brodersen** — geb. 1948 Hamburg, 1966–1972 in Kalifornien, E71/1104. Alt-Hippie ohne Esoterik, Macintosh von 1994, liest Fuller, Mumford, Whole Earth Catalog, Bateson, Illich, Beats und Dylan und deutet damit das Mandatsgebiet 1997. Kennt die drei Gerüchte um 104,6 und erzählt sie erst, wenn sie Layard vertraut. Kennt privat den Erfinder des Schmerz-Radios (öffentlich weiterhin unbekannt), der außerhalb von Sektor 28 lebt.
 - **Walter Grewe** — 56, Funk- und Messtüftler, E71/1103. Alt-68er mit
   Garagenwerkstatt: Peilrahmen von 1938, Röhrenempfänger, Bandschreiber,
   Wandplan mit Peillinien. Spricht Resonanz konsequent doppelt (bau-akustisch

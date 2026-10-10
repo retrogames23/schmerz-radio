@@ -220,6 +220,25 @@ export const KNOWLEDGE_ENTRIES: KnowledgeEntry[] = [
     askedAt5011: false,
     from: "heardZeroIsInfinity",
   },
+  ...(
+    [
+      ["rumorRadioRevival", "Gerücht: Schmerz-Radio findet neue Hörer", "heikel", "hanneRumor1"],
+      ["rumor1046Addiction", "Gerücht: Sucht nach 104,6", "heikel", "hanneRumor2"],
+      ["rumorConspiracy", "Gerücht: Jemand will den Sektor lahmlegen", "brisant", "hanneRumor3"],
+      ["radioInventorContact", "Erfinder des Schmerz-Radios: Konrad Elsner", "brisant", "hanneInventor"],
+    ] as const
+  ).map(([id, label, sensitivity, from]) => ({
+    id,
+    label,
+    source: "Hanne Brodersen, Wohnung 1104, E71",
+    sensitivity,
+    question: "",
+    share: "",
+    withhold: "",
+    noted: "",
+    askedAt5011: false,
+    from,
+  })),
 ];
 
 export const knowledgeById = (id: KnowledgeFlag): KnowledgeEntry | undefined =>
