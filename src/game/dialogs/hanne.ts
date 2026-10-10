@@ -651,7 +651,191 @@ const psychology = {
   ),
 };
 
-const strands: Record<string, DialogLine> = {
+/* ------------------------------------------------------------------ */
+/* Gerüchte um 104,6 und der Erfinder — erst, wenn Hanne Layard ernst */
+/* nimmt. Vertrauen = gehörte Stränge + erreichte tiefe Stellen.      */
+/* ------------------------------------------------------------------ */
+
+const STRAND_FLAGS: StoryFlag[] = [
+  "hanneUSA", "hanneFuller", "hanneMumford", "hanneWEC", "hanneBeat", "hanneMac",
+];
+/** Tiefe Stellen: Betreten setzt ein Vertrauens-Flag. */
+const DEEP: Record<string, StoryFlag> = {
+  us_language: "hanneDeepLanguage",
+  fu_rudder: "hanneDeepRudder",
+  mu_power: "hanneDeepPower",
+  we_illich: "hanneDeepIllich",
+  be_writing: "hanneDeepWriting",
+  mac_learn: "hanneDeepLearn",
+  psy_bind: "hanneDeepBind",
+};
+export function hanneTrust(api: { hasFlag: (f: StoryFlag) => boolean }): number {
+  return [...STRAND_FLAGS, ...Object.values(DEEP)].filter((f) => api.hasFlag(f)).length;
+}
+export const HANNE_RUMOR_THRESHOLDS = { rumor1: 4, rumor2: 6, rumor3: 8, inventor: 10 } as const;
+
+const rumors = {
+  ...chain(
+    "ru1",
+    [
+      ["HANNE", "Darf ich Ihnen etwas erzählen, das kein Gedanke ist, sondern Korridorgerede? Ich erzähle es nur Leuten, die nicht sofort einen Vermerk daraus machen."],
+      ["LAYARD", "Ich bin heute nicht im Dienst. Jedenfalls nicht ganz."],
+      ["HANNE", "Es gibt ein altes Bastlergerät. Ein Radio, das keine Musik bringt, sondern Gefühle. Meistens schlechte. Jahrzehntelang hat es kaum jemand gewollt."],
+      ["HANNE", "Und jetzt höre ich, dass ausgerechnet die Einsamen im Sektor danach suchen. Witwer. Leute, die seit Jahren mit niemandem mehr streiten. Sie sagen, es sei das Einzige, das noch wehtut."],
+      ["LAYARD", "Und das wollen sie?"],
+      ["HANNE", "Ein Schmerz ist wenigstens ein Beweis, dass man noch Empfang hat. Wiener hätte gesagt: Ein System ohne Rückmeldung hält sich für tot."],
+    ],
+    [
+      { text: "Ich kenne das Gerät. Ich höre es selbst.", next: "ru1_own_1" },
+      { text: "Woher wissen Sie das?", next: "ru1_src_1" },
+      back("Das muss ich erst einmal sacken lassen."),
+      bye(),
+    ],
+  ),
+  ...chain(
+    "ru1_own",
+    [
+      ["HANNE", "Oh."],
+      ["HANNE", "Dann verurteile ich Sie nicht. Ich wollte nur wissen, ob Sie mir zuhören oder mich prüfen. Sie hören zu."],
+    ],
+    [back(), bye()],
+  ),
+  ...chain(
+    "ru1_src",
+    [
+      ["HANNE", "Aus dem Waschkeller. Der Waschkeller ist die ehrlichste Zeitung des Hauses. Niemand lügt, während er fremde Socken sortiert."],
+    ],
+    [back(), bye()],
+  ),
+  ...chain(
+    "ru2",
+    [
+      ["HANNE", "Neulich hat mir eine Frau aus E67 erzählt, ihr Nachbar verlässt die Wohnung nicht mehr, ohne vorher eingeschaltet zu haben. Immer dieselbe Stelle auf der Skala. Hundertvierkommasechs."],
+      ["LAYARD", "Eine Gewohnheit."],
+      ["HANNE", "So fängt es an. Dann wird die Gewohnheit eine Bedingung. Sie sagt, es sind viele. Und mehrere von denen sind inzwischen versiegelt."],
+      ["LAYARD", "Die Resonanz-Überlastungen."],
+      ["HANNE", "Ich wollte erst sagen: wie Fernsehen oder Valium. Aber das stimmt nicht. Fernsehen betäubt. Das hier weckt. Und wer zu lange geweckt wird, bricht genauso zusammen."],
+    ],
+    [
+      { text: "Warum gerade diese Frequenz?", next: "ru2_why_1" },
+      back("Lassen wir das für den Moment."),
+      bye(),
+    ],
+  ),
+  ...chain(
+    "ru2_why",
+    [
+      ["HANNE", "Das ist Ihre Frage, nicht meine. Ich bin eine Frau mit Brot und Büchern. Sie sind der mit dem Rechercheauftrag."],
+    ],
+    [back(), bye()],
+  ),
+  ...chain(
+    "ru3",
+    [
+      ["HANNE", "Es gibt noch eine dritte Geschichte. Die erzähle ich Ihnen nur, damit Sie sie von jemandem hören, der sie nicht glaubt."],
+      ["LAYARD", "Ich höre."],
+      ["HANNE", "Hundertvierkommasechs sei ein Programm. Jemand wolle den Sektor lahmlegen. Die Verwaltung, sagen die einen. Das Ausland, sagen andere. Einer im Waschkeller hat Außerirdische gesagt und es ernst gemeint."],
+      ["LAYARD", "Und Sie?"],
+      ["HANNE", "Diese Verwaltung schafft es nicht, einen Heizplan zu senden. Wie soll sie eine Stimmung senden? Mumfords Megamaschine ist gefährlich, weil sie langweilig ist, nicht weil sie raffiniert ist."],
+      ["HANNE", "Aber ich gebe zu: Etwas daran bleibt mir im Nacken sitzen. Wenn es niemand plant und trotzdem passiert, ist das nicht beruhigender."],
+    ],
+    [
+      { text: "Burroughs würde das Kontrolle nennen.", next: "ru3_burr_1", requires: ["hanneBeat"] },
+      back("Ein unangenehmer Gedanke."),
+      bye(),
+    ],
+  ),
+  ...chain(
+    "ru3_burr",
+    [
+      ["HANNE", "Burroughs hat überall Kontrolle gesehen. Das macht ihn nicht falsch, aber es macht ihn zu einem schlechten Zeugen."],
+    ],
+    [back(), bye()],
+  ),
+  ...chain(
+    "inv",
+    [
+      ["LAYARD", "Woher kommt so ein Gerät überhaupt? Irgendjemand muss es gebaut haben."],
+      ["HANNE", "Sie fragen wie einer, der die Antwort aufschreiben will."],
+      ["LAYARD", "Ich frage wie einer, der es verstehen will. Beim Aufschreiben bin ich mir selbst nicht sicher."],
+      ["HANNE", "…Gut. Fünfundsiebzig, Amateurfunktreffen in einer Turnhalle. Ein Mann mit Lötkolben in der Brusttasche, der nicht über Frequenzen sprechen wollte, sondern über Traurigkeit."],
+      ["HANNE", "Konrad Elsner. Er hat nie ein Patent angemeldet. Die Firma, die in den Achtzigern seine Geräte verkauft hat, ist längst pleite, und er war froh darüber."],
+      ["LAYARD", "Lebt er noch?"],
+      ["HANNE", "Nicht in Sektor 28. Er ist weggezogen, als das Ding anfing, Gesprächsstoff zu werden. Ich habe noch eine Nummer. Zu Weihnachten nimmt er ab."],
+      ["HANNE", "Sektor 14, Vorwahl null-vierzehn. Dann drei-null, sieben-zwei, eins-neun.", "Sie schreibt die Nummer nicht auf. Sie wartet, bis Layard sie notiert hat."],
+      ["HANNE", "Und Layard: Rufen Sie ihn nicht als Beamter an. Rufen Sie ihn an wie jemand, der etwas gehört hat."],
+    ],
+    [back("Danke. Ich werde vorsichtig sein."), bye()],
+  ),
+};
+
+const RUMOR_HOSTS: Record<string, { prefix: string; flag: StoryFlag; min: number; text: string; requiresRumor?: StoryFlag }> = {
+  us_comfort: { prefix: "ru1", flag: "hanneRumor1", min: HANNE_RUMOR_THRESHOLDS.rumor1, text: "Sie sehen aus, als hätten Sie noch etwas auf dem Herzen." },
+  psy_bind: { prefix: "ru1", flag: "hanneRumor1", min: HANNE_RUMOR_THRESHOLDS.rumor1, text: "Kennen Sie hier jemanden, dem das passiert?" },
+  mu_power: { prefix: "ru2", flag: "hanneRumor2", min: HANNE_RUMOR_THRESHOLDS.rumor2, text: "Hängen die Leute hier auch an anderen Maschinen?", requiresRumor: "hanneRumor1" },
+  mac_net: { prefix: "ru2", flag: "hanneRumor2", min: HANNE_RUMOR_THRESHOLDS.rumor2, text: "Kann man auch von einem Signal abhängig werden?", requiresRumor: "hanneRumor1" },
+  be_burroughs: { prefix: "ru3", flag: "hanneRumor3", min: HANNE_RUMOR_THRESHOLDS.rumor3, text: "Glauben Sie, jemand steuert das alles?", requiresRumor: "hanneRumor2" },
+  fu_rudder: { prefix: "ru3", flag: "hanneRumor3", min: HANNE_RUMOR_THRESHOLDS.rumor3, text: "Und wenn jemand anderes das Ruder hält?", requiresRumor: "hanneRumor2" },
+};
+
+type TrustApi = Parameters<NonNullable<DialogLine["choicesFn"]>>[0];
+
+function rumorChoice(api: TrustApi, host: (typeof RUMOR_HOSTS)[string]): DialogChoice | null {
+  if (api.hasFlag(host.flag)) return null;
+  if (host.requiresRumor && !api.hasFlag(host.requiresRumor)) return null;
+  if (hanneTrust(api) < host.min) return null;
+  return go(host.text, host.prefix, host.flag);
+}
+
+/** Nächstes fälliges Gerücht oder der Erfinder, als Hub-Einstieg. */
+function pendingHubChoice(api: TrustApi): DialogChoice | null {
+  const t = hanneTrust(api);
+  if (!api.hasFlag("hanneRumor1") && t >= HANNE_RUMOR_THRESHOLDS.rumor1)
+    return go("Sie wollten mir neulich noch etwas erzählen.", "ru1", "hanneRumor1");
+  if (api.hasFlag("hanneRumor1") && !api.hasFlag("hanneRumor2") && t >= HANNE_RUMOR_THRESHOLDS.rumor2)
+    return go("Gibt es Neues aus dem Waschkeller?", "ru2", "hanneRumor2");
+  if (api.hasFlag("hanneRumor2") && !api.hasFlag("hanneRumor3") && t >= HANNE_RUMOR_THRESHOLDS.rumor3)
+    return go("Was erzählt man sich sonst über diese Frequenz?", "ru3", "hanneRumor3");
+  if (api.hasFlag("hanneRumor3") && !api.hasFlag("hanneInventor") && t >= HANNE_RUMOR_THRESHOLDS.inventor)
+    return go("Woher kommt so ein Gerät eigentlich?", "inv", "hanneInventor");
+  return null;
+}
+
+function weave(lines: Record<string, DialogLine>): Record<string, DialogLine> {
+  const out: Record<string, DialogLine> = {};
+  for (const [id, line] of Object.entries(lines)) {
+    let l: DialogLine = line;
+    if (l.choices) {
+      l = {
+        ...l,
+        choices: l.choices.map((c) => {
+          const p = c.next?.endsWith("_1") ? c.next.slice(0, -2) : undefined;
+          const deep = p ? DEEP[p] : undefined;
+          if (!deep) return c;
+          const prev = c.action;
+          return { ...c, action: (api) => { prev?.(api); api.setFlag(deep); } };
+        }),
+      };
+      const hostKey = Object.keys(RUMOR_HOSTS).find((k) => id.startsWith(`${k}_`) && !l.next);
+      if (hostKey) {
+        const host = RUMOR_HOSTS[hostKey];
+        const base = l.choices!;
+        l = {
+          ...l,
+          choices: undefined,
+          choicesFn: (api) => {
+            const extra = rumorChoice(api, host);
+            return extra ? [extra, ...base] : base;
+          },
+        };
+      }
+    }
+    out[id] = l;
+  }
+  return out;
+}
+
+const strands: Record<string, DialogLine> = weave({
   ...usa,
   ...fuller,
   ...mumford,
@@ -659,13 +843,14 @@ const strands: Record<string, DialogLine> = {
   ...beat,
   ...mac,
   ...psychology,
+  ...rumors,
   bye: {
     id: "bye",
     speaker: "HANNE",
     text: "Gehen Sie. Ein guter Gedanke braucht manchmal einen Korridor. Und wenn Sie wiederkommen, bringen Sie Zeit mit — Brot habe ich selbst.",
     end: true,
   },
-};
+});
 
 function hubLine(text: string): DialogLine {
   return {
