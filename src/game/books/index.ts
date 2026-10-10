@@ -8,6 +8,7 @@ import { HISTORY_BOOK } from "./history";
 import { ALMANACH_BOOK } from "./almanach";
 import { GFA_MANIFEST_BOOK } from "./gfaManifest";
 import { NICHT_VORGESEHEN_BOOK } from "./nichtVorgesehen";
+import { FULLER_ZETTEL_BOOK } from "./fullerZettel";
 import "./libraryBooks";
 
 const CORE_BOOKS: Readonly<Record<string, ReadableBook>> = {
@@ -15,6 +16,7 @@ const CORE_BOOKS: Readonly<Record<string, ReadableBook>> = {
   [ALMANACH_BOOK.id]: ALMANACH_BOOK,
   [GFA_MANIFEST_BOOK.id]: GFA_MANIFEST_BOOK,
   [NICHT_VORGESEHEN_BOOK.id]: NICHT_VORGESEHEN_BOOK,
+  [FULLER_ZETTEL_BOOK.id]: FULLER_ZETTEL_BOOK,
 };
 
 export function getBook(id: string): ReadableBook | undefined {
