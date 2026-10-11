@@ -1,9 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  AI_MODEL_MAIN,
   OPENROUTER_CHAT_URL,
   openRouterHeaders,
 } from "@/lib/aiModel";
+
+/** Auskunft läuft über das günstige Luna-Modell — kurze Faktenantworten
+ *  brauchen kein Premium-Modell. GPT-5.6 braucht reasoning_effort
+ *  "none", sonst werden Requests abgelehnt. */
+const AUSKUNFT_MODEL = "openai/gpt-5.6-luna";
 import {
   AUSKUNFT_SYSTEM_PROMPT,
   AUSKUNFT_TRANSFER_RULES,
@@ -129,12 +133,13 @@ export const Route = createFileRoute("/api/public/auskunft")({
             method: "POST",
             headers: openRouterHeaders(apiKey),
             body: JSON.stringify({
-              model: AI_MODEL_MAIN,
+              model: AUSKUNFT_MODEL,
               messages: [
                 { role: "system", content: systemPrompt },
                 ...history,
                 { role: "user", content: question },
               ],
+              reasoning_effort: "none",
               temperature: 0.3,
               max_tokens: 320,
               stream: false,

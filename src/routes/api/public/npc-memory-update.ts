@@ -1,8 +1,12 @@
 import {
-  AI_MODEL_MAIN,
   OPENROUTER_CHAT_URL,
   openRouterHeaders,
 } from "@/lib/aiModel";
+
+/** Gedächtnis-Fortschreibung läuft über das günstigste Tool-fähige
+ *  Modell — Zusammenfassen + Flurfunk-Extraktion braucht kein
+ *  Premium-Modell. */
+const MEMORY_MODEL = "google/gemini-3.1-flash-lite";
 import { createFileRoute } from "@tanstack/react-router";
 import { npcPersonas } from "@/game/npcPersonas";
 import { createClient } from "@supabase/supabase-js";
@@ -16,7 +20,7 @@ import { createClient } from "@supabase/supabase-js";
  *  - Optional: extrahiert 0–2 Flurfunk-Fakten, die der NPC anderen
  *    Bewohnern aus E67 erzählen würde.
  *
- * Läuft über OpenRouter mit Claude Haiku 4.5 (OPENROUTER_API_KEY).
+ * Läuft über OpenRouter mit Gemini 3.1 Flash Lite (OPENROUTER_API_KEY).
  *
  * Auth: User-Token Pflicht. RLS schützt die Tabellen, hier nutzen wir
  * den Service-Client, weil wir bewusst beide Tabellen schreiben.
@@ -187,7 +191,7 @@ export const Route = createFileRoute("/api/public/npc-memory-update")({
             method: "POST",
             headers: openRouterHeaders(apiKey),
             body: JSON.stringify({
-              model: AI_MODEL_MAIN,
+              model: MEMORY_MODEL,
               messages: [
                 { role: "system", content: sysPrompt },
                 {
