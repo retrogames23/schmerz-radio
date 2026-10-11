@@ -783,7 +783,7 @@ export const insaDialogs: Record<string, DialogTree> = {
           },
           {
             text: "Nichts Neues. Ich gehe weiter.",
-            end: true,
+            endsDialog: true,
           },
         ],
       },
