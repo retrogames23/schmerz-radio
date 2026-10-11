@@ -783,7 +783,7 @@ export const insaDialogs: Record<string, DialogTree> = {
           },
           {
             text: "Nichts Neues. Ich gehe weiter.",
-            endsDialog: true,
+            end: true,
           },
         ],
       },
@@ -792,7 +792,7 @@ export const insaDialogs: Record<string, DialogTree> = {
         speaker: "INSA",
         text: "Darauf habe ich keine Antwort, die auf ein Formblatt passt. Und andere habe ich hier nicht.",
         subtext: "Es ist keine Ausflucht. Sie meint genau das.",
-        endsDialog: true,
+        end: true,
       },
       ipa2: {
         id: "ipa2",
