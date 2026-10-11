@@ -103,6 +103,13 @@ export function Inventory() {
     const onUp = () => {
       cleanup();
       if (longPressed || cancelled) return;
+      // Kurzer Tap auf lesbare Items: direkt öffnen/lesen.
+      if (isReadableItem(item)) {
+        drag.clearSelection();
+        setOpen(false);
+        examineItem(item);
+        return;
+      }
       // Kurzer Tap: Toggle-Selektion.
       if (drag.selectedItem?.id === item.id) {
         drag.clearSelection();
