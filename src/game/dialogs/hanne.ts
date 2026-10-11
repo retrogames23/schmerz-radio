@@ -40,7 +40,7 @@ const back = (text = "Lassen wir den Gedanken erst einmal liegen."): DialogChoic
 });
 const bye = (text = "Ich muss weiter."): DialogChoice => ({
   text,
-  next: "bye",
+  endsDialog: true,
 });
 const go = (text: string, prefix: string, flag?: StoryFlag): DialogChoice => ({
   text,
@@ -895,13 +895,6 @@ const strands: Record<string, DialogLine> = weave({
   ...mac,
   ...psychology,
   ...rumors,
-  bye: {
-    id: "bye",
-    speaker: "HANNE",
-    text: "Gehen Sie. Ein guter Gedanke braucht manchmal einen Korridor. Und wenn Sie wiederkommen, bringen Sie Zeit mit — Brot habe ich selbst.",
-    end: true,
-  },
-});
 
 function hubLine(text: string): DialogLine {
   return {
