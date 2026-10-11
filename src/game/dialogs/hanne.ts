@@ -895,6 +895,7 @@ const strands: Record<string, DialogLine> = weave({
   ...mac,
   ...psychology,
   ...rumors,
+});
 
 function hubLine(text: string): DialogLine {
   return {
