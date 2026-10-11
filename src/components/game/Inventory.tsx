@@ -30,6 +30,18 @@ export function Inventory() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scene]);
 
+  // Lesbare/aufschlagbare Items: Auf Touch-Geräten öffnet ein kurzer Tap
+  // diese direkt (statt sie nur für „Verwenden mit" zu selektieren).
+  const isReadableItem = (item: InventoryItem) =>
+    Boolean(libraryBookByItemId(item.id)) ||
+    item.id === "gfaManifest" ||
+    item.id === "fullerZettel" ||
+    item.id === "e67Handbook" ||
+    item.id === "residentId" ||
+    item.id === "paragraphenNotizbuch" ||
+    item.id === "kantinenverordnung" ||
+    item.id === "painRadio";
+
   // Hilfsfunktion: „ansehen" / lesen (geteilt zwischen Tap-Pfad-Long-Press
   // und Desktop-Klick).
   const examineItem = (item: InventoryItem) => {
@@ -91,6 +103,13 @@ export function Inventory() {
     const onUp = () => {
       cleanup();
       if (longPressed || cancelled) return;
+      // Kurzer Tap auf lesbare Items: direkt öffnen/lesen.
+      if (isReadableItem(item)) {
+        drag.clearSelection();
+        setOpen(false);
+        examineItem(item);
+        return;
+      }
       // Kurzer Tap: Toggle-Selektion.
       if (drag.selectedItem?.id === item.id) {
         drag.clearSelection();
