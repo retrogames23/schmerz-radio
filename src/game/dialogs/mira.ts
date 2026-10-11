@@ -323,7 +323,7 @@ export const miraDialogs: Record<string, DialogTree> = {
         text: "Nein. Ist es nicht. Ich sag auch nicht, dass ich recht habe — ich sag, dass mir niemand antwortet. Das ist ein Unterschied, und ich vergesse ihn manchmal.",
         choices: [
           { text: "Erzähl trotzdem weiter.", next: "miraOpen2" },
-          { text: "Reicht. Ich muss weiter.", next: "miraDefer" },
+          { text: "Reicht. Ich muss weiter.", endsDialog: true },
         ],
       },
       miraOpen2: {
@@ -333,7 +333,7 @@ export const miraDialogs: Record<string, DialogTree> = {
         choices: [
           { text: "Und wer profitiert davon?", next: "miraOpen4" },
           { text: "Hübsches Bild. Mehr nicht.", next: "miraDeferDry" },
-          { text: "Reicht. Ich muss weiter.", next: "miraDefer" },
+          { text: "Reicht. Ich muss weiter.", endsDialog: true },
         ],
       },
       miraOpen4: {
@@ -547,7 +547,7 @@ export const miraDialogs: Record<string, DialogTree> = {
         text: "Möglich. Ich renne manchmal los, bevor ich fertig gedacht habe — sagt mein Onkel auch. Aber schlechte Formulierungen kann man verbessern lassen. Ich hab's versucht. Man hat mir stattdessen meine Akte erwähnt.",
         choices: [
           { text: "Sprich weiter.", next: "mrOpen2" },
-          { text: "Reicht. Ich muss weiter.", next: "mrOpenDefer" },
+          { text: "Reicht. Ich muss weiter.", endsDialog: true },
         ],
       },
       mrOpen2: {
@@ -556,7 +556,7 @@ export const miraDialogs: Record<string, DialogTree> = {
         text: "Ein Wort ohne Definition ist eine Blankovollmacht. Du kannst dich nicht dagegen wehren, weil du nicht weißt, wogegen. Ich denke: genau deshalb bleibt es unscharf. Ich hab keine Sprawka dafür. Ist trotzdem 'ne These.",
         choices: [
           { text: "Wer sorgt dafür?", next: "mrOpen3" },
-          { text: "Reicht. Ich muss weiter.", next: "mrOpenDefer" },
+          { text: "Reicht. Ich muss weiter.", endsDialog: true },
         ],
       },
       mrOpen3: {

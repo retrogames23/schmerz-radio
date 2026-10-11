@@ -1005,7 +1005,7 @@ export const hanneDialogs: Record<string, DialogTree> = {
         choices: [
           { text: "Gern. Es riecht gut.", next: "i4a" },
           { text: "Danke, nein. Ich wollte nur kurz hereinschauen.", next: "i4b" },
-          { text: "Ich sollte gleich weiter.", next: "bye" },
+          { text: "Ich sollte gleich weiter.", endsDialog: true },
         ],
       },
       i4a: {

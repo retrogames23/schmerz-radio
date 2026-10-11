@@ -101,7 +101,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
           },
           {
             text: "[ Beenden ]",
-            next: "kBye",
+            endsDialog: true,
           },
         ],
       },
@@ -364,7 +364,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
             action: (api) => {
               api.setFlag("kowalkOfferedForgery");
             },
-            next: "kBye",
+            endsDialog: true,
           },
         ],
       },
@@ -574,7 +574,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         id: "kSideA6",
         speaker: "KOWALK",
         text: "Und Worag — wenn Sie Marteau sehen: ich frage nicht, was er hat. Aber sagen Sie ihm, er soll runterkommen, wenn’s wieder geht. Tilla hat auch immer gesagt, sie kann nicht. Bis sie nicht mehr konnte.",
-        choices: [{ text: "[ Beenden ]", next: "kBye" }],
+        choices: [{ text: "[ Beenden ]", endsDialog: true }],
       },
       // Lösungsweg B — Brust kapituliert vor seiner eigenen Logik
       kSideB1: {
@@ -618,7 +618,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
                   "Eine grau-amber lackierte Konservendose, Etikett »B3 — KOMPENSATIONSRATION«. Brust hat sie freigegeben, weil sein eigenes Regelwerk ihn dazu zwang. Er hat dabei nicht aufgeschaut.",
               });
             },
-            next: "kBye",
+            endsDialog: true,
           },
         ],
       },
@@ -700,7 +700,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
           },
           {
             text: "[ Beenden ]",
-            next: "bBye",
+            endsDialog: true,
           },
         ],
       },

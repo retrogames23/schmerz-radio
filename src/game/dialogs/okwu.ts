@@ -196,7 +196,7 @@ export const okwuDialogs: Record<string, DialogTree> = {
           },
           {
             text: "Ich muss weiter.",
-            next: "ok_bye",
+            endsDialog: true,
           },
         ],
       },
@@ -274,7 +274,7 @@ export const okwuDialogs: Record<string, DialogTree> = {
           },
           {
             text: "Ich muss weiter.",
-            next: "ok2_bye",
+            endsDialog: true,
           },
         ],
       },
@@ -341,7 +341,7 @@ export const okwuDialogs: Record<string, DialogTree> = {
           },
           {
             text: "Ich muss jetzt wirklich weiter.",
-            next: "ok3_bye",
+            endsDialog: true,
           },
         ],
       },

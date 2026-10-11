@@ -41,7 +41,7 @@ export const e71NerdsDialogs: Record<string, DialogTree> = {
           { text: "Bin aus E67, ja. — Was steht da auf dem Bildschirm?", next: "dAmiga1" },
           { text: "Woher habt ihr den Computer?", next: "dImport1" },
           { text: "Was war das mit „Original-Chipsatz“?", next: "dChip1" },
-          { text: "Ich hör euch eine Weile zu.", next: "dByeListen" },
+          { text: "Ich hör euch eine Weile zu.", endsDialog: true },
         ],
       },
       // — Was zeigt der Schirm
@@ -109,7 +109,7 @@ export const e71NerdsDialogs: Record<string, DialogTree> = {
           { text: "Was ist da drin?", next: "sDisk1" },
           { text: "Was ist „Demo-Szene“?", next: "sDemo1" },
           { text: "Erzähl mir von eurer Festplatte.", next: "sHdd1" },
-          { text: "Später.", next: "sBye" },
+          { text: "Später.", endsDialog: true },
         ],
       },
       sDisk1: {
@@ -167,7 +167,7 @@ export const e71NerdsDialogs: Record<string, DialogTree> = {
           { text: "Was für ein Modem ist das?", next: "rModem1" },
           { text: "Wozu braucht man das?", next: "rWeb1" },
           { text: "Was kann der Sound vom Amiga?", next: "rSound1" },
-          { text: "Bin gleich wieder da.", next: "rBye" },
+          { text: "Bin gleich wieder da.", endsDialog: true },
         ],
       },
       rModem1: {
