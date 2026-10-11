@@ -133,12 +133,13 @@ export const Route = createFileRoute("/api/public/auskunft")({
             method: "POST",
             headers: openRouterHeaders(apiKey),
             body: JSON.stringify({
-              model: AI_MODEL_MAIN,
+              model: AUSKUNFT_MODEL,
               messages: [
                 { role: "system", content: systemPrompt },
                 ...history,
                 { role: "user", content: question },
               ],
+              reasoning_effort: "none",
               temperature: 0.3,
               max_tokens: 320,
               stream: false,
