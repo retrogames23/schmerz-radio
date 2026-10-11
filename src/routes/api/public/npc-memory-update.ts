@@ -1,8 +1,12 @@
 import {
-  AI_MODEL_MAIN,
   OPENROUTER_CHAT_URL,
   openRouterHeaders,
 } from "@/lib/aiModel";
+
+/** Gedächtnis-Fortschreibung läuft über das günstigste Tool-fähige
+ *  Modell — Zusammenfassen + Flurfunk-Extraktion braucht kein
+ *  Premium-Modell. */
+const MEMORY_MODEL = "google/gemini-3.1-flash-lite";
 import { createFileRoute } from "@tanstack/react-router";
 import { npcPersonas } from "@/game/npcPersonas";
 import { createClient } from "@supabase/supabase-js";
