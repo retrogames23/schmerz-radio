@@ -181,6 +181,8 @@ export type StoryFlag =
   | "hanneWEC"
   | "hanneBeat"
   | "hanneMac"
+  /** Layard hat Hanne direkt nach der Untersuchung gefragt — sie will ihn erst kennenlernen. */
+  | "hanneInvest"
   /** Tiefe Gesprächsstellen bei Hanne — zählen als Vertrauen. */
   | "hanneDeepLanguage"
   | "hanneDeepRudder"

@@ -873,7 +873,20 @@ function weave(lines: Record<string, DialogLine>): Record<string, DialogLine> {
   return out;
 }
 
+const invest = {
+  ...chain(
+    "inv",
+    [
+      ["HANNE", "Ach. Sie sind also im Dienst. Ich hatte gehofft, Sie schauen aus Neugier vorbei.", "Sie legt das Brotmesser hin, ohne dass es ein Vorwurf ist."],
+      ["HANNE", "Aber nein. Über die Zusammenbrüche, über dieses Radio, über das, wovon im Korridor geflüstert wird — darüber rede ich nicht mit jemandem, den ich seit fünf Minuten kenne. Lernen wir uns erst ein bisschen kennen: ein Gedanke, eine Platte, ein Brot. Danach reden wir über das, warum Sie eigentlich hier sind."],
+      ["LAYARD", "Einverstanden."],
+    ],
+    [back("Schön. Dann fangen wir mit dem Brot an.")],
+  ),
+};
+
 const strands: Record<string, DialogLine> = weave({
+  ...invest,
   ...usa,
   ...fuller,
   ...mumford,
@@ -899,6 +912,24 @@ function hubLine(text: string): DialogLine {
       const choices: DialogChoice[] = [];
       const pending = pendingHubChoice(api);
       if (pending) choices.push(pending);
+      if (
+        !api.hasFlag("hanneInvest") &&
+        !api.hasFlag("hanneRumor1") &&
+        hanneTrust(api) < HANNE_RUMOR_THRESHOLDS.rumor1
+      ) {
+        choices.push(
+          {
+            text: "Ich ermittle wegen der Zusammenbrüche in diesem Sektor.",
+            next: "inv_1",
+            action: (a) => a.setFlag("hanneInvest"),
+          },
+          {
+            text: "Was wissen Sie über das Schmerz-Radio?",
+            next: "inv_1",
+            action: (a) => a.setFlag("hanneInvest"),
+          },
+        );
+      }
       const add = (
         flag: StoryFlag,
         first: string,
@@ -1020,7 +1051,7 @@ export const hanneDialogs: Record<string, DialogTree> = {
         text: "Und womit fängt man an?",
         next: HUB,
       },
-      [HUB]: hubLine("Nicht mit einer Theorie. Suchen Sie sich etwas aus, das Sie tatsächlich sehen. Der Rest kommt früh genug."),
+      [HUB]: hubLine("Worüber wollen Sie reden?"),
       ...strands,
     },
   },
