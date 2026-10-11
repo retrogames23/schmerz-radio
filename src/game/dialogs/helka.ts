@@ -34,7 +34,7 @@ export const helkaDialogs: Record<string, DialogTree> = {
         id: "h5",
         speaker: "LAYARD",
         text: "Es tut mir leid, dass ich störe. Ich gehe jetzt durch den Korridor — Nachbarschaft, sagt man wohl.",
-        next: "h6",
+        end: true,
       },
       h6: {
         id: "h6",

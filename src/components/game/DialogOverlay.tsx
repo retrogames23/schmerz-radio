@@ -483,6 +483,10 @@ export function DialogOverlay() {
                 onClick={(event) => {
                   event.stopPropagation();
                   choice.action?.(api);
+                  if (choice.endsDialog) {
+                    closeDialog();
+                    return;
+                  }
                   if (choice.nextDialog) {
                     const nextDialog =
                       typeof choice.nextDialog === "function"

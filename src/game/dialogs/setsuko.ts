@@ -412,7 +412,7 @@ export const setsukoDialogs: Record<string, DialogTree> = {
           ...(api.hasFlag("heardZeroIsInfinity")
             ? [{ text: "Noch mal zu Zero is Infinity.", next: "shZero" }]
             : []),
-          { text: "Ich wollte nur Hallo sagen.", next: "shBye" },
+          { text: "Ich wollte nur Hallo sagen.", endsDialog: true },
         ],
       },
       shOsho1: {

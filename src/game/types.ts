@@ -674,6 +674,8 @@ export interface DialogChoice {
   next?: string;
   /** Wechselt nach der Action direkt in einen anderen Dialog-Baum. */
   nextDialog?: string | ((api: GameApi) => string);
+  /** Beendet den Dialog sofort nach der Action (z. B. „Ich muss weiter.“) — unabhängig von der Dialogtiefe. */
+  endsDialog?: boolean;
   action?: (api: GameApi) => void;
   requires?: StoryFlag[];
   hiddenWhen?: StoryFlag[];

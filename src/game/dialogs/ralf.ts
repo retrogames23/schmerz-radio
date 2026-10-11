@@ -49,14 +49,14 @@ function deepTopics(api: GameApi): DialogChoice[] {
 function stage2Choices(api: GameApi): DialogChoice[] {
   const topics = lightTopics(api);
   if (topics.length === 0) topics.push({ text: "Erzählen Sie noch mal von früher.", next: "tFrueher" });
-  topics.push({ text: "[ Weitergehen ]", next: "bye" });
+  topics.push({ text: "[ Weitergehen ]", endsDialog: true });
   return topics;
 }
 
 function stage3Choices(api: GameApi): DialogChoice[] {
   const topics = [...deepTopics(api), ...lightTopics(api)];
   if (topics.length === 0) topics.push({ text: "Nichts Bestimmtes. Nur kurz stehen bleiben.", next: "tLeer" });
-  topics.push({ text: "[ Weitergehen ]", next: "bye" });
+  topics.push({ text: "[ Weitergehen ]", endsDialog: true });
   return topics;
 }
 

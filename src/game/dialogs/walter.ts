@@ -191,7 +191,7 @@ export const walterDialogs: Record<string, DialogTree> = {
           ...(api.hasFlag("sawGfaPoster")
             ? [{ text: "Das Plakat da an der Wand — Ihres?", next: "gfa1" }]
             : []),
-          { text: "Ich schaue mich nur um.", next: "wBye" },
+          { text: "Ich schaue mich nur um.", endsDialog: true },
         ],
       },
 
@@ -408,7 +408,7 @@ export const walterDialogs: Record<string, DialogTree> = {
                 },
               ]
             : []),
-          { text: "Nur kurz Hallo.", next: "whBye" },
+          { text: "Nur kurz Hallo.", endsDialog: true },
         ],
       },
       whTech: {
