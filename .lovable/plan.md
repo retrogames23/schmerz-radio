@@ -1,51 +1,65 @@
-# Hanne: die drei Gerüchte und der Erfinder des Schmerz-Radios
+# Hanne: Das Plattenhüllen-Rätsel (Erfinder-Telefonnummer)
 
 ## Ziel
-Hanne kennt alle drei Gerüchte über 104,6 und den Erfinder des Schmerz-Radios. Sie erzählt davon nicht sofort. Erst muss Layard ihr in mehreren Gesprächen gezeigt haben, dass er zuhört, nachfragt und widerspricht.
+Bevor Hanne den Erfinder des Schmerz-Radios (Konrad Elsner, Sektor 14, 014 / 30 72 19) nennt, löst Layard ein kleines Rätsel: Elsner hat ihr die Nummer 1975 hastig auf die Innenhülle einer Schallplatte gekritzelt — bei dem Stück, über das die beiden damals eine ganze Nacht diskutiert haben. Layard muss die richtige Platte im Plattenregal finden und die Innenhülle herausziehen.
 
-## Lore bleibt unverändert
-- Öffentlich bleibt der Erfinder unbekannt. Almanach, LORE.md und die gestrichene Marteau-Spur bleiben, wie sie sind.
-- Hanne kennt ihn privat aus der Bastlerszene der 70er. Es gibt keine Firma mehr.
-- Die Gerüchte sind für Hanne Hörensagen. Sie wertet sie auf ihre Weise und kennt weder ZERO IS INFINITY noch den Verstärker.
-- Den Begriff „Engel-Trauer“ benutzt nur Layard. Hanne sagt „die Hundertvierkommasechs“.
+## Ablauf
 
-## a) Vertrauen statt Schalter
-Hanne sammelt im Hintergrund Punkte, die zeigen, wie ernst sie Layard nimmt. Er bekommt einen Punkt, wenn er:
-- einen Themenstrang zu Ende verfolgt (USA, Fuller, Mumford, Whole Earth, Beats, Mac, Psychologie);
-- an markierten Stellen widerspricht, eine eigene Deutung anbietet oder etwas Persönliches sagt (Autor früher, Verwaltung heute);
-- Für schnelles Weggehen gibt es keinen Abzug.
-
-Stufen:
 ```text
-Stufe 1  ab 3 Punkten  Gerücht 1 — Schmerz-Radio hat neue Hörer gefunden
-Stufe 2  ab 5 Punkten  Gerücht 2 — Menschen werden süchtig nach 104,6
-Stufe 3  ab 7 Punkten  Gerücht 3 — die Verschwörungstheorie, die sie zerlegt
-Stufe 4  alle 3 Gerüchte besprochen + 2 weitere Punkte  der Erfinder
+Vertrauen erreicht (alle 3 Gerüchte erzählt)
+        |
+Hanne: „Konrad hat mir die Nummer damals auf eine Plattenhülle gekritzelt.
+        Das Stück, über das wir die ganze Nacht geredet haben."
+        |
+Hub-Option: „Welche Platte habt ihr damals noch gleich gehört?"
+        |   (jederzeit wiederholbar — auch nach Wiederbesuch)
+        v
+Hanne gibt Hinweis: Dylan, das Ausgeliefertsein — „It's Alright, Ma"
+        |
+Layard untersucht Plattenregal (Hotspot records1104)
+        |
+   ├─ ohne Hinweis gehört: allgemeiner Betrachten-Text (wie bisher)
+   ├─ mit Hinweis, falsche Wahl/unsicher: Hinweis erneut erfragbar
+   └─ mit Hinweis: neue Option „Die Dylan-Platten durchsehen"
+        v
+Auswahl unter 3 Dylan-Alben (nur eines korrekt)
+   ├─ falsch: kurze, warme Korrektur von Hanne, erneut wählbar
+   └─ richtig: Innenhülle herausziehen
+        v
+Fund: verblasste Bleistiftnotiz „K.E. — Sektor 14 — 014 / 30 72 19"
+        |
+Hanne bestätigt: Konrad Elsner, Amateurfunktreffen 1975,
+Firma pleite, kein Patent. Flag hanneInventor gesetzt.
 ```
 
-## Organischer Einbau
-Die Gerüchte bekommen keinen eigenen Menüpunkt. Hanne bringt sie an Stellen ein, an denen sie gedanklich passen, und nur einmal:
-- **Gerücht 1** im Psychologie-Strang (Gemütlichkeit als Betäubung) oder am Ende des Strangs USA/Rückkehr: Einsame Nachbarn hören auf einmal ein altes Bastlergerät, „weil es das Einzige ist, das noch weh tut“. Danach folgt Layards Reaktion. Er kann zugeben, dass er selbst zuhört, oder schweigen.
-- **Gerücht 2** im Mumford- oder Mac-Strang (Abhängigkeit von Technik): Leute, die ihre Wohnung nicht mehr verlassen, ohne vorher eingeschaltet zu haben. Hanne vergleicht das mit Fernsehen und Valium und lässt den Vergleich dann selbst nicht gelten.
-- **Gerücht 3** im Beats-Strang (Burroughs’ Kontrollbegriff) oder bei Fuller: Die Verwaltung, das Ausland oder Außerirdische sollen den Sektor lahmlegen. Hanne nimmt die Theorie ernst genug, um sie zu widerlegen: „Diese Verwaltung kann keinen Heizplan senden. Wie soll sie eine Stimmung senden?“ Dabei bleibt ein Rest Unbehagen.
-- Ist ein passender Strang schon durch, bietet der kurze Wiedereinstieg im Hub einmalig an: „Sie wollten mir neulich noch etwas erzählen.“ So geht kein Gerücht verloren.
-- Jede Stelle bietet die Wahl: nachfragen, zweifeln, nicht weiter darüber sprechen oder gehen.
+## Lösbarkeit ohne genaues Lesen
+- Die Frage **„Welche Platte habt ihr damals noch gleich gehört?"** steht im Hub dauerhaft zur Verfügung, sobald Hanne die Hüllen-Geschichte einmal erwähnt hat (Flag `hanneSleeveHint`). Sie kann beliebig oft gestellt werden — auch bei späteren Besuchen.
+- Wer den Hinweis vergessen hat, fragt einfach erneut nach; Hanne wiederholt ihn gern („Ich sagte doch: Dylan. Das Ausgeliefertsein.").
+- Falsche Alben-Wahl ist kein Dead End: Hanne korrigiert freundlich, die Auswahl bleibt offen.
 
-## b) Der Erfinder
-- Das Gespräch kommt erst ab Stufe 4 und wieder nur, wenn es passt: Layard fragt, woher so ein Gerät überhaupt kommt. Diese Frage erscheint erst, nachdem alle drei Gerüchte gefallen sind.
-- Hanne zögert und erzählt von einem Funkbastler, den sie Mitte der 70er bei einem Amateurfunktreffen kennengelernt hat. Er hat nie ein Patent angemeldet, die Vertriebsfirma der 80er ist längst pleite, und er will nicht gefunden werden.
-- Sie nennt seinen Namen und seine Telefonnummer und warnt: „Rufen Sie ihn nicht als Beamter an.“
-- Layard notiert beides. Das wird als Wissen gespeichert, also im Wissensregister und in Layards Notizen. Ein neuer Ort, ein Anruf oder eine Quest entstehen dadurch noch nicht.
-- Name und Nummer sind meine Vorschläge, zum Beispiel „Konrad Elsner“ mit einer sechsstelligen Nummer im Sektor-28-Format. Bitte gib mir den echten Namen und die echte Nummer, falls du sie schon festgelegt hast.
+## Umsetzung
 
-## Was gleich bleibt
-- Bestehende Dialogpfade, Wohnung, Bild und Hotspots.
-- Hannes Ton: Sie bleibt gesprächig und warm und erzählt Gerüchte nicht esoterisch, sondern analytisch.
-- Für Sasse in 5011 wird nichts neu gebaut. Die neuen Wissenseinträge sind vorbereitet, aber noch nicht abfragbar.
+### Dialoge (`src/game/dialogs/hanne.ts`)
+- Die bisherige Erfinder-Übergabe (Ende der `rumors`-Kette, `inv_8`/`inv_9`) wird umgebaut: Statt die Nummer direkt zu diktieren, erzählt Hanne nur die Hüllen-Geschichte und setzt Flag `hanneSleeveHint`. Name und Nummer nennt sie erst **nach** dem Fund.
+- Neue Hub-Option „Welche Platte habt ihr damals noch gleich gehört?" — sichtbar ab `hanneSleeveHint`, ohne `hiddenWhen` (bleibt dauerhaft wiederholbar), führt zu `hanneSleeveHintLine`.
+- Neuer Mini-Dialog `hanneSleeve` (gestartet vom Plattenregal-Hotspot, wenn `hanneSleeveHint` gesetzt und `hanneInventor` noch nicht): Auswahl aus drei Dylan-Alben. Falsche Wahl → kurze Korrektur-Zeile, zurück zur Auswahl. Richtige Wahl → Fund-Text, Hanne nennt Konrad Elsner / Sektor 14 / 014 / 30 72 19, setzt `hanneInventor`.
+- Nach `hanneInventor`: Plattenregal zeigt wieder den normalen Betrachten-Text; die Hub-Hinweis-Frage verschwindet (nicht mehr nötig).
+
+### Szene (`src/game/scenes/apt1104.ts`)
+- Hotspot `records1104` bekommt Logik: `hanneSleeveHint && !hanneInventor` → `api.startDialog("hanneSleeve")`, sonst bisheriger Betrachten-Text.
+
+### Typen & Flags (`src/game/types.ts`)
+- Neue Story-Flags: `hanneSleeveHint` (Hüllen-Geschichte gehört), `hanneInventor` existiert bereits.
+
+### Quest-Graph (`src/game/questGraph.ts`)
+- `hanneSleeveHint` als Zwischenschritt vor `hanneInventor` eintragen, damit solve-check die Kette prüft.
+
+## Texte (Ton)
+- Hanne bleibt warm und spöttisch: „Siebenundzwanzig Jahre, und ich finde meine eigene Plattensammlung nicht mehr ohne fremde Hilfe."
+- Falsche Wahl: „Nein, nicht die. Hören Sie genauer hin — das Ausgeliefertsein."
+- Fund-Moment bleibt leise: keine Fanfare, nur Hannes kurzes Nicken und die Diktatur der Zahlen.
 
 ## Technische Details
-- `types.ts`: Flags `hanneRumor1`, `hanneRumor2`, `hanneRumor3`, `hanneInventor`, außerdem Zähler-Flags für Vertrauenspunkte (bzw. `hanneTrust1..N` im bestehenden Flag-System, falls es keine Zähler gibt). Das prüfe ich vor dem Bau.
-- `dialogs/hanne.ts`: Ein Helfer `trust(api)` liest die Punkte. An Strangenden und an markierten Einwand-Optionen kommt `addTrust` dazu. In die genannten Knoten kommen bedingte Choices oder `next`-Weichen, dazu der einmalige Hub-Wiedereinstieg und der Erfinder-Knoten.
-- `knowledge.ts`: Einträge `rumorRadioRevival`, `rumor1046Addiction`, `rumorConspiracy`, `radioInventorContact` mit `askedAt5011: false`.
-- Name und Nummer des Erfinders kommen als Projektwissen in die Memory, nicht in die öffentliche Lore. Danach wird LORE.md um einen kurzen Hinweis ergänzt: Hanne kennt ihn privat, öffentlich bleibt er unbekannt.
-- Prüfungen: Erreichbarkeit aller Dialogziele, `solve-check`, `lore-check`, Typecheck.
+- Dateien: `src/game/dialogs/hanne.ts`, `src/game/scenes/apt1104.ts`, `src/game/types.ts`, `src/game/questGraph.ts`.
+- Kein neues Inventar-Item, kein neuer Ort, keine Quest — nur Dialog + Hotspot-Logik (wie besprochen).
+- Danach: `bunx tsgo --noEmit`, `bun run scripts/solve-check.mjs`, `bun run scripts/lore-check.mjs`, Build prüfen.
