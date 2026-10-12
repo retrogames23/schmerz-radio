@@ -35,6 +35,9 @@ import unreadSignatureAsset from "@/assets/music/The_Unread_Signature.mp3.asset.
 import hollowLedgerAsset from "@/assets/music/The_Hollow_Ledger.mp3.asset.json";
 import beforeSnowFallsAsset from "@/assets/music/Before_the_Snow_Falls.mp3.asset.json";
 import shalnyeKoniAsset from "@/assets/music/Shalnye_Koni.mp3.asset.json";
+import feastSunAsset from "@/assets/music/feast_of_a_brand_new_sun.mp3.asset.json";
+import californiaDesignAsset from "@/assets/music/california_s_new_design.mp3.asset.json";
+import skyStoneAsset from "@/assets/music/the_sky_has_turned_to_stone.mp3.asset.json";
 import { pickMoodTrack, type DsaMood } from "./dsaMusic";
 
 const trackSunday = trackSundayAsset.url;
@@ -97,12 +100,26 @@ const CAFETERIA_PLAYLIST: MusicTrack[] = [
   { title: "Before the Snow Falls", src: beforeSnowFallsAsset.url },
 ];
 
+const HANNE_PLAYLIST: MusicTrack[] = [
+  { title: "Feast of a Brand New Sun", src: feastSunAsset.url },
+  { title: "California’s New Design", src: californiaDesignAsset.url },
+  { title: "The Sky Has Turned to Stone", src: skyStoneAsset.url },
+];
+
 export const MUSIC_PLAYLISTS = {
   default: PLAYLIST,
   mira: MIRA_PLAYLIST,
   cafeteria: CAFETERIA_PLAYLIST,
+  hanne: HANNE_PLAYLIST,
 };
 export type MusicPlaylistId = keyof typeof MUSIC_PLAYLISTS;
+
+export function getSceneMusicPlaylist(scene: string): MusicPlaylistId {
+  if (scene === "aptMira4601") return "mira";
+  if (scene === "cafeteriaE67") return "cafeteria";
+  if (scene === "apt1104") return "hanne";
+  return "default";
+}
 
 
 /**
