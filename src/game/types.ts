@@ -197,6 +197,7 @@ export type StoryFlag =
   | "hanneRumor3"
   /** Hanne hat Name und Nummer des Radio-Erfinders genannt. */
   | "hanneInventor"
+  | "hanneSleeveHint"
   // Plakat der „Global Future Alliance“ in Wohnung 1103 angesehen / Manifest genommen
   | "sawGfaPoster"
   | "gfaManifestTaken"

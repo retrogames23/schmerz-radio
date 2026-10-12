@@ -797,13 +797,22 @@ const rumors = {
       ["HANNE", "Sie fragen wie einer, der die Antwort aufschreiben will."],
       ["LAYARD", "Ich frage wie einer, der es verstehen will. Beim Aufschreiben bin ich mir selbst nicht sicher."],
       ["HANNE", "…Gut. Fünfundsiebzig, Amateurfunktreffen in einer Turnhalle. Ein Mann mit Lötkolben in der Brusttasche, der nicht über Frequenzen sprechen wollte, sondern über Traurigkeit."],
-      ["HANNE", "Konrad Elsner. Er hat nie ein Patent angemeldet. Die Firma, die in den Achtzigern seine Geräte verkauft hat, ist längst pleite, und er war froh darüber."],
-      ["LAYARD", "Lebt er noch?"],
-      ["HANNE", "Nicht in Sektor 28. Er ist weggezogen, als das Ding anfing, Gesprächsstoff zu werden. Ich habe noch eine Nummer. Zu Weihnachten nimmt er ab."],
-      ["HANNE", "Sektor 14, Vorwahl null-vierzehn. Dann drei-null, sieben-zwei, eins-neun.", "Sie schreibt die Nummer nicht auf. Sie wartet, bis Layard sie notiert hat."],
-      ["HANNE", "Und Layard: Rufen Sie ihn nicht als Beamter an. Rufen Sie ihn an wie jemand, der etwas gehört hat."],
+      ["HANNE", "Seinen Namen sage ich Ihnen, sobald Sie ihn gefunden haben. Er hat mir damals seine Nummer auf die Innenhülle einer Platte gekritzelt — das Stück, über das wir die ganze Nacht geredet haben. Die Platte steht da drüben im Regal."],
+      ["LAYARD", "Sie wissen nicht mehr, welche es war?"],
+      ["HANNE", "Siebenundzwanzig Jahre, und ich finde meine eigene Plattensammlung nicht mehr ohne fremde Hilfe. Schauen Sie sich um. Wenn Sie die richtige Hülle in der Hand haben, erzähle ich Ihnen den Rest."],
     ],
-    [back("Danke. Ich werde vorsichtig sein."), bye()],
+    [
+      { text: "Welche Platte habt ihr damals noch gleich gehört?", next: "sl_hint_1" },
+      back("Dann sehe ich mir das Regal an."),
+      bye(),
+    ],
+  ),
+  ...chain(
+    "sl_hint",
+    [
+      ["HANNE", "Dylan. Natürlich Dylan. Das Stück, in dem er singt, dass man manchmal niemandem gehorchen muss — ‚It's Alright, Ma‘. Das Ausgeliefertsein und die Freiheit darin. Damit sollten Sie etwas anfangen können."],
+    ],
+    [back("Dann sehe ich mir das Regal an."), bye()],
   ),
 };
 
@@ -834,8 +843,8 @@ function pendingHubChoice(api: TrustApi): DialogChoice | null {
     return go("Gibt es Neues aus dem Waschkeller?", "ru2", "hanneRumor2");
   if (api.hasFlag("hanneRumor2") && !api.hasFlag("hanneRumor3") && t >= HANNE_RUMOR_THRESHOLDS.rumor3)
     return go("Was erzählt man sich sonst über diese Frequenz?", "ru3", "hanneRumor3");
-  if (api.hasFlag("hanneRumor3") && !api.hasFlag("hanneInventor") && t >= HANNE_RUMOR_THRESHOLDS.inventor)
-    return go("Woher kommt so ein Gerät eigentlich?", "inv", "hanneInventor");
+  if (api.hasFlag("hanneRumor3") && !api.hasFlag("hanneSleeveHint") && t >= HANNE_RUMOR_THRESHOLDS.inventor)
+    return go("Woher kommt so ein Gerät eigentlich?", "inv", "hanneSleeveHint");
   return null;
 }
 
@@ -906,6 +915,12 @@ function hubLine(text: string): DialogLine {
       const choices: DialogChoice[] = [];
       const pending = pendingHubChoice(api);
       if (pending) choices.push(pending);
+      if (api.hasFlag("hanneSleeveHint") && !api.hasFlag("hanneInventor")) {
+        choices.push({
+          text: "Welche Platte habt ihr damals noch gleich gehört?",
+          next: "sl_hint_1",
+        });
+      }
       if (
         !api.hasFlag("hanneInvest") &&
         !api.hasFlag("hanneRumor1") &&
@@ -1055,6 +1070,68 @@ export const hanneDialogs: Record<string, DialogTree> = {
     lines: {
       [HUB]: hubLine("Da sind Sie wieder. Setzen Sie sich, oder bleiben Sie stehen. Wir müssen nicht schneller reden, nur weil der Korridor lang ist."),
       ...strands,
+    },
+  },
+  hanneSleeve: {
+    id: "hanneSleeve",
+    start: "s1",
+    lines: {
+      s1: {
+        id: "s1",
+        speaker: "SYSTEM",
+        text: "Das Plattenregal. Dylan, fast vollständig — drei Alben kommen für das Jahr des besagten Stücks in Frage. Hanne beobachtet Layard über den Brillenrand, ohne zu helfen.",
+        choices: [
+          { text: "„Highway 61 Revisited“ herausziehen.", next: "s_wrong" },
+          {
+            text: "„Bringing It All Back Home“ herausziehen.",
+            next: "s_found_1",
+            action: (a) => a.setFlag("hanneInventor"),
+          },
+          { text: "„Blonde on Blonde“ herausziehen.", next: "s_wrong" },
+          { text: "Doch lieber noch einmal nachfragen.", next: "sl_hint_1" },
+          { text: "Ich schaue später noch einmal.", endsDialog: true },
+        ],
+      },
+      s_wrong: {
+        id: "s_wrong",
+        speaker: "HANNE",
+        text: "Nein, nicht die. Hören Sie genauer hin — das Ausgeliefertsein. ‚It's Alright, Ma‘. Die Hülle steckt wieder im Regal.",
+        next: "s1",
+      },
+      s_found_1: {
+        id: "s_found_1",
+        speaker: "SYSTEM",
+        text: "Die Innenhülle ist schwerer als erwartet. Auf dem matt gewordenen Papier, in verblasstem Bleistift: „K.E. — Sektor 14 — 014 / 30 72 19“.",
+        next: "s_found_2",
+      },
+      s_found_2: {
+        id: "s_found_2",
+        speaker: "HANNE",
+        text: "Da haben Sie sie. Konrad Elsner. Er hat nie ein Patent angemeldet. Die Firma, die in den Achtzigern seine Geräte verkauft hat, ist längst pleite, und er war froh darüber.",
+        next: "s_found_3",
+      },
+      s_found_3: {
+        id: "s_found_3",
+        speaker: "LAYARD",
+        text: "Lebt er noch?",
+        next: "s_found_4",
+      },
+      s_found_4: {
+        id: "s_found_4",
+        speaker: "HANNE",
+        text: "Nicht in Sektor 28. Er ist weggezogen, als das Ding anfing, Gesprächsstoff zu werden. Zu Weihnachten nimmt er ab.",
+        next: "s_found_5",
+      },
+      s_found_5: {
+        id: "s_found_5",
+        speaker: "HANNE",
+        text: "Und Layard: Rufen Sie ihn nicht als Beamter an. Rufen Sie ihn an wie jemand, der etwas gehört hat.",
+        subtext: "Sie nimmt die Hülle nicht zurück. Manche Dinge verwahrt man besser bei jemandem, der sie braucht.",
+        choices: [
+          { text: "Danke. Ich werde vorsichtig sein.", next: HUB },
+          { text: "Ich muss weiter.", endsDialog: true },
+        ],
+      },
     },
   },
 };
