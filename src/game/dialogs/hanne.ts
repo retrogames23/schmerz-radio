@@ -875,7 +875,7 @@ function weave(lines: Record<string, DialogLine>): Record<string, DialogLine> {
 
 const invest = {
   ...chain(
-    "inv",
+    "invq",
     [
       ["HANNE", "Ach. Sie sind also im Dienst. Ich hatte gehofft, Sie schauen aus Neugier vorbei.", "Sie legt das Brotmesser hin, ohne dass es ein Vorwurf ist."],
       ["HANNE", "Aber nein. Über die Zusammenbrüche, über dieses Radio, über das, wovon im Korridor geflüstert wird — darüber rede ich nicht mit jemandem, den ich seit fünf Minuten kenne. Lernen wir uns erst ein bisschen kennen: ein Gedanke, eine Platte, ein Brot. Danach reden wir über das, warum Sie eigentlich hier sind."],
@@ -914,12 +914,12 @@ function hubLine(text: string): DialogLine {
         choices.push(
           {
             text: "Ich ermittle wegen der Zusammenbrüche in diesem Sektor.",
-            next: "inv_1",
+            next: "invq_1",
             action: (a) => a.setFlag("hanneInvest"),
           },
           {
             text: "Was wissen Sie über das Schmerz-Radio?",
-            next: "inv_1",
+            next: "invq_1",
             action: (a) => a.setFlag("hanneInvest"),
           },
         );
