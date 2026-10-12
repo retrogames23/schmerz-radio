@@ -76,7 +76,11 @@ export const apt1104Scenes: Record<string, Scene> = {
         h: 22,
         label: "Plattenregal",
         kind: "look",
-        onUse: (api) =>
+        onUse: (api) => {
+          if (api.hasFlag("hanneSleeveHint") && !api.hasFlag("hanneInventor")) {
+            api.startDialog("hanneSleeve");
+            return;
+          }
           api.showText([
             "Dylan, fast vollständig. Joan Baez, die Grateful Dead, eine Lesung von Allen Ginsberg auf einem Label, das es nicht mehr gibt.",
             "Daneben, ohne Hülle, eine Platte von Hannes Wader. Als Ausgleich, vermutlich.",
