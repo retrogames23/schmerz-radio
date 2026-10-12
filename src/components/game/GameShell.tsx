@@ -5,7 +5,7 @@ import { getBook } from "@/game/books";
 import { getLibraryReadableBook } from "@/game/books/libraryBooks";
 import { InventoryDragProvider } from "@/game/InventoryDragContext";
 import { SettingsProvider } from "@/audio/SettingsContext";
-import { MusicPlayer } from "@/audio/MusicPlayer";
+import { MusicPlayer, getSceneMusicPlaylist } from "@/audio/MusicPlayer";
 import { SceneView } from "./SceneView";
 import { TopBar } from "./TopBar";
 import { Inventory, DragCursorLayer } from "./Inventory";
@@ -80,9 +80,9 @@ const FreeChatOverlay = lazyWithRetry(() =>
 function DsaMusicBridge() {
   const { scene, dsaAdventureOpen, dsaBeat, lobbyGateOpen } = useGame();
   const { setOverride, activeOverride, setPlaylist } = useMusic();
-  // Beide Räume ersetzen die Standard-Playlist nur während des Aufenthalts.
+  // Raum-Playlists ersetzen die Standard-Playlist nur während des Aufenthalts.
   useEffect(() => {
-    setPlaylist(scene === "aptMira4601" ? "mira" : scene === "cafeteriaE67" ? "cafeteria" : "default");
+    setPlaylist(getSceneMusicPlaylist(scene));
   }, [scene, setPlaylist]);
   useEffect(() => {
     // Wenn die LLM-Tafelrunde offen ist, übernimmt der Mood-Pool in
