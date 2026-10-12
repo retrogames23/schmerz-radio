@@ -843,8 +843,8 @@ function pendingHubChoice(api: TrustApi): DialogChoice | null {
     return go("Gibt es Neues aus dem Waschkeller?", "ru2", "hanneRumor2");
   if (api.hasFlag("hanneRumor2") && !api.hasFlag("hanneRumor3") && t >= HANNE_RUMOR_THRESHOLDS.rumor3)
     return go("Was erzählt man sich sonst über diese Frequenz?", "ru3", "hanneRumor3");
-  if (api.hasFlag("hanneRumor3") && !api.hasFlag("hanneInventor") && t >= HANNE_RUMOR_THRESHOLDS.inventor)
-    return go("Woher kommt so ein Gerät eigentlich?", "inv", "hanneInventor");
+  if (api.hasFlag("hanneRumor3") && !api.hasFlag("hanneSleeveHint") && t >= HANNE_RUMOR_THRESHOLDS.inventor)
+    return go("Woher kommt so ein Gerät eigentlich?", "inv", "hanneSleeveHint");
   return null;
 }
 
@@ -915,6 +915,12 @@ function hubLine(text: string): DialogLine {
       const choices: DialogChoice[] = [];
       const pending = pendingHubChoice(api);
       if (pending) choices.push(pending);
+      if (api.hasFlag("hanneSleeveHint") && !api.hasFlag("hanneInventor")) {
+        choices.push({
+          text: "Welche Platte habt ihr damals noch gleich gehört?",
+          next: "sl_hint_1",
+        });
+      }
       if (
         !api.hasFlag("hanneInvest") &&
         !api.hasFlag("hanneRumor1") &&
