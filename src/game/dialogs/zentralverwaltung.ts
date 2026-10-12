@@ -260,7 +260,7 @@ const sasseDialog: DialogTree = {
     close4: {
       id: "close4",
       speaker: "SASSE",
-      text: "Kommen Sie wieder, wenn etwas dazukommt. Und, Herr Layard: dazukommen wird etwas.",
+      text: "Kommen Sie wieder, wenn etwas dazukommt. Und, Herr Worag: dazukommen wird etwas.",
       subtext:
         "Sie sagt es freundlich, wie eine Terminvereinbarung. Genau das macht es schlimm.",
       end: true,

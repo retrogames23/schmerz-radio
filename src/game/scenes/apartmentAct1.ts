@@ -49,7 +49,7 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
         const mira = friendly
           ? "Auf dem Boden vor seiner Tür: ein zusammengefalteter Zettel von Mira — er hat ihn gestern Abend nicht aufgehoben."
           : skeptical
-            ? "Auf dem Boden vor seiner Tür: ein behördlicher Aushang. Räumung 4601. Layard liest ihn nicht noch einmal."
+            ? "Von gegenüber: das Geräusch eines Riegels, der vorgeschoben wird. Miras Tür bleibt zu."
             : "Im Korridor draußen: Schritte, die nicht stehen bleiben.";
         if (!api.hasFlag("act2LetterPickedUp")) {
           return [
