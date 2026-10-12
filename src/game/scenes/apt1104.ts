@@ -84,7 +84,8 @@ export const apt1104Scenes: Record<string, Scene> = {
           api.showText([
             "Dylan, fast vollständig. Joan Baez, die Grateful Dead, eine Lesung von Allen Ginsberg auf einem Label, das es nicht mehr gibt.",
             "Daneben, ohne Hülle, eine Platte von Hannes Wader. Als Ausgleich, vermutlich.",
-          ]),
+          ]);
+        },
       },
       {
         id: "bread1104",
