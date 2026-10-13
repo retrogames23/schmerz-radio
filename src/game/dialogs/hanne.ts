@@ -1088,7 +1088,7 @@ export const hanneDialogs: Record<string, DialogTree> = {
             action: (a) => a.setFlag("hanneInventor"),
           },
           { text: "„Blonde on Blonde“ herausziehen.", next: "s_wrong" },
-          { text: "Doch lieber noch einmal nachfragen.", next: "sl_hint_1" },
+          { text: "Doch lieber noch einmal nachfragen.", nextDialog: "hanneHub" },
           { text: "Ich schaue später noch einmal.", endsDialog: true },
         ],
       },
@@ -1128,7 +1128,7 @@ export const hanneDialogs: Record<string, DialogTree> = {
         text: "Und Layard: Rufen Sie ihn nicht als Beamter an. Rufen Sie ihn an wie jemand, der etwas gehört hat.",
         subtext: "Sie nimmt die Hülle nicht zurück. Manche Dinge verwahrt man besser bei jemandem, der sie braucht.",
         choices: [
-          { text: "Danke. Ich werde vorsichtig sein.", next: HUB },
+          { text: "Danke. Ich werde vorsichtig sein.", nextDialog: "hanneHub" },
           { text: "Ich muss weiter.", endsDialog: true },
         ],
       },
