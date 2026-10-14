@@ -48,6 +48,7 @@ import { useDevMode } from "@/dev/devMode";
 import { ToiletWallOverlay } from "./ToiletWallOverlay";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useGame } from "@/game/GameContext";
+import { useSettings } from "@/audio/SettingsContext";
 import { DonationGate } from "@/components/donation/DonationGate";
 import { OverlayErrorBoundary } from "./OverlayErrorBoundary";
 
