@@ -131,7 +131,7 @@ export const HANDBOOK_CHAPTERS: HandbookChapter[] = [
     body: [
       "Jedes Wohngebäude des Mandatsgebiets verfügt über eine *Kombinierte Binnen-Nahversorgungsstelle*, im Volksmund **Konbini**. In E67 befindet sie sich im Erdgeschoss, **rechts neben dem Aufzug**.",
       "**Kurze Geschichte.** 1978 reiste eine Arbeitsgruppe der Ständigen Versorgungskommission nach Tokio und Osaka, um die Grundversorgung der neuen Großwohnanlagen zu verbessern. Die kleinen japanischen Nahversorgungsläden überzeugten durch geringen Raumbedarf und lückenlose Belieferung. Mit dem **Wirtschaftsabkommen von 1979** übernahm das Mandatsgebiet Kühlregale, Kassen und Münzzählwerke aus japanischer Fertigung; 1981 folgte das *Modellprogramm Dezentrale Minimalversorgung* (Richtlinie V-81/4). Den Namen übernahm man lautgetreu.",
-      "**Sortiment.** Die Waren stammen aus dem Mandatsgebiet: Trockennahrung, Haltbarmilch, Brot, Sicherungselemente, Seife, Kleinbedarf.",
+      "**Sortiment.** Die Waren stammen aus dem Mandatsgebiet: Trockennahrung, Haltbarmilch, Brot, Sicherungselemente, Seife, Kleinbedarf. In Medizin-Quadranten (z. B. E71) führt die Stelle die Ausführung **K-4m** mit Hygiene-Sortiment: Verbandsmaterial, Masken, Kräutertees, Desinfektionsmittel.",
       "- **Regelverkauf:** täglich **06:00 bis 19:00 Uhr**.",
       "- **Nachtsperre (19:00 bis 06:00 Uhr):** Die Stelle bleibt **rund um die Uhr besetzt** (Brandschutz, Meldekopf des Flurabschnitts), Waren werden jedoch gemäß §14 der Abendruheverordnung nicht ausgegeben.",
       "- **Ausnahmen in der Nachtzeit:** nur gegen Vorlage eines **Berechtigungsscheins Gruppe S/D** (z. B. Reisende, Schichtdienst) oder eines **Dringlichkeits-Bezugsscheins der Leitstelle** (Zimmer 4602).",
