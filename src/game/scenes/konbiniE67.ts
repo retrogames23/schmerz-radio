@@ -12,7 +12,7 @@ export const konbiniE67Scenes: Record<string, Scene> = {
     title: "Konbini E67 — Typ K-4",
     intro:
       "Kaltes Deckenlicht, glänzende Fliesen, orange-grüne Firmenstreifen an den Wänden. Ein Kühlschrank surrt. Hinter der Kasse sitzt ein Mann im beigen Kittel, über ihm läuft eine Leuchtschrift.",
-    decals: [{ id: "konbiniTicker", kind: "ledTicker", x: 75.6, y: 6.2, w: 22.4, h: 6.2, skewY: -10 }],
+    decals: [{ id: "konbiniTicker", kind: "ledTicker", x: 75.5, y: 6.9, w: 22.3, h: 3.8, skewY: -15.4 }],
     hotspots: [
       {
         id: "konbiniExit",
