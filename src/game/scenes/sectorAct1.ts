@@ -247,10 +247,10 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "elevatorBack",
-        x: 23.5,
-        y: 31.8,
-        w: 6.8,
-        h: 41.4,
+        x: 10,
+        y: 77.9,
+        w: 69,
+        h: 30.4,
         label: "Ausgang Gebäude E71",
         kind: "exit",
         // Rückweg führt zurück durch die Passage nach E67.
