@@ -31,7 +31,7 @@ export const mindenDialogs: Record<string, DialogTree> = {
       med1: {
         id: "med1",
         speaker: "MINDEN",
-        text: "Das ist E71. Medizin-Quadrant. Der Konbini führt hier die Ausführung K-vier-m — m wie medizinisch. Verbandsmaterial, Masken, Tees. Das Graubrot ist nur Höflichkeit.",
+        text: "E71 gehört zum Versorgungsverbund der Ambulanzen. Drüben in den Nachbarblöcken sind die Behandlungszimmer, hier wohnen die Leute. Der Konbini führt deshalb Typ K-vier-m — mit Verbandszeug und Notdepot statt Spielwaren. Das Graubrot ist nur Höflichkeit.",
         next: "med2",
       },
       med2: {
@@ -43,7 +43,7 @@ export const mindenDialogs: Record<string, DialogTree> = {
       med3: {
         id: "med3",
         speaker: "MINDEN",
-        text: "Beides. Nachts ist das hier dasselbe. Wer um drei Uhr kommt, braucht selten Brot.",
+        text: "Versorgungswartin. Mit Sanitätskurs. Wer um drei Uhr kommt, braucht selten Brot — aber meistens auch keinen Arzt, sondern ein Pflaster und jemanden, der zuhört.",
         next: "hub",
       },
       j1: {
@@ -61,19 +61,19 @@ export const mindenDialogs: Record<string, DialogTree> = {
       t1: {
         id: "t1",
         speaker: "MINDEN",
-        text: "Gegen resonanzbedingte Schlafstörungen. Nur gegen Anweisung. Seit diesem Jahr gehen mehr davon weg als Verbandsmaterial — und wir haben hier einen Quadranten voller Pflaster.",
+        text: "Mandats-Sedativ B und Baldriantinktur. Nur gegen Sichtvermerk. Seit den Herbstnebeln gehen davon mehr Packungen weg als Heftpflaster.",
         next: "t2",
       },
       t2: {
         id: "t2",
         speaker: "LAYARD",
-        text: "Seit diesem Jahr?",
+        text: "Woran liegt das?",
         next: "t3",
       },
       t3: {
         id: "t3",
         speaker: "MINDEN",
-        text: "Die Leute schlafen schlecht. Sie reden von einem Sender, den sie im Kopf hören. Ich verkaufe nur die Tabletten. Diagnosen stellt Frau Okwu.",
+        text: "Schichtdienst, stickige Zimmer, Zugluft. Die Leute liegen wach, lauschen auf das Rohrbrummen und werden nervös. Manche reden sich ein, die Wände würden schwingen. Ich bin nur für die Ausgabe da. Verordnungen schreiben die Ärzte drüben in der Ambulanz.",
         next: "hub",
       },
       n1: {

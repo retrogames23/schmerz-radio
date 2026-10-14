@@ -171,11 +171,24 @@ gesehen hat. Das ist die Perspektive, aus der die Welt im Spiel sichtbar wird.
   Stempeln tauchen weiterhin französische, russische und englische Lehnwörter
   auf (Erbe der vier Mandatsmächte). Das erklärt den eigentümlichen
   Behörden-Klang.
-- Adressierung: **Sektor / Quadrant / Gebäude / Etage / Wohnung.** Beispiel:
-  *Sektor 28, Quadrant 67, Gebäude E, Etage 26, Wohnung 11* → kurz: **2611, E67**.
+- Adressierung: **Sektor / Quadrant / Gebäude / Wohnung.** Die vierstellige
+  Wohnungs-/Türnummer liest sich **Etage · Aufgang · Einheit**: *2611* =
+  Etage 2, Aufgang 6, Einheit 11 → kurz: **2611, E67**.
 - Ein **Sektor** ist die große Verwaltungseinheit (Sektor 28 umfasst rund 700 Quadranten).
-- Ein **Quadrant** ist eine Gebäudegruppe nach einheitlichem Raster (Quadrant 67 besteht aus den Blöcken A–D und dem Ergänzungsbau E67).
-- Ein **Gebäude** wie **E67** ist ein konkreter Wohn- und Verwaltungskomplex; **E71** ist ein benachbartes Gebäude im selben Sektor.
+- Ein **Quadrant** ist eine Gebäudegruppe nach einheitlichem Raster (Quadrant 67 besteht aus den Blöcken A–D und dem Ergänzungsbau E67), zusammen etwa 5.000–8.000 Einwohner.
+- Ein **Gebäude** wie **E67** ist ein **fünfgeschossiger, mehrere hundert Meter
+  langer Riegelbau** mit 6–10 Aufgängen (rund 300–500 Wohneinheiten, über
+  1.000 Bewohner). Fünf Geschosse waren das wirtschaftliche Optimum der
+  Planer (ab sechs greifen Brandschutz- und Aufzugsnormen). Der Aufgang 6 von
+  E67 ist der **Versorgungskern**: Steigleitungen, Rohrpost-Verteiler, Kantine
+  (3602), Konbini und Vorgangsknoten 5610 liegen deshalb hier.
+- **E71** ist ein benachbartes, baugleiches Gebäude im **Quadranten 71**,
+  dessen Funktionsschwerpunkt Gesundheit ist: In Nachbarblöcken und
+  Untergeschossen sitzen Ambulanzen, Labore und mehrere Ärztinnen und Ärzte
+  (Dr. Okwu ist eine von ihnen). Darüber wohnen ganz normale Menschen.
+- **Schlafstörungen** haben fast immer alltägliche Ursachen (Schichtdienst,
+  Zugluft, Herbstnebel, Rohrbrummen). Schmerz-Radios sind seltene
+  Bastlergeräte; dass jemand bewusst eines nutzt, bleibt Gerücht.
 - Die **Leitstelle** ist die zentrale telefonische Anlaufstelle eines Sektors.
   Notrufnummer **001**. Die alte Nummer 002 wurde 1996 abgeschafft.
 
