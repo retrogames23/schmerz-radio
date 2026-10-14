@@ -11,8 +11,8 @@ export const konbiniE67Scenes: Record<string, Scene> = {
     background: konbiniBg,
     title: "Konbini E67 — Typ K-4",
     intro:
-      "Warmes Licht, ordentliche Regale, ein gestreiftes Vordach über dem Tresen. Ein Kühlschrank surrt. Hinter der Kasse sitzt ein Mann im beigen Kittel, über ihm läuft eine Leuchtschrift.",
-    decals: [{ id: "konbiniTicker", kind: "ledTicker", x: 70.6, y: 13.9, w: 22.9, h: 6.4 }],
+      "Kaltes Deckenlicht, glänzende Fliesen, orange-grüne Firmenstreifen an den Wänden. Ein Kühlschrank surrt. Hinter der Kasse sitzt ein Mann im beigen Kittel, über ihm läuft eine Leuchtschrift.",
+    decals: [{ id: "konbiniTicker", kind: "ledTicker", x: 75.6, y: 6.2, w: 22.4, h: 6.2, skewY: -10 }],
     hotspots: [
       {
         id: "konbiniExit",
@@ -27,20 +27,20 @@ export const konbiniE67Scenes: Record<string, Scene> = {
       },
       {
         id: "konbiniKroll",
-        x: 77,
-        y: 27,
-        w: 14,
-        h: 26,
+        x: 80.5,
+        y: 21,
+        w: 12.5,
+        h: 33,
         label: "Uwe Kroll (Versorgungswart)",
         kind: "talk",
         onUse: (api) => api.startDialog("krollKonbini"),
       },
       {
         id: "konbiniTickerSpot",
-        x: 70.5,
-        y: 12.5,
-        w: 23,
-        h: 9,
+        x: 75,
+        y: 2,
+        w: 23.5,
+        h: 15,
         label: "Leuchtschrift-Laufband",
         kind: "look",
         onUse: (api) =>
@@ -52,9 +52,9 @@ export const konbiniE67Scenes: Record<string, Scene> = {
       {
         id: "konbiniFridge",
         x: 0,
-        y: 14,
-        w: 16,
-        h: 72,
+        y: 10,
+        w: 15,
+        h: 70,
         label: "Kühlregal",
         kind: "look",
         onUse: (api) =>
@@ -67,23 +67,22 @@ export const konbiniE67Scenes: Record<string, Scene> = {
       {
         id: "konbiniShelf",
         x: 23,
-        y: 22,
-        w: 34,
+        y: 35,
+        w: 28,
         h: 58,
         label: "Warenregal",
         kind: "look",
         onUse: (api) =>
           api.showText([
-            "Dosen ohne Bild, nur ein blauer Stempel: „Mischgemüse II / 1996“. Eingeschweißtes Graubrot. Schmelzsicherungen, Glühstrümpfe, Kernseife.",
-            "An jedem Regal ein kleines rotes Nachtsperre-Schild. Man darf sich die Waren nachts ansehen. Nur nicht nehmen.",
+                        "Graubrot in Tüten, Dosen mit blauem Stempel, Haltbarmilch. An jedem Regal ein kleines rotes Nachtsperre-Schild. Man darf sich die Waren nachts ansehen. Nur nicht nehmen.",
           ]),
       },
       {
         id: "konbiniRegister",
-        x: 64,
-        y: 36,
-        w: 13,
-        h: 18,
+        x: 66.5,
+        y: 40,
+        w: 14,
+        h: 27,
         label: "Kasse und Münzzählwerk",
         kind: "look",
         onUse: (api) =>

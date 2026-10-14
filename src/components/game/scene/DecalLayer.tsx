@@ -35,7 +35,7 @@ export const DecalLayer = memo(function DecalLayer({
             <div
               key={d.id}
               className="led-ticker pointer-events-none absolute z-10 select-none"
-              style={{ left: `${d.x}%`, top: `${d.y}%`, width: `${d.w}%`, height: `${d.h}%` }}
+              style={{ left: `${d.x}%`, top: `${d.y}%`, width: `${d.w}%`, height: `${d.h}%`, transform: d.skewY ? `skewY(${d.skewY}deg)` : undefined }}
               aria-hidden
             >
               <div className="led-ticker-track">

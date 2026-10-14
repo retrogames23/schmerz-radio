@@ -88,7 +88,7 @@ export function startKonbiniAmbience(volume = 0.5): () => void {
     setTimeout(() => {
       if (stopped) return;
       audio = new Audio(src);
-      audio.volume = Math.min(1, volume * 0.9);
+      audio.volume = Math.min(1, volume * 1.6 + 0.2);
       void audio.play().catch(() => {});
     }, 800);
   };
