@@ -1139,8 +1139,9 @@ body:has([data-dsa-page]) * {
   overflow: hidden;
   display: flex;
   align-items: center;
-  background: oklch(0.12 0.01 60);
-  border-radius: 2px;
+  container-type: size;
+  background: oklch(0.1 0.01 60);
+  border-radius: 1px;
   box-shadow: inset 0 0 6px oklch(0 0 0 / 0.9);
 }
 .led-ticker-track {
@@ -1149,10 +1150,12 @@ body:has([data-dsa-page]) * {
   animation: led-ticker-scroll 70s linear infinite;
   font-family: "VT323", "Courier New", monospace;
   font-size: clamp(8px, 1.6cqw, 22px);
-  font-size: clamp(8px, 1.4vw, 22px);
-  letter-spacing: 0.12em;
+  font-size: 62cqh;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   color: oklch(0.82 0.17 70);
-  text-shadow: 0 0 4px oklch(0.75 0.18 60 / 0.9), 0 0 10px oklch(0.7 0.18 55 / 0.5);
+  text-shadow: 0 0 3px oklch(0.75 0.18 60 / 0.8);
 }
 .led-ticker-track span { padding-right: 2em; }
 .led-ticker::after {
@@ -1160,7 +1163,7 @@ body:has([data-dsa-page]) * {
   position: absolute;
   inset: 0;
   background-image: radial-gradient(transparent 45%, oklch(0.12 0.01 60 / 0.85) 70%);
-  background-size: 3px 3px;
+  background-size: 2px 2px;
   pointer-events: none;
 }
 @keyframes led-ticker-scroll {

@@ -82,10 +82,17 @@ const FreeChatOverlay = lazyWithRetry(() =>
 function KonbiniAmbienceBridge() {
   const { scene } = useGame();
   const { sfxVolume } = useSettings();
+  const music = useMusic();
   const inKonbini = scene === "konbiniE67";
   useEffect(() => {
     if (!inKonbini) return;
-    return startKonbiniAmbience(Math.max(0.1, sfxVolume * 0.6));
+    // Im Konbini nur Klangkulisse, keine Musik.
+    music.pause();
+    const stop = startKonbiniAmbience(Math.max(0.1, sfxVolume * 0.6));
+    return () => {
+      stop();
+      music.resume();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inKonbini]);
   return null;
