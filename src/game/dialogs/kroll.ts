@@ -12,7 +12,7 @@ export const krollDialogs: Record<string, DialogTree> = {
       k1: {
         id: "k1",
         speaker: "KROLL",
-        text: "Abend. Wenn Sie was kaufen wollen: geht nicht. Nach neunzehn Uhr ruht der Warenverkehr. Steht im Handbuch, Paragraph fünf Punkt zwei.",
+        text: "Abend. Wenn Sie was kaufen wollen: nur mit Schein. Nach neunzehn Uhr ruht der Regelverkauf — Schichtarbeiter mit Berechtigungsschein S/D kriegen trotzdem was. Steht im Handbuch, Paragraph fünf Punkt zwei.",
         next: "hub",
       },
       hub: {
