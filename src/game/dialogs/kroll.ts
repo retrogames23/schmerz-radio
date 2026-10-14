@@ -12,7 +12,7 @@ export const krollDialogs: Record<string, DialogTree> = {
       k1: {
         id: "k1",
         speaker: "KROLL",
-        text: "Abend. Wenn Sie was kaufen wollen: geht nicht. Nach neunzehn Uhr ruht der Warenverkehr. Steht im Handbuch, Paragraph fünf Punkt zwei.",
+        text: "Abend. Wenn Sie was kaufen wollen: nur mit Schein. Nach neunzehn Uhr ruht der Regelverkauf — Schichtarbeiter mit Berechtigungsschein S/D kriegen trotzdem was. Steht im Handbuch, Paragraph fünf Punkt zwei.",
         next: "hub",
       },
       hub: {
@@ -20,7 +20,7 @@ export const krollDialogs: Record<string, DialogTree> = {
         speaker: "KROLL",
         text: "Noch was?",
         choices: [
-          { text: "Warum sitzen Sie hier, wenn Sie nichts verkaufen dürfen?", next: "w1" },
+          { text: "Warum sitzen Sie hier, wenn der Laden doch zu ist?", next: "w1" },
           { text: "Was sagt die Kasse da immer?", next: "j1" },
           { text: "Woher kommen die ganzen Geräte?", next: "g1" },
           { text: "Und wenn es ein Notfall ist?", next: "n1" },
