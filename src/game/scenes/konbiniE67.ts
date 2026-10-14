@@ -1,5 +1,4 @@
 import konbiniBg from "@/assets/scene-konbini-e67.jpg";
-import krollSprite from "@/assets/npc-kroll.png";
 import type { Scene } from "../types";
 
 /**
@@ -12,19 +11,8 @@ export const konbiniE67Scenes: Record<string, Scene> = {
     background: konbiniBg,
     title: "Konbini E67 — Typ K-4",
     intro:
-      "Grelles Röhrenlicht, graues Linoleum. Ein Kühlschrank surrt. Hinter dickem Glas sitzt ein Mann im beigen Kittel, über ihm läuft eine Leuchtschrift.",
-    decals: [{ id: "konbiniTicker", kind: "ledTicker", x: 66, y: 8, w: 22, h: 8.5 }],
-    npcs: [
-      {
-        id: "krollSprite",
-        src: krollSprite,
-        x: 66,
-        y: 27,
-        w: 12,
-        h: 28.6,
-        alt: "Uwe Kroll hinter der Scheibe",
-      },
-    ],
+      "Warmes Licht, ordentliche Regale, ein gestreiftes Vordach über dem Tresen. Ein Kühlschrank surrt. Hinter der Kasse sitzt ein Mann im beigen Kittel, über ihm läuft eine Leuchtschrift.",
+    decals: [{ id: "konbiniTicker", kind: "ledTicker", x: 70.6, y: 13.9, w: 22.9, h: 6.4 }],
     hotspots: [
       {
         id: "konbiniExit",
@@ -39,20 +27,20 @@ export const konbiniE67Scenes: Record<string, Scene> = {
       },
       {
         id: "konbiniKroll",
-        x: 66,
+        x: 77,
         y: 27,
-        w: 12,
-        h: 27,
+        w: 14,
+        h: 26,
         label: "Uwe Kroll (Versorgungswart)",
         kind: "talk",
         onUse: (api) => api.startDialog("krollKonbini"),
       },
       {
         id: "konbiniTickerSpot",
-        x: 66,
-        y: 6,
-        w: 22,
-        h: 12,
+        x: 70.5,
+        y: 12.5,
+        w: 23,
+        h: 9,
         label: "Leuchtschrift-Laufband",
         kind: "look",
         onUse: (api) =>
@@ -63,10 +51,10 @@ export const konbiniE67Scenes: Record<string, Scene> = {
       },
       {
         id: "konbiniFridge",
-        x: 10,
-        y: 3,
-        w: 15,
-        h: 90,
+        x: 0,
+        y: 14,
+        w: 16,
+        h: 72,
         label: "Kühlregal",
         kind: "look",
         onUse: (api) =>
@@ -78,24 +66,24 @@ export const konbiniE67Scenes: Record<string, Scene> = {
       },
       {
         id: "konbiniShelf",
-        x: 26,
+        x: 23,
         y: 22,
-        w: 23,
-        h: 54,
+        w: 34,
+        h: 58,
         label: "Warenregal",
         kind: "look",
         onUse: (api) =>
           api.showText([
             "Dosen ohne Bild, nur ein blauer Stempel: „Mischgemüse II / 1996“. Eingeschweißtes Graubrot. Schmelzsicherungen, Glühstrümpfe, Kernseife.",
-            "Hinter dem Regal ein Gitter, abgeschlossen. Man darf sich die Waren nachts ansehen. Nur nicht nehmen.",
+            "An jedem Regal ein kleines rotes Nachtsperre-Schild. Man darf sich die Waren nachts ansehen. Nur nicht nehmen.",
           ]),
       },
       {
         id: "konbiniRegister",
-        x: 76,
-        y: 43,
-        w: 20,
-        h: 28,
+        x: 64,
+        y: 36,
+        w: 13,
+        h: 18,
         label: "Kasse und Münzzählwerk",
         kind: "look",
         onUse: (api) =>
