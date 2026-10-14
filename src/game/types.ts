@@ -646,6 +646,8 @@ export type SceneImageSize = { w: number; h: number };
 export interface SceneDecal {
   id: string;
   kind: "television" | "ledTicker";
+  /** Optionale Schrägstellung in Grad, damit Decals perspektivisch zur Wand passen. */
+  skewY?: number;
   x: number;
   y: number;
   w: number;
