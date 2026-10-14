@@ -24,7 +24,7 @@ function TopBarImpl({ onOpenPause, onOpenHelp }: Props) {
   // soll der Track-Switcher verschwinden (Song darf in Ruhe auslaufen).
   // Auch in den Aufzügen wird der Switcher ausgeblendet, da dort die
   // Fahrstuhl-Musik in Dauerschleife läuft.
-  const hideMusicSwitcher = music.activeOverride === "sectorThreshold" || scene === "elevator" || scene === "elevatorE71" || scene === "konbiniE67" || !!busRide;
+  const hideMusicSwitcher = music.activeOverride === "sectorThreshold" || scene === "elevator" || scene === "elevatorE71" || scene === "konbiniE67" || scene === "konbiniE71" || !!busRide;
 
   // Vollbild-Status (Desktop). Synchronisiert mit der Browser-API,
   // damit ESC-Verlassen den Button korrekt zurücksetzt.

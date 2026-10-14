@@ -37,7 +37,8 @@ type Speaker =
   | "HANNE"
   | "ZVSEMPFANG"
   | "SASSE"
-  | "KROLL";
+  | "KROLL"
+  | "MINDEN";
 
 
 interface VoiceProfile {
@@ -263,6 +264,12 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
     voiceId: "onwK4e9ZLuTAKqWW03F9", // Daniel
     speed: 0.9,
     settings: { stability: 0.75, similarity_boost: 0.8, style: 0.1, use_speaker_boost: true },
+  },
+  MINDEN: {
+    // Rosa Minden, Versorgungswartin im Konbini E71 — ruhig, leise, knapp.
+    voiceId: "XB0fDUnXU5powFXDhCwa", // Charlotte
+    speed: 0.92,
+    settings: { stability: 0.8, similarity_boost: 0.8, style: 0.05, use_speaker_boost: true },
   },
   SASSE: {
     // Sachbearbeiterin 5011, 55 — freundlich, sehr korrekt, ruhig.

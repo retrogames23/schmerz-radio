@@ -19,6 +19,7 @@ export type SceneId =
   | "elevator"
   | "floor1Lobby"
   | "konbiniE67"
+  | "konbiniE71"
   | "passage"
   | "corridor36"
   | "corridor46"
@@ -722,7 +723,8 @@ export interface DialogLine {
     | "HANNE"
     | "ZVSEMPFANG"
     | "SASSE"
-    | "KROLL";
+    | "KROLL"
+    | "MINDEN";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;
