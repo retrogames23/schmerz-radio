@@ -17,10 +17,11 @@ export const konbiniE71Scenes: Record<string, Scene> = {
       {
         id: "konbiniTickerE71",
         kind: "ledTicker",
-        x: 72,
-        y: 5.5,
-        w: 26,
-        h: 5,
+        x: 72.4,
+        y: 6.9,
+        w: 24.8,
+        h: 4.4,
+        skewY: -14.5,
         skewY: -2,
         tickerText:
           "+++ KONBINI E71 · TYP K-4m +++ RESONANZ-HYGIENE: MASKENPFLICHT IN WARTEBEREICHEN +++ RUHE IST EIN HYGIENE-MERKMAL +++ NACHTVERKAUF NUR MIT SCHEIN S/D ODER NOTFALL-BESCHEINIGUNG +++ TABLETTEN GEGEN RESONANZBEDINGTE SCHLAFSTÖRUNGEN NUR GEGEN ANWEISUNG +++ ",
