@@ -10,6 +10,9 @@ interface Props {
   ) => T;
 }
 
+const LED_TICKER_TEXT =
+  "+++ KONBINI E67 · TYP K-4 +++ ABENDVERKAUF RUHT 19:00–06:00 +++ AUSGABE NUR MIT BERECHTIGUNGSSCHEIN S/D ODER DRINGLICHKEITS-BEZUGSSCHEIN DER LEITSTELLE +++ VERSORGUNGSRAT SEKTOR 28: RUHEZEITEN BEACHTEN +++ MISCHGEMÜSE II WIEDER LIEFERBAR +++ LINIE 28 VERKEHRT NACH SONDERFAHRPLAN +++ RESONANZ-HYGIENE IST GEMEINSCHAFTSAUFGABE +++ いらっしゃいませ +++ ";
+
 /**
  * Statische „Wandgeräte" / Aufkleber. Eigene memoisierte Schicht, weil
  * sich die Decals einer Szene praktisch nie ändern, der Parent aber
@@ -27,6 +30,21 @@ export const DecalLayer = memo(function DecalLayer({
         const d = applyOverride(`decal:${rawD.id}`, rawD);
         if (d.requires?.some((f) => !flags.has(f))) return null;
         if (d.hiddenWhen?.some((f) => flags.has(f))) return null;
+        if (d.kind === "ledTicker") {
+          return (
+            <div
+              key={d.id}
+              className="led-ticker pointer-events-none absolute z-10 select-none"
+              style={{ left: `${d.x}%`, top: `${d.y}%`, width: `${d.w}%`, height: `${d.h}%` }}
+              aria-hidden
+            >
+              <div className="led-ticker-track">
+                <span>{LED_TICKER_TEXT}</span>
+                <span>{LED_TICKER_TEXT}</span>
+              </div>
+            </div>
+          );
+        }
         if (d.kind !== "television") return null;
         return (
           <div

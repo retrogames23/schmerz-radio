@@ -6,6 +6,7 @@ import { getLibraryReadableBook } from "@/game/books/libraryBooks";
 import { InventoryDragProvider } from "@/game/InventoryDragContext";
 import { SettingsProvider } from "@/audio/SettingsContext";
 import { MusicPlayer, getSceneMusicPlaylist } from "@/audio/MusicPlayer";
+import { startKonbiniAmbience } from "@/audio/konbiniAmbience";
 import { SceneView } from "./SceneView";
 import { TopBar } from "./TopBar";
 import { Inventory, DragCursorLayer } from "./Inventory";
@@ -47,6 +48,7 @@ import { useDevMode } from "@/dev/devMode";
 import { ToiletWallOverlay } from "./ToiletWallOverlay";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useGame } from "@/game/GameContext";
+import { useSettings } from "@/audio/SettingsContext";
 import { DonationGate } from "@/components/donation/DonationGate";
 import { OverlayErrorBoundary } from "./OverlayErrorBoundary";
 
@@ -76,6 +78,18 @@ const HelpOverlay = lazyWithRetry(() =>
 const FreeChatOverlay = lazyWithRetry(() =>
   import("./FreeChatOverlay").then((m) => ({ default: m.FreeChatOverlay })),
 );
+
+function KonbiniAmbienceBridge() {
+  const { scene } = useGame();
+  const { sfxVolume } = useSettings();
+  const inKonbini = scene === "konbiniE67";
+  useEffect(() => {
+    if (!inKonbini) return;
+    return startKonbiniAmbience(Math.max(0.1, sfxVolume * 0.6));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inKonbini]);
+  return null;
+}
 
 function DsaMusicBridge() {
   const { scene, dsaAdventureOpen, dsaBeat, lobbyGateOpen } = useGame();
@@ -262,6 +276,7 @@ function GameStage({
             <ParamedicsCutscene />
             <DsaCharacterSheet />
             <DsaMusicBridge />
+      <KonbiniAmbienceBridge />
             <IdCardOverlay open={idCardOpen} onClose={closeIdCard} />
             <LobbyGate />
             <PneumaticTubeOverlay />

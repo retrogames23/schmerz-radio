@@ -1,6 +1,6 @@
 import elevatorBg from "@/assets/scene-elevator.jpg";
-import floor1LobbyBg from "@/assets/scene-floor1-lobby.jpg";
-import floor1LobbyNoPosterBg from "@/assets/scene-floor1-lobby-noposter.jpg";
+import floor1LobbyBg from "@/assets/scene-floor1-lobby-konbini.jpg";
+import floor1LobbyNoPosterBg from "@/assets/scene-floor1-lobby-noposter-konbini.jpg";
 import passageBg from "@/assets/scene-passage.jpg";
 import philippeSprite from "@/assets/npc-philippe.png";
 import type { Scene } from "../types";
@@ -146,7 +146,7 @@ export const elevatorE67Scenes: Record<string, Scene> = {
       api.hasFlag("belegAushangAufzug") ? floor1LobbyNoPosterBg : floor1LobbyBg,
     title: "Lobby — Etage 1, E67",
     intro:
-      "Ein leerer Empfangstresen. Eine Anzeigetafel. Hinten links: der Aufzug. Rechts: die schwere Sektor-Tür.",
+      "Ein leerer Empfangstresen. Eine Anzeigetafel. Rechts der Aufzug, daneben hell erleuchtet die Glastür des Konbini. Hinten: die schwere Sektor-Tür.",
     decals: [
       {
         id: "tvE67",
@@ -256,6 +256,18 @@ export const elevatorE67Scenes: Record<string, Scene> = {
         label: "Sektor-Tür → E71",
         kind: "exit",
         onUse: (api) => api.goTo("sectorDoor"),
+      },
+      {
+        id: "konbiniDoor",
+        // Glastür rechts neben dem Aufzug.
+        x: 86.5,
+        y: 18,
+        w: 12.5,
+        h: 78,
+        label: "Konbini E67",
+        kind: "exit",
+        exitDir: "right",
+        onUse: (api) => api.goTo("konbiniE67"),
       },
       {
         id: "commonRoomDoor",

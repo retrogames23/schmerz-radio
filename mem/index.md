@@ -14,3 +14,4 @@ DSA-Szenenbilder ([SCENE: <tag>]): Nur setzen, wenn das Bild wirklich passt. Im 
 - [Radio-Erfinder](mem://features/radio-erfinder) — Konrad Elsner, Sektor 14, nur Hanne kennt ihn; öffentlich unbekannt
 
 - [Marketing](mem://reference/marketing) — Recherche und Plan in Project Files (14.10.2026)
+- [Konbini](mem://features/konbini) — Schreibweise, Zeiten 6–19, Scheine, E67 neben Aufzug, Kroll
