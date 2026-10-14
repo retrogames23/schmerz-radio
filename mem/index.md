@@ -12,3 +12,5 @@ DSA-Szenenbilder ([SCENE: <tag>]): Nur setzen, wenn das Bild wirklich passt. Im 
 - [Walters Peilung](mem://features/walter-peilung) — Walter Grewe (E71/1103): verstärkter Träger 104,6, Kreuzpeilung NW, 300–500 m → Quelle E67. Kanonisch.
 - [Verwaltung gleichgültig](mem://constraints/verwaltung-gleichgueltig) — Keine Räumung Miras, Verwaltung nicht bösartig, Anrede „Herr Worag“
 - [Radio-Erfinder](mem://features/radio-erfinder) — Konrad Elsner, Sektor 14, nur Hanne kennt ihn; öffentlich unbekannt
+
+- [Marketing](mem://reference/marketing) — Recherche und Plan in Project Files (14.10.2026)
