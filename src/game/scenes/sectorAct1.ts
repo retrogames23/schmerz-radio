@@ -1,5 +1,5 @@
 import sectorBg from "@/assets/scene-sector-door.jpg";
-import e71LobbyBg from "@/assets/scene-e71-lobby.jpg";
+import e71LobbyBg from "@/assets/scene-e71-lobby-konbini.jpg";
 import corridor15Bg from "@/assets/scene-corridor-15.jpg";
 import elevatorE71Bg from "@/assets/scene-elevator-e71.jpg";
 import room1534Bg from "@/assets/scene-room-1534.jpg";
@@ -208,11 +208,11 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "konbiniE71Door",
-        // Schlichte Tür an der linken Wand, unter dem Verzeichnis-Brett.
-        x: 1,
+        // Gläserne Tür mit Leuchtschild links im Durchgang.
+        x: 23.8,
         y: 26,
-        w: 11,
-        h: 48,
+        w: 5.6,
+        h: 46,
         label: "Konbini E71 (Typ K-4m)",
         kind: "exit",
         onUse: (api) => api.goTo("konbiniE71"),
