@@ -1133,3 +1133,40 @@ body:has([data-dsa-page]) * {
   -webkit-user-select: text;
   user-select: text;
 }
+
+/* Konbini E67: bernsteinfarbenes Punktmatrix-Laufband */
+.led-ticker {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  background: oklch(0.12 0.01 60);
+  border-radius: 2px;
+  box-shadow: inset 0 0 6px oklch(0 0 0 / 0.9);
+}
+.led-ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: led-ticker-scroll 70s linear infinite;
+  font-family: "VT323", "Courier New", monospace;
+  font-size: clamp(8px, 1.6cqw, 22px);
+  font-size: clamp(8px, 1.4vw, 22px);
+  letter-spacing: 0.12em;
+  color: oklch(0.82 0.17 70);
+  text-shadow: 0 0 4px oklch(0.75 0.18 60 / 0.9), 0 0 10px oklch(0.7 0.18 55 / 0.5);
+}
+.led-ticker-track span { padding-right: 2em; }
+.led-ticker::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(transparent 45%, oklch(0.12 0.01 60 / 0.85) 70%);
+  background-size: 3px 3px;
+  pointer-events: none;
+}
+@keyframes led-ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .led-ticker-track { animation-duration: 200s; }
+}
