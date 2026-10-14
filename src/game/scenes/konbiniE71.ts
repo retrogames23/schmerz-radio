@@ -29,10 +29,10 @@ export const konbiniE71Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "konbiniE71Exit",
-        x: 0,
-        y: 28,
-        w: 9,
-        h: 52,
+        x: 37,
+        y: 84,
+        w: 30,
+        h: 16,
         label: "Zurück zum Empfang",
         kind: "exit",
         exitDir: "down",
