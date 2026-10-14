@@ -649,6 +649,8 @@ export interface SceneDecal {
   kind: "television" | "ledTicker";
   /** Optionale Schrägstellung in Grad, damit Decals perspektivisch zur Wand passen. */
   skewY?: number;
+  /** Eigener Laufband-Text (nur kind "ledTicker"); ohne Angabe der E67-Standard. */
+  tickerText?: string;
   x: number;
   y: number;
   w: number;

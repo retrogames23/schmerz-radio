@@ -13,7 +13,19 @@ export const konbiniE71Scenes: Record<string, Scene> = {
     title: "Konbini E71 — Typ K-4m",
     intro:
       "Weiße Fliesen, grelle Röhren, ein Geruch nach Desinfektionsseife und Tee. Halb Laden, halb Sanitätsausgabe. Hinter der Kasse steht eine Frau im weißen Kittel, über ihr läuft eine Leuchtschrift.",
-    decals: [{ id: "konbiniTickerE71", kind: "ledTicker", x: 77.5, y: 3.4, w: 21.5, h: 3.6, skewY: -8 }],
+    decals: [
+      {
+        id: "konbiniTickerE71",
+        kind: "ledTicker",
+        x: 77.5,
+        y: 3.4,
+        w: 21.5,
+        h: 3.6,
+        skewY: -8,
+        tickerText:
+          "+++ KONBINI E71 · TYP K-4m +++ RESONANZ-HYGIENE: MASKENPFLICHT IN WARTEBEREICHEN +++ RUHE IST EIN HYGIENE-MERKMAL +++ NACHTVERKAUF NUR MIT SCHEIN S/D ODER NOTFALL-BESCHEINIGUNG +++ TABLETTEN GEGEN RESONANZBEDINGTE SCHLAFSTÖRUNGEN NUR GEGEN ANWEISUNG +++ 静かにしてください +++ ",
+      },
+    ],
     hotspots: [
       {
         id: "konbiniE71Exit",
