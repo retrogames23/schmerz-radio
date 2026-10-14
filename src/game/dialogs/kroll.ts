@@ -20,7 +20,7 @@ export const krollDialogs: Record<string, DialogTree> = {
         speaker: "KROLL",
         text: "Noch was?",
         choices: [
-          { text: "Warum sitzen Sie hier, wenn Sie nichts verkaufen dürfen?", next: "w1" },
+          { text: "Warum sitzen Sie hier, wenn der Laden doch zu ist?", next: "w1" },
           { text: "Was sagt die Kasse da immer?", next: "j1" },
           { text: "Woher kommen die ganzen Geräte?", next: "g1" },
           { text: "Und wenn es ein Notfall ist?", next: "n1" },
