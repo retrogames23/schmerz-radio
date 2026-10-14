@@ -158,17 +158,6 @@ export const corridorsE67Scenes: Record<string, Scene> = {
         onUse: (api) => api.startDialog("philippeInCorridor46"),
       },
       {
-        id: "miraSpot46",
-        x: 40.5,
-        y: 26.9,
-        w: 10.5,
-        h: 55,
-        label: "Junge Frau an der Wand",
-        kind: "talk",
-        visible: (api) => api.getMiraFloors().includes(4),
-        onUse: (api) => startMiraEncounter(api),
-      },
-      {
         id: "poster46",
         x: 31.8,
         y: 24.9,
@@ -197,6 +186,19 @@ export const corridorsE67Scenes: Record<string, Scene> = {
           }
           api.showText(read);
         },
+      },
+      // WICHTIG: Nach poster46 im Array — Hotspots stapeln in DOM-Reihenfolge,
+      // damit Miras Klickfläche VOR dem Plakat liegt und dort klickbar bleibt.
+      {
+        id: "miraSpot46",
+        x: 40.5,
+        y: 26.9,
+        w: 10.5,
+        h: 55,
+        label: "Junge Frau an der Wand",
+        kind: "talk",
+        visible: (api) => api.getMiraFloors().includes(4),
+        onUse: (api) => startMiraEncounter(api),
       },
       {
         id: "door4601Look",
