@@ -17,11 +17,11 @@ export const konbiniE71Scenes: Record<string, Scene> = {
       {
         id: "konbiniTickerE71",
         kind: "ledTicker",
-        x: 77.5,
-        y: 3.4,
-        w: 21.5,
-        h: 3.6,
-        skewY: -8,
+        x: 72,
+        y: 5.5,
+        w: 26,
+        h: 5,
+        skewY: -2,
         tickerText:
           "+++ KONBINI E71 · TYP K-4m +++ RESONANZ-HYGIENE: MASKENPFLICHT IN WARTEBEREICHEN +++ RUHE IST EIN HYGIENE-MERKMAL +++ NACHTVERKAUF NUR MIT SCHEIN S/D ODER NOTFALL-BESCHEINIGUNG +++ TABLETTEN GEGEN RESONANZBEDINGTE SCHLAFSTÖRUNGEN NUR GEGEN ANWEISUNG +++ ",
       },
@@ -29,10 +29,10 @@ export const konbiniE71Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "konbiniE71Exit",
-        x: 40,
-        y: 86,
-        w: 24,
-        h: 14,
+        x: 0,
+        y: 28,
+        w: 9,
+        h: 52,
         label: "Zurück zum Empfang",
         kind: "exit",
         exitDir: "down",
@@ -64,10 +64,10 @@ export const konbiniE71Scenes: Record<string, Scene> = {
       },
       {
         id: "konbiniE71Fridge",
-        x: 0,
-        y: 12,
-        w: 14,
-        h: 68,
+        x: 50,
+        y: 20,
+        w: 18,
+        h: 52,
         label: "Kühlwand",
         kind: "look",
         onUse: (api) =>
