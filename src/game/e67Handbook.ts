@@ -125,6 +125,21 @@ export const HANDBOOK_CHAPTERS: HandbookChapter[] = [
     ],
   },
   {
+    id: "p52",
+    shortTitle: "§5.2 Konbini",
+    title: "§5.2 Kombinierte Binnen-Nahversorgungsstelle (Konbini, Typ K-4)",
+    body: [
+      "Jedes Wohngebäude des Mandatsgebiets verfügt über eine *Kombinierte Binnen-Nahversorgungsstelle*, im Volksmund **Konbini**. In E67 befindet sie sich im Erdgeschoss, **rechts neben dem Aufzug**.",
+      "**Kurze Geschichte.** 1978 reiste eine Arbeitsgruppe der Ständigen Versorgungskommission nach Tokio und Osaka, um die Grundversorgung der neuen Großwohnanlagen zu verbessern. Die kleinen japanischen Nahversorgungsläden überzeugten durch geringen Raumbedarf und lückenlose Belieferung. Mit dem **Wirtschaftsabkommen von 1979** übernahm das Mandatsgebiet Kühlregale, Kassen und Münzzählwerke aus japanischer Fertigung; 1981 folgte das *Modellprogramm Dezentrale Minimalversorgung* (Richtlinie V-81/4). Den Namen übernahm man lautgetreu.",
+      "**Sortiment.** Die Waren stammen aus dem Mandatsgebiet: Trockennahrung, Haltbarmilch, Brot, Sicherungselemente, Seife, Kleinbedarf.",
+      "- **Regelverkauf:** täglich **06:00 bis 19:00 Uhr**.",
+      "- **Nachtsperre (19:00 bis 06:00 Uhr):** Die Stelle bleibt **rund um die Uhr besetzt** (Brandschutz, Meldekopf des Flurabschnitts), Waren werden jedoch gemäß §14 der Abendruheverordnung nicht ausgegeben.",
+      "- **Ausnahmen in der Nachtzeit:** nur gegen Vorlage eines **Berechtigungsscheins Gruppe S/D** (z. B. Reisende, Schichtdienst) oder eines **Dringlichkeits-Bezugsscheins der Leitstelle** (Zimmer 4602).",
+      "- **Münzzählwerk:** arbeitet nach Festwerttoleranz. Beanstandungen sind schriftlich an das Versorgungsamt zu richten, nicht an den Versorgungswart.",
+      "> Die Ansagen der Kassen- und Kühlmodule erfolgen in der Sprache des Herstellerlandes. Ein Anspruch auf Eindeutschung der Steuerungstonbänder besteht nicht (Abkommen 1979, Abschn. VII d).",
+    ],
+  },
+  {
     id: "p6",
     shortTitle: "§6 Türen & Schleusen",
     title: "§6 Türen, Schleusen und Sektorgrenzen",

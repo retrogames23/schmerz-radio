@@ -18,6 +18,7 @@ export type SceneId =
   | "apt2612"
   | "elevator"
   | "floor1Lobby"
+  | "konbiniE67"
   | "passage"
   | "corridor36"
   | "corridor46"
@@ -644,7 +645,7 @@ export type SceneImageSize = { w: number; h: number };
 
 export interface SceneDecal {
   id: string;
-  kind: "television";
+  kind: "television" | "ledTicker";
   x: number;
   y: number;
   w: number;
@@ -718,7 +719,8 @@ export interface DialogLine {
     | "WALTER"
     | "HANNE"
     | "ZVSEMPFANG"
-    | "SASSE";
+    | "SASSE"
+    | "KROLL";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;

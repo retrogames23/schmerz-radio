@@ -36,7 +36,8 @@ type Speaker =
   | "WALTER"
   | "HANNE"
   | "ZVSEMPFANG"
-  | "SASSE";
+  | "SASSE"
+  | "KROLL";
 
 
 interface VoiceProfile {
@@ -256,6 +257,12 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
     voiceId: "nPczCjzI2devNBz1zQrb", // Brian
     speed: 0.98,
     settings: { stability: 0.75, similarity_boost: 0.8, style: 0.05, use_speaker_boost: true },
+  },
+  KROLL: {
+    // Uwe Kroll, Versorgungswart im Konbini E67 — müde, trocken, stoisch.
+    voiceId: "onwK4e9ZLuTAKqWW03F9", // Daniel
+    speed: 0.9,
+    settings: { stability: 0.75, similarity_boost: 0.8, style: 0.1, use_speaker_boost: true },
   },
   SASSE: {
     // Sachbearbeiterin 5011, 55 — freundlich, sehr korrekt, ruhig.
