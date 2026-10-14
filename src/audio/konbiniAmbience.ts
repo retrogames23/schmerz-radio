@@ -5,8 +5,13 @@
  */
 
 const VOICES = [1, 2, 3, 4, 5].map((n) => `/audio/konbini-voice-${n}.mp3`);
+const VOICES_E71 = [1, 2, 3, 4].map((n) => `/audio/konbini-e71-voice-${n}.mp3`);
 
-export function startKonbiniAmbience(volume = 0.5): () => void {
+export function startKonbiniAmbience(
+  volume = 0.5,
+  opts: { quiet?: boolean } = {},
+): () => void {
+  const voices = opts.quiet ? VOICES_E71 : VOICES;
   if (typeof window === "undefined") return () => {};
   const W = window as unknown as {
     AudioContext?: typeof AudioContext;
@@ -30,7 +35,7 @@ export function startKonbiniAmbience(volume = 0.5): () => void {
   hum2.type = "sine";
   hum2.frequency.value = 100;
   const humGain = c.createGain();
-  humGain.gain.value = 0.08;
+  humGain.gain.value = opts.quiet ? 0.05 : 0.08;
   hum.connect(humGain);
   hum2.connect(humGain);
   humGain.connect(out);
@@ -51,7 +56,7 @@ export function startKonbiniAmbience(volume = 0.5): () => void {
   bp.frequency.value = 160;
   bp.Q.value = 1.2;
   const fridge = c.createGain();
-  fridge.gain.value = 0.35;
+  fridge.gain.value = opts.quiet ? 0.22 : 0.35;
   const lfo = c.createOscillator();
   lfo.frequency.value = 0.15;
   const lfoGain = c.createGain();
@@ -72,7 +77,7 @@ export function startKonbiniAmbience(volume = 0.5): () => void {
       o.frequency.value = f;
       const g = c.createGain();
       g.gain.setValueAtTime(0, t + i * 0.35);
-      g.gain.linearRampToValueAtTime(0.25, t + i * 0.35 + 0.02);
+      g.gain.linearRampToValueAtTime(opts.quiet ? 0.14 : 0.25, t + i * 0.35 + 0.02);
       g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.35 + 0.8);
       o.connect(g).connect(out);
       o.start(t + i * 0.35);
@@ -88,17 +93,19 @@ export function startKonbiniAmbience(volume = 0.5): () => void {
     setTimeout(() => {
       if (stopped) return;
       audio = new Audio(src);
-      audio.volume = Math.min(1, volume * 1.6 + 0.2);
+      audio.volume = opts.quiet
+        ? Math.min(1, volume * 0.9 + 0.1)
+        : Math.min(1, volume * 1.6 + 0.2);
       void audio.play().catch(() => {});
     }, 800);
   };
 
-  let timer: ReturnType<typeof setTimeout> | null = setTimeout(() => announce(VOICES[0]), 900);
+  let timer: ReturnType<typeof setTimeout> | null = setTimeout(() => announce(voices[0]), 900);
   const schedule = () => {
     timer = setTimeout(() => {
-      announce(VOICES[1 + Math.floor(Math.random() * (VOICES.length - 1))]);
+      announce(voices[1 + Math.floor(Math.random() * (voices.length - 1))]);
       schedule();
-    }, 22000 + Math.random() * 25000);
+    }, (opts.quiet ? 30000 : 22000) + Math.random() * 25000);
   };
   schedule();
 

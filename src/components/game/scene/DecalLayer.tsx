@@ -31,6 +31,7 @@ export const DecalLayer = memo(function DecalLayer({
         if (d.requires?.some((f) => !flags.has(f))) return null;
         if (d.hiddenWhen?.some((f) => flags.has(f))) return null;
         if (d.kind === "ledTicker") {
+          const tickerText = d.tickerText ?? LED_TICKER_TEXT;
           return (
             <div
               key={d.id}
@@ -39,8 +40,8 @@ export const DecalLayer = memo(function DecalLayer({
               aria-hidden
             >
               <div className="led-ticker-track">
-                <span>{LED_TICKER_TEXT}</span>
-                <span>{LED_TICKER_TEXT}</span>
+                <span>{tickerText}</span>
+                <span>{tickerText}</span>
               </div>
             </div>
           );

@@ -19,6 +19,7 @@ export type SceneId =
   | "elevator"
   | "floor1Lobby"
   | "konbiniE67"
+  | "konbiniE71"
   | "passage"
   | "corridor36"
   | "corridor46"
@@ -648,6 +649,8 @@ export interface SceneDecal {
   kind: "television" | "ledTicker";
   /** Optionale Schrägstellung in Grad, damit Decals perspektivisch zur Wand passen. */
   skewY?: number;
+  /** Eigener Laufband-Text (nur kind "ledTicker"); ohne Angabe der E67-Standard. */
+  tickerText?: string;
   x: number;
   y: number;
   w: number;
@@ -722,7 +725,8 @@ export interface DialogLine {
     | "HANNE"
     | "ZVSEMPFANG"
     | "SASSE"
-    | "KROLL";
+    | "KROLL"
+    | "MINDEN";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;

@@ -207,6 +207,17 @@ export const sectorAct1Scenes: Record<string, Scene> = {
         },
       },
       {
+        id: "konbiniE71Door",
+        // Schlichte Tür an der linken Wand, unter dem Verzeichnis-Brett.
+        x: 1,
+        y: 26,
+        w: 11,
+        h: 48,
+        label: "Konbini E71 (Typ K-4m)",
+        kind: "exit",
+        onUse: (api) => api.goTo("konbiniE71"),
+      },
+      {
         id: "directory",
         x: 43.2,
         y: 30,

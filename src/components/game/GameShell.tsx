@@ -83,12 +83,14 @@ function KonbiniAmbienceBridge() {
   const { scene } = useGame();
   const { sfxVolume } = useSettings();
   const music = useMusic();
-  const inKonbini = scene === "konbiniE67";
+  const inKonbini = scene === "konbiniE67" || scene === "konbiniE71";
   useEffect(() => {
     if (!inKonbini) return;
     // Im Konbini nur Klangkulisse, keine Musik.
     music.pause();
-    const stop = startKonbiniAmbience(Math.max(0.1, sfxVolume * 0.6));
+    const stop = startKonbiniAmbience(Math.max(0.1, sfxVolume * 0.6), {
+      quiet: scene === "konbiniE71",
+    });
     return () => {
       stop();
       music.resume();
