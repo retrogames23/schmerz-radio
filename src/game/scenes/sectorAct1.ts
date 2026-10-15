@@ -143,17 +143,6 @@ export const sectorAct1Scenes: Record<string, Scene> = {
     title: "Gebäude E71 — Empfang",
     intro:
       "Andere Luft. Kühler. Sauberer. Eine Frau hinter einem Tresen sieht auf.",
-    decals: [
-      {
-        id: "tvE71",
-        kind: "television",
-        // Linke Seitenwand, deutlich über dem schwarzen Brett.
-        x: 17,
-        y: 6,
-        w: 8.25,
-        h: 18,
-      },
-    ],
     hotspots: [
       {
         id: "receptionist",
@@ -233,10 +222,11 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "directory",
-        x: 43.2,
-        y: 30,
-        w: 9,
-        h: 5.9,
+        // Großes schwarzes Verzeichnisbrett an der linken Wand.
+        x: 0,
+        y: 19,
+        w: 16.5,
+        h: 42,
         label: "Hinweisschild",
         kind: "look",
         onUse: (api) =>
@@ -246,18 +236,6 @@ export const sectorAct1Scenes: Record<string, Scene> = {
             ">> Korridor 16  →  Pathologie",
             ">> Resonanz-Hygiene in diesem Quadranten — bitte respektieren.",
           ]),
-      },
-      {
-        id: "television",
-        // Sichtbares Wandgerät an der linken Seitenwand, über dem
-        // schwarzen Verzeichnis-Brett. Klick-Box deckt das Decal.
-        x: 16.25,
-        y: 5,
-        w: 9.75,
-        h: 20,
-        label: "Teleempfänger",
-        kind: "use",
-        onUse: (api) => api.openTelevision(),
       },
       {
         id: "elevatorBack",
