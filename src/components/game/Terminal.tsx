@@ -347,7 +347,7 @@ export function Terminal() {
   // Wenn Bodo gerade B3 für Lotti holt, sitzen wir an seinem Terminal —
   // ohne Login, mit seinem Hostnamen, mit altem CentralOS v2.0.
   // Wird explizit über openTerminal(true) am Hotspot in Bodos Wohnung gesetzt.
-  // Layards eigenes Terminal (TopBar, Wohnung 2611, Sektor-Türen-Terminal)
+  // Layards eigenes Terminal (TopBar, Wohnung 2611, Quadrantenschleusen-Terminal)
   // läuft immer im normalen Phosphor-Grün-Modus.
   // „Lokaler" Modus = an welchem physischen Terminal sitzt man tatsächlich.
   const localBodoMode = terminalBodoMode;
@@ -604,7 +604,7 @@ export function Terminal() {
     // ── Undokumentierter Cheat »vossbeckweak« ─────────────
     // Springt direkt an die Stelle nach dem gewonnenen Bürokratie-
     // Endduell: alle Pflicht-Flags gesetzt, optionale offen, Layard
-    // steht danach an der Sektor-Tür.
+    // steht danach an der Quadrantenschleuse.
     if (raw.toLowerCase() === "vossbeckweak") {
       if (!localBodoMode && !remoteMode) {
         playBeep(0.5 * sfxVolume);
@@ -1241,7 +1241,7 @@ export function Terminal() {
       }
       if (flags.has("calledForCode")) {
         newLines.push({
-          text: "  [003] 06.11.1997  Insa Bauerfeind — Sektor-Tür: Manueller Code  ✶NEU",
+          text: "  [003] 06.11.1997  Insa Bauerfeind — Quadrantenschleuse: Manueller Code  ✶NEU",
           kind: "system",
         });
       }
@@ -1399,7 +1399,7 @@ export function Terminal() {
           { text: "── Nachricht 003 ─────────────────────", kind: "system" },
           { text: "Von:    Bauerfeind, I.", kind: "out" },
           { text: "Datum:  06.11.1997 16:48", kind: "out" },
-          { text: "Betreff: Sektor-Tür — Manueller Code", kind: "out" },
+          { text: "Betreff: Quadrantenschleuse — Manueller Code", kind: "out" },
           { text: "", kind: "out" },
           { text: "Wie besprochen. Ich habe den Code extra für Sie geändert.", kind: "out" },
           { text: "Sie kennen das Datum. Tippen Sie es am Keypad ein —", kind: "out" },

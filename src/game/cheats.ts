@@ -10,7 +10,7 @@ import type { GameApi, StoryFlag } from "./types";
  * das Bürokratie-Endduell gegen Vossbeck gewonnen wurde: alle dafür
  * zwingend nötigen Flags sind gesetzt, alle optionalen (Mira-Vertrauen,
  * Ralf, MARV, DSA-Runde, Fälschungs-Route, Burn-Route, E71-Nebenstränge)
- * bleiben offen. Layard steht danach an der Sektor-Tür.
+ * bleiben offen. Layard steht danach an der Quadrantenschleuse.
  */
 const VOSSBECK_WEAK_FLAGS: StoryFlag[] = [
   // Auftakt: Protokoll-Kette 2613 / 2615
@@ -78,7 +78,7 @@ export function applyVossbeckWeakCheat(api: GameApi): void {
  */
 const ENDE_AKT1_FLAGS: StoryFlag[] = [
   ...VOSSBECK_WEAK_FLAGS,
-  // Sektor-Tür geöffnet, Schwelle überschritten
+  // Quadrantenschleuse geöffnet, Schwelle überschritten
   "sectorDoorOpen",
   "sectorThresholdSeen",
   // Gebäude E71: Empfang, Korridor, Zimmer 1534

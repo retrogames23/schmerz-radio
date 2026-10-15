@@ -899,7 +899,7 @@ export interface GameApi {
 
 /**
  * Welches Schloss steckt hinter dem aktuellen Keypad-Aufruf.
- * Aktuell nur die Sektor-Tür E67/E71 (8-stellig). Tür 5610 öffnet
+ * Aktuell nur die Quadrantenschleuse E67/E71 (8-stellig). Tür 5610 öffnet
  * über Wartungs-Override bzw. Wartungskarte ohne Keypad.
  */
 export type KeypadTarget = "sectorDoor";

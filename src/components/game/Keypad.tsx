@@ -28,7 +28,7 @@ export function Keypad() {
   const [status, setStatus] = useState<Status>("idle");
 
   const config: LockConfig = {
-    label: "Sektor-Tür · E67/E71",
+    label: "Quadrantenschleuse · E67/E71",
     length: 8,
     codes: ["06111997"],
     openFlag: "sectorDoorOpen",

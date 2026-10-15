@@ -48,8 +48,8 @@ const LINES: string[] = [
   "trace 8 hops -> mikael@E71/1534",
   "elevator -> floor 1",
   "elevator -> floor 3",
-  "sektor-tür: ERROR 4567",
-  "sektor-tür: OK manual code",
+  "quadrantenschleuse: ERROR 4567",
+  "quadrantenschleuse: OK manual code",
   "ZENTRAL.LOG 0x4567 cleared",
   ">> ready.",
 ];

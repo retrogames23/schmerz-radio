@@ -146,7 +146,7 @@ export const elevatorE67Scenes: Record<string, Scene> = {
       api.hasFlag("belegAushangAufzug") ? floor1LobbyNoPosterBg : floor1LobbyBg,
     title: "Lobby — Etage 1, E67",
     intro:
-      "Ein leerer Empfangstresen. Eine Anzeigetafel. Rechts der Aufzug, daneben hell erleuchtet die Glastür des Konbini. Hinten: die schwere Sektor-Tür.",
+      "Ein leerer Empfangstresen. Eine Anzeigetafel. Rechts der Aufzug, daneben hell erleuchtet die Glastür des Konbini. Hinten: die schwere Quadrantenschleuse.",
     decals: [
       {
         id: "tvE67",
@@ -253,7 +253,7 @@ export const elevatorE67Scenes: Record<string, Scene> = {
         y: 24.2,
         w: 10.9,
         h: 39.5,
-        label: "Sektor-Tür → E71",
+        label: "Quadrantenschleuse → E71",
         kind: "exit",
         onUse: (api) => api.goTo("sectorDoor"),
       },

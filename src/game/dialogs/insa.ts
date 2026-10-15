@@ -128,7 +128,7 @@ export const insaDialogs: Record<string, DialogTree> = {
             hiddenWhen: ["calledStegmann"],
           },
           {
-            text: "Ich brauche einen Code für die Sektor-Tür.",
+            text: "Ich brauche einen Code für die Quadrantenschleuse.",
             next: "idCode1",
           },
         ],
@@ -261,7 +261,7 @@ export const insaDialogs: Record<string, DialogTree> = {
       x3: {
         id: "x3",
         speaker: "LAYARD",
-        text: "Ich brauche jetzt einen Code für die Sektor-Tür.",
+        text: "Ich brauche jetzt einen Code für die Quadrantenschleuse.",
         next: "x4pflicht1",
       },
       // Sicherheits-Fallback: sollte Layard hier landen, ohne dass der
@@ -578,7 +578,7 @@ export const insaDialogs: Record<string, DialogTree> = {
       ic5: {
         id: "ic5",
         speaker: "INSA",
-        text: "Der Code für die Sektor-Tür liegt in Ihrem Terminal. Datum, ohne Punkte. Sie wissen, wie. Kommen Sie trotzdem rüber, Worag. Es ist heute kein guter Tag, allein zu bleiben.",
+        text: "Der Code für die Quadrantenschleuse liegt in Ihrem Terminal. Datum, ohne Punkte. Sie wissen, wie. Kommen Sie trotzdem rüber, Worag. Es ist heute kein guter Tag, allein zu bleiben.",
         requires: ["sawEmptyOffice"],
         next: "ic5b",
       },

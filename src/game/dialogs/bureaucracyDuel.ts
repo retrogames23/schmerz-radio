@@ -745,7 +745,7 @@ const duelEndgameResult: DialogTree = {
     checkWon: {
       id: "checkWon",
       speaker: "VOSSBECK",
-      text: "Bewohner Worag. Sie sind im Behörden-Ton zu Hause. — Es ergeht: Antrag auf Tagescode für Sektor-Tür E67/E71 bewilligt, vorbehaltlich. Ich lege den Code in Ihr Terminal-Postfach. Datum, ohne Punkte. Acht Ziffern.",
+      text: "Bewohner Worag. Sie sind im Behörden-Ton zu Hause. — Es ergeht: Antrag auf Tagescode für Quadrantenschleuse E67/E71 bewilligt, vorbehaltlich. Ich lege den Code in Ihr Terminal-Postfach. Datum, ohne Punkte. Acht Ziffern.",
       subtext:
         "Er sagt es ohne Hohn. Der Bleistift bleibt senkrecht, aber er liegt jetzt waagerecht auf der Akte.",
       requires: ["duelEndgameWon"],

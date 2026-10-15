@@ -10,7 +10,7 @@ export const sectorAct1Scenes: Record<string, Scene> = {
   sectorDoor: {
     id: "sectorDoor",
     background: sectorBg,
-    title: "Sektor-Tür — Etage 1, E67",
+    title: "Quadrantenschleuse — Etage 1, E67",
     intro:
       "Die schwere Schleusentür am Ende der Lobby. Hinter ihr: ein Verbindungsgang. Daneben: ein Keypad. Darüber: ein Monitor mit grüner Phosphor-Schrift, der „ERROR 4567“ blinkt.",
     hotspots: [
@@ -94,7 +94,7 @@ export const sectorAct1Scenes: Record<string, Scene> = {
         y: 26,
         w: 28.5,
         h: 60,
-        label: "Sektor-Tür öffnen → Verbindungsgang",
+        label: "Quadrantenschleuse öffnen → Verbindungsgang",
         kind: "exit",
         requires: ["sectorDoorOpen"],
         onUse: (api) => {

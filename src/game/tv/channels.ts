@@ -76,7 +76,7 @@ export const CHANNELS: Channel[] = [
       "Tauschbörse, weiter. Gesucht wird eine Bildröhre für einen Teleempfänger, Modell 71-B. Angebote an Apparat 2205. Getauscht wird gegen zwei Kisten Einweckgläser oder Verhandlungssache.",
       "Herr Ludewig aus dem achten Stock gibt Schallplatten ab. Tanzmusik, überwiegend. Er sagt, seine Frau habe genug gehört, und er auch. Abzuholen samstags, nicht vor zehn.",
       "Fundsachen. Im Aufzug von E67 lag ein Schlüsselbund mit vier Schlüsseln und einem Anhänger in Form eines Fisches. Abzuholen bei der Hausverwaltung, gegen Unterschrift.",
-      "Fundsachen, zweiter Teil. Ein einzelner Handschuh, links, braun, gefunden vor der Sektor-Tür. Er wartet seit drei Wochen. Ich sage es ehrlich: Er sieht nicht so aus, als würde er noch abgeholt.",
+      "Fundsachen, zweiter Teil. Ein einzelner Handschuh, links, braun, gefunden vor der Quadrantenschleuse. Er wartet seit drei Wochen. Ich sage es ehrlich: Er sieht nicht so aus, als würde er noch abgeholt.",
       "Und noch eine Fundsache, die eigentlich keine ist: In E12-West ist ein Wellensittich zugeflogen. Er heißt vermutlich nicht Peter, hört aber darauf. Meldungen an Apparat 1188.",
       "Suchmeldung. Familie Arndt sucht die Hebamme, die im Juni bei der Geburt in 3312 geholfen hat. Sie möchten sich bedanken und wissen den Namen nicht mehr. Ein Anruf genügt.",
       "Nachbarschaftliches. Aus dem zwölften Stock wird gebeten, nach 22 Uhr keine Bohrmaschine mehr zu benutzen. Der Zettel endet mit „bitte, bitte, bitte“. Drei Mal unterstrichen.",

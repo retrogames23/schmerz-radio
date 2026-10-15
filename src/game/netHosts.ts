@@ -103,7 +103,7 @@ export const NET_HOSTS: NetHost[] = [
             "── Verteiler: Tagescodes Schleusen E67 ───────",
             "Datum: 06.11.1997",
             "",
-            "  Schleuse E67/E71 (Sektor-Tür)   Tagescode: 06111997",
+            "  Schleuse E67/E71 (Quadrantenschleuse)   Tagescode: 06111997",
             "  Hinweis: Code auf Anforderung geändert (Kowalk/Vossbeck,",
             "  Vorgang 17/V). Acht Ziffern, ohne Punkte.",
             "",
