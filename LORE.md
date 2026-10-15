@@ -186,6 +186,12 @@ gesehen hat. Das ist die Perspektive, aus der die Welt im Spiel sichtbar wird.
   dessen Funktionsschwerpunkt Gesundheit ist: In Nachbarblöcken und
   Untergeschossen sitzen Ambulanzen, Labore und mehrere Ärztinnen und Ärzte
   (Dr. Okwu ist eine von ihnen). Darüber wohnen ganz normale Menschen.
+- **Bewegungsfreiheit:** Innerhalb des eigenen Gebäudes bewegen sich
+  Bewohner frei (alle Etagen, Aufgänge, Kantine, Konbini). Erst der Übertritt
+  in ein anderes Gebäude bzw. einen anderen Quadranten führt durch eine
+  **Quadrantenschleuse** (umgangssprachlich „Quadrantentür“), die einen
+  Ausweis oder Tagescode verlangt. E67 und E71 liegen beide in Sektor 28 —
+  der Begriff „Sektor-Tür“ ist daher falsch und wird nicht verwendet.
 - **Schlafstörungen** haben fast immer alltägliche Ursachen (Schichtdienst,
   Zugluft, Herbstnebel, Rohrbrummen). Schmerz-Radios sind seltene
   Bastlergeräte; dass jemand bewusst eines nutzt, bleibt Gerücht.

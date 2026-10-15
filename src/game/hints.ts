@@ -192,7 +192,7 @@ export const HINT_QUESTS: HintQuest[] = [
   // 11) Insa anrufen → Vorgangs-Status klären, Code anfragen
   {
     id: "act1.callInsaFor5610",
-    title: "Insa anrufen — Code für die Sektor-Tür",
+    title: "Insa anrufen — Code für die Quadrantenschleuse",
     priority: 11,
     isActive: (a) =>
       a.hasFlag("sawEmptyOffice") &&
@@ -203,7 +203,7 @@ export const HINT_QUESTS: HintQuest[] = [
     hints: [
       "Der Abschnittsverantwortliche fehlt — also gibt es jetzt nur noch eine Stelle, die deine Sache weiterbringt.",
       "Geh zurück in deine Wohnung 2611 und ruf von deinem Telefon aus die Leitstelle an.",
-      "Geh nach 2611, klick dein Telefon an und sprich mit Insa. Wähle „Ich brauche einen Code für die Sektor-Tür“ — sie verweist dich an Oberverwalter Vossbeck (3603) und gibt einen Tipp, vorher mit Frau Kowalk zu reden.",
+      "Geh nach 2611, klick dein Telefon an und sprich mit Insa. Wähle „Ich brauche einen Code für die Quadrantenschleuse“ — sie verweist dich an Oberverwalter Vossbeck (3603) und gibt einen Tipp, vorher mit Frau Kowalk zu reden.",
     ],
   },
 
@@ -329,7 +329,7 @@ export const HINT_QUESTS: HintQuest[] = [
     ],
   },
 
-  // 15) Sektor-Tür öffnen
+  // 15) Quadrantenschleuse öffnen
   {
     id: "act1.sectorDoor",
     title: "Gebäude E67 verlassen",

@@ -14,8 +14,8 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
         choices: [
           {
             // Neuer Hauptpfad: Insa hat Layard zu Kowalk geschickt, weil
-            // sie den Tagescode für die Sektor-Tür braucht.
-            text: "Frau Kowalk — Insa sagt, Sie wissen, wie man bei Vossbeck reinkommt. Ich brauche einen Tagescode für die Sektor-Tür.",
+            // sie den Tagescode für die Quadrantenschleuse braucht.
+            text: "Frau Kowalk — Insa sagt, Sie wissen, wie man bei Vossbeck reinkommt. Ich brauche einen Tagescode für die Quadrantenschleuse.",
             next: "kCodePre",
             requires: ["insaSentToKowalkForCode"],
             hiddenWhen: ["knowsVossbeckPath"],
@@ -793,7 +793,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       v2: {
         id: "v2",
         speaker: "VOSSBECK",
-        text: "Bewohner Worag. Antrag auf Tagescode für Sektor-Tür E67/E71. Formblatt Siebzehn-V auf Vorsprache — vorgelegt, gegengezeichnet.",
+        text: "Bewohner Worag. Antrag auf Tagescode für Quadrantenschleuse E67/E71. Formblatt Siebzehn-V auf Vorsprache — vorgelegt, gegengezeichnet.",
         hiddenWhen: ["metVossbeck"],
         next: "v3",
       },
@@ -815,7 +815,7 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
       v4: {
         id: "v4",
         speaker: "VOSSBECK",
-        text: "Worag. Sie wollen einen Tagescode für die Sektor-Tür.",
+        text: "Worag. Sie wollen einen Tagescode für die Quadrantenschleuse.",
         hiddenWhen: ["duelEndgameWon"],
         next: "v5",
       },

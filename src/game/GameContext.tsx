@@ -249,7 +249,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [terminalBodoMode, setTerminalBodoMode] = useState(false);
   const [terminalMiraMode, setTerminalMiraMode] = useState(false);
   const [keypadOpen, setKeypadOpen] = useState(false);
-  // Aktuell nur eine Sorte Keypad (Sektor-Tür). Tür 5610 öffnet über
+  // Aktuell nur eine Sorte Keypad (Quadrantenschleuse). Tür 5610 öffnet über
   // Wartungs-Override / Wartungskarte ohne Keypad.
   const keypadTarget = "sectorDoor" as const;
   const [nodeOpen, setNodeOpen] = useState(false);

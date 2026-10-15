@@ -146,7 +146,7 @@ export const HANDBOOK_CHAPTERS: HandbookChapter[] = [
     body: [
       "Nicht jede Tür ist gleich. Bitte beachten Sie:",
       "- **Innentüren Gebäude E67:** Bewohner-Ausweis genügt.",
-      "- **Sektorschleuse E67 → E71:** Manueller Code, 8-stellig, einmalig durch die Leitstelle vergeben (vgl. §6 Abs. 4 — *„Bringschuld der Bewohnerin/des Bewohners“*).",
+      "- **Quadrantenschleuse E67 → E71:** Manueller Code, 8-stellig, einmalig durch die Leitstelle vergeben (vgl. §6 Abs. 4 — *„Bringschuld der Bewohnerin/des Bewohners“*).",
       "- **Wartungstüren (5er-Etage):** Wartungskarte, **kein** Bewohnerzugang.",
       "**§6 Abs. 9 — Lobby-Schleuse Etage 1.** Im **Tagesmodus** (werktags 06:00–22:00) gilt: Bewohner-Ausweis **zusätzlich** Eingabe des Bewohner-Codes (§2 Abs. 7). Außerhalb dieser Zeit (Nachtmodus) genügt der Ausweis allein.",
       "> Die Schleuse ist freundlich, aber unnachgiebig. Sie weist Sie höflich zurück, sollten Ausweis oder Code fehlen. Sie hat keine Eile.",
