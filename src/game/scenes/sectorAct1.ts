@@ -1,5 +1,5 @@
 import sectorBg from "@/assets/scene-quadrant-lock.jpg";
-import e71LobbyBg from "@/assets/scene-e71-lobby-konbini-k16.png";
+import e71LobbyBg from "@/assets/scene-e71-lobby-k16-swap.png";
 import corridor15Bg from "@/assets/scene-corridor-15.jpg";
 import elevatorE71Bg from "@/assets/scene-elevator-e71.jpg";
 import room1534Bg from "@/assets/scene-room-1534.jpg";
