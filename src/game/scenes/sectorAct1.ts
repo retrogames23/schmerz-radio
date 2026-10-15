@@ -1,4 +1,4 @@
-import sectorBg from "@/assets/scene-sector-door.jpg";
+import sectorBg from "@/assets/scene-quadrant-lock.jpg";
 import e71LobbyBg from "@/assets/scene-e71-lobby-konbini-k16.png";
 import corridor15Bg from "@/assets/scene-corridor-15.jpg";
 import elevatorE71Bg from "@/assets/scene-elevator-e71.jpg";
@@ -12,14 +12,14 @@ export const sectorAct1Scenes: Record<string, Scene> = {
     background: sectorBg,
     title: "Quadrantenschleuse — Etage 1, E67",
     intro:
-      "Die schwere Schleusentür am Ende der Lobby. Hinter ihr: ein Verbindungsgang. Daneben: ein Keypad. Darüber: ein Monitor mit grüner Phosphor-Schrift, der „ERROR 4567“ blinkt.",
+      "Eine graue Doppeltür mit Drahtglasfenstern am Ende der Lobby. Dahinter: grauer Himmel, nasser Beton. Daneben: ein Zugangsterminal. Darüber: ein Monitor mit grüner Phosphor-Schrift, der „ERROR 4567“ blinkt.",
     hotspots: [
       {
         id: "monitor",
-        x: 26.9,
-        y: 29.8,
-        w: 15,
-        h: 22,
+        x: 27.5,
+        y: 31,
+        w: 12.5,
+        h: 20,
         label: "Status-Monitor",
         kind: "look",
         onUse: (api) =>
@@ -32,10 +32,10 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "keypadCall",
-        x: 29,
-        y: 54.3,
-        w: 9.9,
-        h: 15.8,
+        x: 30.3,
+        y: 52.5,
+        w: 7.5,
+        h: 17,
         label: "Keypad — Code eingeben",
         kind: "use",
         onUse: (api) => {
@@ -90,10 +90,10 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "toPassage",
-        x: 48.5,
-        y: 26,
-        w: 28.5,
-        h: 60,
+        x: 51,
+        y: 25,
+        w: 31,
+        h: 52,
         label: "Quadrantenschleuse öffnen → Verbindungsgang",
         kind: "exit",
         requires: ["sectorDoorOpen"],
@@ -109,16 +109,16 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       // weiß, dass es jenseits der Tür um E71 geht.
       {
         id: "doorWonder",
-        x: 48.5,
-        y: 26,
-        w: 26.3,
-        h: 51.3,
+        x: 51,
+        y: 25,
+        w: 31,
+        h: 52,
         label: "Tür betrachten",
         kind: "look",
         hiddenWhen: ["calledInsa2"],
         onUse: (api) =>
           api.showText([
-            "Eine schwere Schleusentür, geschlossen.",
+            "Eine graue Brandschutz-Doppeltür, verriegelt. Durch das Drahtglas: Regen.",
             "Layard war noch nie hindurch. Er hat auch keinen Grund.",
             "Was hinter dieser Tür liegt, kennt er nur aus Aushängen:",
             "ein Verbindungsgang, irgendetwas weiter draußen.",
@@ -127,10 +127,10 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "backHallwayS",
-        x: 10.9,
-        y: 35,
-        w: 13.5,
-        h: 60,
+        x: 0,
+        y: 30,
+        w: 20,
+        h: 70,
         label: "Zurück in die Lobby",
         kind: "exit",
         onUse: (api) => api.goTo("floor1Lobby"),
