@@ -29,20 +29,6 @@ export const corridorsE67Scenes: Record<string, Scene> = {
     npcs: [],
     hotspots: [
       {
-        id: "philippeSpot36",
-        // Philippe steht (wenn er Etage 3 ist) vor seiner Wohnung — wir
-        // nutzen den freien Wandstreifen zwischen 3603 und Aufzug.
-        x: 76,
-        y: 36,
-        w: 7.5,
-        h: 50,
-        label: "Philippe (Nachbar)",
-        kind: "talk",
-        hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
-        visible: (api) => api.getPhilippeFloor() === 3,
-        onUse: (api) => api.startDialog("philippeInCorridor36"),
-      },
-      {
         id: "officeDoor",
         // Tür 3601 — links außen.
         x: 4.4,
@@ -132,6 +118,20 @@ export const corridorsE67Scenes: Record<string, Scene> = {
         label: "Zurück zum Aufzug",
         kind: "exit",
         onUse: (api) => api.goTo("elevator"),
+      },
+      {
+        id: "philippeSpot36",
+        // Philippe lehnt rechts neben Tür 3603 (im Hintergrundbild gemalt).
+        // Steht zuletzt, damit er über der Türfläche 3603 liegt.
+        x: 68,
+        y: 33,
+        w: 8,
+        h: 57,
+        label: "Philippe (Nachbar)",
+        kind: "talk",
+        hiddenWhen: ["doorbellRang", "metPhilippeBefore"],
+        visible: (api) => api.getPhilippeFloor() === 3,
+        onUse: (api) => api.startDialog("philippeInCorridor36"),
       },
     ],
   },
