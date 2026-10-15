@@ -1,5 +1,5 @@
 import sectorBg from "@/assets/scene-sector-door.jpg";
-import e71LobbyBg from "@/assets/scene-e71-lobby-konbini.jpg";
+import e71LobbyBg from "@/assets/scene-e71-lobby-konbini-k16.png";
 import corridor15Bg from "@/assets/scene-corridor-15.jpg";
 import elevatorE71Bg from "@/assets/scene-elevator-e71.jpg";
 import room1534Bg from "@/assets/scene-room-1534.jpg";
@@ -216,6 +216,20 @@ export const sectorAct1Scenes: Record<string, Scene> = {
         label: "Konbini E71 (Typ K-4m)",
         kind: "exit",
         onUse: (api) => api.goTo("konbiniE71"),
+      },
+      {
+        id: "toTrakt16",
+        // Offener Seitengang hinter dem Konbini — Korridor 16 (Pathologie).
+        x: 29.5,
+        y: 34,
+        w: 6,
+        h: 38,
+        label: "Durchgang → Trakt 16 (Pathologie)",
+        kind: "look",
+        onUse: (api) =>
+          api.showText([
+            "Ich weiß nicht, was ich dort soll. Ich habe in diesem Trakt nichts zu suchen.",
+          ]),
       },
       {
         id: "directory",

@@ -1,5 +1,5 @@
-import corridor36Bg from "@/assets/scene-corridor-36.jpg";
-import corridor36PhilippeBg from "@/assets/scene-corridor-36-philippe.jpg";
+import corridor36Bg from "@/assets/scene-corridor-36-transit.jpg";
+import corridor36PhilippeBg from "@/assets/scene-corridor-36-philippe-transit.jpg";
 import corridor46Bg from "@/assets/scene-corridor-46.jpg";
 import corridor46NoPosterBg from "@/assets/scene-corridor-46-noposter.jpg";
 import corridor56Bg from "@/assets/scene-corridor-56.jpg";
@@ -93,6 +93,34 @@ export const corridorsE67Scenes: Record<string, Scene> = {
           api.setFlag("rangEmptyOfficeBell");
           api.startDialog("emptyOfficeBell");
         },
+      },
+      {
+        id: "traktPassage36",
+        // Linkes Bildende: Versorgungsachse läuft weiter Richtung Aufgang 5.
+        x: 0,
+        y: 82,
+        w: 22,
+        h: 18,
+        label: "Versorgungsachse → Aufgang 5",
+        kind: "look",
+        onUse: (api) =>
+          api.showText([
+            "Ich weiß nicht, was ich dort soll. Die Kantine und die Verwaltung sind gleich hier.",
+          ]),
+      },
+      {
+        id: "axisSign36",
+        x: 72.5,
+        y: 37,
+        w: 8.5,
+        h: 8,
+        label: "Schild „Versorgungsachse“",
+        kind: "look",
+        onUse: (api) =>
+          api.showText([
+            "Emailleschild: »VERSORGUNGSACHSE ← Aufgänge 1–5 · Aufgänge 7–10 →«.",
+            "Auf dem Boden die Spuren der Speisewagen. Hier laufen die Leute aus dem ganzen Haus zur Kantine.",
+          ]),
       },
       {
         id: "back36",
