@@ -248,6 +248,20 @@ export const elevatorE67Scenes: Record<string, Scene> = {
         onUse: (api) => api.goTo("elevator"),
       },
       {
+        id: "traktPassageLobby",
+        // Schmaler Durchgang links hinter dem Tresen — Magistrale zu den Aufgängen 1–5.
+        x: 36.5,
+        y: 30,
+        w: 3.5,
+        h: 32,
+        label: "Durchgang → Trakte 1–5",
+        kind: "look",
+        onUse: (api) =>
+          api.showText([
+            "Ich weiß nicht, was ich dort soll. Meine Wohnung liegt in Aufgang 6.",
+          ]),
+      },
+      {
         id: "lobbySectorDoor",
         x: 52.9,
         y: 24.2,
