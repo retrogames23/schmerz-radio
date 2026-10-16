@@ -12,8 +12,7 @@ import type { Scene } from "../types";
 export const commonRoomE71Scenes: Record<string, Scene> = {
   commonRoomE71: {
     id: "commonRoomE71",
-    background: commonRoomE71Bg,
-    backgroundFn: (api) => (api.hasFlag("act2Started") ? commonRoomE71Act2Bg : commonRoomE71Bg),
+    background: (api) => (api.hasFlag("act2Started") ? commonRoomE71Act2Bg : commonRoomE71Bg),
     title: "Gemeinschaftsraum 1530 — Gebäude E71",
     intro: (api) =>
       api.hasFlag("act2Started")
