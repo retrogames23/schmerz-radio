@@ -155,7 +155,7 @@ export function getKonbiniTickerMessages(pool: KonbiniTickerPool): string[] {
 }
 
 /** Lesegeschwindigkeit des Bandes in Zeichen pro Sekunde. */
-export const TICKER_CHARS_PER_SECOND = 5;
+export const TICKER_CHARS_PER_SECOND = 3.5;
 
 export function getKonbiniTickerText(pool: KonbiniTickerPool): string {
   return "+++ " + getKonbiniTickerMessages(pool).join(" +++ ") + " +++ ";
