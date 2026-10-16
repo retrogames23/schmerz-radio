@@ -74,7 +74,7 @@ const GREETINGS: Greeting[] = [
   {
     speaker: "KROLL",
     text: "Morgen. Regelverkauf läuft seit sechs. Falls Sie was brauchen, die Kasse zählt wieder.",
-    subtext: "Er sieht übernächtigt aus. Seine Schicht hat in der Nacht angefangen.",
+    subtext: "Er sieht übernächtigt aus. Seine Schicht hat gestern Abend angefangen.",
     flag: "krollAct2Greeted",
     known: "krollKnownAct1",
     trees: ["krollKonbini"],

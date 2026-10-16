@@ -324,7 +324,7 @@ export const corridorsE67Scenes: Record<string, Scene> = {
     title: "Korridor 56 — Dachetage",
     intro: (api) =>
       api.hasFlag("act2Started")
-        ? "Oben. Am Ende des Korridors: ein vergittertes Fenster. Der Himmel ist immer noch grau, aber heller als gestern Nacht."
+        ? "Oben. Am Ende des Korridors: ein vergittertes Fenster. Der Himmel ist immer noch grau, aber heller als gestern Abend."
         : "Oben. Am Ende des Korridors: ein vergittertes Fenster auf einen grauen Himmel.",
     npcs: [
       {
