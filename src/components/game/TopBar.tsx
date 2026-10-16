@@ -1,6 +1,7 @@
 import { memo, useEffect, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { useMusic } from "@/audio/MusicPlayer";
+import { useExternalGameAudio } from "@/audio/externalGameAudio";
 import { useSettings } from "@/audio/SettingsContext";
 import { useBusRide } from "@/game/busRideState";
 import { scenes } from "@/game/scenes";
