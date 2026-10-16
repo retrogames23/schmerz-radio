@@ -24,8 +24,9 @@ export const corridorsE67Scenes: Record<string, Scene> = {
     // Aufzug am Rand abgeschnitten. „contain" zeigt das Bild immer ganz.
     bgFit: "contain",
     title: "Korridor 36 — Verwaltung und Versorgung",
-    intro:
-      "Andere Beleuchtung als zuhause. Sterilere Türen. Vor einer davon — 3601 — ein handgeschriebenes Schild. Aus 3602 zieht warm und ranzig ein Geruch nach Mensa-Pampe und Bohnerwachs.",
+    intro: (api) => api.hasFlag("act2Started")
+      ? "Vormittag auf der Versorgungsachse. Ein Karren mit Kisten rollt Richtung Aufzug, zwei Leute in Arbeitsjacken gehen vorbei, ohne aufzusehen. Aus 3602 riecht es nach Frühstücksbrei."
+      : "Andere Beleuchtung als zuhause. Sterilere Türen. Vor einer davon — 3601 — ein handgeschriebenes Schild. Aus 3602 zieht warm und ranzig ein Geruch nach Mensa-Pampe und Bohnerwachs.",
     npcs: [],
     hotspots: [
       {
@@ -145,7 +146,9 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       api.hasFlag("port2611Locked") &&
       !api.hasFlag("readTagescodeViaMira")
         ? "Wie zuhause, nur eine Etage höher. Ein Plakat „RESONANZ-HYGIENE“ blättert ab. — Layards Post liegt seit heute Morgen bei der Leitstelle, und dort kommt nur rein, wer im Wartungsnetz hängt. Hinter einer dieser Türen steht so ein Anschluss."
-        : "Wie zuhause, nur eine Etage höher. Ein Plakat „RESONANZ-HYGIENE“ blättert ab.",
+        : api.hasFlag("act2Started")
+          ? "Wie zuhause, nur eine Etage höher. Morgenlicht aus dem Treppenhaus. Ein Plakat „RESONANZ-HYGIENE“ blättert ab."
+          : "Wie zuhause, nur eine Etage höher. Ein Plakat „RESONANZ-HYGIENE“ blättert ab.",
 
     npcs: [
       {
@@ -319,8 +322,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
     id: "corridor56",
     background: corridor56Bg,
     title: "Korridor 56 — Dachetage",
-    intro:
-      "Oben. Am Ende des Korridors: ein vergittertes Fenster auf einen grauen Himmel.",
+    intro: (api) =>
+      api.hasFlag("act2Started")
+        ? "Oben. Am Ende des Korridors: ein vergittertes Fenster. Der Himmel ist immer noch grau, aber heller als gestern Nacht."
+        : "Oben. Am Ende des Korridors: ein vergittertes Fenster auf einen grauen Himmel.",
     npcs: [
       {
         id: "philippeSprite56",

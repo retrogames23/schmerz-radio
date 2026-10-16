@@ -281,8 +281,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
     id: "apt2613",
     background: apt2613Bg,
     title: "Wohnung 2613 — Philippe",
-    intro:
-      "Philippes Wohnung. Derselbe Grundriss wie bei Layard, etwas wärmer. Es riecht nach echtem Kaffee. An der Wand zur Nachbarwohnung 2615 ist das regelmäßige Klopfen zu hören.",
+    intro: (api) =>
+      api.hasFlag("act2Started")
+        ? "Philippes Wohnung am Morgen. Es riecht nach frischem Kaffee. Die Wand zur 2615 bleibt still."
+        : "Philippes Wohnung. Derselbe Grundriss wie bei Layard, etwas wärmer. Es riecht nach echtem Kaffee. An der Wand zur Nachbarwohnung 2615 ist das regelmäßige Klopfen zu hören.",
     hotspots: [
       {
         id: "philippeNpc",
@@ -835,8 +837,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
     background: (api) =>
       api.hasFlag("paramedicsCutsceneSeen") ? hallway2615SealedBg : hallwayBg,
     title: "Korridor 26 — Gebäude E67",
-    intro:
-      "Der Korridor. Wie jeden Morgen. Nur dass Layard ihn jeden Morgen nicht betritt.",
+    intro: (api) =>
+      api.hasFlag("act2Started")
+        ? "Der Korridor am Vormittag. Hinter einer Tür läuft ein Wasserhahn, irgendwo klappert Geschirr. Das Siegel an 2615 hängt noch."
+        : "Der Korridor. Wie jeden Morgen. Nur dass Layard ihn jeden Morgen nicht betritt.",
     hotspots: [
       {
         id: "back2611",
@@ -888,7 +892,10 @@ export const apartmentAct1Scenes: Record<string, Scene> = {
         kind: "look",
         requires: ["paramedicsCutsceneSeen"],
         onUse: (api) =>
-          api.showText([
+          api.showText(api.hasFlag("act2Started") ? [
+            "Das Siegel hängt noch. Über Nacht hat sich eine Ecke gelöst und rollt sich ein.",
+            "„Quarantäne — Resonanz-Überlastung — bis auf Widerruf“. Niemand hat es seitdem angefasst.",
+          ] : [
             "Ein gelbes Siegelband klebt schräg über dem Türrahmen.",
             "Darauf, in Maschinenschrift:",
             "„Quarantäne — Resonanz-Überlastung — bis auf Widerruf“.",
