@@ -141,8 +141,10 @@ export const sectorAct1Scenes: Record<string, Scene> = {
     id: "e71Lobby",
     background: e71LobbyBg,
     title: "Gebäude E71 — Empfang",
-    intro:
-      "Andere Luft. Kühler. Sauberer. Eine Frau hinter einem Tresen sieht auf.",
+    intro: (api) =>
+      api.hasFlag("act2Started")
+        ? "Andere Luft. Kühler. Sauberer. Vormittags klingelt irgendwo hinten ein Telefon, aus dem Seitengang kommen Schritte. Die Frau hinter dem Tresen sieht auf."
+        : "Andere Luft. Kühler. Sauberer. Eine Frau hinter einem Tresen sieht auf.",
     hotspots: [
       {
         id: "receptionist",
@@ -357,8 +359,10 @@ export const sectorAct1Scenes: Record<string, Scene> = {
     id: "corridor15",
     background: corridor15Bg,
     title: "Korridor 15 — Gebäude E71",
-    intro:
-      "Spiegelblanker Linoleum. Eine Neonröhre flackert. Rechts an der Wand: eine Tür, schräg überklebt mit gelbem Siegelband. Am Ende des Korridors, in der Fluchtachse: eine Tür mit einem matten roten Status-Licht. Zimmer 1534. Halbrechts, schmal eingelassen: Tür 1530, einen Spalt offen — von drinnen Stimmen, jung, durcheinander.",
+    intro: (api) =>
+      api.hasFlag("act2Started")
+        ? "Spiegelblanker Linoleum, frisch gewischt, es riecht nach Seife. Hinter der Tür 1532 hört man gedämpft Stimmen, Sprechstunde. Rechts die Tür mit dem gelben Siegelband, unverändert."
+        : "Spiegelblanker Linoleum. Eine Neonröhre flackert. Rechts an der Wand: eine Tür, schräg überklebt mit gelbem Siegelband. Am Ende des Korridors, in der Fluchtachse: eine Tür mit einem matten roten Status-Licht. Zimmer 1534. Halbrechts, schmal eingelassen: Tür 1530, einen Spalt offen — von drinnen Stimmen, jung, durcheinander.",
     hotspots: [
       {
         id: "door1530",

@@ -147,7 +147,7 @@ export const elevatorE67Scenes: Record<string, Scene> = {
       api.hasFlag("belegAushangAufzug") ? floor1LobbyNoPosterBg : floor1LobbyBg,
     title: "Lobby — Etage 1, E67",
     intro: (api) => api.hasFlag("act2Started")
-      ? "Vormittag in der Lobby. Der Tresen ist leer wie immer. Im Konbini stehen zwei Leute an der Kasse. Hinten: die Quadrantenschleuse."
+      ? "Vormittag in der Lobby. Der Tresen ist leer wie immer. Im Konbini zählt das Münzwerk wieder. Hinten: die Quadrantenschleuse."
       : "Ein leerer Empfangstresen. Eine Anzeigetafel. Rechts der Aufzug, daneben hell erleuchtet die Glastür des Konbini. Hinten: die schwere Quadrantenschleuse.",
     decals: [
       {
@@ -303,8 +303,10 @@ export const elevatorE67Scenes: Record<string, Scene> = {
     id: "passage",
     background: passageBg,
     title: "Verbindungsgang E67 ↔ E71",
-    intro:
-      "Außenluft. Das erste Mal seit Jahren. Ein Geländer, kalter Beton, irgendwo ein Lautsprecher, der nichts sagt.",
+    intro: (api) =>
+      api.hasFlag("act2Started")
+        ? "Außenluft, Vormittag. Auf dem nassen Beton frische Schuhabdrücke in beide Richtungen. Ein Geländer, kalter Beton, irgendwo ein Lautsprecher, der nichts sagt."
+        : "Außenluft. Das erste Mal seit Jahren. Ein Geländer, kalter Beton, irgendwo ein Lautsprecher, der nichts sagt.",
     hotspots: [
       {
         id: "lookE67",

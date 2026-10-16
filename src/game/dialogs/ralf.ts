@@ -208,6 +208,8 @@ export const ralfDialogs: Record<string, DialogTree> = {
       },
       rQ1: {
         id: "rQ1",
+        hiddenWhen: ["act2Started"],
+        next: "rQ1d",
         speaker: "RALF",
         text: "Also: Was verschlägt einen um diese Zeit in einen Verbindungsgang, in dem es nichts gibt?",
         choices: [
@@ -215,6 +217,24 @@ export const ralfDialogs: Record<string, DialogTree> = {
           { text: "„Ich schaue mich um. Beruflich fällt mir das schwer.“", next: "rA2", action: (a) => a.setFlag("ralfKnowsLayardWriter") },
           { text: "„Nichts. Ich gehe gleich weiter.“", next: "rA3" },
         ],
+      },
+      rQ1d: {
+        id: "rQ1d",
+        requires: ["act2Started"],
+        speaker: "RALF",
+        text: "Also: Was verschlägt einen am Vormittag in einen Verbindungsgang, in dem es nichts gibt? Schuhe, Mappe — Sie sehen nach Termin aus.",
+        choices: [
+          { text: "„Worag, aus E67, 2611. Ich habe einen Termin drüben.“", next: "rA1d" },
+          { text: "„Ich schaue mich um. Beruflich fällt mir das schwer.“", next: "rA2", action: (a) => a.setFlag("ralfKnowsLayardWriter") },
+          { text: "„Nichts. Ich gehe gleich weiter.“", next: "rA3" },
+        ],
+      },
+      rA1d: {
+        id: "rA1d",
+        speaker: "RALF",
+        text: "Worag. Ein Termin. Dann kommen Sie hier öfter vorbei. Von meinem Fenster aus sieht man, wer kommt und geht. Mehr kann ich nicht.",
+        subtext: "Die Zigarette wird kurz heller.",
+        next: "rEnd",
       },
       rA1: {
         id: "rA1",
@@ -245,7 +265,11 @@ export const ralfDialogs: Record<string, DialogTree> = {
         end: true,
       },
     },
-    onEnd: (api) => api.setFlag("ralfStage2"),
+    onEnd: (api) => {
+      api.setFlag("ralfStage2");
+      // In Akt II kennengelernt: keine „Gestern Abend“-Begrüßung hinterher.
+      if (api.hasFlag("act2Started")) api.setFlag("ralfAct2Greeted");
+    },
   },
 
   // ── Stufe 2: Man kennt sich ─────────────────────────────────────
@@ -335,7 +359,7 @@ export const ralfDialogs: Record<string, DialogTree> = {
       a1: {
         id: "a1",
         speaker: "RALF",
-        text: "Der Schritt. Worag. Gestern Nacht ohne Ziel, heute früh mit Ziel. — Jetzt also offiziell?",
+        text: "Der Schritt. Worag. Gestern Abend ohne Ziel, heute früh mit Ziel. — Jetzt also offiziell?",
         subtext: "Durch den Schlitz sieht er nur Schuhe und eine Mappe. Das reicht ihm.",
         next: "a2",
       },

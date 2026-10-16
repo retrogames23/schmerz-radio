@@ -10,4 +10,4 @@ type: feature
 - Japanische Roboteransagen gehören zur Klangkulisse; LED-Laufband zeigt Newsticker.
 - E71 (Medizin-Quadrant): Ausführung K-4m mit Hygiene-Sortiment (Verbandsmaterial, Masken, Tees, Tabletten gegen resonanzbedingte Schlafstörungen). Eingang: Tür links in der E71-Lobby. Versorgungswartin Rosa Minden (Mitte 40, weißer Kittel, ruhig/leise). Ansagen dort leiser/gedämpfter („Krankenhaus-Modelle“). Vorerst reine Atmosphäre, kein Quest-Item.
 - Resonanz-Schutzmaske NICHT in den Konbini verlegen (frustriert nach dem Marv-Rätsel). Späteres Rätsel steht noch aus.
-- Kauf-Interaktion bewusst weggelassen: Spielzeit ist nachts, der Regelverkauf ruht; ein Einkauf bräuchte Schein S/D oder Notfall-Bezugsschein (potenzielles späteres Rätsel). Beide Konbinis bleiben reine Atmosphäre.
+- Kauf-Interaktion bewusst weggelassen: Akt I spielt abends (nach 19 Uhr ruht der Regelverkauf), Akt II vormittags (Regelverkauf läuft, Einkauf trotzdem ausgeblendet); ein Einkauf bräuchte Schein S/D oder Notfall-Bezugsschein (potenzielles späteres Rätsel). Beide Konbinis bleiben reine Atmosphäre.

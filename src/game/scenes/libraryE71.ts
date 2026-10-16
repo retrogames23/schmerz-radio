@@ -12,8 +12,10 @@ export const libraryE71Scenes: Record<string, Scene> = {
     id: "libraryE71",
     background: libraryBg,
     title: "Bewohnerbibliothek 1101 — Gebäude E71",
-    intro:
-      "Helles Licht fällt durch das große Fenster. Holzregale, ein Teppich, der jedes Geräusch schluckt, und ein Tresen wie in einer kleinen Schulbibliothek von 1995. Hinter dem Tresen sortiert ein älterer Mann Karteikarten und nickt freundlich. Auf dem Tresen steht ein Computer mit einem dicken Röhrenmonitor, dessen Bildschirm mattgrün schimmert. Es riecht nach Papier, Holz und frischer Farbe — nicht nach Reiniger.",
+    intro: (api) =>
+      api.hasFlag("act2Started")
+        ? "Vormittagslicht fällt schräg durch das große Fenster, Staub tanzt darin. Holzregale, ein Teppich, der jedes Geräusch schluckt, ein Tresen wie in einer kleinen Schulbibliothek von 1995. Es ist ruhiger als gestern Abend."
+        : "Helles Licht fällt durch das große Fenster. Holzregale, ein Teppich, der jedes Geräusch schluckt, und ein Tresen wie in einer kleinen Schulbibliothek von 1995. Hinter dem Tresen sortiert ein älterer Mann Karteikarten und nickt freundlich. Auf dem Tresen steht ein Computer mit einem dicken Röhrenmonitor, dessen Bildschirm mattgrün schimmert. Es riecht nach Papier, Holz und frischer Farbe — nicht nach Reiniger.",
     hotspots: [
       {
         id: "herbert",
