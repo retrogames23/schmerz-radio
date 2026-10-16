@@ -109,8 +109,21 @@ export const e71NerdsDialogs: Record<string, DialogTree> = {
           { text: "Was ist da drin?", next: "sDisk1" },
           { text: "Was ist „Demo-Szene“?", next: "sDemo1" },
           { text: "Erzähl mir von eurer Festplatte.", next: "sHdd1" },
+          { text: "Was ist das für ein Gerät in der Box?", next: "sBox1", requires: ["sawGiveawayRadio"], hiddenWhen: ["askedNerdsGiveaway"], action: (a) => a.setFlag("askedNerdsGiveaway") },
           { text: "Später.", endsDialog: true },
         ],
+      },
+      sBox1: {
+        id: "sBox1",
+        speaker: "SIGI",
+        text: "Ach ja, dieses komische Gerät ist seit gestern da drin. In der Box liegt sonst höchstens mal eine abgelaufene Dose Fisch oder, wenn man Glück hat, ein paar Comichefte.",
+        next: "sBox2",
+      },
+      sBox2: {
+        id: "sBox2",
+        speaker: "RUVEN",
+        text: "(vom Regal aus) Hat keiner reingelegt. Also, keiner, den wir kennen.",
+        next: "s0",
       },
       sDisk1: {
         id: "sDisk1",

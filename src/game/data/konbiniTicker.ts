@@ -148,10 +148,15 @@ function interleave(common: string[], special: string[]): string[] {
   return out;
 }
 
-export type KonbiniTickerPool = "e67" | "e71";
+export type KonbiniTickerPool = "e67" | "e67act2" | "e71";
+
+/** Akt II (Vormittag): zusätzliche Fundsache. */
+const E67_ACT2_EXTRA = "FUNDSACHE: KLEINES FUNKGERÄT, BRAUN, OHNE TYPENSCHILD · ABZUHOLEN AN DER KASSE";
 
 export function getKonbiniTickerMessages(pool: KonbiniTickerPool): string[] {
-  return interleave(COMMON, pool === "e71" ? E71 : E67);
+  if (pool === "e71") return interleave(COMMON, E71);
+  if (pool === "e67act2") return interleave(COMMON, [...E67, E67_ACT2_EXTRA]);
+  return interleave(COMMON, E67);
 }
 
 /** Lesegeschwindigkeit des Bandes in Zeichen pro Sekunde. */

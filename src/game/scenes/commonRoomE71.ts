@@ -117,6 +117,31 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
           ]),
       },
       {
+        id: "giveawayBox",
+        // Fest angeschraubte Holzbox an der Wand neben dem Regal (nur im Text beschrieben).
+        x: 0,
+        y: 78,
+        w: 12,
+        h: 18,
+        label: "„Zu verschenken“-Box",
+        kind: "look",
+        onUse: (api) => {
+          if (!api.hasFlag("act2Started")) {
+            api.showText([
+              "Eine fest angeschraubte Holzkiste, mit Filzstift beschriftet: »ZU VERSCHENKEN«.",
+              "Drin: ein einzelner Topflappen. Sonst nichts.",
+            ]);
+            return;
+          }
+          api.setFlag("sawGiveawayRadio");
+          api.showText([
+            "Die »ZU VERSCHENKEN«-Kiste. Neben dem Topflappen liegt heute ein kleines braunes Gerät ohne Typenschild. Ein Drehknopf, eine Skala, ein Ohrhörer.",
+            "Daran mit Gummiband ein Zettel, Druckbuchstaben: »Für schlaflose Nächte. Einfach einschalten.«",
+            "Layard kennt die Bauart. Er hat selbst so eines. Er lässt es liegen.",
+          ]);
+        },
+      },
+      {
         id: "back1530",
         x: 91.2,
         y: 8,

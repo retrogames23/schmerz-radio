@@ -70,6 +70,8 @@
 - **[FEHLT]** Elsner-Anruf (Nummer aus Hannes Plattenhülle): Er erzählt verblüfft von einer anonymen Großbestellung über 120 Geräte vor etwa zwei Monaten, bezahlt per gedecktem Bankscheck, Lieferung an eine Laderampe in Sektor 28. Das ist eine Spur zur Gruppe.
 - **[FEHLT]** Zero is Infinity verteilt die Geräte kostenlos und anonym („Für schlaflose Nächte. Einfach einschalten."): in Postfächern, Gemeinschaftsräumen, Kantinenecken. Erst dadurch erreicht 104,6 eine relevante Zahl von Menschen; das erklärt, warum die Zusammenbrüche erst seit wenigen Wochen gehäuft auftreten.
 
+- **[UMGESETZT]** Leise Hinweise in Akt II (optional): „Zu verschenken“-Kiste im Gemeinschaftsraum 1530 mit Gerät und Zettel (Sigi/Ruven kommentieren); Fundsache-Meldung auf dem Laufband im Konbini E67 und Krolls Bemerkung („Schon das zweite diesen Monat“); Ralf erinnert sich an einen Lieferwagen ohne Aufschrift mit gleich großen Kartons an der Rampe (nach einem Gefallen).
+
 ### Hanne als ahnungslose Geldgeberin
 - **[FEHLT]** Hanne kam 1972 mit Ersparnissen aus den USA zurück, die sie im Mandatsalltag kaum ausgeben kann. Sie hat einem „Gemeinschaftsprojekt gegen die Entfremdung" aus Setsukos Kreis Geld gegeben, im Geist von Fuller und Whole Earth Catalog.
 - **[FEHLT]** Sie weiß nichts von Elsners Geräten, dem Verstärker oder den Zusammenbrüchen. Konfrontiert mit Elsners Großbestellung (Scheck) erkennt sie die Verbindung, ist erschüttert und liefert den entscheidenden Hinweis auf Setsuko und Tür 1531.

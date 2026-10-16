@@ -24,8 +24,16 @@ export const krollDialogs: Record<string, DialogTree> = {
           { text: "Was sagt die Kasse da immer?", next: "j1" },
           { text: "Woher kommen die ganzen Geräte?", next: "g1" },
           { text: "Und wenn es ein Notfall ist?", next: "n1" },
+          { text: "Sie haben ein Funkgerät gefunden?", next: "fs1", requires: ["act2Started"], hiddenWhen: ["askedKrollFundsache"], action: (a) => a.setFlag("askedKrollFundsache") },
           { text: "Schönen Abend noch.", endsDialog: true },
         ],
+      },
+      fs1: {
+        id: "fs1",
+        speaker: "KROLL",
+        text: "Lag im Postfachraum, auf den Briefkästen. Mit Zettel, so ein Geschenk-Ding: ‚Für schlaflose Nächte.‘ Schon das zweite diesen Monat. Holt keiner ab.",
+        subtext: "Er sagt es wie über einen Regenschirm. Fundsache ist Fundsache.",
+        next: "hub",
       },
       w1: {
         id: "w1",

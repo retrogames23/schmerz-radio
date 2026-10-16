@@ -54,6 +54,8 @@ function deepTopics(api: GameApi): DialogChoice[] {
     out.push({ text: "Was hältst du von Miras Theorien?", next: "tMira", action: (a) => a.setFlag("ralfToldMira") });
   if (api.hasFlag("act2Started") && !api.hasFlag("ralfToldGang"))
     out.push({ text: "Wer läuft hier eigentlich so durch den Gang?", next: "tGang", action: (a) => a.setFlag("ralfToldGang") });
+  if (api.hasFlag("act2Started") && (api.hasFlag("ralfFavorTea") || api.hasFlag("ralfFavorNews")) && !api.hasFlag("ralfToldDelivery"))
+    out.push({ text: "Ist dir hier draußen in letzter Zeit irgendwas Komisches aufgefallen?", next: "tDelivery", action: (a) => a.setFlag("ralfToldDelivery") });
   // Vorbereitet: wird erst mit dem Warnbrief freigeschaltet.
   if (api.hasFlag("gotWarnbrief") && !api.hasFlag("ralfToldWarnbrief"))
     out.push({ text: "Jemand hat mir einen Brief zugesteckt. Hast du was gesehen?", next: "tWarnbrief", action: (a) => a.setFlag("ralfToldWarnbrief") });
@@ -432,6 +434,13 @@ export const ralfDialogs: Record<string, DialogTree> = {
         text: "Wer hier durchläuft? Schichtleute früh, Lieferkarren um sieben, die Pathologie-Boten mit ihren Kisten. Ein paar Gesichter kenne ich nur am Schritt: eine, die immer zu schnell geht und dabei nach Farbe riecht. Einer, der stehen bleibt und dann doch nicht anklopft. Und seit heute du — mit Mappe.",
         subtext: "Er sagt keine Namen. Er sortiert nur Geräusche.",
         next: "hubC",
+      },
+      tDelivery: {
+        id: "tDelivery",
+        speaker: "RALF",
+        text: "Komisch war das im Spätsommer. Ein Lieferwagen ohne Aufschrift, nachts an der Rampe. Kartons, alle gleich groß, Schuhkarton-Format. Zwei Leute haben ausgeladen. Einer hat dabei geraucht, die andere hat gezählt.",
+        subtext: "Keine Gesichter, keine Namen. Nur die Kartons, die hat er sich gemerkt.",
+        next: "hubB",
       },
       tWarnbrief: {
         id: "tWarnbrief",
