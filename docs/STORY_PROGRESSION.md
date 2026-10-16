@@ -43,7 +43,7 @@
 
 ### ZVS, Zimmer 5011
 - **[TEILWEISE]** Frau Sasse nimmt Wissen auf (`shared` / `withheld`). `zvsIntakeDone` wird gesetzt, aber nicht ausgewertet; Story endet bei „Kommen Sie wieder, wenn etwas dazukommt."
-- **[FEHLT]** Konrad Elsner anrufen (Nummer bekannt, Anruf ohne Wirkung).
+- **[FEHLT]** Konrad Elsner anrufen (Nummer bekannt, Anruf ohne Wirkung). Geplant: Elsner erzählt von der Großbestellung (siehe „Verbreitung der Schmerz-Radios").
 
 ## Akt III / Finale: Zero is Infinity
 
@@ -65,9 +65,28 @@
 - **[FEHLT]** Tonfall: besorgt, nicht drohend — sie will ihn schützen, ohne die Gruppe zu verraten („Hören Sie auf zu fragen, bevor jemand anfängt, Ihnen zuzuhören").
 - **[FEHLT]** Der Brief ist der konkrete Auslöser für Entscheidung B: Layard wählt aktiv zwischen „Ich gehe der Sache auf den Grund" und „Das geht zu weit. Ich bin Rechercheur, kein Ermittler."
 
+### Verbreitung der Schmerz-Radios (schließt das Reichweiten-Loch)
+- **[FEHLT]** Schmerz-Radios sind obskure Einzelstücke. Elsner hat über zehn Jahre nur etwa 30–40 Geräte gelötet (Bastler, Phantomschmerz-Patienten).
+- **[FEHLT]** Elsner-Anruf (Nummer aus Hannes Plattenhülle): Er erzählt verblüfft von einer anonymen Großbestellung über 120 Geräte vor etwa zwei Monaten, bezahlt per gedecktem Bankscheck, Lieferung an eine Laderampe in Sektor 28. Das ist eine Spur zur Gruppe.
+- **[FEHLT]** Zero is Infinity verteilt die Geräte kostenlos und anonym („Für schlaflose Nächte. Einfach einschalten."): in Postfächern, Gemeinschaftsräumen, Kantinenecken. Erst dadurch erreicht 104,6 eine relevante Zahl von Menschen; das erklärt, warum die Zusammenbrüche erst seit wenigen Wochen gehäuft auftreten.
+
+### Hanne als ahnungslose Geldgeberin
+- **[FEHLT]** Hanne kam 1972 mit Ersparnissen aus den USA zurück, die sie im Mandatsalltag kaum ausgeben kann. Sie hat einem „Gemeinschaftsprojekt gegen die Entfremdung" aus Setsukos Kreis Geld gegeben, im Geist von Fuller und Whole Earth Catalog.
+- **[FEHLT]** Sie weiß nichts von Elsners Geräten, dem Verstärker oder den Zusammenbrüchen. Konfrontiert mit Elsners Großbestellung (Scheck) erkennt sie die Verbindung, ist erschüttert und liefert den entscheidenden Hinweis auf Setsuko und Tür 1531.
+
+### Mitglieder von Zero is Infinity
+- **[FEHLT]** Harter Kern (will weitermachen, eher Leistung erhöhen):
+  - **Gero Malchow** (~48), ehemaliger Rundfunktechniker, strafversetzt; hat Elsners Schaltung mit einem Industrieverstärker und einer Dachantenne gekoppelt. Deutet die Zusammenbrüche als notwendiges „Erwachen".
+  - **Vera Kesten** (~26), Manifest- und Textschreiberin der Gruppe (kein Bezug zu Miras Z.K.S.). Kompromisslos: „Ihr nennt es Anfall — wir nennen es Leben."
+- **[FEHLT]** Bekehrbare (wenden sich nach den Beweisen gegen den harten Kern):
+  - **Setsuko Arai**, Künstlerin, Hannes Kontakt zur Gruppe; bricht an Okwus Akten.
+  - **Kora Lindt** (~34), ehemalige Schulfunk-Sprecherin, die Stimme auf 104,6; wollte Einsamen Gesellschaft leisten.
+  - **Torben Heise** (~42), Sachbearbeiter Liegenschaften; hat 1531 amtlich versiegelt („Hausschwammverdacht") und versorgt den Strom. Kippt aus Angst vor einem Disziplinarverfahren.
+- Abgrenzung: Z.K.S. bleibt ausschließlich Miras Kürzel (Flugblatt, Graffiti, Terminal) und hat mit Zero is Infinity nichts zu tun.
+
 ### Der harte Kern (Finale in 1531)
-- **[FEHLT]** Ein bis zwei Mitglieder von Zero is Infinity bilden den harten Kern; sie würden die Leistung eher erhöhen als abschalten und lassen sich von Layard nicht überzeugen.
-- **[FEHLT]** Beim Auffinden der Gruppe spaltet sie sich: die Mehrheit (inkl. Setsuko, nach den Beweisen) wendet sich gegen den harten Kern.
+- **[FEHLT]** Gero und Vera bilden den harten Kern; sie würden die Leistung eher erhöhen als abschalten und lassen sich von Layard nicht überzeugen.
+- **[FEHLT]** Beim Auffinden der Gruppe spaltet sie sich 3 zu 2: Setsuko, Kora und Torben wenden sich nach den Beweisen gegen Gero und Vera.
 - **[FEHLT]** Layards Schlussentscheidung: Behörden/ZVS einschalten (sichere Abschaltung, aber Verhaftung und Prozess für alle) oder außerbehördliche Lösung (das Kollektiv zerlegt das Studio selbst; die Hardliner könnten woanders neu anfangen).
 
 ### Die zwei Entscheidungen
