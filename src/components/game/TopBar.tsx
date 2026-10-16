@@ -1,6 +1,7 @@
 import { memo, useEffect, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { useMusic } from "@/audio/MusicPlayer";
+import { useExternalGameAudio } from "@/audio/externalGameAudio";
 import { useSettings } from "@/audio/SettingsContext";
 import { useBusRide } from "@/game/busRideState";
 import { scenes } from "@/game/scenes";
@@ -24,7 +25,8 @@ function TopBarImpl({ onOpenPause, onOpenHelp }: Props) {
   // soll der Track-Switcher verschwinden (Song darf in Ruhe auslaufen).
   // Auch in den Aufzügen wird der Switcher ausgeblendet, da dort die
   // Fahrstuhl-Musik in Dauerschleife läuft.
-  const hideMusicSwitcher = music.activeOverride === "sectorThreshold" || scene === "elevator" || scene === "elevatorE71" || scene === "konbiniE67" || scene === "konbiniE71" || !!busRide;
+  const externalGameAudio = useExternalGameAudio();
+  const hideMusicSwitcher = externalGameAudio || music.activeOverride === "sectorThreshold" || scene === "elevator" || scene === "elevatorE71" || scene === "konbiniE67" || scene === "konbiniE71" || !!busRide;
 
   // Vollbild-Status (Desktop). Synchronisiert mit der Browser-API,
   // damit ESC-Verlassen den Button korrekt zurücksetzt.

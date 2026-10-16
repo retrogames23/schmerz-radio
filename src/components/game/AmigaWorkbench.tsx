@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, type ReactNode } from "react";
 import { useGame } from "@/game/GameContext";
+import { useMusic } from "@/audio/MusicPlayer";
+import { setExternalGameAudio } from "@/audio/externalGameAudio";
 import { CloseButton } from "./CloseButton";
 import { FastWebChatRoom } from "./fastweb/ChatRoom";
 
@@ -509,6 +511,25 @@ export function AmigaWorkbench() {
   const { amigaWorkbenchOpen, closeAmigaWorkbench } = useGame();
   const [windows, setWindows] = useState<WindowState[]>([]);
   const [zOrder, setZOrder] = useState<string[]>([]);
+  const music = useMusic();
+  const tycoonRunning = amigaWorkbenchOpen && windows.some((w) => w.kind === "tycoon");
+
+  // Tycoon übernimmt den Sound: Hauptspielmusik pausieren + Player ausblenden.
+  useEffect(() => {
+    if (!tycoonRunning) return;
+    music.pause();
+    setExternalGameAudio(true);
+    return () => {
+      setExternalGameAudio(false);
+      music.resume();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tycoonRunning]);
+
+  // Workbench geschlossen → Tycoon-Fenster mit beenden.
+  useEffect(() => {
+    if (!amigaWorkbenchOpen) setWindows((w) => w.filter((x) => x.kind !== "tycoon"));
+  }, [amigaWorkbenchOpen]);
 
   if (!amigaWorkbenchOpen) return null;
 
@@ -589,10 +610,14 @@ export function AmigaWorkbench() {
             icon={<DiskIcon />}
             onOpen={() => openDrawer(FASTWEB_DISK as FileNode & { kind: "drawer" })}
           />
-          <DesktopIcon label="Tycoon" icon={<DiskIcon />} onOpen={openTycoon} />
           <DesktopIcon label="Ram Disk" icon={<RamDiskIcon />} onOpen={() => openFile("Ram Disk", <em>(leer · 0% full)</em>)} />
           <DesktopIcon label="Shell" icon={<ShellIcon />} onOpen={openShell} />
           <DesktopIcon label="Trashcan" icon={<TrashIcon />} onOpen={() => openFile("Trashcan", <em>(leer)</em>)} />
+        </div>
+
+        {/* Eingelegte Spiele-Diskette (DF2:) frei auf dem Desktop */}
+        <div style={{ position: "absolute", top: 36, left: 24 }}>
+          <DesktopIcon label="HC-Tycoon" icon={<DiskIcon />} onOpen={openTycoon} />
         </div>
 
         {/* Fenster */}
