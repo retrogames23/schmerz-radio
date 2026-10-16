@@ -626,6 +626,14 @@ export function AmigaWorkbench() {
               )}
               {w.kind === "fastweb" && <FastWebBrowser />}
               {w.kind === "shell" && <AmigaShell />}
+              {w.kind === "tycoon" && (
+                <iframe
+                  src={TYCOON_URL}
+                  title="Homecomputer Tycoon"
+                  style={{ border: "none", width: "100%", height: "100%", background: "#000" }}
+                  allow="autoplay; fullscreen"
+                />
+              )}
             </WindowFrame>
           );
         })}
