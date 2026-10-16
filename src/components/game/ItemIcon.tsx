@@ -396,8 +396,28 @@ function VierkantschluesselIcon() {
   );
 }
 
+function TeeRalfIcon() {
+  return (
+    <>
+      {/* Pappdeckel */}
+      <rect x="6" y="6" width="12" height="2" fill={ICON_HI} />
+      {/* Becher */}
+      <rect x="7" y="8" width="10" height="11" fill={ICON_DK} />
+      <rect x="8" y="9" width="1" height="9" fill={ICON_HI} opacity="0.5" />
+      {/* Henkel */}
+      <rect x="17" y="10" width="3" height="1" fill={ICON_DK} />
+      <rect x="19" y="10" width="1" height="5" fill={ICON_DK} />
+      <rect x="17" y="14" width="3" height="1" fill={ICON_DK} />
+      {/* Dampf */}
+      <rect x="10" y="3" width="1" height="2" fill={ICON_HI} opacity="0.6" />
+      <rect x="13" y="2" width="1" height="3" fill={ICON_HI} opacity="0.6" />
+    </>
+  );
+}
+
 const ICON_MAP: Record<InventoryItemId, () => React.ReactElement> = {
   protocol: ProtocolIcon,
+  teeRalf: TeeRalfIcon,
   belegAushangAufzug: AushangIcon,
   belegAushangKorridor46: AushangIcon,
   belegAushangGemeinschaftsraum: AushangIcon,
