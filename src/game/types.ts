@@ -475,6 +475,10 @@ export type StoryFlag =
   | "ralfFavorNews"
   | "ralfAct2Greeted"
   | "ralfToldGang"
+  | "sawGiveawayRadio"
+  | "askedNerdsGiveaway"
+  | "askedKrollFundsache"
+  | "ralfToldDelivery"
   /** Warnbrief erhalten — vorbereitet, wird später gesetzt. */
   | "gotWarnbrief"
   | "ralfToldWarnbrief"
@@ -696,7 +700,7 @@ export interface SceneDecal {
   /** Eigener Laufband-Text (nur kind "ledTicker"); ohne Angabe der E67-Standard. */
   tickerText?: string;
   /** Konbini-Meldungspool für ledTicker (30+ Minuten ohne Wiederholung). */
-  tickerPool?: "e67" | "e71";
+  tickerPool?: "e67" | "e67act2" | "e71";
   x: number;
   y: number;
   w: number;
