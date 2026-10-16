@@ -86,7 +86,7 @@ export const konbiniE67Scenes: Record<string, Scene> = {
         onUse: (api) =>
           api.showText([
             api.hasFlag("act2Started")
-              ? "Graubrot in Tüten, Dosen mit blauem Stempel, Haltbarmilch. Die Nachtsperre-Schilder sind umgedreht. Zwei Schichtarbeiter stehen an, einer zählt Münzen ab."
+              ? "Graubrot in Tüten, Dosen mit blauem Stempel, Haltbarmilch. Die Nachtsperre-Schilder sind umgedreht. Auf dem Tresen liegt noch der Bon von jemandem, der eben eingekauft hat."
               : "Graubrot in Tüten, Dosen mit blauem Stempel, Haltbarmilch. An jedem Regal ein kleines rotes Nachtsperre-Schild. Man darf sich die Waren nachts ansehen. Nur nicht nehmen.",
           ]),
       },

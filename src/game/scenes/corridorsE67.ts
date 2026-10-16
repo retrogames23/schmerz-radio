@@ -25,7 +25,7 @@ export const corridorsE67Scenes: Record<string, Scene> = {
     bgFit: "contain",
     title: "Korridor 36 — Verwaltung und Versorgung",
     intro: (api) => api.hasFlag("act2Started")
-      ? "Vormittag auf der Versorgungsachse. Ein Karren mit Kisten rollt Richtung Aufzug, zwei Leute in Arbeitsjacken gehen vorbei, ohne aufzusehen. Aus 3602 riecht es nach Frühstücksbrei."
+      ? "Vormittag auf der Versorgungsachse. Frische Karrenspuren auf dem Linoleum, irgendwo rollt ein Wagen Richtung Aufzug. Aus 3602 riecht es nach Frühstücksbrei."
       : "Andere Beleuchtung als zuhause. Sterilere Türen. Vor einer davon — 3601 — ein handgeschriebenes Schild. Aus 3602 zieht warm und ranzig ein Geruch nach Mensa-Pampe und Bohnerwachs.",
     npcs: [],
     hotspots: [
