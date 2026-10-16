@@ -444,7 +444,10 @@ type WindowState =
   | { kind: "drawer"; id: string; node: FileNode & { kind: "drawer" } }
   | { kind: "file"; id: string; name: string; content: ReactNode }
   | { kind: "fastweb"; id: string }
-  | { kind: "shell"; id: string };
+  | { kind: "shell"; id: string }
+  | { kind: "tycoon"; id: string };
+
+const TYCOON_URL = "https://homecomputer-tycoon.lovable.app";
 
 let WIN_ID = 0;
 const nextId = () => `w${++WIN_ID}`;
@@ -531,6 +534,13 @@ export function AmigaWorkbench() {
     setWindows((w) => [...w, { kind: "fastweb", id }]);
     setZOrder((z) => [...z, id]);
   };
+  const openTycoon = () => {
+    const existing = windows.find((w) => w.kind === "tycoon");
+    if (existing) { focus(existing.id); return; }
+    const id = nextId();
+    setWindows((w) => [...w, { kind: "tycoon", id }]);
+    setZOrder((z) => [...z, id]);
+  };
   const openShell = () => {
     const id = nextId();
     setWindows((w) => [...w, { kind: "shell", id }]);
@@ -579,6 +589,7 @@ export function AmigaWorkbench() {
             icon={<DiskIcon />}
             onOpen={() => openDrawer(FASTWEB_DISK as FileNode & { kind: "drawer" })}
           />
+          <DesktopIcon label="Tycoon" icon={<DiskIcon />} onOpen={openTycoon} />
           <DesktopIcon label="Ram Disk" icon={<RamDiskIcon />} onOpen={() => openFile("Ram Disk", <em>(leer · 0% full)</em>)} />
           <DesktopIcon label="Shell" icon={<ShellIcon />} onOpen={openShell} />
           <DesktopIcon label="Trashcan" icon={<TrashIcon />} onOpen={() => openFile("Trashcan", <em>(leer)</em>)} />
@@ -595,11 +606,12 @@ export function AmigaWorkbench() {
                 w.kind === "drawer" ? `${w.node.name}:` :
                 w.kind === "file" ? w.name :
                 w.kind === "shell" ? "AmigaShell" :
+                w.kind === "tycoon" ? "Homecomputer Tycoon" :
                 "FastWeb"
               }
               z={10 + z}
               offset={offset}
-              isFastWeb={w.kind === "fastweb"}
+              isFastWeb={w.kind === "fastweb" || w.kind === "tycoon"}
               isShell={w.kind === "shell"}
               onFocus={() => focus(w.id)}
               onClose={() => closeWindow(w.id)}
@@ -614,6 +626,14 @@ export function AmigaWorkbench() {
               )}
               {w.kind === "fastweb" && <FastWebBrowser />}
               {w.kind === "shell" && <AmigaShell />}
+              {w.kind === "tycoon" && (
+                <iframe
+                  src={TYCOON_URL}
+                  title="Homecomputer Tycoon"
+                  style={{ border: "none", width: "100%", height: "100%", background: "#000" }}
+                  allow="autoplay; fullscreen"
+                />
+              )}
             </WindowFrame>
           );
         })}
