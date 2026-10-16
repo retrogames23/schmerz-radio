@@ -6,12 +6,35 @@ export const cafeteriaDialogs: Record<string, DialogTree> = {
     id: "cafeteriaKowalk",
     start: "k0",
     lines: {
+      kTeaRalf: {
+        id: "kTeaRalf",
+        speaker: "KOWALK",
+        text: "Zum Mitnehmen. Für drüben. — Na gut, der Becher kommt aber zurück, ich zähle die. Deckel drauf, sonst ist er kalt, bevor Sie an der Schleuse sind.",
+        subtext: "Sie fragt nicht, für wen. Sie schreibt den Becher trotzdem auf.",
+        end: true,
+      },
       k0: {
         id: "k0",
         speaker: "KOWALK",
         text: "Worag, E67, 2611. — Steht in der Liste. Was brauchen Sie?",
         subtext: "Sie hat die Liste nicht angesehen. Sie kennt die Leute auf E67.",
         choices: [
+          {
+            // Ralfs Gefallen: ein heißer Tee zum Mitnehmen.
+            text: "Einen Tee zum Mitnehmen, bitte. Heiß. Für einen Bekannten drüben bei E71.",
+            next: "kTeaRalf",
+            requires: ["ralfWantsTea"],
+            hiddenWhen: ["gotTeaForRalf"],
+            action: (api) => {
+              api.setFlag("gotTeaForRalf");
+              api.addItem({
+                id: "teeRalf",
+                name: "Becher Tee (heiß)",
+                description:
+                  "Kantinentee aus 3602 im Steingutbecher, mit Pappdeckel abgedeckt. Riecht nach Karton und ein bisschen nach Pfefferminz. Für Ralf am Fenster.",
+              });
+            },
+          },
           {
             // Neuer Hauptpfad: Insa hat Layard zu Kowalk geschickt, weil
             // sie den Tagescode für die Quadrantenschleuse braucht.
