@@ -1,4 +1,5 @@
-import commonRoomE71Bg from "@/assets/scene-common-room-e71.jpg";
+import commonRoomE71Bg from "@/assets/scene-common-room-e71-box.jpg";
+import commonRoomE71Act2Bg from "@/assets/scene-common-room-e71-box-radio.png";
 import type { Scene } from "../types";
 
 /**
@@ -12,6 +13,7 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
   commonRoomE71: {
     id: "commonRoomE71",
     background: commonRoomE71Bg,
+    backgroundFn: (api) => (api.hasFlag("act2Started") ? commonRoomE71Act2Bg : commonRoomE71Bg),
     title: "Gemeinschaftsraum 1530 — Gebäude E71",
     intro: (api) =>
       api.hasFlag("act2Started")
@@ -118,10 +120,10 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
       },
       {
         id: "giveawayBox",
-        // Fest angeschraubte Holzbox an der Wand neben dem Regal (nur im Text beschrieben).
-        x: 0,
-        y: 78,
-        w: 12,
+        // Fest angeschraubte Holzkiste an der Wand über der Sofalehne.
+        x: 44.5,
+        y: 30,
+        w: 14.5,
         h: 18,
         label: "„Zu verschenken“-Box",
         kind: "look",
@@ -135,8 +137,8 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
           }
           api.setFlag("sawGiveawayRadio");
           api.showText([
-            "Die »ZU VERSCHENKEN«-Kiste. Neben dem Topflappen liegt heute ein kleines braunes Gerät ohne Typenschild. Ein Drehknopf, eine Skala, ein Ohrhörer.",
-            "Daran mit Gummiband ein Zettel, Druckbuchstaben: »Für schlaflose Nächte. Einfach einschalten.«",
+            "Die »ZU VERSCHENKEN«-Kiste. Auf dem Topflappen steht heute ein kleines braunes Gerät ohne Typenschild. Ein Drehknopf, eine Skala.",
+            "Daran hängt ein Zettel: »Funktioniert! UKW. Viel Spaß!« Auf der Rückseite, in anderen Druckbuchstaben: »Für schlaflose Nächte. Einfach einschalten.«",
             "Layard kennt die Bauart. Er hat selbst so eines. Er lässt es liegen.",
           ]);
         },
