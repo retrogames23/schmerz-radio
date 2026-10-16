@@ -43,6 +43,7 @@ export type SceneId =
 
 export type InventoryItemId =
   | "protocol"
+  | "teeRalf"
   | "flyer"
   | "wartungsnotiz5610"
   // Ausdruck aus dem Vorgangsknoten 5610 (Papierstreifen, Beleg für 5011)
@@ -465,6 +466,26 @@ export type StoryFlag =
   | "ralfKnowsLayardTired"
   | "ralfToldRollo"
   | "ralfToldBoxbude"
+  // Ralf — Beziehung durch kleine Gefallen
+  | "ralfWantsTea"
+  | "gotTeaForRalf"
+  | "ralfFavorTea"
+  | "ralfWantsNews"
+  | "readTickerForRalf"
+  | "ralfFavorNews"
+  | "ralfAct2Greeted"
+  | "ralfToldGang"
+  /** Warnbrief erhalten — vorbereitet, wird später gesetzt. */
+  | "gotWarnbrief"
+  | "ralfToldWarnbrief"
+  // Akt II — Morgenzeilen der E67-Nachbarn
+  | "philippeAct2Greeted"
+  | "bodoAct2Greeted"
+  | "helkaAct2Greeted"
+  | "ennisAct2Greeted"
+  | "kowalkAct2Greeted"
+  | "brustAct2Greeted"
+  | "krollAct2Greeted"
   // Akt-I-Pflichträtsel „Quittung 4317"
   | "noticedTransferCode"
   | "tookPencilStub"

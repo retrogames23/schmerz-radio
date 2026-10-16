@@ -11,8 +11,9 @@ export const elevatorE67Scenes: Record<string, Scene> = {
     id: "elevator",
     background: elevatorBg,
     title: "Aufzug — E67",
-    intro:
-      "Käfig aus Edelstahl, halb so groß wie eine Wohnung. An der rechten Seitenwand: ein Bedienfeld mit fünf Knöpfen. Über der Tür blinzelt der Etagen-Indikator.",
+    intro: (api) => api.hasFlag("act2Started")
+      ? "Der Käfig riecht nach dem Rasierwasser von jemandem, der eben ausgestiegen ist. Am Bedienfeld fünf Knöpfe, über der Tür der Etagen-Indikator."
+      : "Käfig aus Edelstahl, halb so groß wie eine Wohnung. An der rechten Seitenwand: ein Bedienfeld mit fünf Knöpfen. Über der Tür blinzelt der Etagen-Indikator.",
     hotspots: [
       // Knöpfe von oben (5) nach unten (1) — Werte in Prozent der
       // 16:9-Bühne, rechtes Bedienfeld.
@@ -145,8 +146,9 @@ export const elevatorE67Scenes: Record<string, Scene> = {
     background: (api) =>
       api.hasFlag("belegAushangAufzug") ? floor1LobbyNoPosterBg : floor1LobbyBg,
     title: "Lobby — Etage 1, E67",
-    intro:
-      "Ein leerer Empfangstresen. Eine Anzeigetafel. Rechts der Aufzug, daneben hell erleuchtet die Glastür des Konbini. Hinten: die schwere Quadrantenschleuse.",
+    intro: (api) => api.hasFlag("act2Started")
+      ? "Vormittag in der Lobby. Der Tresen ist leer wie immer. Im Konbini stehen zwei Leute an der Kasse. Hinten: die Quadrantenschleuse."
+      : "Ein leerer Empfangstresen. Eine Anzeigetafel. Rechts der Aufzug, daneben hell erleuchtet die Glastür des Konbini. Hinten: die schwere Quadrantenschleuse.",
     decals: [
       {
         id: "tvE67",

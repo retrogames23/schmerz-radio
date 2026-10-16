@@ -23,6 +23,15 @@ function lightTopics(api: GameApi): DialogChoice[] {
     out.push({ text: "Und Sie stehen wirklich den ganzen Tag hier?", next: "tRollo", action: (a) => a.setFlag("ralfToldRollo") });
   if (!api.hasFlag("ralfToldBoxbude"))
     out.push({ text: "Was haben Sie eigentlich vor dem Archiv gemacht?", next: "tBoxbude", action: (a) => a.setFlag("ralfToldBoxbude") });
+  // Kleine Gefallen — Vertrauen wächst über Handlungen, nicht nur über Themen.
+  if (api.hasFlag("ralfAskedWork") && !api.hasFlag("ralfWantsTea"))
+    out.push({ text: "Kann ich Ihnen eigentlich etwas mitbringen?", next: "fTeaAsk", action: (a) => a.setFlag("ralfWantsTea") });
+  if (api.hasFlag("ralfWantsTea") && !api.hasFlag("ralfFavorTea") && api.hasItem("teeRalf"))
+    out.push({ text: "[ Den Tee aus der Kantine durch den Schlitz reichen ]", next: "fTeaGive", action: (a) => { a.removeItem("teeRalf"); a.setFlag("ralfFavorTea"); } });
+  if (api.hasFlag("ralfAskedWork") && !api.hasFlag("ralfWantsNews"))
+    out.push({ text: "Bekommen Sie hier hinter dem Rollo eigentlich Nachrichten mit?", next: "fNewsAsk", action: (a) => a.setFlag("ralfWantsNews") });
+  if (api.hasFlag("readTickerForRalf") && !api.hasFlag("ralfFavorNews"))
+    out.push({ text: "„Ich habe Ihnen das Laufband im Konbini abgelesen.“", next: "fNewsGive", action: (a) => a.setFlag("ralfFavorNews") });
   return out;
 }
 
@@ -43,6 +52,11 @@ function deepTopics(api: GameApi): DialogChoice[] {
     });
   if (api.hasFlag("metMira") && !api.hasFlag("ralfToldMira"))
     out.push({ text: "Was hältst du von Miras Theorien?", next: "tMira", action: (a) => a.setFlag("ralfToldMira") });
+  if (api.hasFlag("act2Started") && !api.hasFlag("ralfToldGang"))
+    out.push({ text: "Wer läuft hier eigentlich so durch den Gang?", next: "tGang", action: (a) => a.setFlag("ralfToldGang") });
+  // Vorbereitet: wird erst mit dem Warnbrief freigeschaltet.
+  if (api.hasFlag("gotWarnbrief") && !api.hasFlag("ralfToldWarnbrief"))
+    out.push({ text: "Jemand hat mir einen Brief zugesteckt. Hast du was gesehen?", next: "tWarnbrief", action: (a) => a.setFlag("ralfToldWarnbrief") });
   return out;
 }
 
@@ -120,6 +134,33 @@ function lightTopicLines(hubIds: string[]): Record<string, DialogLine> {
       subtext: "Das Ende klingt nicht wie ein Trauma. Eher wie eine Rechnung.",
       next: back(1),
     },
+    fTeaAsk: {
+      id: "fTeaAsk",
+      speaker: "RALF",
+      text: "Mitbringen. Das hat lange keiner gefragt. — Einen Tee. Heiß, aus der Kantine drüben in 3602. Mir geben sie nichts mit, ich bin dort nicht gelistet. Und ich gehe da auch nicht hin.",
+      subtext: "Er sagt es beiläufig. Es ist trotzdem eine Bitte.",
+      next: back(0),
+    },
+    fTeaGive: {
+      id: "fTeaGive",
+      speaker: "RALF",
+      text: "[ Die Hand verschwindet, kommt zurück, nimmt den Becher vorsichtig am Rand. ] — Heiß. Tatsächlich heiß. Danke, Worag. Das merke ich mir.",
+      subtext: "Kein großes Wort. Aber er klingt anders als vorher.",
+      next: back(1),
+    },
+    fNewsAsk: {
+      id: "fNewsAsk",
+      speaker: "RALF",
+      text: "Nachrichten? Ich höre Schritte. Das sind meine Nachrichten. — Im Konbini drüben läuft so ein Leuchtband. Wenn Sie mal da sind: Lesen Sie mir vor, was draufsteht. Egal was. Hauptsache, es ist von heute.",
+      next: back(0),
+    },
+    fNewsGive: {
+      id: "fNewsGive",
+      speaker: "RALF",
+      text: "[ Er hört zu, ohne zu unterbrechen. ] — Das ist alles? Wunderbar. Die schreiben seit Jahren denselben Satz um. Aber es ist ihr Satz von heute. Danke.",
+      subtext: "Er lacht kurz. Es ist das erste Mal, dass Layard ihn lachen hört.",
+      next: back(1),
+    },
     tLeer: {
       id: "tLeer",
       speaker: "RALF",
@@ -161,7 +202,7 @@ export const ralfDialogs: Record<string, DialogTree> = {
       r5: {
         id: "r5",
         speaker: "RALF",
-        text: "Ralf. Ich wohne hier, seit E71 noch keine Nummer hatte. Und Sie sind neu — man hört das am Schritt. Vierte Etage, oder?",
+        text: "Ralf. Ich wohne hier, seit E71 noch keine Nummer hatte. Und Sie sind neu — man hört das am Schritt. Von drüben, oder? E67.",
         subtext: "Keine Neugier. Eher die Routine von jemandem, der Geräusche sortiert.",
         next: "rQ1",
       },
@@ -170,7 +211,7 @@ export const ralfDialogs: Record<string, DialogTree> = {
         speaker: "RALF",
         text: "Also: Was verschlägt einen um diese Zeit in einen Verbindungsgang, in dem es nichts gibt?",
         choices: [
-          { text: "„Worag. Ich wohne in 4602. Ich konnte nicht schlafen.“", next: "rA1", action: (a) => a.setFlag("ralfKnowsLayardTired") },
+          { text: "„Worag. Ich wohne drüben in E67, 2611. Ich konnte nicht schlafen.“", next: "rA1", action: (a) => a.setFlag("ralfKnowsLayardTired") },
           { text: "„Ich schaue mich um. Beruflich fällt mir das schwer.“", next: "rA2", action: (a) => a.setFlag("ralfKnowsLayardWriter") },
           { text: "„Nichts. Ich gehe gleich weiter.“", next: "rA3" },
         ],
@@ -216,7 +257,7 @@ export const ralfDialogs: Record<string, DialogTree> = {
       hi: {
         id: "hi",
         speaker: "RALF",
-        text: "Der Schritt kommt mir bekannt vor. Worag aus 4602.",
+        text: "Der Schritt kommt mir bekannt vor. Worag aus 2611.",
         subtext: "Er hat sich den Schritt gemerkt. Nicht den Namen zuerst.",
         next: "hubA",
       },
@@ -244,8 +285,8 @@ export const ralfDialogs: Record<string, DialogTree> = {
         hiddenWhen: ["ralfAskedNight"],
         next: "hubA",
         choices: [
-          { text: "„Schlecht. Es ist zu leise geworden.“", next: "qNightA", action: (a) => { a.setFlag("ralfAskedNight"); a.setFlag("ralfStage3"); a.setFlag("ralfKnowsLayardTired"); } },
-          { text: "„Ich schlafe. Ich träume nur das Falsche.“", next: "qNightB", action: (a) => { a.setFlag("ralfAskedNight"); a.setFlag("ralfStage3"); } },
+          { text: "„Schlecht. Es ist zu leise geworden.“", next: "qNightA", action: (a) => { a.setFlag("ralfAskedNight"); a.setFlag("ralfKnowsLayardTired"); } },
+          { text: "„Ich schlafe. Ich träume nur das Falsche.“", next: "qNightB", action: (a) => { a.setFlag("ralfAskedNight"); } },
         ],
       },
       qWorkA: {
@@ -283,6 +324,36 @@ export const ralfDialogs: Record<string, DialogTree> = {
         end: true,
       },
     },
+  },
+
+  // ── Akt II: der Morgen danach ───────────────────────────────────
+  ralfAct2: {
+    id: "ralfAct2",
+    start: "a1",
+    npcId: "ralf",
+    lines: {
+      a1: {
+        id: "a1",
+        speaker: "RALF",
+        text: "Der Schritt. Worag. Gestern Nacht ohne Ziel, heute früh mit Ziel. — Jetzt also offiziell?",
+        subtext: "Durch den Schlitz sieht er nur Schuhe und eine Mappe. Das reicht ihm.",
+        next: "a2",
+      },
+      a2: {
+        id: "a2",
+        speaker: "LAYARD",
+        text: "Ein Auftrag. Erhebung vor Ort, E71.",
+        next: "a3",
+      },
+      a3: {
+        id: "a3",
+        speaker: "RALF",
+        text: "Dann kommt hier ab jetzt öfter jemand mit Mappe vorbei. Gut. Von hier sieht man, wer kommt und wer geht. Mehr kann ich nicht. Aber das kann ich gründlich.",
+        subtext: "Es klingt wie ein Angebot, das er nicht als Angebot formulieren will.",
+        end: true,
+      },
+    },
+    onEnd: (api) => api.setFlag("ralfAct2Greeted"),
   },
 
   // ── Stufe 3: Vertrauen ──────────────────────────────────────────
@@ -330,6 +401,20 @@ export const ralfDialogs: Record<string, DialogTree> = {
         text: "Archivar. Registratur, Datumsstempel, Aktenzeichen. Privat habe ich dasselbe gemacht, nur über dieses Haus: Ordner, Ausschnitte, Vermerke. Dann habe ich gemerkt, dass Sammeln eine Beschäftigung ist und keine Handlung. Jetzt lese ich, rauche und rede mit Leuten, die stehen bleiben.",
         subtext: "Er hat sich eingerichtet. Er weiß das und beschönigt es nicht.",
         next: "hubC",
+      },
+      tGang: {
+        id: "tGang",
+        speaker: "RALF",
+        text: "Wer hier durchläuft? Schichtleute früh, Lieferkarren um sieben, die Pathologie-Boten mit ihren Kisten. Ein paar Gesichter kenne ich nur am Schritt: eine, die immer zu schnell geht und dabei nach Farbe riecht. Einer, der stehen bleibt und dann doch nicht anklopft. Und seit heute du — mit Mappe.",
+        subtext: "Er sagt keine Namen. Er sortiert nur Geräusche.",
+        next: "hubC",
+      },
+      tWarnbrief: {
+        id: "tWarnbrief",
+        speaker: "RALF",
+        text: "Ein Brief. Ja. Gestern früh ist jemand mit einem Umschlag Richtung E67 gelaufen und ohne zurückgekommen. Schnell, leise, Farbe an den Fingern. Mehr sage ich nicht — aber ich glaube, wer so etwas schreibt, hat Angst um dich. Nicht vor dir.",
+        subtext: "Er wägt jedes Wort ab. Er will helfen, ohne jemanden zu verraten.",
+        next: "hubB",
       },
       tMira: {
         id: "tMira",

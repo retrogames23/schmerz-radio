@@ -43,11 +43,20 @@ export const konbiniE67Scenes: Record<string, Scene> = {
         h: 15,
         label: "Leuchtschrift-Laufband",
         kind: "look",
-        onUse: (api) =>
+        onUse: (api) => {
+          if (api.hasFlag("ralfWantsNews") && !api.hasFlag("readTickerForRalf")) {
+            api.setFlag("readTickerForRalf");
+            api.showText([
+              "Layard bleibt stehen und liest mit, eine ganze Runde lang. Öffnungszeiten, Wetter, eine Fundsache, eine Verordnung.",
+              "Er prägt sich die Meldungen ein. Für Ralf. Hauptsache, sie sind von heute.",
+            ]);
+            return;
+          }
           api.showText([
             "Ein Laufband aus bernsteinfarbenen Leuchtpunkten. Am Rahmen ein Typenschild mit japanischen Zeichen und einem deutschen Aufkleber: „Importzulassung Sektor 79/K“.",
             "Die Meldungen kommen per Leitung von der Versorgungskommission. Wer sie schreibt, weiß niemand. Sie klingen alle, als hätte sie dieselbe Schreibmaschine verfasst.",
-          ]),
+          ]);
+        },
       },
       {
         id: "konbiniFridge",
@@ -61,7 +70,9 @@ export const konbiniE67Scenes: Record<string, Scene> = {
           api.showText([
             "Glastüren, innen beschlagen. Haltbarmilch im Tetraeder, Molke, Quark in Wachspapier. Alles aus Sektor 31.",
             "Auf den Türen japanische Warnaufkleber, halb mit Tesafilm überklebt. Darunter, mit Kugelschreiber: „Tür zu! — Kroll“.",
-            "Das Fach ist verriegelt. Ein kleines rotes Lämpchen meldet: Nachtsperre.",
+            api.hasFlag("act2Started")
+              ? "Das rote Lämpchen ist aus. Regelverkauf. Layard braucht nichts davon."
+              : "Das Fach ist verriegelt. Ein kleines rotes Lämpchen meldet: Nachtsperre.",
           ]),
       },
       {
@@ -74,7 +85,9 @@ export const konbiniE67Scenes: Record<string, Scene> = {
         kind: "look",
         onUse: (api) =>
           api.showText([
-                        "Graubrot in Tüten, Dosen mit blauem Stempel, Haltbarmilch. An jedem Regal ein kleines rotes Nachtsperre-Schild. Man darf sich die Waren nachts ansehen. Nur nicht nehmen.",
+            api.hasFlag("act2Started")
+              ? "Graubrot in Tüten, Dosen mit blauem Stempel, Haltbarmilch. Die Nachtsperre-Schilder sind umgedreht. Zwei Schichtarbeiter stehen an, einer zählt Münzen ab."
+              : "Graubrot in Tüten, Dosen mit blauem Stempel, Haltbarmilch. An jedem Regal ein kleines rotes Nachtsperre-Schild. Man darf sich die Waren nachts ansehen. Nur nicht nehmen.",
           ]),
       },
       {
@@ -89,7 +102,12 @@ export const konbiniE67Scenes: Record<string, Scene> = {
           api.showText([
             "Ein bulliges Gerät aus beigem und braunem Hartplastik, verchromte Tasten. Das Typenschild ist japanisch. Darüber Dymo-Streifen: SUMME, STORNO, FACH 4.",
             "Daneben der Münzzähler: Schächte für jede Münzgröße, ein kleines grünes Zählfenster. Er zeigt 0000. Nachts wird nicht gezählt.",
-          ]),
+          ].map((t, i) =>
+            i === 1 && api.hasFlag("act2Started")
+              ? "Daneben der Münzzähler: Schächte für jede Münzgröße, ein kleines grünes Zählfenster. Es rattert. Der Regelverkauf läuft seit sechs."
+              : t,
+          ),
+          ),
       },
     ],
   },

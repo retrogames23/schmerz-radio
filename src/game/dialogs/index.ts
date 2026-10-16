@@ -21,8 +21,9 @@ import { zentralverwaltungDialogs } from "./zentralverwaltung";
 import { aushangDialogs } from "./aushaenge";
 import { krollDialogs } from "./kroll";
 import { mindenDialogs } from "./minden";
+import { withAct2Greetings } from "./act2Greetings";
 
-export const dialogs: Record<string, DialogTree> = {
+export const dialogs: Record<string, DialogTree> = withAct2Greetings({
   ...philippeDialogs,
   ...insaDialogs,
   ...miraDialogs,
@@ -45,4 +46,4 @@ export const dialogs: Record<string, DialogTree> = {
   ...aushangDialogs,
   ...krollDialogs,
   ...mindenDialogs,
-};
+});

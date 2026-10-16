@@ -151,8 +151,9 @@ export const communalE67Scenes: Record<string, Scene> = {
     background: (api) =>
       api.hasFlag("sentForgedQuittung") ? cafeteriaGreenBg : cafeteriaBg,
     title: "Kantine 3602 — Nährstoffausgabe E67",
-    intro:
-      "Hinter der Theke zwei Kittel. Auf dem Boden ein Streifen, der einmal weiß war, jetzt eine Spur Anstellen markiert. Im Rohr über dem Tresen blinkt rot ein Licht, das niemand quittiert.",
+    intro: (api) => api.hasFlag("act2Started")
+      ? "Frühstücksausgabe. Hinter der Theke zwei Kittel, vor der Theke eine kurze Schlange in Arbeitsjacken. Im Rohr über dem Tresen blinkt noch immer das rote Licht."
+      : "Hinter der Theke zwei Kittel. Auf dem Boden ein Streifen, der einmal weiß war, jetzt eine Spur Anstellen markiert. Im Rohr über dem Tresen blinkt rot ein Licht, das niemand quittiert.",
     hotspots: [
       {
         id: "kowalkSpot",

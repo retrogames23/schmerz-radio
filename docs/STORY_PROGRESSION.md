@@ -8,9 +8,9 @@
 ---
 
 ## Prolog & Ausgangslage
-- **[UMGESETZT]** Layard, früher Autor, heute Verwaltungsangestellter, lebt 1997 in E67 (Wohnung 4601).
+- **[UMGESETZT]** Layard, früher Autor, heute Verwaltungsangestellter, lebt 1997 in E67 (Wohnung 2611).
 - **[UMGESETZT]** Das Mandatsgebiet: gedämpfte, bürokratische Realität (Provisorium seit 1946/1986), Mandatsdeutsch, Resonanz-Hygiene.
-- **[UMGESETZT]** Mira (4601-Nachbarschaft): ihr Schmerz-Radio empfängt 104,6.
+- **[UMGESETZT]** Mira (Wohnung 4601): hört 104,6 nicht, vertritt eine eigene, falsche Theorie zur Resonanz-Hygiene.
 
 ## Akt I: Haus E67
 - **[UMGESETZT]** Kaputtes Telefon, Nachbarn um Telefon bitten.
@@ -26,6 +26,12 @@
 - **[UMGESETZT]** Dienstmail: Rechercheauftrag 28/1194 zu den Resonanz-Zusammenbrüchen.
 - **[UMGESETZT]** Insa → Vossbeck → Legitimationsschreiben → Sektorkarte.
 - **[UMGESETZT]** Busfahrt Linie 28 (Fahrgäste, streitendes Paar).
+
+### Akt II in E67: subtile Morgenänderungen
+- **[UMGESETZT]** Nur eine Nacht vergangen. E67-Nachbarn (Philippe, Bodo, Helka, Ennis, Kowalk, Brust, Kroll) haben je eine einmalige Morgenzeile; höchstens die Mappe fällt auf.
+- **[UMGESETZT]** Morgen-Beschreibungen: Korridor 26 (Siegel 2615 hängt noch), 36, 46, 56, Aufzug, Lobby, Kantine, 2613, Konbini (Regelverkauf, kein Einkauf).
+- **[UMGESETZT]** Ralf: Vertrauen über kleine Gefallen (Tee aus 3602, Laufband vorlesen); Akt-II-Begrüßung; Beobachtungen im Verbindungsgang.
+- **[FEHLT]** Ralfs Warnbrief-Beobachtung ist vorbereitet (`gotWarnbrief`), wird mit dem Warnbrief freigeschaltet.
 
 ### Sektor 28 / E71
 - **[UMGESETZT]** Gemeinschaftsraum, Bibliothek, Kino, Nerds.
