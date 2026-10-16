@@ -66,7 +66,7 @@
 
 ### Die zwei Entscheidungen
 - **[TEILWEISE] A – Beweise abgeben vs. behalten:** Mechanik bei Sasse angelegt, finale Abgabe/Akte schließen fehlt.
-- **[FEHLT] B – Gruppe suchen vs. nicht suchen:** Sobald Layard die Spur hat (vor Tür 1531 bzw. beim Wählen der Nummer), innerer Monolog mit expliziter Wahl:
+- **[FEHLT] B – Gruppe suchen vs. nicht suchen:** Ausgelöst durch Setsukos Warnbrief (s. o.), innerer Monolog mit expliziter Wahl:
   - „Ich gehe der Sache auf den Grund."
   - „Das geht zu weit. Ich bin Rechercheur, kein Ermittler."
   Wählt er Letzteres, wird die Spur im Notizbuch als „nicht weiterverfolgt" vermerkt. Kein Zeitdruck.
@@ -78,6 +78,6 @@
 | **Beweise behalten** | Ende 2 | Ende 4 |
 
 - **[FEHLT] Ende 1 – Der pflichtbewusste Beamte:** Gerichtsprozess, Layard sagt als Zeuge aus; das System bleibt starr.
-- **[FEHLT] Ende 2 – Die stille Einigung:** Layard überzeugt die Gruppe in 1531, den Sender freiwillig abzuschalten und sich aufzulösen. Kein Prozess; Layard trägt das Geheimnis allein.
+- **[FEHLT] Ende 2 – Die stille Einigung:** Layard überzeugt die Mehrheit der Gruppe in 1531; diese wendet sich gegen den harten Kern, der Sender wird freiwillig abgeschaltet, die Gruppe löst sich auf. Kein Prozess; Layard trägt das Geheimnis allein.
 - **[FEHLT] Ende 3 – Die tragische Konfrontation:** Während Layard verhandelt, stürmt der Ordnungsdienst (alarmiert durch seine Protokolle). Cutscene der Verhaftung, dann Prozess; Layard steht zwischen allen Stühlen.
 - **[FEHLT] Ende 4 – Innere Emigration:** Weder Abgabe noch Suche. Layard schließt die Wohnungstür; 104,6 sendet weiter, die Zusammenbrüche häufen sich.
