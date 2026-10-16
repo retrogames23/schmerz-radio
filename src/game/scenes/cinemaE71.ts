@@ -20,8 +20,10 @@ export const cinemaE71Scenes: Record<string, Scene> = {
     id: "cinemaE71",
     background: cinemaBg,
     title: "Lichtspielsaal 5 — Gebäude E71",
-    intro:
-      "Reihen roter Klappsitze, alle leer. Vorn eine große, gealterte Leinwand. Hinten surrt ein Projektor, ohne etwas zu zeigen. Die Luft riecht nach warmem Staub und altem Zelluloid.",
+    intro: (api) =>
+      api.hasFlag("act2Started")
+        ? "Reihen roter Klappsitze, alle leer. Am Vormittag gibt es keine Vorstellung, nur die Notbeleuchtung brennt. Hinten surrt der Projektor im Leerlauf."
+        : "Reihen roter Klappsitze, alle leer. Vorn eine große, gealterte Leinwand. Hinten surrt ein Projektor, ohne etwas zu zeigen. Die Luft riecht nach warmem Staub und altem Zelluloid.",
     hotspots: [
       {
         id: "cinemaScreen",

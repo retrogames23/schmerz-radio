@@ -303,8 +303,10 @@ export const elevatorE67Scenes: Record<string, Scene> = {
     id: "passage",
     background: passageBg,
     title: "Verbindungsgang E67 ↔ E71",
-    intro:
-      "Außenluft. Das erste Mal seit Jahren. Ein Geländer, kalter Beton, irgendwo ein Lautsprecher, der nichts sagt.",
+    intro: (api) =>
+      api.hasFlag("act2Started")
+        ? "Außenluft, Vormittag. Leute in Arbeitsjacken gehen in beide Richtungen, niemand bleibt stehen. Ein Geländer, kalter Beton, irgendwo ein Lautsprecher, der nichts sagt."
+        : "Außenluft. Das erste Mal seit Jahren. Ein Geländer, kalter Beton, irgendwo ein Lautsprecher, der nichts sagt.",
     hotspots: [
       {
         id: "lookE67",

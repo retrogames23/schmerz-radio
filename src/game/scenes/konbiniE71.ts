@@ -72,7 +72,7 @@ export const konbiniE71Scenes: Record<string, Scene> = {
         onUse: (api) =>
           api.showText([
             "Glastüren, penibel gefegt. Haltbarmilch, Molke, Infusionslösungen für den Hausgebrauch — alles mit dem blauen Behördenstempel.",
-            "Ein Schild in zwei Sprachen: „Nachtsperre ab 19 Uhr“. Darunter, handschriftlich: „Auch für Kollegen. — R. Minden“.",
+            api.hasFlag("act2Started") ? "Ein Schild in zwei Sprachen: „Nachtsperre ab 19 Uhr“. Jetzt ist es umgedreht: „Regelverkauf“. Eine Frau mit Rezeptzettel wartet an der Kasse." : "Ein Schild in zwei Sprachen: „Nachtsperre ab 19 Uhr“. Darunter, handschriftlich: „Auch für Kollegen. — R. Minden“.",
           ]),
       },
       {

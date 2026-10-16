@@ -13,8 +13,10 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
     id: "commonRoomE71",
     background: commonRoomE71Bg,
     title: "Gemeinschaftsraum 1530 — Gebäude E71",
-    intro:
-      "Anders als drüben in E67. Echtes Sofa, eine Pflanze, im Regal Disketten in beschrifteten Ordnern. Auf einem Tisch in der Mitte: ein beigefarbener Computer mit dickem CRT — der Bildschirm leuchtet workbench-blau. Drei Jugendliche zwischen 16 und 22 sitzen drumherum, reden quer durcheinander.",
+    intro: (api) =>
+      api.hasFlag("act2Started")
+        ? "Echtes Sofa, eine Pflanze, Disketten in beschrifteten Ordnern. Auf dem Tisch derselbe beigefarbene Computer, daneben drei Becher von gestern Abend. Es riecht nach kaltem Tee."
+        : "Anders als drüben in E67. Echtes Sofa, eine Pflanze, im Regal Disketten in beschrifteten Ordnern. Auf einem Tisch in der Mitte: ein beigefarbener Computer mit dickem CRT — der Bildschirm leuchtet workbench-blau. Drei Jugendliche zwischen 16 und 22 sitzen drumherum, reden quer durcheinander.",
     hotspots: [
       // — Drei Nerds, ins Bild gemalt. Klickflächen liegen über ihren Figuren.
       {
