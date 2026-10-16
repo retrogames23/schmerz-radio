@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { getKonbiniTickerText, getTickerDurationSeconds } from "@/game/data/konbiniTicker";
 import type { SceneDecal, StoryFlag } from "@/game/types";
 
 interface Props {
@@ -10,8 +11,6 @@ interface Props {
   ) => T;
 }
 
-const LED_TICKER_TEXT =
-  "+++ KONBINI E67 · TYP K-4 +++ ABENDVERKAUF RUHT 19:00–06:00 +++ AUSGABE NUR MIT BERECHTIGUNGSSCHEIN S/D ODER DRINGLICHKEITS-BEZUGSSCHEIN DER LEITSTELLE +++ VERSORGUNGSRAT SEKTOR 28: RUHEZEITEN BEACHTEN +++ MISCHGEMÜSE II WIEDER LIEFERBAR +++ LINIE 28 VERKEHRT NACH SONDERFAHRPLAN +++ RESONANZ-HYGIENE IST GEMEINSCHAFTSAUFGABE +++ いらっしゃいませ +++ ";
 
 /**
  * Statische „Wandgeräte" / Aufkleber. Eigene memoisierte Schicht, weil
@@ -31,7 +30,8 @@ export const DecalLayer = memo(function DecalLayer({
         if (d.requires?.some((f) => !flags.has(f))) return null;
         if (d.hiddenWhen?.some((f) => flags.has(f))) return null;
         if (d.kind === "ledTicker") {
-          const tickerText = d.tickerText ?? LED_TICKER_TEXT;
+          const tickerText = d.tickerText ?? getKonbiniTickerText(d.tickerPool ?? "e67");
+          const duration = getTickerDurationSeconds(tickerText);
           return (
             <div
               key={d.id}
@@ -39,7 +39,7 @@ export const DecalLayer = memo(function DecalLayer({
               style={{ left: `${d.x}%`, top: `${d.y}%`, width: `${d.w}%`, height: `${d.h}%`, transform: d.skewY ? `skewY(${d.skewY}deg)` : undefined }}
               aria-hidden
             >
-              <div className="led-ticker-track">
+              <div className="led-ticker-track" style={{ animationDuration: `${duration}s` }}>
                 <span>{tickerText}</span>
                 <span>{tickerText}</span>
               </div>

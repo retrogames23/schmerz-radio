@@ -1171,5 +1171,5 @@ body:has([data-dsa-page]) * {
   to { transform: translateX(-50%); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .led-ticker-track { animation-duration: 200s; }
+  .led-ticker-track { animation-play-state: paused; }
 }
