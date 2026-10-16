@@ -22,8 +22,7 @@ export const konbiniE71Scenes: Record<string, Scene> = {
         w: 24.8,
         h: 4.4,
         skewY: -14.5,
-        tickerText:
-          "+++ KONBINI E71 · TYP K-4m +++ RESONANZ-HYGIENE: MASKENPFLICHT IN WARTEBEREICHEN +++ RUHE IST EIN HYGIENE-MERKMAL +++ NACHTVERKAUF NUR MIT SCHEIN S/D ODER NOTFALL-BESCHEINIGUNG +++ TABLETTEN GEGEN RESONANZBEDINGTE SCHLAFSTÖRUNGEN NUR GEGEN ANWEISUNG +++ ",
+        tickerPool: "e71",
       },
     ],
     hotspots: [
