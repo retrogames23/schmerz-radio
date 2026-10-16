@@ -54,6 +54,16 @@
 ### Unterschlupf
 - **[FEHLT]** Improvisiertes Sendestudio hinter der versiegelten Tür 1531 (E71). Das Amtssiegel ist die Tarnung.
 
+### Setsukos Warnbrief (Katalysator für die Nichtsuche)
+- **[FEHLT]** Setsuko schreibt Layard einen anonymen Warnbrief (Zettel an seiner Wohnungstür oder auf dem Schreibtisch), sobald er in E71 tief genug gebohrt hat (z. B. nach Walters Peilung oder dem zweiten Setsuko-Gespräch).
+- **[FEHLT]** Tonfall: besorgt, nicht drohend — sie will ihn schützen, ohne die Gruppe zu verraten („Hören Sie auf zu fragen, bevor jemand anfängt, Ihnen zuzuhören").
+- **[FEHLT]** Der Brief ist der konkrete Auslöser für Entscheidung B: Layard wählt aktiv zwischen „Ich gehe der Sache auf den Grund" und „Das geht zu weit. Ich bin Rechercheur, kein Ermittler."
+
+### Der harte Kern (Finale in 1531)
+- **[FEHLT]** Ein bis zwei Mitglieder von Zero is Infinity bilden den harten Kern; sie würden die Leistung eher erhöhen als abschalten und lassen sich von Layard nicht überzeugen.
+- **[FEHLT]** Beim Auffinden der Gruppe spaltet sie sich: die Mehrheit (inkl. Setsuko, nach den Beweisen) wendet sich gegen den harten Kern.
+- **[FEHLT]** Layards Schlussentscheidung: Behörden/ZVS einschalten (sichere Abschaltung, aber Verhaftung und Prozess für alle) oder außerbehördliche Lösung (das Kollektiv zerlegt das Studio selbst; die Hardliner könnten woanders neu anfangen).
+
 ### Die zwei Entscheidungen
 - **[TEILWEISE] A – Beweise abgeben vs. behalten:** Mechanik bei Sasse angelegt, finale Abgabe/Akte schließen fehlt.
 - **[FEHLT] B – Gruppe suchen vs. nicht suchen:** Sobald Layard die Spur hat (vor Tür 1531 bzw. beim Wählen der Nummer), innerer Monolog mit expliziter Wahl:
