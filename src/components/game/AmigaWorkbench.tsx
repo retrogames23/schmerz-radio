@@ -459,9 +459,9 @@ const nextId = () => `w${++WIN_ID}`;
 // ============================================================
 
 // Klassische Workbench-Palette (Release-3-Look, 4 Farben)
-const WB_GREY = "#a8a8a8";        // Desktop / Fenster-Background
-const WB_GREY_LIGHT = "#c8c8c8";  // Bevel hell
-const WB_BLUE = "#5566aa";        // Aktive Titelbar (Streifen-Basis)
+const WB_GREY = "#aaaaaa";        // Desktop / Fenster-Background
+const WB_GREY_LIGHT = "#cccccc";  // Bevel hell
+const WB_BLUE = "#6688bb";        // Aktive Titelbar (Streifen-Basis)
 const WB_WHITE = "#ffffff";
 const WB_BLACK = "#000000";
 const WB_FONT = '"Courier New", "Topaz-8", monospace';
@@ -481,15 +481,15 @@ const BEVEL_IN: React.CSSProperties = {
 };
 
 // Klassische WB-Titelbar-Streifen (horizontale 1px-Linien)
-const TITLEBAR_STRIPES_ACTIVE =
-  `repeating-linear-gradient(0deg, ${WB_BLUE} 0px, ${WB_BLUE} 1px, ${WB_WHITE} 1px, ${WB_WHITE} 2px)`;
+// WB 3.0: aktive Titelleiste solide blau, schwarzer Titeltext
+const TITLEBAR_STRIPES_ACTIVE = WB_BLUE;
 // (Inactive-Variante bei Bedarf später ergänzen)
 
 function ScreenTitleBar() {
   return (
     <div
       style={{
-        background: WB_GREY_LIGHT,
+        background: WB_WHITE,
         borderBottom: `1px solid ${WB_BLACK}`,
         padding: "1px 6px",
         display: "flex",
@@ -501,7 +501,7 @@ function ScreenTitleBar() {
         height: 18,
       }}
     >
-      <span>Amiga Workbench  982400 graphics mem  4003792 other mem</span>
+      <span>Amiga Workbench 3.0   982.400 graphics mem   4.003.792 other mem</span>
       <span style={{ width: 14, height: 12, background: WB_GREY, ...BEVEL_OUT, display: "inline-block" }} />
     </div>
   );
@@ -588,37 +588,19 @@ export function AmigaWorkbench() {
         {/* Screen-Titelbar (WB 2.x): grau, schwarzer Text, Memory-Anzeige */}
         <ScreenTitleBar />
 
-        {/* Desktop-Disk-Icons (rechts, vertikal) */}
-        <div
-          style={{
-            position: "absolute",
-            top: 36,
-            right: 16,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 14,
-          }}
-        >
-          <DesktopIcon
-            label="Workbench2.1"
-            icon={<DiskIcon />}
-            onOpen={() => openDrawer(WORKBENCH_DISK as FileNode & { kind: "drawer" })}
-          />
-          <DesktopIcon
-            label="FastWeb"
-            icon={<DiskIcon />}
-            onOpen={() => openDrawer(FASTWEB_DISK as FileNode & { kind: "drawer" })}
-          />
-          <DesktopIcon label="Ram Disk" icon={<RamDiskIcon />} onOpen={() => openFile("Ram Disk", <em>(leer · 0% full)</em>)} />
-          <DesktopIcon label="Shell" icon={<ShellIcon />} onOpen={openShell} />
-          <DesktopIcon label="Trashcan" icon={<TrashIcon />} onOpen={() => openFile("Trashcan", <em>(leer)</em>)} />
-        </div>
-
-        {/* Eingelegte Spiele-Diskette (DF2:) frei auf dem Desktop */}
-        <div style={{ position: "absolute", top: 36, left: 24 }}>
-          <DesktopIcon label="HC-Tycoon" icon={<DiskIcon />} onOpen={openTycoon} />
-        </div>
+        {/* Desktop-Icons — WB-typisch frei und leicht unordentlich verteilt */}
+        {([
+          { label: "Workbench3.0", icon: <DiskIcon />, top: "8%", left: "86%", onOpen: () => openDrawer(WORKBENCH_DISK as FileNode & { kind: "drawer" }) },
+          { label: "FastWeb", icon: <DiskIcon />, top: "25%", left: "88%", onOpen: () => openDrawer(FASTWEB_DISK as FileNode & { kind: "drawer" }) },
+          { label: "HC-Tycoon", icon: <DiskIcon />, top: "30%", left: "38%", onOpen: openTycoon },
+          { label: "Ram Disk", icon: <RamDiskIcon />, top: "11%", left: "68%", onOpen: () => openFile("Ram Disk", <em>(leer · 0% full)</em>) },
+          { label: "Shell", icon: <ShellIcon />, top: "48%", left: "57%", onOpen: openShell },
+          { label: "Trashcan", icon: <TrashIcon />, top: "70%", left: "85%", onOpen: () => openFile("Trashcan", <em>(leer)</em>) },
+        ]).map((ic) => (
+          <div key={ic.label} style={{ position: "absolute", top: ic.top, left: ic.left, transform: "translateX(-50%)" }}>
+            <DesktopIcon label={ic.label} icon={ic.icon} onOpen={ic.onOpen} />
+          </div>
+        ))}
 
         {/* Fenster */}
         {windows.map((w, i) => {
@@ -877,7 +859,7 @@ function WindowFrame({
           height: 18,
           borderBottom: `1px solid ${WB_BLACK}`,
           background: TITLEBAR_STRIPES_ACTIVE,
-          color: WB_WHITE,
+          color: WB_BLACK,
           cursor: "move",
           userSelect: "none",
         }}
@@ -901,12 +883,12 @@ function WindowFrame({
           style={{
             flex: 1, display: "flex", alignItems: "center",
             paddingLeft: 4, paddingRight: 4, fontSize: 12,
-            color: WB_WHITE, overflow: "hidden",
+            color: WB_BLACK, overflow: "hidden",
           }}
         >
           {/* Title-Block: solider blauer Kasten über den Streifen (WB-typisch) */}
           <span style={{
-            background: WB_BLUE, color: WB_WHITE,
+            background: WB_BLUE, color: WB_BLACK,
             padding: "0 8px", height: 14, lineHeight: "14px",
             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
             display: "inline-block", maxWidth: "100%",
@@ -1024,19 +1006,17 @@ function ToolIcon() {
 }
 
 function DiskIcon() {
-  // 3,5"-Diskette wie in WB 2.x: weißes Floppy mit Shutter, "//" Label
+  // 3,5"-Diskette im WB-3.0-Stil: dunkler Körper, Metallschieber, weißes Etikett
   return (
     <svg width="36" height="40" viewBox="0 0 36 40" aria-hidden shapeRendering="crispEdges">
-      {/* Floppy body */}
-      <rect x="2" y="2" width="32" height="36" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
-      {/* Metal shutter */}
-      <rect x="9" y="3" width="18" height="12" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
-      <rect x="17" y="4" width="3" height="10" fill={WB_BLACK} />
-      {/* Label area */}
-      <rect x="6" y="19" width="24" height="16" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
-      {/* "//" mark inside label (WB-typisch) */}
-      <line x1="11" y1="31" x2="17" y2="22" stroke={WB_BLACK} strokeWidth="2" />
-      <line x1="16" y1="31" x2="22" y2="22" stroke={WB_BLACK} strokeWidth="2" />
+      <path d="M2 2 H30 L34 6 V38 H2 Z" fill={WB_BLACK} />
+      <rect x="9" y="2" width="18" height="12" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
+      <rect x="20" y="4" width="4" height="8" fill={WB_BLACK} />
+      <rect x="6" y="18" width="24" height="18" fill={WB_WHITE} />
+      <rect x="6" y="18" width="24" height="3" fill={WB_BLUE} />
+      <rect x="9" y="25" width="18" height="1" fill={WB_BLACK} />
+      <rect x="9" y="29" width="14" height="1" fill={WB_BLACK} />
+      <rect x="3" y="34" width="2" height="2" fill={WB_WHITE} />
     </svg>
   );
 }
