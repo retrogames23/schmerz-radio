@@ -4,7 +4,7 @@
 - Zwischen Akt I und II liegt nur eine normale Nacht. Akt II ist der nächste Vormittag.
 - Neu ist allein Layards Rolle: Er hat die Dienstmail 28/1194 und (nach 3603) das Legitimationsschreiben. Niemand in E67 weiß Genaueres. Höchstens fällt jemandem die Aktenmappe auf.
 - Es gibt keinen neuen Sanitätereinsatz und kein Großereignis. Die Verwaltung bleibt gleichgültig. Mira bleibt in 4601 und hört 104,6 nicht. Der Kellerstrang ist kein Auslöser.
-- Nur E67 ist betroffen. E71 kennt Layard erst ab Akt II (Ralf, Herbert, Setsuko, Walter, Hanne, Okwu, Mikael bleiben unverändert).
+- Betroffen sind E67 und Ralf. Ralf steht am Fenster hinter dem Verbindungsgang, Layard kann ihn also schon aus Akt I kennen. Die übrigen Leute in E71 lernt Layard erst in Akt II kennen (Herbert, Setsuko, Walter, Hanne, Okwu, Mikael). Sie bleiben unverändert.
 - Ein Szenenbild bekommt nur dann eine Akt-II-Variante, wenn sie exakt denselben Raum zeigt: gleiche Perspektive, gleiche Möbel, gleiche Klickflächen. Nur Licht oder kleine Gegenstände ändern sich.
 - Jede Änderung ist optional. Kein Rätsel und kein Pflichtweg hängt davon ab.
 
@@ -18,6 +18,19 @@
 - **Kowalk und Brust (Kantine 3602):** Frühstücksausgabe statt Abendbetrieb, eine neue Begrüßungszeile.
 - **Kroll (Konbini):** Am Tag ist Regelverkauf. Er erwähnt das in einer Zeile, ein Einkauf bleibt aber weiterhin ausgeblendet.
 - **Insa und Vossbeck:** Schon für Akt II geschrieben, keine Änderung.
+
+## Ralf neu aufbauen (Beziehung durch Handlungen)
+- **Fehler beheben:** In seinem ersten Gespräch sagt Layard „Ich wohne in 4602“. Richtig ist 2611, denn 4602 ist die Leitstelle.
+- **Akt I bleibt der Einstieg:** Kennenlernen in drei Stufen wie bisher (fremd, bekannt, vertraut). Die Stufen steigen aber nicht mehr nur durch Reden.
+- **Kleine Taten statt nur Themen:** Ralf erwähnt nebenbei kleine Dinge, die ihm fehlen oder die er wissen will. Layard kann sie im Spiel erledigen, ohne dass es Pflicht ist. Beispiele:
+  - Ein Tee oder etwas Warmes aus der Kantine 3602.
+  - Ein Ergebnis vom Konbini-Laufband oder vom Fernseher in der Lobby, weil er von seinem Fenster aus nichts sieht.
+  - Eine Nachricht an jemanden in E67, die er selbst nicht überbringen kann.
+  
+  Jede erledigte Tat hebt die Vertrauensstufe. Die schweren Themen öffnen sich erst nach mindestens einer Tat.
+- **Akt II, am Morgen danach:** Ralf erkennt Layard wieder und begrüßt ihn je nach Stufe aus Akt I. Ihm fällt die Mappe auf („Jetzt also offiziell?“). Seine Rolle wird klar: Er sieht von seinem Fenster aus, wer im Verbindungsgang kommt und geht.
+- **Beobachter für später:** Je nach Vertrauen erzählt Ralf von Beobachtungen auf dem Gang, zuerst nur beiläufig und ohne Namen. Seine Schlüsselbeobachtung (wer Layard den Warnbrief zusteckt) wird vorbereitet, aber erst mit dem Warnbrief freigeschaltet. Der Warnbrief selbst bleibt, wie besprochen, für später.
+- **Ohne Sackgasse:** Wer Ralf nie besucht oder nichts für ihn tut, verpasst nur Zusatzwissen. Kein Pflichtweg hängt an ihm.
 
 ## Räume (Beschreibungen und Look-Texte)
 - **2611 Layard:** Schon umgesetzt, keine Änderung.
@@ -42,6 +55,7 @@ Alle anderen Bilder bleiben, wie sie sind.
 ## Technische Details
 - Bedingung überall `api.hasFlag("act2Started")`. Bilder über das vorhandene `background: (api) => ...`, Texte über `intro: (api) => ...`.
 - Dialoge: Akt-II-Einstiegsknoten in `philippe.ts`, `bodo.ts`, `helka.ts`, `ennis.ts`, `cafeteria.ts`, `kroll.ts` und `misc.ts` (Tjark) ergänzen. Die bestehenden Bäume bleiben, die `endsDialog`-Regel gilt weiter.
+- Ralf: `ralf.ts` umbauen. Die Stufen hängen neu an Tat-Flags (z. B. `ralfFavorTea`, `ralfFavorNews`, `ralfFavorMessage`) statt an der Zahl der Themen. Dazu kommt der Akt-II-Einstieg `ralfAct2` und ein vorbereiteter, gesperrter Knoten für die Warnbrief-Beobachtung. Die Szenenwahl passiert in `windowNiche.ts`, die neuen Flags kommen in `types.ts`. Danach muss der Quest-Check ohne Ralf lösbar bleiben.
 - Szenen: `apartmentAct1.ts`, `corridorsE67.ts`, `elevatorE67.ts`, `communalE67.ts`, `konbiniE67.ts`.
 - Bildvarianten entstehen als Bearbeitung des vorhandenen Bildes (gleiche Komposition). Danach werden die Klickflächen per Screenshot geprüft.
 - Story- und Lore-Checks sowie der Build laufen danach.
