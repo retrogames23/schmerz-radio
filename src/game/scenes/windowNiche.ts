@@ -32,14 +32,25 @@ export const windowNicheScenes: Record<string, Scene> = {
         label: "Ralf",
         kind: "talk",
         requires: ["metRalf"],
-        onUse: (api) =>
+        onUse: (api) => {
+          // Akt II: einmalige Begrüßung am Morgen danach.
+          if (api.hasFlag("act2Started") && !api.hasFlag("ralfAct2Greeted")) {
+            api.startDialog("ralfAct2");
+            return;
+          }
+          // Vertrauen braucht Gespräch UND mindestens einen kleinen Gefallen.
+          const favor = api.hasFlag("ralfFavorTea") || api.hasFlag("ralfFavorNews");
+          if (!api.hasFlag("ralfStage3") && api.hasFlag("ralfAskedNight") && favor) {
+            api.setFlag("ralfStage3");
+          }
           api.startDialog(
             api.hasFlag("ralfStage3")
               ? "ralfDeep"
               : api.hasFlag("ralfStage2")
                 ? "ralfTalk"
                 : "ralfIntro",
-          ),
+          );
+        },
       },
       {
         id: "shutter",

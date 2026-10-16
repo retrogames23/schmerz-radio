@@ -348,7 +348,7 @@ export const ralfDialogs: Record<string, DialogTree> = {
       a3: {
         id: "a3",
         speaker: "RALF",
-        text: "Dann laufen Sie hier ab jetzt öfter vorbei. Gut. Von hier sieht man, wer kommt und wer geht. Mehr kann ich nicht. Aber das kann ich gründlich.",
+        text: "Dann kommt hier ab jetzt öfter jemand mit Mappe vorbei. Gut. Von hier sieht man, wer kommt und wer geht. Mehr kann ich nicht. Aber das kann ich gründlich.",
         subtext: "Es klingt wie ein Angebot, das er nicht als Angebot formulieren will.",
         end: true,
       },
@@ -412,7 +412,7 @@ export const ralfDialogs: Record<string, DialogTree> = {
       tWarnbrief: {
         id: "tWarnbrief",
         speaker: "RALF",
-        text: "Ein Brief. Ja. Ich habe jemanden gesehen, der an deiner Tasche vorbei ist, als du hier standst. Schnell, leise, Farbe an den Fingern. Mehr sage ich nicht — aber ich glaube, wer so etwas schreibt, hat Angst um dich. Nicht vor dir.",
+        text: "Ein Brief. Ja. Gestern früh ist jemand mit einem Umschlag Richtung E67 gelaufen und ohne zurückgekommen. Schnell, leise, Farbe an den Fingern. Mehr sage ich nicht — aber ich glaube, wer so etwas schreibt, hat Angst um dich. Nicht vor dir.",
         subtext: "Er wägt jedes Wort ab. Er will helfen, ohne jemanden zu verraten.",
         next: "hubB",
       },
