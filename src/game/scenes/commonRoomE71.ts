@@ -1,5 +1,5 @@
-import commonRoomE71Bg from "@/assets/scene-common-room-e71-box.jpg";
-import commonRoomE71Act2Bg from "@/assets/scene-common-room-e71-box-radio.png";
+import commonRoomE71Bg from "@/assets/scene-common-room-e71-a1200.jpg";
+import commonRoomE71Act2Bg from "@/assets/scene-common-room-e71-a1200-radio.png";
 import type { Scene } from "../types";
 
 /**
@@ -119,25 +119,25 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
       },
       {
         id: "giveawayBox",
-        // Fest angeschraubte Holzkiste an der Wand über der Sofalehne.
-        x: 44.5,
-        y: 30,
-        w: 14.5,
-        h: 18,
+        // Aufrecht an die Wand geschraubtes offenes Holzfach.
+        x: 45,
+        y: 32,
+        w: 13.5,
+        h: 17,
         label: "„Zu verschenken“-Box",
         kind: "look",
         onUse: (api) => {
           if (!api.hasFlag("act2Started")) {
             api.showText([
               "Eine fest angeschraubte Holzkiste, mit Filzstift beschriftet: »ZU VERSCHENKEN«.",
-              "Drin: ein einzelner Topflappen. Sonst nichts.",
+              "Das Fach ist leer.",
             ]);
             return;
           }
           api.setFlag("sawGiveawayRadio");
           api.showText([
-            "Die »ZU VERSCHENKEN«-Kiste. Auf dem Topflappen steht heute ein kleines braunes Gerät ohne Typenschild. Ein Drehknopf, eine Skala.",
-            "Daran hängt ein Zettel: »Funktioniert! UKW. Viel Spaß!« Auf der Rückseite, in anderen Druckbuchstaben: »Für schlaflose Nächte. Einfach einschalten.«",
+            "Die »ZU VERSCHENKEN«-Kiste. Darin steht heute ein kleines braunes Gerät ohne Typenschild. Ein Drehknopf, eine Skala.",
+            "Daran hängt ein handgeschriebener Zettel: »Für schlaflose Nächte. Einfach einschalten.«",
             "Layard kennt die Bauart. Er hat selbst so eines. Er lässt es liegen.",
           ]);
         },
