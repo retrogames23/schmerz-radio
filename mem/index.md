@@ -15,3 +15,4 @@ DSA-Szenenbilder ([SCENE: <tag>]): Nur setzen, wenn das Bild wirklich passt. Im 
 
 - [Marketing](mem://reference/marketing) — Recherche und Plan in Project Files (14.10.2026)
 - [Konbini](mem://features/konbini) — Schreibweise, Zeiten 6–19, Scheine, E67 neben Aufzug, Kroll
+- [Gemeinschaftsraum E71](mem://design/gemeinschaftsraum) — Stilechter Amiga 1200, natürliche Verschenkbox, identische Raumvarianten
