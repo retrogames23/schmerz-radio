@@ -25,7 +25,7 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
         // Vorderster Nerd, links am Tisch (vor dem CRT).
         x: 18,
         y: 31,
-        w: 19,
+        w: 17,
         h: 64,
         label: "Detlef (am Amiga)",
         kind: "talk",
@@ -34,9 +34,9 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
       {
         id: "nerdSigi",
         // Mittiger Nerd, hinten beim Sofa.
-        x: 33,
+        x: 35,
         y: 35,
-        w: 19,
+        w: 17,
         h: 26,
         label: "Sigi (auf dem Sofa)",
         kind: "talk",
@@ -89,9 +89,9 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
         id: "diskShelf",
         // Diskettenregal links/oben.
         x: 0,
-        y: 8,
-        w: 12,
-        h: 27,
+        y: 7,
+        w: 17.5,
+        h: 28,
         label: "Diskettenregal",
         kind: "look",
         onUse: (api) =>
