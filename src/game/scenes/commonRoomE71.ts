@@ -1,5 +1,5 @@
-import commonRoomE71Bg from "@/assets/scene-common-room-e71-a1200.jpg";
-import commonRoomE71Act2Bg from "@/assets/scene-common-room-e71-a1200-radio.png";
+import commonRoomE71Bg from "@/assets/scene-common-room-e71-redesign.jpg";
+import commonRoomE71Act2Bg from "@/assets/scene-common-room-e71-redesign-radio.png";
 import type { Scene } from "../types";
 
 /**
@@ -23,10 +23,10 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
       {
         id: "nerdDetlef",
         // Vorderster Nerd, links am Tisch (vor dem CRT).
-        x: 12,
-        y: 38,
-        w: 18,
-        h: 50,
+        x: 18,
+        y: 31,
+        w: 19,
+        h: 64,
         label: "Detlef (am Amiga)",
         kind: "talk",
         onUse: (api) => api.startDialog("e71NerdDetlef"),
@@ -34,10 +34,10 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
       {
         id: "nerdSigi",
         // Mittiger Nerd, hinten beim Sofa.
-        x: 67.4,
-        y: 34.2,
-        w: 10.4,
-        h: 27.5,
+        x: 33,
+        y: 35,
+        w: 19,
+        h: 26,
         label: "Sigi (auf dem Sofa)",
         kind: "talk",
         onUse: (api) => api.startDialog("e71NerdSigi"),
@@ -45,21 +45,21 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
       {
         id: "nerdRuven",
         // Rechter Nerd, lehnt am Regal.
-        x: 77.6,
-        y: 11.5,
-        w: 14,
-        h: 55,
+        x: 59,
+        y: 15,
+        w: 12,
+        h: 61,
         label: "Ruven (am Regal)",
         kind: "talk",
         onUse: (api) => api.startDialog("e71NerdRuven"),
       },
       {
         id: "amigaCrt",
-        // CRT-Monitor mittig.
-        x: 27.9,
-        y: 52.9,
-        w: 18,
-        h: 24,
+        // Separater CRT links über dem Amiga 1200.
+        x: 2.8,
+        y: 37,
+        w: 15,
+        h: 31,
         label: "Amiga · Workbench",
         kind: "use",
         onUse: (api) => {
@@ -91,7 +91,7 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
         x: 0,
         y: 8,
         w: 12,
-        h: 70,
+        h: 27,
         label: "Diskettenregal",
         kind: "look",
         onUse: (api) =>
@@ -104,8 +104,8 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
       {
         id: "usMagazine",
         // US-Magazin auf dem Sofa-Tisch.
-        x: 60.6,
-        y: 50.4,
+        x: 43,
+        y: 66,
         w: 12,
         h: 12,
         label: "US-Computer-Magazin",
@@ -119,11 +119,11 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
       },
       {
         id: "giveawayBox",
-        // Aufrecht an die Wand geschraubtes offenes Holzfach.
-        x: 45,
-        y: 32,
-        w: 13.5,
-        h: 17,
+        // Eigenes freies Wandfeld neben dem Eingang, nicht am Sofa.
+        x: 78,
+        y: 29,
+        w: 10.8,
+        h: 15,
         label: "„Zu verschenken“-Box",
         kind: "look",
         onUse: (api) => {
@@ -144,10 +144,10 @@ export const commonRoomE71Scenes: Record<string, Scene> = {
       },
       {
         id: "back1530",
-        x: 91.2,
-        y: 8,
-        w: 14,
-        h: 90,
+        x: 92,
+        y: 4,
+        w: 8,
+        h: 87,
         label: "Zurück in den Korridor",
         kind: "exit",
         exitDir: "right",
