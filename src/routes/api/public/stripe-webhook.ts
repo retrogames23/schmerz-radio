@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
-import { sendTransactionalEmailServer } from "@/lib/email/sendTransactional.server";
+import { sendTemplateEmail } from "@/lib/email-templates/send-email";
 
 /**
  * Stripe Webhook: empfängt `checkout.session.completed`,
@@ -115,14 +115,37 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
               style: "currency",
               currency: currency.toUpperCase(),
             }).format((amount ?? 0) / 100);
-            const result = await sendTransactionalEmailServer(admin, {
-              templateName: "donation-confirmation",
-              recipientEmail: email,
-              idempotencyKey: `donation-confirm-${session.id}`,
-              templateData: { amountFormatted },
-            });
-            if (!result.success) {
-              console.warn("stripe-webhook: donation email not sent", result);
+            const messageId = crypto.randomUUID();
+            try {
+              const result = await sendTemplateEmail(
+                "donation-confirmation",
+                email,
+                {
+                  idempotencyKey: `donation-confirm-${session.id}`,
+                  templateData: { amountFormatted },
+                },
+              );
+              const { error: logErr } = await admin.from("email_send_log").insert({
+                message_id: messageId,
+                template_name: "donation-confirmation",
+                recipient_email: email,
+                status: result.sent ? "sent" : "suppressed",
+              });
+              if (logErr) console.error("stripe-webhook: email log failed", logErr);
+              if (!result.sent) {
+                console.warn("stripe-webhook: donation email suppressed", result);
+              }
+            } catch (sendErr) {
+              const { error: logErr } = await admin.from("email_send_log").insert({
+                message_id: messageId,
+                template_name: "donation-confirmation",
+                recipient_email: email,
+                status: "failed",
+                error_message:
+                  sendErr instanceof Error ? sendErr.message.slice(0, 1000) : String(sendErr),
+              });
+              if (logErr) console.error("stripe-webhook: email log failed", logErr);
+              throw sendErr;
             }
           } catch (e) {
             console.error("stripe-webhook: donation email error", e);
