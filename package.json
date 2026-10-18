@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "@lovable.dev/cloud-auth-js": "^1.2.1",
-    "@lovable.dev/email-js": "^0.0.4",
-    "@lovable.dev/webhooks-js": "^0.0.1",
+    "@lovable.dev/email-js": "0.3.1",
+    "@lovable.dev/webhooks-js": "0.0.3",
     "@mlc-ai/web-llm": "^0.2.85",
     "@react-email/components": "^1.0.12",
     "@supabase/supabase-js": "^2.116.0",

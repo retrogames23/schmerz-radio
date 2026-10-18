@@ -12,13 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DsaRouteImport } from './routes/dsa'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as DsaIndexRouteImport } from './routes/dsa.index'
 import { Route as DsaSlotRouteImport } from './routes/dsa.$slot'
 import { Route as DsaGruppeRouteImport } from './routes/dsa.gruppe'
 import { Route as DsaHeldenRouteImport } from './routes/dsa.helden'
-import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as ApiPublicAuskunftRouteImport } from './routes/api/public/auskunft'
 import { Route as ApiPublicBlockfallScoreRouteImport } from './routes/api/public/blockfall-score'
 import { Route as ApiPublicDonationCheckoutRouteImport } from './routes/api/public/donation-checkout'
@@ -30,12 +28,10 @@ import { Route as ApiPublicNpcChatRouteImport } from './routes/api/public/npc-ch
 import { Route as ApiPublicNpcMemoryUpdateRouteImport } from './routes/api/public/npc-memory-update'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as DsaGruppeRoomIdRouteImport } from './routes/dsa.gruppe.$roomId'
-import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as ApiPublicHooksWeeklySignupSummaryRouteImport } from './routes/api/public/hooks/weekly-signup-summary'
 import { Route as DsaGruppeRoomIdSpielRouteImport } from './routes/dsa.gruppe.$roomId.spiel'
-import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
-import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -50,11 +46,6 @@ const DsaRoute = DsaRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UnsubscribeRoute = UnsubscribeRouteImport.update({
-  id: '/unsubscribe',
-  path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiTtsRoute = ApiTtsRouteImport.update({
@@ -81,11 +72,6 @@ const DsaHeldenRoute = DsaHeldenRouteImport.update({
   id: '/helden',
   path: '/helden',
   getParentRoute: () => DsaRoute,
-} as any)
-const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
-  id: '/email/unsubscribe',
-  path: '/email/unsubscribe',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicAuskunftRoute = ApiPublicAuskunftRouteImport.update({
   id: '/api/public/auskunft',
@@ -144,9 +130,9 @@ const DsaGruppeRoomIdRoute = DsaGruppeRoomIdRouteImport.update({
   path: '/$roomId',
   getParentRoute: () => DsaGruppeRoute,
 } as any)
-const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
-  id: '/lovable/email/suppression',
-  path: '/lovable/email/suppression',
+const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
+  id: '/lovable/email/events',
+  path: '/lovable/email/events',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicHooksWeeklySignupSummaryRoute =
@@ -160,22 +146,10 @@ const DsaGruppeRoomIdSpielRoute = DsaGruppeRoomIdSpielRouteImport.update({
   path: '/spiel',
   getParentRoute: () => DsaGruppeRoomIdRoute,
 } as any)
-const LovableEmailQueueProcessRoute =
-  LovableEmailQueueProcessRouteImport.update({
-    id: '/lovable/email/queue/process',
-    path: '/lovable/email/queue/process',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
     path: '/lovable/email/transactional/preview',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LovableEmailTransactionalSendRoute =
-  LovableEmailTransactionalSendRouteImport.update({
-    id: '/lovable/email/transactional/send',
-    path: '/lovable/email/transactional/send',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -183,12 +157,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dsa': typeof DsaRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/unsubscribe': typeof UnsubscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/dsa/$slot': typeof DsaSlotRoute
   '/dsa/gruppe': typeof DsaGruppeRouteWithChildren
   '/dsa/helden': typeof DsaHeldenRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dsa/': typeof DsaIndexRoute
   '/api/public/auskunft': typeof ApiPublicAuskunftRoute
   '/api/public/blockfall-score': typeof ApiPublicBlockfallScoreRoute
@@ -201,22 +173,18 @@ export interface FileRoutesByFullPath {
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/unsubscribe': typeof UnsubscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/dsa/$slot': typeof DsaSlotRoute
   '/dsa/gruppe': typeof DsaGruppeRouteWithChildren
   '/dsa/helden': typeof DsaHeldenRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dsa': typeof DsaIndexRoute
   '/api/public/auskunft': typeof ApiPublicAuskunftRoute
   '/api/public/blockfall-score': typeof ApiPublicBlockfallScoreRoute
@@ -229,24 +197,20 @@ export interface FileRoutesByTo {
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dsa': typeof DsaRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/unsubscribe': typeof UnsubscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/dsa/$slot': typeof DsaSlotRoute
   '/dsa/gruppe': typeof DsaGruppeRouteWithChildren
   '/dsa/helden': typeof DsaHeldenRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dsa/': typeof DsaIndexRoute
   '/api/public/auskunft': typeof ApiPublicAuskunftRoute
   '/api/public/blockfall-score': typeof ApiPublicBlockfallScoreRoute
@@ -259,12 +223,10 @@ export interface FileRoutesById {
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -272,12 +234,10 @@ export interface FileRouteTypes {
     | '/'
     | '/dsa'
     | '/sitemap.xml'
-    | '/unsubscribe'
     | '/api/tts'
     | '/dsa/$slot'
     | '/dsa/gruppe'
     | '/dsa/helden'
-    | '/email/unsubscribe'
     | '/dsa/'
     | '/api/public/auskunft'
     | '/api/public/blockfall-score'
@@ -290,22 +250,18 @@ export interface FileRouteTypes {
     | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
     | '/dsa/gruppe/$roomId'
-    | '/lovable/email/suppression'
+    | '/lovable/email/events'
     | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
-    | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/sitemap.xml'
-    | '/unsubscribe'
     | '/api/tts'
     | '/dsa/$slot'
     | '/dsa/gruppe'
     | '/dsa/helden'
-    | '/email/unsubscribe'
     | '/dsa'
     | '/api/public/auskunft'
     | '/api/public/blockfall-score'
@@ -318,23 +274,19 @@ export interface FileRouteTypes {
     | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
     | '/dsa/gruppe/$roomId'
-    | '/lovable/email/suppression'
+    | '/lovable/email/events'
     | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
-    | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
   id:
     | '__root__'
     | '/'
     | '/dsa'
     | '/sitemap.xml'
-    | '/unsubscribe'
     | '/api/tts'
     | '/dsa/$slot'
     | '/dsa/gruppe'
     | '/dsa/helden'
-    | '/email/unsubscribe'
     | '/dsa/'
     | '/api/public/auskunft'
     | '/api/public/blockfall-score'
@@ -347,21 +299,17 @@ export interface FileRouteTypes {
     | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
     | '/dsa/gruppe/$roomId'
-    | '/lovable/email/suppression'
+    | '/lovable/email/events'
     | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
-    | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DsaRoute: typeof DsaRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  UnsubscribeRoute: typeof UnsubscribeRoute
   ApiTtsRoute: typeof ApiTtsRoute
-  EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ApiPublicAuskunftRoute: typeof ApiPublicAuskunftRoute
   ApiPublicBlockfallScoreRoute: typeof ApiPublicBlockfallScoreRoute
   ApiPublicDonationCheckoutRoute: typeof ApiPublicDonationCheckoutRoute
@@ -372,11 +320,9 @@ export interface RootRouteChildren {
   ApiPublicNpcChatRoute: typeof ApiPublicNpcChatRoute
   ApiPublicNpcMemoryUpdateRoute: typeof ApiPublicNpcMemoryUpdateRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
-  LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   ApiPublicHooksWeeklySignupSummaryRoute: typeof ApiPublicHooksWeeklySignupSummaryRoute
-  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
-  LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -400,13 +346,6 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/unsubscribe': {
-      id: '/unsubscribe'
-      path: '/unsubscribe'
-      fullPath: '/unsubscribe'
-      preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/tts': {
@@ -443,13 +382,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/dsa/helden'
       preLoaderRoute: typeof DsaHeldenRouteImport
       parentRoute: typeof DsaRoute
-    }
-    '/email/unsubscribe': {
-      id: '/email/unsubscribe'
-      path: '/email/unsubscribe'
-      fullPath: '/email/unsubscribe'
-      preLoaderRoute: typeof EmailUnsubscribeRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/api/public/auskunft': {
       id: '/api/public/auskunft'
@@ -528,11 +460,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DsaGruppeRoomIdRouteImport
       parentRoute: typeof DsaGruppeRoute
     }
-    '/lovable/email/suppression': {
-      id: '/lovable/email/suppression'
-      path: '/lovable/email/suppression'
-      fullPath: '/lovable/email/suppression'
-      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
+    '/lovable/email/events': {
+      id: '/lovable/email/events'
+      path: '/lovable/email/events'
+      fullPath: '/lovable/email/events'
+      preLoaderRoute: typeof LovableEmailEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/weekly-signup-summary': {
@@ -549,25 +481,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DsaGruppeRoomIdSpielRouteImport
       parentRoute: typeof DsaGruppeRoomIdRoute
     }
-    '/lovable/email/queue/process': {
-      id: '/lovable/email/queue/process'
-      path: '/lovable/email/queue/process'
-      fullPath: '/lovable/email/queue/process'
-      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
       fullPath: '/lovable/email/transactional/preview'
       preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/email/transactional/send': {
-      id: '/lovable/email/transactional/send'
-      path: '/lovable/email/transactional/send'
-      fullPath: '/lovable/email/transactional/send'
-      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -617,9 +535,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DsaRoute: DsaRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  UnsubscribeRoute: UnsubscribeRoute,
   ApiTtsRoute: ApiTtsRoute,
-  EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ApiPublicAuskunftRoute: ApiPublicAuskunftRoute,
   ApiPublicBlockfallScoreRoute: ApiPublicBlockfallScoreRoute,
   ApiPublicDonationCheckoutRoute: ApiPublicDonationCheckoutRoute,
@@ -630,12 +546,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicNpcChatRoute: ApiPublicNpcChatRoute,
   ApiPublicNpcMemoryUpdateRoute: ApiPublicNpcMemoryUpdateRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
-  LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  LovableEmailEventsRoute: LovableEmailEventsRoute,
   ApiPublicHooksWeeklySignupSummaryRoute:
     ApiPublicHooksWeeklySignupSummaryRoute,
-  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
-  LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

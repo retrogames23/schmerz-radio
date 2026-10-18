@@ -1,12 +1,8 @@
-import * as React from 'react'
-import { render } from '@react-email/components'
 import { createClient } from '@supabase/supabase-js'
 import { createFileRoute } from '@tanstack/react-router'
 import { TEMPLATES } from '@/lib/email-templates/registry'
+import { sendTemplateEmail } from '@/lib/email-templates/send-email'
 
-const SITE_NAME = 'SCHMERZ·RADIO'
-const SENDER_DOMAIN = 'notify.schmerz-radio.com'
-const FROM_DOMAIN = 'schmerz-radio.com'
 const TEMPLATE_NAME = 'weekly-signup-summary'
 
 export const Route = createFileRoute('/api/public/hooks/weekly-signup-summary')({
@@ -63,59 +59,34 @@ export const Route = createFileRoute('/api/public/hooks/weekly-signup-summary')(
         }
         const recipient = template.to
 
-        // Suppression check
-        const { data: suppressed } = await supabase
-          .from('suppressed_emails')
-          .select('id')
-          .eq('email', recipient.toLowerCase())
-          .maybeSingle()
-        if (suppressed) {
-          return Response.json({ skipped: 'suppressed' })
-        }
-
         const messageId = crypto.randomUUID()
-        const element = React.createElement(template.component, templateData)
-        const html = await render(element)
-        const plainText = await render(element, { plainText: true })
-        const subject =
-          typeof template.subject === 'function'
-            ? template.subject(templateData)
-            : template.subject
-
-        await supabase.from('email_send_log').insert({
-          message_id: messageId,
-          template_name: TEMPLATE_NAME,
-          recipient_email: recipient,
-          status: 'pending',
-        })
-
-        const { error: enqueueError } = await supabase.rpc('enqueue_email', {
-          queue_name: 'transactional_emails',
-          payload: {
+        try {
+          const result = await sendTemplateEmail(TEMPLATE_NAME, recipient, {
+            templateData,
+            idempotencyKey: `weekly-signup-${since.toISOString().slice(0, 10)}`,
+          })
+          const { error: logErr } = await supabase.from('email_send_log').insert({
             message_id: messageId,
-            to: recipient,
-            from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
-            sender_domain: SENDER_DOMAIN,
-            subject,
-            html,
-            text: plainText,
-            purpose: 'transactional',
-            label: TEMPLATE_NAME,
-            idempotency_key: `weekly-signup-${since.toISOString().slice(0, 10)}`,
-            queued_at: new Date().toISOString(),
-          },
-        })
-
-        if (enqueueError) {
-          console.error('enqueue failed', enqueueError)
-          await supabase.from('email_send_log').insert({
+            template_name: TEMPLATE_NAME,
+            recipient_email: recipient,
+            status: result.sent ? 'sent' : 'suppressed',
+          })
+          if (logErr) console.error('email log failed', logErr)
+          if (!result.sent) {
+            return Response.json({ skipped: 'suppressed' })
+          }
+        } catch (sendErr) {
+          console.error('send failed', sendErr)
+          const { error: logErr } = await supabase.from('email_send_log').insert({
             message_id: messageId,
             template_name: TEMPLATE_NAME,
             recipient_email: recipient,
             status: 'failed',
-            error_message: 'enqueue_failed',
+            error_message:
+              sendErr instanceof Error ? sendErr.message.slice(0, 1000) : String(sendErr),
           })
-          return Response.json({ error: 'enqueue_failed' }, { status: 500 })
+          if (logErr) console.error('email log failed', logErr)
+          return Response.json({ error: 'send_failed' }, { status: 500 })
         }
 
         return Response.json({
