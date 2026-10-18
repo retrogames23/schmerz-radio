@@ -239,7 +239,7 @@ export const HISTORY_CHAPTERS: HistoryChapter[] = [
   {
     id: "moderne",
     image: imgModerne,
-    imageCaption: "Tafel XII — Aufbau der Quadranten, um 1950",
+    imageCaption: "Tafel XIII — Aufbau der Quadranten, um 1950",
     shortTitle: "Das Provisorium",
     title: "1946–1997: Das Provisorium und der Mandatsbund",
     body: [
