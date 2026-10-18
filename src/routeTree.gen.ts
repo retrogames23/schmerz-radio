@@ -30,6 +30,7 @@ import { Route as ApiPublicNpcChatRouteImport } from './routes/api/public/npc-ch
 import { Route as ApiPublicNpcMemoryUpdateRouteImport } from './routes/api/public/npc-memory-update'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as DsaGruppeRoomIdRouteImport } from './routes/dsa.gruppe.$roomId'
+import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiPublicHooksWeeklySignupSummaryRouteImport } from './routes/api/public/hooks/weekly-signup-summary'
 import { Route as DsaGruppeRoomIdSpielRouteImport } from './routes/dsa.gruppe.$roomId.spiel'
@@ -144,6 +145,11 @@ const DsaGruppeRoomIdRoute = DsaGruppeRoomIdRouteImport.update({
   path: '/$roomId',
   getParentRoute: () => DsaGruppeRoute,
 } as any)
+const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
+  id: '/lovable/email/events',
+  path: '/lovable/email/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
   path: '/lovable/email/suppression',
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
@@ -229,6 +236,7 @@ export interface FileRoutesByTo {
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
@@ -259,6 +267,7 @@ export interface FileRoutesById {
   '/api/public/npc-memory-update': typeof ApiPublicNpcMemoryUpdateRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
@@ -290,6 +299,7 @@ export interface FileRouteTypes {
     | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
     | '/dsa/gruppe/$roomId'
+    | '/lovable/email/events'
     | '/lovable/email/suppression'
     | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
@@ -318,6 +328,7 @@ export interface FileRouteTypes {
     | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
     | '/dsa/gruppe/$roomId'
+    | '/lovable/email/events'
     | '/lovable/email/suppression'
     | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
@@ -347,6 +358,7 @@ export interface FileRouteTypes {
     | '/api/public/npc-memory-update'
     | '/api/public/stripe-webhook'
     | '/dsa/gruppe/$roomId'
+    | '/lovable/email/events'
     | '/lovable/email/suppression'
     | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
@@ -372,6 +384,7 @@ export interface RootRouteChildren {
   ApiPublicNpcChatRoute: typeof ApiPublicNpcChatRoute
   ApiPublicNpcMemoryUpdateRoute: typeof ApiPublicNpcMemoryUpdateRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
+  LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicHooksWeeklySignupSummaryRoute: typeof ApiPublicHooksWeeklySignupSummaryRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -528,6 +541,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DsaGruppeRoomIdRouteImport
       parentRoute: typeof DsaGruppeRoute
     }
+    '/lovable/email/events': {
+      id: '/lovable/email/events'
+      path: '/lovable/email/events'
+      fullPath: '/lovable/email/events'
+      preLoaderRoute: typeof LovableEmailEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/suppression': {
       id: '/lovable/email/suppression'
       path: '/lovable/email/suppression'
@@ -630,6 +650,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicNpcChatRoute: ApiPublicNpcChatRoute,
   ApiPublicNpcMemoryUpdateRoute: ApiPublicNpcMemoryUpdateRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
+  LovableEmailEventsRoute: LovableEmailEventsRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicHooksWeeklySignupSummaryRoute:
     ApiPublicHooksWeeklySignupSummaryRoute,
