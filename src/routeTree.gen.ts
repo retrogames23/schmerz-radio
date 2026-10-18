@@ -31,7 +31,6 @@ import { Route as DsaGruppeRoomIdRouteImport } from './routes/dsa.gruppe.$roomId
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as ApiPublicHooksWeeklySignupSummaryRouteImport } from './routes/api/public/hooks/weekly-signup-summary'
 import { Route as DsaGruppeRoomIdSpielRouteImport } from './routes/dsa.gruppe.$roomId.spiel'
-import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
@@ -147,12 +146,6 @@ const DsaGruppeRoomIdSpielRoute = DsaGruppeRoomIdSpielRouteImport.update({
   path: '/spiel',
   getParentRoute: () => DsaGruppeRoomIdRoute,
 } as any)
-const LovableEmailQueueProcessRoute =
-  LovableEmailQueueProcessRouteImport.update({
-    id: '/lovable/email/queue/process',
-    path: '/lovable/email/queue/process',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
@@ -183,7 +176,6 @@ export interface FileRoutesByFullPath {
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
@@ -208,7 +200,6 @@ export interface FileRoutesByTo {
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
@@ -235,7 +226,6 @@ export interface FileRoutesById {
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
@@ -263,7 +253,6 @@ export interface FileRouteTypes {
     | '/lovable/email/events'
     | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
-    | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -288,7 +277,6 @@ export interface FileRouteTypes {
     | '/lovable/email/events'
     | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
-    | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
   id:
     | '__root__'
@@ -314,7 +302,6 @@ export interface FileRouteTypes {
     | '/lovable/email/events'
     | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
-    | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
@@ -335,7 +322,6 @@ export interface RootRouteChildren {
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   ApiPublicHooksWeeklySignupSummaryRoute: typeof ApiPublicHooksWeeklySignupSummaryRoute
-  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
@@ -495,13 +481,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DsaGruppeRoomIdSpielRouteImport
       parentRoute: typeof DsaGruppeRoomIdRoute
     }
-    '/lovable/email/queue/process': {
-      id: '/lovable/email/queue/process'
-      path: '/lovable/email/queue/process'
-      fullPath: '/lovable/email/queue/process'
-      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
@@ -570,7 +549,6 @@ const rootRouteChildren: RootRouteChildren = {
   LovableEmailEventsRoute: LovableEmailEventsRoute,
   ApiPublicHooksWeeklySignupSummaryRoute:
     ApiPublicHooksWeeklySignupSummaryRoute,
-  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
