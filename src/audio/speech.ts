@@ -18,6 +18,7 @@ type Speaker =
   | "HELKA"
   | "ENNIS"
   | "STEGMANN"
+  | "PALLASCH"
   | "OKWU"
   | "TJARK"
   | "BREM"
@@ -137,6 +138,11 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
     settings: { stability: 0.4, similarity_boost: 0.8, style: 0.3, use_speaker_boost: true },
   },
   STEGMANN: {
+    voiceId: "iP95p4xoKVk53GoZ742B", // Chris — sachlich, nüchtern
+    speed: 1.0,
+    settings: { stability: 0.55, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true },
+  },
+  PALLASCH: {
     voiceId: "iP95p4xoKVk53GoZ742B", // Chris — sachlich, nüchtern
     speed: 1.0,
     settings: { stability: 0.55, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true },
