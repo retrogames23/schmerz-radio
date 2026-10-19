@@ -197,6 +197,7 @@ export function useFastWebChat(
       }
       busyRef.current = true;
       setBusy(true);
+      const startedAt = Date.now();
       try {
         const token = await getFreshAccessToken();
         // Historie: nur sichtbare persona/player-Zeilen
@@ -252,6 +253,12 @@ export function useFastWebChat(
           return;
         }
         setError(null);
+        // Realistische Antwortzeit: Lesen + Nachdenken + Tippen (1997er Tempo, ~4 Zeichen/s).
+        if (trigger === "player") {
+          const typingMs = Math.min(25000, data.text.length * randInt(180, 280));
+          const wait = typingMs - (Date.now() - startedAt);
+          if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+        }
         appendMessage(
           {
             id: newId(),
@@ -322,7 +329,7 @@ export function useFastWebChat(
         true,
       );
       // Kurze Tipp-Verzögerung
-      await new Promise((r) => setTimeout(r, randInt(400, 900)));
+      await new Promise((r) => setTimeout(r, randInt(2000, 5000)));
       await callServer("player");
     },
     [appendMessage, callServer, playerName],
