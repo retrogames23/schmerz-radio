@@ -97,7 +97,7 @@ export function IdCardOverlay({ open, onClose }: Props) {
                       Wohnkomplex E67 · Leitstelle
                     </div>
                     <div className="font-mono-crt text-[9px] uppercase tracking-widest text-[#7a5a20]">
-                      Bewohner-Ausweis — Gebäude E67 / Etage 26
+                      Bewohner-Ausweis — Gebäude E67 / Etage 2 · Whg. 2611
                     </div>
                   </div>
                   <div className="text-right font-mono-crt text-[9px] leading-tight text-[#5a4015]">

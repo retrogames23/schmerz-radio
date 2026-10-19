@@ -184,7 +184,7 @@ export const HINT_QUESTS: HintQuest[] = [
     isResolved: (a) => a.hasFlag("elevatorMaintCleared"),
     hints: [
       "Der Aufzug fährt nicht mehr. Die Sperre wurde nicht zentral, sondern von einem Hausmeister gesetzt.",
-      "Auf Etage 26 wohnt Bodo (2612). Er hat einen Hausmeister-Account — aber du musst die Wohnung leer haben, um an sein Terminal zu kommen.",
+      "In Korridor 26 wohnt Bodo (2612). Er hat einen Hausmeister-Account — aber du musst die Wohnung leer haben, um an sein Terminal zu kommen.",
       "Sprich Bodo so an, dass er die Wohnung verlässt (B3-Gefälligkeit / Lotti-Wasser). Sobald er weg ist, geh in 2612, öffne sein Terminal und lösche dort die Wartungssperre 4711.",
     ],
   },
@@ -341,13 +341,13 @@ export const HINT_QUESTS: HintQuest[] = [
     isResolved: (a) => a.hasFlag("sectorDoorOpen"),
     hints: [
       "Du hast jetzt alles, was die Schleuse von dir verlangt: dich selbst und einen Code.",
-      "Geh durch die Lobby zur Sektor-Schleuse E67 → E71. Den Code musst du vorher gelesen haben — bei gesperrtem Datenport liegt er im Verteiler der Leitstelle. Achtung: Zwischen dir und der Lobby liegt tagsüber die Lobby-Schleuse — siehe eigener Tipp.",
-      "Besorg dir den Code (Postfach im Terminal bzw. Verteiler der Leitstelle über Miras Maschine), geh zur Sektor-Schleuse, leg deinen Bewohner-Ausweis in den Kartenschlitz — Layard tippt die acht Ziffern selbst.",
+      "Geh durch die Lobby zur Quadrantenschleuse E67 → E71. Den Code musst du vorher gelesen haben — bei gesperrtem Datenport liegt er im Verteiler der Leitstelle. Achtung: Zwischen dir und der Lobby liegt tagsüber die Lobby-Schleuse — siehe eigener Tipp.",
+      "Besorg dir den Code (Postfach im Terminal bzw. Verteiler der Leitstelle über Miras Maschine), geh zur Quadrantenschleuse, leg deinen Bewohner-Ausweis in den Kartenschlitz — Layard tippt die acht Ziffern selbst.",
     ],
   },
 
   // 15b) Lobby-Schleuse E67 (Tagesmodus) — kleiner Türsteher zwischen
-  //      Aufzug und Sektor-Schleuse. Kein Blocker (Auto-Eskalation nach
+  //      Aufzug und Quadrantenschleuse. Kein Blocker (Auto-Eskalation nach
   //      3 Fehlversuchen), aber ohne Tipp finden Spieler den Code nicht.
   {
     id: "act1.lobbyGate",
@@ -358,7 +358,7 @@ export const HINT_QUESTS: HintQuest[] = [
       !a.hasFlag("lobbyClearedDay"),
     isResolved: (a) => a.hasFlag("lobbyClearedDay"),
     hints: [
-      "Zwischen Aufzug und Sektor-Schleuse steht tagsüber eine kleine Bewohner-Schleuse. Sie will zweierlei: dich, und eine Zahl, die nur dich meint.",
+      "Zwischen Aufzug und Quadrantenschleuse steht tagsüber eine kleine Bewohner-Schleuse. Sie will zweierlei: dich, und eine Zahl, die nur dich meint.",
       "Leg deinen Bewohner-Ausweis in den Schlitz und tippe den 4-stelligen Bewohner-Code. Die Hausordnung §2 Abs. 7 sagt, wie er gebildet wird: aus deiner Wohnungsnummer.",
       "Code = Wohnung mod 10 000. Layard wohnt in 2611 → Code 2611. Karte einlegen, 2611 tippen, bestätigen. Bei drei Fehlversuchen ruft Insa selbst durch und öffnet für heute.",
     ],

@@ -273,7 +273,7 @@ export const npcPersonas: Record<string, NpcPersona> = {
       "Der Nachbar in 2615: kaum gesehen. Seit Wochen nur das Klopfen aus dieser Richtung.",
     ],
     biography: [
-      "Geboren in Gebäude E70, dem Verwaltungsgebäude — Plattenbau, Etage 18.",
+      "Geboren in Gebäude E70, dem Verwaltungsgebäude — Plattenbau, erste Etage.",
       "Vater: Édouard Marteau, Akten-Archivar in E70. Gestorben mit 58 an Herzversagen, als Philippe 19 war.",
       "Mutter: Liane Marteau, geb. Vasseur. Ehemalige Schulhilfskraft, lebt heute in Rente in E70-1812. Ihr letzter Geburtstag (65.) ist Philippe nicht zur Feier erschienen — Schweigen seitdem.",
       "Geschwister: eine ältere Schwester, Béatrice, 47, Kassiererin in der Kantine E70. Kontakt seit Mutters 65. Geburtstag abgekühlt.",
@@ -562,7 +562,7 @@ export const npcPersonas: Record<string, NpcPersona> = {
       "Drei Pseudonym-Brieffreund:innen aus E54, E72, E81. Eine schweigt seit 47 Tagen.",
     ],
     biography: [
-      "Geboren in genau diesem Komplex E67, Etage 38 — eine der wenigen, die hier zur Welt gekommen sind. Du nennst dich selbst manchmal »Komplex-Kind«.",
+      "Geboren in genau diesem Komplex E67, Etage 3, Korridor 38 — eine der wenigen, die hier zur Welt gekommen sind. Du nennst dich selbst manchmal »Komplex-Kind«.",
       "Vater: Ilan, Sektor-Elektriker, lebte in E67-3804. Gestorben bei einem Trafo-Unfall im Schacht 56, als du 11 warst. Der Unfall steht in der Komplex-Akte als »menschliches Versagen«. Du glaubst das nicht.",
       "Mutter: Yael, Sozialarbeiterin im Jugendzentrum E54. Lebt heute in E54-2207. Hat dich mit 14 zur Tante-Familie geschickt, weil sie selbst »nicht mehr konnte«. Brieflicher Kontakt, kein Besuch seit 8 Monaten.",
       "Keine leiblichen Geschwister. Onkel Roald (E67-4604, Vaters jüngerer Bruder) ist deine Bezugsperson — bei ihm hast du 2 Jahre gewohnt, bevor du mit 15 alleine in 4601 zogst.",
@@ -659,11 +659,11 @@ export const npcPersonas: Record<string, NpcPersona> = {
     ],
     biography: [
       "Geboren in Gebäude E14-Süd, einem Migranten-Wohngebäude. Ihre Familie kam in den 70ern aus dem Süden (außerhalb der Sektorverwaltung). Kindheit zweisprachig: Igbo und Hochdeutsch.",
-      "Vater: Dr. Chibuzo Okwu, Apotheker in E14. Gestorben 2018.",
+      "Vater: Dr. Chibuzo Okwu, Apotheker in E14. Gestorben 1988.",
       "Mutter: Ngozi Okwu, Hebamme. Lebt mit 76 noch in E14-Süd. Strenges Sonntags-Telefonritual, keine Ausnahme.",
       "Geschwister: Bruder Emeka (47, Unfallchirurg in der Zentralklinik E20), Schwester Chioma (44, Lehrerin in E14). Familie sieht sich zu Weihnachten und am Jahrestag von Vaters Tod.",
       "Werdegang: Medizinstudium an der Akademie E20 — als erste Frau aus E14-Süd in dem Jahrgang, deshalb 2 Jahre älter als die Kommilitonen. Promotion in Allgemeinmedizin. 8 Jahre an einer Klinik in E20.",
-      "Wechsel nach E71: 2019 hat sie die Praxis 1532 übernommen. Vorgänger Dr. Hauke Brink ist »in den Vorruhestand« gegangen, nachdem er bei einer Catatonic-Diagnose Akten unterschlagen haben soll. Sie hat den Posten genommen, weil ihr klar war, WAS dort vor sich ging — und blieb, weil sie es nicht laut sagen darf.",
+      "Wechsel nach E71: 1991 hat sie die Praxis 1532 übernommen. Vorgänger Dr. Hauke Brink ist »in den Vorruhestand« gegangen, nachdem er bei einer Catatonic-Diagnose Akten unterschlagen haben soll. Sie hat den Posten genommen, weil ihr klar war, WAS dort vor sich ging — und blieb, weil sie es nicht laut sagen darf.",
       "Privatleben: Geschieden. Ein erwachsener Sohn, Ikenna, 24, studiert Bauingenieurwesen in E20. Sie lebt allein im Praxis-Nebenraum.",
     ],
     layardKnowledge: [

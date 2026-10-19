@@ -53,7 +53,7 @@ const VOSSBECK_WEAK_FLAGS: StoryFlag[] = [
   "duelStarted",
   "vossbeckSummoned",
   "gotFormblatt17V",
-  // Endduell gegen Vossbeck gewonnen → Sektor-Code liegt im Terminal
+  // Endduell gegen Vossbeck gewonnen → Schleusen-Code liegt im Terminal
   "metVossbeck",
   "duelEndgameWon",
   "vossbeckGaveCode",

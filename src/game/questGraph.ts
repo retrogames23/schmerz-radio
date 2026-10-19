@@ -164,7 +164,7 @@ export const criticalPath: QuestStep[] = [
   },
   {
     id: "act1.sectorDoor",
-    title: "Sektor-Schleuse E67 → E71 öffnen",
+    title: "Quadrantenschleuse E67 → E71 öffnen",
     ort: "sectorDoor",
     wer: "—",
     braucht: {

@@ -21,7 +21,7 @@ export const mikaelDialogs: Record<string, DialogTree> = {
       mr3: {
         id: "mr3",
         speaker: "LAYARD",
-        text: "Worag. E67, Etage 26. Ich bringe ein Einsatzprotokoll. Fall-ID 5245, Wohnung 2615. Die Leitstelle hat mich zu Ihnen geschickt.",
+        text: "Worag. E67, Wohnung 2611. Ich bringe ein Einsatzprotokoll. Fall-ID 5245, Wohnung 2615. Die Leitstelle hat mich zu Ihnen geschickt.",
         next: "mr4",
       },
       mr4: {

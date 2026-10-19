@@ -194,7 +194,7 @@ export const insaDialogs: Record<string, DialogTree> = {
       idCode1: {
         id: "idCode1",
         speaker: "INSA",
-        text: "Den Code. — Da muss ich Sie enttäuschen, Worag: Sektor-Codes gibt die Leitstelle nicht heraus. Nicht mehr seit '95. Das macht Oberverwalter Vossbeck persönlich, Etage 3, Tür 3603 — direkt neben der Kantine 3602.",
+        text: "Den Code. — Da muss ich Sie enttäuschen, Worag: Schleusen-Codes gibt die Leitstelle nicht heraus. Nicht mehr seit '95. Das macht Oberverwalter Vossbeck persönlich, Etage 3, Tür 3603 — direkt neben der Kantine 3602.",
         subtext: "Sie sagt es, als hätte sie den Satz schon hundertmal aufgesagt. Vermutlich hat sie das.",
         next: "idCode2",
       },

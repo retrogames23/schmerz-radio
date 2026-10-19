@@ -79,7 +79,7 @@ function resolveEndgame(api: GameApi): void {
   if (hits >= 2) {
     api.setFlag("duelEndgameWon");
     api.clearFlag("duelEndgameLost");
-    // Vossbeck legt den Sektor-Code direkt ins Terminal — kein zweiter Insa-
+    // Vossbeck legt den Schleusen-Code direkt ins Terminal — kein zweiter Insa-
     // Anruf nötig. `calledForCode` ist die Wahrheitsquelle für Terminal/Keypad.
     if (!api.hasFlag("vossbeckGaveCode")) {
       api.setFlag("vossbeckGaveCode");
