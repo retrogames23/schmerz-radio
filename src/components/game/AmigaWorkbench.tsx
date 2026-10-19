@@ -4,6 +4,7 @@ import { useMusic } from "@/audio/MusicPlayer";
 import { setExternalGameAudio } from "@/audio/externalGameAudio";
 import { CloseButton } from "./CloseButton";
 import { FastWebChatRoom } from "./fastweb/ChatRoom";
+import { AMIGA_WITZE_TXT } from "./amiga/amigaWitze";
 import { PaletteTool, PointerTool, SerialTool, ClockTool, CalculatorTool, MoreTool, FormatTool, DiskCopyTool, FixFontsTool, InfoRequester, EmptyDrawerNote } from "./amiga/WbTools";
 
 /**
@@ -102,6 +103,13 @@ const WORKBENCH_DISK: FileNode = {
         { kind: "file", name: "Pointer", size: 2400, content: <PointerTool /> },
         { kind: "file", name: "Palette", size: 3120, content: <PaletteTool /> },
         { kind: "file", name: "Serial", size: 4080, content: <SerialTool /> },
+      ],
+    },
+    {
+      kind: "drawer",
+      name: "Fun",
+      children: [
+        { kind: "file", name: "Amiga-Witze.txt", size: AMIGA_WITZE_TXT.length, content: <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{AMIGA_WITZE_TXT}</pre> },
       ],
     },
     { kind: "file", name: "Startup-Sequence", size: 412, content: STARTUP_SEQUENCE },
