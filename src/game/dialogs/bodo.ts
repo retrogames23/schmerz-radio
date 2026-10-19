@@ -236,7 +236,7 @@ export const bodoDialogs: Record<string, DialogTree> = {
         id: "bodoResonanzHygiene2",
         speaker: "BODO",
         text: "Ich gehe meine Messgänge, ich trage die Zahlen ein, und einmal im Quartal fragt jemand nach, ob im 46er alles ruhig ist. Nach den Zahlen fragt nie jemand.",
-        subtext: "Er stellt die Kanne ab, sehr genau in den Ring auf dem Tisch.",
+        subtext: "Er stellt die Teekanne ab, sehr genau in den Ring auf dem Tisch.",
         end: true,
       },
       // Wiederverwendete Lotti-Reveal-Sequenz, falls der Spieler das Tier
@@ -725,7 +725,7 @@ export const bodoDialogs: Record<string, DialogTree> = {
       bs1: {
         id: "bs1",
         speaker: "SYSTEM",
-        text: "[ Bodo kommt zurück, Kanne in der Hand, Lotti reibt sich an seinem Schienbein. Er bleibt im Türrahmen stehen. ]",
+        text: "[ Bodo kommt zurück, Wasserkanne in der Hand, Lotti reibt sich an seinem Schienbein. Er bleibt im Türrahmen stehen. ]",
         next: "bs2",
       },
       bs2: {
@@ -860,7 +860,7 @@ export const bodoDialogs: Record<string, DialogTree> = {
       brt4: {
         id: "brt4",
         speaker: "BODO",
-        text: "Riecht noch nach Tee von gestern. Lotti wird das mögen — sie schläft besser, wenn's hier irgendwo nach Karton riecht.",
+        text: "Riecht noch nach Tee. Lotti wird das mögen — sie schläft besser, wenn's hier irgendwo nach Karton riecht.",
         next: "brt5",
       },
       brt5: {
@@ -996,7 +996,7 @@ export const bodoDialogs: Record<string, DialogTree> = {
       bkr2: {
         id: "bkr2",
         speaker: "BODO",
-        text: "Erst mal das, was Sie mir schon versprochen haben. Meine Kanne steht seit Wochen irgendwo in 5610 und wird nicht wärmer.",
+        text: "Erst mal das, was Sie mir schon versprochen haben. Meine Kanne steht noch in 5610 und wird nicht wärmer.",
         subtext: "Er sagt es freundlich. Und trotzdem ist es ein Nein.",
         next: "bkr3",
       },
