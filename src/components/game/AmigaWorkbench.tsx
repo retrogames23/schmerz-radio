@@ -302,15 +302,16 @@ chip_in_disco.mod     22 KB   ★★★`}</pre>
           <div style={{ fontFamily: "Times, serif", background: "#fdfaf0", padding: 8 }}>
             <h2 style={{ marginTop: 0 }}>Quarantäne-Zahlen weiter unklar</h2>
             <p>
-              Beobachter im Westen schätzen die Zahl der unter „Resonanz-Hygiene"
-              verhängten Wohnungs-Quarantänen auf inzwischen über 40.000. Die
-              Verwaltung des Mandatsgebiets bestreitet die Erhebung als solche.
+              Beobachter im Westen schätzen, dass seit Beginn des Mandats
+              über 40.000 Wohneinheiten wegen Lüftungs- und Sanierungsmängeln
+              zeitweise gesperrt waren. Die Verwaltung des Mandatsgebiets führt
+              darüber keine öffentliche Statistik.
             </p>
             <p>
-              Aussteiger berichten von akustischen Tests, sogenannten „Klang-Visiten",
-              bei denen Bewohnerinnen und Bewohner einer Wohneinheit auf Reaktion
-              hin geprüft werden. Wer nicht reagiert, gilt als „resonanzfähig" und
-              wird isoliert. Wer zu stark reagiert, ebenso.
+              Bewohner berichten weniger von Härte als von Gleichgültigkeit:
+              Anträge, die monatelang unbearbeitet bleiben, Aushänge zur
+              „Resonanz-Hygiene", die jeder anders auslegt, und Zuständigkeiten,
+              die sich im Kreis drehen.
             </p>
             <p><FastLink to="freie-presse.us" onGo={go}>« zurück</FastLink></p>
           </div>
@@ -323,11 +324,12 @@ chip_in_disco.mod     22 KB   ★★★`}</pre>
           <div style={{ fontFamily: "Times, serif", background: "#fdfaf0", padding: 8 }}>
             <h2 style={{ marginTop: 0 }}>Frequenz 104,6 — Mythos oder Methode?</h2>
             <p>
-              Aussteiger berichten von einer Schmalband-Frequenz, die im
-              Sektornetz offiziell nicht existiert, dort aber regelmäßig
-              gestört wird. Sendeleistung: gering. Reichweite: angeblich
-              ein einzelnes Plattenbau-Karree. Inhalt: Musik, kurze Ansagen,
-              gelegentlich Zahlen.
+              Einzelne Bastler berichten von einem Träger auf 104,6, den
+              keine Behörde führt. Keine Musik, keine Sprache — nur ein
+              gleichmäßiges Signal, das mit selbstgebauten Empfängern eine
+              bedrückende Stimmung, manchmal Kopfschmerz auslösen soll.
+              Reichweite: angeblich ein einzelnes Plattenbau-Karree. Die
+              Verwaltung kennt das Phänomen nach unseren Informationen nicht.
             </p>
             <p>
               Wir bleiben dran. Hinweise bitte verschlüsselt an
