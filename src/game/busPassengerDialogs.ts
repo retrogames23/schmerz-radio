@@ -36,7 +36,7 @@ export const BUS_PASSENGERS: BusPassenger[] = [
     id: "gerda",
     name: "Gerda Pahlke",
     kicker: "Rentnerin, Quadrant 67, Block B",
-    sprite: "elder",
+    sprite: "woman",
     greeting: "„Setzen Sie sich ruhig. Der Bus wird nicht schneller, wenn man steht.“",
     farewell: "„Mehr weiß ich auch nicht. Und was ich weiß, hab ich schon gesagt.“",
     topics: [
