@@ -21,6 +21,12 @@ export interface CctvReport {
   sceneId: string;
   sceneTitle: string;
   background: string | null;
+  /** IDs der beim Spieler sichtbaren Figuren. */
+  npcIds?: string[];
+  /** Spielstand-Auszug, damit der Monitor dieselbe Raumfassung wählt. */
+  flags?: string[];
+  knowledge?: string[];
+  items?: string[];
   activity: string;
   radio: boolean;
   at: number;
@@ -66,6 +72,19 @@ export function CctvBeacon() {
       } catch {
         background = null;
       }
+      const api = g.api;
+      const npcIds = (scene?.npcs ?? [])
+        .filter((n) => {
+          try {
+            if (n.requires && !n.requires.every((f) => api.hasFlag(f))) return false;
+            if (n.hiddenWhen && n.hiddenWhen.some((f) => api.hasFlag(f))) return false;
+            if (n.visible && !n.visible(api)) return false;
+            return true;
+          } catch {
+            return false;
+          }
+        })
+        .map((n) => n.id);
       let activity = "Sieht sich um";
       if (g.dialogId && g.dialogLineId) {
         const line = getDialog(g.dialogId)?.lines[g.dialogLineId];
@@ -80,6 +99,10 @@ export function CctvBeacon() {
         sceneId: g.scene,
         sceneTitle: scene?.title ?? g.scene,
         background,
+        npcIds,
+        flags: [...g.flags],
+        knowledge: [...g.knowledge],
+        items: g.inventory.map((it) => it.id),
         activity,
         radio: g.radioActive,
         at: Date.now(),
@@ -105,8 +128,27 @@ export function CctvBeacon() {
 }
 
 /** 2×2-Überwachungsmonitore. Pingt nur, solange geöffnet. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function remoteApi(base: any, r: CctvReport): any {
+  if (!r.flags) return base;
+  const f = new Set(r.flags);
+  const k = new Set(r.knowledge ?? []);
+  const it = r.items ?? [];
+  return {
+    ...base,
+    hasFlag: (x: string) => f.has(x),
+    hasKnowledge: (x: string) => k.has(x),
+    hasItem: (x: string) => it.includes(x),
+    getItemCount: (x: string) => it.filter((i) => i === x).length,
+  };
+}
+
+function sceneOf(sceneId: string) {
+  return (scenes as Record<string, (typeof scenes)[keyof typeof scenes]>)[sceneId];
+}
+
 function localBackground(sceneId: string, api: unknown): string | null {
-  const scene = (scenes as Record<string, (typeof scenes)[keyof typeof scenes]>)[sceneId];
+  const scene = sceneOf(sceneId);
   if (!scene) return null;
   try {
     return typeof scene.background === "function"
@@ -168,12 +210,27 @@ export function CctvMonitor({ onClose }: { onClose: () => void }) {
             key={i}
             className="relative overflow-hidden rounded-[18px] border-4 border-muted bg-card shadow-[inset_0_0_40px_rgba(0,0,0,0.9)]"
           >
-            {r && (localBackground(r.sceneId, viewerGame.api) ?? r.background) ? (
-              <img
-                src={localBackground(r.sceneId, viewerGame.api) ?? r.background ?? ""}
-                alt={r.sceneTitle}
-                className="absolute inset-0 h-full w-full object-cover opacity-80 [filter:grayscale(0.7)_sepia(0.3)_contrast(1.1)]"
-              />
+            {r && (localBackground(r.sceneId, remoteApi(viewerGame.api, r)) ?? r.background) ? (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="relative aspect-video max-h-full w-full opacity-80 [filter:grayscale(0.7)_sepia(0.3)_contrast(1.1)]">
+                  <img
+                    src={localBackground(r.sceneId, remoteApi(viewerGame.api, r)) ?? r.background ?? ""}
+                    alt={r.sceneTitle}
+                    className="absolute inset-0 h-full w-full object-fill"
+                  />
+                  {(sceneOf(r.sceneId)?.npcs ?? [])
+                    .filter((n) => r.npcIds?.includes(n.id))
+                    .map((n) => (
+                      <img
+                        key={n.id}
+                        src={n.src}
+                        alt={n.alt}
+                        className="absolute object-contain"
+                        style={{ left: `${n.x}%`, top: `${n.y}%`, width: `${n.w}%`, height: `${n.h}%` }}
+                      />
+                    ))}
+                </div>
+              </div>
             ) : (
               <div className="cctv-noise absolute inset-0 flex items-center justify-center text-sm uppercase tracking-[0.3em] text-muted-foreground">
                 {r ? "Bild gestört" : "Kein Signal / Standby"}
