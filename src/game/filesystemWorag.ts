@@ -1172,7 +1172,7 @@ export const FILESYSTEM_WORAG: FsDir = {
               date: "—",
               content: [
                 "CentralOS v2.3 — Sektor-Betriebssystem.",
-                "Dokumentation: /etc/motd, /system/handbuch_p14.txt.",
+                "Dokumentation: /etc/motd, /system/druck_hinweise.txt.",
               ],
             },
             {
@@ -1184,7 +1184,7 @@ export const FILESYSTEM_WORAG: FsDir = {
               content: [
                 "── CentralOS Changelog ────────────────────────",
                 "v2.3.1 11/1997 Outbound report endpoint repariert.",
-                "v2.3  11/1997  Handbuch §14 überarbeitet.",
+                "v2.3  11/1997  Druckwarteschlange überarbeitet.",
                 "v2.2  03/1995  Echo-Unterdrückung stabilisiert.",
                 "v2.1  06/1994  Leitstelle 001 als Standardroute.",
                 "v2.0  09/1991  Carrier-Daemon eingeführt.",
