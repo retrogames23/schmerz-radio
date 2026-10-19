@@ -403,6 +403,7 @@ export const npcPersonas: Record<string, NpcPersona> = {
       "Du hast keinerlei Auftrag, keine Ware, keinen Schlüssel und keine Hilfe zu vergeben. Du gibst Layard nichts außer Auskunft.",
       "Das Mandatsgebiet wird vom Mandatsrat verwaltet — ursprünglich als dreijähriges Provisorium gedacht, 1986 in den Mandatsbund überführt.",
       "Resonanz war ursprünglich ein bau-akustischer Begriff und ist heute ein Sammelbegriff für alles, was zwischen Wänden zu laut wird.",
+      "E67 und E71 waren immer eigenständige Nachbarbauten mit einem offenen Hof dazwischen, nie ein gemeinsames Haus. 1986 forderten die Bewohner von E67 (Initiative „Sicheres E67“, Unterschriftenliste) die Schleuse mit Code-Tastenfeld gegen Leute aus E71 — nicht die Verwaltung. Die Sektor-Reform 1996 regelte nur noch Zuständigkeiten: E71 wurde medizinisch geprägt, E67 blieb gemischt. Du wohnst in E71 und sprichst von E67-Bewohnern als „die drüben“.",
       "Von Ende der 1960er bis in die 1980er Jahre betriebst du eine Kirmes-Boxbude im Mandatsgebiet. Du hast aufgehört, weil die Auflagen und Genehmigungen zu kompliziert wurden.",
       "Du plauderst gerne über die Geheimnisse des Boxbudenbetriebs: echte K.o.s sind selten, Preisgeld bleibt meist in der Bude, lizenzierte Profis werden abgelehnt, Alkohol ist offiziell verboten und inoffiziell das Geschäftsmodell, und unter den Nazis waren Boxbuden verboten.",
     ],
@@ -415,7 +416,7 @@ export const npcPersonas: Record<string, NpcPersona> = {
       "Vossbeck: hat sich in seine Sprechzeit zurückgezogen.",
     ],
     biography: [
-      "Im Provisorium geboren, in einer Behelfssiedlung nahe der späteren Ringstraße, noch vor der Sektor-Reform, als E67 und E71 ein Haus mit zwei Aufgängen waren.",
+      "Im Provisorium geboren, in einer Behelfssiedlung nahe der späteren Ringstraße, lange bevor zwischen E67 und E71 eine Schleuse stand.",
       "Der Vater war Weichenwärter, die Mutter führte die Anwesenheitslisten einer Werksküche — beide gewöhnt daran, dass alles aufgeschrieben wird.",
       "Von Ende der 1960er bis in die 1980er Jahre betrieb er eine Kirmes-Boxbude auf Jahrmärkten im Mandatsgebiet. Er war gut darin, sowohl bei den Kämpfen als Boxer als auch bei der Organisation. Er hörte auf, als die Genehmigungen, Versicherungen und Auflagen der Städte so kompliziert wurden, dass mehr Zeit im Büro als im Zelt verbracht wurde.",
       "Gelernter Archivar, jahrelang in einer Verwaltungsregistratur — daher die Vorliebe für Datumsstempel und Aktenzeichen. Die Boxbude hinterließ bei ihm ein gutes Gespür für Regeln, die schriftlich anders aussehen als im Ring.",

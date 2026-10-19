@@ -83,8 +83,8 @@ function lightTopicLines(hubIds: string[]): Record<string, DialogLine> {
     tSektoren: {
       id: "tSektoren",
       speaker: "RALF",
-      text: "E67 und E71 waren mal ein Haus mit zwei Aufgängen. Dann kam die Sektor-Reform. Man hat nichts abgerissen und nichts gebaut — man hat Zuständigkeiten gezogen. Eine Tür, ein Keypad, ein anderer Briefkopf. Seitdem ist E71 die Medizin und E67 das, was übrig war.",
-      subtext: "„Getrennt“ heißt hier nie räumlich. Es heißt: verschiedene Formulare.",
+      text: "E67 und E71 waren mal Nachbarn mit einem offenen Hof dazwischen. Bis die Leute drüben bei Ihnen in E67 nervös wurden. 1986 gab es eine Unterschriftenliste — „Sicheres E67“, angeblich zu viele Vorfälle, zu viel Durchgangsverkehr aus E71. Also haben Ihre Nachbarn die Schleuse mit dem Tastenfeld verlangt. Und bekommen. 1996 hat die Verwaltung mit der Sektor-Reform dann nur noch den Stempel draufgesetzt: E71 wurde die Medizin, E67 das, was übrig blieb. Jetzt tippen Sie jedes Mal vier Ziffern ein, weil Ihre Nachbarn damals Angst vor uns hatten.",
+      subtext: "Er sagt es ganz ohne Bitterkeit. Eher wie jemand, der sich über schlechte Zäune amüsiert.",
       next: "afterTopic",
     },
     tMandat: {
