@@ -5,12 +5,13 @@ import { setExternalGameAudio } from "@/audio/externalGameAudio";
 import { CloseButton } from "./CloseButton";
 import { FastWebChatRoom } from "./fastweb/ChatRoom";
 import { AMIGA_WITZE_TXT } from "./amiga/amigaWitze";
+import { ATARI_WITZE_TXT } from "./amiga/atariWitze";
 import { PaletteTool, PointerTool, SerialTool, ClockTool, CalculatorTool, MoreTool, FormatTool, DiskCopyTool, FixFontsTool, InfoRequester, EmptyDrawerNote } from "./amiga/WbTools";
 
 /**
  * Amiga-Workbench-Overlay (Gemeinschaftsraum E71, Tür 1530).
  *
- * Simuliert eine Workbench 1.3 mit zwei "Disketten" (Workbench2.0,
+ * Simuliert eine Workbench 3.0 mit zwei "Disketten" (Workbench3.0,
  * FastWeb-Disk), Trashcan, mehreren Datei-Fenstern und einem
  * voll navigierbaren FastWeb-Browser. 1997, also alles knapp 90er.
  */
@@ -74,7 +75,7 @@ const MORE_FILES = [
 
 const WORKBENCH_DISK: FileNode = {
   kind: "drawer",
-  name: "Workbench2.0",
+  name: "Workbench3.0",
   children: [
     {
       kind: "drawer",
@@ -110,6 +111,7 @@ const WORKBENCH_DISK: FileNode = {
       name: "Fun",
       children: [
         { kind: "file", name: "Amiga-Witze.txt", size: AMIGA_WITZE_TXT.length, content: <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{AMIGA_WITZE_TXT}</pre> },
+        { kind: "file", name: "Atari-Witze.txt", size: ATARI_WITZE_TXT.length, content: <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{ATARI_WITZE_TXT}</pre> },
       ],
     },
     { kind: "file", name: "Startup-Sequence", size: 412, content: STARTUP_SEQUENCE },
