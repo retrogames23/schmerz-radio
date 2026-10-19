@@ -157,34 +157,22 @@ export function RadioPanel() {
     }
   }, [freq, volume, resonance, flags, api, setRadioActive, resetResonance, closeRadio, sfxVolume, scene]);
 
-  // E71 Frequenzsperre
+  // E71: Kein Verbot — der Sender steht in E67, hier drüben ist das
+  // Signal schlicht zu schwach. Einmaliger Gedanke, keine Folgen.
   const inE71 =
     scene === "e71Lobby" || scene === "corridor15" || scene === "room1534";
+  const [e71Noted, setE71Noted] = useState(false);
   useEffect(() => {
-    if (!radioOpen) return;
-    if (!inE71) return;
-    if (freq !== 104.6) return;
+    if (!radioOpen || !inE71 || freq !== 104.6 || e71Noted) return;
     const t = setTimeout(() => {
-      setRadioActive(false);
-      resetResonance();
-      closeRadio();
-      api.showText(
-        [
-          ">> GEBÄUDE E71 — FREQUENZSPERRE 104,6 AKTIV",
-          "Eine Hand auf Layards Schulter. Ein junger Pfleger, sehr ruhig.",
-          "„Herr Worag. Bitte schalten Sie das ab. In E71 ist 104,6 nicht zugelassen.“",
-          "Niemand hebt die Stimme. Niemand fragt, was er hier wollte.",
-          "Zwei weitere Pflegerinnen begleiten ihn höflich zurück Richtung Empfang.",
-          "Die Empfangsdame sieht kurz auf. Sagt nichts.",
-          "Die Aufzugtür schließt. Außenluft.",
-        ],
-        () => {
-          api.goTo("passage");
-        },
-      );
+      setE71Noted(true);
+      api.showText([
+        "Auf 104,6 kommt hier drüben nur Rauschen, darunter ein fernes, dünnes Brummen.",
+        "Das Signal ist hier kaum noch zu greifen. Zu viel Beton dazwischen — oder der Sender steht drüben in E67.",
+      ]);
     }, 600);
     return () => clearTimeout(t);
-  }, [radioOpen, inE71, freq, api, setRadioActive, resetResonance, closeRadio, flags]);
+  }, [radioOpen, inE71, freq, api, e71Noted]);
 
   const handleClose = useCallback(() => {
     setRadioActive(false);
