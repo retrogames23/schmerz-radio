@@ -210,12 +210,12 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "toTrakt16",
-        // Offener Seitengang hinter dem Konbini — Korridor 16 (Pathologie).
+        // Offener Seitengang hinter dem Konbini — Korridor 16 (Ambulanz & Labor).
         x: 29.5,
         y: 34,
         w: 6,
         h: 38,
-        label: "Durchgang → Trakt 16 (Pathologie)",
+        label: "Durchgang → Trakt 16 (Ambulanz & Labor)",
         kind: "look",
         onUse: (api) =>
           api.showText([
@@ -233,9 +233,9 @@ export const sectorAct1Scenes: Record<string, Scene> = {
         kind: "look",
         onUse: (api) =>
           api.showText([
-            ">> QUADRANT E71 — MEDIZIN",
+            ">> GEBÄUDE E71 · QUADRANT 71 — GESUNDHEIT",
             ">> Korridor 15  →  Zimmer 1500–1540",
-            ">> Korridor 16  →  Pathologie",
+            ">> Korridor 16  →  Ambulanz & Labor",
             ">> Resonanz-Hygiene in diesem Quadranten — bitte respektieren.",
           ]),
       },

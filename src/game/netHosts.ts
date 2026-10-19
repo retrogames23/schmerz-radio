@@ -683,7 +683,7 @@ export const NET_HOSTS: NetHost[] = [
   {
     ip: "10.71.0.1",
     host: "gateway.e71",
-    desc: "Gateway Nachbarsektor E71",
+    desc: "Gateway Nachbargebäude E71 (Quadrant 71)",
     password: null,
   },
   {
