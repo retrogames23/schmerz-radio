@@ -11,7 +11,7 @@ import { PaletteTool, PointerTool, SerialTool, ClockTool, CalculatorTool, MoreTo
 /**
  * Amiga-Workbench-Overlay (Gemeinschaftsraum E71, Tür 1530).
  *
- * Simuliert eine Workbench 1.3 mit zwei "Disketten" (Workbench2.0,
+ * Simuliert eine Workbench 3.0 mit zwei "Disketten" (Workbench3.0,
  * FastWeb-Disk), Trashcan, mehreren Datei-Fenstern und einem
  * voll navigierbaren FastWeb-Browser. 1997, also alles knapp 90er.
  */
