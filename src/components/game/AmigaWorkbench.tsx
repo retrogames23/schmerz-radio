@@ -4,6 +4,7 @@ import { useMusic } from "@/audio/MusicPlayer";
 import { setExternalGameAudio } from "@/audio/externalGameAudio";
 import { CloseButton } from "./CloseButton";
 import { FastWebChatRoom } from "./fastweb/ChatRoom";
+import { PaletteTool, PointerTool, SerialTool, ClockTool, CalculatorTool, MoreTool, FormatTool, DiskCopyTool, FixFontsTool, InfoRequester, EmptyDrawerNote } from "./amiga/WbTools";
 
 /**
  * Amiga-Workbench-Overlay (Gemeinschaftsraum E71, Tür 1530).
@@ -64,6 +65,12 @@ Frequenz steht im Block. Block ist im Block.
 `}</pre>
 );
 
+const MORE_FILES = [
+  { name: "S:Startup-Sequence", text: extractText(STARTUP_SEQUENCE) },
+  { name: "ReadMe.txt", text: extractText(README_TXT) },
+  { name: "Notiz.txt", text: extractText(NOTIZ_TXT) },
+];
+
 const WORKBENCH_DISK: FileNode = {
   kind: "drawer",
   name: "Workbench2.0",
@@ -74,27 +81,27 @@ const WORKBENCH_DISK: FileNode = {
       children: [
         { kind: "tool", name: "Shell", size: 4216, onOpen: "shell" },
         { kind: "tool", name: "CLI", size: 3892, onOpen: "shell" },
-        { kind: "file", name: "Format", size: 7244, content: <em>(Binary tool — kann Disketten formatieren)</em> },
-        { kind: "file", name: "DiskCopy", size: 9120, content: <em>(Binary tool — kopiert Disketten)</em> },
-        { kind: "file", name: "FixFonts", size: 3344, content: <em>(Binary tool)</em> },
+        { kind: "file", name: "Format", size: 7244, content: <FormatTool /> },
+        { kind: "file", name: "DiskCopy", size: 9120, content: <DiskCopyTool /> },
+        { kind: "file", name: "FixFonts", size: 3344, content: <FixFontsTool /> },
       ],
     },
     {
       kind: "drawer",
       name: "Utilities",
       children: [
-        { kind: "file", name: "Clock", size: 5120, content: <em>(zeigt eine Uhr — analog oder digital)</em> },
-        { kind: "file", name: "Calculator", size: 6240, content: <em>(Taschenrechner mit RPN-Modus)</em> },
-        { kind: "file", name: "More", size: 4880, content: <em>(Text-Pager, scrollt mit SPACE)</em> },
+        { kind: "file", name: "Clock", size: 5120, content: <ClockTool /> },
+        { kind: "file", name: "Calculator", size: 6240, content: <CalculatorTool /> },
+        { kind: "file", name: "More", size: 4880, content: <MoreTool files={MORE_FILES} /> },
       ],
     },
     {
       kind: "drawer",
       name: "Prefs",
       children: [
-        { kind: "file", name: "Pointer", size: 2400, content: <em>(Mauszeiger-Editor, 16×16)</em> },
-        { kind: "file", name: "Palette", size: 3120, content: <em>(Farben für 4-Bitplane Workbench)</em> },
-        { kind: "file", name: "Serial", size: 4080, content: <em>(Serielle Schnittstelle: 9600 8N1)</em> },
+        { kind: "file", name: "Pointer", size: 2400, content: <PointerTool /> },
+        { kind: "file", name: "Palette", size: 3120, content: <PaletteTool /> },
+        { kind: "file", name: "Serial", size: 4080, content: <SerialTool /> },
       ],
     },
     { kind: "file", name: "Startup-Sequence", size: 412, content: STARTUP_SEQUENCE },
@@ -112,8 +119,8 @@ const FASTWEB_DISK: FileNode = {
       kind: "drawer",
       name: "Cache",
       children: [
-        { kind: "file", name: "index.cache", size: 88200, content: <em>(Browser-Cache, binär)</em> },
-        { kind: "file", name: "cookies.dat", size: 240, content: <em>(3 Cookies — start.fastweb.us, amiga-zone.us)</em> },
+        { kind: "file", name: "index.cache", size: 88200, content: <InfoRequester name="index.cache" size={88200} kind="Projekt (FastWeb-Cache)" comment="Nicht löschen, sonst lädt alles neu. — R." /> },
+        { kind: "file", name: "cookies.dat", size: 240, content: <InfoRequester name="cookies.dat" size={240} kind="Projekt (FastWeb)" comment="3 Cookies: start.fastweb.us, amiga-zone.us" /> },
       ],
     },
     {
@@ -135,9 +142,9 @@ radio.untergrund.us
       kind: "drawer",
       name: "Downloads",
       children: [
-        { kind: "file", name: "turrican2.lha", size: 884800, content: <em>(LhA-Archiv, 880K — entpackt 1.4MB)</em> },
-        { kind: "file", name: "mod.spaceDeb", size: 124400, content: <em>(ProTracker MOD, 4-Channel)</em> },
-        { kind: "file", name: "deluxe-paint.adf", size: 901120, content: <em>(Diskettenimage 880K, write-protected)</em> },
+        { kind: "file", name: "turrican2.lha", size: 884800, content: <InfoRequester name="turrican2.lha" size={884800} kind="LhA-Archiv" comment="Entpackt 1,4 MB. Braucht 1 MB Chip-RAM." /> },
+        { kind: "file", name: "mod.spaceDeb", size: 124400, content: <InfoRequester name="mod.spaceDeb" size={124400} kind="ProTracker-Modul, 4 Kanäle" comment="Laut Ruven das beste Modul der Welt." /> },
+        { kind: "file", name: "deluxe-paint.adf", size: 901120, content: <InfoRequester name="deluxe-paint.adf" size={901120} kind="Disk-Image (schreibgeschützt)" comment="Original von Sigis Cousin. Nicht weitergeben." /> },
       ],
     },
   ],
@@ -593,9 +600,9 @@ export function AmigaWorkbench() {
           { label: "Workbench3.0", icon: <DiskIcon />, top: "8%", left: "86%", onOpen: () => openDrawer(WORKBENCH_DISK as FileNode & { kind: "drawer" }) },
           { label: "FastWeb", icon: <DiskIcon />, top: "25%", left: "88%", onOpen: () => openDrawer(FASTWEB_DISK as FileNode & { kind: "drawer" }) },
           { label: "HC-Tycoon", icon: <DiskIcon />, top: "30%", left: "38%", onOpen: openTycoon },
-          { label: "Ram Disk", icon: <RamDiskIcon />, top: "11%", left: "68%", onOpen: () => openFile("Ram Disk", <em>(leer · 0% full)</em>) },
+          { label: "Ram Disk", icon: <RamDiskIcon />, top: "11%", left: "68%", onOpen: () => openFile("Ram Disk", <EmptyDrawerNote text="Ram Disk: 0 Dateien · 0% belegt. Alles hier ist nach dem Ausschalten weg." />) },
           { label: "Shell", icon: <ShellIcon />, top: "48%", left: "57%", onOpen: openShell },
-          { label: "Trashcan", icon: <TrashIcon />, top: "70%", left: "85%", onOpen: () => openFile("Trashcan", <em>(leer)</em>) },
+          { label: "Trashcan", icon: <TrashIcon />, top: "70%", left: "85%", onOpen: () => openFile("Trashcan", <EmptyDrawerNote text="Der Papierkorb ist leer. Ruven leert ihn jeden Abend." />) },
         ]).map((ic) => (
           <div key={ic.label} style={{ position: "absolute", top: ic.top, left: ic.left, transform: "translateX(-50%)" }}>
             <DesktopIcon label={ic.label} icon={ic.icon} onOpen={ic.onOpen} />
@@ -627,7 +634,9 @@ export function AmigaWorkbench() {
                 <DrawerView node={w.node} onOpen={handleNodeOpen} />
               )}
               {w.kind === "file" && (
-                <div style={{ padding: 8, fontFamily: "monospace", fontSize: 12, color: "#000", background: "#fff", height: "100%", overflow: "auto" }}>
+                <div style={(w.content as { type?: unknown })?.type === "pre"
+                  ? { padding: 8, fontFamily: "monospace", fontSize: 12, color: "#000", background: "#fff", height: "100%", overflow: "auto" }
+                  : { height: "100%", overflow: "hidden" }}>
                   {w.content}
                 </div>
               )}
@@ -691,9 +700,7 @@ function FileIcon({ node, onOpen }: { node: FileNode; onOpen: () => void }) {
         fontFamily: WB_FONT,
       }}
     >
-      <div style={{ width: 52, height: 40, margin: "0 auto 2px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        {icon}
-      </div>
+      <IconFrame>{icon}</IconFrame>
       <div style={{ color: WB_BLACK, fontSize: 11, padding: "0 2px", display: "inline-block", maxWidth: 86, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
         {node.name}
       </div>
@@ -925,6 +932,19 @@ function WindowFrame({
 // ICONS
 // ============================================================
 
+// WB-3.0-Iconrahmen: graue, erhabene Kachel mit 1px-Bevel (wie im Original)
+function IconFrame({ children }: { children: ReactNode }) {
+  return (
+    <div style={{
+      width: 60, height: 46, margin: "0 auto 3px", display: "flex", alignItems: "center", justifyContent: "center",
+      background: WB_GREY,
+      borderTop: `1px solid ${WB_WHITE}`, borderLeft: `1px solid ${WB_WHITE}`,
+      borderRight: `1px solid ${WB_BLACK}`, borderBottom: `1px solid ${WB_BLACK}`,
+      boxShadow: `inset -1px -1px 0 #777777`,
+    }}>{children}</div>
+  );
+}
+
 function DesktopIcon({ label, icon, onOpen }: { label: string; icon: ReactNode; onOpen: () => void }) {
   return (
     <button
@@ -939,9 +959,7 @@ function DesktopIcon({ label, icon, onOpen }: { label: string; icon: ReactNode; 
         fontFamily: WB_FONT,
       }}
     >
-      <div style={{ width: 56, height: 44, margin: "0 auto 4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        {icon}
-      </div>
+      <IconFrame>{icon}</IconFrame>
       <div style={{ color: WB_BLACK, fontSize: 11, padding: 0, display: "inline-block", background: "transparent" }}>
         {label}
       </div>
