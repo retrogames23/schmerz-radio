@@ -67,7 +67,7 @@ export const SECTOR_CHATTER: ChatterMessage[] = [
   { from: "kantine.e67", to: "all.e67", text: "heute ausnahme: nudel-äquivalent in B-soße." },
   { from: "ennis.2614", to: "kantine.e67", text: "was ist nudel-äquivalent." },
   { from: "kantine.e67", to: "ennis.2614", text: "B2 in form." },
-  { from: "lobby.001", to: "all.e67", text: "sektorradio bleibt heute durchgehend an. das ist normal." },
+  { from: "lobby.001", to: "all.e67", text: "flurlicht bleibt heute durchgehend an. das ist normal." },
   { from: "anonym.????", to: "all.e67", text: "es ist nicht normal." },
   { from: "lobby.001", to: "anonym.????", text: "absender unbekannt. paket verworfen." },
   { from: "anonym.????", to: "all.e67", text: "es ist nicht normal." },
