@@ -89,7 +89,7 @@ export const krollDialogs: Record<string, DialogTree> = {
       n1: {
         id: "n1",
         speaker: "KROLL",
-        text: "Dann gehen Sie zur Leitstelle, Zimmer 4602, und holen sich einen Dringlichkeits-Bezugsschein. Oder Sie sind Reisender mit Berechtigungsschein S/D. Sonst bleibt das Fach zu.",
+        text: "Dann gehen Sie zur Leitstelle — Etage 3, ein Aufgang weiter, Zimmer 3502 — und holen sich einen Dringlichkeits-Bezugsschein. Oder Sie sind Reisender mit Berechtigungsschein S/D. Sonst bleibt das Fach zu.",
         next: "n2",
       },
       n2: {

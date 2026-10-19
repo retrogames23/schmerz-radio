@@ -81,7 +81,7 @@ export const mindenDialogs: Record<string, DialogTree> = {
       n1: {
         id: "n1",
         speaker: "MINDEN",
-        text: "Dann ist das ein Notfall, und der Notfall geht vor dem Paragraphen. Aber melden müssen Sie ihn trotzdem — Leitstelle drüben in E67, Zimmer 4602. Oder über Telefon, Null-Null-Eins. Der Zettel kommt hinterher. Der Zettel kommt immer hinterher.",
+        text: "Dann ist das ein Notfall, und der Notfall geht vor dem Paragraphen. Aber melden müssen Sie ihn trotzdem — Leitstelle drüben in E67, Etage 3, Aufgang 5, Zimmer 3502. Oder über Telefon, Null-Null-Eins. Der Zettel kommt hinterher. Der Zettel kommt immer hinterher.",
         next: "hub",
       },
     },

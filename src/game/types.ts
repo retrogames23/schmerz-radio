@@ -575,7 +575,7 @@ export type StoryFlag =
   | "showedEnnisPeppermint"
   | "showedEnnisCondom"
   // ── Akt II · Leitstelle (erste persönliche Begegnung mit Insa) ──
-  /** Layard hat Insa in der Leitstelle E67 (Tür 4602) persönlich getroffen. */
+  /** Layard hat Insa in der Leitstelle E67 (Tür 3502, Korridor 35) persönlich getroffen. */
   | "insaAct2BriefingDone"
   // ── E71 Gemeinschaftsraum (Tür 1530) — Home-Computer-Nerds & Amiga ──
   /** Layard hat den Gemeinschaftsraum hinter Tür 1530 zum ersten Mal betreten. */

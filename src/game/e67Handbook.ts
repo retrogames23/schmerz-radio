@@ -134,7 +134,7 @@ export const HANDBOOK_CHAPTERS: HandbookChapter[] = [
       "**Sortiment.** Die Waren stammen aus dem Mandatsgebiet: Trockennahrung, Haltbarmilch, Brot, Sicherungselemente, Seife, Kleinbedarf. In Medizin-Quadranten (z. B. E71) führt die Stelle die Ausführung **K-4m** mit Hygiene-Sortiment: Verbandsmaterial, Masken, Kräutertees, Desinfektionsmittel.",
       "- **Regelverkauf:** täglich **06:00 bis 19:00 Uhr**.",
       "- **Nachtsperre (19:00 bis 06:00 Uhr):** Die Stelle bleibt **rund um die Uhr besetzt** (Brandschutz, Meldekopf des Flurabschnitts), Waren werden jedoch gemäß §14 der Abendruheverordnung nicht ausgegeben.",
-      "- **Ausnahmen in der Nachtzeit:** nur gegen Vorlage eines **Berechtigungsscheins Gruppe S/D** (z. B. Reisende, Schichtdienst) oder eines **Dringlichkeits-Bezugsscheins der Leitstelle** (Zimmer 4602).",
+      "- **Ausnahmen in der Nachtzeit:** nur gegen Vorlage eines **Berechtigungsscheins Gruppe S/D** (z. B. Reisende, Schichtdienst) oder eines **Dringlichkeits-Bezugsscheins der Leitstelle** (Etage 3, Aufgang 5, Zimmer 3502).",
       "- **Münzzählwerk:** arbeitet nach Festwerttoleranz. Beanstandungen sind schriftlich an das Versorgungsamt zu richten, nicht an den Versorgungswart.",
       "> Die Ansagen der Kassen- und Kühlmodule erfolgen in der Sprache des Herstellerlandes. Ein Anspruch auf Eindeutschung der Steuerungstonbänder besteht nicht (Abkommen 1979, Abschn. VII d).",
     ],

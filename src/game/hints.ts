@@ -468,8 +468,8 @@ export const HINT_QUESTS: HintQuest[] = [
     isResolved: (a) => a.hasFlag("insaAct2BriefingDone"),
     hints: [
       "Insa hat dich eingeladen — auf einem Zettel steht eine Türnummer.",
-      "Tür 4602. Wohnetage. Nimm den Aufzug auf die 4 und geh in den Korridor 46.",
-      "Geh in 2611 zur Wohnungstür, fahr mit dem Aufzug auf Etage 4, geh durch Korridor 46 zur Tür 4602 (gegenüber von Mira) und sprich Insa direkt an.",
+      "Tür 3502. Etage 3, ein Aufgang weiter: Nimm den Aufzug auf die 3 und folge der Versorgungsachse nach links.",
+      "Fahr mit dem Aufzug auf Etage 3, geh in Korridor 36 links über die Versorgungsachse nach Aufgang 5 (Korridor 35), öffne Tür 3502 und sprich Insa direkt an.",
     ],
   },
   {
