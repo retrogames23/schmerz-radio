@@ -762,7 +762,7 @@ export const miraDialogs: Record<string, DialogTree> = {
       mtp2: {
         id: "mtp2",
         speaker: "MIRA",
-        text: "Bevor ich dir mehr sage: zwei Sachen. Erstens — auf Etage 56, am Drucker, hängt ein freier Port. Wenn du einen Rechner hast, der Telnet kann, kommst du auf eine Maschine. Da liegt ein Manifest. Lies es. Nicht jetzt. Allein.",
+        text: "Bevor ich dir mehr sage: zwei Sachen. Erstens — in Korridor 56, oben im fünften Stock, am Drucker, hängt ein freier Port. Wenn du einen Rechner hast, der Telnet kann, kommst du auf eine Maschine. Da liegt ein Manifest. Lies es. Nicht jetzt. Allein.",
         next: "mtp3",
       },
       mtp3: {

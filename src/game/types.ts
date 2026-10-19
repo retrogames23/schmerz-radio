@@ -340,7 +340,7 @@ export type StoryFlag =
   // dazu geben („Ich weiß es nicht. Ich war wütend.")
   | "burnedAndDodged"
   // Insa hat Layard zwingend zu Knoten 5610 geschickt (Pflicht-Pfad
-  // für den Sektor-Code).
+  // für den Schleusen-Code).
   // Insa-Rückruf nach burn ist gelaufen (verhindert Endlos-Trigger).
   | "insaCallbackBurnDone"
   // Dr. Adaeze Okwu (E71, Korridor 15) — progressive Dialog-Schichten

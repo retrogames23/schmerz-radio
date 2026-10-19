@@ -53,7 +53,7 @@ export const okwuDialogs: Record<string, DialogTree> = {
       ru2: {
         id: "ru2",
         speaker: "LAYARD",
-        text: "Worag. E67, Etage 26. Ich bringe ein Einsatzprotokoll für Herrn Stegmann. Zimmer 1534.",
+        text: "Worag. E67, Wohnung 2611. Ich bringe ein Einsatzprotokoll für Herrn Stegmann. Zimmer 1534.",
         next: "ru3",
       },
       ru3: {
@@ -174,7 +174,7 @@ export const okwuDialogs: Record<string, DialogTree> = {
       ok5: {
         id: "ok5",
         speaker: "LAYARD",
-        text: "E67. Etage 26.",
+        text: "E67. Wohnung 2611.",
         next: "ok6",
       },
       ok6: {
