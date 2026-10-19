@@ -5,6 +5,7 @@ import { setExternalGameAudio } from "@/audio/externalGameAudio";
 import { CloseButton } from "./CloseButton";
 import { FastWebChatRoom } from "./fastweb/ChatRoom";
 import { AMIGA_WITZE_TXT } from "./amiga/amigaWitze";
+import { ATARI_WITZE_TXT } from "./amiga/atariWitze";
 import { PaletteTool, PointerTool, SerialTool, ClockTool, CalculatorTool, MoreTool, FormatTool, DiskCopyTool, FixFontsTool, InfoRequester, EmptyDrawerNote } from "./amiga/WbTools";
 
 /**
@@ -110,6 +111,7 @@ const WORKBENCH_DISK: FileNode = {
       name: "Fun",
       children: [
         { kind: "file", name: "Amiga-Witze.txt", size: AMIGA_WITZE_TXT.length, content: <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{AMIGA_WITZE_TXT}</pre> },
+        { kind: "file", name: "Atari-Witze.txt", size: ATARI_WITZE_TXT.length, content: <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{ATARI_WITZE_TXT}</pre> },
       ],
     },
     { kind: "file", name: "Startup-Sequence", size: 412, content: STARTUP_SEQUENCE },
