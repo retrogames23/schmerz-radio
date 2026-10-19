@@ -105,7 +105,21 @@ export function CctvBeacon() {
 }
 
 /** 2×2-Überwachungsmonitore. Pingt nur, solange geöffnet. */
+function localBackground(sceneId: string, api: unknown): string | null {
+  const scene = (scenes as Record<string, (typeof scenes)[keyof typeof scenes]>)[sceneId];
+  if (!scene) return null;
+  try {
+    return typeof scene.background === "function"
+      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        scene.background(api as any)
+      : scene.background;
+  } catch {
+    return null;
+  }
+}
+
 export function CctvMonitor({ onClose }: { onClose: () => void }) {
+  const viewerGame = useGame();
   const [reports, setReports] = useState<Record<string, CctvReport>>({});
   const [now, setNow] = useState(Date.now());
 
@@ -154,9 +168,9 @@ export function CctvMonitor({ onClose }: { onClose: () => void }) {
             key={i}
             className="relative overflow-hidden rounded-[18px] border-4 border-muted bg-card shadow-[inset_0_0_40px_rgba(0,0,0,0.9)]"
           >
-            {r?.background ? (
+            {r && (localBackground(r.sceneId, viewerGame.api) ?? r.background) ? (
               <img
-                src={r.background}
+                src={localBackground(r.sceneId, viewerGame.api) ?? r.background ?? ""}
                 alt={r.sceneTitle}
                 className="absolute inset-0 h-full w-full object-cover opacity-80 [filter:grayscale(0.7)_sepia(0.3)_contrast(1.1)]"
               />
