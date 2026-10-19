@@ -75,7 +75,7 @@ const MORE_FILES = [
 
 const WORKBENCH_DISK: FileNode = {
   kind: "drawer",
-  name: "Workbench2.0",
+  name: "Workbench3.0",
   children: [
     {
       kind: "drawer",
