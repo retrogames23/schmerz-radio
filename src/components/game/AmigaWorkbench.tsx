@@ -302,15 +302,16 @@ chip_in_disco.mod     22 KB   ★★★`}</pre>
           <div style={{ fontFamily: "Times, serif", background: "#fdfaf0", padding: 8 }}>
             <h2 style={{ marginTop: 0 }}>Quarantäne-Zahlen weiter unklar</h2>
             <p>
-              Beobachter im Westen schätzen die Zahl der unter „Resonanz-Hygiene"
-              verhängten Wohnungs-Quarantänen auf inzwischen über 40.000. Die
-              Verwaltung des Mandatsgebiets bestreitet die Erhebung als solche.
+              Beobachter im Westen schätzen, dass seit Beginn des Mandats
+              über 40.000 Wohneinheiten wegen Lüftungs- und Sanierungsmängeln
+              zeitweise gesperrt waren. Die Verwaltung des Mandatsgebiets führt
+              darüber keine öffentliche Statistik.
             </p>
             <p>
-              Aussteiger berichten von akustischen Tests, sogenannten „Klang-Visiten",
-              bei denen Bewohnerinnen und Bewohner einer Wohneinheit auf Reaktion
-              hin geprüft werden. Wer nicht reagiert, gilt als „resonanzfähig" und
-              wird isoliert. Wer zu stark reagiert, ebenso.
+              Bewohner berichten weniger von Härte als von Gleichgültigkeit:
+              Anträge, die monatelang unbearbeitet bleiben, Aushänge zur
+              „Resonanz-Hygiene", die jeder anders auslegt, und Zuständigkeiten,
+              die sich im Kreis drehen.
             </p>
             <p><FastLink to="freie-presse.us" onGo={go}>« zurück</FastLink></p>
           </div>
@@ -323,11 +324,12 @@ chip_in_disco.mod     22 KB   ★★★`}</pre>
           <div style={{ fontFamily: "Times, serif", background: "#fdfaf0", padding: 8 }}>
             <h2 style={{ marginTop: 0 }}>Frequenz 104,6 — Mythos oder Methode?</h2>
             <p>
-              Aussteiger berichten von einer Schmalband-Frequenz, die im
-              Sektornetz offiziell nicht existiert, dort aber regelmäßig
-              gestört wird. Sendeleistung: gering. Reichweite: angeblich
-              ein einzelnes Plattenbau-Karree. Inhalt: Musik, kurze Ansagen,
-              gelegentlich Zahlen.
+              Einzelne Bastler berichten von einem Träger auf 104,6, den
+              keine Behörde führt. Keine Musik, keine Sprache — nur ein
+              gleichmäßiges Signal, das mit selbstgebauten Empfängern eine
+              bedrückende Stimmung, manchmal Kopfschmerz auslösen soll.
+              Reichweite: angeblich ein einzelnes Plattenbau-Karree. Die
+              Verwaltung kennt das Phänomen nach unseren Informationen nicht.
             </p>
             <p>
               Wir bleiben dran. Hinweise bitte verschlüsselt an
@@ -424,19 +426,20 @@ offiziell. Verwendung auf eigenes Risiko.`}</pre>
         title: "104,6 — Sendeplan",
         body: (
           <div style={{ background: "#111", color: "#ddd", fontFamily: "monospace", padding: 8 }}>
-            <h3 style={{ color: "#ff5555", marginTop: 0 }}>104,6 MHz — rekonstruierter Plan</h3>
-            <pre style={{ margin: 0 }}>{`Mo  22:00  Musik (instrumental)
-Mo  22:40  Ansage, kurz
-Di  --:--  (nicht beobachtet)
-Mi  22:00  Musik
-Mi  23:10  Zahlenfolge, weiblich, dt.
-Do  22:00  Musik
-Fr  21:30  Lange Ansage (15 Min.)
-Sa  ----   Schweigen
-So  20:00  Musik bis Sendeschluss`}</pre>
+            <h3 style={{ color: "#ff5555", marginTop: 0 }}>104,6 MHz — Beobachtungsprotokoll</h3>
+            <pre style={{ margin: 0 }}>{`Mo  ganztags  Träger, unmoduliert
+Di  ganztags  Träger, unmoduliert
+Mi  ganztags  Träger, Pegel leicht höher
+Do  ganztags  Träger, Pegel konstant
+Fr  ganztags  Träger, unmoduliert
+Sa  ganztags  Träger, unmoduliert
+So  ganztags  Träger, unmoduliert
+
+Musik: keine. Ansagen: keine. Sendeschluss: keiner.`}</pre>
             <p style={{ color: "#fc8" }}>
-              Hinweis: Wer das hier nachsendet oder weiterleitet, ist nach
-              Mandatsrecht §41 (4) selbst strafbar. Niemand zwingt euch.
+              Hinweis: Kein Programm, kein Betreiber bekannt. Wer einen
+              Empfänger dafür baut, tut das auf eigenes Risiko — mehrere
+              Hörer berichten von schlechten Nächten.
             </p>
             <p><FastLink to="radio.untergrund.us" onGo={go}>« zurück</FastLink></p>
           </div>

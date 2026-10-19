@@ -195,7 +195,7 @@ export const KNOWLEDGE_ENTRIES: KnowledgeEntry[] = [
   {
     id: "philippeProbing",
     label: "Der Nachbar fragt aus",
-    source: "Philippe Rausch, Wohnung 2613, E67",
+    source: "Philippe Marteau, Wohnung 2613, E67",
     sensitivity: "heikel",
     question:
       "Ist Ihnen im Haus jemand aufgefallen, der sich für Ihre Angaben interessiert? Ich frage nicht aus Neugier.",

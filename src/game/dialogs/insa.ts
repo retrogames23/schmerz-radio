@@ -149,7 +149,7 @@ export const insaDialogs: Record<string, DialogTree> = {
       },
       idNet3: {
         id: "idNet3",
-        speaker: "STEGMANN",
+        speaker: "PALLASCH",
         text: "Hier ist die technische Unterstützung des Zentralen Netzes, Pallasch am Apparat. — Bauerfeind hat Sie wegen einer Netzstörung durchgestellt. Error-Nummer, bitte. Und in einem Satz: Was wollten Sie übers Netz erledigen, bevor es klemmte?",
         next: "idNet4",
       },
@@ -161,13 +161,13 @@ export const insaDialogs: Record<string, DialogTree> = {
       },
       idNet5: {
         id: "idNet5",
-        speaker: "STEGMANN",
+        speaker: "PALLASCH",
         text: "Verstanden. Bitte tippen Sie im Terminal: »sysupdate«. Damit wird CentralOS über das lokale E67-Netz aktualisiert.",
         next: "idNet6",
       },
       idNet6: {
         id: "idNet6",
-        speaker: "STEGMANN",
+        speaker: "PALLASCH",
         text: "Danach tippen Sie: »trouble net«. Die automatische Problemermittlung leitet Ihren Fehler an die Gateway-Verantwortlichen weiter. Details schicke ich Ihnen ins Terminal-Postfach.",
         next: "idNet7",
       },
