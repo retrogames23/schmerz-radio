@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type ReactNode } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, type ReactNode } from "react";
 import { useGame } from "@/game/GameContext";
 import { useMusic } from "@/audio/MusicPlayer";
 import { setExternalGameAudio } from "@/audio/externalGameAudio";
@@ -531,6 +531,9 @@ export function AmigaWorkbench() {
   const { amigaWorkbenchOpen, closeAmigaWorkbench } = useGame();
   const [windows, setWindows] = useState<WindowState[]>([]);
   const [zOrder, setZOrder] = useState<string[]>([]);
+  const [layoutCmds, setLayoutCmds] = useState<Record<string, LayoutCmd>>({});
+  const [winMenuOpen, setWinMenuOpen] = useState(false);
+  const screenRef = useRef<HTMLDivElement>(null);
   const music = useMusic();
   const tycoonRunning = amigaWorkbenchOpen && windows.some((w) => w.kind === "tycoon");
 
@@ -553,7 +556,23 @@ export function AmigaWorkbench() {
 
   if (!amigaWorkbenchOpen) return null;
 
-  const focus = (id: string) => setZOrder((z) => [...z.filter((x) => x !== id), id]);
+  const focus = (id: string) => setZOrder((z) => (z[z.length - 1] === id ? z : [...z.filter((x) => x !== id), id]));
+  const depth = (id: string, shift: boolean) => setZOrder((z) => {
+    const rest = z.filter((x) => x !== id);
+    if (shift || z[0] === id) return [...rest, id];
+    return [id, ...rest];
+  });
+  const stackAll = () => {
+    setLayoutCmds(Object.fromEntries(zOrder.map((id, i) => [id, { seq: Date.now() + i, g: { x: 16 + i * 22, y: 30 + i * 22, w: 420, h: 300 } }])));
+  };
+  const tileAll = () => {
+    const el = screenRef.current; if (!el || zOrder.length === 0) return;
+    const n = zOrder.length, cols = Math.ceil(Math.sqrt(n)), rows = Math.ceil(n / cols);
+    const W = el.clientWidth, H = el.clientHeight - 20;
+    const w = Math.floor(W / cols), h = Math.floor(H / rows);
+    setLayoutCmds(Object.fromEntries(zOrder.map((id, i) => [id, { seq: Date.now() + i, g: { x: (i % cols) * w, y: 20 + Math.floor(i / cols) * h, w, h } }])));
+  };
+  const closeAll = () => { setWindows([]); setZOrder([]); };
 
   const openDrawer = (node: FileNode & { kind: "drawer" }) => {
     const id = nextId();
@@ -602,11 +621,34 @@ export function AmigaWorkbench() {
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80">
       <div
+        ref={screenRef}
         className="relative h-full w-full overflow-hidden"
         style={{ background: WB_GREY, fontFamily: WB_FONT, color: "#000", imageRendering: "pixelated" }}
       >
         {/* Screen-Titelbar (WB 2.x): grau, schwarzer Text, Memory-Anzeige */}
         <ScreenTitleBar />
+        {/* Menü „Fenster“ */}
+        <div style={{ position: "absolute", top: 0, left: "62%", zIndex: 1001, fontSize: 12 }}>
+          <button type="button" onClick={() => setWinMenuOpen((o) => !o)}
+            style={{ height: 18, padding: "0 8px", background: winMenuOpen ? WB_BLACK : WB_WHITE, color: winMenuOpen ? WB_WHITE : WB_BLACK, border: "none", fontFamily: WB_FONT, fontSize: 12, cursor: "pointer" }}>
+            Fenster
+          </button>
+          {winMenuOpen && (
+            <div style={{ position: "absolute", top: 18, left: 0, background: WB_WHITE, border: `1px solid ${WB_BLACK}`, minWidth: 190 }}>
+              {([
+                ["Stapeln", stackAll],
+                ["Nebeneinander", tileAll],
+                ["Alle schließen", closeAll],
+              ] as const).map(([label, fn]) => (
+                <button key={label} type="button" disabled={windows.length === 0}
+                  onClick={() => { fn(); setWinMenuOpen(false); }}
+                  style={{ display: "block", width: "100%", textAlign: "left", padding: "2px 10px", background: "transparent", border: "none", fontFamily: WB_FONT, fontSize: 12, color: windows.length === 0 ? WB_GREY : WB_BLACK, cursor: "pointer" }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Desktop-Icons — WB-typisch frei und leicht unordentlich verteilt */}
         {([
@@ -640,7 +682,10 @@ export function AmigaWorkbench() {
               offset={offset}
               isFastWeb={w.kind === "fastweb" || w.kind === "tycoon"}
               isShell={w.kind === "shell"}
+              active={zOrder[zOrder.length - 1] === w.id}
+              layoutCmd={layoutCmds[w.id] ?? null}
               onFocus={() => focus(w.id)}
+              onDepth={(shift) => depth(w.id, shift)}
               onClose={() => closeWindow(w.id)}
             >
               {w.kind === "drawer" && (
@@ -809,133 +854,170 @@ function ToolbarButton({ onClick, disabled, children }: { onClick: () => void; d
 // WINDOW FRAME
 // ============================================================
 
+type Geom = { x: number; y: number; w: number; h: number };
+export type LayoutCmd = { seq: number; g: Geom } | null;
+
 function WindowFrame({
-  title, z, offset, isFastWeb, isShell, onClose, onFocus, children,
+  title, z, offset, isFastWeb, isShell, active, layoutCmd, onClose, onFocus, onDepth, children,
 }: {
   title: string;
   z: number;
   offset: number;
   isFastWeb: boolean;
   isShell?: boolean;
+  active: boolean;
+  layoutCmd: LayoutCmd;
   onClose: () => void;
   onFocus: () => void;
+  onDepth: (shift: boolean) => void;
   children: ReactNode;
 }) {
-  // Initialposition (ziehbar via Titelbar)
-  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
-  const dragRef = useRef<{ startX: number; startY: number; baseX: number; baseY: number } | null>(null);
+  const elRef = useRef<HTMLDivElement>(null);
+  const [geom, setGeom] = useState<Geom | null>(null);
+  const [busy, setBusy] = useState(false);
+  const prevGeom = useRef<Geom | null>(null);
+  const op = useRef<{ mode: "move" | "size"; sx: number; sy: number; base: Geom } | null>(null);
+  const MIN_W = 160, MIN_H = 90, TOP = 19;
 
-  useEffect(() => {
-    function onMove(e: MouseEvent) {
-      const d = dragRef.current;
-      if (!d) return;
-      setPos({ x: d.baseX + (e.clientX - d.startX), y: d.baseY + (e.clientY - d.startY) });
-    }
-    function onUp() { dragRef.current = null; }
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
-    };
+  // Erste Geometrie aus dem CSS-Layout messen, danach in Pixeln führen.
+  useLayoutEffect(() => {
+    const el = elRef.current;
+    if (el && !geom) setGeom({ x: el.offsetLeft, y: el.offsetTop, w: el.offsetWidth, h: el.offsetHeight });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const startDrag = (e: React.MouseEvent) => {
-    if (e.button !== 0) return;
-    onFocus();
-    const cur = pos ?? { x: 0, y: 0 };
-    dragRef.current = { startX: e.clientX, startY: e.clientY, baseX: cur.x, baseY: cur.y };
+  useEffect(() => {
+    if (layoutCmd) { prevGeom.current = null; setGeom(layoutCmd.g); }
+  }, [layoutCmd]);
+
+  const bounds = () => {
+    const p = elRef.current?.parentElement;
+    return { W: p?.clientWidth ?? 1280, H: p?.clientHeight ?? 800 };
+  };
+  const clamp = (g: Geom): Geom => {
+    const { W, H } = bounds();
+    const w = Math.max(MIN_W, Math.min(g.w, W));
+    const h = Math.max(MIN_H, Math.min(g.h, H - TOP));
+    const x = Math.max(-w + 60, Math.min(g.x, W - 60));
+    const y = Math.max(TOP, Math.min(g.y, H - 20));
+    return { x, y, w, h };
   };
 
-  // FastWeb fills most of the screen; drawers are smaller
+  const begin = (mode: "move" | "size") => (e: React.PointerEvent) => {
+    if (e.button !== 0 || !geom) return;
+    e.stopPropagation();
+    onFocus();
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    op.current = { mode, sx: e.clientX, sy: e.clientY, base: geom };
+    setBusy(true);
+  };
+  const move = (e: React.PointerEvent) => {
+    const o = op.current;
+    if (!o) return;
+    const dx = e.clientX - o.sx, dy = e.clientY - o.sy;
+    if (o.mode === "move") setGeom(clamp({ ...o.base, x: o.base.x + dx, y: o.base.y + dy }));
+    else {
+      const { W, H } = bounds();
+      setGeom(clamp({ ...o.base, w: Math.min(o.base.w + dx, W - o.base.x), h: Math.min(o.base.h + dy, H - o.base.y) }));
+    }
+  };
+  const end = () => { op.current = null; setBusy(false); };
+
+  const toggleZoom = () => {
+    if (!geom) return;
+    onFocus();
+    if (prevGeom.current) { setGeom(prevGeom.current); prevGeom.current = null; return; }
+    const { W, H } = bounds();
+    prevGeom.current = geom;
+    setGeom({ x: 4, y: TOP + 2, w: W - 8, h: H - TOP - 6 });
+  };
+
   const baseStyle: React.CSSProperties = isFastWeb
-    ? { position: "absolute", top: 26, left: "3%", right: "3%", bottom: 12, zIndex: z }
+    ? { position: "absolute", top: 26, left: "3%", right: "3%", bottom: 12 }
     : isShell
-    ? { position: "absolute", top: 60, left: "8%", width: "min(560px, 80%)", height: "min(360px, 65%)", zIndex: z }
-    : {
-        position: "absolute",
-        top: 40 + offset,
-        left: `calc(2% + ${offset}px)`,
-        width: "min(420px, 70%)",
-        height: "min(320px, 60%)",
-        zIndex: z,
-      };
-  const style: React.CSSProperties = pos
-    ? { ...baseStyle, transform: `translate(${pos.x}px, ${pos.y}px)` }
+    ? { position: "absolute", top: 60, left: "8%", width: "min(560px, 80%)", height: "min(360px, 65%)" }
+    : { position: "absolute", top: 40 + offset, left: `calc(2% + ${offset}px)`, width: "min(420px, 70%)", height: "min(320px, 60%)" };
+  const style: React.CSSProperties = geom
+    ? { position: "absolute", left: geom.x, top: geom.y, width: geom.w, height: geom.h }
     : baseStyle;
+
+  const gadget: React.CSSProperties = { width: 20, height: 18, background: WB_GREY, ...BEVEL_OUT, padding: 0, margin: 0, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", touchAction: "manipulation" };
+  const stop = (e: React.PointerEvent | React.MouseEvent) => e.stopPropagation();
 
   return (
     <div
-      style={{ ...style, background: WB_GREY, ...BEVEL_OUT, display: "flex", flexDirection: "column", fontFamily: WB_FONT }}
-      onMouseDown={onFocus}
-      onTouchStart={onFocus}
+      ref={elRef}
+      style={{ ...style, zIndex: z, background: WB_GREY, ...BEVEL_OUT, display: "flex", flexDirection: "column", fontFamily: WB_FONT }}
+      onPointerDown={onFocus}
     >
-      {/* WB-Titelbar: solides Blau, weißer Text, links Close, rechts Zoom + Depth */}
+      {/* WB-Titelbar: aktiv blau, inaktiv grau; links Close, rechts Zoom + Depth */}
       <div
-        onMouseDown={startDrag}
+        onPointerDown={begin("move")}
+        onPointerMove={move}
+        onPointerUp={end}
+        onPointerCancel={end}
+        onDoubleClick={toggleZoom}
         style={{
-          display: "flex",
-          alignItems: "stretch",
-          height: 18,
+          display: "flex", alignItems: "stretch", height: 18,
           borderBottom: `1px solid ${WB_BLACK}`,
-          background: TITLEBAR_STRIPES_ACTIVE,
-          color: WB_BLACK,
-          cursor: "move",
-          userSelect: "none",
+          background: active ? TITLEBAR_STRIPES_ACTIVE : WB_GREY,
+          color: WB_BLACK, cursor: "move", userSelect: "none", touchAction: "none",
         }}
       >
-        {/* Close-Gadget */}
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onClose(); }}
-          onMouseDown={(e) => e.stopPropagation()}
-          aria-label="Schließen"
-          style={{
-            width: 20, height: 18, background: WB_GREY, ...BEVEL_OUT,
-            padding: 0, margin: 0, cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            touchAction: "manipulation", WebkitTapHighlightColor: "rgba(0,0,0,0.3)",
-          }}
-        >
+        <button type="button" aria-label="Schließen" style={gadget}
+          onPointerDown={stop} onDoubleClick={stop}
+          onClick={(e) => { e.stopPropagation(); onClose(); }}>
           <span style={{ width: 6, height: 6, background: WB_BLACK, display: "block" }} />
         </button>
-        <div
-          style={{
-            flex: 1, display: "flex", alignItems: "center",
-            paddingLeft: 4, paddingRight: 4, fontSize: 12,
-            color: WB_BLACK, overflow: "hidden",
-          }}
-        >
-          {/* Title-Block: solider blauer Kasten über den Streifen (WB-typisch) */}
+        <div style={{ flex: 1, display: "flex", alignItems: "center", paddingLeft: 4, paddingRight: 4, fontSize: 12, color: WB_BLACK, overflow: "hidden" }}>
           <span style={{
-            background: WB_BLUE, color: WB_BLACK,
+            background: active ? WB_BLUE : WB_GREY, color: WB_BLACK,
             padding: "0 8px", height: 14, lineHeight: "14px",
             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
             display: "inline-block", maxWidth: "100%",
           }}>{title}</span>
         </div>
-        {/* Zoom-Gadget (kleines + großes Rechteck) */}
-        <div onMouseDown={(e) => e.stopPropagation()} style={{ width: 20, height: 18, background: WB_GREY, ...BEVEL_OUT, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <button type="button" aria-label="Zoom" style={gadget}
+          onPointerDown={stop} onDoubleClick={stop}
+          onClick={(e) => { e.stopPropagation(); toggleZoom(); }}>
           <svg width="14" height="10" viewBox="0 0 14 10" shapeRendering="crispEdges">
             <rect x="0" y="0" width="14" height="10" fill="none" stroke={WB_BLACK} strokeWidth="1" />
             <rect x="0" y="0" width="6" height="5" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
           </svg>
-        </div>
-        {/* Depth-Gadget (zwei überlappende Rechtecke) */}
-        <div onMouseDown={(e) => e.stopPropagation()} style={{ width: 20, height: 18, background: WB_GREY, ...BEVEL_OUT, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        </button>
+        <button type="button" aria-label="Fenster nach hinten/vorn" style={gadget}
+          onPointerDown={stop} onDoubleClick={stop}
+          onClick={(e) => { e.stopPropagation(); onDepth(e.shiftKey); }}>
           <svg width="14" height="10" viewBox="0 0 14 10" shapeRendering="crispEdges">
             <rect x="3" y="0" width="11" height="7" fill={WB_GREY_LIGHT} stroke={WB_BLACK} strokeWidth="1" />
             <rect x="0" y="3" width="11" height="7" fill={WB_WHITE} stroke={WB_BLACK} strokeWidth="1" />
           </svg>
-        </div>
+        </button>
       </div>
-      {/* Inhalt + Scrollbar-Rinnen rechts und unten (rein dekorativ, WB-typisch) */}
-      <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+      <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", position: "relative" }}>
         <div style={{ flex: 1, minHeight: 0, display: "flex" }}>
           <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>{children}</div>
           <ScrollGutter vertical />
         </div>
-        <ScrollGutter />
+        <div style={{ display: "flex" }}>
+          <div style={{ flex: 1 }}><ScrollGutter /></div>
+          {/* Größen-Gadget unten rechts */}
+          <div
+            aria-label="Fenstergröße ändern"
+            onPointerDown={begin("size")}
+            onPointerMove={move}
+            onPointerUp={end}
+            onPointerCancel={end}
+            style={{ width: 16, height: 14, background: WB_GREY, ...BEVEL_OUT, cursor: "nwse-resize", touchAction: "none", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+          >
+            <svg width="10" height="8" viewBox="0 0 10 8" shapeRendering="crispEdges">
+              <rect x="0.5" y="0.5" width="9" height="7" fill="none" stroke={WB_BLACK} />
+              <rect x="0.5" y="0.5" width="4" height="3" fill={WB_WHITE} stroke={WB_BLACK} />
+            </svg>
+          </div>
+        </div>
+        {/* Während Drag/Resize Iframes abschirmen */}
+        {busy && <div style={{ position: "absolute", inset: 0, zIndex: 5 }} />}
       </div>
     </div>
   );
