@@ -133,7 +133,7 @@ export const insaDialogs: Record<string, DialogTree> = {
           },
         ],
       },
-      // ── Pfad A: Layard meldet die Störung → Stegmann (Standardweg).
+      // ── Pfad A: Layard meldet die Störung → Pallasch (Netz-Hotline) (Standardweg).
       idNet1: {
         id: "idNet1",
         speaker: "INSA",
@@ -150,7 +150,7 @@ export const insaDialogs: Record<string, DialogTree> = {
       idNet3: {
         id: "idNet3",
         speaker: "STEGMANN",
-        text: "Hier ist die technische Unterstützung des Zentralen Netzes, Stegmann am Apparat. — Bauerfeind hat Sie wegen einer Netzstörung durchgestellt. Error-Nummer, bitte. Und in einem Satz: Was wollten Sie übers Netz erledigen, bevor es klemmte?",
+        text: "Hier ist die technische Unterstützung des Zentralen Netzes, Pallasch am Apparat. — Bauerfeind hat Sie wegen einer Netzstörung durchgestellt. Error-Nummer, bitte. Und in einem Satz: Was wollten Sie übers Netz erledigen, bevor es klemmte?",
         next: "idNet4",
       },
       idNet4: {
@@ -180,7 +180,7 @@ export const insaDialogs: Record<string, DialogTree> = {
       idNet8: {
         id: "idNet8",
         speaker: "SYSTEM",
-        text: "[ Hörer eingehängt. Stegmann hatte denselben monotonen Tonfall wie die automatischen Ansagen der B2-Kantine. ]",
+        text: "[ Hörer eingehängt. Pallasch hatte denselben monotonen Tonfall wie die automatischen Ansagen der B2-Kantine. ]",
         choices: [
           {
             text: "▣ Beenden",
