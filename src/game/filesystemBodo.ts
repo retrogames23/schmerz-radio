@@ -538,13 +538,15 @@ export const FILESYSTEM_BODO: FsDir = {
         },
         {
           type: "file",
-          name: "sektor.conf",
+          name: "gebaeude.conf",
           kind: "config",
           size: 300,
           date: "—",
           content: [
-            "# /etc/sektor.conf",
-            "sektor        = E67",
+            "# /etc/gebaeude.conf",
+            "gebaeude      = E67",
+            "quadrant      = 67",
+            "sektor        = 28",
             "korridor      = 26",
             "gateway       = E67/E71",
             "tf_hausnetz   = 120 kHz",
