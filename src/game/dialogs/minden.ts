@@ -51,7 +51,7 @@ export const mindenDialogs: Record<string, DialogTree> = {
       j1: {
         id: "j1",
         speaker: "MINDEN",
-        text: "Japanisch. Die Geräte sind aus dem Abkommen neunundsiebzig. Diese hier sind die Krankenhaus-Modelle — die sprechen leiser. Irgendjemand in Tokio hat das so eingestellt, und hier hat es niemand geändert.",
+        text: "Japanisch. Die Geräte sind aus dem Abkommen neunundsiebzig. Diese hier sind die Ambulanz-Modelle — die sprechen leiser. Irgendjemand in Tokio hat das so eingestellt, und hier hat es niemand geändert.",
         next: "j2",
       },
       j2: {
