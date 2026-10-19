@@ -508,7 +508,7 @@ export const NET_HOSTS: NetHost[] = [
         "── stadtwerke, abt. fernmelde, archiv ────────",
         "── auszug, mitgenommen 1991 ──────────────────",
         "",
-        "trägersignal 104,6 MHz, sektor E67:",
+        "trägersignal 104,6 MHz, gebäude E67:",
         "  amplitudenstabilität automatisch:  ausgefallen",
         "  amplitudenstabilität manuell:      aktiv",
         "  zuständig:                          1 person/schicht",
@@ -599,7 +599,7 @@ export const NET_HOSTS: NetHost[] = [
         out[".versteckt_presse.txt"] = [
           "── private sammlung, nicht weitergeben ───────",
           "",
-          "1991  abendkurier:    'sektor E67 hört zu'",
+          "1991  abendkurier:    'gebäude E67 hört zu'",
           "1992  morgenblatt:    'frequenzkritik wächst'",
           "1993  freie presse:   'sektor E81 — was bleibt'",
           "1994  abendkurier:    'die letzten freien funker'",
