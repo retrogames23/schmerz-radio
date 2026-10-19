@@ -142,7 +142,7 @@ const COMPOSITION_SLOTS: Record<
   ],
   d: [
     { sprite: "elder", hotspot: { x: 17, y: 33, w: 22, h: 62 } },
-    { sprite: "woman", hotspot: { x: 46, y: 40, w: 11, h: 26 } },
+    { sprite: "girl", hotspot: { x: 46, y: 40, w: 11, h: 26 } },
     { sprite: "worker", hotspot: { x: 62, y: 34, w: 21, h: 63 } },
   ],
   e: [

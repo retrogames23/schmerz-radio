@@ -9,7 +9,7 @@
  * Anspielungen auf das Schmerz-Radio.
  */
 
-export type BusSpriteId = "elder" | "woman" | "youth" | "worker" | "couple";
+export type BusSpriteId = "elder" | "woman" | "girl" | "youth" | "worker" | "couple";
 
 export interface BusTopic {
   id: string;
@@ -736,7 +736,7 @@ export const BUS_PASSENGERS: BusPassenger[] = [
     id: "sanne",
     name: "Sanne Ruhl",
     kicker: "Schülerin, Bildungsstelle Süd",
-    sprite: "woman",
+    sprite: "girl",
     greeting: "„Wenn Sie fragen, ob ich schwänze: Unterricht ausgefallen. Ich hab keine Sprawka dafür, aber es stimmt.“",
     farewell: "„Ich muss lernen. Angeblich.“",
     topics: [
