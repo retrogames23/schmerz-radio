@@ -291,7 +291,7 @@ export const insaDialogs: Record<string, DialogTree> = {
       x4: {
         id: "x4",
         speaker: "INSA",
-        text: "Sie haben das wirklich durchgezogen, Worag. Den Code lege ich Ihnen jetzt ins Terminal. Sie wissen schon: das Datum.",
+        text: "Sie haben das wirklich durchgezogen, Worag. Mit dem Bogen gehen Sie jetzt zu Oberverwalter Vossbeck, Tür 3603. Den Code gibt nur er heraus.",
         subtext: "Eine Spur Bewunderung, sauber unterdrückt.",
         requires: ["receivedTillaTransfer"],
         next: "x5",
@@ -377,7 +377,7 @@ export const insaDialogs: Record<string, DialogTree> = {
       r3: {
         id: "r3",
         speaker: "INSA",
-        text: "Frau Kowalk, Kantine 3602, linker Tresen. Sobald der Bogen aus E70-K bei Ihnen aus dem Rohr fällt, ist Ihr Status sauber. Dann rufen Sie mich an — Code kommt ins Postfach.",
+        text: "Frau Kowalk, Kantine 3602, linker Tresen. Sobald der Bogen aus E70-K bei Ihnen aus dem Rohr fällt, ist Ihr Status sauber. Dann gehen Sie damit zu Vossbeck, 3603. Den Code gibt nur er.",
         next: "r4",
       },
       r4: {
@@ -578,7 +578,7 @@ export const insaDialogs: Record<string, DialogTree> = {
       ic5: {
         id: "ic5",
         speaker: "INSA",
-        text: "Der Code für die Quadrantenschleuse liegt in Ihrem Terminal. Datum, ohne Punkte. Sie wissen, wie. Kommen Sie trotzdem rüber, Worag. Es ist heute kein guter Tag, allein zu bleiben.",
+        text: "Den Code für die Quadrantenschleuse habe ich nicht, Worag, das wissen Sie. Den gibt nur Vossbeck, Tür 3603. Kommen Sie trotzdem rüber, Worag. Es ist heute kein guter Tag, allein zu bleiben.",
         requires: ["sawEmptyOffice"],
         next: "ic5b",
       },
