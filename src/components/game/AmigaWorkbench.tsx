@@ -426,19 +426,20 @@ offiziell. Verwendung auf eigenes Risiko.`}</pre>
         title: "104,6 — Sendeplan",
         body: (
           <div style={{ background: "#111", color: "#ddd", fontFamily: "monospace", padding: 8 }}>
-            <h3 style={{ color: "#ff5555", marginTop: 0 }}>104,6 MHz — rekonstruierter Plan</h3>
-            <pre style={{ margin: 0 }}>{`Mo  22:00  Musik (instrumental)
-Mo  22:40  Ansage, kurz
-Di  --:--  (nicht beobachtet)
-Mi  22:00  Musik
-Mi  23:10  Zahlenfolge, weiblich, dt.
-Do  22:00  Musik
-Fr  21:30  Lange Ansage (15 Min.)
-Sa  ----   Schweigen
-So  20:00  Musik bis Sendeschluss`}</pre>
+            <h3 style={{ color: "#ff5555", marginTop: 0 }}>104,6 MHz — Beobachtungsprotokoll</h3>
+            <pre style={{ margin: 0 }}>{`Mo  ganztags  Träger, unmoduliert
+Di  ganztags  Träger, unmoduliert
+Mi  ganztags  Träger, Pegel leicht höher
+Do  ganztags  Träger, Pegel konstant
+Fr  ganztags  Träger, unmoduliert
+Sa  ganztags  Träger, unmoduliert
+So  ganztags  Träger, unmoduliert
+
+Musik: keine. Ansagen: keine. Sendeschluss: keiner.`}</pre>
             <p style={{ color: "#fc8" }}>
-              Hinweis: Wer das hier nachsendet oder weiterleitet, ist nach
-              Mandatsrecht §41 (4) selbst strafbar. Niemand zwingt euch.
+              Hinweis: Kein Programm, kein Betreiber bekannt. Wer einen
+              Empfänger dafür baut, tut das auf eigenes Risiko — mehrere
+              Hörer berichten von schlechten Nächten.
             </p>
             <p><FastLink to="radio.untergrund.us" onGo={go}>« zurück</FastLink></p>
           </div>
