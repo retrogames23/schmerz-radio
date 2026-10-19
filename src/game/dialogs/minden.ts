@@ -13,6 +13,7 @@ export const mindenDialogs: Record<string, DialogTree> = {
       m1: {
         id: "m1",
         speaker: "MINDEN",
+        hiddenWhen: ["act2Started"],
         text: "Guten Abend. Leise, bitte — der Flur hört mit. Wenn Sie etwas brauchen: nach neunzehn Uhr nur gegen Schein. S/D für Schichtarbeiter, Notfall-Bezugsschein von der Leitstelle. Paragraph fünf Punkt zwei.",
         next: "hub",
       },
@@ -24,8 +25,9 @@ export const mindenDialogs: Record<string, DialogTree> = {
           { text: "Warum ist hier alles so ... medizinisch?", next: "med1" },
           { text: "Was sagt die Kasse da immer?", next: "j1" },
           { text: "Sie verkaufen Tabletten gegen Schlafstörungen?", next: "t1" },
-          { text: "Und wenn nachts jemand zusammenbricht?", next: "n1" },
-          { text: "Gute Nacht.", endsDialog: true },
+          { text: "Und wenn jemand zusammenbricht?", next: "n1" },
+          { text: "Gute Nacht.", endsDialog: true, hiddenWhen: ["act2Started"] },
+          { text: "Einen ruhigen Tag noch.", endsDialog: true, requires: ["act2Started"] },
         ],
       },
       med1: {
@@ -79,7 +81,7 @@ export const mindenDialogs: Record<string, DialogTree> = {
       n1: {
         id: "n1",
         speaker: "MINDEN",
-        text: "Dann ist das ein Notfall, und der Notfall geht vor dem Paragraphen. Aber melden müssen Sie ihn trotzdem — Leitstelle, Zimmer 4602. Der Zettel kommt hinterher. Der Zettel kommt immer hinterher.",
+        text: "Dann ist das ein Notfall, und der Notfall geht vor dem Paragraphen. Aber melden müssen Sie ihn trotzdem — Leitstelle drüben in E67, Zimmer 4602. Oder über Telefon, Null-Null-Eins. Der Zettel kommt hinterher. Der Zettel kommt immer hinterher.",
         next: "hub",
       },
     },

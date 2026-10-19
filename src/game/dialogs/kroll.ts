@@ -12,6 +12,7 @@ export const krollDialogs: Record<string, DialogTree> = {
       k1: {
         id: "k1",
         speaker: "KROLL",
+        hiddenWhen: ["act2Started"],
         text: "Abend. Wenn Sie was kaufen wollen: nur mit Schein. Nach neunzehn Uhr ruht der Regelverkauf — Schichtarbeiter mit Berechtigungsschein S/D kriegen trotzdem was. Steht im Handbuch, Paragraph fünf Punkt zwei.",
         next: "hub",
       },
@@ -20,12 +21,14 @@ export const krollDialogs: Record<string, DialogTree> = {
         speaker: "KROLL",
         text: "Noch was?",
         choices: [
-          { text: "Warum sitzen Sie hier, wenn der Laden doch zu ist?", next: "w1" },
+          { text: "Warum sitzen Sie hier, wenn der Laden doch zu ist?", next: "w1", hiddenWhen: ["act2Started"] },
+          { text: "Sie sind immer noch da?", next: "w1", requires: ["act2Started"] },
           { text: "Was sagt die Kasse da immer?", next: "j1" },
           { text: "Woher kommen die ganzen Geräte?", next: "g1" },
           { text: "Und wenn es ein Notfall ist?", next: "n1" },
           { text: "Sie haben ein Funkgerät gefunden?", next: "fs1", requires: ["act2Started"], hiddenWhen: ["askedKrollFundsache"], action: (a) => a.setFlag("askedKrollFundsache") },
-          { text: "Schönen Abend noch.", endsDialog: true },
+          { text: "Schönen Abend noch.", endsDialog: true, hiddenWhen: ["act2Started"] },
+          { text: "Schönen Tag noch.", endsDialog: true, requires: ["act2Started"] },
         ],
       },
       fs1: {
@@ -38,13 +41,13 @@ export const krollDialogs: Record<string, DialogTree> = {
       w1: {
         id: "w1",
         speaker: "KROLL",
-        text: "Brandschutz. Und Meldekopf für den Flurabschnitt. Ich bin nachts das einzige Licht im Erdgeschoss, das nicht von allein angeht.",
+        text: "Brandschutz. Und Meldekopf für den Flurabschnitt. Ich bin nachts das einzige Licht im Erdgeschoss, das nicht von allein angeht. Um acht löst mich die Kollegin ab — heute ist sie spät.",
         next: "w2",
       },
       w2: {
         id: "w2",
         speaker: "LAYARD",
-        text: "Und was machen Sie die ganze Nacht?",
+        text: "Und was machen Sie so eine ganze Nacht?",
         next: "w3",
       },
       w3: {
@@ -92,7 +95,7 @@ export const krollDialogs: Record<string, DialogTree> = {
       n2: {
         id: "n2",
         speaker: "KROLL",
-        text: "Nehmen Sie's nicht persönlich. Mir ist egal, was Sie nachts essen. Mir ist nur nicht egal, was auf dem Zettel steht.",
+        text: "Nehmen Sie's nicht persönlich. Mir ist egal, was Sie essen. Mir ist nur nicht egal, was auf dem Zettel steht.",
         next: "hub",
       },
     },
