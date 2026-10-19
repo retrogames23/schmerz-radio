@@ -3,7 +3,7 @@ import filmAsset from "@/assets/lehrfilm-mandatsgebiet.mp4.asset.json";
 import type { Scene } from "../types";
 
 /**
- * Kinosaal auf Etage 5 des Sektors E71 — „Lichtspielsaal 5“.
+ * Kinosaal auf Etage 5 des Gebäudes E71 — „Lichtspielsaal 5“.
  * Die Leinwand ist bewusst leer: Filme werden später ergänzt
  * (siehe CINEMA_FILMS — solange die Liste leer ist, läuft kein Programm).
  */
