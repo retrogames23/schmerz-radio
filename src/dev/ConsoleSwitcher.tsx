@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useGame } from "@/game/GameContext";
+import { CctvMonitor } from "./cctv";
 
 /**
  * Eintrag im Konsolen-Switcher. `open` löst die jeweilige Konsole/Overlay
@@ -65,6 +66,11 @@ const consoles: ConsoleEntry[] = [
     open: (ctx) => ctx.openIdCard(),
   },
   {
+    id: "cctv",
+    title: "Leitstelle · CCTV 4 Monitore (Live-Spieler)",
+    open: () => {},
+  },
+  {
     id: "amiga-workbench",
     title: "Amiga · Workbench + FastWeb (E71)",
     open: ({ api }) => api.openAmigaWorkbench(),
@@ -79,6 +85,7 @@ export function ConsoleSwitcher() {
   const ctx = useGame();
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState("");
+  const [cctvOpen, setCctvOpen] = useState(false);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -97,6 +104,8 @@ export function ConsoleSwitcher() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  const closeCctv = useCallback(() => setCctvOpen(false), []);
 
   const filtered = filter
     ? consoles.filter(
@@ -117,6 +126,7 @@ export function ConsoleSwitcher() {
         ▣
       </button>
 
+      {cctvOpen && <CctvMonitor onClose={closeCctv} />}
       {open && (
         <div
           className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/70 px-4 py-12"
@@ -159,7 +169,8 @@ export function ConsoleSwitcher() {
                     <button
                       type="button"
                       onClick={() => {
-                        c.open(ctx);
+                        if (c.id === "cctv") setCctvOpen(true);
+                        else c.open(ctx);
                         setOpen(false);
                       }}
                       className="flex w-full items-center justify-between gap-3 rounded-sm border border-amber-glow/20 px-3 py-2 text-left text-foreground transition hover:border-amber-glow/60 hover:bg-amber-glow/10"

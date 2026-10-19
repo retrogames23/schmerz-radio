@@ -41,6 +41,7 @@ import { BusRide } from "./BusRide";
 import { RoomSwitcher } from "@/dev/RoomSwitcher";
 import { BookSwitcher } from "@/dev/BookSwitcher";
 import { ConsoleSwitcher } from "@/dev/ConsoleSwitcher";
+import { CctvBeacon } from "@/dev/cctv";
 import { OverlayQAOverlay } from "@/dev/OverlayQAOverlay";
 import { DialogEditOverlay } from "@/dev/DialogEditOverlay";
 import { DevPlaybackPanel } from "@/dev/DevPlaybackPanel";
@@ -337,6 +338,7 @@ function GameStage({
       {dev && <RoomSwitcher />}
       {dev && <BookSwitcher />}
       {dev && <ConsoleSwitcher />}
+      <CctvBeacon />
       {dev && <OverlayQAOverlay />}
       {dev && <DialogEditOverlay />}
       {dev && <DevPlaybackPanel />}
