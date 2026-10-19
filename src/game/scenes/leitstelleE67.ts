@@ -2,7 +2,7 @@ import leitstelleBg from "@/assets/scene-leitstelle-e67.jpg";
 import type { Scene } from "../types";
 
 /**
- * Leitstelle E67 — kleines Disposition-Büro hinter Tür 4602 in Korridor 46.
+ * Leitstelle E67 — kleines Disposition-Büro hinter Tür 3502 in Korridor 35 (Etage 3, Aufgang 5).
  * Hierher bringt Layard das abgelehnte Einsatzprotokoll persönlich zu Insa
  * Bauerfeind. Sie nimmt es entgegen, weist es zu — mehr passiert nicht.
  * Kein Auftrag, kein Geheimnis, keine Akte. Der eigentliche Anstoß für
@@ -15,7 +15,7 @@ export const leitstelleE67Scenes: Record<string, Scene> = {
     background: leitstelleBg,
     title: "Leitstelle E67 — Disposition",
     intro:
-      "Hinter der Tür 4602 ein einzelnes Büro. Linoleum, Resopal, drei beige Tischapparate. Auf der Schrankwand hängende Registratur. Aus einer halb offenen Schublade rieseln vergilbte Karteireiter. Auf dem Tee-Tablett eine Kanne, die wirklich Tee enthält. Insa sitzt am Schreibtisch — kleiner als am Hörer.",
+      "Hinter der Tür 3502 ein einzelnes Büro. Linoleum, Resopal, drei beige Tischapparate. Auf der Schrankwand hängende Registratur. Aus einer halb offenen Schublade rieseln vergilbte Karteireiter. Auf dem Tee-Tablett eine Kanne, die wirklich Tee enthält. Insa sitzt am Schreibtisch — kleiner als am Hörer.",
     hotspots: [
       {
         id: "insaInPerson",
@@ -86,7 +86,7 @@ export const leitstelleE67Scenes: Record<string, Scene> = {
         },
       },
       {
-        id: "back4602",
+        id: "back3502",
         x: 54.8,
         y: 13.4,
         w: 14,
@@ -94,7 +94,7 @@ export const leitstelleE67Scenes: Record<string, Scene> = {
         label: "Zurück in den Korridor",
         kind: "exit",
         exitDir: "right",
-        onUse: (api) => api.goTo("corridor46"),
+        onUse: (api) => api.goTo("corridor35"),
       },
     ],
   },

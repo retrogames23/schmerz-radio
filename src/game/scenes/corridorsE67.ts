@@ -83,17 +83,24 @@ export const corridorsE67Scenes: Record<string, Scene> = {
       },
       {
         id: "traktPassage36",
-        // Linkes Bildende: Versorgungsachse läuft weiter Richtung Aufgang 5.
+        // Linkes Bildende: Versorgungsachse läuft weiter zu Aufgang 5
+        // (Korridor 35, Leitstelle). Erst ab Akt II hat Layard dort zu tun.
         x: 0,
         y: 82,
         w: 22,
         h: 18,
         label: "Versorgungsachse → Aufgang 5",
-        kind: "look",
-        onUse: (api) =>
+        kind: "exit",
+        exitDir: "left",
+        onUse: (api) => {
+          if (api.hasFlag("act2Started")) {
+            api.goTo("corridor35");
+            return;
+          }
           api.showText([
             "Ich weiß nicht, was ich dort soll. Die Kantine und die Verwaltung sind gleich hier.",
-          ]),
+          ]);
+        },
       },
       {
         id: "axisSign36",
@@ -274,23 +281,10 @@ export const corridorsE67Scenes: Record<string, Scene> = {
         h: 66,
         label: "Tür 4602",
         kind: "look",
-        hiddenWhen: ["act2Started"],
         onUse: (api) =>
           api.showText([
             "Tür 4602. Verschlossen. Hinter der Tür: leises Radiorauschen, keine Stimme.",
           ]),
-      },
-      {
-        id: "door4602Leitstelle",
-        x: 84.9,
-        y: 22.1,
-        w: 10.5,
-        h: 66,
-        label: "Tür 4602 — Leitstelle E67 · Disposition",
-        kind: "exit",
-        exitDir: "right",
-        requires: ["act2Started"],
-        onUse: (api) => api.goTo("leitstelleE67"),
       },
       {
         id: "door4603Look",

@@ -158,7 +158,7 @@ export function buildEndingBaseFrames(npcCount: number): string[][] {
       "Sie ist leichter, als sie heute Morgen war.",
     ],
     [
-      "Später. Sektor-Leitstelle E67, Korridor 46, Tür 4602.",
+      "Später. Sektor-Leitstelle E67, Etage 3, Aufgang 5, Tür 3502.",
       "Insa Bauerfeind nimmt das Protokoll persönlich entgegen.",
       "Sie dreht es einmal in der Hand, legt es auf ihren Stapel — nicht darunter, darauf.",
     ],

@@ -486,7 +486,7 @@ export const insaDialogs: Record<string, DialogTree> = {
       ar11: {
         id: "ar11",
         speaker: "INSA",
-        text: "Hören Sie. — Bringen Sie es mir vorbei. Persönlich. Sektor-Leitstelle E67, Korridor 46, Tür 4602. Fragen Sie nach Bauerfeind. Heute. Morgen. Wann Sie wollen.",
+        text: "Hören Sie. — Bringen Sie es mir vorbei. Persönlich. Leitstelle E67, Etage 3, Aufgang 5 — Tür 3502. Über die Versorgungsachse, links an der Kantine vorbei. Fragen Sie nach Bauerfeind. Heute. Morgen. Wann Sie wollen.",
         next: "ar12",
       },
       ar12: {
@@ -691,7 +691,7 @@ export const insaDialogs: Record<string, DialogTree> = {
       },
     },
   },
-  // ── Akt II · Erste persönliche Begegnung in der Leitstelle (4602) ──
+  // ── Akt II · Erste persönliche Begegnung in der Leitstelle (3502) ──
   insaAct2InPerson: {
     id: "insaAct2InPerson",
     start: "ip1",

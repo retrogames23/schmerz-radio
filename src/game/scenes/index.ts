@@ -16,6 +16,7 @@ import { apt1103Scenes } from "./apt1103";
 import { apt1104Scenes } from "./apt1104";
 import { kantinenverwaltung3603Scenes } from "./kantinenverwaltung3603";
 import { leitstelleE67Scenes } from "./leitstelleE67";
+import { corridor35Scenes } from "./corridor35";
 import { kellerE67Scenes } from "./kellerE67";
 import { pubScenes } from "./pub";
 import { windowNicheScenes } from "./windowNiche";
@@ -39,6 +40,7 @@ export const scenes: Record<string, Scene> = {
   ...apt1104Scenes,
   ...kantinenverwaltung3603Scenes,
   ...leitstelleE67Scenes,
+  ...corridor35Scenes,
   ...kellerE67Scenes,
   ...pubScenes,
   ...windowNicheScenes,
