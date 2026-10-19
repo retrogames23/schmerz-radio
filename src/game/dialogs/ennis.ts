@@ -80,7 +80,7 @@ export const ennisDialogs: Record<string, DialogTree> = {
       es4: {
         id: "es4",
         speaker: "ENNIS",
-        text: "Wütend ist Bürgersache. Ich bin auf Linie. — Wenn Sie Smalltalk wollen, gehen Sie zu Marschke, die Katze hört zu. Hier hört nur 104,6 zu, und der zählt nicht.",
+        text: "Wütend ist Bürgersache. Ich bin auf Linie. — Wenn Sie Smalltalk wollen, gehen Sie zu Marschke, die Katze hört zu. Hier hört nur die Lüftung zu, und die zählt nicht.",
         subtext: "Er meint den Satz nicht so, wie er ihn sagt. Beides gleichzeitig.",
         choices: [
           {

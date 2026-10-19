@@ -283,7 +283,7 @@ export const corridorsE67Scenes: Record<string, Scene> = {
         kind: "look",
         onUse: (api) =>
           api.showText([
-            "Tür 4602. Verschlossen. Hinter der Tür: leises Radiorauschen, keine Stimme.",
+            "Tür 4602. Verschlossen. Hinter der Tür: ein Fernseher, Ton ganz leise, keine Stimme.",
           ]),
       },
       {
@@ -483,9 +483,7 @@ export const corridorsE67Scenes: Record<string, Scene> = {
             api.showText([
               "Eine Stahltür, schmal, in die Wand eingelassen.",
               "Schild: »5610 · Technik · Kein Zutritt«.",
-              api.isRadioActive()
-                ? "Hier ist das Brummen am lautesten. Das Signal kommt von hinter dieser Tür."
-                : "Kein Keypad — nur ein flacher Kartenleser und ein blaues",
+              "Kein Keypad — nur ein flacher Kartenleser und ein blaues",
               "Wartungs-LED, das ruhig blinkt. Ohne Wartungskarte",
               "oder gelöste Wartungssperre bleibt die Tür zu.",
             ]);
