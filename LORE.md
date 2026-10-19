@@ -374,8 +374,11 @@ zwangsläufig den Brandalarm im Technikraum aus.
   nicht restlos verstanden — affektive Zustände, überwiegend negative:
   Schmerz, Trauer, Beklemmung. Sender und Empfänger müssen beide eingeschaltet
   sein.
-- **Erfunden** Mitte der 70er Jahre vom Funkamateur **Cornel Marteau**
-  (Name in §3.6 des E67-Handbuchs etabliert).
+- **Erfunden** Mitte der 70er Jahre vom Funkbastler **Konrad Elsner**
+  (Sektor 14). Öffentlich ist kein Urheber verzeichnet; nur Hanne Brodersen
+  (E71/1104) kennt ihn privat. Kein Patent, die Vertriebsfirma der 80er ist
+  pleite. Der „Marteau-Vermerk“ in §3.6 des E67-Handbuchs betrifft dagegen
+  Philippe Marteau (2613) und die alte Schicht-A-Akte 4317.
 - **Marktdurchdringung:** marginal. In den 80ern als „Therapie-Spielzeug"
   verkauft, schnell wieder vom Markt verschwunden, weil die meisten Menschen
   nicht freiwillig fremden Schmerz hören wollen. Geräte stehen heute bei
@@ -450,12 +453,13 @@ stehen weiterhin in `src/game/npcPersonas.ts`.
 - **Bodo Marschke** — Nachbar in 2612. Älterer Verwaltungsbeamter im
   Vorruhestand. Hat eine Katze und ein heimlich gut gepflegtes Terminal.
 - **Mira** — Bewohnervertretung E67, Schicht A. Trockensiegel-Hüterin.
-- **Mikael** — Etage-3-Beamter. Lehnt Protokolle aus Prinzip ab.
+- **Mikael Stegmann** — Sachbearbeiter in E71/1534. Erstickt in Vorgängen.
 - **Dr. Okwu** — Sektorärztin Anfang fünfzig. Sprechzimmer mit Aktenregalen.
-- **Helka, Ennis, Okwu, Vossbeck** — diverse Funktionsträger Sektor 28
-  (siehe `dialogs/`).
-- **Cornel Marteau** — Erfinder des Schmerz-Radios. Im Spiel nicht
-  anwesend; nur als Name in Akten und §3.6.
+- **Vossbeck** — Oberverwalter, Kantinenverwaltung 3603.
+- **Helka Vint** (2610) und **Ennis Korr** (2614) — Nachbarn auf Korridor 26,
+  keine Funktionsträger.
+- **Konrad Elsner** — Erfinder des Schmerz-Radios, Sektor 14. Im Spiel nur
+  telefonisch erreichbar; öffentlich unbekannt.
 - **Herbert** — Bibliothekar der Bewohnerbibliothek 1101 in E71. Leiht Bücher
   aus, spricht wenig, legt lieber den Finger auf eine Zeile.
 - **Setsuko Arai** — Künstlerin, E71/1102 (gegenüber der Bibliothek).

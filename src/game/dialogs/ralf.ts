@@ -431,7 +431,7 @@ export const ralfDialogs: Record<string, DialogTree> = {
       tGang: {
         id: "tGang",
         speaker: "RALF",
-        text: "Wer hier durchläuft? Schichtleute früh, Lieferkarren um sieben, die Pathologie-Boten mit ihren Kisten. Ein paar Gesichter kenne ich nur am Schritt: eine, die immer zu schnell geht und dabei nach Farbe riecht. Einer, der stehen bleibt und dann doch nicht anklopft. Und seit heute du — mit Mappe.",
+        text: "Wer hier durchläuft? Schichtleute früh, Lieferkarren um sieben, die Labor-Boten mit ihren Probenkisten. Ein paar Gesichter kenne ich nur am Schritt: eine, die immer zu schnell geht und dabei nach Farbe riecht. Einer, der stehen bleibt und dann doch nicht anklopft. Und seit heute du — mit Mappe.",
         subtext: "Er sagt keine Namen. Er sortiert nur Geräusche.",
         next: "hubC",
       },

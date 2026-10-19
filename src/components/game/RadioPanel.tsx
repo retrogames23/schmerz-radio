@@ -170,7 +170,7 @@ export function RadioPanel() {
       closeRadio();
       api.showText(
         [
-          ">> SEKTOR E71 — FREQUENZSPERRE 104,6 AKTIV",
+          ">> GEBÄUDE E71 — FREQUENZSPERRE 104,6 AKTIV",
           "Eine Hand auf Layards Schulter. Ein junger Pfleger, sehr ruhig.",
           "„Herr Worag. Bitte schalten Sie das ab. In E71 ist 104,6 nicht zugelassen.“",
           "Niemand hebt die Stimme. Niemand fragt, was er hier wollte.",
