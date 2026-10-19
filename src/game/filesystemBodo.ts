@@ -280,7 +280,7 @@ const HOME_BODO: FsDir = {
       content: [
         "── persönlicher auszug, mitgenommen 1991 ─────",
         "",
-        "trägersignal 104,6 MHz — manuell nachregeln,",
+        "hausnetz-träger (TF, 120 kHz) — manuell nachregeln,",
         "alle 90 sekunden, schicht: 1 person.",
         "",
         "ich war diese person, von 1986 bis 1991.",
@@ -467,7 +467,7 @@ const SYSTEM_DIR_BODO: FsDir = {
       content: [
         "── notiz für mich, falls ich's vergesse ──────",
         "",
-        "trägersignal 104,6: nicht anfassen.",
+        "hausnetz-träger TF: nicht anfassen.",
         "aufzug E67/2:        bei sperrung 4711 prüfen.",
         "lüftung 5:           grenzwert ist NICHT alarm.",
         "",
@@ -537,7 +537,7 @@ export const FILESYSTEM_BODO: FsDir = {
           content: [
             "── CentralOS v2.0 ─────────────────────────────",
             "Hausmeister-Konsole 2/E67.",
-            "Frequenz 104,6: NICHT anfassen.",
+            "TF-Hausnetz: NICHT anfassen.",
             "Bei Wartungs-Alarmen siehe »maint list«.",
             "Stadtwerke. Schicht: halbtags.",
           ],
@@ -553,7 +553,7 @@ export const FILESYSTEM_BODO: FsDir = {
             "sektor        = E67",
             "korridor      = 26",
             "gateway       = E67/E71",
-            "frequency     = 104.600 MHz",
+            "tf_hausnetz   = 120 kHz",
             "quiet_hours   = none",
           ],
         },
@@ -670,7 +670,7 @@ export const FILESYSTEM_BODO: FsDir = {
               content: [
                 "── kern.log ───────────────────────────────────",
                 "kernel: CentralOS 2.0 boot OK",
-                "kernel: carrier0 attached at 104.600 MHz",
+                "kernel: carrier0 attached (TF-Hausnetz 120 kHz)",
                 "kernel: WARN /dev/null write throttled",
                 "── Ende ───────────────────────────────────────",
               ],
@@ -685,7 +685,7 @@ export const FILESYSTEM_BODO: FsDir = {
                 "[    0.00] CentralOS v2.0 starting",
                 "[    0.12] cpu0: 33 MHz (synthetisch)",
                 "[    0.40] mem: 4096 KB",
-                "[    1.10] carrier0: lock 104.600 MHz",
+                "[    1.10] carrier0: lock TF 120 kHz",
               ],
             },
           ],
@@ -829,7 +829,7 @@ export const FILESYSTEM_BODO: FsDir = {
       desc: "Geräte.",
       children: [
         { type: "file", name: "null",     kind: "config", size: 0, date: "—", content: [""] },
-        { type: "file", name: "carrier0", kind: "config", size: 0, date: "—", content: ["[device — Trägersignal 104.600 MHz, read-only]"] },
+        { type: "file", name: "carrier0", kind: "config", size: 0, date: "—", content: ["[device — TF-Hausnetz-Träger 120 kHz, read-only]"] },
         { type: "file", name: "tty0",     kind: "config", size: 0, date: "—", content: ["[device — Terminal]"] },
       ],
     },

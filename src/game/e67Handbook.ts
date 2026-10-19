@@ -70,7 +70,6 @@ export const HANDBOOK_CHAPTERS: HandbookChapter[] = [
       "Die folgende Tabelle ist nicht abschließend. Im Zweifel: lieber freundlich gar nicht wählen als falsch.",
       "| Situation | 001 wählen? | Hinweis",
       "| Es klopft nebenan, niemand öffnet | Ja, sofern es **dreimal** klopft *und* länger als 20 Sekunden anhält. Bei nur zweimal: erst eigene Tür öffnen, freundlich rufen, dann ggf. wählen. | §3.1",
-      "| Schmerz-Radio rauscht „auffällig harmonisch“ | Nein. Zeichen guter Resonanz-Hygiene. Bitte genießen. | §3.2 / §9",
       "| Ozongeruch im Treppenhaus | Erst Fenster (falls vorhanden) öffnen, dann **001**, **niemals zuerst 002** (002 existiert nicht mehr seit der Sektor-Reform 1996, vgl. §B). | §3.3",
       "| Aufzug bleibt zwischen Etagen stehen | **Nicht 001.** Dafür ist der gelbe Aufzugnotruf zuständig (gedrückt halten, nicht tippen). 001 erst, wenn der gelbe Knopf nach 4 Minuten nicht reagiert. | §3.4",
       "| Nachbar öffnet plötzlich nicht mehr | Ja, aber höflich. Bitte nicht „vermisst“ sagen — die Leitstelle bevorzugt „derzeit nicht erreichbar“. | §3.5",

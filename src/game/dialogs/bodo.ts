@@ -71,7 +71,7 @@ export const bodoDialogs: Record<string, DialogTree> = {
       bodoLottiReveal3: {
         id: "bodoLottiReveal3",
         speaker: "BODO",
-        text: "Sie zuckt, wenn das Radio voll aufgedreht ist. Deshalb läuft es hier leise.",
+        text: "Sie zuckt, wenn mein Werkstattradio voll aufgedreht ist. Deshalb läuft es hier leise.",
         choices: [
           {
             text: "[ Beenden ]",
@@ -315,7 +315,7 @@ export const bodoDialogs: Record<string, DialogTree> = {
       bf6: {
         id: "bf6",
         speaker: "BODO",
-        text: "Wenn der Mensch geht, fällt die Schicht aus. Wenn die Schicht ausfällt, hört der Sektor sich selbst. Das ist alles, was Sie wissen müssen — und mehr, als ich heute hätte sagen sollen.",
+        text: "Wenn der Mensch geht, fällt die Schicht aus. Wenn die Schicht ausfällt, ist das Haus taub — kein Hausruf, keine Terminals. Das ist alles, was Sie wissen müssen — und mehr, als ich heute hätte sagen sollen.",
         next: "bf7",
       },
       bf7: {
