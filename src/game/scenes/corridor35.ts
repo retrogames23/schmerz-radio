@@ -1,4 +1,4 @@
-import corridor35Bg from "@/assets/scene-corridor-35.jpg";
+import corridor35Bg from "@/assets/scene-corridor-35-deutsch.jpg";
 import type { Scene } from "../types";
 
 /**
