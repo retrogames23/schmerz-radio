@@ -634,7 +634,9 @@ export function AmigaWorkbench() {
                 <DrawerView node={w.node} onOpen={handleNodeOpen} />
               )}
               {w.kind === "file" && (
-                <div style={{ padding: 8, fontFamily: "monospace", fontSize: 12, color: "#000", background: "#fff", height: "100%", overflow: "auto" }}>
+                <div style={(w.content as { type?: unknown })?.type === "pre"
+                  ? { padding: 8, fontFamily: "monospace", fontSize: 12, color: "#000", background: "#fff", height: "100%", overflow: "auto" }
+                  : { height: "100%", overflow: "hidden" }}>
                   {w.content}
                 </div>
               )}
