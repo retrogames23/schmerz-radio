@@ -87,7 +87,7 @@ export const vossbeckAct2Dialogs: Record<string, DialogTree> = {
       f0: {
         id: "f0",
         speaker: "VOSSBECK",
-        text: "Worag. Wieder hier. — Ich habe gehört, auf 104,6 sendet jetzt jemand mit Verstärker.",
+        text: "Worag. Wieder hier. — Ich sehe, Wohnung 4601 hat ihren Bogen eingereicht. Sauber abgeheftet, keine Rückfragen.",
         subtext: "Der Bleistift bleibt senkrecht. Aber er sieht Layard länger an als nötig.",
         next: "f1",
       },

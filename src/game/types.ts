@@ -757,6 +757,7 @@ export interface DialogLine {
     | "HELKA"
     | "ENNIS"
     | "STEGMANN"
+    | "PALLASCH"
     | "OKWU"
     | "TJARK"
     | "BREM"
