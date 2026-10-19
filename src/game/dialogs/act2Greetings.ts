@@ -15,6 +15,10 @@ interface Greeting {
   /** Wird gesetzt, sobald Layard die Figur in Akt I gesprochen hat. */
   known: StoryFlag;
   trees: string[];
+  /** Zusätzliche Flags, die gesetzt sein müssen, damit die Zeile erscheint. */
+  requires?: StoryFlag[];
+  /** Flags, bei denen die Zeile übersprungen wird. */
+  hiddenWhen?: StoryFlag[];
 }
 
 const GREETINGS: Greeting[] = [
@@ -37,10 +41,23 @@ const GREETINGS: Greeting[] = [
   },
   {
     speaker: "BODO",
-    text: "Morgen. Ich war schon unten, Kontrollgang. Tee ist auch schon kalt. — Sie sehen aus, als hätten Sie heute einen Termin.",
+    text: "Morgen. Ich war schon unten, Kontrollgang. Seit vorgestern ohne meine Kanne, der Tee hier schmeckt nach heißer Leitung. — Sie sehen aus, als hätten Sie heute einen Termin.",
     subtext: "Er sagt es ohne Neugier. Hausmeister registrieren Veränderungen, sie bewerten sie nicht.",
     flag: "bodoAct2Greeted",
     known: "bodoKnownAct1",
+    // Bodo ließ seine Kanne am Akt-I-Abend in 5610 stehen ("gestern").
+    // Am Akt-II-Morgen ist das vorgestern — erst mit der Rückgabe
+    // (`gaveBodoThermos`) übernimmt die zweite Variante unten.
+    hiddenWhen: ["gaveBodoThermos"],
+    trees: ["bodoSmalltalk"],
+  },
+  {
+    speaker: "BODO",
+    text: "Morgen. Ich war schon unten, Kontrollgang. Kanne wieder da, Tee wieder warm. — Sie sehen aus, als hätten Sie heute einen Termin.",
+    subtext: "Er sagt es ohne Neugier. Hausmeister registrieren Veränderungen, sie bewerten sie nicht.",
+    flag: "bodoAct2Greeted",
+    known: "bodoKnownAct1",
+    requires: ["gaveBodoThermos"],
     trees: ["bodoSmalltalk"],
   },
   {
@@ -138,30 +155,36 @@ const GREETINGS: Greeting[] = [
   },
 ];
 
-const GREETING_LINE_ID = "__act2Morning";
+const GREETING_LINE_PREFIX = "__act2Morning";
 
 /** Hängt die Akt-II-Morgenzeile vor die genannten Dialogbäume. */
 export function withAct2Greetings(
   dialogs: Record<string, DialogTree>,
 ): Record<string, DialogTree> {
   const out = { ...dialogs };
-  for (const g of GREETINGS) {
+  for (let gi = 0; gi < GREETINGS.length; gi++) {
+    const g = GREETINGS[gi];
     for (const treeId of g.trees) {
       const tree = out[treeId];
       if (!tree) continue;
       const originalEnd = tree.onEnd;
+      // Eigene Zeilen-ID je Eintrag und Baum: zwei Varianten derselben
+      // Figur (Bodo: Kanne noch nicht zurück / Kanne zurück) hängen so als
+      // Kette im selben Baum — die unsichtbare Variante wird per
+      // requires/hiddenWhen übersprungen.
+      const lineId = `${GREETING_LINE_PREFIX}_${gi}_${treeId}`;
       out[treeId] = {
         ...tree,
-        start: GREETING_LINE_ID,
+        start: lineId,
         lines: {
           ...tree.lines,
-          [GREETING_LINE_ID]: {
-            id: GREETING_LINE_ID,
+          [lineId]: {
+            id: lineId,
             speaker: g.speaker,
             text: g.text,
             subtext: g.subtext,
-            requires: ["act2Started", g.known],
-            hiddenWhen: [g.flag],
+            requires: ["act2Started", g.known, ...(g.requires ?? [])],
+            hiddenWhen: [g.flag, ...(g.hiddenWhen ?? [])],
             next: tree.start,
           },
         },
