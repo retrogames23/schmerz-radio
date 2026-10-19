@@ -21,6 +21,7 @@ export type SceneId =
   | "konbiniE67"
   | "konbiniE71"
   | "passage"
+  | "corridor35"
   | "corridor36"
   | "corridor46"
   | "corridor56"
