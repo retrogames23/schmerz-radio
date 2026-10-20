@@ -1063,12 +1063,15 @@ a:focus-visible,
 }
 /* Regen im Fensterausschnitt (Hotspot "window": 45.1/1.8, 10.2×54.9) */
 .apt-window-rain {
+  /* Nur die Glasfläche (ohne Rahmen/Laibung), damit es nicht "im Zimmer" regnet */
   position: absolute;
-  left: 45.1%;
-  top: 1.8%;
-  width: 10.2%;
-  height: 54.9%;
+  left: 46.6%;
+  top: 1.6%;
+  width: 5.6%;
+  height: 53.2%;
   overflow: hidden;
+  opacity: 0.7;
+  mix-blend-mode: screen;
 }
 .apt-rain {
   position: absolute;
