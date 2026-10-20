@@ -7,6 +7,7 @@ import { useQA } from "@/dev/overlayQAState";
 import { getOverridesFor } from "@/dev/overlayQAState";
 import { Eye, EyeOff } from "lucide-react";
 import { NpcLayer } from "./scene/NpcLayer";
+import { E71LobbyLife } from "./scene/E71LobbyLife";
 import { DecalLayer } from "./scene/DecalLayer";
 import { HotspotLayer } from "./scene/HotspotLayer";
 import { CinemaProjection } from "./CinemaProjection";
@@ -357,6 +358,9 @@ export function SceneView() {
           applyOverride={applyOverride}
         />
 
+        {/* Leben-Ebene E71-Empfang: Passant, Konbini-Besucherin, Telefon-LED */}
+        {scene === "e71Lobby" && <E71LobbyLife />}
+
         {/* Lichtspielsaal 5: Film läuft auf der Leinwand */}
         <CinemaProjection />
 
@@ -389,6 +393,11 @@ export function SceneView() {
         <FloatingChatter
           enabled={scene === "commonRoomE71"}
           variant="e71Nerds"
+        />
+        {/* Hintergrund-Telefonate der Empfangsdame im E71-Empfang */}
+        <FloatingChatter
+          enabled={scene === "e71Lobby"}
+          variant="e71Reception"
         />
 
         {/* Amber vignette when radio is active */}
