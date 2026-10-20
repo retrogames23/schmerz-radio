@@ -95,6 +95,12 @@ const E71_CONFIG: ChatterConfig = {
   labels: E71_LABEL as Record<string, string>,
 };
 
+const E71_RECEPTION_CONFIG: ChatterConfig = {
+  topics: E71_RECEPTION_CHATTER_TOPICS as unknown as ReadonlyArray<ChatterTopicLike>,
+  anchors: E71_RECEPTION_ANCHOR as Record<string, { x: number; y: number }>,
+  labels: E71_RECEPTION_LABEL as Record<string, string>,
+};
+
 interface ActiveBubble {
   id: string;
   npc: AnyNpcId;
@@ -127,7 +133,7 @@ export function FloatingChatter({
   variant = "dsa",
 }: {
   enabled: boolean;
-  variant?: "dsa" | "cafeteria" | "e71Nerds";
+  variant?: "dsa" | "cafeteria" | "e71Nerds" | "e71Reception";
 }) {
   const { dialogId, dsaCreatorOpen } = useGame();
   const [bubble, setBubble] = useState<ActiveBubble | null>(null);
@@ -142,7 +148,9 @@ export function FloatingChatter({
       ? CAFETERIA_CONFIG
       : variant === "e71Nerds"
         ? E71_CONFIG
-        : DSA_CONFIG;
+        : variant === "e71Reception"
+          ? E71_RECEPTION_CONFIG
+          : DSA_CONFIG;
 
   useLayoutEffect(() => {
     const element = bubbleRef.current;
