@@ -8,6 +8,8 @@ import { getOverridesFor } from "@/dev/overlayQAState";
 import { Eye, EyeOff } from "lucide-react";
 import { NpcLayer } from "./scene/NpcLayer";
 import { E71LobbyLife } from "./scene/E71LobbyLife";
+import { PlazaWalker } from "./scene/PlazaWalker";
+import plazaForegroundMask from "@/assets/sprites/zvs-walker-foreground-mask.png.asset.json";
 import { DecalLayer } from "./scene/DecalLayer";
 import { HotspotLayer } from "./scene/HotspotLayer";
 import { CinemaProjection } from "./CinemaProjection";
@@ -358,8 +360,16 @@ export function SceneView() {
           applyOverride={applyOverride}
         />
 
-        {/* Leben-Ebene E71-Empfang: Passant, Konbini-Besucherin, Telefon-LED */}
+        {/* Leben-Ebene E71-Empfang: Telefon-LED */}
         {scene === "e71Lobby" && <E71LobbyLife />}
+        {scene === "zvsExterior" && (
+          <>
+            <PlazaWalker />
+            <img src={backgroundSrc} alt="" aria-hidden="true"
+              style={{ maskImage: `url(${plazaForegroundMask.url})` }}
+              className="plaza-walker-foreground pointer-events-none absolute inset-0 h-full w-full" />
+          </>
+        )}
 
         {/* Lichtspielsaal 5: Film läuft auf der Leinwand */}
         <CinemaProjection />

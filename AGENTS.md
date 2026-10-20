@@ -1,5 +1,7 @@
 # Architecture rules
 
+- Ambient walkers use real sprite-sheet frames and a scene-mounted one-shot timeline in image coordinates; never use story flags or opacity fades for passers-by, so re-renders preserve a visit and leaving resets it.
+
 - Keep title rain artwork and mask in the same cover/center layout box; size the canvas backing buffer from local layout dimensions without setting inline CSS dimensions, so resizing and transformed stages retain alignment.
 
 - Position ambient speech bubbles in image coordinates and clamp their measured bounds to the visible stage crop; animation must not apply a second horizontal offset, so tails remain attached to speakers across screen sizes.
