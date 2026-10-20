@@ -9,6 +9,10 @@ import {
   E71_NERDS_CHATTER_TOPICS,
   type E71NerdNpcId,
 } from "../../game/e71NerdsChatter";
+import {
+  E71_RECEPTION_CHATTER_TOPICS,
+  type E71ReceptionNpcId,
+} from "../../game/e71ReceptionChatter";
 
 /**
  * Position einer Sprechblase je NPC, in % der Szene.
@@ -51,7 +55,16 @@ const E71_LABEL: Record<E71NerdNpcId, string> = {
   ruven: "Ruven",
 };
 
-type AnyNpcId = ChatterNpcId | CafeteriaNpcId | E71NerdNpcId;
+const E71_RECEPTION_ANCHOR: Record<E71ReceptionNpcId, { x: number; y: number }> = {
+  // Kopf der Empfangsdame hinter dem Tresen (Bildkoordinaten).
+  empfang: { x: 86, y: 36 },
+};
+
+const E71_RECEPTION_LABEL: Record<E71ReceptionNpcId, string> = {
+  empfang: "Empfang",
+};
+
+type AnyNpcId = ChatterNpcId | CafeteriaNpcId | E71NerdNpcId | E71ReceptionNpcId;
 
 interface ChatterTopicLike {
   id: string;
