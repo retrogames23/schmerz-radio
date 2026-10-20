@@ -311,6 +311,9 @@ export function SceneView() {
           }`}
         />
         {scene === "elevator" && <div className="fluorescent-flicker" aria-hidden="true" />}
+        {scene === "cafeteriaE67" && !flags.has("sentForgedQuittung") && (
+          <div className="cafeteria-red-lamp" aria-hidden="true" />
+        )}
         {scene === "apartment" && (
           <div className="apt-ambience" aria-hidden="true">
             <div className="apt-lamp" />
