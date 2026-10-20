@@ -1340,15 +1340,16 @@ body:has([data-dsa-page]) * {
   overflow: hidden;
   border-radius: 6% / 8%;
   background: radial-gradient(ellipse at center, rgb(8 30 14 / 0.94), rgb(3 14 7 / 0.96));
-  mask-image: radial-gradient(ellipse at center, black 72%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse at center, black 72%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent), linear-gradient(to bottom, transparent, black 6%, black 94%, transparent);
+  mask-composite: intersect;
+  -webkit-mask-composite: source-in;
   font-family: "VT323", ui-monospace, monospace;
   font-size: max(6px, 1.25cqmin);
   line-height: 1.25;
   color: rgb(120 255 140 / 0.85);
   text-shadow: 0 0 4px rgb(80 255 110 / 0.7);
   text-align: left;
-  padding: 0 8%;
+  padding: 0 1.6%;
 }
 .title-crt-screen::after {
   content: "";
