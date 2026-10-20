@@ -324,6 +324,13 @@ export function SceneView() {
         )}
         {scene === "apartment" && (
           <div className="apt-ambience" aria-hidden="true">
+            <div className="apt-window-rain">
+              <div className="apt-rain apt-rain-far" />
+              <div className="apt-rain apt-rain-near" />
+              <div className="apt-drip apt-drip-1" />
+              <div className="apt-drip apt-drip-2" />
+              <div className="apt-drip apt-drip-3" />
+            </div>
             <div className="apt-lamp" />
             <div className="apt-cursor" />
           </div>
