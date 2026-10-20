@@ -260,7 +260,7 @@ const dataflowChapters: HandbookChapter[] = [
     title: "Vorwort: Der Plan vor dem Strom",
     body: [
       "Wer heute einen Rechner benutzt, denkt nicht über seine Bauweise nach, so wenig wie man beim Öffnen eines Wasserhahns über Rohrquerschnitte nachdenkt. Dieses Buch versucht, den Weg nachzuzeichnen, der zu dieser Selbstverständlichkeit geführt hat — mit seinen Umwegen, Fehlschlägen und Streitfragen.",
-      "Erzählt wird keine Geschichte genialer Einfälle, sondern eine Geschichte von Prüfstellen, Normenausschüssen und Werkstätten. Die Rechentechnik dieses Jahrhunderts ist weniger erfunden als genehmigt worden. Das ist ihr Vorzug und ihre Last.",
+      "Erzählt wird keine Heldengeschichte genialer Erfinder, sondern eine Entwicklung aus Werkstätten, militärischen Pflichtenheften und industriellen Normen. Die Rechentechnik dieses Jahrhunderts ist aus dem Bedürfnis nach Verlässlichkeit entstanden. Das ist ihr Vorzug und ihre Last.",
     ],
   },
   {
@@ -270,9 +270,9 @@ const dataflowChapters: HandbookChapter[] = [
     shortTitle: "Die Gründerjahre",
     title: "I. Relais, Lochstreifen und die Norm von 1948",
     body: [
-      "Die ersten programmgesteuerten Anlagen der 1940er Jahre waren Einzelstücke: Howard Aikens Mark-Maschinen in Harvard, Konrad Zuses Z-Reihe in Berlin und später in der Schweiz. Ihr Programm lief vom Lochstreifen, ihre Zahlen standen in Relaisregistern. Dass beides verschiedene Träger hatte, folgte schlicht aus dem Material, nicht aus einer Theorie.",
-      "Interessanter ist der Vorschlag, der sich nicht durchsetzte. 1945 regte John von Neumann an, Befehle und Zahlen im selben Speicher abzulegen, um teure Röhren zu sparen. Am Institute for Advanced Study wurde das erprobt. Die Rechenämter, die solche Anlagen abnehmen und eichen mussten, lehnten es ab: Eine Maschine, deren Programm sich durch ihre eigenen Ergebnisse verändern konnte, ließ sich nicht abnehmen, nicht eichen und nicht für Gutachten verwenden.",
-      "Die Abnahmerichtlinie der Rechenämter von 1948 schrieb deshalb getrennte Befehls- und Datenträger vor. Für fast alle späteren Hersteller war damit entschieden, was sie bauen durften, wenn sie an Behörden, Banken und Versicherungen liefern wollten.",
+      "Die ersten programmgesteuerten Anlagen der 1940er Jahre waren Einzelstücke: Howard Aikens Mark-Maschinen in Harvard, Konrad Zuses Z-Reihe in Berlin und später in Zürich. Ihr Programm lief vom Lochstreifen oder von Steckfeldern, ihre Zahlen standen in Relaisregistern. Dass beides getrennt war, folgte zunächst schlicht aus dem verfügbaren Material.",
+      "Interessanter ist der Vorschlag, der sich in den Vereinigten Staaten nicht durchsetzte. 1945 regte John von Neumann an, Befehle und Zahlen im selben Röhrenspeicher abzulegen, um teure Bauteile zu sparen. Am Institute for Advanced Study in Princeton wurde das erprobt. Die Auftraggeber bei Marine und Heer winkten ab: Die Röhrenspeicher jener Jahre waren anfällig für Rauschen, und eine Anlage, deren Programm sich durch einen verfälschten Rechenwert selbst überschreiben konnte, galt für ballistische Tafeln als unkalkulierbares Risiko.",
+      "Die Spezifikation des National Bureau of Standards von 1948 hielt fest, was öffentliche Aufträge erhalten konnte: Die Befehlszuführung musste vom Zahlenspeicher getrennt und gegen Schreibzugriffe der Maschine selbst gesperrt sein. Versicherungen und Banken übernahmen den Grundsatz bald freiwillig, weil ihre Wirtschaftsprüfer ihn verlangten. Damit war die Richtung der amerikanischen Industrie für Jahrzehnte vorgegeben, und Europa übernahm sie mit den Maschinen.",
     ],
   },
   {
@@ -294,8 +294,8 @@ const dataflowChapters: HandbookChapter[] = [
     shortTitle: "Datenfluss",
     title: "III. Der Übergang zum Datenfluss (1968–1979)",
     body: [
-      "Ende der 1960er Jahre stellte eine Gruppe um Jack Dennis die alte Frage neu: Warum sollte ein Rechner Befehl für Befehl abarbeiten, wenn viele Rechnungen gar nicht voneinander abhängen? In ihren Entwürfen wird ein Programm zu einem Netz aus Knoten. Ein Knoten rechnet, sobald alle Eingangswerte anliegen, und reicht sein Ergebnis als Marke weiter.",
-      "Für die Prüfstellen war das zunächst ein Rückschritt, denn die Reihenfolge der Rechenschritte stand nicht mehr fest. Erst der Nachweis, dass das Ergebnis eines richtig gebauten Netzes von dieser Reihenfolge unabhängig ist, brachte 1974 die Zulassung. Mit ihr wechselte die Prüfung vom Ablauf auf den Plan.",
+      "Ende der 1960er Jahre stellte eine Forschungsgruppe um Jack Dennis am MIT die alte Frage neu: Warum sollte ein Rechner Befehl für Befehl abarbeiten, wenn viele Rechnungen gar nicht voneinander abhängen? In ihren Entwürfen wird ein Programm zu einem Netz aus Knoten. Ein Knoten rechnet, sobald alle Eingangswerte anliegen, und reicht sein Ergebnis als Marke weiter.",
+      "In der Fachwelt stieß das zunächst auf Misstrauen, denn die Reihenfolge der Rechenschritte stand nicht mehr fest. Erst der Nachweis von 1974, dass das Ergebnis eines richtig gebauten Netzes von dieser Reihenfolge unabhängig ist, überzeugte Geldgeber und Chiphersteller. Im Mandatsgebiet folgte die Zulassung wenige Jahre später; mit ihr wechselte die Prüfung vom Ablauf auf den Plan.",
       "Die neue Bauweise brachte eigene Fehler. Zwei Knoten, die aufeinander warten, legen ein ganzes Teilnetz still. Ein Knoten, der schneller liefert, als sein Nachbar abnimmt, füllt dessen Warteschlange. Verklemmung und Rückstau wurden die Leitbegriffe einer Generation von Wartungstechnikern.",
     ],
   },
