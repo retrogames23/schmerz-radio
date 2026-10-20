@@ -1054,8 +1054,9 @@ a:focus-visible,
   .bus-scroll { animation-duration: 90s; }
 }
 
-/* ---- Apartment-Ambiente: Regen, Lampenflackern ---- */
+/* ---- Apartment-Ambiente: Cursor, Regen, Lampenflackern ---- */
 .apt-ambience {
+  --apt-cursor-glass: rgb(6, 28, 12);
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -1137,6 +1138,22 @@ a:focus-visible,
   .apt-rain, .apt-drip { animation: none; }
   .apt-drip { opacity: 0; }
 }
+/* Cover only the painted underscore (x 488–498, y 331–337).
+   A soft oval blends into the CRT instead of drawing a rectangular block. */
+.apt-cursor {
+  position: absolute;
+  left: 30.8081%;
+  top: 49.2559%;
+  width: 0.6313%;
+  height: 0.8929%;
+  background: var(--apt-cursor-glass);
+  mask-image: radial-gradient(ellipse, black 40%, transparent 75%);
+  animation: apt-cursor-blink 1.1s steps(1) infinite;
+}
+@keyframes apt-cursor-blink {
+  0%, 49% { opacity: 0; }
+  50%, 100% { opacity: 1; }
+}
 .apt-lamp {
   position: absolute;
   left: 12%;
@@ -1164,6 +1181,7 @@ a:focus-visible,
   83% { opacity: 0.36; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .apt-cursor { animation: none; opacity: 0; }
   .apt-lamp { animation: none; opacity: 0.32; }
 }
 /* Kantine 3602: rotes Signallicht am Rohrpost-Rohr pulsiert sanft. */
