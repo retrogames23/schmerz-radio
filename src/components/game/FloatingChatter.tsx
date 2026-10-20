@@ -29,8 +29,8 @@ const DSA_LABEL: Record<ChatterNpcId, string> = {
 
 const CAFETERIA_ANCHOR: Record<CafeteriaNpcId, { x: number; y: number }> = {
   // Kopfpositionen im vollständigen Kantinenbild, nicht im beschnittenen Ausschnitt.
-  kowalk: { x: 24, y: 31 },
-  brust: { x: 78, y: 29 },
+  kowalk: { x: 24, y: 43 },
+  brust: { x: 78, y: 39 },
 };
 
 const CAFETERIA_LABEL: Record<CafeteriaNpcId, string> = {
