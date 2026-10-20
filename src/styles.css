@@ -1377,10 +1377,10 @@ body:has([data-dsa-page]) * {
    in die Tiefe (schrumpft zum Fluchtpunkt, verblasst). 30 s Zyklus mit
    langer Leerphase, damit es nicht mechanisch wirkt. */
 .e71-walker {
-  left: 43.2%;
-  top: 34%;
-  width: 6.5%;
-  height: 23%;
+  left: 36%;
+  top: 35%;
+  width: 5.5%;
+  height: 20%;
   transform-origin: 50% 100%;
   opacity: 0;
   filter: drop-shadow(0 4px 8px rgb(0 0 0 / 0.5)) saturate(0.85) brightness(0.92);
@@ -1389,8 +1389,8 @@ body:has([data-dsa-page]) * {
 @keyframes e71-walker-walk {
   0%   { opacity: 0; transform: translateY(0) scale(1); }
   4%   { opacity: 0.9; transform: translateY(0) scale(1); }
-  42%  { opacity: 0.9; transform: translateY(-56%) scale(0.32); }
-  48%  { opacity: 0; transform: translateY(-58%) scale(0.3); }
+  42%  { opacity: 0.9; transform: translateY(-45%) scale(0.35); }
+  48%  { opacity: 0; transform: translateY(-47%) scale(0.33); }
   100% { opacity: 0; transform: translateY(0) scale(1); }
 }
 
