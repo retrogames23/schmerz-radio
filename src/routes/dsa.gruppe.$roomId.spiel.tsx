@@ -18,6 +18,14 @@ function readEnterSubmits(): boolean {
 }
 
 export const Route = createFileRoute("/dsa/gruppe/$roomId/spiel")({
+  head: () => ({ meta: [
+    { title: "Gemeinsames Abenteuer – SCHMERZ·RADIO DSA" },
+    { name: "description", content: "Die DSA-Gruppenrunde mit euren Helden und Spielleiter Tjark." },
+    { property: "og:title", content: "Gemeinsames Abenteuer – SCHMERZ·RADIO DSA" },
+    { property: "og:description", content: "Die DSA-Gruppenrunde mit euren Helden und Spielleiter Tjark." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: SpielraumPage,
 });
 

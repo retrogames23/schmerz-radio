@@ -13,6 +13,14 @@ import type { DsaHero } from "@/game/types";
 import { DSA_SETTINGS } from "@/game/dsa/llmAdventure";
 
 export const Route = createFileRoute("/dsa/gruppe/$roomId")({
+  head: () => ({ meta: [
+    { title: "Vorzimmer der Tafelrunde – SCHMERZ·RADIO DSA" },
+    { name: "description", content: "Helden auswählen und die gemeinsame DSA-Tafelrunde vorbereiten." },
+    { property: "og:title", content: "Vorzimmer der Tafelrunde – SCHMERZ·RADIO DSA" },
+    { property: "og:description", content: "Helden auswählen und die gemeinsame DSA-Tafelrunde vorbereiten." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: VorzimmerPage,
 });
 

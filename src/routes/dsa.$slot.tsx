@@ -17,6 +17,14 @@ const DsaLlmAdventureScene = lazy(() =>
 );
 
 export const Route = createFileRoute("/dsa/$slot")({
+  head: () => ({ meta: [
+    { title: "Dein Soloabenteuer – SCHMERZ·RADIO DSA" },
+    { name: "description", content: "Deinen DSA-Helden ansehen und das Soloabenteuer mit Tjark fortsetzen." },
+    { property: "og:title", content: "Dein Soloabenteuer – SCHMERZ·RADIO DSA" },
+    { property: "og:description", content: "Deinen DSA-Helden ansehen und das Soloabenteuer mit Tjark fortsetzen." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   validateSearch: (search: Record<string, unknown>) => {
     const raw = typeof search.returnTo === "string" ? search.returnTo : "";
     // Nur interne Pfade erlauben (kein offener Redirect).
