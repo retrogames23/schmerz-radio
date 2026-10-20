@@ -77,7 +77,7 @@
 
 ### Hanne als ahnungslose Geldgeberin
 - **[FEHLT]** Hanne kam 1972 mit Ersparnissen aus den USA zurück, die sie im Mandatsalltag kaum ausgeben kann. Sie hat einem „Gemeinschaftsprojekt gegen die Entfremdung" aus Setsukos Kreis Geld gegeben, im Geist von Fuller und Whole Earth Catalog.
-- **[FEHLT]** Sie weiß nichts von Elsners Geräten, dem Verstärker oder den Zusammenbrüchen. Konfrontiert mit Elsners Großbestellung (Scheck) erkennt sie die Verbindung, ist erschüttert und liefert den entscheidenden Hinweis auf Setsuko und Tür 1531.
+- **[FEHLT]** Sie weiß nichts von Elsners Geräten, dem Verstärker oder den Zusammenbrüchen. Konfrontiert mit Elsners Großbestellung (Scheck) erkennt sie die Verbindung, ist erschüttert und liefert den entscheidenden Hinweis auf Setsuko und Tür 4603 in E67.
 
 ### Mitglieder von Zero is Infinity
 - **[FEHLT]** Harter Kern (will weitermachen, eher Leistung erhöhen):
@@ -86,10 +86,10 @@
 - **[FEHLT]** Bekehrbare (wenden sich nach den Beweisen gegen den harten Kern):
   - **Setsuko Arai**, Künstlerin, Hannes Kontakt zur Gruppe; bricht an Okwus Akten.
   - **Kora Lindt** (~34), ehemalige Schulfunk-Sprecherin, die Stimme auf 104,6; wollte Einsamen Gesellschaft leisten.
-  - **Torben Heise** (~42), Sachbearbeiter Liegenschaften; hat 1531 amtlich versiegelt („Hausschwammverdacht") und versorgt den Strom. Kippt aus Angst vor einem Disziplinarverfahren.
+  - **Torben Heise** (~42), Sachbearbeiter Liegenschaften; hat 4603 (E67) amtlich versiegelt („Hausschwammverdacht") und versorgt den Strom. Kippt aus Angst vor einem Disziplinarverfahren.
 - Abgrenzung: Z.K.S. bleibt ausschließlich Miras Kürzel (Flugblatt, Graffiti, Terminal) und hat mit Zero is Infinity nichts zu tun.
 
-### Der harte Kern (Finale in 1531)
+### Der harte Kern (Finale in 4603, E67)
 - **[FEHLT]** Gero und Vera bilden den harten Kern; sie würden die Leistung eher erhöhen als abschalten und lassen sich von Layard nicht überzeugen.
 - **[FEHLT]** Beim Auffinden der Gruppe spaltet sie sich 3 zu 2: Setsuko, Kora und Torben wenden sich nach den Beweisen gegen Gero und Vera.
 - **[FEHLT]** Layards Schlussentscheidung: Behörden/ZVS einschalten (sichere Abschaltung, aber Verhaftung und Prozess für alle) oder außerbehördliche Lösung (das Kollektiv zerlegt das Studio selbst; die Hardliner könnten woanders neu anfangen).
