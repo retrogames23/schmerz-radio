@@ -1,6 +1,19 @@
 import type { DialogTree } from "../types";
 
 export const okwuDialogs: Record<string, DialogTree> = {
+  receptionAfter: {
+    id: "receptionAfter",
+    start: "ra1",
+    lines: {
+      ra1: {
+        id: "ra1",
+        speaker: "RECEPTION",
+        text: "Korridor 15, ganz nach hinten. Die Tür mit dem roten Licht.",
+        subtext: "Sie sieht kurz auf und schreibt dann weiter.",
+        end: true,
+      },
+    },
+  },
   reception: {
     id: "reception",
     start: "r1",
