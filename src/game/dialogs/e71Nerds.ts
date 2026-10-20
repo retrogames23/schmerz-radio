@@ -75,7 +75,7 @@ export const e71NerdsDialogs: Record<string, DialogTree> = {
       dChip1: {
         id: "dChip1",
         speaker: "DETLEF",
-        text: "Der Amiga hat drei Custom-Chips: Agnus, Denise, Paula. Zusammen heißen die OCS — Original Chip Set. Das ist das, was ihn überhaupt zum Amiga macht. Andere Heimrechner haben sowas nicht, die schieben alles durch den Hauptknoten.",
+        text: "Der Amiga hat drei Custom-Chips: Agnus, Denise, Paula. Zusammen heißen die OCS — Original Chip Set. Das ist das, was ihn überhaupt zum Amiga macht. PCs haben sowas nicht, die schieben alles durch den Hauptknoten.",
         next: "dChip2",
       },
       dChip2: {
@@ -128,7 +128,7 @@ export const e71NerdsDialogs: Record<string, DialogTree> = {
       sDisk1: {
         id: "sDisk1",
         speaker: "SIGI",
-        text: "Disketten. 3,5 Zoll, doppelte Dichte. Eine Atari-formatierte fasst 720 Kilobyte. Eine Amiga-formatierte fasst 880. Weil der Amiga seinen eigenen Disk-Controller hat und nicht so viel Platz für den Index verbrennt.",
+        text: "Disketten. 3,5 Zoll, doppelte Dichte. Eine PC-formatierte fasst 720 Kilobyte. Eine Amiga-formatierte fasst 880. Weil der Amiga seinen eigenen Disk-Controller hat und nicht so viel Platz für den Index verbrennt.",
         next: "sDisk2",
       },
       sDisk2: {

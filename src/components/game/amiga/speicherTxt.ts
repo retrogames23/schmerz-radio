@@ -28,7 +28,6 @@ Was das fuer Sie bedeutet:
 
  * Ein fehlerhaftes Programm kann seine eigenen Daten
    verderben, aber keine fremden Befehle erzeugen.
-   Der Guru meldet sich, das System bleibt sauber.
 
  * Eine Diskette voller Daten bleibt eine Diskette voller
    Daten. Sie kann sich nicht selbst zum Programm machen.
