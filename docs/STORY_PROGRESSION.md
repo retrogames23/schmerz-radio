@@ -58,7 +58,9 @@
 - **[FEHLT]** Erst im Unterschlupf brechen harte Beweise (z. B. Okwus Akten) ihre Überzeugung: Konstruktionsfehler, keine Befreiung.
 
 ### Unterschlupf
-- **[FEHLT]** Improvisiertes Sendestudio hinter der versiegelten Tür 1531 (E71). Das Amtssiegel ist die Tarnung.
+- **[FEHLT]** Improvisiertes Sendestudio hinter Tür **4603 in E67** (Korridor 46, Miras Etage). Torben Heise hat die Wohnung amtlich versiegelt („Hausschwammverdacht“); das Siegel ist die Tarnung. Die Antenne läuft über die Steigleitung zum Dach. Damit stimmt Walters Peilung (Nordwest, 300–500 m, E67).
+- **[FEHLT]** Mira (4601) hört 104,6 nicht, spürt aber die Nähe der Endstufe (Brummen in der Wand, Schlaflosigkeit). Das bleibt Andeutung, keine Schuldzuweisung.
+- Tür 1531 (E71) bleibt versiegelt, aber aus anderem, banalem Grund.
 
 ### Setsukos Warnbrief (Katalysator für die Nichtsuche)
 - **[FEHLT]** Setsuko schreibt Layard einen anonymen Warnbrief (Zettel an seiner Wohnungstür oder auf dem Schreibtisch), sobald er in E71 tief genug gebohrt hat (z. B. nach Walters Peilung oder dem zweiten Setsuko-Gespräch).
@@ -68,13 +70,14 @@
 ### Verbreitung der Schmerz-Radios (schließt das Reichweiten-Loch)
 - **[FEHLT]** Schmerz-Radios sind obskure Einzelstücke. Elsner hat über zehn Jahre nur etwa 30–40 Geräte gelötet (Bastler, Phantomschmerz-Patienten).
 - **[FEHLT]** Elsner-Anruf (Nummer aus Hannes Plattenhülle): Er erzählt verblüfft von einer anonymen Großbestellung über 120 Geräte vor etwa zwei Monaten, bezahlt per gedecktem Bankscheck, Lieferung an eine Laderampe in Sektor 28. Das ist eine Spur zur Gruppe.
+- **[FEHLT]** Die 120 Geräte sind kein Neubau: Nach der Pleite der Vertriebsfirma Mitte der 80er blieben Elsner mehrere Kisten unverkaufter Restbestände und Bausätze im Schuppen. Er war froh, sie loszuwerden. Deshalb sehen alle verteilten Geräte gleich aus (80er-Gehäuse, gleiche Festquarze).
 - **[FEHLT]** Zero is Infinity verteilt die Geräte kostenlos und anonym („Für schlaflose Nächte. Einfach einschalten."): in Postfächern, Gemeinschaftsräumen, Kantinenecken. Erst dadurch erreicht 104,6 eine relevante Zahl von Menschen; das erklärt, warum die Zusammenbrüche erst seit wenigen Wochen gehäuft auftreten.
 
 - **[UMGESETZT]** Leise Hinweise in Akt II (optional): „Zu verschenken“-Kiste im Gemeinschaftsraum 1530 mit Gerät und Zettel (Sigi/Ruven kommentieren); Fundsache-Meldung auf dem Laufband im Konbini E67 und Krolls Bemerkung („Schon das zweite diesen Monat“); Ralf erinnert sich an einen Lieferwagen ohne Aufschrift mit gleich großen Kartons an der Rampe (nach einem Gefallen).
 
 ### Hanne als ahnungslose Geldgeberin
 - **[FEHLT]** Hanne kam 1972 mit Ersparnissen aus den USA zurück, die sie im Mandatsalltag kaum ausgeben kann. Sie hat einem „Gemeinschaftsprojekt gegen die Entfremdung" aus Setsukos Kreis Geld gegeben, im Geist von Fuller und Whole Earth Catalog.
-- **[FEHLT]** Sie weiß nichts von Elsners Geräten, dem Verstärker oder den Zusammenbrüchen. Konfrontiert mit Elsners Großbestellung (Scheck) erkennt sie die Verbindung, ist erschüttert und liefert den entscheidenden Hinweis auf Setsuko und Tür 1531.
+- **[FEHLT]** Sie weiß nichts von Elsners Geräten, dem Verstärker oder den Zusammenbrüchen. Konfrontiert mit Elsners Großbestellung (Scheck) erkennt sie die Verbindung, ist erschüttert und liefert den entscheidenden Hinweis auf Setsuko und Tür 4603 in E67.
 
 ### Mitglieder von Zero is Infinity
 - **[FEHLT]** Harter Kern (will weitermachen, eher Leistung erhöhen):
@@ -83,10 +86,10 @@
 - **[FEHLT]** Bekehrbare (wenden sich nach den Beweisen gegen den harten Kern):
   - **Setsuko Arai**, Künstlerin, Hannes Kontakt zur Gruppe; bricht an Okwus Akten.
   - **Kora Lindt** (~34), ehemalige Schulfunk-Sprecherin, die Stimme auf 104,6; wollte Einsamen Gesellschaft leisten.
-  - **Torben Heise** (~42), Sachbearbeiter Liegenschaften; hat 1531 amtlich versiegelt („Hausschwammverdacht") und versorgt den Strom. Kippt aus Angst vor einem Disziplinarverfahren.
+  - **Torben Heise** (~42), Sachbearbeiter Liegenschaften; hat 4603 (E67) amtlich versiegelt („Hausschwammverdacht") und versorgt den Strom. Kippt aus Angst vor einem Disziplinarverfahren.
 - Abgrenzung: Z.K.S. bleibt ausschließlich Miras Kürzel (Flugblatt, Graffiti, Terminal) und hat mit Zero is Infinity nichts zu tun.
 
-### Der harte Kern (Finale in 1531)
+### Der harte Kern (Finale in 4603, E67)
 - **[FEHLT]** Gero und Vera bilden den harten Kern; sie würden die Leistung eher erhöhen als abschalten und lassen sich von Layard nicht überzeugen.
 - **[FEHLT]** Beim Auffinden der Gruppe spaltet sie sich 3 zu 2: Setsuko, Kora und Torben wenden sich nach den Beweisen gegen Gero und Vera.
 - **[FEHLT]** Layards Schlussentscheidung: Behörden/ZVS einschalten (sichere Abschaltung, aber Verhaftung und Prozess für alle) oder außerbehördliche Lösung (das Kollektiv zerlegt das Studio selbst; die Hardliner könnten woanders neu anfangen).
@@ -105,6 +108,12 @@
 | **Beweise behalten** | Ende 2 | Ende 4 |
 
 - **[FEHLT] Ende 1 – Der pflichtbewusste Beamte:** Gerichtsprozess, Layard sagt als Zeuge aus; das System bleibt starr.
-- **[FEHLT] Ende 2 – Die stille Einigung:** Layard überzeugt die Mehrheit der Gruppe in 1531; diese wendet sich gegen den harten Kern, der Sender wird freiwillig abgeschaltet, die Gruppe löst sich auf. Kein Prozess; Layard trägt das Geheimnis allein.
-- **[FEHLT] Ende 3 – Die tragische Konfrontation:** Während Layard verhandelt, stürmt der Ordnungsdienst (alarmiert durch seine Protokolle). Cutscene der Verhaftung, dann Prozess; Layard steht zwischen allen Stühlen.
+- **[FEHLT] Ende 2 – Die stille Einigung:** Layard überzeugt die Mehrheit der Gruppe in 4603; diese wendet sich gegen den harten Kern, der Sender wird freiwillig abgeschaltet, die Gruppe löst sich auf. Kein Prozess; Layard trägt das Geheimnis allein.
+- **[FEHLT] Ende 3 – Die nüchterne Verhaftung:** Während Layard verhandelt, klopfen zwei Beamte des Ordnungsdienstes in grauen Dienstmänteln (ausgelöst durch seine Protokolle). Kein Sturm, keine Waffen: Kennkarten vorzeigen, Hände auf den Tisch, Bänder in Kartons mit Trockensiegel, ein Elektriker klemmt die Antenne ab. Torben geht still mit, Gero verweigert das Protokoll und wird förmlich hinausgeleitet. Layard erhält nur einen Durchschlag des Sicherstellungsprotokolls. Danach Prozess; Layard steht zwischen allen Stühlen.
+
+### Der Prozess (Ende 1 und 3)
+- **[FEHLT]** Undramatisch: holzgetäfelter Saal des Mandatsgerichts Sektor 28, drei ältere Beisitzer, ratternde Schreibmaschine, keine Geschworenen, keine Plädoyers.
+- **[FEHLT]** Anklage auf Verwaltungstatbestände: unbefugte Frequenzbelegung und Leistungserhöhung, Zweckentfremdung und Siegelmissbrauch an Wohnung 4603, Gefährdung der Resonanz-Hygiene durch ungenehmigte Übertragung. Keine Staatsfeindlichkeit.
+- **[FEHLT]** Layard sagt als Zeuge aus und liest ruhig aus Notizbuch und ZVS-Vermerken vor.
+- **[FEHLT]** Urteil: Geldstrafen, Arbeitsauflagen für Gero und Vera, Versetzung für Torben. Das System wankt nicht; die Akte wird abgelegt.
 - **[FEHLT] Ende 4 – Innere Emigration:** Weder Abgabe noch Suche. Layard schließt die Wohnungstür; 104,6 sendet weiter, die Zusammenbrüche häufen sich.

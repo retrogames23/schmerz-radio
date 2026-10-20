@@ -254,6 +254,10 @@ S. R. Vossen, 1997)*
   ist seit den 80ern Alltagstechnik und nichts Aufregendes; Schadcode, der sich
   als Datenstrom tarnt und dann ausgeführt wird, ist **physikalisch unmöglich**;
   ZENTRAL.NETZ und CENTRALOS laufen auf dieser Grundlage.
+- **Heimcomputer** wie Amiga oder Macintosh gibt es auch in dieser Welt, aber
+  als zivile Harvard-/Datenfluss-Maschinen: getrennter Befehls- und
+  Datenspeicher, mehrere eigenständige Koprozessoren für Bild und Ton. Die
+  Oberflächen sehen vertraut aus, die Technik darunter folgt dem Kanon.
 - **Nicht erlaubt:** Vergleiche mit „unserer" Computergeschichte, Von-Neumann
   als bekannte Alternative, PCs/Internet-Analogien. Erzählt wird streng aus
   der Welt heraus.
