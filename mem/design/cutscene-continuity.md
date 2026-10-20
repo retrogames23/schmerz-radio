@@ -10,7 +10,7 @@ Wohnung 2611 (Layard) — kanonisch:
 - Riveted Stahl-Schleusentür rechts mit zwei runden Bullaugen.
 - Schwarzes Bakelit-WANDtelefon mit Wählscheibe und Spiralkabel neben der Tür (kein Tischtelefon).
 - Holzschreibtisch links: beiger 80er-Jahre-CRT (grüner Text, "CentralOS"), Tastatur, altes Holz-Röhrenradio; darunter Plastikkiste "B2".
-- Eiserner Bettrahmen unter dem hohen schmalen Fenster; draußen grüner Regenhimmel, Hochhäuser, kleines Solarpanel am Fenstersims.
+- Eiserner Bettrahmen unter dem hohen schmalen Fenster; draußen grüner Regenhimmel und Hochhäuser. Die Solarzelle ist außen montiert und darf im Zimmer nicht sichtbar sein.
 - Wandregal mit Aktenordnern; eine einzelne Emaille-Pendelleuchte als warme Lichtquelle.
 
 Stil aller Cutscenes: dunkle Graphic-Novel-Malerei, gedeckte Oliv-/Betontöne, Tuschelinien, kinematisches warmes Einzellicht, 16:9.
