@@ -1054,7 +1054,7 @@ a:focus-visible,
   .bus-scroll { animation-duration: 90s; }
 }
 
-/* ---- Apartment-Ambiente: Terminal-Cursor, Regen, Lampenflackern ---- */
+/* ---- Apartment-Ambiente: Regen, Lampenflackern ---- */
 .apt-ambience {
   position: absolute;
   inset: 0;
@@ -1137,20 +1137,6 @@ a:focus-visible,
   .apt-rain, .apt-drip { animation: none; }
   .apt-drip { opacity: 0; }
 }
-/* Blinkt den vorhandenen Unterstrich im Bild, indem er kurz abgedeckt wird */
-.apt-cursor {
-  position: absolute;
-  left: 30.7%;
-  top: 49.3%;
-  width: 1%;
-  height: 0.8%;
-  background: rgb(21, 52, 32);
-  animation: apt-cursor-blink 1.1s steps(1) infinite;
-}
-@keyframes apt-cursor-blink {
-  0%, 49% { opacity: 0; }
-  50%, 100% { opacity: 1; }
-}
 .apt-lamp {
   position: absolute;
   left: 12%;
@@ -1178,7 +1164,6 @@ a:focus-visible,
   83% { opacity: 0.36; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .apt-cursor { animation: none; opacity: 0; }
   .apt-lamp { animation: none; opacity: 0.32; }
 }
 /* Kantine 3602: rotes Signallicht am Rohrpost-Rohr pulsiert sanft. */

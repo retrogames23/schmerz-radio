@@ -332,7 +332,6 @@ export function SceneView() {
               <div className="apt-drip apt-drip-3" />
             </div>
             <div className="apt-lamp" />
-            <div className="apt-cursor" />
           </div>
         )}
       </div>
