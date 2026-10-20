@@ -233,7 +233,7 @@ function siteBody(key: SiteKey, go: (s: SiteKey) => void): { title: string; body
  / __ | / /|_/ // // // /_\\ \\
 /_/ |_|/_/  /_/___/____/\\_/\\_\\
         AMIGA ZONE — since 1989`}</pre>
-            <p>» 880 KB pro Diskette. Ataris können einpacken.</p>
+            <p>» 880 KB pro Diskette. PCs können einpacken.</p>
             <p>» Bereiche:</p>
             <ul>
               <li><FastLink to="amiga-zone.us/cheats" onGo={go}>Cheats</FastLink></li>
