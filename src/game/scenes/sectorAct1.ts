@@ -154,8 +154,13 @@ export const sectorAct1Scenes: Record<string, Scene> = {
         h: 25,
         label: "Empfangsdame",
         kind: "talk",
-        hiddenWhen: ["metReceptionist"],
         onUse: (api) => {
+          // Nach dem Eintrittsgespräch bleibt sie ansprechbar und
+          // wiederholt nur noch knapp den Weg.
+          if (api.hasFlag("metReceptionist")) {
+            api.startDialog("receptionAfter");
+            return;
+          }
           // Ohne medizinische Maske wird Layard freundlich abgewiesen
           // und auf den Kondomautomaten in „Zum stillen Funk" verwiesen.
           if (!api.hasFlag("wearingMedMask")) {
