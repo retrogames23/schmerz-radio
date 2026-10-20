@@ -1,5 +1,5 @@
 import sectorBg from "@/assets/scene-quadrant-lock.jpg";
-import e71LobbyBg from "@/assets/scene-e71-lobby-k16-swap.png";
+import e71LobbyBg from "@/assets/scene-e71-lobby-v2.png";
 import corridor15Bg from "@/assets/scene-corridor-15.jpg";
 import elevatorE71Bg from "@/assets/scene-elevator-e71.jpg";
 import room1534Bg from "@/assets/scene-room-1534.jpg";
@@ -148,10 +148,10 @@ export const sectorAct1Scenes: Record<string, Scene> = {
     hotspots: [
       {
         id: "receptionist",
-        x: 68.8,
-        y: 31.3,
-        w: 18.8,
-        h: 50,
+        x: 80.5,
+        y: 37,
+        w: 12,
+        h: 25,
         label: "Empfangsdame",
         kind: "talk",
         hiddenWhen: ["metReceptionist"],
@@ -199,22 +199,22 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "konbiniE71Door",
-        // Gläserne Tür mit Leuchtschild links im Durchgang.
-        x: 23.8,
-        y: 26,
-        w: 5.6,
-        h: 46,
+        // Gläserne Tür mit Emailleschild ganz links.
+        x: 2.5,
+        y: 14,
+        w: 9.5,
+        h: 64,
         label: "Konbini E71 (Typ K-4m)",
         kind: "exit",
         onUse: (api) => api.goTo("konbiniE71"),
       },
       {
         id: "toTrakt16",
-        // Offener Seitengang hinter dem Konbini — Korridor 16 (Ambulanz & Labor).
+        // Offener Seitengang links der Mitte — Korridor 16 (Ambulanz & Labor).
         x: 29.5,
-        y: 34,
-        w: 6,
-        h: 38,
+        y: 22,
+        w: 15.5,
+        h: 42,
         label: "Durchgang → Trakt 16 (Ambulanz & Labor)",
         kind: "look",
         onUse: (api) =>
@@ -224,11 +224,11 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "directory",
-        // Großes schwarzes Verzeichnisbrett an der linken Wand.
-        x: 0,
-        y: 19,
-        w: 16.5,
-        h: 42,
+        // Schwarzes Verzeichnisbrett neben der Konbini-Tür.
+        x: 15,
+        y: 11.5,
+        w: 11.7,
+        h: 46,
         label: "Hinweisschild",
         kind: "look",
         onUse: (api) =>
@@ -236,15 +236,16 @@ export const sectorAct1Scenes: Record<string, Scene> = {
             ">> GEBÄUDE E71 · QUADRANT 71 — GESUNDHEIT",
             ">> Korridor 15  →  Zimmer 1500–1540",
             ">> Korridor 16  →  Ambulanz & Labor",
+            ">> Etagen 2–5: Wohnungen · Etage 1: Bewohnerbibliothek 1101 · Keller: Technik",
             ">> Resonanz-Hygiene in diesem Quadranten — bitte respektieren.",
           ]),
       },
       {
         id: "elevatorBack",
-        x: 10,
-        y: 77.9,
-        w: 69,
-        h: 30.4,
+        x: 5,
+        y: 82,
+        w: 55,
+        h: 18,
         label: "Ausgang Gebäude E71",
         kind: "exit",
         // Rückweg führt zurück durch die Passage nach E67.
@@ -252,10 +253,10 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "toCorridor15",
-        x: 40.4,
-        y: 37.8,
-        w: 14.1,
-        h: 31,
+        x: 48.5,
+        y: 25,
+        w: 14.5,
+        h: 38,
         label: "Tür → Korridor 15",
         kind: "exit",
         requires: ["metReceptionist"],
@@ -263,11 +264,11 @@ export const sectorAct1Scenes: Record<string, Scene> = {
       },
       {
         id: "e71ElevatorDoor",
-        // Schmale Tür rechts hinter dem Tresen — Aufzug des Sektors.
-        x: 66.6,
-        y: 34,
-        w: 4.4,
-        h: 28,
+        // Stahltür rechts hinter dem Tresen — Aufzug von E71.
+        x: 71.6,
+        y: 20,
+        w: 8.6,
+        h: 32,
         label: "Aufzug",
         kind: "exit",
         onUse: (api) => {
