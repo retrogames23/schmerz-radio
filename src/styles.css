@@ -1313,3 +1313,58 @@ body:has([data-dsa-page]) * {
   .pub-lamp { animation: none; opacity: 0.7; }
   .pub-steam { animation: none; opacity: 0.35; }
 }
+
+/* Title screen: scrolling phosphor text on the painted CRT (1264x848 art). */
+.title-art-frame {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  container-type: size;
+}
+.title-art-cover {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100cqw, calc(100cqh * 1264 / 848));
+  height: max(100cqh, calc(100cqw * 848 / 1264));
+  transform: translate(-50%, -50%);
+}
+.title-crt-screen {
+  position: absolute;
+  left: 61.2%;
+  top: 41.6%;
+  width: 17.2%;
+  height: 24.9%;
+  overflow: hidden;
+  border-radius: 6% / 8%;
+  background: radial-gradient(ellipse at center, rgb(8 30 14 / 0.94), rgb(3 14 7 / 0.96));
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent), linear-gradient(to bottom, transparent, black 6%, black 94%, transparent);
+  mask-composite: intersect;
+  -webkit-mask-composite: source-in;
+  font-family: "VT323", ui-monospace, monospace;
+  font-size: max(6px, 1.25cqmin);
+  line-height: 1.25;
+  color: rgb(120 255 140 / 0.85);
+  text-shadow: 0 0 4px rgb(80 255 110 / 0.7);
+  text-align: left;
+  padding: 0 1.6%;
+}
+.title-crt-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(to bottom, rgb(0 0 0 / 0.25) 0 1px, transparent 1px 3px);
+}
+.title-crt-scroll {
+  animation: title-crt-scroll 40s linear infinite;
+  white-space: pre;
+}
+@keyframes title-crt-scroll {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .title-crt-scroll { animation: none; }
+}
