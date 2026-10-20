@@ -1369,7 +1369,7 @@ body:has([data-dsa-page]) * {
   .title-crt-scroll { animation: none; }
 }
 
-/* ===== E71-Empfang: Leben-Ebene (Passant, Konbini-Besucherin, Telefon-LED) =====
+/* ===== E71-Empfang: Leben-Ebene (Telefon-LED) =====
    Alle Positionen in % des Szenenbildes (1376×768), gleiche Geometrie wie
    Hotspots/NPCs. Rein dekorativ, pointer-events-none. */
 
@@ -1399,4 +1399,16 @@ body:has([data-dsa-page]) * {
     animation: none;
     opacity: 0;
   }
+}
+
+/* Foreground poles/trunks remain in front of the plaza passer-by.
+   Mask coordinates belong to the full scene image, just like the canvas. */
+.plaza-walker-foreground {
+  clip-path: polygon(0 0, 0 0, 0 0);
+  mask-image: var(--plaza-foreground-mask);
+  mask-size: 100% 100%;
+  clip-path: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .plaza-walker { visibility: hidden; }
 }
