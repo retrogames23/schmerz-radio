@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { CHATTER_TOPICS, type ChatterNpcId } from "@/game/dsa/chatter";
 import {
@@ -28,11 +28,9 @@ const DSA_LABEL: Record<ChatterNpcId, string> = {
 };
 
 const CAFETERIA_ANCHOR: Record<CafeteriaNpcId, { x: number; y: number }> = {
-  // Werte passen zu den Sprite-Positionen in cafeteriaE67 (siehe scenes.ts).
-  // Kowalk steht ganz links — Bubble-Anker bewusst nach rechts versetzt,
-  // damit die Sprechblase aus Spielersicht rechts neben ihr erscheint.
-  kowalk: { x: 36, y: 45 },
-  brust: { x: 84, y: 42 },
+  // Kopfpositionen im vollständigen Kantinenbild, nicht im beschnittenen Ausschnitt.
+  kowalk: { x: 24, y: 43 },
+  brust: { x: 78, y: 39 },
 };
 
 const CAFETERIA_LABEL: Record<CafeteriaNpcId, string> = {
@@ -122,6 +120,8 @@ export function FloatingChatter({
   const [bubble, setBubble] = useState<ActiveBubble | null>(null);
   const cancelRef = useRef(false);
   const seqRef = useRef(0);
+  const bubbleRef = useRef<HTMLDivElement>(null);
+  const [placement, setPlacement] = useState({ left: 0, top: 0, width: 260, tail: 130 });
 
   const isActive = enabled && !dialogId && !dsaCreatorOpen;
   const config =
@@ -130,6 +130,42 @@ export function FloatingChatter({
       : variant === "e71Nerds"
         ? E71_CONFIG
         : DSA_CONFIG;
+
+  useLayoutEffect(() => {
+    const element = bubbleRef.current;
+    const layer = element?.parentElement;
+    const stage = layer?.parentElement;
+    const anchor = bubble ? config.anchors[bubble.npc] : undefined;
+    if (!element || !layer || !stage || !anchor) return;
+
+    const position = () => {
+      const layerRect = layer.getBoundingClientRect();
+      const stageRect = stage.getBoundingClientRect();
+      const scale = layerRect.width / layer.offsetWidth;
+      if (!scale) return;
+      // The image can extend beyond the stage (object-cover). Clamp to the
+      // visible crop, while keeping the tail attached to the real speaker.
+      const visibleLeft = Math.max(0, (stageRect.left - layerRect.left) / scale);
+      const visibleRight = Math.min(layer.offsetWidth, (stageRect.right - layerRect.left) / scale);
+      const visibleTop = Math.max(0, (stageRect.top - layerRect.top) / scale);
+      const width = Math.min(260, visibleRight - visibleLeft - 24);
+      const anchorX = layer.offsetWidth * anchor.x / 100;
+      const anchorY = layer.offsetHeight * anchor.y / 100;
+      const left = Math.max(visibleLeft + 12, Math.min(visibleRight - width - 12, anchorX - width / 2));
+      setPlacement({
+        left,
+        top: Math.max(visibleTop + 12, anchorY - element.offsetHeight - 14),
+        width,
+        tail: Math.max(12, Math.min(width - 12, anchorX - left)),
+      });
+    };
+    position();
+    const observer = new ResizeObserver(position);
+    observer.observe(element);
+    observer.observe(layer);
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, [bubble?.id, config]);
 
   useEffect(() => {
     if (!isActive) {
@@ -181,27 +217,22 @@ export function FloatingChatter({
 
   if (!isActive || !bubble) return null;
 
-  const anchor = config.anchors[bubble.npc];
   const label = config.labels[bubble.npc] ?? bubble.npc;
-
-  // Sprechblase ist max. 260 px breit und um -50 % horizontal verschoben,
-  // ragt also je nach Anker links/rechts aus dem Bild heraus. Auf Mobile
-  // (rotierte Stage, schmale Szene) muss der Anker stärker eingeklemmt
-  // werden, sonst wird die Blase links/rechts angeschnitten.
-  const clampedX = Math.min(64, Math.max(36, anchor.x));
 
   return (
     <div
+      ref={bubbleRef}
       className={`chatter-bubble pointer-events-none absolute z-30 ${
         bubble.fadingOut ? "is-out" : ""
       }`}
       style={{
-        left: `${clampedX}%`,
-        top: `${anchor.y}%`,
+        left: placement.left,
+        top: placement.top,
+        width: placement.width,
       }}
       aria-live="polite"
     >
-      <div className="relative max-w-[260px] -translate-x-1/2 rounded-md border border-amber-glow/50 bg-background/95 px-3 py-2 shadow-[0_4px_12px_rgba(0,0,0,0.55)]">
+      <div className="relative rounded-md border border-amber-glow/50 bg-background/95 px-3 py-2 shadow-lg">
         <div className="font-mono-crt text-[9px] uppercase tracking-[0.25em] text-amber-glow/80">
           {label}
         </div>
@@ -210,12 +241,9 @@ export function FloatingChatter({
         </div>
         {/* Sprechblasen-Schwanz nach unten */}
         <div
-          className="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2"
+          className="absolute top-full h-0 w-0 -translate-x-1/2 border-x-[8px] border-t-[10px] border-x-transparent border-t-background/95"
           style={{
-            borderLeft: "8px solid transparent",
-            borderRight: "8px solid transparent",
-            borderTop: "10px solid hsl(0 0% 6% / 0.95)",
-            filter: "drop-shadow(0 2px 1px rgba(0,0,0,0.4))",
+            left: placement.tail,
           }}
         />
       </div>
