@@ -1,5 +1,7 @@
 # Architecture rules
 
+- Keep title rain artwork and mask in the same cover/center layout box; size the canvas backing buffer from local layout dimensions without setting inline CSS dimensions, so resizing and transformed stages retain alignment.
+
 - Position ambient speech bubbles in image coordinates and clamp their measured bounds to the visible stage crop; animation must not apply a second horizontal offset, so tails remain attached to speakers across screen sizes.
 
 - Preserve the game React context identity through Vite hot data during development refreshes; mounted providers and refreshed consumers must share the same context without resetting the game.

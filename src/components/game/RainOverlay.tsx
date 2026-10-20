@@ -75,14 +75,11 @@ export function RainOverlay() {
       // On mobile we render inside a rotated/scaled virtual stage, so the
       // window viewport doesn't match the actual rendering area — using it
       // produces rain only in a small strip (e.g. left side after rotation).
-      const rect = canvas.getBoundingClientRect();
-      width = Math.max(1, Math.round(rect.width));
-      height = Math.max(1, Math.round(rect.height));
+      width = Math.max(1, canvas.clientWidth);
+      height = Math.max(1, canvas.clientHeight);
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.floor(width * dpr);
       canvas.height = Math.floor(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       // Density scales with viewport area (capped).
@@ -95,7 +92,7 @@ export function RainOverlay() {
     window.addEventListener("resize", resize);
     window.addEventListener("orientationchange", resize);
     const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(resize) : null;
-    ro?.observe(canvas);
+    if (canvas.parentElement) ro?.observe(canvas.parentElement);
 
     let raf = 0;
     const tick = () => {
