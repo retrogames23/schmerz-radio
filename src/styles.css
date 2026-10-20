@@ -1061,6 +1061,79 @@ a:focus-visible,
   pointer-events: none;
   z-index: 1;
 }
+/* Regen im Fensterausschnitt (Hotspot "window": 45.1/1.8, 10.2×54.9) */
+.apt-window-rain {
+  position: absolute;
+  left: 45.1%;
+  top: 1.8%;
+  width: 10.2%;
+  height: 54.9%;
+  overflow: hidden;
+}
+.apt-rain {
+  position: absolute;
+  inset: -40% -30%;
+  background-repeat: repeat;
+  transform: rotate(8deg);
+}
+.apt-rain-far {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0 9px,
+    rgba(200, 215, 230, 0.16) 9px 10px,
+    transparent 10px 23px
+  ),
+  linear-gradient(transparent 0 60%, rgba(0, 0, 0, 0) 60%);
+  -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 10px, transparent 10px 34px);
+  mask-image: repeating-linear-gradient(180deg, #000 0 10px, transparent 10px 34px);
+  animation: apt-rain-fall 0.9s linear infinite;
+}
+.apt-rain-near {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0 17px,
+    rgba(215, 228, 240, 0.24) 17px 18px,
+    transparent 18px 41px
+  );
+  -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 18px, transparent 18px 70px);
+  mask-image: repeating-linear-gradient(180deg, #000 0 18px, transparent 18px 70px);
+  animation: apt-rain-fall-near 0.55s linear infinite;
+}
+@keyframes apt-rain-fall {
+  from { -webkit-mask-position: 0 0; mask-position: 0 0; }
+  to { -webkit-mask-position: 0 34px; mask-position: 0 34px; }
+}
+@keyframes apt-rain-fall-near {
+  from { -webkit-mask-position: 0 0; mask-position: 0 0; }
+  to { -webkit-mask-position: 0 70px; mask-position: 0 70px; }
+}
+.apt-drip {
+  position: absolute;
+  top: -6%;
+  width: 3px;
+  height: 7px;
+  border-radius: 50% 50% 45% 45%;
+  background: radial-gradient(circle at 40% 35%, rgba(240, 245, 255, 0.7), rgba(170, 190, 210, 0.25) 70%);
+  box-shadow: 0 -14px 3px -1px rgba(200, 215, 230, 0.12);
+  opacity: 0;
+  animation: apt-drip-run 11s ease-in infinite;
+}
+.apt-drip-1 { left: 22%; animation-delay: 0s; }
+.apt-drip-2 { left: 58%; animation-delay: 4.2s; animation-duration: 13s; }
+.apt-drip-3 { left: 81%; animation-delay: 7.5s; animation-duration: 9s; }
+@keyframes apt-drip-run {
+  0% { top: -6%; opacity: 0; }
+  6% { top: 8%; opacity: 0.9; }
+  30% { top: 14%; }
+  40% { top: 38%; }
+  55% { top: 44%; }
+  80% { top: 100%; opacity: 0.8; }
+  81%, 100% { top: 104%; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .apt-rain, .apt-drip { animation: none; }
+  .apt-drip { opacity: 0; }
+}
 /* Blinkt den vorhandenen Unterstrich im Bild, indem er kurz abgedeckt wird */
 .apt-cursor {
   position: absolute;
