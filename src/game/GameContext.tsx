@@ -6,6 +6,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type Context,
   type ReactNode,
 } from "react";
 import { getDialog } from "./dialogs/lookup";
@@ -220,7 +221,15 @@ interface PersistedState {
   marvState?: MarvSaveState;
 }
 
-const GameContext = createContext<GameContextValue | null>(null);
+// Keep the context identity when Vite refreshes this module: an already
+// mounted provider and freshly loaded consumers must use the same object.
+const GameContext =
+  (import.meta.hot?.data.gameContext as
+    | Context<GameContextValue | null>
+    | undefined) ?? createContext<GameContextValue | null>(null);
+if (import.meta.hot) {
+  import.meta.hot.data.gameContext = GameContext;
+}
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();

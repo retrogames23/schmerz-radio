@@ -18,6 +18,8 @@ export const Route = createFileRoute("/")({
           "Ein 2D Point & Click-Adventure über bürokratische Erstarrung und das heimliche Begehren nach echtem Erleben.",
       },
       { property: "og:url", content: "https://schmerz-radio.com/" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "canonical", href: "https://schmerz-radio.com/" },
