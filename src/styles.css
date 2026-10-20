@@ -1405,6 +1405,7 @@ body:has([data-dsa-page]) * {
    Mask coordinates belong to the full scene image, just like the canvas. */
 .plaza-walker-foreground {
   mask-size: 100% 100%;
+  mask-mode: luminance;
 }
 @media (prefers-reduced-motion: reduce) {
   .plaza-walker { visibility: hidden; }
