@@ -6,6 +6,7 @@ import { CloseButton } from "./CloseButton";
 import { FastWebChatRoom } from "./fastweb/ChatRoom";
 import { AMIGA_WITZE_TXT } from "./amiga/amigaWitze";
 import { ATARI_WITZE_TXT } from "./amiga/atariWitze";
+import { SPEICHER_TXT } from "./amiga/speicherTxt";
 import { PaletteTool, PointerTool, SerialTool, ClockTool, CalculatorTool, MoreTool, FormatTool, DiskCopyTool, FixFontsTool, InfoRequester, EmptyDrawerNote } from "./amiga/WbTools";
 
 /**
@@ -70,6 +71,7 @@ Frequenz steht im Block. Block ist im Block.
 const MORE_FILES = [
   { name: "S:Startup-Sequence", text: extractText(STARTUP_SEQUENCE) },
   { name: "ReadMe.txt", text: extractText(README_TXT) },
+  { name: "Speicher.txt", text: SPEICHER_TXT },
   { name: "Notiz.txt", text: extractText(NOTIZ_TXT) },
 ];
 
@@ -116,6 +118,7 @@ const WORKBENCH_DISK: FileNode = {
     },
     { kind: "file", name: "Startup-Sequence", size: 412, content: STARTUP_SEQUENCE },
     { kind: "file", name: "ReadMe.txt", size: 1180, content: README_TXT },
+    { kind: "file", name: "Speicher.txt", size: SPEICHER_TXT.length, content: <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{SPEICHER_TXT}</pre> },
     { kind: "file", name: "Notiz.txt", size: 240, content: NOTIZ_TXT },
   ],
 };
@@ -230,7 +233,7 @@ function siteBody(key: SiteKey, go: (s: SiteKey) => void): { title: string; body
  / __ | / /|_/ // // // /_\\ \\
 /_/ |_|/_/  /_/___/____/\\_/\\_\\
         AMIGA ZONE — since 1989`}</pre>
-            <p>» 880 KB pro Diskette. PCs können einpacken.</p>
+            <p>» 880 KB pro Diskette. Ataris können einpacken.</p>
             <p>» Bereiche:</p>
             <ul>
               <li><FastLink to="amiga-zone.us/cheats" onGo={go}>Cheats</FastLink></li>
