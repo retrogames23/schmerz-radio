@@ -1105,6 +1105,32 @@ a:focus-visible,
   .apt-cursor { animation: none; opacity: 0; }
   .apt-lamp { animation: none; opacity: 0.32; }
 }
+/* Kantine 3602: rotes Signallicht am Rohrpost-Rohr pulsiert sanft. */
+.cafeteria-red-lamp {
+  position: absolute;
+  left: 52%;
+  top: 22.4%;
+  width: 14%;
+  height: 25%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 70, 50, 0.55) 0%,
+    rgba(255, 40, 30, 0.22) 28%,
+    rgba(255, 30, 20, 0) 65%
+  );
+  animation: cafeteria-red-lamp 2.4s ease-in-out infinite;
+}
+@keyframes cafeteria-red-lamp {
+  0%, 100% { opacity: 0.25; }
+  45% { opacity: 0.85; }
+  60% { opacity: 0.75; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cafeteria-red-lamp { animation: none; opacity: 0.5; }
+}
 
 /*
  * Versehentliches Markieren von Spieltext beim Klicken/Ziehen verhindern.
