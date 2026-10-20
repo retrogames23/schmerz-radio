@@ -9,6 +9,10 @@ import {
   E71_NERDS_CHATTER_TOPICS,
   type E71NerdNpcId,
 } from "../../game/e71NerdsChatter";
+import {
+  E71_RECEPTION_CHATTER_TOPICS,
+  type E71ReceptionNpcId,
+} from "../../game/e71ReceptionChatter";
 
 /**
  * Position einer Sprechblase je NPC, in % der Szene.
@@ -51,7 +55,16 @@ const E71_LABEL: Record<E71NerdNpcId, string> = {
   ruven: "Ruven",
 };
 
-type AnyNpcId = ChatterNpcId | CafeteriaNpcId | E71NerdNpcId;
+const E71_RECEPTION_ANCHOR: Record<E71ReceptionNpcId, { x: number; y: number }> = {
+  // Kopf der Empfangsdame hinter dem Tresen (Bildkoordinaten).
+  empfang: { x: 86, y: 36 },
+};
+
+const E71_RECEPTION_LABEL: Record<E71ReceptionNpcId, string> = {
+  empfang: "Empfang",
+};
+
+type AnyNpcId = ChatterNpcId | CafeteriaNpcId | E71NerdNpcId | E71ReceptionNpcId;
 
 interface ChatterTopicLike {
   id: string;
@@ -80,6 +93,12 @@ const E71_CONFIG: ChatterConfig = {
   topics: E71_NERDS_CHATTER_TOPICS as unknown as ReadonlyArray<ChatterTopicLike>,
   anchors: E71_ANCHOR as Record<string, { x: number; y: number }>,
   labels: E71_LABEL as Record<string, string>,
+};
+
+const E71_RECEPTION_CONFIG: ChatterConfig = {
+  topics: E71_RECEPTION_CHATTER_TOPICS as unknown as ReadonlyArray<ChatterTopicLike>,
+  anchors: E71_RECEPTION_ANCHOR as Record<string, { x: number; y: number }>,
+  labels: E71_RECEPTION_LABEL as Record<string, string>,
 };
 
 interface ActiveBubble {
@@ -114,7 +133,7 @@ export function FloatingChatter({
   variant = "dsa",
 }: {
   enabled: boolean;
-  variant?: "dsa" | "cafeteria" | "e71Nerds";
+  variant?: "dsa" | "cafeteria" | "e71Nerds" | "e71Reception";
 }) {
   const { dialogId, dsaCreatorOpen } = useGame();
   const [bubble, setBubble] = useState<ActiveBubble | null>(null);
@@ -129,7 +148,9 @@ export function FloatingChatter({
       ? CAFETERIA_CONFIG
       : variant === "e71Nerds"
         ? E71_CONFIG
-        : DSA_CONFIG;
+        : variant === "e71Reception"
+          ? E71_RECEPTION_CONFIG
+          : DSA_CONFIG;
 
   useLayoutEffect(() => {
     const element = bubbleRef.current;
