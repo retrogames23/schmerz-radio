@@ -12,6 +12,25 @@ import { isDevMode } from "@/dev/devMode";
 
 const titleTrack = titleTrackAsset.url;
 
+const TITLE_CRT_LINES = [
+  "CENTRALOS v2.3",
+  "TERMINAL E67",
+  "",
+  "KNOTEN 5610 .. OK",
+  "PORT 4601 .. AKTIV",
+  "LEITSTELLE 3502",
+  "TRAEGER 104,6",
+  "RESONANZ .. 12%",
+  "",
+  "SEKTOR 28 EMPFANG",
+  "SIGNAL .. SCHWACH",
+  "REGEN .. ANHALTEND",
+  "",
+  "> WARTE AUF",
+  "  EINGABE_",
+  "",
+];
+
 const PRE_ALPHA_WARNING_UI_TEXT = {
   title: "Pre-Alpha-Warnung",
   body:
@@ -124,6 +143,23 @@ export function TitleScreen({ onStart }: Props) {
       {/* Animated rain on top of the painted artwork — desktop only. */}
       <div className="hidden md:contents">
         <RainOverlay />
+      </div>
+
+      {/* Slowly scrolling phosphor text on the painted CRT monitor. */}
+      <div className="title-art-frame" aria-hidden="true">
+        <div className="title-art-cover">
+          <div className="title-crt-screen">
+            <div className="title-crt-scroll">
+              {[0, 1].map((copy) => (
+                <div key={copy}>
+                  {TITLE_CRT_LINES.map((line, i) => (
+                    <div key={i}>{line || "\u00a0"}</div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Vignette + darken so foreground text stays readable on top of the art. */}
