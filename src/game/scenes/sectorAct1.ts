@@ -1,5 +1,5 @@
 import sectorBg from "@/assets/scene-quadrant-lock.jpg";
-import e71LobbyBg from "@/assets/scene-e71-lobby-v2.png";
+import e71LobbyBg from "@/assets/scene-e71-lobby-v3.png";
 import corridor15Bg from "@/assets/scene-corridor-15.jpg";
 import elevatorE71Bg from "@/assets/scene-elevator-e71.jpg";
 import room1534Bg from "@/assets/scene-room-1534.jpg";
@@ -236,7 +236,7 @@ export const sectorAct1Scenes: Record<string, Scene> = {
             ">> GEBÄUDE E71 · QUADRANT 71 — GESUNDHEIT",
             ">> Korridor 15  →  Zimmer 1500–1540",
             ">> Korridor 16  →  Ambulanz & Labor",
-            ">> Etagen 2–5: Wohnungen · Etage 1: Bewohnerbibliothek 1101 · Keller: Technik",
+            ">> 5 Lichtspielsaal · 4/3 Wohnungen · 2 Korridor 21 · 1 Bibliothek 1101 · Keller: Technik",
             ">> Resonanz-Hygiene in diesem Quadranten — bitte respektieren.",
           ]),
       },
