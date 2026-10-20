@@ -17,6 +17,10 @@ export const Route = createFileRoute("/dsa/gruppe")({
     meta: [
       { title: TITLE },
       { name: "description", content: DESCRIPTION },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESCRIPTION },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex,follow" },
     ],
   }),
