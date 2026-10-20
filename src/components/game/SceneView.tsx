@@ -311,6 +311,14 @@ export function SceneView() {
           }`}
         />
         {scene === "elevator" && <div className="fluorescent-flicker" aria-hidden="true" />}
+        {scene === "pub" && (
+          <div className="pub-ambience" aria-hidden="true">
+            <div className="pub-lamp" />
+            <div className="pub-steam pub-steam-1" />
+            <div className="pub-steam pub-steam-2" />
+            <div className="pub-steam pub-steam-3" />
+          </div>
+        )}
         {scene === "cafeteriaE67" && !flags.has("sentForgedQuittung") && (
           <div className="cafeteria-red-lamp" aria-hidden="true" />
         )}

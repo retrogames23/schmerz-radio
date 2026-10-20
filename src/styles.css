@@ -1199,3 +1199,38 @@ body:has([data-dsa-page]) * {
 @media (prefers-reduced-motion: reduce) {
   .led-ticker-track { animation-timing-function: linear; }
 }
+
+/* Kneipe „Zum stillen Funk“: flackernde Deckenröhre + Dampf hinter Brams Theke */
+.pub-ambience { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.pub-lamp {
+  position: absolute; left: 50.8%; top: 8%; width: 40%; height: 22%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse at center, rgba(255, 230, 140, 0.55) 0%, rgba(255, 210, 110, 0.18) 45%, transparent 72%);
+  mix-blend-mode: screen;
+  animation: pub-lamp-flicker 7s steps(1, end) infinite;
+}
+@keyframes pub-lamp-flicker {
+  0%, 100% { opacity: 0.8; }
+  41% { opacity: 0.8; } 42% { opacity: 0.2; } 43% { opacity: 0.75; } 44% { opacity: 0.1; } 46% { opacity: 0.8; }
+  78% { opacity: 0.8; } 79% { opacity: 0.35; } 80% { opacity: 0.8; }
+}
+.pub-steam {
+  position: absolute; width: 9%; height: 26%;
+  background: radial-gradient(ellipse at center, rgba(225, 225, 215, 0.32) 0%, rgba(225, 225, 215, 0.12) 45%, transparent 70%);
+  filter: blur(6px);
+  opacity: 0;
+  animation: pub-steam-rise 7s ease-in infinite;
+}
+.pub-steam-1 { left: 62%; top: 30%; animation-delay: 0s; }
+.pub-steam-2 { left: 66%; top: 32%; animation-delay: 2.4s; }
+.pub-steam-3 { left: 59%; top: 31%; animation-delay: 4.7s; }
+@keyframes pub-steam-rise {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.7); }
+  20% { opacity: 0.85; }
+  60% { opacity: 0.55; transform: translate(-1.5vw, -10%) scale(1.1); }
+  100% { opacity: 0; transform: translate(1vw, -38%) scale(1.5); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pub-lamp { animation: none; opacity: 0.7; }
+  .pub-steam { animation: none; opacity: 0.35; }
+}
