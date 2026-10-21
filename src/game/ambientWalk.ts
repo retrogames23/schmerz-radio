@@ -9,7 +9,7 @@ export const PLAZA_CHARACTERS = [
   { id: "beamtin", label: "Frau mit Aktenmappe", frames: 8, durationMs: 27000, cycleMs: 840, height: 0.18 },
   { id: "bote", label: "Bote mit Schultertasche", frames: 8, durationMs: 21000, cycleMs: 720, height: 0.19 },
   { id: "handwerker", label: "Handwerker mit Werkzeugkasten", frames: 8, durationMs: 34000, cycleMs: 1080, height: 0.19 },
-  { id: "rentner", label: "Älterer Mann mit Stock", frames: 8, durationMs: 48000, cycleMs: 1500, height: 0.18 },
+  { id: "rentner", label: "Älterer Mann mit Stock", frames: 8, durationMs: 44000, cycleMs: 1450, height: 0.18 },
   { id: "schirmfrau", label: "Frau mit Regenschirm", frames: 8, durationMs: 29000, cycleMs: 1120, height: 0.23 },
 ] as const;
 export type PlazaCharacter = typeof PLAZA_CHARACTERS[number];
