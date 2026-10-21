@@ -7,4 +7,5 @@ type: preference
 - Jede Person darf höchstens einmal pro Aufruf einer Szene erscheinen; erst nach Verlassen und erneutem Betreten ist ein neuer Auftritt erlaubt.
 - Auf dem Vorplatz kommen die verschiedenen Figuren in zufälliger Reihenfolge, mit 20 Sekunden bis einer Minute zwischen ihren Auftritten und unterschiedlichen Gehgeschwindigkeiten.
 - Jeder Vorplatz-Passant ist anklickbar; einige antworten nur kurz, andere führen längeren Smalltalk.
-- Auf dem Vorplatz regnet es sichtbar, passend zu den Bemerkungen der Passanten.
+- Auf dem Vorplatz regnet es auf Desktop sichtbar, passend zu den Bemerkungen der Passanten.
+- Auf Mobilgeräten keinen animierten Regen anzeigen oder berechnen: Performance hat Vorrang. Gilt auch für Startbildschirm und Wohnung.

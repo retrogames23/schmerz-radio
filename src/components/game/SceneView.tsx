@@ -10,6 +10,7 @@ import { NpcLayer } from "./scene/NpcLayer";
 import { E71LobbyLife } from "./scene/E71LobbyLife";
 import { PlazaWalker } from "./scene/PlazaWalker";
 import { PlazaRain } from "./scene/PlazaRain";
+import { useRainEnabled } from "./useRainEnabled";
 import plazaForegroundMask from "@/assets/sprites/zvs-walker-foreground-v2.png.asset.json";
 import { DecalLayer } from "./scene/DecalLayer";
 import { HotspotLayer } from "./scene/HotspotLayer";
@@ -22,6 +23,7 @@ import {
 } from "@/dev/textPatchState";
 
 export function SceneView() {
+  const rainEnabled = useRainEnabled();
   const {
     scene,
     caption,
@@ -328,13 +330,13 @@ export function SceneView() {
         )}
         {scene === "apartment" && (
           <div className="apt-ambience" aria-hidden="true">
-            <div className="apt-window-rain">
+            {rainEnabled && <div className="apt-window-rain">
               <div className="apt-rain apt-rain-far" />
               <div className="apt-rain apt-rain-near" />
               <div className="apt-drip apt-drip-1" />
               <div className="apt-drip apt-drip-2" />
               <div className="apt-drip apt-drip-3" />
-            </div>
+            </div>}
             <div className="apt-lamp" />
             <div className="apt-cursor" />
           </div>
@@ -369,7 +371,7 @@ export function SceneView() {
             <img src={backgroundSrc} alt="" aria-hidden="true"
               style={{ maskImage: `url(${plazaForegroundMask.url})`, WebkitMaskImage: `url(${plazaForegroundMask.url})` }}
               className="plaza-walker-foreground pointer-events-none absolute inset-0 h-full w-full" />
-            <PlazaRain />
+            {rainEnabled && <PlazaRain />}
           </>
         )}
 

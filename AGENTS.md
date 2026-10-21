@@ -5,6 +5,7 @@
 - Plaza foreground occlusion uses traced alpha contours at the background's native resolution; outdoor rain shares its local image box, renders above scenery without intercepting input, and uses elapsed time rather than frame counts.
 
 - Keep title rain artwork and mask in the same cover/center layout box; size the canvas backing buffer from local layout dimensions without setting inline CSS dimensions, so resizing and transformed stages retain alignment.
+- Gate all animated rain with the shared device media policy and unmount excluded effects; CSS hiding alone leaves canvas animation loops running.
 
 - Position ambient speech bubbles in image coordinates and clamp their measured bounds to the visible stage crop; animation must not apply a second horizontal offset, so tails remain attached to speakers across screen sizes.
 
