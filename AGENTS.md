@@ -2,6 +2,7 @@
 
 - Ambient walkers use real sprite-sheet frames and a scene-mounted shuffled finite timeline in image coordinates; pause the local clock for conversations, mobile focus sheets and hidden tabs, and use existing Hotspot controls plus registered optional dialog trees. Moving NPCs opt into direct touch interaction to avoid history-backed focus sheets interrupting conversations. Never use story flags or opacity fades, so re-renders preserve a visit and leaving resets it.
 - Generated walk-cycle sheets must be post-processed before use: drop duplicate loop-closure frames (a 9th frame identical to the 1st causes a visible hitch) and re-center every frame horizontally on the figure's center of mass (AI-generated frames drift ±15 px and make the figure lurch sideways). Match cycleMs to sprite height and crossing duration so feet don't slide.
+- Plaza foreground occlusion uses traced alpha contours at the background's native resolution; outdoor rain shares its local image box, renders above scenery without intercepting input, and uses elapsed time rather than frame counts.
 
 - Keep title rain artwork and mask in the same cover/center layout box; size the canvas backing buffer from local layout dimensions without setting inline CSS dimensions, so resizing and transformed stages retain alignment.
 

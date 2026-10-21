@@ -65,6 +65,7 @@
 }
 
 :root {
+  --plaza-rain-ink: rgb(195 210 202);
   --radius: 0.125rem;
   /* Bürokratie-Palette — entsättigte Grüntöne und Grau */
   --background: oklch(0.18 0.012 150);
@@ -1411,6 +1412,8 @@ body:has([data-dsa-page]) * {
   mask-repeat: no-repeat;
   mask-mode: alpha;
 }
+.plaza-rain { z-index: 2; }
 @media (prefers-reduced-motion: reduce) {
   .plaza-walker { visibility: hidden; }
+  .plaza-rain { visibility: hidden; }
 }
