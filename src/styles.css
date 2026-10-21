@@ -1404,8 +1404,12 @@ body:has([data-dsa-page]) * {
 /* Foreground poles/trunks remain in front of the plaza passer-by.
    Mask coordinates belong to the full scene image, just like the canvas. */
 .plaza-walker-foreground {
+  /* Alpha mask: Safari ignores mask-mode luminance. */
+  -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
-  mask-mode: luminance;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  mask-mode: alpha;
 }
 @media (prefers-reduced-motion: reduce) {
   .plaza-walker { visibility: hidden; }
