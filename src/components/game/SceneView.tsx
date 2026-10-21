@@ -9,7 +9,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { NpcLayer } from "./scene/NpcLayer";
 import { E71LobbyLife } from "./scene/E71LobbyLife";
 import { PlazaWalker } from "./scene/PlazaWalker";
-import plazaForegroundMask from "@/assets/sprites/zvs-walker-foreground-alpha.png.asset.json";
+import { PlazaRain } from "./scene/PlazaRain";
+import plazaForegroundMask from "@/assets/sprites/zvs-walker-foreground-v2.png.asset.json";
 import { DecalLayer } from "./scene/DecalLayer";
 import { HotspotLayer } from "./scene/HotspotLayer";
 import { CinemaProjection } from "./CinemaProjection";
@@ -368,6 +369,7 @@ export function SceneView() {
             <img src={backgroundSrc} alt="" aria-hidden="true"
               style={{ maskImage: `url(${plazaForegroundMask.url})`, WebkitMaskImage: `url(${plazaForegroundMask.url})` }}
               className="plaza-walker-foreground pointer-events-none absolute inset-0 h-full w-full" />
+            <PlazaRain />
           </>
         )}
 
