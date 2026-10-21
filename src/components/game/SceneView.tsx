@@ -11,7 +11,7 @@ import { E71LobbyLife } from "./scene/E71LobbyLife";
 import { PlazaWalker } from "./scene/PlazaWalker";
 import { PlazaRain } from "./scene/PlazaRain";
 import { useRainEnabled } from "./useRainEnabled";
-import plazaForegroundMask from "@/assets/sprites/zvs-walker-foreground-v2.png.asset.json";
+import plazaForegroundMask from "@/assets/sprites/zvs-walker-foreground-v3.png.asset.json";
 import { DecalLayer } from "./scene/DecalLayer";
 import { HotspotLayer } from "./scene/HotspotLayer";
 import { CinemaProjection } from "./CinemaProjection";
