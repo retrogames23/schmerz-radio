@@ -4,7 +4,7 @@ import beamtinAsset from "@/assets/sprites/zvs-beamtin-cycle.png.asset.json";
 import boteAsset from "@/assets/sprites/zvs-bote-cycle.png.asset.json";
 import handwerkerAsset from "@/assets/sprites/zvs-handwerker-cycle.png.asset.json";
 import rentnerAsset from "@/assets/sprites/zvs-rentner-cycle-v2.png.asset.json";
-import schirmfrauAsset from "@/assets/sprites/zvs-schirmfrau-cycle.png.asset.json";
+import schirmfrauAsset from "@/assets/sprites/zvs-schirmfrau-cycle-v3.png.asset.json";
 import { createWalkVisit, PLAZA_WALK, type PlazaCharacter } from "@/game/ambientWalk";
 import { useGame } from "@/game/GameContext";
 import { useInventoryDrag } from "@/game/InventoryDragContext";

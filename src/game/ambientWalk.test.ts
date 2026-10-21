@@ -85,7 +85,7 @@ test("conversation and hidden-tab pauses freeze the visit without losing an appe
   assert.ok(before);
   const paused = visit.sample(600000, true);
   assert.equal(paused?.progress, before.progress);
-  assert.equal(paused?.frame, 2);
+  assert.equal(paused?.frame, before.frame);
   const after = visit.sample(601000);
   assert.equal(after?.character.id, "walker");
   assert.equal(after?.progress, before.progress + 1000 / 30000);

@@ -1,4 +1,6 @@
 # Vorplatz-Passant
+- [x] Laufzyklus der Schirmfrau anhand der tatsächlichen Schrittphasen korrigieren und im Spiel prüfen.
+- [x] Verdeckung am rechten Birkenstamm präzise nachzeichnen und im Spiel prüfen.
 - [x] Birkenmaske exakt an Stämmen und sichtbaren Ästen korrigieren.
 - [x] Dezenten Regen auf dem Vorplatz ergänzen und im Spiel prüfen.
 - [x] Hochgeladenen Gehzyklus freistellen und gleichmäßig ausrichten.
