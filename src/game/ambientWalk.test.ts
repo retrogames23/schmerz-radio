@@ -30,17 +30,17 @@ test("leaving and re-entering allows one new appearance", () => {
   assert.equal(first.sample(42500), null);
 });
 
-test("subsequent entrances are between one and four minutes apart", () => {
+test("subsequent entrances are between twenty seconds and one minute apart", () => {
   for (const random of [() => 0, () => 0.5, () => 0.999999]) {
     const visit = createWalkVisit(random);
     assert.equal(visit.schedule[0]?.intervalMs, 2500);
     for (const entry of visit.schedule.slice(1)) {
-      assert.ok(entry.intervalMs >= 60000);
-      assert.ok(entry.intervalMs <= 240000);
+      assert.ok(entry.intervalMs >= 20000);
+      assert.ok(entry.intervalMs <= 60000);
     }
   }
-  assert.equal(PLAZA_WALK.minIntervalMs, 60000);
-  assert.equal(PLAZA_WALK.maxIntervalMs, 240000);
+  assert.equal(PLAZA_WALK.minIntervalMs, 20000);
+  assert.equal(PLAZA_WALK.maxIntervalMs, 60000);
 });
 
 test("random order contains all six characters exactly once", () => {
@@ -49,6 +49,29 @@ test("random order contains all six characters exactly once", () => {
   assert.equal(new Set(a).size, 6);
   assert.deepEqual([...a].sort(), PLAZA_CHARACTERS.map((c) => c.id).sort());
   assert.notDeepEqual(a, b);
+});
+
+test("a figure always enters from the edge and never pops in mid-walk", () => {
+  for (const random of [() => 0, () => 0.999]) {
+    const visit = createWalkVisit(random);
+    visit.sample(0);
+    let lastId: string | null = null;
+    let lastEntrance = 0;
+    for (let now = 0; now <= 900000; now += 100) {
+      const sample = visit.sample(now);
+      if (!sample) continue;
+      if (sample.character.id !== lastId) {
+        if (lastId !== null) {
+          const gap = now - lastEntrance;
+          assert.ok(gap >= 20000 && gap <= 60000, `gap ${gap} after ${lastId}`);
+        }
+        assert.ok(sample.progress < 0.02, `${sample.character.id} appeared mid-walk at ${sample.progress}`);
+        lastId = sample.character.id;
+        lastEntrance = now;
+      }
+    }
+    assert.equal(visit.finished, true);
+  }
 });
 
 test("characters have different walking speeds", () => {
