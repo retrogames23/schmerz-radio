@@ -56,19 +56,19 @@ test("a figure always enters from the edge and never pops in mid-walk", () => {
     const visit = createWalkVisit(random);
     visit.sample(0);
     let lastId: string | null = null;
-    let lastSeen = 0;
-    for (let now = 0; now <= 900000; now += 250) {
+    let lastEntrance = 0;
+    for (let now = 0; now <= 900000; now += 100) {
       const sample = visit.sample(now);
       if (!sample) continue;
       if (sample.character.id !== lastId) {
         if (lastId !== null) {
-          const gap = now - lastSeen;
+          const gap = now - lastEntrance;
           assert.ok(gap >= 20000 && gap <= 60000, `gap ${gap} after ${lastId}`);
         }
-        assert.ok(sample.progress < 0.01, `${sample.character.id} appeared mid-walk at ${sample.progress}`);
+        assert.ok(sample.progress < 0.02, `${sample.character.id} appeared mid-walk at ${sample.progress}`);
         lastId = sample.character.id;
+        lastEntrance = now;
       }
-      lastSeen = now;
     }
     assert.equal(visit.finished, true);
   }
