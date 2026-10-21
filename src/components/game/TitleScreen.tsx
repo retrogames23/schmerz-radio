@@ -8,6 +8,7 @@ import { CreditsOverlay } from "./CreditsOverlay";
 import { DonationModal } from "@/components/donation/DonationModal";
 import titleArtwork from "@/assets/title/schmerz-radio-v1.jpg";
 import { RainOverlay } from "./RainOverlay";
+import { useRainEnabled } from "./useRainEnabled";
 import { isDevMode } from "@/dev/devMode";
 
 const titleTrack = titleTrackAsset.url;
@@ -44,6 +45,7 @@ interface Props {
 }
 
 export function TitleScreen({ onStart }: Props) {
+  const rainEnabled = useRainEnabled();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const startedRef = useRef(false);
   const [musicOn, setMusicOn] = useState(false);
@@ -141,9 +143,7 @@ export function TitleScreen({ onStart }: Props) {
         decoding="async"
       />
       {/* Animated rain on top of the painted artwork — desktop only. */}
-      <div className="hidden md:contents">
-        <RainOverlay />
-      </div>
+      {rainEnabled && <RainOverlay />}
 
       {/* Slowly scrolling phosphor text on the painted CRT monitor. */}
       <div className="title-art-frame" aria-hidden="true">

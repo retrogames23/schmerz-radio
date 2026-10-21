@@ -4,7 +4,7 @@
 DSA-Szenenbilder ([SCENE: <tag>]): Nur setzen, wenn das Bild wirklich passt. Im Zweifel KEIN Bild. Gilt für Solo- und Gruppen-Prompt.
 
 ## Memories
-- [Natürliche Figurenanimation](mem://preferences/ambient-animation) — Echte Gehzyklen, kein Geister-Fading, jede Person höchstens einmal pro Szenenbesuch.
+- [Natürliche Figurenanimation](mem://preferences/ambient-animation) — Echte Gehzyklen, kein Geister-Fading, einmal pro Szenenbesuch; kein Regen auf Mobilgeräten.
 - [Hannes Musik](mem://features/hanne-musik) — Eigene Raum-Songliste, alle drei hochgeladenen Songs in Anhang-Reihenfolge.
 - [World-Info-Layer](mem://features/world-info-layer) — Keyword-getriggerter Lore-Block (Geo-Sanity constant, Städte/Götter selective), injiziert pro Master-Wende vor dynamischem State-Block in beiden DSA-Routes.
 - [Brem & Yelva Backstories](mem://features/companion-backstories) — Festum/Pakt-Manuskript-Bruch für Brem (NICHT Borbarad — Rückkehr erst 22 Hal), fortgesungene Sippe + Praios-Adept für Yelva. Geheimnisse, nicht Smalltalk.
