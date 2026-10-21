@@ -92,7 +92,7 @@ export const PlazaWalker = memo(function PlazaWalker({ reveal = false }: { revea
     <canvas ref={canvasRef} className="plaza-walker pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true" />
     <div ref={targetRef} className="plaza-walker pointer-events-none absolute z-30 invisible"
       onPointerDownCapture={() => { clickedRef.current = true; }}>
-      {character && <div className="pointer-events-auto h-full w-full"><Hotspot reveal={reveal} hotspot={{
+      {character && <div className="pointer-events-auto h-full w-full"><Hotspot directInteraction reveal={reveal} hotspot={{
         id: `plaza_${character.id}`, label: character.label,
         x: 0, y: 0, w: 100, h: 100, kind: "talk",
         onUse: (api) => { clickedRef.current = true; api.startDialog(`plaza_${character.id}`); },
