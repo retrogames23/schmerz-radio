@@ -364,7 +364,7 @@ export function SceneView() {
         {scene === "e71Lobby" && <E71LobbyLife />}
         {scene === "zvsExterior" && (
           <>
-            <PlazaWalker />
+            <PlazaWalker reveal={revealHotspots || touchReveal} />
             <img src={backgroundSrc} alt="" aria-hidden="true"
               style={{ maskImage: `url(${plazaForegroundMask.url})`, WebkitMaskImage: `url(${plazaForegroundMask.url})` }}
               className="plaza-walker-foreground pointer-events-none absolute inset-0 h-full w-full" />
