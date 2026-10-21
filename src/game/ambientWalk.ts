@@ -45,7 +45,8 @@ export function createWalkVisit(random: () => number = Math.random) {
           frame: paused ? 2 : Math.floor(local / (entry.character.cycleMs / entry.character.frames)) % entry.character.frames,
         };
         index++;
-        entrance += schedule[index]?.intervalMs ?? 0;
+        const nextInterval = schedule[index]?.intervalMs ?? 0;
+        entrance += Math.max(entry.character.durationMs, nextInterval);
       }
       return null;
     },
