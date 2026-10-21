@@ -30,17 +30,17 @@ test("leaving and re-entering allows one new appearance", () => {
   assert.equal(first.sample(42500), null);
 });
 
-test("subsequent entrances are between one and four minutes apart", () => {
+test("subsequent entrances are between twenty seconds and one minute apart", () => {
   for (const random of [() => 0, () => 0.5, () => 0.999999]) {
     const visit = createWalkVisit(random);
     assert.equal(visit.schedule[0]?.intervalMs, 2500);
     for (const entry of visit.schedule.slice(1)) {
-      assert.ok(entry.intervalMs >= 60000);
-      assert.ok(entry.intervalMs <= 240000);
+      assert.ok(entry.intervalMs >= 20000);
+      assert.ok(entry.intervalMs <= 60000);
     }
   }
-  assert.equal(PLAZA_WALK.minIntervalMs, 60000);
-  assert.equal(PLAZA_WALK.maxIntervalMs, 240000);
+  assert.equal(PLAZA_WALK.minIntervalMs, 20000);
+  assert.equal(PLAZA_WALK.maxIntervalMs, 60000);
 });
 
 test("random order contains all six characters exactly once", () => {

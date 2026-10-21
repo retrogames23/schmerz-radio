@@ -1,6 +1,6 @@
 /** Scene-local clock, never stored in story flags or saves. */
 export const PLAZA_WALK = {
-  delayMs: 2500, minIntervalMs: 60000, maxIntervalMs: 240000,
+  delayMs: 2500, minIntervalMs: 20000, maxIntervalMs: 60000,
   cellWidth: 160, cellHeight: 304, baseline: 0.65,
 } as const;
 
