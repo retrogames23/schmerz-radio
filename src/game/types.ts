@@ -778,7 +778,13 @@ export interface DialogLine {
     | "ZVSEMPFANG"
     | "SASSE"
     | "KROLL"
-    | "MINDEN";
+    | "MINDEN"
+    | "MANN MIT AKTENTASCHE"
+    | "FRAU MIT AKTENMAPPE"
+    | "BOTE"
+    | "HANDWERKER"
+    | "ÄLTERER MANN"
+    | "FRAU MIT REGENSCHIRM";
   text: string;
   /** subtext appears only when Schmerz-Radio active */
   subtext?: string;
