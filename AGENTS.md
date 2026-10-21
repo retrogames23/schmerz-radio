@@ -1,6 +1,6 @@
 # Architecture rules
 
-- Ambient walkers use real sprite-sheet frames and a scene-mounted one-shot timeline in image coordinates; never use story flags or opacity fades for passers-by, so re-renders preserve a visit and leaving resets it.
+- Ambient walkers use real sprite-sheet frames and a scene-mounted shuffled finite timeline in image coordinates; pause the local clock for conversations, mobile focus sheets and hidden tabs, and use existing Hotspot controls plus registered optional dialog trees. Moving NPCs opt into direct touch interaction to avoid history-backed focus sheets interrupting conversations. Never use story flags or opacity fades, so re-renders preserve a visit and leaving resets it.
 
 - Keep title rain artwork and mask in the same cover/center layout box; size the canvas backing buffer from local layout dimensions without setting inline CSS dimensions, so resizing and transformed stages retain alignment.
 

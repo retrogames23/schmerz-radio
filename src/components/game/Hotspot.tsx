@@ -10,9 +10,11 @@ interface Props {
   /** Wenn true, wird der Hotspot mit Rahmen und Label sichtbar dargestellt
    *  (z. B. wenn der Spieler die Leertaste gedrückt hält). */
   reveal?: boolean;
+  /** Moving ambient NPCs start talking directly, without a mobile history-backed focus sheet. */
+  directInteraction?: boolean;
 }
 
-function HotspotImpl({ hotspot, reveal = false }: Props) {
+function HotspotImpl({ hotspot, reveal = false, directInteraction = false }: Props) {
   const { api, setCaption, flags } = useGame();
   const drag = useInventoryDrag();
   const isCoarse = useCoarsePointer();
@@ -123,7 +125,7 @@ function HotspotImpl({ hotspot, reveal = false }: Props) {
         // statt der direkten Aktion das Fokus-Sheet, in dem der Spieler
         // bequem in der Daumen-Zone die Aktion oder ein Item wählt.
         // Exits bleiben direkt — sonst würde jeder Türklick zur Bremse.
-        if (isCoarse && hotspot.kind !== "exit") {
+        if (isCoarse && hotspot.kind !== "exit" && !directInteraction) {
           setCaption(null);
           drag.openFocus(hotspot);
           return;
