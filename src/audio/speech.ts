@@ -39,7 +39,13 @@ type Speaker =
   | "ZVSEMPFANG"
   | "SASSE"
   | "KROLL"
-  | "MINDEN";
+  | "MINDEN"
+  | "MANN MIT AKTENTASCHE"
+  | "FRAU MIT AKTENMAPPE"
+  | "BOTE"
+  | "HANDWERKER"
+  | "ÄLTERER MANN"
+  | "FRAU MIT REGENSCHIRM";
 
 
 interface VoiceProfile {
@@ -277,6 +283,12 @@ const PROFILES: Record<Speaker, VoiceProfile> = {
     speed: 0.92,
     settings: { stability: 0.8, similarity_boost: 0.8, style: 0.05, use_speaker_boost: true },
   },
+  "MANN MIT AKTENTASCHE": { voiceId: "onwK4e9ZLuTAKqWW03F9", speed: 1.0 },
+  "FRAU MIT AKTENMAPPE": { voiceId: "Xb7hH8MSUJpSbSDYk0k2", speed: 0.97 },
+  BOTE: { voiceId: "TX3LPaxmHKxFdv7VOQHJ", speed: 1.1 },
+  HANDWERKER: { voiceId: "JBFqnCBsd6RMkjVDRZzb", speed: 0.95 },
+  "ÄLTERER MANN": { voiceId: "pqHfZKP75CvOlQylNhV4", speed: 0.85 },
+  "FRAU MIT REGENSCHIRM": { voiceId: "pFZP5JQG7iQjIQuC4Bku", speed: 0.96 },
   SASSE: {
     // Sachbearbeiterin 5011, 55 — freundlich, sehr korrekt, ruhig.
     voiceId: "XB0fDUnXU5powFXDhCwa", // Charlotte

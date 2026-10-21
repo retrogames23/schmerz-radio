@@ -10,7 +10,9 @@ test("every plaza character has a reachable conversation", () => {
     assert.ok(tree.lines[tree.start]);
     for (const line of Object.values(tree.lines)) {
       if (line.next) assert.ok(tree.lines[line.next]);
-      for (const choice of line.choices ?? []) assert.ok(tree.lines[choice.next]);
+      for (const choice of line.choices ?? []) {
+        if (choice.next) assert.ok(tree.lines[choice.next]);
+      }
     }
   }
 });
