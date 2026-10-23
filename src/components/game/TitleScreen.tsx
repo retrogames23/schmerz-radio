@@ -14,21 +14,21 @@ import { isDevMode } from "@/dev/devMode";
 const titleTrack = titleTrackAsset.url;
 
 const TITLE_CRT_LINES = [
-  "CENTRALOS v2.3",
-  "TERMINAL E67",
+  "CENTRALOS v2.3 .. BEREIT",
+  "TERMINAL E67 .. GEB. E67",
   "",
-  "KNOTEN 5610 .. OK",
-  "PORT 4601 .. AKTIV",
-  "LEITSTELLE 3502",
-  "TRAEGER 104,6",
-  "RESONANZ .. 12%",
+  "KNOTEN 5610 ....... OK",
+  "PORT 4601 ......... AKTIV",
+  "LEITSTELLE 3502 ... OK",
+  "TRAEGER 104,6 ..... UKW",
+  "RESONANZ .......... 12%",
   "",
-  "SEKTOR 28 EMPFANG",
-  "SIGNAL .. SCHWACH",
-  "REGEN .. ANHALTEND",
+  "SEKTOR 28 EMPFANG .. OK",
+  "SIGNAL ............ SCHWACH",
+  "REGEN ............. ANHALTEND",
   "",
-  "> WARTE AUF",
-  "  EINGABE_",
+  "> WARTE AUF EINGABE",
+  "  █",
   "",
 ];
 
