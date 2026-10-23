@@ -1334,9 +1334,9 @@ body:has([data-dsa-page]) * {
 }
 .title-crt-screen {
   position: absolute;
-  left: 61.2%;
+  left: 59.8%;
   top: 41.6%;
-  width: 17.2%;
+  width: 20.4%;
   height: 24.9%;
   overflow: hidden;
   border-radius: 6% / 8%;
