@@ -376,10 +376,20 @@ zwangsläufig den Brandalarm im Technikraum aus.
 
 ### Schmerz-Radio
 - **Was es ist:** ein privates Funkgerät, das auf 104,6 MHz sendet und
-  empfängt. Reichweite wenige hundert Meter. Es überträgt — physikalisch
-  nicht restlos verstanden — affektive Zustände, überwiegend negative:
+  empfängt. Reichweite wenige hundert Meter. Physikalisch überträgt es nur
+  Ton. Hörer erleben dabei affektive Zustände, überwiegend negative:
   Schmerz, Trauer, Beklemmung. Sender und Empfänger müssen beide eingeschaltet
   sein.
+- **Erklärung in der Spielwelt (verbindlich):** *akustisch induzierte
+  Dysästhesie*. Unter dem Programm liegen tieffrequente Pulsfolgen,
+  rhythmische Brüche und Pausen im Atemtakt. Bei voller Lautstärke und
+  längerem Hören verändern sie bei einem kleinen Teil der Menschen das
+  Körperempfinden (vergleichbar mit Flackerlicht-Kopfschmerz); Erwartung und
+  Suggestion erledigen den Rest. Der Effekt lässt sich nicht messen und nicht
+  übertragen. Deshalb ist er keine Sensation, sondern eine medizinische
+  Kuriosität. Elsner fand die Wirkung durch Ausprobieren; eine Theorie dazu hatte er
+  nie. Nicht mit Resonanz/Resonanz-Hygiene verwechseln: Das ist ein
+  eigenständiger bauakustischer und sozialer Verwaltungsbegriff.
 - **Erfunden** Mitte der 70er Jahre vom Funkbastler **Konrad Elsner**
   (Sektor 14). Öffentlich ist kein Urheber verzeichnet; nur Hanne Brodersen
   (E71/1104) kennt ihn privat. Kein Patent, die Vertriebsfirma der 80er ist
