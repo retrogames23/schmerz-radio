@@ -5,7 +5,7 @@ import {
   ALMANACH_TITLE,
   ALMANACH_UI_TEXT,
   type AlmanachChapter,
-} from "@/game/quadrantenAlmanach";
+} from "@/game/sektorenAlmanach";
 import { CloseButton } from "./CloseButton";
 
 interface Props {

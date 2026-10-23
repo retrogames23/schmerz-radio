@@ -3,7 +3,7 @@ import {
   ALMANACH_SUBTITLE,
   ALMANACH_TITLE,
   ALMANACH_UI_TEXT,
-} from "@/game/quadrantenAlmanach";
+} from "@/game/sektorenAlmanach";
 import { registerBook, type ReadableBook } from "./registry";
 
 export const ALMANACH_BOOK: ReadableBook = {

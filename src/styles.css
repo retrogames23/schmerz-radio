@@ -1345,12 +1345,12 @@ body:has([data-dsa-page]) * {
   mask-composite: intersect;
   -webkit-mask-composite: source-in;
   font-family: "VT323", ui-monospace, monospace;
-  font-size: max(6px, 1.25cqmin);
+  font-size: max(8px, 1.6cqmin);
   line-height: 1.25;
   color: rgb(120 255 140 / 0.85);
   text-shadow: 0 0 4px rgb(80 255 110 / 0.7);
   text-align: left;
-  padding: 0 1.6%;
+  padding: 0 0.9%;
 }
 .title-crt-screen::after {
   content: "";
