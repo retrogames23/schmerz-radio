@@ -133,7 +133,7 @@ def main():
       ON CONFLICT (source, content_hash) DO NOTHING;
     SELECT count(*) AS inserted FROM public.dsa_rulebook_chunks WHERE source = '{source}';
     """
-    subprocess.run(["psql", "-v", "ON_ERROR_STOP=1", "-c", sql], check=True)
+    subprocess.run(["psql", "-v", "ON_ERROR_STOP=1", "-f", "-"], input=sql, text=True, check=True)
     os.unlink(tsv.name)
     print("done.")
 
