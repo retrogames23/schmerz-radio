@@ -17,6 +17,8 @@ Idempotent: doppelte Chunks (gleicher content_hash) werden via
 UNIQUE (source, content_hash) übersprungen.
 """
 
+import functools, builtins
+print = functools.partial(builtins.print, flush=True)
 import os, sys, re, json, hashlib, time, subprocess, tempfile
 import requests
 from pypdf import PdfReader
@@ -83,13 +85,13 @@ def main():
         with tempfile.TemporaryDirectory() as d:
             subprocess.run(["pdftoppm", "-r", "200", "-gray", "-png", "-f", str(i + 1), "-l", str(i + 1), pdf_path, f"{d}/p"], check=True)
             img = next(f for f in os.listdir(d) if f.endswith(".png"))
-            out = subprocess.run(["tesseract", f"{d}/{img}", "stdout", "-l", "deu"], capture_output=True, text=True)
+            out = subprocess.run(["tesseract", f"{d}/{img}", "stdout", "-l", "deu"], capture_output=True, text=True, env={**os.environ, "OMP_THREAD_LIMIT": "1"})
             return out.stdout
     from concurrent.futures import ThreadPoolExecutor
     need = [i for i, t in enumerate(raw) if len(t.strip()) < 50]
     if need:
         print(f"OCR for {len(need)} pages …")
-        with ThreadPoolExecutor(max_workers=12) as ex:
+        with ThreadPoolExecutor(max_workers=14) as ex:
             for i, t in zip(need, ex.map(ocr, need)):
                 raw[i] = t
 
