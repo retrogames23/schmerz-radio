@@ -17,6 +17,8 @@ Idempotent: doppelte Chunks (gleicher content_hash) werden via
 UNIQUE (source, content_hash) übersprungen.
 """
 
+import functools, builtins
+print = functools.partial(builtins.print, flush=True)
 import os, sys, re, json, hashlib, time, subprocess, tempfile
 import requests
 from pypdf import PdfReader
@@ -71,12 +73,31 @@ def main():
     api_key = os.environ["LOVABLE_API_KEY"]
 
     reader = PdfReader(pdf_path)
-    pages = []
+    raw = []
     for p in reader.pages:
         try:
-            t = p.extract_text() or ""
+            raw.append(p.extract_text() or "")
         except Exception:
-            t = ""
+            raw.append("")
+
+    # OCR-Fallback für gescannte Seiten (pdftoppm + tesseract, deutsch).
+    def ocr(i):
+        with tempfile.TemporaryDirectory() as d:
+            subprocess.run(["pdftoppm", "-r", "200", "-gray", "-png", "-f", str(i + 1), "-l", str(i + 1), pdf_path, f"{d}/p"], check=True)
+            img = next(f for f in os.listdir(d) if f.endswith(".png"))
+            out = subprocess.run(["tesseract", f"{d}/{img}", "stdout", "-l", "deu"], capture_output=True, text=True, env={**os.environ, "OMP_THREAD_LIMIT": "1"})
+            return out.stdout
+    from concurrent.futures import ThreadPoolExecutor
+    need = [i for i, t in enumerate(raw) if len(t.strip()) < 50]
+    if need:
+        print(f"OCR for {len(need)} pages …")
+        with ThreadPoolExecutor(max_workers=14) as ex:
+            for i, t in zip(need, ex.map(ocr, need)):
+                raw[i] = t
+
+    pages = []
+    for t in raw:
+        t = re.sub(r"-\n(\w)", r"\1", t)
         t = re.sub(r"[ \t]+", " ", t)
         t = re.sub(r"\n{3,}", "\n\n", t).strip()
         pages.append(t)
@@ -105,6 +126,7 @@ def main():
     tsv.close()
 
     sql = f"""
+    DROP TABLE IF EXISTS _ingest;
     CREATE TEMP TABLE _ingest (LIKE public.dsa_rulebook_chunks INCLUDING DEFAULTS);
     \\COPY _ingest(source,page_start,page_end,chunk_index,content,content_hash,token_estimate,embedding,metadata) FROM '{tsv.name}' WITH (FORMAT text, DELIMITER E'\\t');
     INSERT INTO public.dsa_rulebook_chunks (source,page_start,page_end,chunk_index,content,content_hash,token_estimate,embedding,metadata)
@@ -112,7 +134,7 @@ def main():
       ON CONFLICT (source, content_hash) DO NOTHING;
     SELECT count(*) AS inserted FROM public.dsa_rulebook_chunks WHERE source = '{source}';
     """
-    subprocess.run(["psql", "-v", "ON_ERROR_STOP=1", "-c", sql], check=True)
+    subprocess.run(["psql", "-v", "ON_ERROR_STOP=1", "-f", "-"], input=sql, text=True, check=True)
     os.unlink(tsv.name)
     print("done.")
 
