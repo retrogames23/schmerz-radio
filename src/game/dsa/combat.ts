@@ -267,7 +267,7 @@ export const CLASS_COMBAT_PROFILES: Record<
 /** Wandelt den Spielercharakter in einen Combatant um. */
 export function heroCombatantFromCharacter(
   ch: DsaCharacterSummary,
-  hero?: { spells?: Record<string, number>; gear?: HeroGear } | null,
+  hero?: { spells?: Record<string, number>; gear?: HeroGear; apTotal?: number } | null,
 ): Combatant {
   const profile =
     CLASS_COMBAT_PROFILES[(ch.classId as DsaClassId)] ??
@@ -327,7 +327,15 @@ export function heroCombatantFromCharacter(
     aeMax: ch.ae ?? undefined,
     spells,
     classId: ch.classId as DsaClassId,
+    stufe: stufeFromAp(hero?.apTotal ?? 0),
   };
+}
+
+/** DSA3-Stufe aus Gesamt-AP: Stufe n ab 100·n·(n−1)/2 AP. */
+export function stufeFromAp(ap: number): number {
+  let n = 1;
+  while (n < 21 && 50 * (n + 1) * n <= ap) n++;
+  return n;
 }
 
 /** Parst einen TP-String wie "1W+4" oder "2W+2" in Würfel + Flat-Bonus. */
@@ -1068,11 +1076,6 @@ export function resolveRound(
   return events;
 }
 
-function pickWeakestW(group: WoundedCombatant[]): WoundedCombatant | null {
-  const live = group.filter(alive);
-  if (live.length === 0) return null;
-  return live.sort((a, b) => a.le - b.le)[0];
-}
 function pickFoeTargetW(foes: WoundedCombatant[]): WoundedCombatant | null {
   const live = foes.filter(alive);
   if (live.length === 0) return null;
