@@ -17,6 +17,7 @@ import {
   equipWeapon,
   unequipWeapon,
   equipArmor,
+  gearRestriction,
   unequipArmor,
   equipShield,
   unequipShield,

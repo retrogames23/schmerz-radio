@@ -6,7 +6,7 @@ import { rollThreeD20Probe } from "./rules/probe";
 import type { AttributeId } from "./rules/mechanics";
 import { WEAPONS } from "./rules/weapons";
 import { ARMORS } from "./rules/armor";
-import type { HeroGear } from "./gear";
+import { gearRestriction, type HeroGear } from "./gear";
 import type { CombatIntent, CompanionIntent } from "./combatIntent";
 import { EMPTY_COMBAT_INTENT, mergeCombatIntents, YELVA_DEFAULT_SPELLS } from "./combatIntent";
 
@@ -285,9 +285,17 @@ export function heroCombatantFromCharacter(
   // Ausrüstung: Waffe ersetzt TP-Würfel/Bonus und liefert AT/PA-Modifikatoren,
   // Rüstung ersetzt RS, Schild gibt zusätzlich PA-Bonus.
   const gear = hero?.gear;
-  const weapon = gear?.weaponId ? WEAPONS[gear.weaponId] : null;
-  const armor = gear?.armorId ? ARMORS[gear.armorId] : null;
-  const shield = gear?.shieldId ? ARMORS[gear.shieldId] : null;
+  // Regelwidrige Altbestände (z. B. Kettenhemd am Magier) wirken im Kampf nicht.
+  const cls = ch.classId as DsaClassId;
+  const noGear = { armorId: null, shieldId: null };
+  const weapon =
+    gear?.weaponId && !gearRestriction(cls, noGear, { weaponId: gear.weaponId }) ? WEAPONS[gear.weaponId] : null;
+  const armor =
+    gear?.armorId && !gearRestriction(cls, noGear, { armorId: gear.armorId }) ? ARMORS[gear.armorId] : null;
+  const shield =
+    gear?.shieldId && !gearRestriction(cls, { armorId: armor?.id ?? null, shieldId: null }, { shieldId: gear.shieldId })
+      ? ARMORS[gear.shieldId]
+      : null;
 
   let tpDice = profile.tpDice;
   let tpBonus = profile.tpBonus + tpKKBonus;
