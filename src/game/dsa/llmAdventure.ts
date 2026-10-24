@@ -140,6 +140,10 @@ export interface ParsedMasterTurn {
   itemsAdded: { name: string; description?: string; count?: number }[];
   /** Vom Meister gestrichene Items (per Name / Teilstring / ID). */
   itemsRemoved: string[];
+  /** [LE: -N] / [LE: +N] — Schaden/Heilung außerhalb des Kampfbildschirms. */
+  leDelta: number;
+  /** [AE: -N] / [AE: +N] — verbrauchte / regenerierte Astralenergie. */
+  aeDelta: number;
 }
 
 const SPEAKER_RE = /^\s*\[(TJARK|BREM|YELVA)\]\s*/i;
@@ -150,6 +154,8 @@ const OUTTIME_RE = /\[OUTTIME_WARN\]/i;
 const END_RE = /\[END:\s*(victory|defeat|aborted)\s*\]/i;
 const MOOD_RE = /\[MOOD:\s*([a-z_]+)\s*\]/i;
 const AP_RE = /\[AP:\s*(\d{1,4})\s*(?:\|\s*([^\]]+))?\]/i;
+const LE_RE_G = /\[LE:\s*([+-]\s*\d{1,3})\s*\]/gi;
+const AE_RE_G = /\[AE:\s*([+-]\s*\d{1,3})\s*\]/gi;
 const ITEM_PLUS_RE_G = /\[ITEM\+:\s*([^\]]+?)\s*\]/gi;
 const ITEM_MINUS_RE_G = /\[ITEM-:\s*([^\]]+?)\s*\]/gi;
 /** Entfernt jegliche Marker aus dem reinen Sprechtext einer Zeile. */
@@ -164,6 +170,8 @@ function stripMarkers(s: string): string {
     .replace(AP_RE, "")
     .replace(ITEM_PLUS_RE_G, "")
     .replace(ITEM_MINUS_RE_G, "")
+    .replace(LE_RE_G, "")
+    .replace(AE_RE_G, "")
     // Sicherheitsnetz: alle übrigen Pseudo-Marker à la [NPC_PRIEST],
     // [SZENE_TEMPEL], [FOO_BAR] aus dem Sprechtext entfernen — die LLM
     // erfindet sie gelegentlich und sie brechen die Immersion.
@@ -226,7 +234,10 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
     const ids = combatMatch[1]
       .split(",")
       .map((s) => s.trim().toLowerCase())
-      .filter((id) => id.length > 0 && id in ENEMY_STATS);
+      .filter((id) => /^[a-z0-9_-]{2,40}$/.test(id))
+      .slice(0, 6);
+    // Unbekannte IDs bleiben erhalten; der Client baut dafür einen
+    // Ersatzgegner (fallbackEnemyStat), statt den Kampf zu verwerfen.
     if (ids.length > 0) combat = { enemyIds: ids };
   }
 
@@ -236,6 +247,14 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
         modifier: checkMatch[2] ? parseInt(checkMatch[2].replace(/\s+/g, ""), 10) : 0,
       }
     : null;
+
+  const sumDelta = (re: RegExp) => {
+    let t = 0;
+    for (const m of text.matchAll(re)) t += parseInt(m[1].replace(/\s+/g, ""), 10) || 0;
+    return Math.max(-99, Math.min(99, t));
+  };
+  const leDelta = sumDelta(LE_RE_G);
+  const aeDelta = sumDelta(AE_RE_G);
 
   const end = endMatch
     ? (endMatch[1].toLowerCase() as EndKind)
@@ -284,6 +303,8 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
     ap,
     itemsAdded,
     itemsRemoved,
+    leDelta,
+    aeDelta,
   };
 }
 
@@ -308,4 +329,26 @@ export interface AdventureRow {
   offtopic_streak: number;
   updated_at: string;
   wish_brief?: string | null;
+}
+/** Ersatz-Gegnerbogen für vom Meister frei erfundene Gegner-IDs. */
+export function fallbackEnemyStat(id: string): import("./combat").EnemyStat {
+  const known = ENEMY_STATS[id];
+  if (known) return known;
+  const name = id
+    .split(/[_-]+/)
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ") || "Unbekannter Gegner";
+  return {
+    id,
+    name,
+    le: 18,
+    at: 10,
+    pa: 8,
+    tpDice: 1,
+    tpBonus: 2,
+    rs: 1,
+    iniBase: 10,
+    weapon: "Waffe",
+  };
 }

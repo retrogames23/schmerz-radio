@@ -1,3 +1,4 @@
+import { queueMasterNote } from "@/game/dsa/pendingMasterNotes";
 import { useEffect, useRef, useState } from "react";
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { CloseButton } from "./CloseButton";
@@ -76,7 +77,7 @@ export function DsaCharacterSheet() {
   function applyGear(next: HeroGear, note: string) {
     if (!updateHero) return;
     updateHero({ ...hero, gear: next });
-    notifyMaster?.(note);
+    (notifyMaster ?? queueMasterNote)(note);
   }
 
   function onPortraitFile(file: File) {
@@ -99,7 +100,7 @@ export function DsaCharacterSheet() {
         ctx.drawImage(img, 0, 0, w, h);
         const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
         updateHero({ ...hero, portraitDataUrl: dataUrl });
-        notifyMaster?.(
+        (notifyMaster ?? queueMasterNote)(
           `${heroName} hat ein neues Porträt am Heldenbrief befestigt.`,
         );
       };

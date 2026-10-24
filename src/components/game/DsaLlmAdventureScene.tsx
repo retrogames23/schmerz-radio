@@ -18,6 +18,8 @@ import {
   type DsaSettingId,
   type AdventureStatus,
 } from "@/game/dsa/llmAdventure";
+import { fallbackEnemyStat } from "@/game/dsa/llmAdventure";
+import { drainMasterNotes, rollAttributeCheck } from "@/game/dsa/pendingMasterNotes";
 import {
   resolveSceneImage,
 } from "@/game/dsa/sceneImages";
@@ -64,6 +66,8 @@ interface ServerReply {
   apAwarded?: number;
   apReason?: string;
   gear?: HeroGear | null;
+  heroLe?: number;
+  heroAe?: number | null;
 }
 
 interface LoadedAdventure {
@@ -224,6 +228,7 @@ export function DsaLlmAdventureScene() {
   const [error, setError] = useState<string | null>(null);
   const [combat, setCombat] = useState<CombatBridge | null>(null);
   const [pendingCombat, setPendingCombat] = useState<CombatBridge | null>(null);
+  const [pendingCheck, setPendingCheck] = useState<{ attr: string; modifier: number } | null>(null);
   const [endState, setEndState] = useState<AdventureStatus | null>(null);
   const [endAp, setEndAp] = useState<{ value: number; reason: string } | null>(null);
   const [settingId, setSettingId] = useState<DsaSettingId | null>(null);
@@ -366,6 +371,15 @@ export function DsaLlmAdventureScene() {
       if (data.imageTag) setImageTag(data.imageTag);
       if (data.parsed.mood) setMood(data.parsed.mood);
       // Inventar-Update vom Meister auf den Helden spiegeln.
+      // LE/AE-Stand des Meisters übernehmen ([LE: ±N] / [AE: ±N]).
+      if (dsaCharacterRef.current && typeof data.heroLe === "number") {
+        const cur = dsaCharacterRef.current;
+        const nextAe = typeof data.heroAe === "number" ? data.heroAe : cur.ae;
+        if (cur.le !== data.heroLe || cur.ae !== nextAe) {
+          setDsaCharacter({ ...cur, le: data.heroLe, ae: nextAe });
+        }
+      }
+      setPendingCheck(data.status === "active" && !data.parsed.combat ? data.parsed.check ?? null : null);
       if (data.gear && updateHero && dsaCharacterRef.current) {
         const cur = upgradeToHero(dsaCharacterRef.current as DsaHero);
         if (cur) updateHero({ ...cur, gear: data.gear });
@@ -386,8 +400,8 @@ export function DsaLlmAdventureScene() {
         const companions = companionCombatants(intent);
         const foes = data.parsed.combat.enemyIds
           .map((id, i) => {
-            const stat = ENEMY_STATS[id];
-            return stat ? foeCombatantFromStat(stat, i) : null;
+            const stat = ENEMY_STATS[id] ?? fallbackEnemyStat(id);
+            return foeCombatantFromStat(stat, i);
           })
           .filter((f): f is Combatant => !!f);
         if (foes.length > 0) {
@@ -460,11 +474,14 @@ export function DsaLlmAdventureScene() {
     }
   }
 
-  const handleSend = useCallback(async (opts?: { outtime?: boolean }) => {
-    const raw = composerText.trim();
+  const handleSend = useCallback(async (opts?: { outtime?: boolean; override?: string }) => {
+    const raw = (opts?.override ?? composerText).trim();
     if (!raw || busy || endState) return;
-    const text = opts?.outtime && !/^outtime[:\s]/i.test(raw) ? `Outtime: ${raw}` : raw;
-    setComposerText("");
+    const spoken = opts?.outtime && !/^outtime[:\s]/i.test(raw) ? `Outtime: ${raw}` : raw;
+    // Gesammelte Heldenbogen-Änderungen mitschicken (kostet keine eigene Wende).
+    const notes = opts?.outtime ? "" : drainMasterNotes();
+    const text = (notes ? `${notes}\n${spoken}` : spoken).slice(0, 500);
+    if (!opts?.override) setComposerText("");
     setBusy(true);
     setError(null);
     const myId = nextId();
@@ -475,7 +492,7 @@ export function DsaLlmAdventureScene() {
         const j = await r.json().catch(() => ({ error: "Fehler." }));
         setError(j.error || "Tjark schweigt.");
         // Eingabe wieder herstellen, damit sie nicht verloren ist.
-        setComposerText(text);
+        if (!opts?.override) setComposerText(spoken);
         setTurns((t) => t.filter((x) => x.id !== myId));
         return;
       }
@@ -484,12 +501,22 @@ export function DsaLlmAdventureScene() {
     } catch (e) {
       console.error("dsa-llm say failed", e);
       setError(e instanceof Error ? e.message : "Verbindung fehlgeschlagen.");
-      setComposerText(text);
+      if (!opts?.override) setComposerText(spoken);
       setTurns((t) => t.filter((x) => x.id !== myId));
     } finally {
       setBusy(false);
     }
   }, [composerText, busy, endState, nextId, handleServerReply, heroSlot, getDsaSessionId, expectsSignedInUser, runtimeMode]);
+
+  function handleRollCheck() {
+    if (!pendingCheck || !dsaCharacter) return;
+    const value = dsaCharacter.attrs[pendingCheck.attr] ?? 10;
+    const r = rollAttributeCheck(value, pendingCheck.modifier);
+    const mod = pendingCheck.modifier === 0 ? "±0" : pendingCheck.modifier > 0 ? `+${pendingCheck.modifier}` : `${pendingCheck.modifier}`;
+    const line = `[PROBE] ${pendingCheck.attr} ${mod}: 1W20=${r.roll} gegen ${r.target} — ${r.success ? "gelungen" : "misslungen"}`;
+    setPendingCheck(null);
+    void handleSend({ override: line });
+  }
 
   async function handleCombatDone(res: CombatDoneResult) {
     if (!combat || !dsaCharacter) return;
@@ -705,6 +732,23 @@ export function DsaLlmAdventureScene() {
                 ) : (
                   <PlayerTurn key={t.id} text={t.text} name={dsaCharacter.name} />
                 ),
+              )}
+              {pendingCheck && !pendingCombat && !busy && (
+                <div className="pt-2 flex flex-wrap items-center gap-3">
+                  <span className="font-serif italic text-[#2a1f10]/80">
+                    Tjark verlangt eine Probe auf {pendingCheck.attr}
+                    {pendingCheck.modifier !== 0 &&
+                      ` (${pendingCheck.modifier > 0 ? "erschwert um " : "erleichtert um "}${Math.abs(pendingCheck.modifier)})`}
+                    {" "}— dein Wert: {dsaCharacter.attrs[pendingCheck.attr] ?? "?"}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRollCheck}
+                    className="inline-flex items-center gap-2 rounded border-2 border-[#3a2c1a] bg-[#f1e6c8] px-4 py-2 text-sm font-bold uppercase tracking-wider text-[#2a1f10] shadow-[0_2px_0_rgba(0,0,0,0.35)] hover:-translate-y-px transition-transform"
+                  >
+                    🎲 W20 würfeln
+                  </button>
+                </div>
               )}
               {pendingCombat && !busy && (
                 <div className="pt-2">
