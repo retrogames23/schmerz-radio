@@ -972,6 +972,8 @@ export interface DsaCharacterSummary {
   /** Maximaler LE-Wert beim Erschaffen (für Heilung als Obergrenze). */
   leMax: number;
   ae: number | null;
+  /** Maximale AsP (Obergrenze für Regeneration). Fehlt bei Altständen → ae gilt als Max. */
+  aeMax?: number;
   rerolled: boolean;
   /** "m" | "w" (oder freier Text). Steuert u.a. die Porträt-Auswahl. */
   geschlecht?: string;

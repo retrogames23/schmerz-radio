@@ -541,6 +541,11 @@ export function DsaLlmAdventureScene() {
   async function handleCombatDone(res: CombatDoneResult) {
     if (!combat || !dsaCharacter) return;
     let nextChar = { ...dsaCharacter };
+    if (dsaCharacter.ae !== null && typeof res.heroAe === "number") {
+      const aeMax = Math.max(dsaCharacter.ae, dsaCharacter.aeMax ?? dsaCharacter.ae);
+      nextChar.aeMax = aeMax;
+      nextChar.ae = Math.max(0, Math.min(aeMax, res.heroAe));
+    }
     if (res.outcome === "victory" || res.outcome === "aborted") {
       nextChar.le = Math.max(1, res.heroLe);
     } else {
@@ -566,6 +571,8 @@ export function DsaLlmAdventureScene() {
           consequenceKind: res.consequenceKind,
           heroLe: nextChar.le,
           heroLeMax: nextChar.leMax,
+          heroAe: nextChar.ae,
+          heroAeMax: nextChar.aeMax,
           wounds: res.heroWounds,
           fallen: res.fallen,
           attrLowered: res.attrLowered,

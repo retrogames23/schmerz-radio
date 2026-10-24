@@ -257,7 +257,10 @@ export function DsaCharacterSheet() {
               accent
             />
             {dsaCharacter.ae !== null ? (
-              <Stat label="Astralenergie" value={`${dsaCharacter.ae}`} />
+              <Stat
+                label="Astralenergie"
+                value={`${dsaCharacter.ae} / ${Math.max(dsaCharacter.ae, dsaCharacter.aeMax ?? dsaCharacter.ae)}`}
+              />
             ) : (
               <Stat label="Astralenergie" value="—" />
             )}
