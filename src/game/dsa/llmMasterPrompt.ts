@@ -188,7 +188,7 @@ ${serializeCompanionGearForPrompt()}
   SPIELER-INVENTARAKTIONEN (am Heldenbogen):
     ${player} kann am Tisch jederzeit am Heldenbogen Waffe / Rüstung / Schild
     wechseln und sonstige Items wegwerfen. Solche Änderungen kommen als
-    User-Turn mit dem Präfix [INVENTAR] zu dir, z. B.
+    Präfix [INVENTAR] am Anfang der nächsten Spielereingabe zu dir, z. B.
       "[INVENTAR] ${player} nimmt die Streitaxt in die Hand und steckt das
        Langschwert in den Rucksack."
     Behandle das NICHT als eigene Spielszene, verlange keine Probe und
@@ -294,8 +294,14 @@ ${sceneTagList}
                               Gespräch genau mit dieser Figur. Vorigen Tag NICHT wiederholen, nur bei echtem Orts-/
                               Stimmungswechsel neu setzen. Kämpfe & Nachwirkungen: ortsspezifisch (combat_alley/forest/
                               tavern/dungeon, aftermath_* analog); combat_intro/aftermath nur bei offener Feldszene.
-    [CHECK: <ATTR> [+/-N]]    fordert eine Eigenschaftsprobe (MU, KL, CH, FF, GE, IN, KK). Modifikator optional.
-    [COMBAT: id1, id2, ...]   ruft den Kampfbildschirm auf. Erlaubte Gegner-IDs: ${enemyIdList}
+    [CHECK: <ATTR> [+/-N]]    fordert eine Eigenschaftsprobe (MU, KL, CH, FF, GE, IN, KK). +N = erschwert, -N = erleichtert.
+                              Der Spieler würfelt danach selbst; das Ergebnis kommt als User-Turn
+                              "[PROBE] <ATTR> <mod>: 1W20=<wurf> gegen <ziel> — gelungen|misslungen". Erzähle erst
+                              dann die Folge und halte dich an das Ergebnis. Pro Wende höchstens EINE Probe.
+    [LE: -N] / [LE: +N]       Schaden oder Heilung AUSSERHALB des Kampfbildschirms (Sturz, Falle, Gift, Heiltrank, Rast).
+    [AE: -N] / [AE: +N]       verbrauchte Astralenergie beim Zaubern (laut AsP-Kosten) bzw. Regeneration bei Rast.
+    [COMBAT: id1, id2, ...]   ruft den Kampfbildschirm auf. Bevorzugte Gegner-IDs: ${enemyIdList}
+                              Passt keine, nutze eine sprechende eigene ID in snake_case (z. B. maraskanischer_assassine).
     [OUTTIME_WARN]            zeigt, dass du den Spieler ans Abenteuer erinnerst.
     [END: victory|defeat|aborted]  beendet das Abenteuer (Sieg / Niederlage / Abbruch).
     [MOOD: <id>]              gibt dem Musik-Player die aktuelle Stimmung. Erlaubt: ${moodList}.

@@ -1051,10 +1051,25 @@ export const Route = createFileRoute("/api/public/dsa-master")({
           }
 
           const rawSnap = row.character_snapshot as DsaCharacterSummary;
-          const characterSnap: DsaCharacterSummary = {
+          let characterSnap: DsaCharacterSummary = {
             ...rawSnap,
             attrs: sanitizeAttrs(rawSnap.attrs),
           };
+          // Kampfausgang in den Snapshot übernehmen, sonst glaubt der
+          // Meister in der nächsten Wende, der Held hätte volle LE.
+          if (action === "combat_result") {
+            const leMax = Math.max(1, characterSnap.leMax ?? characterSnap.le ?? 1);
+            const le = typeof b.heroLe === "number" ? Math.round(b.heroLe) : characterSnap.le;
+            characterSnap = { ...characterSnap, le: Math.max(1, Math.min(leMax, le)) };
+            const lowered = typeof b.attrLowered === "string" ? b.attrLowered : "";
+            if (b.consequenceKind === "wound" && /^(MU|KL|CH|FF|GE|IN|KK)$/.test(lowered)) {
+              const cur = characterSnap.attrs[lowered] ?? 11;
+              characterSnap = {
+                ...characterSnap,
+                attrs: { ...characterSnap.attrs, [lowered]: Math.max(1, cur - 1) },
+              };
+            }
+          }
           const settingId = row.setting as DsaSettingId;
           const wishBrief = (row as { wish_brief?: string | null }).wish_brief ?? null;
           const isOpenSetting = DONOR_ONLY_SETTINGS.has(settingId);
@@ -1142,6 +1157,30 @@ export const Route = createFileRoute("/api/public/dsa-master")({
 
           const imgTag = parsed.sceneTag ?? row.current_image_tag ?? "forest_path";
 
+          // [LE: ±N] / [AE: ±N] auf den Snapshot anwenden (Fallen, Stürze,
+          // Zauber, Rast). LE fällt narrativ nie unter 1 — echtes Sterben
+          // entscheidet der Kampfbildschirm bzw. [END: defeat].
+          if (parsed.leDelta !== 0) {
+            const leMax = Math.max(1, characterSnap.leMax ?? characterSnap.le ?? 1);
+            characterSnap = {
+              ...characterSnap,
+              le: Math.max(1, Math.min(leMax, (characterSnap.le ?? leMax) + parsed.leDelta)),
+            };
+          }
+          if (parsed.aeDelta !== 0 && typeof characterSnap.ae === "number") {
+            const aeMax = Math.max(
+              characterSnap.ae,
+              typeof (characterSnap as { aeMax?: number }).aeMax === "number"
+                ? (characterSnap as { aeMax?: number }).aeMax!
+                : characterSnap.ae,
+            );
+            characterSnap = {
+              ...characterSnap,
+              aeMax,
+              ae: Math.max(0, Math.min(aeMax, characterSnap.ae + parsed.aeDelta)),
+            } as DsaCharacterSummary;
+          }
+
           if (parsed.outtimeWarn) offtopicStreak = 0;
 
           // Item-Marker des Meisters auf den Helden anwenden (nur eingeloggt).
@@ -1182,6 +1221,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
               current_image_tag: imgTag,
               status: nextStatus,
               offtopic_streak: offtopicStreak,
+              character_snapshot: characterSnap as unknown as Record<string, unknown>,
               ...(parsed.end ? { ap_awarded: apAwarded, ap_reason: apReason } : {}),
             });
           const { error: upErr } = await (uid
@@ -1253,6 +1293,8 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             apAwarded,
             apReason,
             gear: appliedGear,
+            heroLe: characterSnap.le,
+            heroAe: characterSnap.ae,
           });
         }
 
