@@ -75,10 +75,10 @@ export async function searchDsaRulebook(
       h.page_start === h.page_end
         ? `S. ${h.page_start}`
         : `S. ${h.page_start}–${h.page_end}`;
-    return `[#${i + 1} ${pages} · sim ${score}%]\n${h.content.trim()}`;
+    return `[#${i + 1} ${h.source} ${pages} · sim ${score}%]\n${h.content.trim()}`;
   });
   return [
-    `REGELWERK-AUSZUG (DSA3 Grundregeln, eigene Worte zusammenfassen, NIE wörtlich zitieren):`,
+    `QUELLEN-AUSZUG (DSA3-Regelwerk/Abenteuer, Quelle steht je Treffer; eigene Worte zusammenfassen, NIE wörtlich zitieren):`,
     "",
     blocks.join("\n\n---\n\n"),
   ].join("\n");

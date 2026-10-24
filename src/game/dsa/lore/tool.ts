@@ -44,8 +44,9 @@ export const DSA_RULEBOOK_TOOL_SPEC = {
   function: {
     name: "dsaRulebook",
     description:
-      "Volltextsuche im DSA3-Grundregelwerk (semantische Suche per Embeddings). " +
+      "Semantische Suche im DSA3-Grundregelwerk UND in klassischen offiziellen Abenteuern (Die Verschwörung von Gareth, Mehr als 1000 Oger, Die Seelen der Magier, Die Phileasson-Saga). " +
       "Nutze dieses Tool für Detailfragen zu Regeln, die NICHT in der kompakten Regelreferenz im System-Prompt stehen — z. B. Spezialregeln zu Magieresistenz, Heilung, Gift, Manöverketten, Erfahrungsstufen-Effekten, Rüstungsabzügen auf Talente, etc. " +
+      "Außerdem für authentisches Aventurien-Flair: kanonische NSCs, Orte (Gareth, Trollzacken, Thorwal, Hohe Norden), Ogerzüge, Magierakademien, Thorwaler Sitten. Nutze Abenteuer-Auszüge als Inspiration, kopiere aber nie ganze Plots und spoilere sie nicht. " +
       "Stelle eine konkrete Frage in eigenen Worten (z. B. 'Wie funktioniert eine Magieresistenzprobe?'). Antworten sind Auszüge aus dem Originalregelwerk — fasse sie in eigenen Worten zusammen, zitiere NIE wörtlich. " +
       "Budget: max. 1 Aufruf pro Meisterwende. Bei einfachen Proben/Modifikatoren reicht die Tabelle im System-Prompt — kein Tool nötig.",
     parameters: {
