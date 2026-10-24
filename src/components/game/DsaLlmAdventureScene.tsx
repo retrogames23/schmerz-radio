@@ -18,8 +18,9 @@ import {
   type DsaSettingId,
   type AdventureStatus,
 } from "@/game/dsa/llmAdventure";
-import { fallbackEnemyStat } from "@/game/dsa/llmAdventure";
-import { drainMasterNotes, rollAttributeCheck } from "@/game/dsa/pendingMasterNotes";
+import { fallbackEnemyStat, type MasterCheck } from "@/game/dsa/llmAdventure";
+import { TALENTS } from "@/game/dsa/rules/talents";
+import { drainMasterNotes, rollAttributeCheck, rollTalentCheck } from "@/game/dsa/pendingMasterNotes";
 import {
   resolveSceneImage,
 } from "@/game/dsa/sceneImages";
@@ -36,7 +37,7 @@ import {
   type Combatant,
 } from "@/game/dsa/combat";
 import { parseCombatIntent, type CombatIntent } from "@/game/dsa/combatIntent";
-import { upgradeToHero } from "@/game/dsa/advancement";
+import { upgradeToHero, defaultTalents } from "@/game/dsa/advancement";
 import type { HeroGear } from "@/game/dsa/gear";
 import type { DsaHero } from "@/game/types";
 import { useCoarsePointer } from "@/hooks/useCoarsePointer";
@@ -228,7 +229,7 @@ export function DsaLlmAdventureScene() {
   const [error, setError] = useState<string | null>(null);
   const [combat, setCombat] = useState<CombatBridge | null>(null);
   const [pendingCombat, setPendingCombat] = useState<CombatBridge | null>(null);
-  const [pendingCheck, setPendingCheck] = useState<{ attr: string; modifier: number } | null>(null);
+  const [pendingCheck, setPendingCheck] = useState<MasterCheck | null>(null);
   const [endState, setEndState] = useState<AdventureStatus | null>(null);
   const [endAp, setEndAp] = useState<{ value: number; reason: string } | null>(null);
   const [settingId, setSettingId] = useState<DsaSettingId | null>(null);
@@ -508,8 +509,27 @@ export function DsaLlmAdventureScene() {
     }
   }, [composerText, busy, endState, nextId, handleServerReply, heroSlot, getDsaSessionId, expectsSignedInUser, runtimeMode]);
 
+  function heroTaw(talentId: string): number {
+    const ch = dsaCharacter as unknown as { talents?: Record<string, number>; classId: string } | null;
+    const table = ch?.talents ?? (ch ? defaultTalents(ch.classId) : {});
+    const v = table[talentId];
+    return typeof v === "number" ? v : 0;
+  }
+
   function handleRollCheck() {
     if (!pendingCheck || !dsaCharacter) return;
+    if (pendingCheck.talentId) {
+      const r = rollTalentCheck(
+        pendingCheck.talentId,
+        dsaCharacter.attrs as Record<string, number>,
+        heroTaw(pendingCheck.talentId),
+        pendingCheck.modifier,
+      );
+      setPendingCheck(null);
+      void handleSend({ override: r.line });
+      return;
+    }
+    if (!pendingCheck.attr) return;
     const value = dsaCharacter.attrs[pendingCheck.attr] ?? 10;
     const r = rollAttributeCheck(value, pendingCheck.modifier);
     const mod = pendingCheck.modifier === 0 ? "±0" : pendingCheck.modifier > 0 ? `+${pendingCheck.modifier}` : `${pendingCheck.modifier}`;
@@ -736,17 +756,25 @@ export function DsaLlmAdventureScene() {
               {pendingCheck && !pendingCombat && !busy && (
                 <div className="pt-2 flex flex-wrap items-center gap-3">
                   <span className="font-serif italic text-[#2a1f10]/80">
-                    Tjark verlangt eine Probe auf {pendingCheck.attr}
+                    Tjark verlangt eine {pendingCheck.talentId ? "Talentprobe" : "Probe"} auf {pendingCheck.label}
                     {pendingCheck.modifier !== 0 &&
                       ` (${pendingCheck.modifier > 0 ? "erschwert um " : "erleichtert um "}${Math.abs(pendingCheck.modifier)})`}
-                    {" "}— dein Wert: {dsaCharacter.attrs[pendingCheck.attr] ?? "?"}
+                    {" "}—{" "}
+                    {pendingCheck.talentId
+                      ? (() => {
+                          const def = TALENTS.find((x) => x.id === pendingCheck.talentId);
+                          const taw = heroTaw(pendingCheck.talentId);
+                          const probe = def?.probe.map((a) => `${a} ${dsaCharacter.attrs[a] ?? "?"}`).join(" · ");
+                          return `${probe} · TaW ${taw}${taw === 0 ? " (ungelernt)" : ""}`;
+                        })()
+                      : `dein Wert: ${pendingCheck.attr ? dsaCharacter.attrs[pendingCheck.attr] ?? "?" : "?"}`}
                   </span>
                   <button
                     type="button"
                     onClick={handleRollCheck}
                     className="inline-flex items-center gap-2 rounded border-2 border-[#3a2c1a] bg-[#f1e6c8] px-4 py-2 text-sm font-bold uppercase tracking-wider text-[#2a1f10] shadow-[0_2px_0_rgba(0,0,0,0.35)] hover:-translate-y-px transition-transform"
                   >
-                    🎲 W20 würfeln
+                    🎲 {pendingCheck.talentId ? "3W20 würfeln" : "W20 würfeln"}
                   </button>
                 </div>
               )}

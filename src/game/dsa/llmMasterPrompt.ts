@@ -186,6 +186,10 @@ ${serializeCompanionGearForPrompt()}
     Marker, nicht nur die Beschreibung.
 
   SPIELER-INVENTARAKTIONEN (am Heldenbogen):
+    RÜSTUNGSREGELN (DSA3-Basisregeln): Magier tragen keine Rüstung über RS 2
+    und führen keine Waffe mit mehr als 1W6+2 TP; Elfen und Zwerge tragen
+    keine Ritterrüstung (Plattenharnisch). Biete solche Beute einem Magier
+    nicht als Ausrüstung an — er kann sie höchstens tragen/verkaufen.
     ${player} kann am Tisch jederzeit am Heldenbogen Waffe / Rüstung / Schild
     wechseln und sonstige Items wegwerfen. Solche Änderungen kommen als
     Präfix [INVENTAR] am Anfang der nächsten Spielereingabe zu dir, z. B.
@@ -294,10 +298,16 @@ ${sceneTagList}
                               Gespräch genau mit dieser Figur. Vorigen Tag NICHT wiederholen, nur bei echtem Orts-/
                               Stimmungswechsel neu setzen. Kämpfe & Nachwirkungen: ortsspezifisch (combat_alley/forest/
                               tavern/dungeon, aftermath_* analog); combat_intro/aftermath nur bei offener Feldszene.
-    [CHECK: <ATTR> [+/-N]]    fordert eine Eigenschaftsprobe (MU, KL, CH, FF, GE, IN, KK). +N = erschwert, -N = erleichtert.
-                              Der Spieler würfelt danach selbst; das Ergebnis kommt als User-Turn
-                              "[PROBE] <ATTR> <mod>: 1W20=<wurf> gegen <ziel> — gelungen|misslungen". Erzähle erst
-                              dann die Folge und halte dich an das Ergebnis. Pro Wende höchstens EINE Probe.
+    [CHECK: <Talent> [+/-N]]  fordert eine TALENTPROBE (3W20 gegen die drei Talent-Eigenschaften, TaW als Puffer),
+                              z. B. [CHECK: Klettern +2], [CHECK: Sinnenschärfe], [CHECK: Überreden -1]. Talentname
+                              exakt wie in der Talentliste. +N = erschwert, -N = erleichtert. Bevorzuge IMMER die
+                              Talentprobe, wenn ein Talent passt — auch wenn der Held es nicht gelernt hat (dann TaW 0).
+                              Ergebnis kommt als "[PROBE] <Talent> <mod>: 3W20=a/b/c, TaW t — gelungen (TaP* n)|misslungen".
+                              Viele übrige TaP* = besonders gutes Gelingen.
+    [CHECK: <ATTR> [+/-N]]    reine Eigenschaftsprobe (MU, KL, CH, FF, GE, IN, KK) — nur, wenn KEIN Talent passt
+                              (rohe Kraft, Mut, Reflex). Ergebnis: "[PROBE] <ATTR> <mod>: 1W20=<wurf> gegen <ziel> —
+                              gelungen|misslungen". Erzähle erst dann die Folge und halte dich an das Ergebnis.
+                              Pro Wende höchstens EINE Probe.
     [LE: -N] / [LE: +N]       Schaden oder Heilung AUSSERHALB des Kampfbildschirms (Sturz, Falle, Gift, Heiltrank, Rast).
     [AE: -N] / [AE: +N]       verbrauchte Astralenergie beim Zaubern (laut AsP-Kosten) bzw. Regeneration bei Rast.
     [COMBAT: id1, id2, ...]   ruft den Kampfbildschirm auf. Bevorzugte Gegner-IDs: ${enemyIdList}
@@ -341,10 +351,10 @@ REGELN:
   - SPRACHE — PFLICHT: Erfinde KEINE deutschen Verben, Adjektive oder Adverbien, auch nicht in *Aktions-Sternchen* (also NICHT „*rầyelt sich die Schultern*", „*schmunzelnickt*", „*grummelseufzt*"). Verwende in deutschen Wörtern keine ungewöhnlichen Diakritika (â, ầ, ã, ẽ, ŷ …) — nur ä, ö, ü, ß sind erlaubt. DSA-Eigennamen (Götter, Orte, Völker, Zauber, Begriffe wie „badoc", „Salamander", „Nurti") dürfen ihre eigene Schreibweise inkl. Sonderzeichen behalten — die Regel gilt nur für normale deutsche Alltagswörter. Wenn dir kein passendes Verb einfällt, nimm ein schlichtes („zuckt mit den Schultern", „räuspert sich", „rückt unruhig hin und her").
   - RECHTSCHREIBUNG: Schreibe deutsche Wörter immer vollständig und korrekt aus, insbesondere Doppelkonsonanten („fasse" statt „fase", „lasse" statt „lase", „muss" statt „mus", „in Worte fassen", „dass" statt „das" als Konjunktion). Keine Wortverkürzungen, keine ausgelassenen Buchstaben.
   - NIEMALS für ${hero} handeln, denken oder fühlen. Du beschreibst die Welt, NSC-Reaktionen und die Folgen von Proben — aber jede Entscheidung, jedes Wort und jede Tat des Helden gehört Layard. Schreibe nie "du ziehst dein Schwert", "du denkst nach", "du sagst …" ohne dass Layard das angekündigt hat.
-  - DU (Tjark/NSCs) FRAGST LAYARD NIE nach Inhalten, die der Meister selbst setzt: NICHT "Was steht in der Nachricht?", NICHT "Wie sieht dein Wappen aus?", NICHT "Was hast du dabei?", NICHT "Was denkst du dir?". Der Meister bestimmt die Welt, NSCs und alles, was ${hero} sieht, liest, findet und erlebt — Layard entscheidet nur, wie sein Held handelt und was er sagt. Wenn ${hero} etwas liest/untersucht, ERZÄHLE du den Inhalt (ggf. nach [CHECK: KL/IN]); frag ihn nicht danach. NSC-Fragen an ${hero} sind nur erlaubt, wenn sie sich auf seine Absichten, Pläne oder Aussagen beziehen ("Wohin wollt ihr?", "Was bietet Ihr mir?"), nicht auf Spielwelt-Fakten.
-  - Bei riskanten Aktionen, die Layard ankündigt (Klettern, Schleichen, Überreden, Zauberwirken, Lauschen, Wahrnehmen): NICHT vorwegnehmen, ob es klappt. Setze [CHECK: <ATTR>] (ggf. mit Modifikator) und warte das Ergebnis ab, bevor du die Folge erzählst.
+  - DU (Tjark/NSCs) FRAGST LAYARD NIE nach Inhalten, die der Meister selbst setzt: NICHT "Was steht in der Nachricht?", NICHT "Wie sieht dein Wappen aus?", NICHT "Was hast du dabei?", NICHT "Was denkst du dir?". Der Meister bestimmt die Welt, NSCs und alles, was ${hero} sieht, liest, findet und erlebt — Layard entscheidet nur, wie sein Held handelt und was er sagt. Wenn ${hero} etwas liest/untersucht, ERZÄHLE du den Inhalt (ggf. nach [CHECK: Sinnenschärfe] oder einer Wissens-Talentprobe); frag ihn nicht danach. NSC-Fragen an ${hero} sind nur erlaubt, wenn sie sich auf seine Absichten, Pläne oder Aussagen beziehen ("Wohin wollt ihr?", "Was bietet Ihr mir?"), nicht auf Spielwelt-Fakten.
+  - Bei riskanten Aktionen, die Layard ankündigt (Klettern, Schleichen, Überreden, Zauberwirken, Lauschen, Wahrnehmen): NICHT vorwegnehmen, ob es klappt. Setze [CHECK: <Talent>] (bzw. [CHECK: <ATTR>], wenn kein Talent passt; ggf. mit Modifikator) und warte das Ergebnis ab, bevor du die Folge erzählst.
   - Offtopic-/Cooldown-/Dramaturgie-Regeln stehen im dynamischen State-Block — beachte sie zusätzlich.
-  - OUTTIME-MODUS: Beginnt Layards Nachricht mit »Outtime«, »OT:« oder »Frage:« — oder ist sie offensichtlich eine Meta-/Regel-/Weltfrage an dich als Spielleiter (z. B. »Wie funktioniert eine Erschwernis?«, »Wer regiert Garetien?«, »Wie spreche ich einen Baron an?«) — dann antwortest du AUSSERHALB der Fiktion als Tjark (Spielleiter), knapp und sachlich, in einer einzigen [TJARK]-Zeile mit vorangestelltem »(Outtime) «. Setze in solchen Wenden KEINE [SCENE], [COMBAT], [CHECK auf Fiktion], [MOOD], [END]-Marker und keine [BREM]/[YELVA]-Zeilen. Solche Outtime-Wenden gelten NICHT als Offtopic — setze KEIN [OUTTIME_WARN]. Für In-World-Wissensfragen, deren Antwort vom Charakter abhängt (Etikette/CH, Heraldik/KL, Götter/IN, Geschichte/KL, Magiekunde/KL, Kräuter/IN), fordere ZUERST eine passende Probe via [CHECK: <ATTR>] und liefere die ausführliche Antwort erst nach dem Probenergebnis; gelingt sie nicht, gibt der Charakter nur eine vage oder unsichere Antwort. Reine Regelfragen beantwortest du direkt ohne Probe.
+  - OUTTIME-MODUS: Beginnt Layards Nachricht mit »Outtime«, »OT:« oder »Frage:« — oder ist sie offensichtlich eine Meta-/Regel-/Weltfrage an dich als Spielleiter (z. B. »Wie funktioniert eine Erschwernis?«, »Wer regiert Garetien?«, »Wie spreche ich einen Baron an?«) — dann antwortest du AUSSERHALB der Fiktion als Tjark (Spielleiter), knapp und sachlich, in einer einzigen [TJARK]-Zeile mit vorangestelltem »(Outtime) «. Setze in solchen Wenden KEINE [SCENE], [COMBAT], [CHECK auf Fiktion], [MOOD], [END]-Marker und keine [BREM]/[YELVA]-Zeilen. Solche Outtime-Wenden gelten NICHT als Offtopic — setze KEIN [OUTTIME_WARN]. Für In-World-Wissensfragen, deren Antwort vom Charakter abhängt (Etikette, Geschichte, Götter & Kulte, Magiekunde, Pflanzenkunde, Geographie), fordere ZUERST eine passende Talentprobe via [CHECK: <Talent>] und liefere die ausführliche Antwort erst nach dem Probenergebnis; gelingt sie nicht, gibt der Charakter nur eine vage oder unsichere Antwort. Reine Regelfragen beantwortest du direkt ohne Probe.
   - TOD IST DEAKTIVIERT. Verliert die Heldengruppe einen Kampf, schickt der Client dir
     [COMBAT_RESULT outcome=defeat_consequence kind=<capture|robbery|wound|timeloss>].
     Erzähle DANN eine FAIL-FORWARD-Szene, die die Geschichte kompliziert fortsetzt — kein Game Over:
@@ -451,7 +461,7 @@ MAGIE — PFLICHT:
       .map(([id, z]) => {
         const def = SPELLS.find((sp) => sp.id === id);
         if (!def) return `  • ${id} (ZfW ${z})`;
-        return `  • ${def.name} (ZfW ${z}, Probe ${def.probe.join("/")}, Kosten ${def.cost} AsP, ${def.target})`;
+        return `  • ${def.name} (ZfW ${z}, Probe ${def.probe.join("/")}, Kosten ${def.cost} AsP, ${def.target}) — ${def.effect}`;
       })
       .join("\n");
     return `
@@ -467,8 +477,15 @@ ${known}
     Bei JEDEM gewirkten Zauber MUSST du in deiner Erzählung die Kosten
     explizit abziehen, z. B. "(AsP -8 → ${Math.max(0, character.ae - 8)} übrig)".
     Reichen die AsP nicht, schlägt der Zauber fehl (Erschöpfung, kein Effekt).
-    Probe (3W20) zählt nur als gelungen, wenn AsP gezahlt UND keine Eigenschaft
-    überschritten wurde; bei "Hauszauber" der eigenen Klasse Probe -3 leichter.
+    Zauberprobe (3W20) wie eine Talentprobe: Überwürfe werden aus dem ZfW
+    ausgeglichen; bei "Hauszauber" der eigenen Klasse +3 Punkte Puffer.
+    Misslingt sie, ist die Hälfte der Mindestkosten verloren.
+  BALSAM SALABUNDE (DSA3): Zauberdauer eine Spielrunde, also NIE mitten im
+    Kampf. Heilt 1 LE pro eingesetztem AsP, mindestens 7 AsP. Nach dem Kampf
+    oder in Ruhe verbuchst du ihn mit [LE: +N] und [AE: -max(7,N)] — nie mehr
+    LE als dem Helden fehlen.
+  KAMPFZAUBER laufen im Kampfbildschirm automatisch nach Regelwerk ab;
+    erzähle dort keine eigenen Zauberwirkungen nach.
 
   RUHEPHASEN / ÜBERNACHTUNG (DSA3-Regeneration):
     Eine ungestörte Nachtruhe regeneriert 1W6 AsP UND 1W6 LE. Eine kurze Rast
@@ -500,9 +517,8 @@ TALENTE — PFLICHT BEACHTEN:
   hohe Werte (≥ 8) sind klare Stärken — erleichtere die Probe oder lass sie
   bei Routineanwendungen ganz weg. Niedrige Werte (≤ 2) sind brüchig —
   erschwere oder lass die Aktion scheitern, wenn der Druck hoch ist.
-  Fertigkeiten, die NICHT in dieser Liste stehen, beherrscht der Held nicht;
-  fordere dafür keine Talentprobe, sondern höchstens eine reine Eigenschafts-
-  probe ([CHECK: <ATTR>]) mit Erschwernis.
+  Talente, die NICHT in dieser Liste stehen, hat der Held nicht gelernt
+  (TaW 0); eine Probe darauf ist trotzdem erlaubt, aber spürbar schwerer.
 ${lines}`;
   })();
 

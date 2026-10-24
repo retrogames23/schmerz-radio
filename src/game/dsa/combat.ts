@@ -1,11 +1,12 @@
 import type { Attrs } from "./dice";
 import type { DsaClassId } from "./classes";
 import type { DsaCharacterSummary } from "@/game/types";
-import { SPELLS, type SpellDef } from "./rules/spells";
+import { SPELLS, COMBAT_SPELL_IDS, type SpellDef } from "./rules/spells";
+import { rollThreeD20Probe } from "./rules/probe";
 import type { AttributeId } from "./rules/mechanics";
 import { WEAPONS } from "./rules/weapons";
 import { ARMORS } from "./rules/armor";
-import type { HeroGear } from "./gear";
+import { gearRestriction, type HeroGear } from "./gear";
 import type { CombatIntent, CompanionIntent } from "./combatIntent";
 import { EMPTY_COMBAT_INTENT, mergeCombatIntents, YELVA_DEFAULT_SPELLS } from "./combatIntent";
 
@@ -66,6 +67,12 @@ export interface Combatant {
   role?: CombatantRole;
   /** Bevorzugte Fernkampf-Variante (für Log-Beschreibung). */
   rangedWeapon?: string;
+  /** Erfahrungsstufe (DSA3) — für Ignifaxius-Würfel und Fulminictus-Bonus. */
+  stufe?: number;
+  /** Magieresistenz — erschwert Bannbaladin. */
+  mr?: number;
+  /** Gesetzt, wenn die Figur den Kampf ohne LE-Verlust verlassen hat (Flucht, Bezauberung). */
+  outOfFight?: string;
 }
 
 export interface EnemyStat {
@@ -260,7 +267,7 @@ export const CLASS_COMBAT_PROFILES: Record<
 /** Wandelt den Spielercharakter in einen Combatant um. */
 export function heroCombatantFromCharacter(
   ch: DsaCharacterSummary,
-  hero?: { spells?: Record<string, number>; gear?: HeroGear } | null,
+  hero?: { spells?: Record<string, number>; gear?: HeroGear; apTotal?: number } | null,
 ): Combatant {
   const profile =
     CLASS_COMBAT_PROFILES[(ch.classId as DsaClassId)] ??
@@ -278,9 +285,17 @@ export function heroCombatantFromCharacter(
   // Ausrüstung: Waffe ersetzt TP-Würfel/Bonus und liefert AT/PA-Modifikatoren,
   // Rüstung ersetzt RS, Schild gibt zusätzlich PA-Bonus.
   const gear = hero?.gear;
-  const weapon = gear?.weaponId ? WEAPONS[gear.weaponId] : null;
-  const armor = gear?.armorId ? ARMORS[gear.armorId] : null;
-  const shield = gear?.shieldId ? ARMORS[gear.shieldId] : null;
+  // Regelwidrige Altbestände (z. B. Kettenhemd am Magier) wirken im Kampf nicht.
+  const cls = ch.classId as DsaClassId;
+  const noGear = { armorId: null, shieldId: null };
+  const weapon =
+    gear?.weaponId && !gearRestriction(cls, noGear, { weaponId: gear.weaponId }) ? WEAPONS[gear.weaponId] : null;
+  const armor =
+    gear?.armorId && !gearRestriction(cls, noGear, { armorId: gear.armorId }) ? ARMORS[gear.armorId] : null;
+  const shield =
+    gear?.shieldId && !gearRestriction(cls, { armorId: armor?.id ?? null, shieldId: null }, { shieldId: gear.shieldId })
+      ? ARMORS[gear.shieldId]
+      : null;
 
   let tpDice = profile.tpDice;
   let tpBonus = profile.tpBonus + tpKKBonus;
@@ -320,7 +335,15 @@ export function heroCombatantFromCharacter(
     aeMax: ch.ae ?? undefined,
     spells,
     classId: ch.classId as DsaClassId,
+    stufe: stufeFromAp(hero?.apTotal ?? 0),
   };
+}
+
+/** DSA3-Stufe aus Gesamt-AP: Stufe n ab 100·n·(n−1)/2 AP. */
+export function stufeFromAp(ap: number): number {
+  let n = 1;
+  while (n < 21 && 50 * (n + 1) * n <= ap) n++;
+  return n;
 }
 
 /** Parst einen TP-String wie "1W+4" oder "2W+2" in Würfel + Flat-Bonus. */
@@ -508,8 +531,8 @@ export type Tactic =
   | "magic-mid"
   | "magic-high";
 
-/** Schwerpunkt bei Magie-Taktiken, wenn Layard Balsam Salabunde kennt. */
-export type SpellFocus = "offense" | "healing" | "balanced";
+/** offense = nur Angriffszauber; protect = erst Armatrutz/Axxeleratus. ("healing"/"balanced" = Altwerte, wirken wie protect.) */
+export type SpellFocus = "offense" | "protect" | "healing" | "balanced";
 
 export const TACTIC_LABELS: Record<Tactic, { title: string; blurb: string }> = {
   balanced: {
@@ -565,6 +588,12 @@ export interface WoundedCombatant extends Combatant {
   paMod?: number;
   effectRoundsLeft?: number;
   effectLabel?: string;
+  /** Wurzelgriff o. ä.: kein eigener Angriff, solange der Effekt läuft. */
+  noAttack?: boolean;
+  /** RS-Zuwachs durch Armatrutz (für den ganzen Kampf). */
+  armatrutzRs?: number;
+  /** Axxeleratus aktiv: AT/PA +2 für den ganzen Kampf. */
+  axxeleratus?: boolean;
 }
 
 export interface CombatState {
@@ -705,6 +734,7 @@ export function resolveRound(
       if ((c.effectRoundsLeft ?? 0) <= 0) {
         c.atMod = 0;
         c.paMod = 0;
+        c.noAttack = false;
         c.effectLabel = undefined;
         c.effectRoundsLeft = 0;
       }
@@ -770,17 +800,13 @@ export function resolveRound(
     if (yelva && alive(yelva)) {
       const spell = SPELLS.find((s) => s.id === intent.yelvaSpellId);
       const zfw = spell ? yelva.spells?.[spell.id] : undefined;
-      if (spell && typeof zfw === "number" && (yelva.ae ?? 0) >= spellCost(spell)) {
-        if (!yelvaManualSpell) state.yelvaSpellResolved = true;
-        resolveYelvaSpell(yelva, spell, zfw, state, all, events);
+      if (!yelvaManualSpell) state.yelvaSpellResolved = true;
+      if (spell && typeof zfw === "number") {
+        castCombatSpell(yelva, spell, zfw, state, all, events);
       } else if (spell) {
-        if (!yelvaManualSpell) state.yelvaSpellResolved = true;
-        const reason = typeof zfw !== "number"
-          ? `Yelva kennt ${spell.name} nicht.`
-          : `Yelva hat nicht genug Astralenergie für ${spell.name}.`;
         events.push({
           kind: "spell-fizzle",
-          text: reason,
+          text: `Yelva kennt ${spell.name} nicht.`,
           snapshot: snapshotW(all),
           actorId: yelva.id,
         });
@@ -835,27 +861,14 @@ export function resolveRound(
     if (layard && alive(layard)) {
       const spell = SPELLS.find((s) => s.id === intent.layardSpellId);
       const zfw = spell ? layard.spells?.[spell.id] : undefined;
-      if (spell && typeof zfw === "number" && (layard.ae ?? 0) >= spellCost(spell)) {
-        if (!manualSpellThisRound) state.layardSpellResolved = true;
-        layardSkipMelee = true;
-        if (spell.id === "balsam_salabunde") {
-          resolveLayardBalsam(layard, all, events);
-        } else {
-          const foeTarget = pickWeakestW(state.foes);
-          if (foeTarget) {
-            resolveLayardSpellExplicit(layard, foeTarget, spell, zfw, all, events);
-          }
-        }
+      // Einmaliger Versuch pro Wunsch (kein Endlos-Spam bei Fehlschlag).
+      if (!manualSpellThisRound) state.layardSpellResolved = true;
+      if (spell && typeof zfw === "number") {
+        if (castCombatSpell(layard, spell, zfw, state, all, events)) layardSkipMelee = true;
       } else if (spell) {
-        // Bekannter Spruch, aber nicht bezahlbar / kein Ziel: einmaliger
-        // Hinweis, dann ausschalten (kein Endlos-Spam).
-        if (!manualSpellThisRound) state.layardSpellResolved = true;
-        const reason = typeof zfw !== "number"
-          ? `Layard kennt ${spell.name} nicht.`
-          : `Layard hat nicht genug Astralenergie für ${spell.name}.`;
         events.push({
           kind: "spell-fizzle",
-          text: reason,
+          text: `${layard.name} kennt ${spell.name} nicht.`,
           snapshot: snapshotW(all),
           actorId: layard.id,
         });
@@ -863,54 +876,40 @@ export function resolveRound(
     }
   }
 
-  if (tactic === "spell") {
-    layardSkipMelee = true;
+  const autoCast = (protectFirst: boolean) => {
     const layard = state.heroes.find((h) => h.id === "hero");
-    const foeTarget = layard ? pickWeakestW(state.foes) : null;
-    if (layard && alive(layard) && foeTarget) {
-      resolveLayardSpell(layard, foeTarget, all, events);
+    if (!layard || !alive(layard)) return;
+    const pick = pickCombatSpell(layard, protectFirst);
+    if (!pick) {
+      if (tactic === "spell") {
+        events.push({
+          kind: "spell-fizzle",
+          text: knowsCombatSpell(layard.spells)
+            ? `${layard.name} hat zu wenig Astralenergie für einen Kampfzauber — die Formel bleibt ungesprochen.`
+            : `${layard.name} kennt keinen Kampfzauber.`,
+          snapshot: snapshotW(all),
+          actorId: layard.id,
+        });
+      }
+      return;
     }
-  }
+    if (castCombatSpell(layard, pick.spell, pick.zfw, state, all, events)) layardSkipMelee = true;
+  };
+
+  if (tactic === "spell") autoCast(false);
 
   // Magie-Intensitäts-Taktiken: Layard entscheidet pro Runde probabilistisch,
-  // ob er einen Spruch wirkt. Schwerpunkt steuert offensiv vs. heilend (nur
-  // wenn Balsam Salabunde bekannt ist).
+  // ob er einen Spruch wirkt. Schwerpunkt „Schutz zuerst" legt zuerst
+  // Armatrutz/Axxeleratus, danach Angriffszauber.
   if (
-    tactic === "magic-none" ||
     tactic === "magic-low" ||
     tactic === "magic-mid" ||
     tactic === "magic-high"
   ) {
-    const prob: Record<typeof tactic, number> = {
-      "magic-none": 0,
-      "magic-low": 0.34,
-      "magic-mid": 0.67,
-      "magic-high": 1,
-    } as const;
-    const p = prob[tactic];
-    const layard = state.heroes.find((h) => h.id === "hero");
-    if (p > 0 && layard && alive(layard) && Math.random() < p) {
+    const p = tactic === "magic-low" ? 0.34 : tactic === "magic-mid" ? 0.67 : 1;
+    if (Math.random() < p) {
       const focus: SpellFocus = opts?.spellFocus ?? "offense";
-      const knowsBalsam =
-        typeof layard.spells?.["balsam_salabunde"] === "number";
-      const missingLe = Math.max(0, layard.leMax - layard.le);
-      const halfLe = Math.ceil(layard.leMax * 0.5);
-      const wantHeal =
-        knowsBalsam &&
-        missingLe >= 3 &&
-        (focus === "healing" ||
-          (focus === "balanced" && layard.le <= halfLe));
-      if (wantHeal) {
-        layardSkipMelee = true;
-        resolveLayardBalsam(layard, all, events);
-      } else if (focus !== "healing") {
-        const foeTarget = pickWeakestW(state.foes);
-        if (foeTarget && pickCombatSpell(layard)) {
-          layardSkipMelee = true;
-          resolveLayardSpell(layard, foeTarget, all, events);
-        }
-      }
-      // Heilfokus ohne Bedarf → kein Spruch, normaler Nahkampf bleibt.
+      autoCast(focus !== "offense");
     }
   }
 
@@ -933,6 +932,7 @@ export function resolveRound(
     if (state.foes.every((f) => !alive(f))) break;
     // Layard hat diese Runde gezaubert → kein Nahkampf-Angriff.
     if (layardSkipMelee && isLayard(actor)) continue;
+    if (actor.noAttack) continue;
 
     const target =
       actor.side === "hero" ? pickFoeTargetW(state.foes) : pickHeroTargetW(state.heroes);
@@ -942,10 +942,12 @@ export function resolveRound(
     const actorAtMod =
       -2 * actor.wounds +
       (actor.atMod ?? 0) +
+      (actor.axxeleratus ? 2 : 0) +
       (actor.side === "foe" ? mods.foeAt : isLayard(actor) ? mods.heroAt : 0);
     const targetPaMod =
       -2 * target.wounds +
       (target.paMod ?? 0) +
+      (target.axxeleratus ? 2 : 0) +
       (target.side === "foe" ? mods.foePa : isLayard(target) ? mods.heroPa : 0);
     const actorTpMod =
       -2 * actor.wounds + (isLayard(actor) ? mods.heroTp : 0);
@@ -1081,11 +1083,6 @@ export function resolveRound(
   return events;
 }
 
-function pickWeakestW(group: WoundedCombatant[]): WoundedCombatant | null {
-  const live = group.filter(alive);
-  if (live.length === 0) return null;
-  return live.sort((a, b) => a.le - b.le)[0];
-}
 function pickFoeTargetW(foes: WoundedCombatant[]): WoundedCombatant | null {
   const live = foes.filter(alive);
   if (live.length === 0) return null;
@@ -1105,514 +1102,290 @@ function pickHeroTargetW(heroes: WoundedCombatant[]): WoundedCombatant | null {
   return pool.sort((a, b) => a.le - b.le)[0];
 }
 
-/**
- * Variante von resolveLayardSpell, die einen vom Spieler ausdrücklich
- * gewünschten Spruch verarbeitet (statt nach Priorität zu wählen).
- */
-function resolveLayardSpellExplicit(
-  layard: WoundedCombatant,
-  foe: WoundedCombatant,
-  spell: SpellDef,
-  zfw: number,
-  all: WoundedCombatant[],
-  events: CombatEvent[],
-): void {
-  const cost = spellCost(spell);
-  const attrs = layard.attrs;
-  if (!attrs) {
-    events.push({
-      kind: "spell-fizzle",
-      text: `${layard.name} kann ${spell.name} ohne Eigenschaftswerte nicht stabilisieren.`,
-      snapshot: snapshotW(all),
-      actorId: layard.id,
-    });
-    return;
-  }
-  const ownSchool = spellOwnSchool(layard.classId, spell);
-  const modBuf = ownSchool ? 3 : 0;
-  const rolls: number[] = [d20(), d20(), d20()];
-  let bufferLeft = zfw + modBuf;
-  const dice = rolls.map((r, i) => {
-    const attrId = spell.probe[i] as AttributeId;
-    const target = attrs[attrId] ?? 10;
-    const fail = r > target;
-    if (fail) bufferLeft -= r - target;
-    return { label: `${attrId} (W20)`, value: r, target, success: !fail };
-  });
-  const ones = rolls.filter((r) => r === 1).length;
-  const twenties = rolls.filter((r) => r === 20).length;
-  let success: boolean;
-  if (twenties >= 2) success = false;
-  else if (ones >= 2) success = true;
-  else success = bufferLeft >= 0;
-  const aeCost = success ? cost : Math.ceil(cost / 2);
-  layard.ae = Math.max(0, (layard.ae ?? 0) - aeCost);
-  if (!success) {
-    events.push({
-      kind: "spell-fail",
-      text: `${layard.name} wirkt ${spell.name} (Wunsch) — Probe misslingt. AsP −${aeCost} → ${layard.ae}.`,
-      dice,
-      snapshot: snapshotW(all),
-      actorId: layard.id,
-      targetId: foe.id,
-    });
-    return;
-  }
-  const { rolls: tpRolls, dmg, rsApplied } = spellDamage(spell, zfw, foe.rs);
-  foe.le = Math.max(0, foe.le - dmg);
-  events.push({
-    kind: "spell-cast",
-    text: `${layard.name} wirkt ${spell.name}${ownSchool ? " (Hauszauber)" : ""} auf ${foe.name}. ${dmg} TP (RS ${rsApplied}). AsP −${aeCost} → ${layard.ae}. ${foe.name}: ${foe.le}/${foe.leMax} LE.`,
-    dice: [
-      ...dice,
-      ...tpRolls.map((r, i) => ({ label: `TP W${i + 1}`, value: r })),
-    ],
-    snapshot: snapshotW(all),
-    actorId: layard.id,
-    targetId: foe.id,
-  });
-  if (foe.le <= 0) {
-    events.push({
-      kind: "downed",
-      text: `${foe.name} ist kampfunfähig.`,
-      snapshot: snapshotW(all),
-      actorId: layard.id,
-      targetId: foe.id,
-    });
-  }
-}
-
 // ────────────────────────────────────────────────────────────────
-// Kampfzauber für Layard (Tactic "spell").
+// Zauber im Kampf — Werte nach DSA3-Regelwerk (Die Magie des Schwarzen
+// Auges). Alle Sprüche laufen durch castCombatSpell(), egal ob Layard
+// (explizit oder per Magie-Taktik) oder Yelva sie wirkt.
 // ────────────────────────────────────────────────────────────────
 
-/** Reihenfolge, in der Layard Zauber bevorzugt — stärkster zuerst. */
-const COMBAT_SPELL_PRIORITY = ["ignifaxius", "blitz_dich_find", "fulminictus"];
+/** Bevorzugte Reihenfolge, wenn die Magie-Taktik selbst wählt. */
+const AUTO_BUFF_PRIORITY = ["armatrutz", "axxeleratus"];
+const AUTO_ATTACK_PRIORITY = ["ignifaxius", "fulminictus", "horriphobus", "bannbaladin", "blitz_dich_find", "wurzelgriff"];
 
-/** Hauszauber-Schulen für die −3-Erleichterung. */
+/** Hauszauber-Schulen für die +3-Puffer-Erleichterung. */
 function spellOwnSchool(classId: string | undefined, spell: SpellDef): boolean {
   if (!classId) return false;
   return spell.schools.includes(classId);
 }
 
-/** AsP-Kosten als Zahl (Strings wie "KK/2" werden defensiv auf 4 gesetzt). */
+/** Mindestkosten — darunter kann der Spruch nicht begonnen werden. */
 function spellCost(spell: SpellDef): number {
-  const n = Number(spell.cost);
-  return Number.isFinite(n) && n > 0 ? n : 4;
+  return Math.max(1, spell.minCost);
 }
 
-/** Wählt den ersten priorisierten Zauber, den Layard kennt UND bezahlen kann. */
+/** Ist der Spruch für diesen Zaubernden gerade sinnvoll wirkbar? */
+function spellUsable(caster: WoundedCombatant, spell: SpellDef): boolean {
+  if (!spell.combat) return false;
+  if ((caster.ae ?? 0) < spellCost(spell)) return false;
+  if (spell.id === "armatrutz" && (caster.armatrutzRs ?? 0) > 0) return false;
+  if (spell.id === "axxeleratus" && caster.axxeleratus) return false;
+  return true;
+}
+
+/** Wählt für die Magie-Taktik einen Spruch. `protectFirst` zieht Schutzzauber vor. */
 function pickCombatSpell(
-  layard: WoundedCombatant,
-): { spell: SpellDef; zfw: number; cost: number } | null {
-  const known = layard.spells;
-  const ae = layard.ae ?? 0;
+  caster: WoundedCombatant,
+  protectFirst: boolean,
+): { spell: SpellDef; zfw: number } | null {
+  const known = caster.spells;
   if (!known) return null;
-  for (const id of COMBAT_SPELL_PRIORITY) {
+  const order = protectFirst
+    ? [...AUTO_BUFF_PRIORITY, ...AUTO_ATTACK_PRIORITY]
+    : AUTO_ATTACK_PRIORITY;
+  for (const id of order) {
     const zfw = known[id];
-    if (typeof zfw !== "number" || zfw < 0) continue;
+    if (typeof zfw !== "number") continue;
     const spell = SPELLS.find((s) => s.id === id);
-    if (!spell) continue;
-    const cost = spellCost(spell);
-    if (ae < cost) continue;
-    return { spell, zfw, cost };
+    if (!spell || !spellUsable(caster, spell)) continue;
+    return { spell, zfw };
   }
   return null;
 }
 
-/** TP-Formel je Zauber. RS-Anteil halbiert sich bei Blitz dich find. */
-function spellDamage(
-  spell: SpellDef,
-  zfw: number,
-  targetRs: number,
-): { rolls: number[]; dmg: number; rsApplied: number } {
-  const rolls: number[] = [];
-  let raw = zfw;
-  let dice = 1;
-  let rsApplied = targetRs;
-  if (spell.id === "ignifaxius") {
-    dice = 2; // 2W6 + ZfW
-  } else if (spell.id === "blitz_dich_find") {
-    dice = 1; // 1W6 + ZfW
-    rsApplied = Math.floor(targetRs / 2);
-  } else if (spell.id === "fulminictus") {
-    dice = 1; // 1W6 + ZfW/2
-    raw = Math.floor(zfw / 2);
-  }
-  for (let i = 0; i < dice; i++) {
-    const r = d6();
-    rolls.push(r);
-    raw += r;
-  }
-  const dmg = Math.max(1, raw - rsApplied);
-  return { rolls, dmg, rsApplied };
+/** Kennt der Held überhaupt einen im Kampf wirkbaren Spruch? */
+export function knowsCombatSpell(spells: Record<string, number> | undefined | null): boolean {
+  return Object.keys(spells ?? {}).some((id) => COMBAT_SPELL_IDS.has(id));
 }
 
 /**
- * Führt Layards Zauber aus: Probe → AsP abziehen → Wirkung. Mutiert
- * `layard.ae` und ggf. `foe.le`. Schreibt 1–2 Events ins Log.
+ * DSA3-Zauberprobe: 3W20 gegen die drei Eigenschaften, ZfW (+3 bei
+ * Hauszauber) als Puffer für Überwürfe. Eine Erschwernis (z. B. MR des
+ * Opfers) senkt den Puffer; wird er negativ, werden zusätzlich alle drei
+ * Eigenschaften um den Rest gesenkt. Doppel-1 gelingt, Doppel-20 misslingt.
+ * `zfpStar` = übrige Punkte (mind. 1 bei Erfolg).
  */
-function resolveLayardSpell(
-  layard: WoundedCombatant,
-  foe: WoundedCombatant,
+function rollSpellProbe(
+  spell: SpellDef,
+  zfw: number,
+  attrs: Attrs,
+  ownSchool: boolean,
+  difficulty = 0,
+): {
+  dice: { label: string; value: number; target: number; success: boolean }[];
+  success: boolean;
+  bufferLeft: number;
+  zfpStar: number;
+} {
+  const r = rollThreeD20Probe(
+    spell.probe.map((a) => attrs[a as AttributeId] ?? 10) as [number, number, number],
+    zfw + (ownSchool ? 3 : 0),
+    difficulty,
+  );
+  const dice = r.rolls.map((v, i) => ({
+    label: `${spell.probe[i]} (W20)`,
+    value: v,
+    target: r.targets[i],
+    success: v <= r.targets[i],
+  }));
+  return { dice, success: r.success, bufferLeft: r.pointsLeft, zfpStar: r.success ? Math.max(1, r.pointsLeft) : 0 };
+}
+
+function aeTag(c: WoundedCombatant, spent: number): string {
+  return `AsP −${spent} → ${c.ae ?? 0}`;
+}
+
+/**
+ * Wirkt einen Zauber im Kampf. Liefert true, wenn die Aktion des Zaubernden
+ * damit verbraucht ist (Spruch begonnen, egal ob gelungen).
+ */
+function castCombatSpell(
+  caster: WoundedCombatant,
+  spell: SpellDef,
+  zfw: number,
+  state: CombatState,
   all: WoundedCombatant[],
   events: CombatEvent[],
-): void {
-  // 1. Hat Layard überhaupt einen wirkbaren Kampfzauber?
-  const pick = pickCombatSpell(layard);
-  if (!pick) {
-    const reason = !layard.spells || Object.keys(layard.spells).length === 0
-      ? `${layard.name} kennt keinen Kampfzauber — die Formel verpufft, bevor sie beginnt.`
-      : `${layard.name} hat zu wenig Astralenergie für einen Kampfzauber — die Formel zerbricht.`;
+): boolean {
+  const who = caster.name.split(" ")[0];
+  if (!spell.combat) {
     events.push({
       kind: "spell-fizzle",
-      text: reason,
+      text:
+        spell.id === "balsam_salabunde"
+          ? `${who} kann Balsam Salabunde nicht im Kampfgetümmel wirken — der Spruch braucht eine volle Spielrunde Ruhe. Nach dem Kampf ist Zeit dafür.`
+          : `${spell.name} hat im Kampfgetümmel keine unmittelbare Wirkung — ${who} lässt es bleiben.`,
       snapshot: snapshotW(all),
-      actorId: layard.id,
+      actorId: caster.id,
     });
-    return;
+    return false;
   }
-  const { spell, zfw, cost } = pick;
-  const attrs = layard.attrs;
-  if (!attrs) {
+  if (!spellUsable(caster, spell)) {
+    const already =
+      (spell.id === "armatrutz" && (caster.armatrutzRs ?? 0) > 0) ||
+      (spell.id === "axxeleratus" && caster.axxeleratus);
     events.push({
       kind: "spell-fizzle",
-      text: `${layard.name} kann den Zauber ${spell.name} ohne Eigenschaftswerte nicht stabilisieren.`,
+      text: already
+        ? `${spell.name} liegt bereits auf ${who}.`
+        : `${who} hat zu wenig Astralenergie für ${spell.name} (mind. ${spellCost(spell)} AsP).`,
       snapshot: snapshotW(all),
-      actorId: layard.id,
+      actorId: caster.id,
     });
-    return;
+    return false;
   }
+  const attrs = caster.attrs;
+  if (!attrs) return false;
+  const ownSchool = spellOwnSchool(caster.classId, spell);
+  const school = ownSchool ? " (Hauszauber)" : "";
+  const stufe = Math.max(1, caster.stufe ?? 1);
+  const isBuff = spell.combat === "buff";
+  const foe = isBuff ? null : pickFoeTargetW(state.foes);
+  if (!isBuff && !foe) return false;
 
-  // 2. 3W20-Probe gegen die drei Zauber-Eigenschaften.
-  const ownSchool = spellOwnSchool(layard.classId, spell);
-  const modBuf = ownSchool ? 3 : 0; // Hauszauber: +3 ZfW-Puffer
-  const rolls: number[] = [d20(), d20(), d20()];
-  let bufferLeft = zfw + modBuf;
-  const dice = rolls.map((r, i) => {
-    const attrId = spell.probe[i] as AttributeId;
-    const target = attrs[attrId] ?? 10;
-    const fail = r > target;
-    if (fail) bufferLeft -= r - target;
-    return { label: `${attrId} (W20)`, value: r, target, success: !fail };
-  });
-  const ones = rolls.filter((r) => r === 1).length;
-  const twenties = rolls.filter((r) => r === 20).length;
-  let success: boolean;
-  if (twenties >= 2) success = false;
-  else if (ones >= 2) success = true;
-  else success = bufferLeft >= 0;
+  // Bannbaladin wird um die Magieresistenz des Opfers erschwert.
+  const difficulty = spell.id === "bannbaladin" ? Math.max(0, foe?.mr ?? 3) : 0;
+  const probe = rollSpellProbe(spell, zfw, attrs, ownSchool, difficulty);
+  const ae = caster.ae ?? 0;
 
-  // 3. AsP abziehen (Erfolg: voll, Misserfolg: halb).
-  const aeCost = success ? cost : Math.ceil(cost / 2);
-  layard.ae = Math.max(0, (layard.ae ?? 0) - aeCost);
-
-  if (!success) {
+  if (!probe.success) {
+    // Misslungen: die Hälfte der Mindestkosten ist verloren.
+    const lost = Math.max(1, Math.ceil(spellCost(spell) / 2));
+    caster.ae = Math.max(0, ae - lost);
     events.push({
       kind: "spell-fail",
-      text: `${layard.name} wirkt ${spell.name} — Probe misslingt (Puffer ${bufferLeft}). Astralenergie verpufft halbiert (AsP −${aeCost} → ${layard.ae}).`,
-      dice,
+      text: `${who} wirkt ${spell.name}${foe ? ` auf ${foe.name}` : ""} — die Probe misslingt${difficulty ? ` (MR +${difficulty})` : ""}. ${aeTag(caster, lost)}.`,
+      dice: probe.dice,
       snapshot: snapshotW(all),
-      actorId: layard.id,
-      targetId: foe.id,
+      actorId: caster.id,
+      targetId: foe?.id,
     });
-    return;
+    return true;
   }
 
-  // 4. Erfolg → Schaden anwenden.
-  const { rolls: tpRolls, dmg, rsApplied } = spellDamage(spell, zfw, foe.rs);
-  foe.le = Math.max(0, foe.le - dmg);
+  const zfp = probe.zfpStar;
+  let text = "";
+  const extraDice: { label: string; value: number }[] = [];
 
-  const formulaStr =
-    spell.id === "ignifaxius"
-      ? `2W6+ZfW(${zfw})`
-      : spell.id === "fulminictus"
-        ? `1W6+ZfW/2(${Math.floor(zfw / 2)})`
-        : `1W6+ZfW(${zfw})`;
+  switch (spell.id) {
+    case "ignifaxius": {
+      // Bis Stufe+1 W6, AsP = erzielte TP; je 10 TP −1 RS am Opfer.
+      const maxDice = Math.min(stufe + 1, Math.max(1, Math.floor(ae / 3.5)));
+      let tp = 0;
+      for (let i = 0; i < maxDice; i++) {
+        const r = d6();
+        extraDice.push({ label: `TP W${i + 1}`, value: r });
+        tp += r;
+      }
+      tp = Math.min(tp, ae);
+      caster.ae = ae - tp;
+      const rsBefore = foe!.rs;
+      const dmg = Math.max(0, tp - rsBefore);
+      foe!.le = Math.max(0, foe!.le - dmg);
+      const rsLoss = Math.floor(tp / 10);
+      if (rsLoss > 0) foe!.rs = Math.max(0, foe!.rs - rsLoss);
+      text = `${who} wirkt Ignifaxius${school} — ${maxDice}W6 = ${tp} TP auf ${foe!.name}, ${dmg} SP nach RS ${rsBefore}${rsLoss ? `, Rüstung schmilzt (RS −${rsLoss})` : ""}. ${aeTag(caster, tp)}. ${foe!.name}: ${foe!.le}/${foe!.leMax} LE.`;
+      break;
+    }
+    case "fulminictus": {
+      // 3W6 + Stufe SP, ignoriert Rüstung, AsP = SP (gedeckelt durch AsP).
+      let sp = stufe;
+      for (let i = 0; i < 3; i++) {
+        const r = d6();
+        extraDice.push({ label: `SP W${i + 1}`, value: r });
+        sp += r;
+      }
+      sp = Math.min(sp, ae);
+      caster.ae = ae - sp;
+      foe!.le = Math.max(0, foe!.le - sp);
+      text = `${who} wirkt Fulminictus${school} — ${sp} SP durchdringen jede Rüstung von ${foe!.name}. ${aeTag(caster, sp)}. ${foe!.name}: ${foe!.le}/${foe!.leMax} LE.`;
+      break;
+    }
+    case "blitz_dich_find": {
+      const cost = spellCost(spell);
+      caster.ae = ae - cost;
+      const rounds = Math.min(5, zfp);
+      foe!.atMod = Math.min(foe!.atMod ?? 0, -5);
+      foe!.paMod = Math.min(foe!.paMod ?? 0, -5);
+      foe!.effectRoundsLeft = Math.max(foe!.effectRoundsLeft ?? 0, rounds);
+      foe!.effectLabel = "geblendet";
+      text = `${who} wirkt Blitz dich find${school} — ${foe!.name} ist ${rounds} KR geblendet (AT/PA −5). ${aeTag(caster, cost)}.`;
+      break;
+    }
+    case "wurzelgriff": {
+      const cost = spellCost(spell);
+      caster.ae = ae - cost;
+      const rounds = Math.min(5, zfp);
+      foe!.noAttack = true;
+      foe!.paMod = Math.min(foe!.paMod ?? 0, -4);
+      foe!.effectRoundsLeft = Math.max(foe!.effectRoundsLeft ?? 0, rounds);
+      foe!.effectLabel = "umschlungen";
+      text = `${who} wirkt Wurzelgriff${school} — Wurzeln halten ${foe!.name} ${rounds} KR fest (kein Angriff, PA −4). ${aeTag(caster, cost)}.`;
+      break;
+    }
+    case "horriphobus": {
+      const cost = spellCost(spell);
+      caster.ae = ae - cost;
+      foe!.outOfFight = "flieht in Panik";
+      text = `${who} wirkt Horriphobus${school} — ${foe!.name} flieht schreiend und ist aus dem Kampf. ${aeTag(caster, cost)}.`;
+      break;
+    }
+    case "bannbaladin": {
+      const cost = spellCost(spell);
+      caster.ae = ae - cost;
+      foe!.outOfFight = "bezaubert";
+      text = `${who} wirkt Bannbaladin${school} — ${foe!.name} hält ${who} für den besten Freund und senkt die Waffe. Kampf für ihn vorbei. ${aeTag(caster, cost)}.`;
+      break;
+    }
+    case "armatrutz": {
+      // RS×RS AsP, mind. 4; RS-Zuwachs höchstens ZfP*.
+      let rsGain = 1;
+      for (let r = 4; r >= 1; r--) {
+        if (r <= zfp && Math.max(4, r * r) <= ae) { rsGain = r; break; }
+      }
+      const cost = Math.max(4, rsGain * rsGain);
+      caster.ae = ae - cost;
+      caster.armatrutzRs = rsGain;
+      caster.rs += rsGain;
+      text = `${who} wirkt Armatrutz${school} — unsichtbare Rüstung, RS +${rsGain} (jetzt ${caster.rs}) für diesen Kampf. ${aeTag(caster, cost)}.`;
+      break;
+    }
+    case "axxeleratus": {
+      const cost = spellCost(spell);
+      caster.ae = ae - cost;
+      caster.axxeleratus = true;
+      text = `${who} wirkt Axxeleratus${school} — doppelt so schnell, AT und PA +2 für den Rest des Kampfes. ${aeTag(caster, cost)}.`;
+      break;
+    }
+    default:
+      return false;
+  }
+
   events.push({
     kind: "spell-cast",
-    text: `${layard.name} wirkt ${spell.name}${ownSchool ? " (Hauszauber)" : ""} auf ${foe.name}. ${dmg} TP (${tpRolls.join("+")} ${formulaStr} − RS ${rsApplied}). AsP −${aeCost} → ${layard.ae}. ${foe.name}: ${foe.le}/${foe.leMax} LE.`,
-    dice: [
-      ...dice,
-      ...tpRolls.map((r, i) => ({ label: `TP W${i + 1}`, value: r })),
-    ],
+    text,
+    dice: [...probe.dice, ...extraDice],
     snapshot: snapshotW(all),
-    actorId: layard.id,
-    targetId: foe.id,
+    actorId: caster.id,
+    targetId: foe?.id ?? caster.id,
   });
-
-  if (foe.le <= 0) {
+  if (foe && foe.le <= 0) {
     events.push({
       kind: "downed",
       text: `${foe.name} ist kampfunfähig.`,
       snapshot: snapshotW(all),
-      actorId: layard.id,
+      actorId: caster.id,
       targetId: foe.id,
     });
   }
-}
-
-/**
- * Layard wirkt Balsam Salabunde auf sich selbst. AsP-Kosten = geheilte LE
- * (1 AsP pro LE). Bei misslungener Probe verpuffen die halben Kosten der
- * geplanten Heilung. Mutiert `layard.le` und `layard.ae`.
- */
-function resolveLayardBalsam(
-  layard: WoundedCombatant,
-  all: WoundedCombatant[],
-  events: CombatEvent[],
-): void {
-  const spell = SPELLS.find((s) => s.id === "balsam_salabunde");
-  const zfw = layard.spells?.["balsam_salabunde"];
-  const attrs = layard.attrs;
-  if (!spell || typeof zfw !== "number" || !attrs) {
-    events.push({
-      kind: "spell-fizzle",
-      text: `${layard.name} kann Balsam Salabunde nicht stabilisieren.`,
-      snapshot: snapshotW(all),
-      actorId: layard.id,
-    });
-    return;
-  }
-  const ae = layard.ae ?? 0;
-  const missingLe = Math.max(0, layard.leMax - layard.le);
-  // Geplante Heilung: durch ZfW gedeckelt, durch AsP gedeckelt, durch Bedarf.
-  const planned = Math.max(1, Math.min(missingLe, zfw, ae));
-  if (ae <= 0 || missingLe <= 0) {
-    events.push({
-      kind: "spell-fizzle",
-      text: `${layard.name} braucht keine Heilung — Balsam Salabunde bleibt ungewirkt.`,
-      snapshot: snapshotW(all),
-      actorId: layard.id,
-    });
-    return;
-  }
-
-  const ownSchool = spellOwnSchool(layard.classId, spell);
-  const modBuf = ownSchool ? 3 : 0;
-  const rolls: number[] = [d20(), d20(), d20()];
-  let bufferLeft = zfw + modBuf;
-  const dice = rolls.map((r, i) => {
-    const attrId = spell.probe[i] as AttributeId;
-    const target = attrs[attrId] ?? 10;
-    const fail = r > target;
-    if (fail) bufferLeft -= r - target;
-    return { label: `${attrId} (W20)`, value: r, target, success: !fail };
-  });
-  const ones = rolls.filter((r) => r === 1).length;
-  const twenties = rolls.filter((r) => r === 20).length;
-  let success: boolean;
-  if (twenties >= 2) success = false;
-  else if (ones >= 2) success = true;
-  else success = bufferLeft >= 0;
-
-  if (!success) {
-    const lost = Math.max(1, Math.ceil(planned / 2));
-    layard.ae = Math.max(0, ae - lost);
-    events.push({
-      kind: "spell-fail",
-      text: `${layard.name} wirkt Balsam Salabunde — Probe misslingt (Puffer ${bufferLeft}). Astralenergie verpufft halbiert (AsP −${lost} → ${layard.ae}).`,
-      dice,
-      snapshot: snapshotW(all),
-      actorId: layard.id,
-    });
-    return;
-  }
-
-  // Erfolg: Heilung in Höhe von `planned`, gleich viele AsP abziehen.
-  layard.le = Math.min(layard.leMax, layard.le + planned);
-  layard.ae = Math.max(0, ae - planned);
-  events.push({
-    kind: "spell-cast",
-    text: `${layard.name} wirkt Balsam Salabunde${ownSchool ? " (Hauszauber)" : ""} auf sich selbst. +${planned} LE (AsP −${planned} → ${layard.ae}). ${layard.name}: ${layard.le}/${layard.leMax} LE.`,
-    dice,
-    snapshot: snapshotW(all),
-    actorId: layard.id,
-    targetId: layard.id,
-  });
+  return true;
 }
 
 function snapshot(all: Combatant[]): { id: string; le: number }[] {
   return all.map((c) => ({ id: c.id, le: c.le }));
 }
 
-/**
- * Yelva wirkt einen ihrer Elfen-Hauszauber. Mechanisch ausgespielt werden
- * Balsam Salabunde (heilt verwundeten Helden) und Bannbaladin (setzt einen
- * Gegner für mehrere Runden außer Gefecht — er lässt die Waffe sinken).
- * Andere Hauszauber sind im Kampf nicht spürbar und werden ehrlich als
- * Fizzle protokolliert.
- */
-function resolveYelvaSpell(
-  yelva: WoundedCombatant,
-  spell: SpellDef,
-  zfw: number,
-  state: CombatState,
-  all: WoundedCombatant[],
-  events: CombatEvent[],
-): void {
-  const attrs = yelva.attrs;
-  if (!attrs) return;
-  const cost = spellCost(spell);
-  const ownSchool = spellOwnSchool(yelva.classId, spell);
-
-  // --- Balsam Salabunde: heilt den am stärksten verwundeten Helden. ----
-  if (spell.id === "balsam_salabunde") {
-    const wounded = state.heroes
-      .filter((h) => alive(h) && h.le < h.leMax)
-      .sort((a, b) => a.le / a.leMax - b.le / b.leMax)[0];
-    if (!wounded) {
-      events.push({
-        kind: "spell-fizzle",
-        text: `Niemand braucht Heilung — Yelva spart sich Balsam Salabunde.`,
-        snapshot: snapshotW(all),
-        actorId: yelva.id,
-      });
-      return;
-    }
-    const ae = yelva.ae ?? 0;
-    const missing = wounded.leMax - wounded.le;
-    const planned = Math.max(1, Math.min(missing, zfw, ae));
-    const { dice, success, bufferLeft } = rollSpellProbe(spell, zfw, attrs, ownSchool);
-    if (!success) {
-      const lost = Math.max(1, Math.ceil(planned / 2));
-      yelva.ae = Math.max(0, ae - lost);
-      events.push({
-        kind: "spell-fail",
-        text: `Yelva singt Balsam Salabunde über ${wounded.name} — die Probe misslingt (Puffer ${bufferLeft}). AsP −${lost} → ${yelva.ae}.`,
-        dice,
-        snapshot: snapshotW(all),
-        actorId: yelva.id,
-        targetId: wounded.id,
-      });
-      return;
-    }
-    wounded.le = Math.min(wounded.leMax, wounded.le + planned);
-    wounded.wounds = Math.max(0, wounded.wounds - 1);
-    yelva.ae = Math.max(0, ae - planned);
-    events.push({
-      kind: "spell-cast",
-      text: `Yelva singt Balsam Salabunde${ownSchool ? " (Hauszauber)" : ""} über ${wounded.name}. +${planned} LE (AsP −${planned} → ${yelva.ae}). ${wounded.name}: ${wounded.le}/${wounded.leMax} LE.`,
-      dice,
-      snapshot: snapshotW(all),
-      actorId: yelva.id,
-      targetId: wounded.id,
-    });
-    return;
-  }
-
-  // --- Bannbaladin: ein Gegner verliert die Lust am Kampf. ------------
-  if (spell.id === "bannbaladin") {
-    const foeTarget = pickFoeTargetW(state.foes);
-    if (!foeTarget) return;
-    const { dice, success, bufferLeft } = rollSpellProbe(spell, zfw, attrs, ownSchool);
-    const ae = yelva.ae ?? 0;
-    const aeCost = success ? cost : Math.ceil(cost / 2);
-    yelva.ae = Math.max(0, ae - aeCost);
-    if (!success) {
-      events.push({
-        kind: "spell-fail",
-        text: `Yelva singt Bannbaladin gegen ${foeTarget.name} — er schüttelt das Lied ab (Puffer ${bufferLeft}). AsP −${aeCost} → ${yelva.ae}.`,
-        dice,
-        snapshot: snapshotW(all),
-        actorId: yelva.id,
-        targetId: foeTarget.id,
-      });
-      return;
-    }
-    // Erfolg: Gegner setzt für mehrere Runden aus (AT/PA stark reduziert)
-    // und wird mit "besänftigt" markiert.
-    foeTarget.atMod = -8;
-    foeTarget.paMod = -4;
-    foeTarget.effectRoundsLeft = 3;
-    foeTarget.effectLabel = "besänftigt";
-    events.push({
-      kind: "spell-cast",
-      text: `Yelva singt Bannbaladin${ownSchool ? " (Hauszauber)" : ""} — ${foeTarget.name} lässt die Waffe sinken (3 Runden besänftigt). AsP −${aeCost} → ${yelva.ae}.`,
-      dice,
-      snapshot: snapshotW(all),
-      actorId: yelva.id,
-      targetId: foeTarget.id,
-    });
-    return;
-  }
-
-  // --- Restliche Elfen-Hauszauber: im Kampf ohne mechanische Wirkung --
-  // --- Blitz dich find: Schadenszauber, Rüstung halbiert. ----------
-  if (spell.id === "blitz_dich_find") {
-    const foeTarget = pickFoeTargetW(state.foes);
-    if (!foeTarget) return;
-    const { dice, success, bufferLeft } = rollSpellProbe(spell, zfw, attrs, ownSchool);
-    const ae = yelva.ae ?? 0;
-    const aeCost = success ? cost : Math.ceil(cost / 2);
-    yelva.ae = Math.max(0, ae - aeCost);
-    if (!success) {
-      events.push({
-        kind: "spell-fail",
-        text: `Yelva singt Blitz dich find auf ${foeTarget.name} — der Blitz verpufft (Puffer ${bufferLeft}). AsP −${aeCost} → ${yelva.ae}.`,
-        dice,
-        snapshot: snapshotW(all),
-        actorId: yelva.id,
-        targetId: foeTarget.id,
-      });
-      return;
-    }
-    const raw = d6() + zfw;
-    const rs = Math.floor((foeTarget.rs ?? 0) / 2);
-    const dmg = Math.max(1, raw - rs);
-    foeTarget.le = Math.max(0, foeTarget.le - dmg);
-    events.push({
-      kind: "spell-cast",
-      text: `Yelva singt Blitz dich find${ownSchool ? " (Hauszauber)" : ""} — Blitz trifft ${foeTarget.name} für ${dmg} TP (1W+${zfw}=${raw}, halbe RS ${rs}). AsP −${aeCost} → ${yelva.ae}.`,
-      dice,
-      snapshot: snapshotW(all),
-      actorId: yelva.id,
-      targetId: foeTarget.id,
-    });
-    return;
-  }
-
-  // --- Restliche Elfen-Hauszauber: im Kampf ohne mechanische Wirkung --
-  events.push({
-    kind: "spell-fizzle",
-    text: `Yelva wirkt ${spell.name} — im Kampfgetümmel ohne unmittelbare Wirkung.`,
-    snapshot: snapshotW(all),
-    actorId: yelva.id,
-  });
-}
-
-/** Standard-3W20-Spruchprobe, gemeinsam genutzt für Yelvas Auflösung. */
-function rollSpellProbe(
-  spell: SpellDef,
-  zfw: number,
-  attrs: Attrs,
-  ownSchool: boolean,
-): {
-  dice: { label: string; value: number; target: number; success: boolean }[];
-  success: boolean;
-  bufferLeft: number;
-} {
-  const modBuf = ownSchool ? 3 : 0;
-  const rolls: number[] = [d20(), d20(), d20()];
-  let bufferLeft = zfw + modBuf;
-  const dice = rolls.map((r, i) => {
-    const attrId = spell.probe[i] as AttributeId;
-    const target = attrs[attrId] ?? 10;
-    const fail = r > target;
-    if (fail) bufferLeft -= r - target;
-    return { label: `${attrId} (W20)`, value: r, target, success: !fail };
-  });
-  const ones = rolls.filter((r) => r === 1).length;
-  const twenties = rolls.filter((r) => r === 20).length;
-  let success: boolean;
-  if (twenties >= 2) success = false;
-  else if (ones >= 2) success = true;
-  else success = bufferLeft >= 0;
-  return { dice, success, bufferLeft };
-}
-
 function alive(c: Combatant): boolean {
-  return c.le > 0;
+  return c.le > 0 && !c.outOfFight;
 }
 
 function pickWeakest(group: Combatant[]): Combatant | null {

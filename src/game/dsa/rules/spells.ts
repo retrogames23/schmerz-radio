@@ -22,6 +22,14 @@ export interface SpellDef {
   target: "Selbst" | "Berührung" | "Sicht" | "Bereich";
   effect: string;
   schools: string[]; // Klassen, die den Zauber als Hauszauber haben (Mod -3)
+  /** Mindestkosten in AsP — Voraussetzung, um den Spruch überhaupt zu beginnen. */
+  minCost: number;
+  /**
+   * Einsatz im rundenbasierten Kampf (DSA3-Zauberdauer ≤ wenige Sekunden).
+   * Fehlt das Feld, ist der Spruch im Kampf nicht wirkbar (z. B. Balsam
+   * Salabunde: Zauberdauer 1 Spielrunde).
+   */
+  combat?: "damage" | "blind" | "control" | "buff";
 }
 
 export const SPELLS: SpellDef[] = [
@@ -34,46 +42,54 @@ export const SPELLS: SpellDef[] = [
     target: "Bereich",
     effect: "Erzeugt eine kleine, frei schwebende Lichtquelle.",
     schools: ["magier", "elf"],
+    minCost: 1,
   },
   {
     id: "blitz_dich_find",
     name: "Blitz dich find",
     probe: ["MU", "KL", "FF"],
-    cost: "6",
+    cost: "5",
     range: "Sicht",
     target: "Sicht",
-    effect: "Elektrischer Blitz, 1W+ZfW Schaden, Rüstung halb wirksam.",
+    effect: "Grelle Lichtblendung: das Ziel ist für ZfP* Kampfrunden geblendet (AT/PA −5).",
     schools: ["magier", "elf"],
+    minCost: 5,
+    combat: "blind",
   },
   {
     id: "ignifaxius",
     name: "Ignifaxius",
-    probe: ["MU", "KL", "KK"],
-    cost: "8",
+    probe: ["KL", "GE", "FF"],
+    cost: "1 pro TP",
     range: "Sicht",
     target: "Sicht",
-    effect: "Stoß aus Feuer, 2W+ZfW Schaden, entzündet Brennbares.",
+    effect: "Feuerlanze: bis Stufe+1 W6 TP, AsP = erzielte TP, je 10 TP sinkt der RS des Opfers um 1.",
     schools: ["magier"],
+    minCost: 6,
+    combat: "damage",
   },
   {
     id: "fulminictus",
     name: "Fulminictus",
-    probe: ["KL", "IN", "KK"],
-    cost: "4",
+    probe: ["KL", "GE", "KK"],
+    cost: "1 pro SP",
     range: "Sicht",
     target: "Sicht",
-    effect: "Druckwelle, wirft Ziele zu Boden, leichter Schaden.",
+    effect: "Magischer Schlag, 3W6+Stufe SP, durchdringt jede Rüstung; AsP = zugefügte SP.",
     schools: ["magier"],
+    minCost: 3,
+    combat: "damage",
   },
   {
     id: "balsam_salabunde",
     name: "Balsam Salabunde",
-    probe: ["MU", "IN", "CH"],
-    cost: "geheilte LE",
+    probe: ["KL", "IN", "CH"],
+    cost: "1 pro LP, mind. 7",
     range: "Berührung",
     target: "Berührung",
-    effect: "Heilt LE; jeder LE kostet 1 AsP.",
+    effect: "Heilt 1 LE pro AsP (mind. 7 AsP); Zauberdauer 1 Spielrunde — nicht im Kampfgetümmel.",
     schools: ["magier", "elf", "druide"],
+    minCost: 7,
   },
   {
     id: "horriphobus",
@@ -82,38 +98,46 @@ export const SPELLS: SpellDef[] = [
     cost: "7",
     range: "Sicht",
     target: "Sicht",
-    effect: "Erzeugt panische Furcht beim Ziel; Flucht für mehrere Runden.",
+    effect: "Das Ziel flieht schreiend oder kauert sich angsterfüllt zusammen (3 Spielrunden).",
     schools: ["magier"],
+    minCost: 7,
+    combat: "control",
   },
   {
     id: "bannbaladin",
     name: "Bannbaladin",
-    probe: ["KL", "IN", "CH"],
+    probe: ["IN", "CH", "CH"],
     cost: "8",
     range: "Sicht",
     target: "Sicht",
-    effect: "Macht das Ziel dem Zauberer für kurze Zeit freundlich gesinnt.",
+    effect: "Das Ziel hält den Zauberer für seinen besten Freund (Probe +MR); es stellt den Kampf ein.",
     schools: ["magier", "elf"],
+    minCost: 8,
+    combat: "control",
   },
   {
     id: "armatrutz",
     name: "Armatrutz",
-    probe: ["KL", "KL", "KK"],
-    cost: "7",
+    probe: ["IN", "GE", "KK"],
+    cost: "RS×RS, mind. 4",
     range: "Berührung",
     target: "Berührung",
-    effect: "+2 RS für mehrere Kampfrunden.",
+    effect: "Unsichtbare Rüstung ohne Behinderung, RS-Zuwachs für einen Kampf; Kosten RS×RS AsP.",
     schools: ["magier"],
+    minCost: 4,
+    combat: "buff",
   },
   {
     id: "axxeleratus",
     name: "Axxeleratus",
-    probe: ["MU", "IN", "GE"],
-    cost: "8",
+    probe: ["KL", "GE", "KK"],
+    cost: "7",
     range: "Berührung",
     target: "Berührung",
-    effect: "Verdoppelt Aktionen pro Kampfrunde für wenige Runden.",
+    effect: "Verdoppelt die Geschwindigkeit für 20 KR: AT und PA je +2.",
     schools: ["magier"],
+    minCost: 7,
+    combat: "buff",
   },
   {
     id: "adlerauge",
@@ -124,6 +148,7 @@ export const SPELLS: SpellDef[] = [
     target: "Selbst",
     effect: "Sehschärfe stark erhöht für eine Spielstunde.",
     schools: ["magier", "elf"],
+    minCost: 4,
   },
   {
     id: "manifesto",
@@ -134,6 +159,7 @@ export const SPELLS: SpellDef[] = [
     target: "Berührung",
     effect: "Macht Unsichtbares oder Geister kurzzeitig sichtbar.",
     schools: ["magier"],
+    minCost: 3,
   },
   {
     id: "odem_arcanum",
@@ -144,6 +170,7 @@ export const SPELLS: SpellDef[] = [
     target: "Sicht",
     effect: "Zauberer erkennt magische Auren und ihre Stärke.",
     schools: ["magier", "elf", "druide"],
+    minCost: 2,
   },
   // === Druidische Hauszauber (DSA3) ===
   {
@@ -155,6 +182,7 @@ export const SPELLS: SpellDef[] = [
     target: "Sicht",
     effect: "Beruhigt oder lenkt ein wildes Tier; folgt kurzzeitig dem Druiden.",
     schools: ["druide"],
+    minCost: 7,
   },
   {
     id: "kroetensprung",
@@ -165,6 +193,7 @@ export const SPELLS: SpellDef[] = [
     target: "Selbst",
     effect: "Erlaubt einen weiten, sicheren Sprung über Hindernisse oder Abgründe.",
     schools: ["druide"],
+    minCost: 5,
   },
   {
     id: "pentagramma",
@@ -175,6 +204,7 @@ export const SPELLS: SpellDef[] = [
     target: "Bereich",
     effect: "Schutzkreis gegen Dämonen und niedere Geister; hält mehrere Stunden.",
     schools: ["druide", "magier"],
+    minCost: 10,
   },
   {
     id: "wolkenruf",
@@ -185,6 +215,7 @@ export const SPELLS: SpellDef[] = [
     target: "Bereich",
     effect: "Ruft Wolken oder leichten Regen herbei; verändert das Wetter lokal.",
     schools: ["druide"],
+    minCost: 12,
   },
   {
     id: "wurzelgriff",
@@ -193,8 +224,10 @@ export const SPELLS: SpellDef[] = [
     cost: "6",
     range: "Sicht",
     target: "Sicht",
-    effect: "Wurzeln und Pflanzen umschlingen ein Ziel und halten es fest.",
+    effect: "Wurzeln umschlingen ein Ziel am Boden; es kann für ZfP* Kampfrunden nicht angreifen (PA −4).",
     schools: ["druide"],
+    minCost: 6,
+    combat: "control",
   },
 ];
 
@@ -204,3 +237,8 @@ export function spellsForPrompt(): string {
   );
   return ["ZAUBER (3W20 gegen die drei Eigenschaften; Hauszauber: Probe -3 erleichtert):", ...rows].join("\n");
 }
+
+/** Im rundenbasierten Kampf wirkbare Sprüche. */
+export const COMBAT_SPELL_IDS: ReadonlySet<string> = new Set(
+  SPELLS.filter((s) => s.combat).map((s) => s.id),
+);

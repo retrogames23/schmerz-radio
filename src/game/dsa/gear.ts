@@ -404,3 +404,44 @@ export function serializeCompanionGearForPrompt(): string {
   parts.push(serializeGearForPrompt(COMPANION_GEAR.yelva));
   return parts.join("\n");
 }
+/**
+ * DSA3-Basisregeln zu Waffen und Rüstung je Heldentyp:
+ * - Magier: keine Rüstung über RS 2 (ein Schild zählt als RS 1 mit),
+ *   keine Waffe mit mehr als 1W6+2 TP.
+ * - Elf und Zwerg: keine Ritterrüstung (Plattenharnisch).
+ * Liefert einen Ablehnungsgrund oder null, wenn erlaubt.
+ */
+export function gearRestriction(
+  classId: DsaClassId | string,
+  gear: Pick<HeroGear, "armorId" | "shieldId">,
+  next: { weaponId?: string; armorId?: string; shieldId?: string },
+): string | null {
+  if (next.weaponId) {
+    const w = WEAPONS[next.weaponId];
+    if (w && classId === "magier" && maxTp(w.tp) > 8) {
+      return `Magier führen keine Waffe mit mehr als 1W6+2 TP (${w.name}: ${w.tp}).`;
+    }
+  }
+  if (next.armorId) {
+    const a = ARMORS[next.armorId];
+    if (a && (classId === "elf" || classId === "zwerg") && a.id === "plattenharnisch") {
+      return `${classId === "elf" ? "Elfen" : "Zwerge"} tragen keine Ritterrüstung.`;
+    }
+    if (a && classId === "magier" && a.rs + (gear.shieldId ? 1 : 0) > 2) {
+      return `Magier tragen keine Rüstung über RS 2${gear.shieldId ? " (der Schild zählt mit)" : ""}.`;
+    }
+  }
+  if (next.shieldId && classId === "magier") {
+    const rs = gear.armorId ? ARMORS[gear.armorId]?.rs ?? 0 : 0;
+    if (rs + 1 > 2) return "Magier tragen keine Rüstung über RS 2 — mit dieser Rüstung ist kein Schild mehr erlaubt.";
+  }
+  return null;
+}
+
+/** Höchstmögliche TP eines TP-Strings wie "1W+4". */
+function maxTp(tp: string): number {
+  const m = /^\s*(\d+)\s*[wW]6?\s*(?:([+-])\s*(\d+))?\s*$/.exec(tp);
+  if (!m) return 0;
+  const bonus = m[3] ? (m[2] === "-" ? -1 : 1) * parseInt(m[3], 10) : 0;
+  return parseInt(m[1], 10) * 6 + bonus;
+}
