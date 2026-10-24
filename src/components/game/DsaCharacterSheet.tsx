@@ -388,6 +388,8 @@ export function DsaCharacterSheet() {
                                   <button
                                     type="button"
                                     className="dsa-mini-btn"
+                                    disabled={!!gearRestriction(dsaCharacter.classId, g, { weaponId: it.weaponId })}
+                                    title={gearRestriction(dsaCharacter.classId, g, { weaponId: it.weaponId }) ?? undefined}
                                     onClick={() =>
                                       applyGear(
                                         equipWeapon(g, it.id),
@@ -402,6 +404,8 @@ export function DsaCharacterSheet() {
                                   <button
                                     type="button"
                                     className="dsa-mini-btn"
+                                    disabled={!!gearRestriction(dsaCharacter.classId, g, { armorId: it.armorId })}
+                                    title={gearRestriction(dsaCharacter.classId, g, { armorId: it.armorId }) ?? undefined}
                                     onClick={() =>
                                       applyGear(
                                         equipArmor(g, it.id),
@@ -416,6 +420,8 @@ export function DsaCharacterSheet() {
                                   <button
                                     type="button"
                                     className="dsa-mini-btn"
+                                    disabled={!!gearRestriction(dsaCharacter.classId, g, { shieldId: it.shieldId })}
+                                    title={gearRestriction(dsaCharacter.classId, g, { shieldId: it.shieldId }) ?? undefined}
                                     onClick={() =>
                                       applyGear(
                                         equipShield(g, it.id),
