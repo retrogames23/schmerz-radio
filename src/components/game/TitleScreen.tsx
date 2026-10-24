@@ -1,4 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import ambientWalkSource from "@/game/ambientWalk.ts?raw";
+import rainPolicySource from "@/game/rainPolicy.ts?raw";
 import { useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import titleTrackAsset from "@/assets/the-glass-hour.mp3.asset.json";
@@ -13,24 +15,16 @@ import { isDevMode } from "@/dev/devMode";
 
 const titleTrack = titleTrackAsset.url;
 
+// Echter Quelltext dieses Spiels läuft über den gemalten Monitor.
 const TITLE_CRT_LINES = [
-  "CENTRALOS v2.3 .. BEREIT",
-  "TERMINAL E67 .. GEB. E67",
+  "// src/game/ambientWalk.ts",
+  ...ambientWalkSource.split("\n"),
   "",
-  "KNOTEN 5610 ....... OK",
-  "PORT 4601 ......... AKTIV",
-  "LEITSTELLE 3502 ... OK",
-  "TRAEGER 104,6 ..... UKW",
-  "RESONANZ .......... 12%",
+  "// src/game/rainPolicy.ts",
+  ...rainPolicySource.split("\n"),
   "",
-  "SEKTOR 28 EMPFANG .. OK",
-  "SIGNAL ............ SCHWACH",
-  "REGEN ............. ANHALTEND",
-  "",
-  "> WARTE AUF EINGABE",
-  "  █",
-  "",
-];
+].map((line) => line.replace(/\t/g, "  "));
+const TITLE_CRT_DURATION_S = Math.round(TITLE_CRT_LINES.length * 1.4);
 
 const PRE_ALPHA_WARNING_UI_TEXT = {
   title: "Pre-Alpha-Warnung",
@@ -149,7 +143,7 @@ export function TitleScreen({ onStart }: Props) {
       <div className="title-art-frame" aria-hidden="true">
         <div className="title-art-cover">
           <div className="title-crt-screen">
-            <div className="title-crt-scroll">
+            <div className="title-crt-scroll" style={{ animationDuration: `${TITLE_CRT_DURATION_S}s` }}>
               {[0, 1].map((copy) => (
                 <div key={copy}>
                   {TITLE_CRT_LINES.map((line, i) => (
