@@ -516,7 +516,8 @@ export type Tactic =
   | "magic-high";
 
 /** Schwerpunkt bei Magie-Taktiken, wenn Layard Balsam Salabunde kennt. */
-export type SpellFocus = "offense" | "healing" | "balanced";
+/** offense = nur Angriffszauber; protect = erst Armatrutz/Axxeleratus. ("healing"/"balanced" = Altwerte, wirken wie protect.) */
+export type SpellFocus = "offense" | "protect" | "healing" | "balanced";
 
 export const TACTIC_LABELS: Record<Tactic, { title: string; blurb: string }> = {
   balanced: {
@@ -860,54 +861,40 @@ export function resolveRound(
     }
   }
 
-  if (tactic === "spell") {
-    layardSkipMelee = true;
+  const autoCast = (protectFirst: boolean) => {
     const layard = state.heroes.find((h) => h.id === "hero");
-    const foeTarget = layard ? pickWeakestW(state.foes) : null;
-    if (layard && alive(layard) && foeTarget) {
-      resolveLayardSpell(layard, foeTarget, all, events);
+    if (!layard || !alive(layard)) return;
+    const pick = pickCombatSpell(layard, protectFirst);
+    if (!pick) {
+      if (tactic === "spell") {
+        events.push({
+          kind: "spell-fizzle",
+          text: knowsCombatSpell(layard.spells)
+            ? `${layard.name} hat zu wenig Astralenergie für einen Kampfzauber — die Formel bleibt ungesprochen.`
+            : `${layard.name} kennt keinen Kampfzauber.`,
+          snapshot: snapshotW(all),
+          actorId: layard.id,
+        });
+      }
+      return;
     }
-  }
+    if (castCombatSpell(layard, pick.spell, pick.zfw, state, all, events)) layardSkipMelee = true;
+  };
+
+  if (tactic === "spell") autoCast(false);
 
   // Magie-Intensitäts-Taktiken: Layard entscheidet pro Runde probabilistisch,
-  // ob er einen Spruch wirkt. Schwerpunkt steuert offensiv vs. heilend (nur
-  // wenn Balsam Salabunde bekannt ist).
+  // ob er einen Spruch wirkt. Schwerpunkt „Schutz zuerst" legt zuerst
+  // Armatrutz/Axxeleratus, danach Angriffszauber.
   if (
-    tactic === "magic-none" ||
     tactic === "magic-low" ||
     tactic === "magic-mid" ||
     tactic === "magic-high"
   ) {
-    const prob: Record<typeof tactic, number> = {
-      "magic-none": 0,
-      "magic-low": 0.34,
-      "magic-mid": 0.67,
-      "magic-high": 1,
-    } as const;
-    const p = prob[tactic];
-    const layard = state.heroes.find((h) => h.id === "hero");
-    if (p > 0 && layard && alive(layard) && Math.random() < p) {
+    const p = tactic === "magic-low" ? 0.34 : tactic === "magic-mid" ? 0.67 : 1;
+    if (Math.random() < p) {
       const focus: SpellFocus = opts?.spellFocus ?? "offense";
-      const knowsBalsam =
-        typeof layard.spells?.["balsam_salabunde"] === "number";
-      const missingLe = Math.max(0, layard.leMax - layard.le);
-      const halfLe = Math.ceil(layard.leMax * 0.5);
-      const wantHeal =
-        knowsBalsam &&
-        missingLe >= 3 &&
-        (focus === "healing" ||
-          (focus === "balanced" && layard.le <= halfLe));
-      if (wantHeal) {
-        layardSkipMelee = true;
-        resolveLayardBalsam(layard, all, events);
-      } else if (focus !== "healing") {
-        const foeTarget = pickWeakestW(state.foes);
-        if (foeTarget && pickCombatSpell(layard)) {
-          layardSkipMelee = true;
-          resolveLayardSpell(layard, foeTarget, all, events);
-        }
-      }
-      // Heilfokus ohne Bedarf → kein Spruch, normaler Nahkampf bleibt.
+      autoCast(focus !== "offense");
     }
   }
 
@@ -930,6 +917,7 @@ export function resolveRound(
     if (state.foes.every((f) => !alive(f))) break;
     // Layard hat diese Runde gezaubert → kein Nahkampf-Angriff.
     if (layardSkipMelee && isLayard(actor)) continue;
+    if (actor.noAttack) continue;
 
     const target =
       actor.side === "hero" ? pickFoeTargetW(state.foes) : pickHeroTargetW(state.heroes);
@@ -939,10 +927,12 @@ export function resolveRound(
     const actorAtMod =
       -2 * actor.wounds +
       (actor.atMod ?? 0) +
+      (actor.axxeleratus ? 2 : 0) +
       (actor.side === "foe" ? mods.foeAt : isLayard(actor) ? mods.heroAt : 0);
     const targetPaMod =
       -2 * target.wounds +
       (target.paMod ?? 0) +
+      (target.axxeleratus ? 2 : 0) +
       (target.side === "foe" ? mods.foePa : isLayard(target) ? mods.heroPa : 0);
     const actorTpMod =
       -2 * actor.wounds + (isLayard(actor) ? mods.heroTp : 0);
