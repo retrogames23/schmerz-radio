@@ -1,3 +1,4 @@
+import { TALENTS } from "./rules/talents";
 import { DSA_SCENE_TAGS } from "./sceneImages";
 import { ENEMY_STATS } from "./combat";
 import { DSA_MOODS, isDsaMood, type DsaMood } from "@/audio/dsaMusic";
@@ -129,7 +130,8 @@ export interface ParsedMasterTurn {
   lines: SpokenLine[];
   sceneTag: string | null;
   combat: CombatRequest | null;
-  check: { attr: string; modifier: number } | null;
+  /** [CHECK: …] — Eigenschafts- (attr) oder Talentprobe (talentId). */
+  check: MasterCheck | null;
   outtimeWarn: boolean;
   end: EndKind | null;
   /** Optionaler Mood-Hinweis vom Meister an den Musik-Player. */
@@ -149,7 +151,42 @@ export interface ParsedMasterTurn {
 const SPEAKER_RE = /^\s*\[(TJARK|BREM|YELVA)\]\s*/i;
 const SCENE_RE = /\[SCENE:\s*([a-z0-9_]+)\s*\]/i;
 const COMBAT_RE = /\[COMBAT:\s*([a-z0-9_,\s-]+)\]/i;
-const CHECK_RE = /\[CHECK:\s*(MU|KL|CH|FF|GE|IN|KK)\s*(?:([+-]\s*\d+))?\s*\]/i;
+const CHECK_RE = /\[CHECK:\s*([^\]+\-]+?)\s*(?:([+-]\s*\d+))?\s*\]/i;
+
+export interface MasterCheck {
+  /** Eigenschaftskürzel bei reiner Eigenschaftsprobe. */
+  attr?: string;
+  /** Talent-ID bei Talentprobe. */
+  talentId?: string;
+  /** Anzeigename (Eigenschaft oder Talent). */
+  label: string;
+  modifier: number;
+}
+
+const ATTR_IDS = ["MU", "KL", "CH", "FF", "GE", "IN", "KK"];
+
+function normTalentKey(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
+    .replace(/[^a-z0-9]+/g, "");
+}
+
+/** Löst den Inhalt eines [CHECK: …]-Markers zu Eigenschaft oder Talent auf. */
+export function resolveCheckTarget(rawName: string, modifier: number): MasterCheck | null {
+  const name = rawName.trim();
+  const up = name.toUpperCase();
+  if (ATTR_IDS.includes(up)) return { attr: up, label: up, modifier };
+  const key = normTalentKey(name);
+  if (!key) return null;
+  const hit =
+    TALENTS.find((t) => normTalentKey(t.name) === key || normTalentKey(t.id) === key) ??
+    TALENTS.find((t) => normTalentKey(t.name).startsWith(key) || key.startsWith(normTalentKey(t.name).slice(0, 6)));
+  if (hit) return { talentId: hit.id, label: hit.name, modifier };
+  // Fallback: „KL/IN" o. ä. → erste genannte Eigenschaft.
+  const attr = ATTR_IDS.find((a) => up.startsWith(a));
+  return attr ? { attr, label: attr, modifier } : null;
+}
 const OUTTIME_RE = /\[OUTTIME_WARN\]/i;
 const END_RE = /\[END:\s*(victory|defeat|aborted)\s*\]/i;
 const MOOD_RE = /\[MOOD:\s*([a-z_]+)\s*\]/i;
@@ -242,10 +279,10 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
   }
 
   const check = checkMatch
-    ? {
-        attr: checkMatch[1].toUpperCase(),
-        modifier: checkMatch[2] ? parseInt(checkMatch[2].replace(/\s+/g, ""), 10) : 0,
-      }
+    ? resolveCheckTarget(
+        checkMatch[1],
+        checkMatch[2] ? parseInt(checkMatch[2].replace(/\s+/g, ""), 10) : 0,
+      )
     : null;
 
   const sumDelta = (re: RegExp) => {
