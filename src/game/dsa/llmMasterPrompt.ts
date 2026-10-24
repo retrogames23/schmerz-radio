@@ -473,7 +473,7 @@ MAGIE — PFLICHT:
 ${known}
 
   ASTRALPUNKTE (AsP):
-    Aktueller AsP-Pool des Helden zu Spielbeginn: ${character.ae}.
+    Aktueller AsP-Pool des Helden: ${character.ae} / ${Math.max(character.ae, character.aeMax ?? character.ae)} (aktuell / maximal).
     Bei JEDEM gewirkten Zauber MUSST du in deiner Erzählung die Kosten
     explizit abziehen, z. B. "(AsP -8 → ${Math.max(0, character.ae - 8)} übrig)".
     Reichen die AsP nicht, schlägt der Zauber fehl (Erschöpfung, kein Effekt).
