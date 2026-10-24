@@ -126,6 +126,7 @@ def main():
     tsv.close()
 
     sql = f"""
+    DROP TABLE IF EXISTS _ingest;
     CREATE TEMP TABLE _ingest (LIKE public.dsa_rulebook_chunks INCLUDING DEFAULTS);
     \\COPY _ingest(source,page_start,page_end,chunk_index,content,content_hash,token_estimate,embedding,metadata) FROM '{tsv.name}' WITH (FORMAT text, DELIMITER E'\\t');
     INSERT INTO public.dsa_rulebook_chunks (source,page_start,page_end,chunk_index,content,content_hash,token_estimate,embedding,metadata)
