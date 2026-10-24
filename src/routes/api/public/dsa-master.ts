@@ -1061,6 +1061,19 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             const leMax = Math.max(1, characterSnap.leMax ?? characterSnap.le ?? 1);
             const le = typeof b.heroLe === "number" ? Math.round(b.heroLe) : characterSnap.le;
             characterSnap = { ...characterSnap, le: Math.max(1, Math.min(leMax, le)) };
+            // Im Kampf verbrauchte AsP bleiben verbraucht (kein Reset auf Max).
+            if (typeof characterSnap.ae === "number" && typeof b.heroAe === "number") {
+              const prevMax = Math.max(characterSnap.ae, characterSnap.aeMax ?? characterSnap.ae);
+              const aeMax =
+                typeof b.heroAeMax === "number"
+                  ? Math.max(1, Math.min(prevMax + 5, Math.round(b.heroAeMax)))
+                  : prevMax;
+              characterSnap = {
+                ...characterSnap,
+                aeMax,
+                ae: Math.max(0, Math.min(aeMax, Math.round(b.heroAe))),
+              };
+            }
             const lowered = typeof b.attrLowered === "string" ? b.attrLowered : "";
             if (b.consequenceKind === "wound" && /^(MU|KL|CH|FF|GE|IN|KK)$/.test(lowered)) {
               const cur = characterSnap.attrs[lowered] ?? 11;
@@ -1168,12 +1181,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             };
           }
           if (parsed.aeDelta !== 0 && typeof characterSnap.ae === "number") {
-            const aeMax = Math.max(
-              characterSnap.ae,
-              typeof (characterSnap as { aeMax?: number }).aeMax === "number"
-                ? (characterSnap as { aeMax?: number }).aeMax!
-                : characterSnap.ae,
-            );
+            const aeMax = Math.max(characterSnap.ae, characterSnap.aeMax ?? characterSnap.ae);
             characterSnap = {
               ...characterSnap,
               aeMax,

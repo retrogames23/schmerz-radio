@@ -332,7 +332,7 @@ export function heroCombatantFromCharacter(
     weapon: shield ? `${weaponName} & ${shield.name}` : weaponName,
     attrs: a,
     ae: ch.ae ?? undefined,
-    aeMax: ch.ae ?? undefined,
+    aeMax: ch.ae === null ? undefined : Math.max(ch.ae, ch.aeMax ?? ch.ae),
     spells,
     classId: ch.classId as DsaClassId,
     stufe: stufeFromAp(hero?.apTotal ?? 0),

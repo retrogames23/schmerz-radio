@@ -488,11 +488,25 @@ ${known}
     erzähle dort keine eigenen Zauberwirkungen nach.
 
   RUHEPHASEN / ÜBERNACHTUNG (DSA3-Regeneration):
-    Eine ungestörte Nachtruhe regeneriert 1W6 AsP UND 1W6 LE. Eine kurze Rast
-    (ein paar Stunden, kein Schlaf) regeneriert nichts. Mehrere ruhige Tage
-    in einem Tempel oder Heim können bis zur vollen Regeneration führen
-    (1W6 pro Nacht summiert). Erzähle die Regeneration konkret nach einer
-    Übernachtungs-Szene ("Am Morgen fühlst du dich klarer — +4 AsP, +3 LE").`;
+    Eine ungestörte Nachtruhe (6–8 Stunden) regeneriert 1W6 LE und — bei
+    Zauberkundigen — 1W6 AsP. Eine kurze Rast ohne Schlaf regeneriert nichts.
+    PFLICHT: Verbuche jede Regeneration mit Markern, sonst zählt sie nicht:
+    [LE: +N] und (nur Zauberkundige) [AE: +N]. Nie mehr als dem Helden fehlt
+    (siehe LE x/max bzw. AsP x/max im Heldenbogen).
+    RÜSTUNG: Geh davon aus, dass die Helden ihre Rüstung zum Schlafen
+    ablegen. Nur wenn das Abenteuer es erzwingt (Feldlager mit Alarmbereit-
+    schaft, Hinterhalt droht) oder der Spieler es ausdrücklich sagt, schläft
+    jemand in Metallrüstung: dann −2 auf den LE-Wurf (mindestens 0).
+    Nässe/Kälte ohne Schutz: ebenfalls −2. Warmes Bett (Gasthaus, Tempel): +1 LE.
+    BANN DES EISENS: Trägt ein Zauberkundiger beim Schlafen ausdrücklich
+    Eisen am Körper (Metallrüstung, Ketten), regeneriert er 0 AsP. Abgelegte
+    Waffen neben dem Lager stören nicht.
+    VOR DER RAST: Ist ein Held verwundet, biete eine Probe auf Heilkunde
+    Wunden an ([CHECK: Heilkunde Wunden]); bei Erfolg zusätzlich +TaP* LE
+    (höchstens 1W6). Durch Störung (Überfall, Wache unterbrochen) entfällt
+    die Regeneration dieser Nacht ganz oder halb.
+    Mehrere ruhige Tage summieren sich (1W6 pro Nacht). Erzähle die Erholung
+    konkret ("Am Morgen fühlst du dich klarer.") und setze die Marker.`;
   })();
 
   const wishTimeAnchorBlock = isWish ? buildBfTimeAnchorPrompt(wishBrief) : "";

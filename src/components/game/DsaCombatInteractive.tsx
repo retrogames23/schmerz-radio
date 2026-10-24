@@ -35,6 +35,8 @@ export interface CombatDoneResult {
   consequenceKind: ConsequenceKind | null;
   heroLe: number;
   heroLeMax: number;
+  /** Verbleibende AsP nach dem Kampf (null bei Nicht-Zauberern). */
+  heroAe: number | null;
   heroWounds: number;
   fallen: string[];
   /** Bei kind=wound vom Client gewähltes Attribut, das −1 bekommt. */
@@ -190,6 +192,7 @@ export function DsaCombatInteractive({
       consequenceKind: st.consequenceKind,
       heroLe: outcome === "victory" ? Math.max(1, heroLe) : heroLe,
       heroLeMax,
+      heroAe: hero && typeof hero.ae === "number" ? Math.max(0, hero.ae) : null,
       heroWounds,
       fallen: st.fallenHeroes.map((f) => f.name),
       attrLowered,

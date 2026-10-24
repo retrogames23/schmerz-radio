@@ -226,7 +226,8 @@ export function applyAdvancement(hero: DsaHero, a: Advancement): DsaHero {
       next.le = Math.min(next.leMax, next.le + 1);
     }
     if (a.attr === "IN" && next.ae !== null) {
-      next.ae = next.ae + 1;
+      next.aeMax = (next.aeMax ?? next.ae) + 1;
+      next.ae = Math.min(next.aeMax, next.ae + 1);
     }
   } else if (a.kind === "talent") {
     next.talents[a.id] = (next.talents[a.id] ?? -1) + 1;
