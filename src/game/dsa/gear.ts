@@ -210,8 +210,20 @@ export function addItem(
 
 /** Streicht ein Item per ID oder Name (case-insensitive, Teilstring erlaubt). */
 export function removeItem(gear: HeroGear, idOrName: string): HeroGear {
-  const needle = (idOrName || "").trim().toLowerCase();
-  if (!needle) return gear;
+  let raw = (idOrName || "").trim();
+  if (!raw) return gear;
+  // Mengenangabe: "2 Silbertaler", "Fackel ×2", "Fackel x2" → nur N abziehen.
+  let qty: number | null = null;
+  const lead = /^(\d{1,2})\s*[x×]?\s+(.+)$/i.exec(raw);
+  const tail = /^(.+?)\s+[x×]\s*(\d{1,2})$/i.exec(raw);
+  if (lead) {
+    qty = parseInt(lead[1], 10);
+    raw = lead[2].trim();
+  } else if (tail) {
+    qty = parseInt(tail[2], 10);
+    raw = tail[1].trim();
+  }
+  const needle = raw.toLowerCase();
   const normNeedle = normalizeId(needle);
   const idx = gear.items.findIndex(
     (it) =>
@@ -221,7 +233,14 @@ export function removeItem(gear: HeroGear, idOrName: string): HeroGear {
   );
   if (idx < 0) return gear;
   const items = [...gear.items];
-  items.splice(idx, 1);
+  const cur = items[idx];
+  const have = cur.count ?? 1;
+  if (qty !== null && qty > 0 && qty < have) {
+    const left = have - qty;
+    items[idx] = { ...cur, count: left > 1 ? left : undefined };
+  } else {
+    items.splice(idx, 1);
+  }
   return { ...gear, items };
 }
 
