@@ -67,6 +67,12 @@ export interface Combatant {
   role?: CombatantRole;
   /** Bevorzugte Fernkampf-Variante (für Log-Beschreibung). */
   rangedWeapon?: string;
+  /** Erfahrungsstufe (DSA3) — für Ignifaxius-Würfel und Fulminictus-Bonus. */
+  stufe?: number;
+  /** Magieresistenz — erschwert Bannbaladin. */
+  mr?: number;
+  /** Gesetzt, wenn die Figur den Kampf ohne LE-Verlust verlassen hat (Flucht, Bezauberung). */
+  outOfFight?: string;
 }
 
 export interface EnemyStat {
@@ -566,6 +572,12 @@ export interface WoundedCombatant extends Combatant {
   paMod?: number;
   effectRoundsLeft?: number;
   effectLabel?: string;
+  /** Wurzelgriff o. ä.: kein eigener Angriff, solange der Effekt läuft. */
+  noAttack?: boolean;
+  /** RS-Zuwachs durch Armatrutz (für den ganzen Kampf). */
+  armatrutzRs?: number;
+  /** Axxeleratus aktiv: AT/PA +2 für den ganzen Kampf. */
+  axxeleratus?: boolean;
 }
 
 export interface CombatState {
@@ -706,6 +718,7 @@ export function resolveRound(
       if ((c.effectRoundsLeft ?? 0) <= 0) {
         c.atMod = 0;
         c.paMod = 0;
+        c.noAttack = false;
         c.effectLabel = undefined;
         c.effectRoundsLeft = 0;
       }
@@ -771,17 +784,13 @@ export function resolveRound(
     if (yelva && alive(yelva)) {
       const spell = SPELLS.find((s) => s.id === intent.yelvaSpellId);
       const zfw = spell ? yelva.spells?.[spell.id] : undefined;
-      if (spell && typeof zfw === "number" && (yelva.ae ?? 0) >= spellCost(spell)) {
-        if (!yelvaManualSpell) state.yelvaSpellResolved = true;
-        resolveYelvaSpell(yelva, spell, zfw, state, all, events);
+      if (!yelvaManualSpell) state.yelvaSpellResolved = true;
+      if (spell && typeof zfw === "number") {
+        castCombatSpell(yelva, spell, zfw, state, all, events);
       } else if (spell) {
-        if (!yelvaManualSpell) state.yelvaSpellResolved = true;
-        const reason = typeof zfw !== "number"
-          ? `Yelva kennt ${spell.name} nicht.`
-          : `Yelva hat nicht genug Astralenergie für ${spell.name}.`;
         events.push({
           kind: "spell-fizzle",
-          text: reason,
+          text: `Yelva kennt ${spell.name} nicht.`,
           snapshot: snapshotW(all),
           actorId: yelva.id,
         });
@@ -836,27 +845,14 @@ export function resolveRound(
     if (layard && alive(layard)) {
       const spell = SPELLS.find((s) => s.id === intent.layardSpellId);
       const zfw = spell ? layard.spells?.[spell.id] : undefined;
-      if (spell && typeof zfw === "number" && (layard.ae ?? 0) >= spellCost(spell)) {
-        if (!manualSpellThisRound) state.layardSpellResolved = true;
-        layardSkipMelee = true;
-        if (spell.id === "balsam_salabunde") {
-          resolveLayardBalsam(layard, all, events);
-        } else {
-          const foeTarget = pickWeakestW(state.foes);
-          if (foeTarget) {
-            resolveLayardSpellExplicit(layard, foeTarget, spell, zfw, all, events);
-          }
-        }
+      // Einmaliger Versuch pro Wunsch (kein Endlos-Spam bei Fehlschlag).
+      if (!manualSpellThisRound) state.layardSpellResolved = true;
+      if (spell && typeof zfw === "number") {
+        if (castCombatSpell(layard, spell, zfw, state, all, events)) layardSkipMelee = true;
       } else if (spell) {
-        // Bekannter Spruch, aber nicht bezahlbar / kein Ziel: einmaliger
-        // Hinweis, dann ausschalten (kein Endlos-Spam).
-        if (!manualSpellThisRound) state.layardSpellResolved = true;
-        const reason = typeof zfw !== "number"
-          ? `Layard kennt ${spell.name} nicht.`
-          : `Layard hat nicht genug Astralenergie für ${spell.name}.`;
         events.push({
           kind: "spell-fizzle",
-          text: reason,
+          text: `${layard.name} kennt ${spell.name} nicht.`,
           snapshot: snapshotW(all),
           actorId: layard.id,
         });
@@ -1389,7 +1385,7 @@ function snapshot(all: Combatant[]): { id: string; le: number }[] {
 }
 
 function alive(c: Combatant): boolean {
-  return c.le > 0;
+  return c.le > 0 && !c.outOfFight;
 }
 
 function pickWeakest(group: Combatant[]): Combatant | null {
