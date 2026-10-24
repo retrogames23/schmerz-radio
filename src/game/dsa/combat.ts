@@ -523,7 +523,6 @@ export type Tactic =
   | "magic-mid"
   | "magic-high";
 
-/** Schwerpunkt bei Magie-Taktiken, wenn Layard Balsam Salabunde kennt. */
 /** offense = nur Angriffszauber; protect = erst Armatrutz/Axxeleratus. ("healing"/"balanced" = Altwerte, wirken wie protect.) */
 export type SpellFocus = "offense" | "protect" | "healing" | "balanced";
 
