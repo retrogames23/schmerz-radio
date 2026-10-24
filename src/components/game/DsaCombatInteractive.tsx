@@ -13,7 +13,7 @@ import {
   type Tactic,
   type SpellFocus,
 } from "@/game/dsa/combat";
-import { SPELLS } from "@/game/dsa/rules/spells";
+import { SPELLS, COMBAT_SPELL_IDS } from "@/game/dsa/rules/spells";
 import { mergeCombatIntents, parseCombatIntent, type CombatIntent } from "@/game/dsa/combatIntent";
 import { CombatantCard } from "./dsa/CombatantCard";
 import { ActionIndicator } from "./dsa/ActionIndicator";
@@ -483,7 +483,7 @@ function SideLabel({ label, align }: { label: string; align: "left" | "right" })
 function detectTacticCommand(text: string, layard: Combatant | null): Tactic | null {
   const lower = text.toLowerCase();
   const knowsCombatSpell = Object.keys(layard?.spells ?? {}).some((id) =>
-    ["ignifaxius", "blitz_dich_find", "fulminictus"].includes(id),
+    COMBAT_SPELL_IDS.has(id),
   );
   if (/(flieh|flucht|einsch(?:ü|ue)chter|zur(?:ü|ue)ckziehen|wegrennen)/i.test(lower)) return "flee";
   if (/(defensiv|deckung|parier|vorsichtig|schild)/i.test(lower)) return "defensive";
@@ -492,7 +492,7 @@ function detectTacticCommand(text: string, layard: Combatant | null): Tactic | n
   if (/(keine magie|asp sparen|astralenergie sparen|ohne zauber)/i.test(lower)) return knowsCombatSpell ? "magic-none" : "balanced";
   if (/(viel magie|alles an magie|volle magie|zauberfeuer)/i.test(lower)) return knowsCombatSpell ? "magic-high" : null;
   if (/(wenig magie|sparsam zauber|ein bisschen magie)/i.test(lower)) return knowsCombatSpell ? "magic-low" : null;
-  if (/(zauber|wirke|magie|ignifaxius|fulminictus|blitz)/i.test(lower)) return knowsCombatSpell ? "magic-mid" : "spell";
+  if (/(zauber|wirke|magie|ignifaxius|fulminictus|blitz|horriphobus|bannbaladin|armatrutz|axxeleratus)/i.test(lower)) return knowsCombatSpell ? "magic-mid" : "spell";
   return null;
 }
 
@@ -513,12 +513,13 @@ function TacticPicker({
   confirmLabel: string;
   layard: Combatant | null;
 }) {
-  const combatSpellIds = new Set(["ignifaxius", "blitz_dich_find", "fulminictus"]);
+  const combatSpellIds = COMBAT_SPELL_IDS;
   const spells = layard?.spells ?? {};
   const knowsCombatSpell = Object.keys(spells).some((id) =>
     combatSpellIds.has(id),
   );
-  const knowsBalsam = typeof spells["balsam_salabunde"] === "number";
+  const knowsProtect =
+    typeof spells["armatrutz"] === "number" || typeof spells["axxeleratus"] === "number";
   const hasAsp = (layard?.ae ?? 0) > 0;
   // Magier-Modus: Spieler wählt Magie-Intensität statt klassischer Taktik.
   const mageMode = knowsCombatSpell;
@@ -549,7 +550,7 @@ function TacticPicker({
             if (t.startsWith("magic-")) {
               const known = SPELLS.filter(
                 (s) =>
-                  (combatSpellIds.has(s.id) || s.id === "balsam_salabunde") &&
+                  combatSpellIds.has(s.id) &&
                   typeof spells[s.id] === "number",
               );
               if (known.length === 0) return null;
@@ -600,17 +601,16 @@ function TacticPicker({
           );
         })}
       </div>
-      {mageMode && knowsBalsam && tactic !== "magic-none" && tactic !== "flee" && (
+      {mageMode && knowsProtect && tactic !== "magic-none" && tactic !== "flee" && (
         <div className="mb-3">
           <div className="dsa-typed text-[10px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b border-[rgba(20,12,4,0.55)] pb-1">
             Magie-Schwerpunkt
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {(
               [
-                { id: "offense", title: "Angriffszauber", blurb: "Nur Ignifaxius & Co. — kein Balsam." },
-                { id: "balanced", title: "Ausgeglichen", blurb: "Balsam erst, wenn Layard unter halber LE ist." },
-                { id: "healing", title: "Heilzauber", blurb: "Bevorzugt Balsam Salabunde, wenn Wunden vorhanden." },
+                { id: "offense", title: "Angriffszauber", blurb: "Ignifaxius, Fulminictus, Horriphobus & Co. — kein Schutzzauber." },
+                { id: "protect", title: "Schutz zuerst", blurb: "Erst Armatrutz bzw. Axxeleratus, danach Angriffszauber." },
               ] as { id: SpellFocus; title: string; blurb: string }[]
             ).map((opt) => {
               const active = spellFocus === opt.id;
