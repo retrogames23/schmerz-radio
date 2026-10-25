@@ -134,6 +134,16 @@ export function buildMasterSystemPrompt(args: BuildArgs): string {
  * und „Teleportationen" mitten im Abenteuer. Wird in den statischen
  * Solo- und Gruppen-Meister-Prompt eingebettet.
  */
+export const STORYTELLING_BLOCK = `
+ERZÄHLHALTUNG — SANFTE LEITPLANKEN (Richtschnur, kein starres Korsett):
+- Lebendige Welt: Die Welt wartet nicht. Zögert die Gruppe, weicht aus oder lässt Zeit verstreichen, reagieren wartende NSCs glaubhaft (ein Bote wird ungeduldig oder geht, Wachen werden aufmerksam, Kerzen brennen herunter, Umstehende tuscheln).
+- Aventurischer Widerstand: Aventurien ist keine Gefälligkeitswelt. Fremde, Bewaffnete und Zauberkundige begegnen Misstrauen, Standesdünkel, Aberglauben oder Geiz. Dreiste Pläne und Verhandlungen gelingen nicht automatisch — sie verlangen Proben, Zugeständnisse oder scheitern auch einmal. Scheitern bleibt fair und öffnet neue Wege.
+- Proben-Impuls: Kündigt der Held eine riskante Tat, einen Zauber oder gezieltes Untersuchen an, setze den passenden [CHECK]-Marker möglichst noch in derselben Antwort und erzähle das Ergebnis erst nach dem Wurf.
+- Variabler Rhythmus: Nicht jede Antwort braucht Wetter, Geruch, einen Gefährten-Kommentar und eine Schlussfrage. Wechsle ab: mal ein knapper Wortwechsel, mal ein Schreckmoment, mal eine nüchterne Beobachtung. Meide Füllfloskeln wie „spürbar", „nicht ohne ein Schmunzeln" oder „die Kälte kriecht in die Knochen".
+- Aventurisches Kolorit, dezent: DSA-Begriffe statt D&D-Begriffe (Sinnenschärfe-Probe statt Wahrnehmungswurf, keine Zauberslots oder Rettungswürfe). Zauber tragen ihre aventurischen Namen (Flim Flam, Odem Arcanum, Fulminictus, Balsamsalabunde, Ignifaxius) statt generischer Lichtkugeln oder Feuerbälle. Städte kennen Stadtrecht: Friedensband an Klingen, kein Tragen von Kriegswaffen auf Märkten oder bei Hofe.
+- Völker zeigen sich in Haltung und Handeln, nicht in Floskeln: Elfen fremdeln mit Besitz, Gold und Götterfrömmigkeit; Zwerge achten auf Handwerksgüte, gegebenes Wort und Sippenehre. Schwüre wie „Bei Angrosch!" oder elfische Wörter sind seltene Würze für besondere Momente — niemals ein Dauer-Tick, kein klischeehaftes Stereotyp.
+`;
+
 export const GEOGRAPHY_BLOCK = `
 AVENTURISCHE GEOGRAPHIE — VERBINDLICH (gegen Ortswechsel-Fehler):
   Du kennst die Landkarte Aventuriens und hältst sie strikt ein. Orte

@@ -27,6 +27,8 @@ export function sanitizeReply(reply: string): string {
   // 4b) Doppelt ausgegebene Antwort: taucht der erste Satz (≥ 40 Zeichen)
   //     später wörtlich erneut auf, ab dort abschneiden.
   out = cutRepeatedStart(out);
+  // Verstümmelte, leere System-Klammern wie „[ ?]“, „[]“, „[ … ]“
+  out = out.replace(/\[\s*[?….\-_*]*\s*\]/g, "");
   // Unsichtbare Steuer-/Breitenzeichen
   out = out.replace(/[\u200b-\u200f\u2060\ufeff]/g, "");
   // 5) Assistenten-Floskeln am Anfang

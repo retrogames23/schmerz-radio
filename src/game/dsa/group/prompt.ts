@@ -9,7 +9,7 @@ import { buildCoreLoreAppend, buildContextualLoreBlock, buildCompanionBackstorie
 import type { DsaCharacterSummary } from "@/game/types";
 import { defaultGearFor, serializeGearForPrompt, serializeCompanionGearForPrompt, type HeroGear } from "../gear";
 import { buildBfTimeAnchorPrompt } from "../time";
-import { GEOGRAPHY_BLOCK } from "../llmMasterPrompt";
+import { GEOGRAPHY_BLOCK, STORYTELLING_BLOCK } from "../llmMasterPrompt";
 
 export interface GroupHero {
   userId: string;
@@ -58,6 +58,7 @@ ${buildContextualLoreBlock({ setting, enemyIds: Object.keys(ENEMY_STATS) })}
 
 ${buildDsa3RulesBlock()}
 ${GEOGRAPHY_BLOCK}
+${STORYTELLING_BLOCK}
 ${companionBlock}
 
 SETTING DIESES ABENTEUERS — ${s?.title ?? "freie Wahl"}:
