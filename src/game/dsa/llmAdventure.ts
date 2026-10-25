@@ -353,6 +353,7 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
     itemsRemoved,
     leDelta,
     aeDelta,
+    moneyDelta,
   };
 }
 

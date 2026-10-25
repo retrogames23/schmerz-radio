@@ -1,3 +1,4 @@
+import { applyMoneyDelta } from "@/game/dsa/money";
 import {
   AI_MODEL_DSA_MASTER,
   OPENROUTER_CHAT_URL,
@@ -1207,13 +1208,14 @@ export const Route = createFileRoute("/api/public/dsa-master")({
 
           // Item-Marker des Meisters auf den Helden anwenden (nur eingeloggt).
           let appliedGear: HeroGear | null = null;
-          if (uid && (parsed.itemsAdded.length > 0 || parsed.itemsRemoved.length > 0)) {
+          if (uid && (parsed.itemsAdded.length > 0 || parsed.itemsRemoved.length > 0 || parsed.moneyDelta !== 0)) {
             try {
               const cur = await loadHeroGearAndRow(admin, uid, heroSlot);
               let g: HeroGear = cur.gear ?? defaultGearFor(
                 String(characterSnap.classId),
               );
               for (const name of parsed.itemsRemoved) g = removeItem(g, name);
+              if (parsed.moneyDelta) g = applyMoneyDelta(g, parsed.moneyDelta);
               for (const it of parsed.itemsAdded) g = addItem(g, it);
               await persistHeroGear(admin, uid, heroSlot, cur.rawHero, g);
               appliedGear = g;
