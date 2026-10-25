@@ -25,6 +25,7 @@ import { TALENTS } from "@/game/dsa/rules/talents";
 import { drainMasterNotes, rollAttributeCheck, rollTalentCheck } from "@/game/dsa/pendingMasterNotes";
 import {
   resolveSceneImage,
+  sceneCaption,
 } from "@/game/dsa/sceneImages";
 import {
   exportAdventureAsDocx,
@@ -739,19 +740,37 @@ export function DsaLlmAdventureScene() {
         {mode.kind === "play" && (
           <>
             {imgSrc && (
-              <button
-                type="button"
-                onClick={() => setImageZoomed(true)}
-                title="Bild vergrößern"
-                className="shrink-0 relative w-full bg-black/80 cursor-zoom-in focus:outline-none"
-              >
-                <img
-                  src={imgSrc}
-                  alt="Szene"
-                  loading="lazy"
-                  className="w-full h-32 sm:h-48 object-cover opacity-90"
-                />
-              </button>
+              <figure className="shrink-0 m-0 px-3 sm:px-5 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setImageZoomed(true)}
+                  title="Bild vergrößern"
+                  className="relative block w-full cursor-zoom-in focus:outline-none overflow-hidden rounded-sm"
+                  style={{
+                    WebkitMaskImage:
+                      "radial-gradient(ellipse 72% 78% at 50% 50%, #000 58%, transparent 100%)",
+                    maskImage:
+                      "radial-gradient(ellipse 72% 78% at 50% 50%, #000 58%, transparent 100%)",
+                  }}
+                >
+                  <img
+                    src={imgSrc}
+                    alt={sceneCaption(imageTag) ?? "Szene"}
+                    loading="lazy"
+                    className="w-full h-32 sm:h-48 object-cover sepia-[.25] saturate-[.85]"
+                  />
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0"
+                    style={{ boxShadow: "inset 0 0 40px 12px rgba(120, 85, 40, 0.35)" }}
+                  />
+                </button>
+                {sceneCaption(imageTag) && (
+                  <figcaption className="mt-1 text-center font-serif italic text-xs sm:text-sm tracking-wide text-[#2a1f10]/70">
+                    ❧ {sceneCaption(imageTag)} ❧
+                  </figcaption>
+                )}
+              </figure>
             )}
 
             <div
