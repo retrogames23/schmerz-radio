@@ -1,4 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe, test as it } from "node:test";
+import assert from "node:assert/strict";
+const expect = (v: unknown) => ({ toBe: (x: unknown) => assert.equal(v, x), toBeNull: () => assert.equal(v, null) });
 import { matchWeaponId } from "./rules/weapons";
 import { addItem, defaultGearFor, equipWeapon, emptyGear, withWeaponIds } from "./gear";
 
