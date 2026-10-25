@@ -123,14 +123,11 @@ const DSA_MODEL_IDS = new Set(DSA_MASTER_MODELS.map((m) => m.id));
  * - Spender (donor=true): freie Wahl aus der Allowlist, Default Luna.
  */
 export function resolveDsaMasterModel(
-  requested: unknown,
+  _requested: unknown,
   donor: boolean,
 ): string {
-  if (!donor) return AI_MODEL_DSA_FREE;
-  if (typeof requested !== "string" || !DSA_MODEL_IDS.has(requested)) {
-    return AI_MODEL_DSA_MASTER;
-  }
-  return requested;
+  // Feste Zwei-Stufen-Logik: keine manuelle Modellwahl mehr.
+  return donor ? AI_MODEL_DSA_MASTER : AI_MODEL_DSA_FREE;
 }
 
 /**
