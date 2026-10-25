@@ -149,6 +149,7 @@ async function callChatWithLoreToolOnce(
     let upstream: Response;
     try {
       upstream = await fetch(OPENROUTER_CHAT_URL, {
+        signal: AbortSignal.timeout(60_000),
         method: "POST",
         headers: openRouterHeaders(apiKey),
         body: JSON.stringify({
