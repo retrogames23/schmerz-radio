@@ -27,6 +27,7 @@ export function sanitizeReply(reply: string): string {
   // 4b) Doppelt ausgegebene Antwort: taucht der erste Satz (≥ 40 Zeichen)
   //     später wörtlich erneut auf, ab dort abschneiden.
   out = cutRepeatedStart(out);
+  out = cutParaphrasedRestart(out);
   // Verstümmelte, leere System-Klammern wie „[ ?]“, „[]“, „[ … ]“
   out = out.replace(/\[\s*[?….\-_*]*\s*\]/g, "");
   // Unsichtbare Steuer-/Breitenzeichen
@@ -55,4 +56,31 @@ function cutRepeatedStart(text: string): string {
   const tag = text.slice(0, again).match(/\[(?:TJARK|BREM|YELVA)\][^\S\n]*(?:\(Outtime\)\s*)?$/i);
   if (tag) cut = again - tag[0].length;
   return text.slice(0, cut).trimEnd();
+}
+
+const STOP = new Set("der die das den dem des ein eine einen einem einer und oder aber mit von zu im in am an auf aus bei für über unter vor nach ist sind war wird sich nicht noch schon auch nur wie als dass ihr euch du dich dir er sie es wir uns so da hier dort wenn während".split(" "));
+
+function contentWords(p: string): Set<string> {
+  const words = p.toLowerCase().replace(/\[[^\]]*\]/g, " ").match(/[a-zäöüß]{4,}/g) ?? [];
+  return new Set(words.filter((w) => !STOP.has(w)).map((w) => w.slice(0, 6)));
+}
+
+/** Schneidet einen späteren Tjark-Absatz ab, der den ersten Erzählabsatz
+ *  nur umformuliert wiederholt (≥ 55 % gemeinsame Inhaltswörter). */
+export function cutParaphrasedRestart(text: string): string {
+  const paras = text.split(/\n\s*\n/);
+  if (paras.length < 2) return text;
+  const isNarr = (p: string) => !/^\s*\[(?:BREM|YELVA)\]/i.test(p) && !/\(Outtime\)/i.test(p);
+  const firstIdx = paras.findIndex((p) => isNarr(p) && p.length >= 120);
+  if (firstIdx < 0) return text;
+  const a = contentWords(paras[firstIdx]);
+  if (a.size < 8) return text;
+  for (let i = firstIdx + 1; i < paras.length; i++) {
+    if (!isNarr(paras[i]) || paras[i].length < 120) continue;
+    const b = contentWords(paras[i]);
+    let shared = 0;
+    for (const w of b) if (a.has(w)) shared++;
+    if (shared / Math.min(a.size, b.size) >= 0.55) return paras.slice(0, i).join("\n\n").trimEnd();
+  }
+  return text;
 }
