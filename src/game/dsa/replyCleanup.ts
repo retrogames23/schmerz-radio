@@ -40,3 +40,17 @@ export function sanitizeReply(reply: string): string {
   out = out.replace(/[ \t]+$/gm, "").replace(/\n{3,}/g, "\n\n");
   return out.trim();
 }
+
+function cutRepeatedStart(text: string): string {
+  const body = text.replace(/^\s*\[(?:TJARK|BREM|YELVA)\]\s*(?:\(Outtime\)\s*)?/i, "");
+  const m = /^([\s\S]{40,}?[.!?])(?:\s|$)/.exec(body);
+  if (!m) return text;
+  const probe = m[1].slice(0, 40);
+  const first = text.indexOf(probe);
+  const again = text.indexOf(probe, first + probe.length);
+  if (first < 0 || again < 0) return text;
+  let cut = again;
+  const tag = text.slice(0, again).match(/\[(?:TJARK|BREM|YELVA)\][^\S\n]*(?:\(Outtime\)\s*)?$/i);
+  if (tag) cut = again - tag[0].length;
+  return text.slice(0, cut).trimEnd();
+}
