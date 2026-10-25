@@ -6,7 +6,8 @@
  * und die DSA-Abenteuer (solo + Gruppe). Das Overlay `ChatLiveOverlay`
  * abonniert diesen Speicher und zeigt bis zu vier Sessions live an.
  *
- * Rein lokal pro Browser-Tab — es werden keine zusätzlichen Daten
+ * Lokal im Browser, per BroadcastChannel + localStorage tab-übergreifend
+ * synchronisiert — es werden keine zusätzlichen Daten
  * verschickt, nur mitgeschrieben, was ohnehin durch die Leitung geht.
  */
 
@@ -39,10 +40,62 @@ export interface ChatLiveState {
 
 const MAX_LIVE_SESSIONS = 4;
 const MAX_MESSAGES_PER_SESSION = 80;
+const STORAGE_KEY = "chatlive:sessions:v1";
+const CHANNEL_NAME = "chatlive";
 
-let state: ChatLiveState = { open: false, sessions: [] };
+const EMPTY: ChatLiveState = { open: false, sessions: [] };
+let state: ChatLiveState = EMPTY;
 let nextSessionId = 1;
 const listeners = new Set<() => void>();
+
+// --- Tab-übergreifende Synchronisation (BroadcastChannel + localStorage) ---
+let syncReady = false;
+let channel: BroadcastChannel | null = null;
+
+function newSessionId(): number {
+  // Tab-übergreifend eindeutig genug: Zeit + Zufall + Zähler.
+  return Date.now() * 1000 + Math.floor(Math.random() * 900) + (nextSessionId++ % 100);
+}
+
+function ensureSync() {
+  if (syncReady || typeof window === "undefined") return;
+  syncReady = true;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const sessions = JSON.parse(raw) as ChatLiveSession[];
+      if (Array.isArray(sessions)) state = { ...state, sessions };
+    }
+  } catch {
+    /* ignore */
+  }
+  try {
+    if (typeof BroadcastChannel !== "undefined") {
+      channel = new BroadcastChannel(CHANNEL_NAME);
+      channel.onmessage = (ev: MessageEvent) => {
+        const sessions = (ev.data as { sessions?: ChatLiveSession[] })?.sessions;
+        if (!Array.isArray(sessions)) return;
+        state = { ...state, sessions };
+        emit();
+      };
+    }
+  } catch {
+    channel = null;
+  }
+}
+
+function publish(sessions: ChatLiveSession[]) {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+  } catch {
+    /* ignore */
+  }
+  try {
+    channel?.postMessage({ sessions });
+  } catch {
+    /* ignore */
+  }
+}
 
 function emit() {
   for (const cb of listeners) {
@@ -55,11 +108,15 @@ function emit() {
 }
 
 function setState(next: ChatLiveState) {
+  ensureSync();
+  const sessionsChanged = next.sessions !== state.sessions;
   state = next;
+  if (sessionsChanged && typeof window !== "undefined") publish(next.sessions);
   emit();
 }
 
 export function subscribeChatLive(cb: () => void): () => void {
+  ensureSync();
   listeners.add(cb);
   return () => listeners.delete(cb);
 }
@@ -69,7 +126,7 @@ export function getChatLiveState(): ChatLiveState {
 }
 
 export function useChatLiveState(): ChatLiveState {
-  return useSyncExternalStore(subscribeChatLive, getChatLiveState);
+  return useSyncExternalStore(subscribeChatLive, getChatLiveState, () => EMPTY);
 }
 
 export function setChatLiveOpen(open: boolean): void {
@@ -109,11 +166,12 @@ function pushMessage(key: string, msg: ChatLiveMessage, status?: ChatLiveSession
  * »beendet« markiert und ans Ende gereiht.
  */
 export function chatLiveTrack(key: string, kind: ChatLiveKind, title: string): ChatLiveHandle {
+  ensureSync();
   const existing = state.sessions.find((s) => s.key === key && s.status !== "ended");
   if (!existing) {
     const now = Date.now();
     const session: ChatLiveSession = {
-      id: nextSessionId++,
+      id: newSessionId(),
       key,
       kind,
       title,
@@ -161,6 +219,29 @@ export function chatLiveTrack(key: string, kind: ChatLiveKind, title: string): C
       setState({ ...state, sessions });
     },
   };
+}
+
+/** Bestehenden Verlauf (z. B. geladenes Abenteuer) als Session-Inhalt setzen. */
+export function chatLiveSeed(
+  key: string,
+  kind: ChatLiveKind,
+  title: string,
+  messages: { role: ChatLiveMessage["role"]; text: string }[],
+): void {
+  chatLiveTrack(key, kind, title);
+  const now = Date.now();
+  const msgs = messages
+    .filter((m) => m.text.trim())
+    .slice(-MAX_MESSAGES_PER_SESSION)
+    .map((m) => ({ role: m.role, text: m.text.trim(), at: now }));
+  setState({
+    ...state,
+    sessions: state.sessions.map((s) =>
+      s.key === key && s.status !== "ended"
+        ? { ...s, messages: msgs, status: "active" as const, updatedAt: now }
+        : s,
+    ),
+  });
 }
 
 export const CHAT_LIVE_KIND_LABEL: Record<ChatLiveKind, string> = {

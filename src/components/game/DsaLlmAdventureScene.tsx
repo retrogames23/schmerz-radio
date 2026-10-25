@@ -4,7 +4,7 @@ import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playDiceRoll } from "@/audio/sfx";
 import { getDsaModel } from "@/lib/dsaModelPreference";
-import { chatLiveTrack } from "@/dev/chatLive";
+import { chatLiveSeed, chatLiveTrack } from "@/dev/chatLive";
 import { Cpu } from "lucide-react";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useAuth } from "@/auth/AuthContext";
@@ -324,6 +324,20 @@ export function DsaLlmAdventureScene() {
           }
         }
         setTurns(restored);
+        // Bisherigen Verlauf in den LLM-Live-Monitor übernehmen.
+        chatLiveSeed(
+          `dsa:${heroSlot}`,
+          "dsa",
+          `DSA · ${dsaCharacterRef.current?.name ?? "Abenteuer"}`,
+          restored.map((t) =>
+            t.kind === "player"
+              ? { role: "user" as const, text: t.text }
+              : {
+                  role: "assistant" as const,
+                  text: t.lines.map((l) => (l.speaker ? `${l.speaker}: ${l.text}` : l.text)).join("\n"),
+                },
+          ),
+        );
         if (adv.status !== "active") {
           setEndState(adv.status);
         }
