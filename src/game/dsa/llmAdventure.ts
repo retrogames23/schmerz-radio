@@ -1,3 +1,4 @@
+import { parseMoney } from "./money";
 import { TALENTS } from "./rules/talents";
 import { DSA_SCENE_TAGS } from "./sceneImages";
 import { ENEMY_STATS } from "./combat";
@@ -146,6 +147,8 @@ export interface ParsedMasterTurn {
   leDelta: number;
   /** [AE: -N] / [AE: +N] — verbrauchte / regenerierte Astralenergie. */
   aeDelta: number;
+  /** [GELD: +5 Dukaten] / [GELD: -3 Silbertaler] — Delta in Kreuzer. */
+  moneyDelta: number;
 }
 
 const SPEAKER_RE = /^\s*\[(TJARK|BREM|YELVA)\]\s*/i;
@@ -195,6 +198,8 @@ const LE_RE_G = /\[LE:\s*([+-]\s*\d{1,3})\s*\]/gi;
 const AE_RE_G = /\[AE:\s*([+-]\s*\d{1,3})\s*\]/gi;
 const ITEM_PLUS_RE_G = /\[ITEM\+:\s*([^\]]+?)\s*\]/gi;
 const ITEM_MINUS_RE_G = /\[ITEM-:\s*([^\]]+?)\s*\]/gi;
+/** Solo: [GELD: +5 Dukaten 3 Silbertaler]. Gruppe nutzt [GELD: Name: ...]. */
+export const GELD_RE_G = /\[GELD:\s*([^\]]+?)\s*\]/gi;
 /** Entfernt jegliche Marker aus dem reinen Sprechtext einer Zeile. */
 function stripMarkers(s: string): string {
   return s
@@ -207,6 +212,7 @@ function stripMarkers(s: string): string {
     .replace(AP_RE, "")
     .replace(ITEM_PLUS_RE_G, "")
     .replace(ITEM_MINUS_RE_G, "")
+    .replace(GELD_RE_G, "")
     .replace(LE_RE_G, "")
     .replace(AE_RE_G, "")
     // Sicherheitsnetz: alle übrigen Pseudo-Marker à la [NPC_PRIEST],
@@ -260,6 +266,11 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
     const payload = (m[1] ?? "").trim().slice(0, 60);
     if (payload) itemsRemoved.push(payload);
     if (itemsRemoved.length >= 6) break;
+  }
+  let moneyDelta = 0;
+  for (const m of text.matchAll(GELD_RE_G)) {
+    const k = parseMoney(m[1] ?? "");
+    if (k !== null) moneyDelta += k;
   }
   const sceneTag =
     sceneMatch && DSA_SCENE_TAGS.includes(sceneMatch[1].toLowerCase())
@@ -342,6 +353,7 @@ export function parseMasterTurn(raw: string): ParsedMasterTurn {
     itemsRemoved,
     leDelta,
     aeDelta,
+    moneyDelta,
   };
 }
 

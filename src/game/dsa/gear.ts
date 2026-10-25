@@ -1,3 +1,4 @@
+import { addCoins, applyMoneyDelta, coinFor, formatKreuzer, purseKreuzer } from "./money";
 import type { DsaClassId } from "./classes";
 import { WEAPONS } from "./rules/weapons";
 import { ARMORS } from "./rules/armor";
@@ -51,7 +52,7 @@ export function defaultGearFor(classId: DsaClassId | string): HeroGear {
         shieldId: "rundschild",
         items: [
           { id: "dolch_im_guertel", name: "Dolch im Gürtel", description: "Schmal, gut versteckt.", count: 1 },
-          { id: "reisegeld", name: "Reisegeld", description: "10 Silbertaler in einem Lederbeutel.", count: 10 },
+          { id: "silbertaler", name: "Silbertaler", description: "Gängige Silbermünze.", count: 10 },
           { id: "trinkschlauch", name: "Trinkschlauch", description: "Halber Liter Wasser, leicht abgestanden." },
         ],
       };
@@ -189,6 +190,8 @@ export function addItem(
 ): HeroGear {
   const name = (input.name || "").trim().slice(0, 60);
   if (!name) return gear;
+  const coin = coinFor(input.id ?? name);
+  if (coin) return addCoins(gear, coin, input.count ?? 1);
   const id = input.id ? normalizeId(input.id) : normalizeId(name);
   const count = Math.max(1, Math.min(99, Math.round(input.count ?? 1)));
   const description = (input.description || "").trim().slice(0, 160) || undefined;
@@ -222,6 +225,11 @@ export function removeItem(gear: HeroGear, idOrName: string): HeroGear {
   } else if (tail) {
     qty = parseInt(tail[2], 10);
     raw = tail[1].trim();
+  }
+  const coin = coinFor(raw);
+  if (coin) {
+    const k = coin.kreuzer * (qty && qty > 0 ? qty : 1);
+    return applyMoneyDelta(gear, -k);
   }
   const needle = raw.toLowerCase();
   const normNeedle = normalizeId(needle);
@@ -381,6 +389,7 @@ export function serializeGearForPrompt(gear: HeroGear): string {
     `  Rüstung: ${armor ? `${armor.name} (RS ${armor.rs})` : "— keine —"}`,
   );
   if (shield) lines.push(`  Schild:  ${shield.name} (PA+${shield.paBonus ?? 0})`);
+  lines.push(`  Geldkatze: ${formatKreuzer(purseKreuzer(gear))}`);
   if (gear.items.length === 0) {
     lines.push("  Inventar: (leer)");
   } else {
