@@ -825,9 +825,12 @@ export const Route = createFileRoute("/api/public/dsa-group")({
             className: sanitize(hero.className, 40) || "Abenteurer",
             classId: String(hero.classId).replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 40),
             attrs: sanitizeAttrs(hero.attrs),
-            le: Math.max(0, Math.round(hero.le)),
+            // Gruppenabenteuer beginnen stets mit vollständig geheiltem Helden.
+            le: Math.max(1, Math.round(hero.leMax)),
             leMax: Math.max(1, Math.round(hero.leMax)),
-            ae: typeof hero.ae === "number" ? Math.max(0, Math.round(hero.ae)) : null,
+            ae: typeof hero.ae === "number"
+              ? Math.max(0, Math.round(Math.max(hero.ae, typeof hero.aeMax === "number" ? hero.aeMax : hero.ae)))
+              : null,
             rerolled: !!(hero as { rerolled?: boolean }).rerolled,
           };
           const { error: upErr } = await admin

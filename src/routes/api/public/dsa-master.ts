@@ -832,14 +832,22 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             className: sanitizePromptField(character.className, 40) || "Abenteurer",
             classId: String(character.classId).replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 40),
             attrs: sanitizeAttrs(character.attrs),
-            le: typeof character.le === "number" && Number.isFinite(character.le)
-              ? Math.max(0, Math.round(character.le))
-              : 0,
+            // Neues Abenteuer: Held ist stets vollständig geheilt.
+            le: typeof character.leMax === "number" && Number.isFinite(character.leMax)
+              ? Math.max(1, Math.round(character.leMax))
+              : 1,
             leMax: typeof character.leMax === "number" && Number.isFinite(character.leMax)
               ? Math.max(1, Math.round(character.leMax))
               : 1,
             ae: typeof character.ae === "number" && Number.isFinite(character.ae)
-              ? Math.max(0, Math.round(character.ae))
+              ? Math.max(
+                  0,
+                  Math.round(
+                    typeof character.aeMax === "number" && Number.isFinite(character.aeMax)
+                      ? Math.max(character.ae, character.aeMax)
+                      : character.ae,
+                  ),
+                )
               : null,
             rerolled: !!character.rerolled,
           };
