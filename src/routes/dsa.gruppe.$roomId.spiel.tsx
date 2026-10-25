@@ -12,6 +12,7 @@ import { rollAttributeCheck, rollTalentCheck } from "@/game/dsa/pendingMasterNot
 import { defaultTalents } from "@/game/dsa/advancement";
 import { TALENTS } from "@/game/dsa/rules/talents";
 import { playDiceRoll } from "@/audio/sfx";
+import { chatLiveTrack } from "@/dev/chatLive";
 import { useSettings } from "@/audio/SettingsContext";
 import { useCoarsePointer } from "@/hooks/useCoarsePointer";
 
@@ -262,6 +263,33 @@ function SpielraumPage() {
   useEffect(() => {
     setImageZoomed(false);
   }, [turns.sceneTag]);
+
+  // LLM-Live-Mitschrift (Cheat »chatlivecheat«): neue Meister- und
+  // Spieler-Zeilen aus dem Realtime-Verlauf in den Tracker spiegeln.
+  const liveSeenRef = useRef(0);
+  useEffect(() => {
+    if (!roomId) return;
+    if (messages.length < liveSeenRef.current) liveSeenRef.current = 0;
+    const fresh = messages.slice(liveSeenRef.current);
+    liveSeenRef.current = messages.length;
+    if (fresh.length === 0) return;
+    const live = chatLiveTrack(
+      `dsa-gruppe:${roomId}`,
+      "dsa-gruppe",
+      `DSA-Gruppe · ${room?.name ?? roomId}`,
+    );
+    for (const m of fresh) {
+      if (m.role === "master") {
+        const parsed = parseMasterTurn(m.content);
+        const text = parsed.lines
+          .map((l) => (l.speaker ? `${l.speaker}: ${l.text}` : l.text))
+          .join("\n");
+        if (text) live.assistant(text);
+      } else if (m.role === "player") {
+        live.user(`${m.author_hero_name ?? "Spieler"}: ${m.content}`);
+      }
+    }
+  }, [messages, roomId, room?.name]);
 
   // Bedenkzeit-Verlängerungen dieser Runde (Systemzeilen nach der letzten Meister-Wende).
   const extensionsUsed = useMemo(() => {
