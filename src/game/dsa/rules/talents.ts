@@ -22,6 +22,8 @@ export const TALENTS: TalentDef[] = [
   { id: "athletik",      name: "Athletik / Akrobatik", probe: ["MU", "GE", "KK"], category: "koerper" },
   { id: "selbstbeherrschung", name: "Selbstbeherrschung", probe: ["MU", "MU", "KK"], category: "koerper" },
   { id: "sinnenschaerfe", name: "Sinnenschärfe",    probe: ["KL", "IN", "IN"], category: "koerper" },
+  { id: "reiten",        name: "Reiten",            probe: ["CH", "GE", "KK"], category: "koerper" },
+  { id: "zechen",        name: "Zechen",            probe: ["IN", "KK", "KK"], category: "koerper" },
 
   // Gesellschaft
   { id: "ueberreden",    name: "Überreden",         probe: ["MU", "IN", "CH"], category: "gesellschaft" },
@@ -30,6 +32,8 @@ export const TALENTS: TalentDef[] = [
   { id: "feilschen",     name: "Feilschen",         probe: ["KL", "IN", "CH"], category: "gesellschaft" },
   { id: "lehren",        name: "Lehren",            probe: ["KL", "IN", "CH"], category: "gesellschaft" },
   { id: "etikette",      name: "Etikette",          probe: ["KL", "IN", "CH"], category: "gesellschaft" },
+  { id: "betoeren",      name: "Betören",           probe: ["IN", "CH", "CH"], category: "gesellschaft" },
+  { id: "tanzen",        name: "Tanzen",            probe: ["CH", "GE", "GE"], category: "gesellschaft" },
 
   // Natur
   { id: "faehrtenlesen", name: "Fährtensuchen",     probe: ["KL", "IN", "GE"], category: "natur" },
@@ -54,6 +58,7 @@ export const TALENTS: TalentDef[] = [
   { id: "taschendiebstahl", name: "Taschendiebstahl", probe: ["MU", "FF", "GE"], category: "handwerk" },
   { id: "musizieren",    name: "Musizieren",        probe: ["CH", "FF", "KK"], category: "handwerk" },
   { id: "schmieden",     name: "Schmieden",         probe: ["FF", "KK", "KK"], category: "handwerk" },
+  { id: "fahrzeug",      name: "Fahrzeug lenken",   probe: ["IN", "CH", "FF"], category: "handwerk" },
 ];
 
 export function talentsForPrompt(): string {
