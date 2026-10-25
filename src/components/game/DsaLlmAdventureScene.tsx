@@ -421,7 +421,7 @@ export function DsaLlmAdventureScene() {
         }
       }
     },
-    [appendMaster, setMood, creditHeroAp, updateHero],
+    [appendMaster, setMood, creditHeroAp, updateHero, heroSlot],
   );
 
   // Mood-Pool aktivieren, solange die Tafelrunde offen ist. Beim Schließen
