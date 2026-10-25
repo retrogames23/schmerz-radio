@@ -9,7 +9,7 @@ import { resolveLoreTopic, LORE_TOPIC_HINT } from "./lookup";
 import { searchDsaRulebook } from "./rulebook.server";
 import {
   AI_MODEL_DSA_MASTER,
-  AI_MODEL_DSA_FREE,
+  AI_MODEL_DSA_FALLBACK,
   OPENROUTER_CHAT_URL,
   getModelLimits,
   openRouterHeaders,
@@ -105,11 +105,11 @@ export async function callChatWithLoreTool(
   // Unsichtbarer Ausfallschutz: Bei Ausfall/Timeout des Hauptmodells
   // (nicht bei Kontingent-, Key- oder Rate-Limit-Fehlern) genau diesen
   // einen Zug mit dem günstigen Modell erzählen statt Fehler anzuzeigen.
-  if (!result.ok && result.status === 502 && model !== AI_MODEL_DSA_FREE) {
-    console.warn(`[dsa-fallback] ${model} failed (${result.error}) → ${AI_MODEL_DSA_FREE}`);
+  if (!result.ok && result.status === 502 && model !== AI_MODEL_DSA_FALLBACK) {
+    console.warn(`[dsa-fallback] ${model} failed (${result.error}) → ${AI_MODEL_DSA_FALLBACK}`);
     return callChatWithLoreToolOnce(apiKey, messages, {
       ...options,
-      model: AI_MODEL_DSA_FREE,
+      model: AI_MODEL_DSA_FALLBACK,
       callLabel: `${options.callLabel ?? "dsa-master"}:fallback`,
     });
   }

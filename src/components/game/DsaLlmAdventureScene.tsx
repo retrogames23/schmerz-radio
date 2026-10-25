@@ -3,7 +3,7 @@ import { ScrollText, Loader2, Send, LogOut, Dices, Swords, Maximize2, Minimize2,
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playDiceRoll } from "@/audio/sfx";
-import { getDsaModel, getDsaModelOption } from "@/lib/dsaModelPreference";
+import { getDsaModel } from "@/lib/dsaModelPreference";
 import { Cpu } from "lucide-react";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useAuth } from "@/auth/AuthContext";
@@ -162,28 +162,17 @@ function normalizeHeroSlot(value: number | undefined): 1 | 2 | 3 | 4 | 5 | 6 {
 }
 
 /**
- * Read-only Anzeige des aktiven KI-Meister-Modells. Während des Abenteuers
- * darf NICHT mehr gewechselt werden — das würde den Prompt-Cache wegwerfen
- * und Erzählton/Telemetrie inkonsistent machen. Wechseln geht nur vor dem
- * Start eines neuen Abenteuers (siehe SettingPicker).
+ * Read-only Anzeige des KI-Meister-Modells (für alle gleich).
  */
 function DsaModelBadge() {
-  const donation = useDonationStatus();
-  const [opt, setOpt] = useState(() => getDsaModelOption());
-  useEffect(() => {
-    const handler = () => setOpt(getDsaModelOption());
-    window.addEventListener("dsa-model-changed", handler);
-    return () => window.removeEventListener("dsa-model-changed", handler);
-  }, []);
-  if (!donation.unlocked) return null;
   return (
     <span
       className="hidden sm:inline-flex items-center gap-1.5 rounded border border-[#3a2c1a]/40 bg-[#f5e6c8]/60 px-2 py-1 text-[11px] font-serif text-[#2a1f10] shadow-sm"
-      title={`KI-Meister dieser Runde: ${opt.label}\n${opt.hint}\nWechsel nur beim Start eines neuen Abenteuers.`}
+      title="KI-Meister: GPT-6 Luna"
     >
       <Cpu className="h-3 w-3 opacity-70" strokeWidth={2} aria-hidden />
       <span className="opacity-70">KI:</span>
-      <span className="font-semibold">{opt.short}</span>
+      <span className="font-semibold">Luna</span>
     </span>
   );
 }
