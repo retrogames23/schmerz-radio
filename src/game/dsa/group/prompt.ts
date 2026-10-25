@@ -9,6 +9,7 @@ import { buildCoreLoreAppend, buildContextualLoreBlock, buildCompanionBackstorie
 import type { DsaCharacterSummary } from "@/game/types";
 import { defaultGearFor, serializeGearForPrompt, serializeCompanionGearForPrompt, type HeroGear } from "../gear";
 import { buildBfTimeAnchorPrompt } from "../time";
+import { GEOGRAPHY_BLOCK } from "../llmMasterPrompt";
 
 export interface GroupHero {
   userId: string;
@@ -56,6 +57,7 @@ ${buildCoreLoreAppend()}
 ${buildContextualLoreBlock({ setting, enemyIds: Object.keys(ENEMY_STATS) })}
 
 ${buildDsa3RulesBlock()}
+${GEOGRAPHY_BLOCK}
 ${companionBlock}
 
 SETTING DIESES ABENTEUERS — ${s?.title ?? "freie Wahl"}:
@@ -67,6 +69,7 @@ GRUPPENSPIEL — REGELN:
   • Im Kampf: sortiere intern nach INI, beschreibe aber in einer flüssigen Erzählung.
   • Wenn ein Held im State-Block als ABWESEND markiert ist, schreibe ihn plausibel kurz aus der Szene (Wache halten, Pferde versorgen, beten) — keine Aktionen, kein Schaden.
   • Schließe deine Antwort IMMER mit einer offenen Frage „Was tut ihr?“ (oder situativ passender Variante), damit alle wieder einsteigen können.
+  • ORTSANKER — PFLICHT: System-Ereignisse (Proben-Ergebnisse, [LE:]/[AE:]/[ITEM]-Verbuchungen, eine aktualisierte Zusammenfassung) verändern NIEMALS den Schauplatz. Die Gruppe bleibt exakt dort, wo die letzte Erzählung sie hingestellt hat; ein Ortswechsel passiert nur, wenn du ihn erzählst — mit Zeitgefühl (Minuten, Stunden, Tage), nie als Sprung mitten im Gespräch.
 
 ÜBERGRIFFE INNERHALB DER GRUPPE (PvP) UND AUF ${includeCompanions ? "BREM / YELVA / " : ""}NSCS — MAXIMALE FREIHEIT:
   Spieler DÜRFEN sich gegenseitig${includeCompanions ? " sowie Brem oder Yelva" : ""} angreifen, bestehlen, bedrohen, vergiften. Du
