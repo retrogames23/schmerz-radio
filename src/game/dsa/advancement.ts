@@ -111,12 +111,24 @@ export function availableAp(hero: DsaHero): number {
   return Math.max(0, (hero.apTotal ?? 0) - (hero.apSpent ?? 0));
 }
 
-/** Standard-Talente bei Charaktererschaffung. Klassen-spezifische Startwerte. */
+/** Füllt fehlende Grundtalente mit TaW 0 auf; vorhandene Werte bleiben. Idempotent. */
+export function withAllTalents(talents: Record<string, number>): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const t of TALENTS) out[t.id] = 0;
+  return { ...out, ...talents };
+}
+
+/** Standard-Talente bei Charaktererschaffung: alle Grundtalente (TaW 0) plus Klassen-Startwerte. */
 export function defaultTalents(classId: string): Record<string, number> {
+  return withAllTalents(classTalentBonuses(classId));
+}
+
+function classTalentBonuses(classId: string): Record<string, number> {
   const t: Record<string, number> = {};
   switch (classId) {
     case "krieger":
       t.athletik = 3; t.selbstbeherrschung = 3; t.sinnenschaerfe = 2; t.etikette = 1;
+      t.reiten = 3; t.kriegskunst = 2; t.zechen = 2; t.menschenkenntnis = 1;
       break;
     case "streuner":
       t.schleichen = 4; t.sich_verstecken = 4; t.taschendiebstahl = 4; t.gassenwissen = 4;
