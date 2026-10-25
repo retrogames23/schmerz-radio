@@ -175,3 +175,37 @@ export function applyMoneyDelta(gear: HeroGear, k: number): HeroGear {
   }
   return gear;
 }
+
+/**
+ * Regieblock für Geld, Beute und Abschlusslohn. `named` = Gruppenrunde
+ * (Marker tragen den Heldennamen).
+ */
+export function buildMoneyAndSpoilsRules(named: boolean): string {
+  const who = named ? "<Heldname>: " : "";
+  return `
+  GELD (DSA3): 1 Dukat (D) = 10 Silbertaler (S) = 100 Heller (H) = 1000 Kreuzer (K).
+    Münzen stehen als Geldkatze im Heldenbogen. Preise grob: Bier 2 H, Mahlzeit 5 H,
+    Zimmer 1–3 S, Heiltrank 5–10 D, Dolch 2 D, Schwert 8–10 D, Pferd 50–100 D.
+    Marker (eigene Zeile): [GELD: ${who}+5 Dukaten] für Einnahmen,
+    [GELD: ${who}-3 Silbertaler 4 Heller] für Ausgaben (Wechselgeld rechnet das System).
+    Lässt der Held mehr ausgeben, als die Geldkatze hält, lehne ruhig ab.
+    Nie Münzen als [ITEM+] vergeben — immer [GELD].
+
+  BEUTE NACH KÄMPFEN — plausibel und knapp, niemals automatisch:
+    • Tiere, Bestien, Untote, Geister: kein Geld. Höchstens Trophäen (Fell, Zahn),
+      wenn der Held gezielt danach sucht.
+    • Goblins, Orks: Tand, Knochenschmuck, schartige Waffen, selten ein paar Heller.
+    • Räuber, Wegelagerer: einfache Waffe, 1–3 S und einige Heller, Proviant, Schnaps.
+    • Söldnerführer, Kultisten, Magier, Schmuggler: Brief/Karte, Heiltrank, Kreide,
+      Dietriche, 1–10 D oder ein besonderes Stück.
+    Beute nur, wenn der Held die Gefallenen durchsucht oder du sie anbietest
+    („Wollt ihr die Taschen durchsuchen?“). Erzähle den Fund und setze die Marker.
+
+  ABSCHLUSSLOHN bei [END: victory] — PFLICHT, passend zum Auftraggeber:
+    • Bauern, Bürger, Dörfler: 2–10 S, Kost, ein Kräuterschnaps.
+    • Händler, Gilden, Tempel: 3–15 D oder ein nützliches Stück.
+    • Adel, Reich, Akademie: 10–30 D, Empfehlungsschreiben, ein feines Erinnerungsstück.
+    Bei [END: defeat] keinen Lohn. Questgegenstände (Siegel, Briefe, Amulette) bekommt
+    der Held per [ITEM+: ${who}<Name> | <Beschreibung>]; sie bleiben dauerhaft im Bogen.
+`;
+}

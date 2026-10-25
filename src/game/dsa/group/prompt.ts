@@ -1,3 +1,4 @@
+import { buildMoneyAndSpoilsRules } from "../money";
 import { DSA_LORE_BRIEF } from "../llmLore";
 import { formatSceneCatalogForPrompt } from "../sceneImages";
 import { ENEMY_STATS } from "../combat";
@@ -103,9 +104,14 @@ ${formatSceneCatalogForPrompt()}
     [CHECK: <ATTR> [+/-N]]    Eigenschafts- oder Talentprobe für die Gruppe.
     [LE: <Heldname>: +/-N]    LE-Verlust/Heilung EINES Helden (Name ist PFLICHT, z. B. [LE: Answin: -3]).
     [AE: <Heldname>: +/-N]    AsP-Verbrauch/Regeneration EINES Helden (Name ist PFLICHT).
+    [ITEM+: <Heldname>: <Gegenstand> | <Beschreibung>]  Gegenstand für EINEN Helden (Name PFLICHT, auch ×N).
+    [ITEM-: <Heldname>: <Gegenstand>]   Streicht einen Gegenstand dieses Helden (verbraucht, verloren, gestohlen).
+    [GELD: <Heldname>: +/-<Betrag>]     Geld eines Helden, z. B. [GELD: Answin: +3 Dukaten].
+                              Bei geteilter Beute: pro Held eine eigene Zeile. Inventare und Geldkatzen stehen im State-Block.
     [MOOD: <id>]              Musikstimmung. Erlaubt: ${DSA_MOODS.join(", ")}.
     [END: victory|defeat|aborted]  Beendet das Abenteuer (frühestens nach ~30 Meisterwenden).
   KEINE [COMBAT]-Marker in dieser Gruppenrunde — Kämpfe werden erzählt und mit [CHECK]-Proben (KK/GE/AT-Eigenschaft) entschieden; pro Treffer ggf. 1W6+2 LE-Verlust als [LE: <Heldname>: -N] setzen.
+${buildMoneyAndSpoilsRules(true)}
   NSC-HALTUNGEN: Halte die Einträge im NSC-TRACKER des State-Blocks ein und melde Änderungen wie dort beschrieben.
 
 ${isOpen ? "OFFENE RUNDE — kein Akt-Korsett, kein Pflicht-Showdown." : "PLANE in 5 Akten (~30–50 Wenden insgesamt). [END: victory] frühestens nach ~30 Wenden, wenn alle Fäden geschlossen sind."}

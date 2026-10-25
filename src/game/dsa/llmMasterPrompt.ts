@@ -1,3 +1,4 @@
+import { buildMoneyAndSpoilsRules } from "./money";
 import { DSA_LORE_BRIEF } from "./llmLore";
 import { DSA_SCENE_TAGS, formatSceneTagListForPrompt } from "./sceneImages";
 import { ENEMY_STATS } from "./combat";
@@ -185,6 +186,7 @@ ${serializeCompanionGearForPrompt()}
     einzelnes Item zerstört, verbraucht oder gestohlen wird: immer auch der
     Marker, nicht nur die Beschreibung.
 
+${buildMoneyAndSpoilsRules(false)}
   SPIELER-INVENTARAKTIONEN (am Heldenbogen):
     RÜSTUNGSREGELN (DSA3-Basisregeln): Magier tragen keine Rüstung über RS 2
     und führen keine Waffe mit mehr als 1W6+2 TP; Elfen und Zwerge tragen
