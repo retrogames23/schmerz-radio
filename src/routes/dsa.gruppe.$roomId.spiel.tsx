@@ -67,9 +67,13 @@ interface RoomRow {
   summary: string;
   ap_awarded: boolean;
   host_user_id: string;
+  collect_started_at?: string | null;
 }
 
-const COLLECT_WINDOW_MS = 45_000;
+const COLLECT_WINDOW_MS = 30_000;
+const EXTEND_MS = 20_000;
+const MAX_EXTENSIONS = 5;
+const EXTEND_PREFIX = "⏳";
 
 function SpielraumPage() {
   const { roomId } = useParams({ from: "/dsa/gruppe/$roomId/spiel" });
@@ -135,7 +139,7 @@ function SpielraumPage() {
       const [{ data: r }, { data: ms }, { data: msg }, { data: pa }] = await Promise.all([
         supabase
           .from("dsa_group_rooms")
-          .select("id,name,status,turn_idx,summary,ap_awarded,host_user_id")
+          .select("id,name,status,turn_idx,summary,ap_awarded,host_user_id,collect_started_at")
           .eq("id", roomId)
           .maybeSingle(),
         supabase
@@ -259,21 +263,30 @@ function SpielraumPage() {
     setImageZoomed(false);
   }, [turns.sceneTag]);
 
-  // Countdown for collect window: starts at first pending action.
+  // Bedenkzeit-Verlängerungen dieser Runde (Systemzeilen nach der letzten Meister-Wende).
+  const extensionsUsed = useMemo(() => {
+    let n = 0;
+    for (const m of messages) {
+      if (m.role === "master") n = 0;
+      else if (m.role === "system" && m.content.startsWith(EXTEND_PREFIX)) n++;
+    }
+    return n;
+  }, [messages]);
+
+  // Countdown: basiert auf dem serverseitigen Fensterbeginn (inkl. Verlängerungen).
+  const collectStart = room?.collect_started_at ?? null;
   useEffect(() => {
-    if (pending.length === 0) {
+    if (pending.length === 0 || !collectStart) {
       setSecondsLeft(null);
       advanceFiredRef.current = null;
       return;
     }
-    const batchKey = `${pending[0]?.user_id ?? ""}:${pending.length}`;
-    const started = Date.now();
+    const startedAt = new Date(collectStart).getTime();
+    const batchKey = collectStart;
     const tick = () => {
-      const left = Math.max(0, Math.round((COLLECT_WINDOW_MS - (Date.now() - started)) / 1000));
+      const left = Math.max(0, Math.round((COLLECT_WINDOW_MS - (Date.now() - startedAt)) / 1000));
       setSecondsLeft(left);
-      // Wenn der Gastgeber offline ist, NICHT vorrücken — das Spiel
-      // pausiert, bis er zurück ist (er triggert dann selbst per
-      // Heartbeat das Vorrücken serverseitig).
+      // Gastgeber offline → pausieren (er rückt beim Heartbeat selbst vor).
       const hostNow = membersRef.current.find(
         (m) => m.user_id === roomRef.current?.host_user_id,
       );
@@ -289,7 +302,7 @@ function SpielraumPage() {
     const id = setInterval(tick, 500);
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pending.length === 0 ? 0 : pending[0]?.user_id]);
+  }, [pending.length === 0, collectStart]);
 
   async function call(action: string, extra: Record<string, unknown> = {}) {
     setBusy(true);
@@ -498,6 +511,17 @@ function SpielraumPage() {
                   Gesammelte Aktionen ({pending.length}):{" "}
                   {pending.map((p) => p.hero_name).join(", ")}
                   {!showHostPause && secondsLeft != null && ` · Tjark erzählt weiter in ${secondsLeft}s …`}
+                  {!showHostPause && secondsLeft != null && (
+                    <button
+                      type="button"
+                      onClick={() => void call("extend")}
+                      disabled={busy || extensionsUsed >= MAX_EXTENSIONS}
+                      title={`Verlängert die Runde für alle um ${EXTEND_MS / 1000} Sekunden`}
+                      className="ml-auto not-italic rounded border border-[#3a2c1a]/50 bg-[#fbf2d8] px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a] disabled:opacity-40"
+                    >
+                      +20 s ({MAX_EXTENSIONS - extensionsUsed})
+                    </button>
+                  )}
                 </div>
               )}
               {turns.check && !isDone && !hasPending && !busy && me?.hero_snapshot && (
@@ -590,6 +614,17 @@ function SpielraumPage() {
                       <Send className="h-3.5 w-3.5" strokeWidth={2.5} />
                       {hasPending ? "Ändern" : "Sagen"}
                     </button>
+                    {!hasPending && (
+                      <button
+                        type="button"
+                        onClick={() => void call("submitAction", { text: "(hält sich zurück und beobachtet das Geschehen)" })}
+                        disabled={busy}
+                        title="Diese Runde nichts tun — beschleunigt Tjarks nächste Antwort"
+                        className="inline-flex items-center justify-center rounded border-2 border-[#3a2c1a]/60 bg-transparent px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a] disabled:opacity-50"
+                      >
+                        Fertig
+                      </button>
+                    )}
                   </div>
                 </div>
                 <div className="mt-2 flex justify-between text-[10px] uppercase tracking-wider text-[#2a1f10]/60">

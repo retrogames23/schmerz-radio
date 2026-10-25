@@ -42,7 +42,10 @@ const MAX_NAME = 40;
 const MAX_PW = 60;
 const MAX_WISH = 600;
 const MAX_ACTION = 500;
-const COLLECT_WINDOW_MS = 45_000;
+const COLLECT_WINDOW_MS = 30_000;
+const EXTEND_MS = 20_000;
+const MAX_EXTENSIONS = 5;
+const EXTEND_PREFIX = "⏳";
 const ABSENCE_MS = 60_000;
 const MAX_MESSAGES = 120;
 const MIN_END_TURNS = 30;
@@ -465,7 +468,7 @@ async function loadHistoryForLLM(
     if (r.role === "master") turns.push({ role: "assistant", content: r.content });
     else if (r.role === "player")
       turns.push({ role: "user", content: `${r.author_hero_name ?? "Spieler"}: ${r.content}` });
-    else turns.push({ role: "system", content: r.content });
+    else if (!r.content.startsWith(EXTEND_PREFIX)) turns.push({ role: "system", content: r.content });
   }
   return turns;
 }
@@ -1031,6 +1034,41 @@ export const Route = createFileRoute("/api/public/dsa-group")({
             const r = await advanceTurn(admin, apiKey, roomId, model);
             if (!r.ok) return json(r.status, { error: r.error });
           }
+          return json(200, { ok: true });
+        }
+
+        // ─── extend (+20 s Bedenkzeit, max. 5 je Runde) ───
+        if (action === "extend") {
+          if (room.status !== "active") return json(409, { error: "Kein laufendes Abenteuer." });
+          if (!room.collect_started_at) return json(409, { error: "Es läuft gerade keine Bedenkzeit." });
+          const exMembers = await fetchMembers(admin, roomId);
+          const meEx = exMembers.find((m) => m.user_id === uid);
+          if (!meEx) return json(403, { error: "Kein Mitglied dieses Raums." });
+          const { data: lastM } = await admin
+            .from("dsa_group_messages")
+            .select("idx")
+            .eq("room_id", roomId)
+            .eq("role", "master")
+            .order("idx", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          const mIdx = (lastM as { idx?: number } | null)?.idx ?? -1;
+          const { data: sysRows } = await admin
+            .from("dsa_group_messages")
+            .select("content")
+            .eq("room_id", roomId)
+            .eq("role", "system")
+            .gt("idx", mIdx);
+          const used = ((sysRows ?? []) as { content: string }[]).filter((r) =>
+            r.content.startsWith(EXTEND_PREFIX),
+          ).length;
+          if (used >= MAX_EXTENSIONS) {
+            return json(409, { error: "Keine weitere Bedenkzeit mehr in dieser Runde." });
+          }
+          const newStart = new Date(new Date(room.collect_started_at).getTime() + EXTEND_MS).toISOString();
+          await admin.from("dsa_group_rooms").update({ collect_started_at: newStart }).eq("id", roomId);
+          const who = sanitize(meEx.hero_snapshot?.name ?? "", 60) || "Jemand";
+          await appendMessageSafe(admin, roomId, "system", `${EXTEND_PREFIX} ${who} erbittet Bedenkzeit (+20 s).`, uid, who);
           return json(200, { ok: true });
         }
 
