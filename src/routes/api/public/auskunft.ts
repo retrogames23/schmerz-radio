@@ -7,7 +7,7 @@ import {
 /** Auskunft läuft über das günstige Luna-Modell — kurze Faktenantworten
  *  brauchen kein Premium-Modell. GPT-5.6 braucht reasoning_effort
  *  "none", sonst werden Requests abgelehnt. */
-const AUSKUNFT_MODEL = "openai/gpt-5.6-luna";
+const AUSKUNFT_MODEL = "openai/gpt-6-luna";
 import {
   AUSKUNFT_SYSTEM_PROMPT,
   AUSKUNFT_TRANSFER_RULES,

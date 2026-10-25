@@ -579,7 +579,8 @@ export const Route = createFileRoute("/api/public/npc-chat")({
             body: JSON.stringify({
               // Kostenbremse: das teure Haupt-Modell bekommen nur
               // Unterstützer*innen, alle anderen das günstige Light-Modell.
-              model: donationUnlocked ? AI_MODEL_MAIN : AI_MODEL_LIGHT,
+              model: AI_MODEL_MAIN,
+              reasoning_effort: "none",
               messages,
               temperature: 0.6,
               max_tokens: donationUnlocked ? 600 : 400,
