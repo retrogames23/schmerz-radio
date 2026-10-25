@@ -216,7 +216,7 @@ ${buildMoneyAndSpoilsRules(false)}
     geführt) — und dann konsequent mit Zeitgefühl (Minuten, Stunden, Tage).
 `;
 
-const GEOGRAPHY_BLOCK = `
+export const GEOGRAPHY_BLOCK = `
 AVENTURISCHE GEOGRAPHIE — VERBINDLICH (gegen Ortswechsel-Fehler):
   Du kennst die Landkarte Aventuriens und hältst sie strikt ein. Orte
   wechseln niemals ihre Region, und die Gruppe „teleportiert" nie:
