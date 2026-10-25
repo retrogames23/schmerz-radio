@@ -657,6 +657,28 @@ function SpielraumPage() {
           </aside>
         </div>
       </div>
+
+      {imgSrc && imageZoomed && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 p-4 sm:p-8"
+          onClick={() => setImageZoomed(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setImageZoomed(false)}
+            title="Schließen"
+            className="absolute top-3 left-3 z-10 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-2 py-1 text-[#2a1f10] hover:bg-[#f1d99a]"
+          >
+            ✕
+          </button>
+          <img
+            src={imgSrc}
+            alt="Szene (vergrößert)"
+            className="max-h-full max-w-full object-contain shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
