@@ -6,7 +6,8 @@
  * und die DSA-Abenteuer (solo + Gruppe). Das Overlay `ChatLiveOverlay`
  * abonniert diesen Speicher und zeigt bis zu vier Sessions live an.
  *
- * Rein lokal pro Browser-Tab — es werden keine zusätzlichen Daten
+ * Lokal im Browser, per BroadcastChannel + localStorage tab-übergreifend
+ * synchronisiert — es werden keine zusätzlichen Daten
  * verschickt, nur mitgeschrieben, was ohnehin durch die Leitung geht.
  */
 
@@ -165,11 +166,12 @@ function pushMessage(key: string, msg: ChatLiveMessage, status?: ChatLiveSession
  * »beendet« markiert und ans Ende gereiht.
  */
 export function chatLiveTrack(key: string, kind: ChatLiveKind, title: string): ChatLiveHandle {
+  ensureSync();
   const existing = state.sessions.find((s) => s.key === key && s.status !== "ended");
   if (!existing) {
     const now = Date.now();
     const session: ChatLiveSession = {
-      id: nextSessionId++,
+      id: newSessionId(),
       key,
       kind,
       title,
@@ -217,6 +219,29 @@ export function chatLiveTrack(key: string, kind: ChatLiveKind, title: string): C
       setState({ ...state, sessions });
     },
   };
+}
+
+/** Bestehenden Verlauf (z. B. geladenes Abenteuer) als Session-Inhalt setzen. */
+export function chatLiveSeed(
+  key: string,
+  kind: ChatLiveKind,
+  title: string,
+  messages: { role: ChatLiveMessage["role"]; text: string }[],
+): void {
+  chatLiveTrack(key, kind, title);
+  const now = Date.now();
+  const msgs = messages
+    .filter((m) => m.text.trim())
+    .slice(-MAX_MESSAGES_PER_SESSION)
+    .map((m) => ({ role: m.role, text: m.text.trim(), at: now }));
+  setState({
+    ...state,
+    sessions: state.sessions.map((s) =>
+      s.key === key && s.status !== "ended"
+        ? { ...s, messages: msgs, status: "active" as const, updatedAt: now }
+        : s,
+    ),
+  });
 }
 
 export const CHAT_LIVE_KIND_LABEL: Record<ChatLiveKind, string> = {
