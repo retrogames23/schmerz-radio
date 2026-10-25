@@ -13,4 +13,4 @@
 # DSA Sprechertrennung
 - [x] Gefährtenrede im Solo- und Gruppenspiel ausschließlich eigenen Sprecherblöcken zuordnen.
 - [x] Outtime-Auskunft von der Erzählung trennen, einschließlich gemischter Gruppenrunden.
-- [ ] Bestehende DSA-Prüfungen und aktuelle Fehlersignale kontrollieren.
+- [x] Bestehende DSA-Prüfungen und aktuelle Fehlersignale kontrollieren (41 Tests erfolgreich; build OK).
