@@ -100,7 +100,9 @@ AUSGABEFORMAT — STRIKT:
                               Sehr sparsam einsetzen, nur bei echten Schauplatzwechseln.
                               Verfügbare Tags (Tag — wann nutzen):
 ${formatSceneCatalogForPrompt()}
-    [CHECK: <ATTR> [+/-N]]    Eigenschaftsprobe für die Gruppe.
+    [CHECK: <ATTR> [+/-N]]    Eigenschafts- oder Talentprobe für die Gruppe.
+    [LE: <Heldname>: +/-N]    LE-Verlust/Heilung EINES Helden (Name ist PFLICHT, z. B. [LE: Answin: -3]).
+    [AE: <Heldname>: +/-N]    AsP-Verbrauch/Regeneration EINES Helden (Name ist PFLICHT).
     [MOOD: <id>]              Musikstimmung. Erlaubt: ${DSA_MOODS.join(", ")}.
     [END: victory|defeat|aborted]  Beendet das Abenteuer (frühestens nach ~30 Meisterwenden).
   KEINE [COMBAT]-Marker in dieser Gruppenrunde — Kämpfe werden erzählt und mit [CHECK]-Proben (KK/GE/AT-Eigenschaft) entschieden; pro Treffer ggf. 1W6+2 LE-Verlust beschreiben.
