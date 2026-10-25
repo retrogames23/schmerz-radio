@@ -171,7 +171,7 @@ export function DsaCharacterSheet() {
                 className={
                   "dsa-typed text-[12px] uppercase tracking-widest font-bold px-3 py-1.5 border-2 rounded-sm " +
                   (ap > 0
-                    ? "bg-[#1e1208] text-[#fff8e1] border-[#1e1208] hover:bg-black [text-shadow:0_1px_0_rgba(0,0,0,0.6)]"
+                    ? "bg-[#1e1208] text-[#fff8e1]! border-[#1e1208] hover:bg-black [text-shadow:0_1px_0_rgba(0,0,0,0.6)]"
                     : "dsa-ink border-[rgba(30,18,8,0.4)] opacity-50 cursor-not-allowed")
                 }
               >
