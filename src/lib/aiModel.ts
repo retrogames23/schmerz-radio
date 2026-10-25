@@ -27,20 +27,20 @@ export const AI_MODEL_MAIN = "anthropic/claude-haiku-4.5";
 export const AI_MODEL_LIGHT = "google/gemini-3.1-flash-lite";
 
 /**
- * DSA-Meister läuft über OpenRouter mit OpenAI GPT-5.6 Luna
- * (schnell und ~5x günstiger als Claude Haiku 4.5 bei vergleichbarem
- * Erzähl-/Tool-Verhalten).
+ * DSA-Meister läuft für alle Spieler*innen über OpenRouter mit
+ * OpenAI GPT-6 Luna. Gratis und Unterstützung unterscheiden sich nur
+ * über Runden-/Abenteuerlimits, nicht über das Modell.
  * API-Key liegt in der Umgebungsvariable OPENROUTER_API_KEY.
  */
 export const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 export const OPENROUTER_CHAT_URL = `${OPENROUTER_BASE_URL}/chat/completions`;
-export const AI_MODEL_DSA_MASTER = "openai/gpt-5.6-luna";
+export const AI_MODEL_DSA_MASTER = "openai/gpt-6-luna";
 
 /**
- * Gratis-Modell für alle, die (noch) nicht unterstützen. Deutlich
- * günstiger als Luna und für Schnupper-Runden völlig ausreichend.
+ * Unsichtbarer Notfall-Ersatz für genau einen Zug, falls Luna ausfällt
+ * (502/Timeout). Wird nie regulär gewählt.
  */
-export const AI_MODEL_DSA_FREE = "google/gemini-3.1-flash-lite";
+export const AI_MODEL_DSA_FALLBACK = "google/gemini-3.1-flash-lite";
 
 /** App-Identifikation für OpenRouter-Ranking-Header (optional aber empfohlen). */
 const OPENROUTER_APP_URL = "https://schmerz-radio.com";
@@ -55,153 +55,33 @@ export function openRouterHeaders(apiKey: string): Record<string, string> {
   };
 }
 
-/**
- * Auswählbare Master-Modelle für DSA. Modelle mit donorOnly=true
- * (donation_unlocked=true) dürfen vom Default abweichen — Standard-
- * spieler*innen können alle nicht-donorOnly-Optionen wählen.
- *
- * Reihenfolge bestimmt die Anzeige im UI-Switcher.
- */
-export interface DsaMasterModelOption {
-  id: string;
-  label: string;
-  short: string;
-  hint: string;
-  donorOnly: boolean;
-}
-
-export const DSA_MASTER_MODELS: DsaMasterModelOption[] = [
-  {
-    id: AI_MODEL_DSA_MASTER, // openai/gpt-5.6-luna
-    label: "GPT-5.6 Luna (Standard für Unterstützer*innen)",
-    short: "Luna",
-    hint: "Schnell, gutes Deutsch, solide Tool-Calls.",
-    donorOnly: true,
-  },
-  {
-    id: AI_MODEL_DSA_FREE, // google/gemini-3.1-flash-lite
-    label: "Gemini 3.1 Flash Lite (Gratis-Standard)",
-    short: "Flash Lite",
-    hint: "Schnellste, günstigste Option — Standard ohne Unterstützung.",
-    donorOnly: false,
-  },
-  {
-    id: "anthropic/claude-haiku-4.5",
-    label: "Claude Haiku 4.5",
-    short: "Haiku",
-    hint: "Sehr atmosphärische Erzählung, deutlich teurer.",
-    donorOnly: true,
-  },
-  {
-    id: "openai/gpt-5.4-mini",
-    label: "GPT-5.4 mini",
-    short: "GPT-5.4m",
-    hint: "Sehr zuverlässige Tool-Calls, solides Deutsch.",
-    donorOnly: true,
-  },
-  {
-    id: "anthropic/claude-sonnet-4",
-    label: "Claude Sonnet 4 (Premium)",
-    short: "Sonnet 4",
-    hint: "Beste DSA-Treue & Erzählkunst — teurer, lohnt sich für Highlights.",
-    donorOnly: true,
-  },
-  {
-    id: "deepseek/deepseek-chat",
-    label: "DeepSeek Chat",
-    short: "DeepSeek",
-    hint: "Sehr günstig, kreatives Storytelling.",
-    donorOnly: true,
-  },
-];
-
-const DSA_MODEL_IDS = new Set(DSA_MASTER_MODELS.map((m) => m.id));
-
-/**
- * Wählt das tatsächlich zu verwendende Modell für eine Anfrage aus.
- * - Nicht-Spender: immer das günstige Gratis-Modell (AI_MODEL_DSA_FREE).
- * - Spender (donor=true): freie Wahl aus der Allowlist, Default Luna.
- */
-export function resolveDsaMasterModel(
-  _requested: unknown,
-  donor: boolean,
-): string {
-  // Feste Zwei-Stufen-Logik: keine manuelle Modellwahl mehr.
-  return donor ? AI_MODEL_DSA_MASTER : AI_MODEL_DSA_FREE;
+/** Ein einziges Meister-Modell für alle; Parameter bleiben für Aufrufer kompatibel. */
+export function resolveDsaMasterModel(_requested?: unknown, _donor?: boolean): string {
+  return AI_MODEL_DSA_MASTER;
 }
 
 /**
- * Pro-Modell-Limits für DSA-Meister-Calls. Senkt bei teuren Modellen
- * (Sonnet 4) systematisch die Kostenstellen, ohne den Default für Haiku
- * zu verändern:
- *   - max_tokens (Output)
- *   - historyWindow (Anzahl mitgesendeter Chat-Nachrichten)
- *   - maxToolRounds (dsaLore-Loop-Tiefe)
- *   - useTools (dsaLore überhaupt anbieten)
+ * Pro-Modell-Limits für DSA-Meister-Calls.
  */
 export interface ModelLimits {
   maxTokens: number;
   historyWindow: number;
   maxToolRounds: number;
   useTools: boolean;
-  /** Nur GPT-5.6-Modelle: müssen mit reasoning_effort "none" laufen,
-   *  sonst werden Requests mit Function-Tools mit 400 abgelehnt. */
+  /** Luna-Modelle müssen mit Tools reasoning_effort "none" nutzen. */
   reasoningEffort?: "none";
 }
 
 const DEFAULT_LIMITS: ModelLimits = {
-  maxTokens: 950,
+  maxTokens: 800,
   historyWindow: 6,
   maxToolRounds: 4,
   useTools: true,
 };
 
 const MODEL_LIMITS_MAP: Record<string, Partial<ModelLimits>> = {
-  // Premium-Modell — pro Token am teuersten, also am stärksten gedrosselt.
-  "anthropic/claude-sonnet-4": {
-    maxTokens: 600,
-    historyWindow: 6,
-    maxToolRounds: 3,
-    useTools: true,
-  },
-  // Default-Modell — günstigste schnelle Option, reasoning_effort "none"
-  // ist bei GPT-5.6 mit Tools Pflicht.
-  "openai/gpt-5.6-luna": {
-    maxTokens: 800,
-    historyWindow: 6,
-    maxToolRounds: 4,
-    useTools: true,
-    reasoningEffort: "none",
-  },
-  // Wählbare Alternative — teurer, dafür sehr atmosphärisch.
-  "anthropic/claude-haiku-4.5": {
-    maxTokens: 950,
-    historyWindow: 6,
-    maxToolRounds: 4,
-    useTools: true,
-  },
-  // Donor-Modelle: kleineres History-Fenster spart ~30 % Prompt-Tokens
-  // ohne sichtbaren Erzähl-Bruch (Kurz-Summary im System-Prompt bleibt).
-  "openai/gpt-5.4-mini": {
-    maxTokens: 700,
-    historyWindow: 6,
-    maxToolRounds: 3,
-    useTools: true,
-  },
-  "deepseek/deepseek-chat": {
-    maxTokens: 700,
-    historyWindow: 6,
-    maxToolRounds: 3,
-    useTools: true,
-  },
-  // Gratis-Standard: am stärksten gedrosselt, damit Schnupper-Runden
-  // fast nichts kosten.
-  "google/gemini-3.1-flash-lite": {
-    maxTokens: 600,
-    historyWindow: 4,
-    maxToolRounds: 2,
-    useTools: true,
-  },
+  [AI_MODEL_DSA_MASTER]: { reasoningEffort: "none" },
+  [AI_MODEL_DSA_FALLBACK]: { maxTokens: 700, maxToolRounds: 2 },
 };
 
 export function getModelLimits(model: string): ModelLimits {
