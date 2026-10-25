@@ -268,3 +268,49 @@ export function resolveSceneImage(tag: string | null | undefined): string | null
   if (!tag) return null;
   return DSA_SCENE_IMAGES[tag] ?? null;
 }
+/**
+ * Knappe Kulissen-Untertitel (im Spiel unter dem Bild). Bewusst allgemein
+ * gehalten: Das Bild ist Bühne, keine Detailabbildung der Szene.
+ */
+const DSA_SCENE_LABELS: Record<string, string> = {
+  forest_path: "Waldweg", forest_clearing: "Waldlichtung", forest_night: "Wald bei Nacht",
+  forest_shelter: "Lager unter Tannen", mountain_pass: "Gebirgspass", mountain_cave: "Höhle im Berg",
+  cave_entrance: "Vor dem Höhleneingang", snow_pass: "Verschneiter Pass", swamp: "Sumpfland",
+  swamp_path: "Pfad durch den Sumpf", swamp_ruin: "Ruine im Sumpf", coast: "Küste",
+  river_ferry: "An der Fähre", river_bank: "Am Flussufer", stone_bridge: "Alte Steinbrücke",
+  crossroads_shrine: "Wegkreuzung", wayside_shrine: "Schrein am Wegesrand", camp_fire: "Am Lagerfeuer",
+  hut_exterior: "Einsame Hütte", hut_interior: "In der Hütte", farmstead: "Bauernhof",
+  village_square: "Dorfplatz", city_gate: "Am Stadttor", city_market: "Marktplatz",
+  market_stall: "Am Marktstand", city_alley: "Gassen der Stadt", city_temple: "Vor dem Tempel",
+  city_palace: "Vor dem Palast", city_courtyard: "Innenhof", town_walls: "Vor den Stadtmauern",
+  noble_hall: "Adelssaal", throne_room: "Thronsaal", council_chamber: "Ratsstube",
+  library: "Bibliothek", scriptorium: "Schreibstube", alchemist_lab: "Alchimistenwerkstatt",
+  temple_interior: "Im Tempel", monastery_court: "Klosterhof", blacksmith: "Schmiede",
+  stable_horses: "Pferdestall", graveyard: "Boronsanger", harbor: "Hafenkai",
+  ship_deck: "An Deck", ship_storm: "Sturm auf See", burning_building: "Feuer in der Nacht",
+  tavern_ext: "Vor der Schenke", tavern_int: "Schankraum", tavern_brawl: "Schlägerei in der Schenke",
+  tavern_room: "Gastzimmer", dungeon_door: "Vor dem Gewölbe", dungeon_corridor: "Gewölbegang",
+  dungeon_chamber: "Gewölbekammer", dungeon_crypt: "Gruft", catacombs: "Katakomben",
+  mine_tunnel: "Stollen", underground_river: "Unterirdischer Fluss", mage_tower: "Magierturm",
+  druid_grove: "Heiliger Hain", standing_stones: "Steinkreis", dragon_lair: "Drachenhort",
+  spider_lair: "Spinnenhöhle", misty_moor: "Nebelmoor", carriage_road: "Auf der Landstraße",
+  desert_dunes: "Wüste", jungle_path: "Dschungelpfad", frozen_lake: "Zugefrorener See",
+  mountain_top: "Gipfel", bandit_camp: "Räuberlager", orc_warband: "Orklager",
+  battlefield: "Schlachtfeld", siege_camp: "Belagerungslager", prison_cell: "Kerkerzelle",
+  npc_noble: "Bei Hofe", npc_merchant: "Beim Händler", npc_mage: "Beim Magus",
+  npc_priest: "Beim Geweihten", npc_warrior: "Ein Recke", npc_witch: "Bei der Hexe",
+  combat_intro: "Überfall", combat_alley: "Kampf in der Gasse", combat_tavern: "Kampf in der Schenke",
+  combat_forest: "Kampf im Wald", combat_dungeon: "Kampf im Gewölbe", aftermath: "Nach dem Kampf",
+  aftermath_alley: "Nach dem Kampf", aftermath_tavern: "Nach dem Kampf",
+  aftermath_forest: "Nach dem Kampf", aftermath_dungeon: "Nach dem Kampf",
+  sewers: "Unter der Stadt", dwarf_hall: "Zwergenhalle", guard_house: "Wachstube",
+  thorwal_longship: "Am Fjord", desert_oasis: "Oase", elf_settlement: "Elfensiedlung",
+  infirmary: "Heilerstube",
+};
+
+/** Untertitel „Kulisse: …“ für einen Tag, oder null. */
+export function sceneCaption(tag: string | null | undefined): string | null {
+  if (!tag) return null;
+  const label = DSA_SCENE_LABELS[tag];
+  return label ? `Kulisse: ${label}` : null;
+}
