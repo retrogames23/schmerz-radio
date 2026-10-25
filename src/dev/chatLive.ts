@@ -39,10 +39,62 @@ export interface ChatLiveState {
 
 const MAX_LIVE_SESSIONS = 4;
 const MAX_MESSAGES_PER_SESSION = 80;
+const STORAGE_KEY = "chatlive:sessions:v1";
+const CHANNEL_NAME = "chatlive";
 
-let state: ChatLiveState = { open: false, sessions: [] };
+const EMPTY: ChatLiveState = { open: false, sessions: [] };
+let state: ChatLiveState = EMPTY;
 let nextSessionId = 1;
 const listeners = new Set<() => void>();
+
+// --- Tab-übergreifende Synchronisation (BroadcastChannel + localStorage) ---
+let syncReady = false;
+let channel: BroadcastChannel | null = null;
+
+function newSessionId(): number {
+  // Tab-übergreifend eindeutig genug: Zeit + Zufall + Zähler.
+  return Date.now() * 1000 + Math.floor(Math.random() * 900) + (nextSessionId++ % 100);
+}
+
+function ensureSync() {
+  if (syncReady || typeof window === "undefined") return;
+  syncReady = true;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const sessions = JSON.parse(raw) as ChatLiveSession[];
+      if (Array.isArray(sessions)) state = { ...state, sessions };
+    }
+  } catch {
+    /* ignore */
+  }
+  try {
+    if (typeof BroadcastChannel !== "undefined") {
+      channel = new BroadcastChannel(CHANNEL_NAME);
+      channel.onmessage = (ev: MessageEvent) => {
+        const sessions = (ev.data as { sessions?: ChatLiveSession[] })?.sessions;
+        if (!Array.isArray(sessions)) return;
+        state = { ...state, sessions };
+        emit();
+      };
+    }
+  } catch {
+    channel = null;
+  }
+}
+
+function publish(sessions: ChatLiveSession[]) {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+  } catch {
+    /* ignore */
+  }
+  try {
+    channel?.postMessage({ sessions });
+  } catch {
+    /* ignore */
+  }
+}
 
 function emit() {
   for (const cb of listeners) {
@@ -55,11 +107,15 @@ function emit() {
 }
 
 function setState(next: ChatLiveState) {
+  ensureSync();
+  const sessionsChanged = next.sessions !== state.sessions;
   state = next;
+  if (sessionsChanged && typeof window !== "undefined") publish(next.sessions);
   emit();
 }
 
 export function subscribeChatLive(cb: () => void): () => void {
+  ensureSync();
   listeners.add(cb);
   return () => listeners.delete(cb);
 }
@@ -69,7 +125,7 @@ export function getChatLiveState(): ChatLiveState {
 }
 
 export function useChatLiveState(): ChatLiveState {
-  return useSyncExternalStore(subscribeChatLive, getChatLiveState);
+  return useSyncExternalStore(subscribeChatLive, getChatLiveState, () => EMPTY);
 }
 
 export function setChatLiveOpen(open: boolean): void {
