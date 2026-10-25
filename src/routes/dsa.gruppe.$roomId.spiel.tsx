@@ -497,6 +497,34 @@ function SpielraumPage() {
                   {!showHostPause && secondsLeft != null && ` · Tjark erzählt weiter in ${secondsLeft}s …`}
                 </div>
               )}
+              {turns.check && !isDone && !hasPending && !busy && me?.hero_snapshot && (
+                <div className="pt-2 flex flex-wrap items-center gap-3">
+                  <span className="font-serif italic text-[#2a1f10]/80">
+                    Tjark verlangt eine {turns.check.talentId ? "Talentprobe" : "Probe"} auf{" "}
+                    {turns.check.label}
+                    {turns.check.modifier !== 0 &&
+                      ` (${turns.check.modifier > 0 ? "erschwert um " : "erleichtert um "}${Math.abs(turns.check.modifier)})`}
+                    {" — "}
+                    {turns.check.talentId
+                      ? (() => {
+                          const def = TALENTS.find((x) => x.id === turns.check!.talentId);
+                          const taw = myTaw(turns.check!.talentId!);
+                          const probe = def?.probe
+                            .map((a) => `${a} ${me.hero_snapshot!.attrs[a] ?? "?"}`)
+                            .join(" · ");
+                          return `${probe} · TaW ${taw}${taw === 0 ? " (ungelernt)" : ""}`;
+                        })()
+                      : `dein Wert: ${turns.check.attr ? (me.hero_snapshot.attrs[turns.check.attr] ?? "?") : "?"}`}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRollCheck}
+                    className="inline-flex items-center gap-2 rounded border-2 border-[#3a2c1a] bg-[#f1e6c8] px-4 py-2 text-sm font-bold uppercase tracking-wider text-[#2a1f10] shadow-[0_2px_0_rgba(0,0,0,0.35)] hover:-translate-y-px transition-transform"
+                  >
+                    🎲 {turns.check.talentId ? "3W20 würfeln" : "W20 würfeln"}
+                  </button>
+                </div>
+              )}
               {showHostPause && (
                 <div className="rounded border-2 border-[#3a2c1a]/50 bg-[#fbf2d8] px-3 py-2 font-serif text-sm text-[#2a1f10]">
                   ⏸ Der Gastgeber ist gerade offline — das Spiel pausiert.
@@ -524,7 +552,6 @@ function SpielraumPage() {
                         !e.nativeEvent.isComposing &&
                         !isCoarse &&
                         enterSubmits &&
-                        !hasPending &&
                         !busy &&
                         draft.trim()
                       ) {
@@ -534,11 +561,11 @@ function SpielraumPage() {
                     }}
                     placeholder={
                       hasPending
-                        ? "Du hast diese Runde schon gehandelt — warte auf Tjark."
+                        ? "Deine Aktion liegt vor — du kannst sie noch ändern, bis Tjark weitererzählt."
                         : "Was tust du?"
                     }
                     rows={2}
-                    disabled={hasPending || busy}
+                    disabled={busy}
                     className="flex-1 resize-none rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 font-sans text-base leading-relaxed text-[#2a1f10] placeholder:text-[#2a1f10]/40 focus:outline-none focus:ring-2 focus:ring-[#3a2c1a]/40 disabled:opacity-50"
                   />
                   <div className="flex flex-col gap-2">
