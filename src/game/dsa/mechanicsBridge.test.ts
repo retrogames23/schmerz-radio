@@ -13,8 +13,8 @@ describe("DSA-Mechanik-Brücke", () => {
   });
 
   it("entfernt ohne Mengenangabe den ganzen Eintrag", () => {
-    const g = addItem(base, { name: "Silbertaler", count: 10 });
-    assert.equal(removeItem(g, "Silbertaler").items.length, 0);
+    const g = addItem(base, { name: "Fackel", count: 10 });
+    assert.equal(removeItem(g, "Fackel").items.length, 0);
   });
 
   it("liest LE- und AE-Änderungen des Meisters", () => {
