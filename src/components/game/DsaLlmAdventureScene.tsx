@@ -438,6 +438,18 @@ export function DsaLlmAdventureScene() {
 
   async function handlePickSetting(settingId: DsaSettingId, wishBrief?: string) {
     if (!dsaCharacter || busy) return;
+    // Zwischen Abenteuern wird stets vollständig geheilt (LE/AsP auf Maximum).
+    const healed = {
+      ...dsaCharacter,
+      le: dsaCharacter.leMax,
+      ae:
+        dsaCharacter.ae === null
+          ? null
+          : Math.max(dsaCharacter.ae, dsaCharacter.aeMax ?? dsaCharacter.ae),
+    };
+    if (healed.le !== dsaCharacter.le || healed.ae !== dsaCharacter.ae) {
+      setDsaCharacter(healed);
+    }
     setBusy(true);
     setError(null);
     setMode({ kind: "loading" });
@@ -448,7 +460,7 @@ export function DsaLlmAdventureScene() {
           action: "start",
           setting: settingId,
           heroSlot,
-          character: dsaCharacter,
+          character: healed,
           ...(wishBrief ? { wishBrief } : {}),
         },
         startedSid,
