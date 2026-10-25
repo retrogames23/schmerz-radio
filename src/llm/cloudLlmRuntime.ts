@@ -1,5 +1,7 @@
 import type { ChatMsg, LlmContext, LlmRuntime } from "./runtime";
 import { supabase } from "@/integrations/supabase/client";
+import { chatLiveTrack } from "@/dev/chatLive";
+import { getPersona } from "@/game/npcPersonas";
 
 // Globaler Hook für UI-Side-Effects (Spenden-Modal triggern, Counter aktualisieren).
 export type CloudUsageEvent = {
@@ -80,6 +82,13 @@ export function createCloudRuntime(npcId: string): LlmRuntime {
         role: m.role as "user" | "assistant",
         content: m.content,
       }));
+      // LLM-Live-Mitschrift (Cheat »chatlivecheat«).
+      const live = chatLiveTrack(
+        `npc:${npcId}`,
+        "npc",
+        getPersona(npcId)?.displayName ?? npcId,
+      );
+      live.user(last.content);
 
       // User-Token mitsenden (falls eingeloggt) — sonst Anon-ID
       // aus dem localStorage, damit der Server das Kontingent zählen kann.
@@ -177,6 +186,7 @@ export function createCloudRuntime(npcId: string): LlmRuntime {
         marv?: MarvUpdate;
       };
       if (!data.reply) throw new Error("Leere Antwort vom Server.");
+      live.assistant(data.reply);
       if (typeof data.limit === "number" && typeof data.softLimit === "number") {
         emitUsage({
           count: data.count ?? null,

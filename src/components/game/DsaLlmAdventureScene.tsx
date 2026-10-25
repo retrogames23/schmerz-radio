@@ -4,6 +4,7 @@ import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playDiceRoll } from "@/audio/sfx";
 import { getDsaModel } from "@/lib/dsaModelPreference";
+import { chatLiveTrack } from "@/dev/chatLive";
 import { Cpu } from "lucide-react";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useAuth } from "@/auth/AuthContext";
@@ -360,6 +361,15 @@ export function DsaLlmAdventureScene() {
     (data: ServerReply) => {
       const newTag = data.imageTag || data.parsed.sceneTag || null;
       appendMaster(data.parsed, newTag);
+      // LLM-Live-Mitschrift (Cheat »chatlivecheat«).
+      const liveText = data.parsed.lines
+        .map((l) => (l.speaker ? `${l.speaker}: ${l.text}` : l.text))
+        .join("\n");
+      chatLiveTrack(
+        `dsa:${heroSlot}`,
+        "dsa",
+        `DSA · ${dsaCharacterRef.current?.name ?? "Abenteuer"}`,
+      ).assistant(liveText);
       if (data.imageTag) setImageTag(data.imageTag);
       if (data.parsed.mood) setMood(data.parsed.mood);
       // Inventar-Update vom Meister auf den Helden spiegeln.
@@ -411,7 +421,7 @@ export function DsaLlmAdventureScene() {
         }
       }
     },
-    [appendMaster, setMood, creditHeroAp, updateHero],
+    [appendMaster, setMood, creditHeroAp, updateHero, heroSlot],
   );
 
   // Mood-Pool aktivieren, solange die Tafelrunde offen ist. Beim Schließen
@@ -490,6 +500,8 @@ export function DsaLlmAdventureScene() {
     setError(null);
     const myId = nextId();
     setTurns((t) => [...t, { id: myId, kind: "player", text }]);
+    // LLM-Live-Mitschrift (Cheat »chatlivecheat«).
+    chatLiveTrack(`dsa:${heroSlot}`, "dsa", `DSA · ${dsaCharacter?.name ?? "Abenteuer"}`).user(text);
     try {
       const r = await authedPost({ action: "say", text, heroSlot }, getDsaSessionId(), expectsSignedInUser, runtimeMode);
       if (!r.ok) {

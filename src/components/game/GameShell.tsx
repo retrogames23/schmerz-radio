@@ -43,6 +43,7 @@ import { BookSwitcher } from "@/dev/BookSwitcher";
 import { ConsoleSwitcher } from "@/dev/ConsoleSwitcher";
 import { CctvBeacon } from "@/dev/cctv";
 import { OverlayQAOverlay } from "@/dev/OverlayQAOverlay";
+import { ChatLiveOverlay } from "@/dev/ChatLiveOverlay";
 import { DialogEditOverlay } from "@/dev/DialogEditOverlay";
 import { DevPlaybackPanel } from "@/dev/DevPlaybackPanel";
 import { useDevMode } from "@/dev/devMode";
@@ -335,6 +336,7 @@ function GameStage({
         <Inventory />
       </div>
     </MobileStage>
+      <ChatLiveOverlay />
       {dev && <RoomSwitcher />}
       {dev && <BookSwitcher />}
       {dev && <ConsoleSwitcher />}

@@ -4,6 +4,7 @@ import { getFreshAccessToken } from "@/auth/freshToken";
 import {
   onCloudError,
 } from "@/llm/cloudLlmRuntime";
+import { chatLiveTrack } from "@/dev/chatLive";
 
 export interface FastWebChatMessage {
   id: string;
@@ -212,6 +213,12 @@ export function useFastWebChat(
                 : m.persona,
             text: m.text,
           }));
+        // LLM-Live-Mitschrift (Cheat »chatlivecheat«).
+        const live = chatLiveTrack(`fastweb:${room.id}`, "fastweb", `FastWeb ${room.channel}`);
+        if (trigger === "player") {
+          const lastPlayer = [...s.messages].reverse().find((m) => m.kind === "player");
+          if (lastPlayer) live.user(`${playerName}: ${lastPlayer.text}`);
+        }
         const resp = await fetch("/api/public/fastweb-chat", {
           method: "POST",
           headers: {
@@ -252,6 +259,7 @@ export function useFastWebChat(
           setError("Leere Antwort vom Server.");
           return;
         }
+        live.assistant(`${data.persona}: ${data.text}`);
         setError(null);
         // Realistische Antwortzeit: Lesen + Nachdenken + Tippen (1997er Tempo, ~4 Zeichen/s).
         if (trigger === "player") {

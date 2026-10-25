@@ -24,6 +24,7 @@ import {
 import { NET_HOSTS, type NetHost } from "@/game/netHosts";
 import type { StoryFlag } from "@/game/types";
 import { applyVossbeckWeakCheat, applyEndeAkt1Cheat, applyPhoneBrokenCheat } from "@/game/cheats";
+import { chatLiveTrack, toggleChatLive } from "@/dev/chatLive";
 import {
   adventureCommand,
   adventureStart,
@@ -545,6 +546,23 @@ export function Terminal() {
     const raw = input.trim();
     if (!raw) return;
 
+    // ── Undokumentierter Cheat »chatlivecheat« ────────────
+    // Öffnet/schließt den LLM-Live-Monitor (bis zu 4 Sessions:
+    // NPC-Dialoge, FastWeb, Auskunft, DSA). Funktioniert in jeder
+    // Konsolen-Sitzung — lokal, an Bodos Maschine oder remote.
+    if (raw.toLowerCase() === "chatlivecheat") {
+      playBeep(0.5 * sfxVolume);
+      toggleChatLive();
+      setLines((prev) => [
+        ...prev,
+        { text: `layard@centralos:~$ ${raw}`, kind: "in" },
+        { text: ">> [DEBUG] LLM-Live-Monitor umgeschaltet.", kind: "system" },
+        { text: "", kind: "out" },
+      ]);
+      setInput("");
+      return;
+    }
+
     // ── Undokumentierter Cheat »cheat superuser« ──────────
     // Nur in Layards eigenem Terminal (nicht an Bodos Maschine, nicht in
     // einer aktiven Remote-Sitzung). Aktiviert einen Modus, in dem
@@ -675,6 +693,12 @@ export function Terminal() {
         { text: ">> Anfrage wird bearbeitet …", kind: "busy" },
       ]);
       const history = auskunftHistoryRef.current.slice(-8);
+      const live = chatLiveTrack(
+        "auskunft",
+        "auskunft",
+        auskunftStation ? `auskunft.bin · ${auskunftStation}` : "auskunft.bin",
+      );
+      live.user(raw);
       void (async () => {
         try {
           const resp = await fetch("/api/public/auskunft", {
@@ -700,6 +724,7 @@ export function Terminal() {
           const answerText = transfer
             ? data.answer.replace(transfer[0], "").trimEnd()
             : data.answer;
+          live.assistant(answerText);
           auskunftHistoryRef.current = [
             ...history,
             { role: "user" as const, content: raw },
@@ -728,6 +753,7 @@ export function Terminal() {
           }
         } catch {
           setAuskunftBusyIndex(null);
+          live.note("Leitung gestört.");
           setLines((prev) => [
             ...prev,
             { text: ">> AUSKUNFT NICHT MÖGLICH: Leitung gestört.", kind: "system" },
