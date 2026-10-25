@@ -109,6 +109,18 @@ function SpielraumPage() {
     document.addEventListener("fullscreenchange", onChange);
     return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
+  // Zoom: Escape schließt, Szenenwechsel setzt zurück.
+  useEffect(() => {
+    if (!imageZoomed) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setImageZoomed(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [imageZoomed]);
+  useEffect(() => {
+    setImageZoomed(false);
+  }, [turns.sceneTag]);
   const toggleFullscreen = async () => {
     try {
       if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
@@ -337,6 +349,38 @@ function SpielraumPage() {
   const hostIsMe = room.host_user_id === user.id;
   const showHostPause = hostAbsent && !hostIsMe && !isDone;
 
+  function myTaw(talentId: string): number {
+    const snap = me?.hero_snapshot;
+    const table = snap?.classId ? defaultTalents(snap.classId) : {};
+    const v = table[talentId];
+    return typeof v === "number" ? v : 0;
+  }
+
+  // [CHECK: …] des letzten Meister-Zugs: lokal würfeln und das Ergebnis
+  // als eigene Aktion ([PROBE]-Zeile) einreichen — wie im Solo-Modus.
+  function handleRollCheck() {
+    const check = turns.check;
+    const snap = me?.hero_snapshot;
+    if (!check || !snap) return;
+    if (sfxVolume > 0) playDiceRoll(0.6 * sfxVolume);
+    let line: string | null = null;
+    if (check.talentId) {
+      line = rollTalentCheck(
+        check.talentId,
+        snap.attrs as Record<string, number>,
+        myTaw(check.talentId),
+        check.modifier,
+      ).line;
+    } else if (check.attr) {
+      const value = snap.attrs[check.attr] ?? 10;
+      const r = rollAttributeCheck(value, check.modifier);
+      const mod =
+        check.modifier === 0 ? "±0" : check.modifier > 0 ? `+${check.modifier}` : `${check.modifier}`;
+      line = `[PROBE] ${check.attr} ${mod}: 1W20=${r.roll} gegen ${r.target} — ${r.success ? "gelungen" : "misslungen"}`;
+    }
+    if (line) void call("submitAction", { text: line });
+  }
+
   const imgSrc = resolveSceneImage(turns.sceneTag);
 
   return (
@@ -389,16 +433,39 @@ function SpielraumPage() {
           </div>
         </div>
 
-        {/* Scene image */}
+        {/* Scene image: Pergament-Vignette, Untertitel, Zoom wie im Solo-Modus */}
         {imgSrc && (
-          <div className="relative w-full bg-black/80">
-            <img
-              src={imgSrc}
-              alt="Szene"
-              loading="lazy"
-              className="w-full h-32 sm:h-48 object-cover opacity-90"
-            />
-          </div>
+          <figure className="relative m-0 w-full bg-black/80">
+            <button
+              type="button"
+              onClick={() => setImageZoomed(true)}
+              title="Bild vergrößern"
+              className="relative block w-full cursor-zoom-in focus:outline-none overflow-hidden"
+              style={{
+                WebkitMaskImage:
+                  "radial-gradient(ellipse 72% 78% at 50% 50%, #000 58%, transparent 100%)",
+                maskImage:
+                  "radial-gradient(ellipse 72% 78% at 50% 50%, #000 58%, transparent 100%)",
+              }}
+            >
+              <img
+                src={imgSrc}
+                alt={sceneCaption(turns.sceneTag) ?? "Szene"}
+                loading="lazy"
+                className="w-full h-32 sm:h-48 object-cover opacity-90 sepia-[.25] saturate-[.85]"
+              />
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0"
+                style={{ boxShadow: "inset 0 0 40px 12px rgba(120, 85, 40, 0.35)" }}
+              />
+            </button>
+            {sceneCaption(turns.sceneTag) && (
+              <figcaption className="pointer-events-none absolute bottom-1 left-0 right-0 text-center font-serif italic text-xs tracking-wide text-[#f1e6c8]/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.8)]">
+                ❧ {sceneCaption(turns.sceneTag)} ❧
+              </figcaption>
+            )}
+          </figure>
         )}
 
         {/* Body grid: transcript + group aside */}
