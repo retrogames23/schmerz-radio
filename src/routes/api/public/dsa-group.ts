@@ -224,29 +224,55 @@ async function callMaster(
 }
 
 /**
- * Letzte Säuberung der Modell-Antwort. Entfernt interne Reasoning-Sektionen
- * (z. B. DeepSeek `<think>…</think>`) und Reste von Tool-Aufrufen oder
- * Chat-Template-Steuerzeichen, bevor der Text geparst und an die DB/den
- * Client geschickt wird. Spielerseitige Marker ([TJARK]/[BREM]/[YELVA]/
- * [SCENE]/[CHECK]/[END]) bleiben unberührt.
+ * Benannte Vital-Marker der Gruppenrunde: [LE: Heldname: -3] /
+ * [AE: Heldname: +2]. Der Name ist Pflicht, weil mehrere Helden am Tisch
+ * sitzen — die alte Solo-Form [LE: -3] wird hier bewusst ignoriert.
+ * Wendet die Deltas auf die hero_snapshots der Mitglieder an und entfernt
+ * die Marker aus dem gespeicherten Text.
  */
-function sanitizeReply(reply: string): string {
-  if (!reply) return "";
-  let out = reply;
-  out = out.replace(/<think>[\s\S]*?<\/think>/gi, "");
-  out = out.replace(/<thinking>[\s\S]*?<\/thinking>/gi, "");
-  out = out.replace(/<reasoning>[\s\S]*?<\/reasoning>/gi, "");
-  out = out.replace(/<reflection>[\s\S]*?<\/reflection>/gi, "");
-  out = out.replace(/<scratchpad>[\s\S]*?<\/scratchpad>/gi, "");
-  out = out.replace(/<(?:think|thinking|reasoning|reflection|scratchpad)>[\s\S]*$/i, "");
-  out = out.replace(/<tool_call>[\s\S]*?<\/tool_call>/gi, "");
-  out = out.replace(/<tool_response>[\s\S]*?<\/tool_response>/gi, "");
-  out = out.replace(/<function_calls?>[\s\S]*?<\/function_calls?>/gi, "");
-  out = out.replace(/<\|tool_calls?_begin\|>[\s\S]*?<\|tool_calls?_end\|>/gi, "");
-  out = out.replace(/<\|im_(?:start|end)\|>(?:\s*(?:system|assistant|user))?/gi, "");
-  out = out.replace(/<\|(?:begin_of_text|end_of_text|eot_id|start_header_id|end_header_id|bos|eos)\|>/gi, "");
-  out = out.replace(/<\|[a-z_]+\|>/gi, "");
-  return out.trim();
+const LE_NAMED_RE_G = /\[LE:\s*([A-ZÄÖÜa-zäöü][^\]:\d+-]{0,38}?)\s*:\s*([+-]\s*\d{1,3})\s*\]/gi;
+const AE_NAMED_RE_G = /\[AE:\s*([A-ZÄÖÜa-zäöü][^\]:\d+-]{0,38}?)\s*:\s*([+-]\s*\d{1,3})\s*\]/gi;
+
+async function applyVitalMarkers(
+  admin: AnyClient,
+  roomId: string,
+  members: MemberRow[],
+  reply: string,
+): Promise<string> {
+  const apply = async (re: RegExp, key: "le" | "ae") => {
+    for (const m of reply.matchAll(re)) {
+      const name = (m[1] ?? "").trim().toLowerCase();
+      const delta = parseInt((m[2] ?? "").replace(/\s+/g, ""), 10);
+      if (!name || !Number.isFinite(delta) || delta === 0) continue;
+      const member = members.find(
+        (mm) => mm.hero_snapshot && mm.hero_snapshot.name.trim().toLowerCase() === name,
+      );
+      if (!member?.hero_snapshot) continue;
+      const snap = { ...member.hero_snapshot };
+      if (key === "le") {
+        snap.le = Math.max(0, Math.min(snap.leMax, snap.le + delta));
+      } else {
+        if (snap.ae === null) continue;
+        const aeMax = snap.aeMax ?? Math.max(snap.ae, 0);
+        snap.aeMax = aeMax;
+        snap.ae = Math.max(0, Math.min(aeMax, snap.ae + delta));
+      }
+      member.hero_snapshot = snap;
+      await admin
+        .from("dsa_group_members")
+        .update({ hero_snapshot: snap as unknown as Record<string, unknown> })
+        .eq("room_id", roomId)
+        .eq("user_id", member.user_id);
+    }
+  };
+  await apply(LE_NAMED_RE_G, "le");
+  await apply(AE_NAMED_RE_G, "ae");
+  return reply
+    .replace(LE_NAMED_RE_G, "")
+    .replace(AE_NAMED_RE_G, "")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 type AnyClient = ReturnType<typeof createClient<any, any, any>>;
