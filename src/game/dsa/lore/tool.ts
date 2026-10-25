@@ -9,6 +9,7 @@ import { resolveLoreTopic, LORE_TOPIC_HINT } from "./lookup";
 import { searchDsaRulebook } from "./rulebook.server";
 import {
   AI_MODEL_DSA_MASTER,
+  AI_MODEL_DSA_FREE,
   OPENROUTER_CHAT_URL,
   getModelLimits,
   openRouterHeaders,
@@ -97,6 +98,27 @@ type ChatMessage =
 export async function callChatWithLoreTool(
   apiKey: string,
   messages: ChatMessage[],
+  options: Parameters<typeof callChatWithLoreToolOnce>[2],
+): ReturnType<typeof callChatWithLoreToolOnce> {
+  const result = await callChatWithLoreToolOnce(apiKey, messages, options);
+  const model = options.model || AI_MODEL_DSA_MASTER;
+  // Unsichtbarer Ausfallschutz: Bei Ausfall/Timeout des Hauptmodells
+  // (nicht bei Kontingent-, Key- oder Rate-Limit-Fehlern) genau diesen
+  // einen Zug mit dem günstigen Modell erzählen statt Fehler anzuzeigen.
+  if (!result.ok && result.status === 502 && model !== AI_MODEL_DSA_FREE) {
+    console.warn(`[dsa-fallback] ${model} failed (${result.error}) → ${AI_MODEL_DSA_FREE}`);
+    return callChatWithLoreToolOnce(apiKey, messages, {
+      ...options,
+      model: AI_MODEL_DSA_FREE,
+      callLabel: `${options.callLabel ?? "dsa-master"}:fallback`,
+    });
+  }
+  return result;
+}
+
+async function callChatWithLoreToolOnce(
+  apiKey: string,
+  messages: ChatMessage[],
   options: {
     temperature: number;
     max_tokens: number;
@@ -127,6 +149,7 @@ export async function callChatWithLoreTool(
     let upstream: Response;
     try {
       upstream = await fetch(OPENROUTER_CHAT_URL, {
+        signal: AbortSignal.timeout(60_000),
         method: "POST",
         headers: openRouterHeaders(apiKey),
         body: JSON.stringify({
