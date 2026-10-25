@@ -169,7 +169,7 @@ export function emptyAttrs(): Partial<Attrs> {
 
 export function talentsFor(classId: DsaClassId | undefined): string[] {
   if (classId === "magier" || classId === "druide")
-    return ["Stab+5", "Lesen/Schreiben +6", "Sprachen +4", "Pflanzenkunde +3"];
+    return ["Magiekunde +5", "Rechnen +4", "Alchimie +3", "Geschichte +3"];
   if (classId === "streuner" || classId === "gaukler")
     return ["Dolch +5", "Schleichen +6", "Taschendieb +5", "Lügen +4"];
   if (classId === "elf")

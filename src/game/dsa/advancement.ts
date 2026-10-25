@@ -77,7 +77,7 @@ export function upgradeToHero(c: DsaCharacterSummary | DsaHero | null): DsaHero 
     apSpent: typeof h.apSpent === "number" ? Math.max(0, h.apSpent) : 0,
     talents:
       h.talents && typeof h.talents === "object"
-        ? { ...h.talents }
+        ? withAllTalents(h.talents)
         : defaultTalents(c.classId as DsaClassId),
     spells:
       h.spells && typeof h.spells === "object"
@@ -132,29 +132,29 @@ function classTalentBonuses(classId: string): Record<string, number> {
       break;
     case "streuner":
       t.schleichen = 4; t.sich_verstecken = 4; t.taschendiebstahl = 4; t.gassenwissen = 4;
-      t.schloesser = 3; t.sinnenschaerfe = 3;
+      t.schloesser = 3; t.sinnenschaerfe = 3; t.menschenkenntnis = 3; t.feilschen = 2; t.zechen = 1;
       break;
     case "magier":
-      t.alchimie = 3; t.magiekunde = 5; t.geschichte = 3; t.goetter_kulte = 3; t.rechnen = 4;
+      t.alchimie = 3; t.magiekunde = 5; t.geschichte = 3; t.goetter_kulte = 3; t.rechnen = 4; t.lehren = 2; t.etikette = 2; t.menschenkenntnis = 1;
       break;
     case "elf":
       t.sinnenschaerfe = 5; t.wildnisleben = 4; t.faehrtenlesen = 4; t.schleichen = 3;
-      t.tierkunde = 3; t.musizieren = 4;
+      t.tierkunde = 3; t.musizieren = 4; t.tanzen = 2; t.orientierung = 2;
       break;
     case "zwerg":
-      t.athletik = 3; t.schmieden = 5; t.selbstbeherrschung = 4; t.sinnenschaerfe = 3;
+      t.athletik = 3; t.schmieden = 5; t.selbstbeherrschung = 4; t.sinnenschaerfe = 3; t.zechen = 3; t.feilschen = 2;
       break;
     case "gaukler":
       t.musizieren = 5; t.ueberreden = 4; t.taschendiebstahl = 3; t.menschenkenntnis = 3;
-      t.athletik = 3;
+      t.athletik = 3; t.betoeren = 3; t.tanzen = 3; t.gassenwissen = 2;
       break;
     case "thorwaler":
       t.athletik = 4; t.schwimmen = 5; t.wildnisleben = 3; t.sinnenschaerfe = 3;
-      t.selbstbeherrschung = 4;
+      t.selbstbeherrschung = 4; t.zechen = 4; t.fahrzeug = 2;
       break;
     case "druide":
       t.pflanzenkunde = 5; t.tierkunde = 5; t.heilkunde_wunden = 3; t.wildnisleben = 4;
-      t.goetter_kulte = 3;
+      t.goetter_kulte = 3; t.menschenkenntnis = 2;
       break;
     default:
       t.athletik = 2;
