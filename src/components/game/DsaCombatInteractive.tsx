@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronRight, Pause, Play, Send } from "lucide-react";
 import { CloseButton } from "./CloseButton";
+import { useSettings } from "@/audio/SettingsContext";
+import { playDiceRoll, playSpellChime, playSwordClash, playThud } from "@/audio/sfx";
 import {
   createCombatState,
   resolveRound,
@@ -114,6 +116,21 @@ export function DsaCombatInteractive({
       if (timer.current) clearTimeout(timer.current);
     };
   }, [step, fast, events.length, paused, hasStarted]);
+
+  const { sfxVolume } = useSettings();
+  useEffect(() => {
+    if (!current || sfxVolume <= 0) return;
+    const v = sfxVolume;
+    switch (current.kind) {
+      case "ini": playDiceRoll(0.4 * v); break;
+      case "attack-hit": playSwordClash(0.5 * v); break;
+      case "parry-success": playSwordClash(0.35 * v); break;
+      case "attack-miss": playThud(0.25 * v); break;
+      case "damage": case "downed": playThud(0.5 * v); break;
+      case "spell-cast": playSpellChime(false, 0.4 * v); break;
+      case "spell-fail": case "spell-fizzle": playSpellChime(true, 0.35 * v); break;
+    }
+  }, [current, sfxVolume]);
 
   useEffect(() => {
     if (!current) return;

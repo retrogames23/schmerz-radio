@@ -6,6 +6,8 @@ import {
   resolveDsaMasterModel,
 } from "@/lib/aiModel";
 import { isDailyBudgetReached } from "@/game/dsa/lore/dailyBudget.server";
+import { AUTHORS_NOTE, extractNpcMarkers, injectAuthorsNote, mergeNpcStates, npcTrackerBlock, sceneQueryFrom, type NpcState } from "@/game/dsa/masterDirectives";
+import { searchDsaRulebook } from "@/game/dsa/lore/rulebook.server";
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import {
@@ -518,6 +520,8 @@ async function callMaster(
     const enhancedLast = { role: last.role, content: `${last.content}\n\n${tail}` };
     chatMessages = [systemMessage, ...trimmed.slice(0, -1), enhancedLast];
   }
+
+  chatMessages = injectAuthorsNote(chatMessages, 2, AUTHORS_NOTE) as typeof chatMessages;
 
   return callChatWithLoreTool(apiKey, chatMessages, {
     temperature: 0.8,
@@ -1110,17 +1114,39 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             recentMessages: history,
             extraScanText: [summary, wishBrief ?? ""].filter(Boolean).join("\n"),
           });
+          // NSC-Tracker + Auto-RAG bei Schauplatzwechsel.
+          const npcStates = (characterSnap as { npcStates?: NpcState[] }).npcStates;
+          let ragBlock = "";
+          const lastAssistant = [...history].reverse().find((m) => m.role === "assistant")?.content;
+          const sceneQuery = sceneQueryFrom(lastAssistant);
+          if (sceneQuery) {
+            try {
+              const hits = await searchDsaRulebook(`Atmosphäre und Schauplatz: ${sceneQuery}`, 2);
+              if (hits.startsWith("QUELLEN")) {
+                ragBlock = `ATMOSPHÄRE-ANREGUNG aus klassischen DSA3-Quellen (nur Ton und Details als Inspiration, eigene Worte, keine Plots übernehmen):\n${hits.slice(0, 2400)}`;
+              }
+            } catch (e) {
+              console.warn("dsa auto-rag failed", e);
+            }
+          }
           const result = await callMaster(
             apiKey,
             staticLore,
-            dynamicState,
+            `${dynamicState}\n\n${npcTrackerBlock(npcStates)}`,
             history,
             minEnd,
             chosenModel,
-            wiTurn.block,
+            [wiTurn.block, ragBlock].filter(Boolean).join("\n\n"),
           );
           if (!result.ok) return json(result.status, { error: result.error });
-          let reply = sanitizeReply(result.reply);
+          const npcParsed = extractNpcMarkers(sanitizeReply(result.reply));
+          if (npcParsed.updates.length > 0) {
+            characterSnap = {
+              ...characterSnap,
+              npcStates: mergeNpcStates(npcStates, npcParsed.updates, assistantTurns + 1),
+            } as DsaCharacterSummary;
+          }
+          let reply = npcParsed.text || sanitizeReply(result.reply);
           let parsed = parseMasterTurn(reply);
           if (parsed.end && !isOpenSetting && assistantTurns + 1 < MIN_END_ASSISTANT_TURNS) {
             reply = stripEndMarker(reply);

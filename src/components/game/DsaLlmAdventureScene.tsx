@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollText, Loader2, Send, LogOut, Dices, Swords, Maximize2, Minimize2, FileDown, Play, Lock, Sparkles } from "lucide-react";
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
+import { useSettings } from "@/audio/SettingsContext";
+import { playDiceRoll } from "@/audio/sfx";
 import { DsaModelSwitcher } from "@/components/game/dsa/DsaModelSwitcher";
 import { getDsaModel, getDsaModelOption } from "@/lib/dsaModelPreference";
 import { Cpu } from "lucide-react";
@@ -509,6 +511,8 @@ export function DsaLlmAdventureScene() {
     }
   }, [composerText, busy, endState, nextId, handleServerReply, heroSlot, getDsaSessionId, expectsSignedInUser, runtimeMode]);
 
+  const { sfxVolume } = useSettings();
+
   function heroTaw(talentId: string): number {
     const ch = dsaCharacter as unknown as { talents?: Record<string, number>; classId: string } | null;
     const table = ch?.talents ?? (ch ? defaultTalents(ch.classId) : {});
@@ -518,6 +522,7 @@ export function DsaLlmAdventureScene() {
 
   function handleRollCheck() {
     if (!pendingCheck || !dsaCharacter) return;
+    if (sfxVolume > 0) playDiceRoll(0.6 * sfxVolume);
     if (pendingCheck.talentId) {
       const r = rollTalentCheck(
         pendingCheck.talentId,
