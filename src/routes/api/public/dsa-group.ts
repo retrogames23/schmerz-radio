@@ -18,6 +18,18 @@ import { defaultGearFor, type HeroGear } from "@/game/dsa/gear";
 import { callChatWithLoreTool } from "@/game/dsa/lore/tool";
 import { selectActiveWorldInfo } from "@/game/dsa/lore/worldInfo";
 import { getModelLimits, resolveDsaMasterModel } from "@/lib/aiModel";
+import { sanitizeReply } from "@/game/dsa/replyCleanup";
+import { DSA_FEW_SHOT_EXAMPLES } from "@/game/dsa/lore/fewShot";
+import {
+  AUTHORS_NOTE,
+  extractNpcMarkers,
+  injectAuthorsNote,
+  mergeNpcStates,
+  npcTrackerBlock,
+  sceneQueryFrom,
+  type NpcState,
+} from "@/game/dsa/masterDirectives";
+import { searchDsaRulebook } from "@/game/dsa/lore/rulebook.server";
 
 /**
  * Server-Route für das DSA-Gruppenabenteuer (Mehrspieler-Modus).
