@@ -16,3 +16,8 @@ describe("sanitizeReply – Fremdschrift & Dopplung", () => {
     assert.equal(sanitizeReply(t), t);
   });
 });
+
+it("entfernt verstümmelte leere Klammern wie [ ?]", () => {
+  assert.ok(!sanitizeReply("[ ?] [TJARK] Die Tür knarrt.").includes("[ ?]"));
+  assert.ok(sanitizeReply("[TJARK] Die Tür knarrt.").includes("[TJARK]"));
+});
