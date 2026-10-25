@@ -81,7 +81,7 @@ export function upgradeToHero(c: DsaCharacterSummary | DsaHero | null): DsaHero 
         : defaultTalents(c.classId as DsaClassId),
     spells:
       h.spells && typeof h.spells === "object"
-        ? { ...h.spells }
+        ? { ...defaultSpells(c.classId as DsaClassId), ...h.spells }
         : defaultSpells(c.classId as DsaClassId),
     adventuresPlayed:
       typeof h.adventuresPlayed === "number" ? Math.max(0, h.adventuresPlayed) : 0,
