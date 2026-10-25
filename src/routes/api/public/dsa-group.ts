@@ -42,7 +42,7 @@ const MAX_NAME = 40;
 const MAX_PW = 60;
 const MAX_WISH = 600;
 const MAX_ACTION = 500;
-const COLLECT_WINDOW_MS = 20_000;
+const COLLECT_WINDOW_MS = 45_000;
 const ABSENCE_MS = 60_000;
 const MAX_MESSAGES = 120;
 const MIN_END_TURNS = 30;
@@ -168,7 +168,7 @@ async function callMaster(
     content: [
       {
         type: "text" as const,
-        text: `${guard}\n\n${staticLore}`,
+        text: `${guard}\n\n${staticLore}\n\n${DSA_FEW_SHOT_EXAMPLES}`,
         cache_control: { type: "ephemeral" as const },
       },
     ],
@@ -210,6 +210,8 @@ async function callMaster(
     const enhancedLast = { role: last.role, content: `${last.content}\n\n${tail}` };
     chatMessages = [systemMessage, ...trimmed.slice(0, -1), enhancedLast];
   }
+  // Author's Note als Depth-Injection kurz vor dem Ende des Kontexts.
+  chatMessages = injectAuthorsNote(chatMessages, 2, AUTHORS_NOTE) as typeof chatMessages;
 
   return callChatWithLoreTool(apiKey, chatMessages, {
     temperature: 0.8,
