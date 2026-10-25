@@ -87,6 +87,14 @@ import imgCarriageRoad from "@/assets/dsa/dsa-carriage-road.jpg";
 import imgMarketStall from "@/assets/dsa/dsa-market-stall.jpg";
 import imgNpcWarrior from "@/assets/dsa/dsa-npc-warrior.jpg";
 import imgNpcWitch from "@/assets/dsa/dsa-npc-witch.jpg";
+// Lücken-Batch 2026-10
+import imgSewers from "@/assets/dsa/dsa-sewers.jpg";
+import imgDwarfHall from "@/assets/dsa/dsa-dwarf-hall.jpg";
+import imgGuardHouse from "@/assets/dsa/dsa-guard-house.jpg";
+import imgThorwalLongship from "@/assets/dsa/dsa-thorwal-longship.jpg";
+import imgDesertOasis from "@/assets/dsa/dsa-desert-oasis.jpg";
+import imgElfSettlement from "@/assets/dsa/dsa-elf-settlement.jpg";
+import imgInfirmary from "@/assets/dsa/dsa-infirmary.jpg";
 
 /**
  * Katalog der illustrierten Aventurien-Szenen. Jeder Eintrag enthält das
@@ -209,6 +217,15 @@ export const DSA_SCENE_CATALOG: Record<string, DsaSceneEntry> = {
   aftermath_tavern: { src: imgAftermathTavern, use: "Verwüstete Schenke nach Kampf — umgekippte Möbel, Splitter." },
   aftermath_forest: { src: imgAftermathForest, use: "Waldlichtung nach Kampf — gefallene Gegner zwischen Bäumen." },
   aftermath_dungeon: { src: imgAftermathDungeon, use: "Verlies-Raum nach Kampf — Leichen im Fackelschein." },
+
+  // ── Lücken-Ergänzungen ─────────────────────────────────────────────
+  sewers: { src: imgSewers, use: "Kanalisation/Gewölbe unter einer Großstadt (Gareth, Havena, Grangor) — Wasserkanal, Schmuggler, Flucht durch die Unterstadt." },
+  dwarf_hall: { src: imgDwarfHall, use: "Große Zwergenhalle einer Binge mit Runensäulen und Essen — Ankunft bei Angroschim, Audienz beim Bergkönig (NICHT für enge Stollen)." },
+  guard_house: { src: imgGuardHouse, use: "Wachstube der Stadtgarde mit Steckbriefen — Verhör, Anzeige erstatten, Festnahme, Gespräch mit Büttel/Weibel." },
+  thorwal_longship: { src: imgThorwalLongship, use: "Thorwalsche Otta am Fjordsteg — Thorwal, Hjaldingard, Fahrt mit Thorwalern, Nordküste." },
+  desert_oasis: { src: imgDesertOasis, use: "Oase mit Palmen und Nomadenzelten — Rast in der Khôm, Novadi-Lager, Gastrecht bei Beni." },
+  elf_settlement: { src: imgElfSettlement, use: "Elfische Baumsiedlung in Riesenbäumen — Besuch bei Auelfen/Waldelfen, Sippe, Salamandersteine." },
+  infirmary: { src: imgInfirmary, use: "Heilerstube/Peraine-Hospital mit Kräutern und Strohbetten — Verwundete versorgen, Genesung, Heilkunde." },
 };
 
 /** Back-compat: nur Pfade. Neuer Code sollte DSA_SCENE_CATALOG nutzen. */
