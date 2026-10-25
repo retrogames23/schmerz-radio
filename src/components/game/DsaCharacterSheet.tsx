@@ -116,13 +116,6 @@ export function DsaCharacterSheet() {
     delete (next as { portraitDataUrl?: string }).portraitDataUrl;
     updateHero(next);
   }
-  type LearnedTalent = { name: string; value: number; probe: readonly string[] };
-  const learnedTalents: LearnedTalent[] = Object.entries(hero.talents ?? {})
-    .flatMap(([id, value]) => {
-      const def = TALENTS.find((t) => t.id === id);
-      return def ? [{ name: def.name, value, probe: def.probe as readonly string[] }] : [];
-    })
-    .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name));
   const learnedSpells = Object.entries(hero.spells ?? {})
     .map(([id, value]) => {
       const def = SPELLS.find((s) => s.id === id);
@@ -465,28 +458,6 @@ export function DsaCharacterSheet() {
             </section>
           )}
 
-          {/* Talente (passend zur Klasse) */}
-          {profile && (
-            <section>
-              <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.85)] pb-1">
-                Talente · Auswahl
-              </div>
-              <div className="dsa-typed text-[13px] dsa-ink font-semibold grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
-                {classTalents(dsaCharacter.classId).map((t) => (
-                  <div
-                    key={t}
-                    className="flex items-center justify-between border-b border-[rgba(20,12,4,0.55)] py-0.5"
-                  >
-                    <span>{t.split(" ").slice(0, -1).join(" ") || t}</span>
-                    <span className="dsa-ink font-bold">
-                      {t.split(" ").slice(-1)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
           {/* Zauber (nur magisch begabte Klassen) */}
           {cls?.magic && (
             <section>
@@ -530,30 +501,41 @@ export function DsaCharacterSheet() {
             </section>
           )}
 
-          {/* Gelernte Talente (Steigerungs-Sicht). */}
-          {canAdvance && learnedTalents.length > 0 && (
-            <section>
-              <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.85)] pb-1">
-                Talente · Gelernt
-              </div>
-              <div className="dsa-typed text-[13px] dsa-ink font-semibold grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
-                {learnedTalents.map((t) => (
-                  <div
-                    key={t.name}
-                    className="flex items-center justify-between border-b border-[rgba(20,12,4,0.55)] py-0.5"
-                  >
-                    <span>
-                      {t.name}{" "}
-                      <span className="text-[10px] opacity-60 uppercase tracking-wider">
-                        {t.probe.join("/")}
-                      </span>
-                    </span>
-                    <span className="dsa-ink font-bold">{t.value}</span>
+          {/* Talente nach DSA3-Kategorien */}
+          <section>
+            <div className="dsa-typed text-[11px] uppercase tracking-[0.3em] dsa-ink font-bold mb-2 border-b-2 border-[rgba(20,12,4,0.85)] pb-1">
+              Talente
+            </div>
+            <div className="space-y-3">
+              {TALENT_CATEGORIES.map(([cat, label]) => {
+                const list = TALENTS.filter((t) => t.category === cat);
+                if (list.length === 0) return null;
+                return (
+                  <div key={cat}>
+                    <div className="dsa-typed text-[10px] uppercase tracking-widest dsa-ink-faded font-bold mb-0.5">
+                      {label}
+                    </div>
+                    <div className="dsa-typed text-[13px] dsa-ink font-semibold grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-0.5">
+                      {list.map((t) => (
+                        <div
+                          key={t.id}
+                          className="flex items-center justify-between border-b border-[rgba(20,12,4,0.55)] py-0.5"
+                        >
+                          <span>
+                            {t.name}{" "}
+                            <span className="text-[10px] opacity-60 uppercase tracking-wider">
+                              {t.probe.join("/")}
+                            </span>
+                          </span>
+                          <span className="dsa-ink font-bold">{hero.talents[t.id] ?? 0}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
-              </div>
-            </section>
-          )}
+                );
+              })}
+            </div>
+          </section>
         </div>
 
         {/* Footer */}
@@ -634,24 +616,13 @@ function Stat({
   );
 }
 
-function classTalents(classId: string): string[] {
-  switch (classId) {
-    case "magier":
-    case "druide":
-      return ["Stab +5", "Lesen/Schreiben +6", "Sprachen +4", "Pflanzenkunde +3"];
-    case "streuner":
-    case "gaukler":
-      return ["Dolch +5", "Schleichen +6", "Taschendieb +5", "Lügen +4"];
-    case "elf":
-      return ["Bogen +7", "Sinnenschärfe +6", "Wildnisleben +5", "Singen +4"];
-    case "thorwaler":
-      return ["Hiebwaffen +7", "Boote fahren +5", "Zechen +5"];
-    case "zwerg":
-      return ["Hiebwaffen +6", "Mineralogie +5", "Bergbau +5"];
-    default:
-      return ["Hiebwaffen +6", "Schild +5", "Reiten +4", "Athletik +4"];
-  }
-}
+const TALENT_CATEGORIES: [string, string][] = [
+  ["koerper", "Körper"],
+  ["gesellschaft", "Gesellschaft"],
+  ["natur", "Natur"],
+  ["wissen", "Wissen"],
+  ["handwerk", "Handwerk"],
+];
 
 function GearSlot({
   label,

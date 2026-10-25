@@ -1,3 +1,5 @@
+import { defaultTalents } from "@/game/dsa/advancement";
+import { TALENTS } from "@/game/dsa/rules/talents";
 import type { Attrs } from "@/game/dsa/dice";
 import {
   type DsaClass,
@@ -168,17 +170,12 @@ export function emptyAttrs(): Partial<Attrs> {
 }
 
 export function talentsFor(classId: DsaClassId | undefined): string[] {
-  if (classId === "magier" || classId === "druide")
-    return ["Stab+5", "Lesen/Schreiben +6", "Sprachen +4", "Pflanzenkunde +3"];
-  if (classId === "streuner" || classId === "gaukler")
-    return ["Dolch +5", "Schleichen +6", "Taschendieb +5", "Lügen +4"];
-  if (classId === "elf")
-    return ["Bogen +7", "Sinnenschärfe +6", "Wildnisleben +5", "Singen +4"];
-  if (classId === "thorwaler")
-    return ["Hiebwaffen +7", "Boote fahren +5", "Zechen +5"];
-  if (classId === "zwerg")
-    return ["Hiebwaffen +6", "Mineralogie +5", "Bergbau +5"];
-  return ["Hiebwaffen +6", "Schild +5", "Reiten +4", "Athletik +4"];
+  const t = defaultTalents(classId ?? "krieger");
+  return Object.entries(t)
+    .filter(([, v]) => v > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([id, v]) => `${TALENTS.find((x) => x.id === id)?.name ?? id} +${v}`);
 }
 
 export const NEGATIVE_ATTRS = [

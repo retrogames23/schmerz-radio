@@ -114,3 +114,16 @@ describe("DSA3-Kampfzauber", () => {
     assert.equal(stufeFromAp(300), 3);
   });
 });
+
+import { defaultTalents as _dt, upgradeToHero as _up } from "./advancement";
+describe("DSA3-Grundtalente", () => {
+  it("jeder neue Held hat Menschenkenntnis (mind. TaW 0)", () => {
+    assert.equal(_dt("krieger").menschenkenntnis, 1);
+    assert.equal(typeof _dt("magier").reiten, "number");
+  });
+  it("alte Helden werden aufgefüllt, Steigerungen bleiben", () => {
+    const h = _up({ name: "A", className: "Krieger", classId: "krieger", attrs: {} as never, le: 30, ae: null, talents: { athletik: 9 } } as never)!;
+    assert.equal(h.talents.athletik, 9);
+    assert.equal(h.talents.menschenkenntnis, 0);
+  });
+});
