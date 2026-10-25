@@ -20,6 +20,13 @@ export function sanitizeReply(reply: string): string {
   // 4) Tokenizer-Ausreißer: CJK-, Hangul-, Kana- und Vollbreiten-Zeichen
   //    kommen in deutschem DSA-Text nie vor (z. B. „＿日本").
   out = out.replace(/[\u3000-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af\uff00-\uffef]+/g, "");
+  // Weitere fremde Schriften (Thai, Arabisch, Hebräisch, Devanagari, Kyrillisch …)
+  // — z. B. Spam-Token wie „ฟรีเครดิต" mitten im Text.
+  out = out.replace(/[\u0400-\u04ff\u0590-\u06ff\u0900-\u0dff\u0e00-\u0e7f\u0e80-\u0eff\u1000-\u109f]+/g, " ");
+  out = out.replace(/([.!?…“"])\s{2,}/g, "$1 ");
+  // 4b) Doppelt ausgegebene Antwort: taucht der erste Satz (≥ 40 Zeichen)
+  //     später wörtlich erneut auf, ab dort abschneiden.
+  out = cutRepeatedStart(out);
   // Unsichtbare Steuer-/Breitenzeichen
   out = out.replace(/[\u200b-\u200f\u2060\ufeff]/g, "");
   // 5) Assistenten-Floskeln am Anfang
@@ -32,4 +39,18 @@ export function sanitizeReply(reply: string): string {
   // 7) Whitespace glätten
   out = out.replace(/[ \t]+$/gm, "").replace(/\n{3,}/g, "\n\n");
   return out.trim();
+}
+
+function cutRepeatedStart(text: string): string {
+  const body = text.replace(/^\s*\[(?:TJARK|BREM|YELVA)\]\s*(?:\(Outtime\)\s*)?/i, "");
+  const m = /^([\s\S]{40,}?[.!?])(?:\s|$)/.exec(body);
+  if (!m) return text;
+  const probe = m[1].slice(0, 40);
+  const first = text.indexOf(probe);
+  const again = text.indexOf(probe, first + probe.length);
+  if (first < 0 || again < 0) return text;
+  let cut = again;
+  const tag = text.slice(0, again).match(/\[(?:TJARK|BREM|YELVA)\][^\S\n]*(?:\(Outtime\)\s*)?$/i);
+  if (tag) cut = again - tag[0].length;
+  return text.slice(0, cut).trimEnd();
 }
