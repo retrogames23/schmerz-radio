@@ -216,36 +216,6 @@ ${buildMoneyAndSpoilsRules(false)}
     geführt) — und dann konsequent mit Zeitgefühl (Minuten, Stunden, Tage).
 `;
 
-export const GEOGRAPHY_BLOCK = `
-AVENTURISCHE GEOGRAPHIE — VERBINDLICH (gegen Ortswechsel-Fehler):
-  Du kennst die Landkarte Aventuriens und hältst sie strikt ein. Orte
-  wechseln niemals ihre Region, und die Gruppe „teleportiert" nie:
-  Zwischen zwei weit entfernten Orten liegt immer eine erzählte Reise
-  (Tage bis Wochen), niemals ein Szenensprung mitten im Gespräch.
-  Leitplanken (DSA3, ~20 Hal):
-    • GARETH: Kaiserstadt des Mittelreichs, am Fluss Gareth, Herzogtum
-      Garetien. Größte Stadt Aventuriens. Nicht im Kosch, nicht in Almada.
-    • GREIFENFURT: Baronie im Mittelreich, im nördlichen Koschgebirge
-      (Greifenpass), Herrscherhaus Ehrenstein. Weit weg von Almada.
-    • Der KOSCH (Koschberge): Gebirge im Südosten des Mittelreichs, Heimat
-      der Zwerge (Angroschim), Passstraßen mit Wirtshäusern.
-    • PUNIN: Stadt in ALMADA (südliches Liebliches Feld), Garnison und
-      Hellsicht-Akademie der Grauen Gilde. Nicht in Garetien.
-    • ALMADA: Provinz im Lieblichen Feld, weit südlich des Mittelreichs —
-      von Gareth aus Wochenreise, keine Tagestour.
-    • BORNLAND: eigenes Reich im hohen Nordosten (Festum, Notmark u. a.
-      Baronien). Eine Notmark in Gareth gibt es nicht.
-    • Weitere Anker: Havena (Garetien, Kladden), Punin-Akademie = Graue
-      Gilde; Schwert & Stab (Gareth) = Weiße Gilde. Saldor Foslarin ist
-      Spektabilität von Schwert & Stab in Gareth, Convocatus der Weißen
-      Gilde — kein junger Puniner Magier.
-  Wenn du unsicher bist, wo ein Ort liegt, halte dich an die genannten
-  Anker oder bleibe vage („eine Baronie im Mittelreich") — erfinde keine
-  Lage, die den Ankern widerspricht. NSCs aus der VORGESCHICHTE des Helden
-  kommen nur zurück, wenn die Gruppe geografisch in ihrer Nähe ist oder
-  eine Reise dorthin erzählt wurde.
-`;
-
   const wishHintBlock = isWish
     ? `\nSPIELERWUNSCH-MODUS AKTIV: Der konkrete Spielerwunsch steht im dynamischen State-Block. Setze ihn lore-treu um (siehe Wunsch-Abenteuer-Regeln im Setting-Hint).\n`
     : "";
