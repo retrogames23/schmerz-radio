@@ -3,7 +3,6 @@ import { ScrollText, Loader2, Send, LogOut, Dices, Swords, Maximize2, Minimize2,
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playDiceRoll } from "@/audio/sfx";
-import { DsaModelSwitcher } from "@/components/game/dsa/DsaModelSwitcher";
 import { getDsaModel, getDsaModelOption } from "@/lib/dsaModelPreference";
 import { Cpu } from "lucide-react";
 import { useMusic } from "@/audio/MusicPlayer";
@@ -1056,14 +1055,6 @@ function SettingPicker({
         <p className="text-xs uppercase tracking-[0.3em] opacity-60 mt-6 mb-3">
           Setting wählen
         </p>
-        {isDonor && (
-          <div className="mb-3 flex items-center justify-between gap-2 rounded border border-[#3a2c1a]/40 bg-[#fbf2d8] px-3 py-2">
-            <span className="text-[11px] uppercase tracking-wider text-[#2a1f10]/80">
-              KI-Meister vor dem Start wählen
-            </span>
-            <DsaModelSwitcher />
-          </div>
-        )}
         {error && (
           <div className="mb-3 rounded border-2 border-red-900/40 bg-red-100/60 px-3 py-2 text-sm text-red-900">
             {error}

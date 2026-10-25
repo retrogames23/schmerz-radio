@@ -15,13 +15,9 @@ const STORAGE_KEY = "dsa.model";
 const VALID_IDS = new Set(DSA_MASTER_MODELS.map((m) => m.id));
 
 export function getDsaModel(): string {
-  if (typeof window === "undefined") return AI_MODEL_DSA_MASTER;
-  try {
-    const v = window.localStorage.getItem(STORAGE_KEY);
-    if (v && VALID_IDS.has(v)) return v;
-  } catch {
-    /* ignore */
-  }
+  // Manuelle Wahl entfernt: Server entscheidet nach Unterstützer-Status.
+  void STORAGE_KEY;
+  void VALID_IDS;
   return AI_MODEL_DSA_MASTER;
 }
 
