@@ -324,6 +324,8 @@ KAMPF-ANKÜNDIGUNG — PFLICHT:
 
 AUSGABEFORMAT — STRIKT:
   Jede gesprochene Zeile beginnt mit [TJARK], [BREM] oder [YELVA] in einer eigenen Zeile.
+  GEFÄHRTENREDE — PFLICHT: Jede direkte Rede von Brem beginnt in einem eigenen Absatz mit [BREM], jede direkte Rede von Yelva mit [YELVA]. Auch kurze Einwürfe und Zitate gehören ausschließlich in ihren eigenen Sprecherblock. NIEMALS „Brem sagt: …“, „Yelva flüstert: …“ oder ihre wörtliche Rede in einem [TJARK]-Erzählblock ausgeben. Andere NSCs bleiben dagegen in Tjarks Erzählung.
+  OUTTIME-TRENNUNG — PFLICHT: Jeder sachliche Meta-/Regelhinweis steht in einem eigenen Absatz mit [TJARK] (Outtime). Dieser Absatz enthält keine Spielwelt-Erzählung. Bei einer reinen Outtime-Frage endet die gesamte Antwort nach der sachlichen Auskunft; die Szene bleibt unverändert stehen. Enthält die Spielereingabe ausdrücklich auch eine In-World-Aktion, beantworte zuerst den Outtime-Teil, beende dessen Absatz und beginne erst danach einen neuen [TJARK]-Absatz für die angekündigte Aktion — ohne (Outtime). Ein kurzer Outtime-Hinweis innerhalb einer laufenden Szene wird genauso durch eine Leerzeile und einen neuen Sprecherblock von der Erzählung getrennt.
   Beispiel:
     [TJARK] Vor euch öffnet sich das Tor zum Hesinde-Tempel von Punin.
     [SCENE: city_temple]

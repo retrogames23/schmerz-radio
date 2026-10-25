@@ -9,3 +9,8 @@
 - [x] Fünf weitere Figuren freistellen und in zufälliger Reihenfolge einbauen.
 - [x] Abstände von 20 Sekunden bis einer Minute, unterschiedliche Gehgeschwindigkeiten und Gesprächspausen testen.
 - [x] Alle sechs Figuren anklickbar machen; kurze Antworten und verzweigten Smalltalk im Spiel prüfen.
+
+# DSA Sprechertrennung
+- [x] Gefährtenrede im Solo- und Gruppenspiel ausschließlich eigenen Sprecherblöcken zuordnen.
+- [x] Outtime-Auskunft von der Erzählung trennen, einschließlich gemischter Gruppenrunden.
+- [x] Bestehende DSA-Prüfungen und aktuelle Fehlersignale kontrollieren (41 Tests erfolgreich; build OK).
