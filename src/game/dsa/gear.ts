@@ -1,6 +1,6 @@
 import { addCoins, applyMoneyDelta, coinFor, formatKreuzer, purseKreuzer } from "./money";
 import type { DsaClassId } from "./classes";
-import { WEAPONS } from "./rules/weapons";
+import { WEAPONS, matchWeaponId } from "./rules/weapons";
 import { ARMORS } from "./rules/armor";
 
 /** Freier Item-Slot im Held-Inventar. Story-Items dürfen frei benannt werden. */
@@ -206,9 +206,33 @@ export function addItem(
     };
   } else {
     if (items.length >= MAX_GEAR_ITEMS) return gear;
-    items.push({ id, name, description, count: count > 1 ? count : undefined });
+    const weaponId = matchWeaponId(name) ?? undefined;
+    const w = weaponId ? WEAPONS[weaponId] : null;
+    items.push({
+      id,
+      name,
+      description: description ?? (w ? `Waffe · TP ${w.tp}` : undefined),
+      count: count > 1 ? count : undefined,
+      ...(weaponId ? { weaponId } : {}),
+    });
   }
   return { ...gear, items };
+}
+
+/**
+ * Ergänzt fehlende weaponId-Marker an Inventar-Items anhand des Namens —
+ * repariert Startausrüstung, Meister-Beute und Altbestände beim Lesen.
+ */
+export function withWeaponIds(gear: HeroGear): HeroGear {
+  let changed = false;
+  const items = gear.items.map((it) => {
+    if (it.weaponId || it.armorId || it.shieldId) return it;
+    const weaponId = matchWeaponId(it.name);
+    if (!weaponId) return it;
+    changed = true;
+    return { ...it, weaponId };
+  });
+  return changed ? { ...gear, items } : gear;
 }
 
 /** Streicht ein Item per ID oder Name (case-insensitive, Teilstring erlaubt). */
@@ -266,7 +290,8 @@ export function discardItemById(gear: HeroGear, id: string): HeroGear {
  * zurück ins Inventar (mit weaponId-Marker, damit man sie wieder anlegen
  * kann). Items ohne weaponId-Marker bleiben unverändert.
  */
-export function equipWeapon(gear: HeroGear, itemId: string): HeroGear {
+export function equipWeapon(rawGear: HeroGear, itemId: string): HeroGear {
+  const gear = withWeaponIds(rawGear);
   const idx = gear.items.findIndex((it) => it.id === itemId && it.weaponId);
   if (idx < 0) return gear;
   const target = gear.items[idx];

@@ -45,6 +45,62 @@ export const WEAPONS: Record<string, WeaponStats> = {
   armbrust:        { id: "armbrust",        name: "Armbrust",         tp: "2W+4", at: 0,  pa:  0, hands: 2, reach: "lang",   kind: "schuss"},
 };
 
+/**
+ * Ordnet einen frei benannten Gegenstand („Dolch im Gürtel“, „kurzer Säbel“)
+ * einer Standardwaffe zu. Längere/spezifischere Stichwörter zuerst, damit
+ * „Wurfmesser“ nicht als „Messer“ und „Langbogen“ nicht als „Bogen“ endet.
+ */
+const WEAPON_KEYWORDS: Array<[string, string]> = [
+  ["anderthalbhaender", "anderthalbhand"],
+  ["bastardschwert", "anderthalbhand"],
+  ["zweihaender", "zweihaender"],
+  ["kurzschwert", "kurzschwert"],
+  ["langschwert", "langschwert"],
+  ["wurfmesser", "wurfmesser"],
+  ["wurfdolch", "wurfmesser"],
+  ["wurfspeer", "wurfspeer"],
+  ["kriegshammer", "kriegshammer"],
+  ["schmiedehammer", "keule"],
+  ["morgenstern", "morgenstern"],
+  ["hellebarde", "hellebarde"],
+  ["streitaxt", "streitaxt"],
+  ["zwergenaxt", "streitaxt"],
+  ["kurzbogen", "kurzbogen"],
+  ["langbogen", "langbogen"],
+  ["elfenbogen", "langbogen"],
+  ["armbrust", "armbrust"],
+  ["kampfstab", "stab"],
+  ["magierstab", "stab"],
+  ["sichelmesser", "dolch"],
+  ["langdolch", "dolch"],
+  ["messer", "dolch"],
+  ["dolch", "dolch"],
+  ["saebel", "saebel"],
+  ["rapier", "saebel"],
+  ["schwert", "langschwert"],
+  ["axt", "streitaxt"],
+  ["beil", "streitaxt"],
+  ["speer", "speer"],
+  ["lanze", "speer"],
+  ["bogen", "kurzbogen"],
+  ["keule", "keule"],
+  ["knueppel", "keule"],
+  ["streitkolben", "keule"],
+];
+
+/** Gegenstände, die Waffenwörter enthalten, aber keine Waffen sind. */
+const NON_WEAPON_HINTS = ["scheide", "pfeil", "bolzen", "sehne", "griff", "klinge_bruch", "wetzstein", "holster", "koecher"];
+
+export function matchWeaponId(name: string): string | null {
+  const n = (name || "")
+    .toLowerCase()
+    .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss");
+  if (!n) return null;
+  if (NON_WEAPON_HINTS.some((h) => n.includes(h))) return null;
+  for (const [kw, id] of WEAPON_KEYWORDS) if (n.includes(kw)) return id;
+  return null;
+}
+
 /** Kompakter Plain-Text-Block für den System-Prompt. */
 export function weaponsForPrompt(): string {
   const rows = Object.values(WEAPONS).map(
