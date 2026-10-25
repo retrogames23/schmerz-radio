@@ -1,20 +1,21 @@
-import { describe, expect, it } from "vitest";
+import { describe, test as it } from "node:test";
+import assert from "node:assert/strict";
 import { sanitizeReply } from "./replyCleanup";
 
 describe("sanitizeReply", () => {
   it("entfernt CJK-/Vollbreiten-Glitches", () => {
-    expect(sanitizeReply("[TJARK] Der Wind heult.＿日本")).toBe("[TJARK] Der Wind heult.");
+    assert.equal(sanitizeReply("[TJARK] Der Wind heult.＿日本"), "[TJARK] Der Wind heult.");
   });
   it("verwirft abgebrochene Marker am Ende", () => {
-    expect(sanitizeReply("[TJARK] Klettere.\n[CHECK: Klettern +2")).toBe("[TJARK] Klettere.");
+    assert.equal(sanitizeReply("[TJARK] Klettere.\n[CHECK: Klettern +2"), "[TJARK] Klettere.");
   });
   it("behält vollständige Marker", () => {
-    expect(sanitizeReply("[TJARK] Klettere.\n[CHECK: Klettern +2]")).toBe("[TJARK] Klettere.\n[CHECK: Klettern +2]");
+    assert.equal(sanitizeReply("[TJARK] Klettere.\n[CHECK: Klettern +2]"), "[TJARK] Klettere.\n[CHECK: Klettern +2]");
   });
   it("entfernt Assistenten-Floskel am Anfang", () => {
-    expect(sanitizeReply("Hier ist die Fortsetzung:\n[TJARK] Nacht.")).toBe("[TJARK] Nacht.");
+    assert.equal(sanitizeReply("Hier ist die Fortsetzung:\n[TJARK] Nacht."), "[TJARK] Nacht.");
   });
   it("behält deutsche Umlaute und Gedankenstriche", () => {
-    expect(sanitizeReply("[BREM] Grüß dich — Öhm, „ja“.")).toBe("[BREM] Grüß dich — Öhm, „ja“.");
+    assert.equal(sanitizeReply("[BREM] Grüß dich — Öhm, „ja“."), "[BREM] Grüß dich — Öhm, „ja“.");
   });
 });
