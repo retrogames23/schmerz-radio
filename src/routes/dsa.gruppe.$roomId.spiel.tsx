@@ -89,6 +89,8 @@ function SpielraumPage() {
   const membersRef = useRef<MemberRow[]>([]);
   const roomRef = useRef<RoomRow | null>(null);
   const isCoarse = useCoarsePointer();
+  const { sfxVolume } = useSettings();
+  const [imageZoomed, setImageZoomed] = useState(false);
   const [enterSubmits, setEnterSubmits] = useState<boolean>(() => readEnterSubmits());
   useEffect(() => {
     try {
@@ -239,7 +241,7 @@ function SpielraumPage() {
         out.push({ id: m.id, kind: "system", text: m.content });
       }
     }
-    return { items: out, sceneTag: lastSceneTag };
+    return { items: out, sceneTag: lastSceneTag, check: lastCheck };
   }, [messages, user?.id]);
 
   // Countdown for collect window: starts at first pending action.
