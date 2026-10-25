@@ -14,7 +14,8 @@ import {
 } from "@/game/dsa/llmAdventure";
 import type { DsaCharacterSummary } from "@/game/types";
 import { AP_DEFAULTS } from "@/game/dsa/advancement";
-import { defaultGearFor, type HeroGear } from "@/game/dsa/gear";
+import { addItem, defaultGearFor, removeItem, type HeroGear } from "@/game/dsa/gear";
+import { applyMoneyDelta, parseMoney } from "@/game/dsa/money";
 import { callChatWithLoreTool } from "@/game/dsa/lore/tool";
 import { selectActiveWorldInfo } from "@/game/dsa/lore/worldInfo";
 import { getModelLimits, resolveDsaMasterModel } from "@/lib/aiModel";
@@ -273,6 +274,83 @@ async function applyVitalMarkers(
   return reply
     .replace(LE_NAMED_RE_G, "")
     .replace(AE_NAMED_RE_G, "")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+const ITEM_PLUS_NAMED_RE_G = /\[ITEM\+:\s*([^\]:|]{1,40}?)\s*:\s*([^\]]+?)\s*\]/gi;
+const ITEM_MINUS_NAMED_RE_G = /\[ITEM-:\s*([^\]:|]{1,40}?)\s*:\s*([^\]]+?)\s*\]/gi;
+const GELD_NAMED_RE_G = /\[GELD:\s*([^\]:|]{1,40}?)\s*:\s*([^\]]+?)\s*\]/gi;
+
+/**
+ * Wendet [ITEM+/ITEM-/GELD: <Heldname>: …]-Marker dauerhaft auf den
+ * Heldenbogen des jeweiligen Spielers an (dsa_heroes.hero.gear).
+ */
+async function applyGroupItemMarkers(
+  admin: AnyClient,
+  members: MemberRow[],
+  reply: string,
+): Promise<string> {
+  type Op = (g: HeroGear) => HeroGear;
+  const ops = new Map<string, { m: MemberRow; ops: Op[] }>();
+  const find = (raw: string) => {
+    const n = raw.trim().toLowerCase();
+    return members.find((mm) => {
+      const hn = mm.hero_snapshot?.name.trim().toLowerCase();
+      return !!hn && (hn === n || hn.split(/\s+/)[0] === n);
+    });
+  };
+  const push = (raw: string, op: Op) => {
+    const m = find(raw);
+    if (!m || m.slot < 1 || m.slot > 6) return;
+    const e = ops.get(m.user_id) ?? { m, ops: [] };
+    if (e.ops.length < 12) e.ops.push(op);
+    ops.set(m.user_id, e);
+  };
+  for (const mt of reply.matchAll(ITEM_MINUS_NAMED_RE_G)) {
+    const what = mt[2].trim().slice(0, 60);
+    if (what) push(mt[1], (g) => removeItem(g, what));
+  }
+  for (const mt of reply.matchAll(ITEM_PLUS_NAMED_RE_G)) {
+    const [head, ...desc] = mt[2].split("|");
+    const h = head.trim();
+    const cm = /\s+[x×]\s*(\d{1,4})\s*$/i.exec(h);
+    const lead = /^(\d{1,4})\s+(.+)$/.exec(h);
+    const count = cm ? parseInt(cm[1], 10) : lead ? parseInt(lead[1], 10) : 1;
+    const name = (cm ? h.slice(0, cm.index) : lead ? lead[2] : h).trim().slice(0, 60);
+    const description = desc.join("|").trim().slice(0, 160) || undefined;
+    if (name) push(mt[1], (g) => addItem(g, { name, description, count }));
+  }
+  for (const mt of reply.matchAll(GELD_NAMED_RE_G)) {
+    const k = parseMoney(mt[2]);
+    if (k) push(mt[1], (g) => applyMoneyDelta(g, k));
+  }
+  for (const { m, ops: list } of ops.values()) {
+    try {
+      const { data } = await admin
+        .from("dsa_heroes")
+        .select("hero")
+        .eq("user_id", m.user_id)
+        .eq("slot", m.slot)
+        .maybeSingle();
+      const hero = (data as { hero?: Record<string, unknown> } | null)?.hero;
+      if (!hero) continue;
+      let g = ((hero as { gear?: HeroGear }).gear ?? defaultGearFor(String(m.hero_snapshot?.classId))) as HeroGear;
+      for (const op of list) g = op(g);
+      await admin
+        .from("dsa_heroes")
+        .update({ hero: { ...hero, gear: g } })
+        .eq("user_id", m.user_id)
+        .eq("slot", m.slot);
+    } catch (e) {
+      console.error("dsa-group apply items failed", e);
+    }
+  }
+  return reply
+    .replace(ITEM_PLUS_NAMED_RE_G, "")
+    .replace(ITEM_MINUS_NAMED_RE_G, "")
+    .replace(GELD_NAMED_RE_G, "")
     .replace(/[ \t]+\n/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
@@ -537,6 +615,7 @@ async function runMasterAndStore(
   const npcParsed = extractNpcMarkers(sanitizeReply(result.reply));
   const npcStates = mergeNpcStates(room.npc_states ?? undefined, npcParsed.updates, room.turn_idx + 1);
   let reply = await applyVitalMarkers(admin, room.id, members, npcParsed.text);
+  reply = await applyGroupItemMarkers(admin, members, reply);
   const parsed = parseMasterTurn(reply);
   let nextStatus: "active" | "victory" | "defeat" | "aborted" = "active";
   if (parsed.end === "victory") nextStatus = "victory";
