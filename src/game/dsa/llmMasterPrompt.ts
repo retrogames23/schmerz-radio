@@ -269,6 +269,7 @@ ${buildCompanionBackstoriesBlock(mode)}
 ${buildContextualLoreBlock({ setting, enemyIds: Object.keys(ENEMY_STATS) })}
 
 ${buildDsa3RulesBlock()}
+${GEOGRAPHY_BLOCK}
 ${wishHintBlock}
 SETTING DIESES ABENTEUERS — ${s?.title ?? "freie Wahl"}:
 ${s?.masterHint ?? "Setze einen passenden Auftakt."}
