@@ -1,6 +1,6 @@
 import { describe, test as it } from "node:test";
 import assert from "node:assert/strict";
-import { sanitizeReply } from "./replyCleanup";
+import { sanitizeReply, cutParaphrasedRestart } from "./replyCleanup";
 
 describe("sanitizeReply – Fremdschrift & Dopplung", () => {
   it("entfernt Thai-Spam-Token", () => {
@@ -22,14 +22,13 @@ it("entfernt verstümmelte leere Klammern wie [ ?]", () => {
   assert.ok(sanitizeReply("[TJARK] Die Tür knarrt.").includes("[TJARK]"));
 });
 
-import { cutParaphrasedRestart } from "./replyCleanup";
-test("cuts paraphrased opening restart", () => {
+it("cuts paraphrased opening restart", () => {
   const a = "[TJARK] In der milden Abendluft rauschen Karren über das Pflaster von Gareth, die goldene Kuppel des Praios-Tempels glänzt, Händler rufen ihre Waren aus.";
   const b = "[TJARK] Abendsonne vergoldet die Kuppel des Praios-Tempels, während Karren über das Pflaster von Gareth rauschen und Händler ihre Waren ausrufen.";
-  expect(cutParaphrasedRestart(a + "\n\n" + b)).toBe(a);
+  assert.equal(cutParaphrasedRestart(a + "\n\n" + b), a);
 });
-test("keeps distinct follow-up paragraph", () => {
+it("keeps distinct follow-up paragraph", () => {
   const a = "[TJARK] In der milden Abendluft rauschen Karren über das Pflaster von Gareth, die goldene Kuppel des Praios-Tempels glänzt, Händler rufen ihre Waren aus.";
   const b = "Ein Tempeldiener in gelber Robe drängt sich durch die Menge, ein versiegeltes Schreiben in der Hand, und sucht mit hastigem Blick nach einem kräftigen Schwertträger.";
-  expect(cutParaphrasedRestart(a + "\n\n" + b)).toBe(a + "\n\n" + b);
+  assert.equal(cutParaphrasedRestart(a + "\n\n" + b), a + "\n\n" + b);
 });
