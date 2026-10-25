@@ -251,7 +251,8 @@ export const Route = createFileRoute("/api/public/fastweb-chat")({
             headers: openRouterHeaders(apiKey),
             body: JSON.stringify({
               // Kostenbremse: teures Haupt-Modell nur für Unterstützer*innen.
-              model: donationUnlocked ? AI_MODEL_MAIN : AI_MODEL_LIGHT,
+              model: AI_MODEL_MAIN,
+              reasoning_effort: "none",
               messages: [
                 { role: "system", content: guard },
                 { role: "system", content: systemPrompt },

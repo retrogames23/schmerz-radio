@@ -16,7 +16,7 @@
 
 /** Haupt-Modell für Meister/NSC-Antworten, Free Chat, DSA.
  *  Läuft über OpenRouter (OPENROUTER_API_KEY). */
-export const AI_MODEL_MAIN = "anthropic/claude-haiku-4.5";
+export const AI_MODEL_MAIN = "openai/gpt-6-luna";
 
 /**
  * Leichteres Modell für Hintergrund-Aufgaben (z. B. MARV-Empathie-
