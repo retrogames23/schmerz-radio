@@ -15,6 +15,7 @@ import { WEAPONS } from "@/game/dsa/rules/weapons";
 import { ARMORS } from "@/game/dsa/rules/armor";
 import {
   equipWeapon,
+  withWeaponIds,
   unequipWeapon,
   equipArmor,
   gearRestriction,
@@ -309,7 +310,7 @@ export function DsaCharacterSheet() {
                 Ausrüstung
               </div>
               {(() => {
-                const g = hero.gear!;
+                const g = withWeaponIds(hero.gear!);
                 const weapon = g.weaponId ? WEAPONS[g.weaponId] : null;
                 const armor = g.armorId ? ARMORS[g.armorId] : null;
                 const shield = g.shieldId ? ARMORS[g.shieldId] : null;
