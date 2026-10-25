@@ -100,10 +100,13 @@ AUSGABEFORMAT — STRIKT:
                               Sehr sparsam einsetzen, nur bei echten Schauplatzwechseln.
                               Verfügbare Tags (Tag — wann nutzen):
 ${formatSceneCatalogForPrompt()}
-    [CHECK: <ATTR> [+/-N]]    Eigenschaftsprobe für die Gruppe.
+    [CHECK: <ATTR> [+/-N]]    Eigenschafts- oder Talentprobe für die Gruppe.
+    [LE: <Heldname>: +/-N]    LE-Verlust/Heilung EINES Helden (Name ist PFLICHT, z. B. [LE: Answin: -3]).
+    [AE: <Heldname>: +/-N]    AsP-Verbrauch/Regeneration EINES Helden (Name ist PFLICHT).
     [MOOD: <id>]              Musikstimmung. Erlaubt: ${DSA_MOODS.join(", ")}.
     [END: victory|defeat|aborted]  Beendet das Abenteuer (frühestens nach ~30 Meisterwenden).
-  KEINE [COMBAT]-Marker in dieser Gruppenrunde — Kämpfe werden erzählt und mit [CHECK]-Proben (KK/GE/AT-Eigenschaft) entschieden; pro Treffer ggf. 1W6+2 LE-Verlust beschreiben.
+  KEINE [COMBAT]-Marker in dieser Gruppenrunde — Kämpfe werden erzählt und mit [CHECK]-Proben (KK/GE/AT-Eigenschaft) entschieden; pro Treffer ggf. 1W6+2 LE-Verlust als [LE: <Heldname>: -N] setzen.
+  NSC-HALTUNGEN: Halte die Einträge im NSC-TRACKER des State-Blocks ein und melde Änderungen wie dort beschrieben.
 
 ${isOpen ? "OFFENE RUNDE — kein Akt-Korsett, kein Pflicht-Showdown." : "PLANE in 5 Akten (~30–50 Wenden insgesamt). [END: victory] frühestens nach ~30 Wenden, wenn alle Fäden geschlossen sind."}
 `;

@@ -18,6 +18,18 @@ import { defaultGearFor, type HeroGear } from "@/game/dsa/gear";
 import { callChatWithLoreTool } from "@/game/dsa/lore/tool";
 import { selectActiveWorldInfo } from "@/game/dsa/lore/worldInfo";
 import { getModelLimits, resolveDsaMasterModel } from "@/lib/aiModel";
+import { sanitizeReply } from "@/game/dsa/replyCleanup";
+import { DSA_FEW_SHOT_EXAMPLES } from "@/game/dsa/lore/fewShot";
+import {
+  AUTHORS_NOTE,
+  extractNpcMarkers,
+  injectAuthorsNote,
+  mergeNpcStates,
+  npcTrackerBlock,
+  sceneQueryFrom,
+  type NpcState,
+} from "@/game/dsa/masterDirectives";
+import { searchDsaRulebook } from "@/game/dsa/lore/rulebook.server";
 
 /**
  * Server-Route für das DSA-Gruppenabenteuer (Mehrspieler-Modus).
@@ -30,7 +42,7 @@ const MAX_NAME = 40;
 const MAX_PW = 60;
 const MAX_WISH = 600;
 const MAX_ACTION = 500;
-const COLLECT_WINDOW_MS = 20_000;
+const COLLECT_WINDOW_MS = 45_000;
 const ABSENCE_MS = 60_000;
 const MAX_MESSAGES = 120;
 const MIN_END_TURNS = 30;
@@ -156,7 +168,7 @@ async function callMaster(
     content: [
       {
         type: "text" as const,
-        text: `${guard}\n\n${staticLore}`,
+        text: `${guard}\n\n${staticLore}\n\n${DSA_FEW_SHOT_EXAMPLES}`,
         cache_control: { type: "ephemeral" as const },
       },
     ],
@@ -198,6 +210,8 @@ async function callMaster(
     const enhancedLast = { role: last.role, content: `${last.content}\n\n${tail}` };
     chatMessages = [systemMessage, ...trimmed.slice(0, -1), enhancedLast];
   }
+  // Author's Note als Depth-Injection kurz vor dem Ende des Kontexts.
+  chatMessages = injectAuthorsNote(chatMessages, 2, AUTHORS_NOTE) as typeof chatMessages;
 
   return callChatWithLoreTool(apiKey, chatMessages, {
     temperature: 0.8,
@@ -210,29 +224,55 @@ async function callMaster(
 }
 
 /**
- * Letzte Säuberung der Modell-Antwort. Entfernt interne Reasoning-Sektionen
- * (z. B. DeepSeek `<think>…</think>`) und Reste von Tool-Aufrufen oder
- * Chat-Template-Steuerzeichen, bevor der Text geparst und an die DB/den
- * Client geschickt wird. Spielerseitige Marker ([TJARK]/[BREM]/[YELVA]/
- * [SCENE]/[CHECK]/[END]) bleiben unberührt.
+ * Benannte Vital-Marker der Gruppenrunde: [LE: Heldname: -3] /
+ * [AE: Heldname: +2]. Der Name ist Pflicht, weil mehrere Helden am Tisch
+ * sitzen — die alte Solo-Form [LE: -3] wird hier bewusst ignoriert.
+ * Wendet die Deltas auf die hero_snapshots der Mitglieder an und entfernt
+ * die Marker aus dem gespeicherten Text.
  */
-function sanitizeReply(reply: string): string {
-  if (!reply) return "";
-  let out = reply;
-  out = out.replace(/<think>[\s\S]*?<\/think>/gi, "");
-  out = out.replace(/<thinking>[\s\S]*?<\/thinking>/gi, "");
-  out = out.replace(/<reasoning>[\s\S]*?<\/reasoning>/gi, "");
-  out = out.replace(/<reflection>[\s\S]*?<\/reflection>/gi, "");
-  out = out.replace(/<scratchpad>[\s\S]*?<\/scratchpad>/gi, "");
-  out = out.replace(/<(?:think|thinking|reasoning|reflection|scratchpad)>[\s\S]*$/i, "");
-  out = out.replace(/<tool_call>[\s\S]*?<\/tool_call>/gi, "");
-  out = out.replace(/<tool_response>[\s\S]*?<\/tool_response>/gi, "");
-  out = out.replace(/<function_calls?>[\s\S]*?<\/function_calls?>/gi, "");
-  out = out.replace(/<\|tool_calls?_begin\|>[\s\S]*?<\|tool_calls?_end\|>/gi, "");
-  out = out.replace(/<\|im_(?:start|end)\|>(?:\s*(?:system|assistant|user))?/gi, "");
-  out = out.replace(/<\|(?:begin_of_text|end_of_text|eot_id|start_header_id|end_header_id|bos|eos)\|>/gi, "");
-  out = out.replace(/<\|[a-z_]+\|>/gi, "");
-  return out.trim();
+const LE_NAMED_RE_G = /\[LE:\s*([A-ZÄÖÜa-zäöü][^\]:\d+-]{0,38}?)\s*:\s*([+-]\s*\d{1,3})\s*\]/gi;
+const AE_NAMED_RE_G = /\[AE:\s*([A-ZÄÖÜa-zäöü][^\]:\d+-]{0,38}?)\s*:\s*([+-]\s*\d{1,3})\s*\]/gi;
+
+async function applyVitalMarkers(
+  admin: AnyClient,
+  roomId: string,
+  members: MemberRow[],
+  reply: string,
+): Promise<string> {
+  const apply = async (re: RegExp, key: "le" | "ae") => {
+    for (const m of reply.matchAll(re)) {
+      const name = (m[1] ?? "").trim().toLowerCase();
+      const delta = parseInt((m[2] ?? "").replace(/\s+/g, ""), 10);
+      if (!name || !Number.isFinite(delta) || delta === 0) continue;
+      const member = members.find(
+        (mm) => mm.hero_snapshot && mm.hero_snapshot.name.trim().toLowerCase() === name,
+      );
+      if (!member?.hero_snapshot) continue;
+      const snap = { ...member.hero_snapshot };
+      if (key === "le") {
+        snap.le = Math.max(0, Math.min(snap.leMax, snap.le + delta));
+      } else {
+        if (snap.ae === null) continue;
+        const aeMax = snap.aeMax ?? Math.max(snap.ae, 0);
+        snap.aeMax = aeMax;
+        snap.ae = Math.max(0, Math.min(aeMax, snap.ae + delta));
+      }
+      member.hero_snapshot = snap;
+      await admin
+        .from("dsa_group_members")
+        .update({ hero_snapshot: snap as unknown as Record<string, unknown> })
+        .eq("room_id", roomId)
+        .eq("user_id", member.user_id);
+    }
+  };
+  await apply(LE_NAMED_RE_G, "le");
+  await apply(AE_NAMED_RE_G, "ae");
+  return reply
+    .replace(LE_NAMED_RE_G, "")
+    .replace(AE_NAMED_RE_G, "")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 type AnyClient = ReturnType<typeof createClient<any, any, any>>;
@@ -271,6 +311,7 @@ interface RoomRow {
   current_image_tag: string;
   collect_started_at: string | null;
   ap_awarded: boolean;
+  npc_states: NpcState[] | null;
 }
 
 interface MemberRow {
@@ -444,21 +485,42 @@ async function runMasterAndStore(
     room.setting as DsaSettingId,
     room.include_npc_companions,
   );
-  const dynamicState = buildDynamicGroupMasterState({
+  const dynamicState = `${buildDynamicGroupMasterState({
     setting: room.setting as DsaSettingId,
     heroes,
     includeCompanions: room.include_npc_companions,
     summary: room.summary,
     wishBrief: room.wish_brief,
     assistantTurns,
-  });
+  })}\n\n${npcTrackerBlock(room.npc_states ?? undefined)}`;
   const history = await loadHistoryForLLM(admin, room.id);
-  if (userTurn) history.push({ role: "user", content: userTurn.content });
+  if (userTurn) {
+    // Die Aktionen dieser Runde stehen bereits einzeln als Spieler-Zeilen
+    // im Transkript (submitAction) — die abschließenden User-Zeilen aus
+    // der History entfernen, damit sie nicht doppelt (einzeln plus
+    // gebündelt in „Diese Runde:") im LLM-Kontext landen.
+    while (history.length > 0 && history[history.length - 1].role === "user") history.pop();
+    history.push({ role: "user", content: userTurn.content });
+  }
   const minEnd = isOpen ? 0 : MIN_END_TURNS;
   const wiGroup = selectActiveWorldInfo({
     recentMessages: history,
     extraScanText: [room.summary, room.wish_brief ?? ""].filter(Boolean).join("\n"),
   });
+  // Auto-RAG bei Schauplatzwechsel (wie im Solo-Modus).
+  let ragBlock = "";
+  const lastAssistant = [...history].reverse().find((m) => m.role === "assistant")?.content;
+  const sceneQuery = sceneQueryFrom(lastAssistant);
+  if (sceneQuery) {
+    try {
+      const hits = await searchDsaRulebook(`Atmosphäre und Schauplatz: ${sceneQuery}`, 2);
+      if (hits.startsWith("QUELLEN")) {
+        ragBlock = `ATMOSPHÄRE-ANREGUNG aus klassischen DSA3-Quellen (nur Ton und Details als Inspiration, eigene Worte, keine Plots übernehmen):\n${hits.slice(0, 2400)}`;
+      }
+    } catch (e) {
+      console.warn("dsa-group auto-rag failed", e);
+    }
+  }
   const result = await callMaster(
     apiKey,
     staticLore,
@@ -466,12 +528,13 @@ async function runMasterAndStore(
     history,
     minEnd,
     model,
-    wiGroup.block,
+    [wiGroup.block, ragBlock].filter(Boolean).join("\n\n"),
   );
   if (!result.ok) return result;
-  const cleanedReply = sanitizeReply(result.reply);
-  const parsed = parseMasterTurn(cleanedReply);
-  let reply = cleanedReply;
+  const npcParsed = extractNpcMarkers(sanitizeReply(result.reply));
+  const npcStates = mergeNpcStates(room.npc_states ?? undefined, npcParsed.updates, room.turn_idx + 1);
+  let reply = await applyVitalMarkers(admin, room.id, members, npcParsed.text);
+  const parsed = parseMasterTurn(reply);
   let nextStatus: "active" | "victory" | "defeat" | "aborted" = "active";
   if (parsed.end === "victory") nextStatus = "victory";
   else if (parsed.end === "defeat") nextStatus = "defeat";
@@ -491,6 +554,7 @@ async function runMasterAndStore(
       current_image_tag: imageTag,
       status: nextStatus === "active" ? "active" : "done",
       collect_started_at: null,
+      npc_states: npcStates,
     })
     .eq("id", room.id);
   // Bei Spielende AP an alle anwesenden Helden vergeben.
@@ -869,7 +933,8 @@ export const Route = createFileRoute("/api/public/dsa-group")({
           const me = members.find((m) => m.user_id === uid);
           if (!me || !me.hero_snapshot) return json(403, { error: "Kein Held in diesem Raum." });
 
-          // Duplikat verhindern.
+          // Bereits eingereicht? Dann die Aktion dieser Runde ändern,
+          // solange das Sammelfenster läuft — statt abzulehnen.
           const { data: existing } = await admin
             .from("dsa_group_pending_actions")
             .select("user_id")
@@ -877,7 +942,44 @@ export const Route = createFileRoute("/api/public/dsa-group")({
             .eq("turn_idx", room.turn_idx)
             .eq("user_id", uid)
             .maybeSingle();
-          if (existing) return json(409, { error: "Du hast diese Runde schon gehandelt." });
+          if (existing) {
+            await admin
+              .from("dsa_group_pending_actions")
+              .update({ action: text })
+              .eq("room_id", roomId)
+              .eq("turn_idx", room.turn_idx)
+              .eq("user_id", uid);
+            // Auch die Transkript-Zeile aktualisieren (letzte Spieler-
+            // Zeile dieses Spielers nach der letzten Meister-Wende).
+            const { data: lastMaster } = await admin
+              .from("dsa_group_messages")
+              .select("idx")
+              .eq("room_id", roomId)
+              .eq("role", "master")
+              .order("idx", { ascending: false })
+              .limit(1)
+              .maybeSingle();
+            const masterIdx = (lastMaster as { idx?: number } | null)?.idx ?? -1;
+            const { data: myLast } = await admin
+              .from("dsa_group_messages")
+              .select("idx")
+              .eq("room_id", roomId)
+              .eq("role", "player")
+              .eq("author_user_id", uid)
+              .gt("idx", masterIdx)
+              .order("idx", { ascending: false })
+              .limit(1)
+              .maybeSingle();
+            const myIdx = (myLast as { idx?: number } | null)?.idx;
+            if (typeof myIdx === "number") {
+              await admin
+                .from("dsa_group_messages")
+                .update({ content: text })
+                .eq("room_id", roomId)
+                .eq("idx", myIdx);
+            }
+            return json(200, { ok: true, edited: true });
+          }
 
           await admin.from("dsa_group_pending_actions").insert({
             room_id: roomId,

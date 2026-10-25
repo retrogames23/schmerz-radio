@@ -227,6 +227,7 @@ export type Database = {
           include_npc_companions: boolean
           max_players: number
           name: string
+          npc_states: Json
           password_hash: string | null
           session_id: string
           setting: string
@@ -247,6 +248,7 @@ export type Database = {
           include_npc_companions?: boolean
           max_players?: number
           name: string
+          npc_states?: Json
           password_hash?: string | null
           session_id?: string
           setting: string
@@ -267,6 +269,7 @@ export type Database = {
           include_npc_companions?: boolean
           max_players?: number
           name?: string
+          npc_states?: Json
           password_hash?: string | null
           session_id?: string
           setting?: string

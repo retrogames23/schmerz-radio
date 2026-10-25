@@ -5,9 +5,14 @@ import { ArrowLeft, Loader2, Maximize2, Minimize2, ScrollText, Send } from "luci
 import { useAuth } from "@/auth/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getFreshAccessToken } from "@/auth/freshToken";
-import { parseMasterTurn, type SpokenLine } from "@/game/dsa/llmAdventure";
-import { resolveSceneImage } from "@/game/dsa/sceneImages";
+import { parseMasterTurn, type MasterCheck, type SpokenLine } from "@/game/dsa/llmAdventure";
+import { resolveSceneImage, sceneCaption } from "@/game/dsa/sceneImages";
 import { portraitFor } from "@/game/dsa/portraits";
+import { rollAttributeCheck, rollTalentCheck } from "@/game/dsa/pendingMasterNotes";
+import { defaultTalents } from "@/game/dsa/advancement";
+import { TALENTS } from "@/game/dsa/rules/talents";
+import { playDiceRoll } from "@/audio/sfx";
+import { useSettings } from "@/audio/SettingsContext";
 import { useCoarsePointer } from "@/hooks/useCoarsePointer";
 
 const ENTER_SUBMIT_KEY = "dsa:composer:enterSubmits";
@@ -49,6 +54,7 @@ interface MemberRow {
     portraitDataUrl?: string;
     le?: number;
     leMax?: number;
+    attrs?: Record<string, number>;
   } | null;
   last_seen_at: string;
   slot: number | null;
@@ -63,7 +69,7 @@ interface RoomRow {
   host_user_id: string;
 }
 
-const COLLECT_WINDOW_MS = 20_000;
+const COLLECT_WINDOW_MS = 45_000;
 
 function SpielraumPage() {
   const { roomId } = useParams({ from: "/dsa/gruppe/$roomId/spiel" });
@@ -84,6 +90,8 @@ function SpielraumPage() {
   const membersRef = useRef<MemberRow[]>([]);
   const roomRef = useRef<RoomRow | null>(null);
   const isCoarse = useCoarsePointer();
+  const { sfxVolume } = useSettings();
+  const [imageZoomed, setImageZoomed] = useState(false);
   const [enterSubmits, setEnterSubmits] = useState<boolean>(() => readEnterSubmits());
   useEffect(() => {
     try {
@@ -102,6 +110,15 @@ function SpielraumPage() {
     document.addEventListener("fullscreenchange", onChange);
     return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
+  // Zoom: Escape schließt, Szenenwechsel setzt zurück.
+  useEffect(() => {
+    if (!imageZoomed) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setImageZoomed(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [imageZoomed]);
   const toggleFullscreen = async () => {
     try {
       if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
@@ -213,10 +230,12 @@ function SpielraumPage() {
       | { id: string; kind: "system"; text: string }
     > = [];
     let lastSceneTag: string | null = null;
+    let lastCheck: MasterCheck | null = null;
     for (const m of messages) {
       if (m.role === "master") {
         const parsed = parseMasterTurn(m.content);
         if (parsed.sceneTag) lastSceneTag = parsed.sceneTag;
+        lastCheck = parsed.check;
         if (parsed.lines.length > 0) {
           out.push({ id: m.id, kind: "master", lines: parsed.lines });
         }
@@ -232,8 +251,13 @@ function SpielraumPage() {
         out.push({ id: m.id, kind: "system", text: m.content });
       }
     }
-    return { items: out, sceneTag: lastSceneTag };
+    return { items: out, sceneTag: lastSceneTag, check: lastCheck };
   }, [messages, user?.id]);
+
+  // Szenenwechsel setzt den Bild-Zoom zurück.
+  useEffect(() => {
+    setImageZoomed(false);
+  }, [turns.sceneTag]);
 
   // Countdown for collect window: starts at first pending action.
   useEffect(() => {
@@ -328,6 +352,38 @@ function SpielraumPage() {
   const hostIsMe = room.host_user_id === user.id;
   const showHostPause = hostAbsent && !hostIsMe && !isDone;
 
+  function myTaw(talentId: string): number {
+    const snap = me?.hero_snapshot;
+    const table = snap?.classId ? defaultTalents(snap.classId) : {};
+    const v = table[talentId];
+    return typeof v === "number" ? v : 0;
+  }
+
+  // [CHECK: …] des letzten Meister-Zugs: lokal würfeln und das Ergebnis
+  // als eigene Aktion ([PROBE]-Zeile) einreichen — wie im Solo-Modus.
+  function handleRollCheck() {
+    const check = turns.check;
+    const snap = me?.hero_snapshot;
+    if (!check || !snap) return;
+    if (sfxVolume > 0) playDiceRoll(0.6 * sfxVolume);
+    let line: string | null = null;
+    if (check.talentId) {
+      line = rollTalentCheck(
+        check.talentId,
+        snap.attrs ?? {},
+        myTaw(check.talentId),
+        check.modifier,
+      ).line;
+    } else if (check.attr) {
+      const value = snap.attrs?.[check.attr] ?? 10;
+      const r = rollAttributeCheck(value, check.modifier);
+      const mod =
+        check.modifier === 0 ? "±0" : check.modifier > 0 ? `+${check.modifier}` : `${check.modifier}`;
+      line = `[PROBE] ${check.attr} ${mod}: 1W20=${r.roll} gegen ${r.target} — ${r.success ? "gelungen" : "misslungen"}`;
+    }
+    if (line) void call("submitAction", { text: line });
+  }
+
   const imgSrc = resolveSceneImage(turns.sceneTag);
 
   return (
@@ -380,16 +436,39 @@ function SpielraumPage() {
           </div>
         </div>
 
-        {/* Scene image */}
+        {/* Scene image: Pergament-Vignette, Untertitel, Zoom wie im Solo-Modus */}
         {imgSrc && (
-          <div className="relative w-full bg-black/80">
-            <img
-              src={imgSrc}
-              alt="Szene"
-              loading="lazy"
-              className="w-full h-32 sm:h-48 object-cover opacity-90"
-            />
-          </div>
+          <figure className="relative m-0 w-full bg-black/80">
+            <button
+              type="button"
+              onClick={() => setImageZoomed(true)}
+              title="Bild vergrößern"
+              className="relative block w-full cursor-zoom-in focus:outline-none overflow-hidden"
+              style={{
+                WebkitMaskImage:
+                  "radial-gradient(ellipse 72% 78% at 50% 50%, #000 58%, transparent 100%)",
+                maskImage:
+                  "radial-gradient(ellipse 72% 78% at 50% 50%, #000 58%, transparent 100%)",
+              }}
+            >
+              <img
+                src={imgSrc}
+                alt={sceneCaption(turns.sceneTag) ?? "Szene"}
+                loading="lazy"
+                className="w-full h-32 sm:h-48 object-cover opacity-90 sepia-[.25] saturate-[.85]"
+              />
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0"
+                style={{ boxShadow: "inset 0 0 40px 12px rgba(120, 85, 40, 0.35)" }}
+              />
+            </button>
+            {sceneCaption(turns.sceneTag) && (
+              <figcaption className="pointer-events-none absolute bottom-1 left-0 right-0 text-center font-serif italic text-xs tracking-wide text-[#f1e6c8]/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.8)]">
+                ❧ {sceneCaption(turns.sceneTag)} ❧
+              </figcaption>
+            )}
+          </figure>
         )}
 
         {/* Body grid: transcript + group aside */}
@@ -421,6 +500,34 @@ function SpielraumPage() {
                   {!showHostPause && secondsLeft != null && ` · Tjark erzählt weiter in ${secondsLeft}s …`}
                 </div>
               )}
+              {turns.check && !isDone && !hasPending && !busy && me?.hero_snapshot && (
+                <div className="pt-2 flex flex-wrap items-center gap-3">
+                  <span className="font-serif italic text-[#2a1f10]/80">
+                    Tjark verlangt eine {turns.check.talentId ? "Talentprobe" : "Probe"} auf{" "}
+                    {turns.check.label}
+                    {turns.check.modifier !== 0 &&
+                      ` (${turns.check.modifier > 0 ? "erschwert um " : "erleichtert um "}${Math.abs(turns.check.modifier)})`}
+                    {" — "}
+                    {turns.check.talentId
+                      ? (() => {
+                          const def = TALENTS.find((x) => x.id === turns.check!.talentId);
+                          const taw = myTaw(turns.check!.talentId!);
+                          const probe = def?.probe
+                            .map((a) => `${a} ${me.hero_snapshot!.attrs?.[a] ?? "?"}`)
+                            .join(" · ");
+                          return `${probe} · TaW ${taw}${taw === 0 ? " (ungelernt)" : ""}`;
+                        })()
+                      : `dein Wert: ${turns.check.attr ? (me.hero_snapshot.attrs?.[turns.check.attr] ?? "?") : "?"}`}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRollCheck}
+                    className="inline-flex items-center gap-2 rounded border-2 border-[#3a2c1a] bg-[#f1e6c8] px-4 py-2 text-sm font-bold uppercase tracking-wider text-[#2a1f10] shadow-[0_2px_0_rgba(0,0,0,0.35)] hover:-translate-y-px transition-transform"
+                  >
+                    🎲 {turns.check.talentId ? "3W20 würfeln" : "W20 würfeln"}
+                  </button>
+                </div>
+              )}
               {showHostPause && (
                 <div className="rounded border-2 border-[#3a2c1a]/50 bg-[#fbf2d8] px-3 py-2 font-serif text-sm text-[#2a1f10]">
                   ⏸ Der Gastgeber ist gerade offline — das Spiel pausiert.
@@ -448,7 +555,6 @@ function SpielraumPage() {
                         !e.nativeEvent.isComposing &&
                         !isCoarse &&
                         enterSubmits &&
-                        !hasPending &&
                         !busy &&
                         draft.trim()
                       ) {
@@ -458,18 +564,18 @@ function SpielraumPage() {
                     }}
                     placeholder={
                       hasPending
-                        ? "Du hast diese Runde schon gehandelt — warte auf Tjark."
+                        ? "Deine Aktion liegt vor — du kannst sie noch ändern, bis Tjark weitererzählt."
                         : "Was tust du?"
                     }
                     rows={2}
-                    disabled={hasPending || busy}
+                    disabled={busy}
                     className="flex-1 resize-none rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 font-sans text-base leading-relaxed text-[#2a1f10] placeholder:text-[#2a1f10]/40 focus:outline-none focus:ring-2 focus:ring-[#3a2c1a]/40 disabled:opacity-50"
                   />
                   <div className="flex flex-col gap-2">
                     <button
                       type="button"
                       onClick={() => void submitAction({ outtime: true })}
-                      disabled={hasPending || busy || !draft.trim()}
+                      disabled={busy || !draft.trim()}
                       title="Als Outtime-Frage an Tjark (Regeln, Welt, Meta) schicken"
                       className="inline-flex items-center justify-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a] disabled:opacity-50"
                     >
@@ -478,11 +584,11 @@ function SpielraumPage() {
                     <button
                       type="button"
                       onClick={() => void submitAction()}
-                      disabled={hasPending || busy || !draft.trim()}
+                      disabled={busy || !draft.trim()}
                       className="inline-flex items-center justify-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10] disabled:opacity-50"
                     >
                       <Send className="h-3.5 w-3.5" strokeWidth={2.5} />
-                      Sagen
+                      {hasPending ? "Ändern" : "Sagen"}
                     </button>
                   </div>
                 </div>
@@ -554,6 +660,28 @@ function SpielraumPage() {
           </aside>
         </div>
       </div>
+
+      {imgSrc && imageZoomed && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 p-4 sm:p-8"
+          onClick={() => setImageZoomed(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setImageZoomed(false)}
+            title="Schließen"
+            className="absolute top-3 left-3 z-10 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-2 py-1 text-[#2a1f10] hover:bg-[#f1d99a]"
+          >
+            ✕
+          </button>
+          <img
+            src={imgSrc}
+            alt="Szene (vergrößert)"
+            className="max-h-full max-w-full object-contain shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

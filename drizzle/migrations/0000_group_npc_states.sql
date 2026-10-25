@@ -1,0 +1,1 @@
+alter table public.dsa_group_rooms add column if not exists npc_states jsonb not null default '[]'::jsonb;
