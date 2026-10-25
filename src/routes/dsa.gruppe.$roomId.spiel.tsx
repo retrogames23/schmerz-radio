@@ -370,12 +370,12 @@ function SpielraumPage() {
     if (check.talentId) {
       line = rollTalentCheck(
         check.talentId,
-        snap.attrs as Record<string, number>,
+        snap.attrs ?? {},
         myTaw(check.talentId),
         check.modifier,
       ).line;
     } else if (check.attr) {
-      const value = snap.attrs[check.attr] ?? 10;
+      const value = snap.attrs?.[check.attr] ?? 10;
       const r = rollAttributeCheck(value, check.modifier);
       const mod =
         check.modifier === 0 ? "±0" : check.modifier > 0 ? `+${check.modifier}` : `${check.modifier}`;
@@ -513,11 +513,11 @@ function SpielraumPage() {
                           const def = TALENTS.find((x) => x.id === turns.check!.talentId);
                           const taw = myTaw(turns.check!.talentId!);
                           const probe = def?.probe
-                            .map((a) => `${a} ${me.hero_snapshot!.attrs[a] ?? "?"}`)
+                            .map((a) => `${a} ${me.hero_snapshot!.attrs?.[a] ?? "?"}`)
                             .join(" · ");
                           return `${probe} · TaW ${taw}${taw === 0 ? " (ungelernt)" : ""}`;
                         })()
-                      : `dein Wert: ${turns.check.attr ? (me.hero_snapshot.attrs[turns.check.attr] ?? "?") : "?"}`}
+                      : `dein Wert: ${turns.check.attr ? (me.hero_snapshot.attrs?.[turns.check.attr] ?? "?") : "?"}`}
                   </span>
                   <button
                     type="button"
