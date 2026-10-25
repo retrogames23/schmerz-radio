@@ -554,6 +554,7 @@ async function runMasterAndStore(
       current_image_tag: imageTag,
       status: nextStatus === "active" ? "active" : "done",
       collect_started_at: null,
+      npc_states: npcStates,
     })
     .eq("id", room.id);
   // Bei Spielende AP an alle anwesenden Helden vergeben.
@@ -932,7 +933,8 @@ export const Route = createFileRoute("/api/public/dsa-group")({
           const me = members.find((m) => m.user_id === uid);
           if (!me || !me.hero_snapshot) return json(403, { error: "Kein Held in diesem Raum." });
 
-          // Duplikat verhindern.
+          // Bereits eingereicht? Dann die Aktion dieser Runde ändern,
+          // solange das Sammelfenster läuft — statt abzulehnen.
           const { data: existing } = await admin
             .from("dsa_group_pending_actions")
             .select("user_id")
@@ -940,7 +942,44 @@ export const Route = createFileRoute("/api/public/dsa-group")({
             .eq("turn_idx", room.turn_idx)
             .eq("user_id", uid)
             .maybeSingle();
-          if (existing) return json(409, { error: "Du hast diese Runde schon gehandelt." });
+          if (existing) {
+            await admin
+              .from("dsa_group_pending_actions")
+              .update({ action: text })
+              .eq("room_id", roomId)
+              .eq("turn_idx", room.turn_idx)
+              .eq("user_id", uid);
+            // Auch die Transkript-Zeile aktualisieren (letzte Spieler-
+            // Zeile dieses Spielers nach der letzten Meister-Wende).
+            const { data: lastMaster } = await admin
+              .from("dsa_group_messages")
+              .select("idx")
+              .eq("room_id", roomId)
+              .eq("role", "master")
+              .order("idx", { ascending: false })
+              .limit(1)
+              .maybeSingle();
+            const masterIdx = (lastMaster as { idx?: number } | null)?.idx ?? -1;
+            const { data: myLast } = await admin
+              .from("dsa_group_messages")
+              .select("idx")
+              .eq("room_id", roomId)
+              .eq("role", "player")
+              .eq("author_user_id", uid)
+              .gt("idx", masterIdx)
+              .order("idx", { ascending: false })
+              .limit(1)
+              .maybeSingle();
+            const myIdx = (myLast as { idx?: number } | null)?.idx;
+            if (typeof myIdx === "number") {
+              await admin
+                .from("dsa_group_messages")
+                .update({ content: text })
+                .eq("room_id", roomId)
+                .eq("idx", myIdx);
+            }
+            return json(200, { ok: true, edited: true });
+          }
 
           await admin.from("dsa_group_pending_actions").insert({
             room_id: roomId,
