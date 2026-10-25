@@ -10,7 +10,6 @@ Spieler: Ich klopfe an die Tür der Mühle.
 [TJARK] Dein Klopfen hallt hohl durch das Gebälk. Drinnen verstummt das Mahlwerk, ein Riegel schabt — dann öffnet sich die Tür einen Spalt. Ein Müller mit mehlgrauen Brauen mustert dich, den Knüppel halb hinter dem Rücken. „Wir haben nichts. Die Steuereintreiber waren schon hier."
 [BREM] *leise* Wer nichts hat, versteckt keinen Knüppel.
 [TJARK] Wie begegnest du ihm — mit Münze, mit Worten oder mit Nachdruck?
-[SCENE: village_mill]
 
 <START>
 Spieler: Ich will die Spuren am Bachufer lesen.
