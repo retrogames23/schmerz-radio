@@ -54,6 +54,7 @@ interface MemberRow {
     portraitDataUrl?: string;
     le?: number;
     leMax?: number;
+    attrs?: Record<string, number>;
   } | null;
   last_seen_at: string;
   slot: number | null;
@@ -118,9 +119,6 @@ function SpielraumPage() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [imageZoomed]);
-  useEffect(() => {
-    setImageZoomed(false);
-  }, [turns.sceneTag]);
   const toggleFullscreen = async () => {
     try {
       if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
@@ -255,6 +253,11 @@ function SpielraumPage() {
     }
     return { items: out, sceneTag: lastSceneTag, check: lastCheck };
   }, [messages, user?.id]);
+
+  // Szenenwechsel setzt den Bild-Zoom zurück.
+  useEffect(() => {
+    setImageZoomed(false);
+  }, [turns.sceneTag]);
 
   // Countdown for collect window: starts at first pending action.
   useEffect(() => {
