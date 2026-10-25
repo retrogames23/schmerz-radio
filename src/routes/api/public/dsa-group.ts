@@ -311,6 +311,7 @@ interface RoomRow {
   current_image_tag: string;
   collect_started_at: string | null;
   ap_awarded: boolean;
+  npc_states: NpcState[] | null;
 }
 
 interface MemberRow {
@@ -484,21 +485,42 @@ async function runMasterAndStore(
     room.setting as DsaSettingId,
     room.include_npc_companions,
   );
-  const dynamicState = buildDynamicGroupMasterState({
+  const dynamicState = `${buildDynamicGroupMasterState({
     setting: room.setting as DsaSettingId,
     heroes,
     includeCompanions: room.include_npc_companions,
     summary: room.summary,
     wishBrief: room.wish_brief,
     assistantTurns,
-  });
+  })}\n\n${npcTrackerBlock(room.npc_states ?? undefined)}`;
   const history = await loadHistoryForLLM(admin, room.id);
-  if (userTurn) history.push({ role: "user", content: userTurn.content });
+  if (userTurn) {
+    // Die Aktionen dieser Runde stehen bereits einzeln als Spieler-Zeilen
+    // im Transkript (submitAction) — die abschließenden User-Zeilen aus
+    // der History entfernen, damit sie nicht doppelt (einzeln plus
+    // gebündelt in „Diese Runde:") im LLM-Kontext landen.
+    while (history.length > 0 && history[history.length - 1].role === "user") history.pop();
+    history.push({ role: "user", content: userTurn.content });
+  }
   const minEnd = isOpen ? 0 : MIN_END_TURNS;
   const wiGroup = selectActiveWorldInfo({
     recentMessages: history,
     extraScanText: [room.summary, room.wish_brief ?? ""].filter(Boolean).join("\n"),
   });
+  // Auto-RAG bei Schauplatzwechsel (wie im Solo-Modus).
+  let ragBlock = "";
+  const lastAssistant = [...history].reverse().find((m) => m.role === "assistant")?.content;
+  const sceneQuery = sceneQueryFrom(lastAssistant);
+  if (sceneQuery) {
+    try {
+      const hits = await searchDsaRulebook(`Atmosphäre und Schauplatz: ${sceneQuery}`, 2);
+      if (hits.startsWith("QUELLEN")) {
+        ragBlock = `ATMOSPHÄRE-ANREGUNG aus klassischen DSA3-Quellen (nur Ton und Details als Inspiration, eigene Worte, keine Plots übernehmen):\n${hits.slice(0, 2400)}`;
+      }
+    } catch (e) {
+      console.warn("dsa-group auto-rag failed", e);
+    }
+  }
   const result = await callMaster(
     apiKey,
     staticLore,
@@ -506,12 +528,13 @@ async function runMasterAndStore(
     history,
     minEnd,
     model,
-    wiGroup.block,
+    [wiGroup.block, ragBlock].filter(Boolean).join("\n\n"),
   );
   if (!result.ok) return result;
-  const cleanedReply = sanitizeReply(result.reply);
-  const parsed = parseMasterTurn(cleanedReply);
-  let reply = cleanedReply;
+  const npcParsed = extractNpcMarkers(sanitizeReply(result.reply));
+  const npcStates = mergeNpcStates(room.npc_states ?? undefined, npcParsed.updates, room.turn_idx + 1);
+  let reply = await applyVitalMarkers(admin, room.id, members, npcParsed.text);
+  const parsed = parseMasterTurn(reply);
   let nextStatus: "active" | "victory" | "defeat" | "aborted" = "active";
   if (parsed.end === "victory") nextStatus = "victory";
   else if (parsed.end === "defeat") nextStatus = "defeat";
