@@ -3,7 +3,7 @@ import { ScrollText, Loader2, Send, LogOut, Dices, Swords, Maximize2, Minimize2,
 import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playDiceRoll } from "@/audio/sfx";
-import { getDsaModel, getDsaModelOption } from "@/lib/dsaModelPreference";
+import { getDsaModel } from "@/lib/dsaModelPreference";
 import { Cpu } from "lucide-react";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useAuth } from "@/auth/AuthContext";
