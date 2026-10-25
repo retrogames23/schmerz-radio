@@ -124,7 +124,10 @@ export function StandaloneDsaHost({
     return () => {
       cancelled = true;
     };
-  }, [user, slot]);
+    // Nur bei echtem Konto-/Slotwechsel neu abgleichen — Token-Refreshes
+    // erzeugen neue user-Objekte und würden sonst die SessionId rotieren.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, slot]);
 
   const setCharacter = useCallback(
     (c: DsaCharacterSummary | null) => {

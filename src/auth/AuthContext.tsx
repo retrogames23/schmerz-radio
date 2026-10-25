@@ -32,7 +32,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // 1. Subscribe FIRST so we don't miss the initial event.
     const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
       setSession(sess);
-      setUser(sess?.user ?? null);
+      // Token-Refresh liefert ein neues user-Objekt für dasselbe Konto —
+      // Referenz stabil halten, damit Abhängige nicht neu laden.
+      setUser((prev) => {
+        const next = sess?.user ?? null;
+        if (prev && next && prev.id === next.id && prev.updated_at === next.updated_at) return prev;
+        return next;
+      });
     });
     // 2. Then load any persisted session.
     supabase.auth
