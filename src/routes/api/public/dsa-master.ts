@@ -431,7 +431,7 @@ async function maybeSummarize(
           {
             role: "system",
             content:
-              "Du fasst einen DSA-Spielabend in 4–8 Stichpunkten auf Deutsch zusammen. Nenne: Setting, wichtige NPCs, getroffene Entscheidungen, gefundene/erlittene Dinge, offene Fäden. Kein Geschwafel, keine Sprecherkürzel.",
+              "Du fasst einen DSA-Spielabend in 4–8 Stichpunkten auf Deutsch zusammen. Der ERSTE Stichpunkt ist immer der AKTUELLE SCHAUPLATZ (genauer Ort, wer anwesend ist, was gerade unmittelbar geschieht) — er darf bei späteren Zusammenfassungen nur aktualisiert, nie weggelassen werden. Danach: Setting, wichtige NPCs, getroffene Entscheidungen, gefundene/erlittene Dinge, offene Fäden. Kein Geschwafel, keine Sprecherkürzel.",
           },
           {
             role: "user",
