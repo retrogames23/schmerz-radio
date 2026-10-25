@@ -572,7 +572,7 @@ function SpielraumPage() {
                     <button
                       type="button"
                       onClick={() => void submitAction({ outtime: true })}
-                      disabled={hasPending || busy || !draft.trim()}
+                      disabled={busy || !draft.trim()}
                       title="Als Outtime-Frage an Tjark (Regeln, Welt, Meta) schicken"
                       className="inline-flex items-center justify-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#fbf2d8] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#2a1f10] hover:bg-[#f1d99a] disabled:opacity-50"
                     >
@@ -581,11 +581,11 @@ function SpielraumPage() {
                     <button
                       type="button"
                       onClick={() => void submitAction()}
-                      disabled={hasPending || busy || !draft.trim()}
+                      disabled={busy || !draft.trim()}
                       className="inline-flex items-center justify-center gap-1.5 rounded border-2 border-[#3a2c1a] bg-[#3a2c1a] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#f1e6c8] hover:bg-[#2a1f10] disabled:opacity-50"
                     >
                       <Send className="h-3.5 w-3.5" strokeWidth={2.5} />
-                      Sagen
+                      {hasPending ? "Ändern" : "Sagen"}
                     </button>
                   </div>
                 </div>
