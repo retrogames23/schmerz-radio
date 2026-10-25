@@ -5,9 +5,14 @@ import { ArrowLeft, Loader2, Maximize2, Minimize2, ScrollText, Send } from "luci
 import { useAuth } from "@/auth/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getFreshAccessToken } from "@/auth/freshToken";
-import { parseMasterTurn, type SpokenLine } from "@/game/dsa/llmAdventure";
-import { resolveSceneImage } from "@/game/dsa/sceneImages";
+import { parseMasterTurn, type MasterCheck, type SpokenLine } from "@/game/dsa/llmAdventure";
+import { resolveSceneImage, sceneCaption } from "@/game/dsa/sceneImages";
 import { portraitFor } from "@/game/dsa/portraits";
+import { rollAttributeCheck, rollTalentCheck } from "@/game/dsa/pendingMasterNotes";
+import { defaultTalents } from "@/game/dsa/advancement";
+import { TALENTS } from "@/game/dsa/rules/talents";
+import { playDiceRoll } from "@/audio/sfx";
+import { useSettings } from "@/audio/SettingsContext";
 import { useCoarsePointer } from "@/hooks/useCoarsePointer";
 
 const ENTER_SUBMIT_KEY = "dsa:composer:enterSubmits";
@@ -63,7 +68,7 @@ interface RoomRow {
   host_user_id: string;
 }
 
-const COLLECT_WINDOW_MS = 20_000;
+const COLLECT_WINDOW_MS = 45_000;
 
 function SpielraumPage() {
   const { roomId } = useParams({ from: "/dsa/gruppe/$roomId/spiel" });
@@ -213,10 +218,12 @@ function SpielraumPage() {
       | { id: string; kind: "system"; text: string }
     > = [];
     let lastSceneTag: string | null = null;
+    let lastCheck: MasterCheck | null = null;
     for (const m of messages) {
       if (m.role === "master") {
         const parsed = parseMasterTurn(m.content);
         if (parsed.sceneTag) lastSceneTag = parsed.sceneTag;
+        lastCheck = parsed.check;
         if (parsed.lines.length > 0) {
           out.push({ id: m.id, kind: "master", lines: parsed.lines });
         }
