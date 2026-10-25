@@ -321,3 +321,94 @@ export function startBusAmbience(volume = 0.5): () => void {
     }, 700);
   };
 }
+function noiseBuffer(c: AudioContext, seconds: number) {
+  const b = c.createBuffer(1, Math.floor(c.sampleRate * seconds), c.sampleRate);
+  const d = b.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  return b;
+}
+
+function click(c: AudioContext, out: AudioNode, t: number, freq: number, vol: number, len = 0.04) {
+  const src = c.createBufferSource();
+  src.buffer = noiseBuffer(c, len);
+  const bp = c.createBiquadFilter();
+  bp.type = "bandpass";
+  bp.frequency.value = freq;
+  bp.Q.value = 6;
+  const g = c.createGain();
+  g.gain.setValueAtTime(vol, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + len);
+  src.connect(bp).connect(g).connect(out);
+  src.start(t);
+}
+
+/** Würfelklappern: Wurf + ausrollende, leiser werdende Aufschläge. */
+export function playDiceRoll(volume = 0.5) {
+  const c = getCtx();
+  if (!c) return;
+  const out = master(c, volume);
+  let t = c.currentTime;
+  for (let i = 0; i < 9; i++) {
+    t += 0.03 + i * 0.012 + Math.random() * 0.02;
+    click(c, out, t, 2200 + Math.random() * 1800, 0.9 * Math.pow(0.8, i));
+  }
+}
+
+/** Metallischer Treffer im Kampf. */
+export function playSwordClash(volume = 0.4) {
+  const c = getCtx();
+  if (!c) return;
+  const out = master(c, volume);
+  const t = c.currentTime;
+  click(c, out, t, 3500, 0.8, 0.08);
+  for (const f of [1870, 2630, 3410]) {
+    const o = c.createOscillator();
+    o.type = "triangle";
+    o.frequency.value = f;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.12, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+    o.connect(g).connect(out);
+    o.start(t);
+    o.stop(t + 0.55);
+  }
+}
+
+/** Dumpfer Schlag für Schaden / Verfehlen. */
+export function playThud(volume = 0.4) {
+  const c = getCtx();
+  if (!c) return;
+  const out = master(c, volume);
+  const t = c.currentTime;
+  const o = c.createOscillator();
+  o.type = "sine";
+  o.frequency.setValueAtTime(140, t);
+  o.frequency.exponentialRampToValueAtTime(50, t + 0.18);
+  const g = c.createGain();
+  g.gain.setValueAtTime(0.7, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+  o.connect(g).connect(out);
+  o.start(t);
+  o.stop(t + 0.25);
+}
+
+/** Schimmernder Zauberklang (steigende Glocken); `fail` klingt fallend. */
+export function playSpellChime(fail = false, volume = 0.3) {
+  const c = getCtx();
+  if (!c) return;
+  const out = master(c, volume);
+  const notes = fail ? [660, 520, 390] : [523, 784, 1046, 1318];
+  notes.forEach((f, i) => {
+    const o = c.createOscillator();
+    o.type = "sine";
+    o.frequency.value = f;
+    const g = c.createGain();
+    const t = c.currentTime + i * 0.07;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.3, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+    o.connect(g).connect(out);
+    o.start(t);
+    o.stop(t + 0.65);
+  });
+}
