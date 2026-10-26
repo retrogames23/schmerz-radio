@@ -1319,6 +1319,7 @@ export const Route = createFileRoute("/api/public/dsa-master")({
             gear: appliedGear,
             heroLe: characterSnap.le,
             heroAe: characterSnap.ae,
+            heroAeMax: characterSnap.aeMax ?? null,
           });
         }
 

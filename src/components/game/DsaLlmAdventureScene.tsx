@@ -72,6 +72,7 @@ interface ServerReply {
   gear?: HeroGear | null;
   heroLe?: number;
   heroAe?: number | null;
+  heroAeMax?: number | null;
 }
 
 interface LoadedAdventure {
@@ -391,8 +392,19 @@ export function DsaLlmAdventureScene() {
       if (dsaCharacterRef.current && typeof data.heroLe === "number") {
         const cur = dsaCharacterRef.current;
         const nextAe = typeof data.heroAe === "number" ? data.heroAe : cur.ae;
-        if (cur.le !== data.heroLe || cur.ae !== nextAe) {
-          setDsaCharacter({ ...cur, le: data.heroLe, ae: nextAe });
+        // AsP-Maximum nie unter den aktuellen Wert fallen lassen: Sonst wird
+        // ein reduzierter AsP-Stand beim nächsten Abenteuer fälschlich als
+        // „voll" behandelt und das Maximum schrumpft dauerhaft.
+        const nextAeMax =
+          cur.ae === null
+            ? cur.aeMax
+            : Math.max(
+                typeof data.heroAeMax === "number" ? data.heroAeMax : 0,
+                cur.aeMax ?? 0,
+                nextAe ?? 0,
+              );
+        if (cur.le !== data.heroLe || cur.ae !== nextAe || cur.aeMax !== nextAeMax) {
+          setDsaCharacter({ ...cur, le: data.heroLe, ae: nextAe, aeMax: nextAeMax });
         }
       }
       setPendingCheck(data.status === "active" && !data.parsed.combat ? data.parsed.check ?? null : null);
