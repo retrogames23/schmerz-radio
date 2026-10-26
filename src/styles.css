@@ -897,8 +897,30 @@ a:focus-visible,
   animation: dsa-landing-drift 38s ease-in-out infinite;
   filter: saturate(1.05);
 }
+/* 1920×1080-Bildbox mit cover/center-Verhalten innerhalb des Containers */
+.dsa-landing-box {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100cqw, calc(100cqh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
+}
+@keyframes dsa-smoke-rise {
+  0%   { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  12%  { opacity: 0.55; }
+  60%  { opacity: 0.32; }
+  100% { transform: translate(120px, -230px) scale(3.4); opacity: 0; }
+}
+.dsa-smoke {
+  fill: rgba(225, 215, 200, 0.85);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: dsa-smoke-rise 7s cubic-bezier(0.3, 0.2, 0.5, 1) infinite;
+}
 @media (prefers-reduced-motion: reduce) {
   .dsa-landing-bg { animation: none; transform: scale(1.05); }
+  .dsa-smoke { animation: none; opacity: 0; }
 }
 
 /* ── DSA-Abenteuer-Overlay ───────────────────────────────────────── */

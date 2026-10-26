@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LogIn, LogOut, Swords, Users } from "lucide-react";
 import { useState } from "react";
-import landingBg from "@/assets/dsa/landing-bg.jpg";
+import { LandingScene } from "@/components/dsa/LandingScene";
 import { ImpressumOverlay } from "@/components/game/ImpressumOverlay";
 import { OpenSourceOverlay } from "@/components/game/OpenSourceOverlay";
 import { CreditsOverlay } from "@/components/game/CreditsOverlay";
@@ -100,10 +100,7 @@ function DsaLanding() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
       >
-        <div
-          className="dsa-landing-bg absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${landingBg})` }}
-        />
+        <LandingScene />
         {/* Lesbarkeits-Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#1a120a]/40 via-[#1a120a]/70 to-[#1a120a]/95" />
       </div>
