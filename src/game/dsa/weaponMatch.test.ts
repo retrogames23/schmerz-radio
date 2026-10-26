@@ -19,3 +19,10 @@ describe("Waffenerkennung", () => {
     expect(equipWeapon(g, dolch.id).weaponId).toBe("dolch");
   });
 });
+
+describe("Kaiser Retos Waffenkammer", () => {
+  it("Tuzakmesser ist kein Dolch", () => expect(matchWeaponId("Tuzakmesser")).toBe("tuzakmesser"));
+  it("Kriegsbeil vor Beil", () => expect(matchWeaponId("Kriegsbeil")).toBe("kriegsbeil"));
+  it("Kriegsbogen vor Bogen", () => expect(matchWeaponId("Kriegsbogen")).toBe("kriegsbogen"));
+  it("Lindwurmschläger erkannt", () => expect(matchWeaponId("Lindwurmschläger")).toBe("lindwurmschlaeger"));
+});
