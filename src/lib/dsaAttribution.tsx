@@ -18,7 +18,7 @@ export const DSA_ATTRIBUTION_HEADLINE =
 /** Mehrere Absätze; jedes Element wird als eigener Paragraph gerendert. */
 export const DSA_ATTRIBUTION_PARAGRAPHS: readonly string[] = [
   "Schmerz-Radio ist ein rein privates, nicht-kommerzielles Fan-Projekt und steht in keiner offiziellen Verbindung zur Ulisses Spiele GmbH.",
-  "Die im DSA-Modus verwendeten Spielmechaniken (Proben, Eigenschaften, Talente, Kampfregeln, Zauber, Liturgien etc.) basieren auf dem Regelwerk \u201EDas Schwarze Auge\u201C (DSA) und werden hier mit freundlicher Genehmigung der Ulisses Spiele GmbH (Waldems) genutzt — ausdrücklich beschränkt auf die nicht-kommerzielle Verwendung.",
+  "Die im DSA-Modus verwendeten Spielmechaniken (Proben, Eigenschaften, Talente, Kampfregeln, Zauber, Liturgien etc.) basieren auf dem Regelwerk \u201EDas Schwarze Auge\u201C (DSA) in der dritten Regel-Edition von 1992 und werden hier mit freundlicher Genehmigung der Ulisses Spiele GmbH (Waldems) genutzt — ausdrücklich beschränkt auf die nicht-kommerzielle Verwendung.",
   "DAS SCHWARZE AUGE, AVENTURIEN, DERE, MYRANOR, THARUN, UTHURIA, RIESLAND und THE DARK EYE sind eingetragene Marken der Significant Fantasy Medienrechte GbR bzw. der Ulisses Spiele GmbH. Welt-Inhalte (Götter, Regionen, Völker, Persönlichkeiten Aventuriens etc.) sind Eigentum der jeweiligen Rechteinhaber und werden hier nur atmosphärisch referenziert, nicht eins zu eins vervielfältigt. Es werden keine offiziellen Texte oder Grafiken aus DSA-Publikationen übernommen.",
   "Schmerz-Radio ist und bleibt kostenlos spielbar. Freiwillige Unterstützungsbeiträge (\u201ETrinkgeld\u201C) sind kein Entgelt für das Spiel oder dessen DSA-Anteile, sondern decken ausschließlich die laufenden Cloud- und KI-Kosten.",
 ] as const;
