@@ -237,6 +237,7 @@ export function DsaCharacterCreator() {
       le,
       leMax: le,
       ae,
+      aeMax: ae ?? undefined,
       rerolled: rollCount > 1,
       geschlecht: chosenGender,
     });
