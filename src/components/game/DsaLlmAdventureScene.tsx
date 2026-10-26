@@ -4,7 +4,7 @@ import { useDsaHost } from "@/game/dsa/DsaHostContext";
 import { useSettings } from "@/audio/SettingsContext";
 import { playDiceRoll } from "@/audio/sfx";
 import { getDsaModel } from "@/lib/dsaModelPreference";
-import { chatLiveSeed, chatLiveTrack } from "@/dev/chatLive";
+import { chatLiveEnd, chatLiveSeed, chatLiveTrack } from "@/dev/chatLive";
 import { Cpu } from "lucide-react";
 import { useMusic } from "@/audio/MusicPlayer";
 import { useAuth } from "@/auth/AuthContext";
@@ -354,6 +354,8 @@ export function DsaLlmAdventureScene() {
     })();
     return () => {
       cancelled = true;
+      // Abenteuer verlassen → Live-Session sauber beenden.
+      chatLiveEnd(`dsa:${heroSlot}`);
     };
   }, [dsaAdventureOpen, authLoading, sidForLoad, heroSlot, expectsSignedInUser]);
 

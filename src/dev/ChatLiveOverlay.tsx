@@ -79,7 +79,7 @@ export function ChatLiveOverlay() {
   const { open, sessions } = useChatLiveState();
   if (!open) return null;
 
-  const shown = sessions.slice(-4);
+  const shown = chatLiveVisibleSessions(sessions).slice(-4);
 
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/70 p-3 sm:p-6">
@@ -91,6 +91,14 @@ export function ChatLiveOverlay() {
               LLM-Live <span className="text-zinc-500">· bis zu 4 Sessions</span>
             </h2>
           </div>
+          <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => chatLiveClearEnded()}
+            className="rounded px-2 py-1 text-xs text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+          >
+            Verlauf leeren
+          </button>
           <button
             type="button"
             onClick={() => setChatLiveOpen(false)}
@@ -99,6 +107,7 @@ export function ChatLiveOverlay() {
           >
             <X className="h-4 w-4" />
           </button>
+          </div>
         </header>
         {shown.length === 0 ? (
           <div className="flex flex-1 items-center justify-center p-8">

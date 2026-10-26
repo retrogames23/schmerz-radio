@@ -42,6 +42,20 @@ const MAX_LIVE_SESSIONS = 4;
 const MAX_MESSAGES_PER_SESSION = 80;
 const STORAGE_KEY = "chatlive:sessions:v1";
 const CHANNEL_NAME = "chatlive";
+/** Sessions ohne Aktivität seit so langer Zeit gelten als beendet. */
+export const CHAT_LIVE_STALE_MS = 20 * 60 * 1000;
+
+function expireStale(sessions: ChatLiveSession[], now = Date.now()): ChatLiveSession[] {
+  let changed = false;
+  const next = sessions.map((s) => {
+    if (s.status !== "ended" && now - s.updatedAt > CHAT_LIVE_STALE_MS) {
+      changed = true;
+      return { ...s, status: "ended" as const };
+    }
+    return s;
+  });
+  return changed ? next : sessions;
+}
 
 const EMPTY: ChatLiveState = { open: false, sessions: [] };
 let state: ChatLiveState = EMPTY;
@@ -64,7 +78,7 @@ function ensureSync() {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const sessions = JSON.parse(raw) as ChatLiveSession[];
-      if (Array.isArray(sessions)) state = { ...state, sessions };
+      if (Array.isArray(sessions)) state = { ...state, sessions: expireStale(sessions) };
     }
   } catch {
     /* ignore */
@@ -167,6 +181,8 @@ function pushMessage(key: string, msg: ChatLiveMessage, status?: ChatLiveSession
  */
 export function chatLiveTrack(key: string, kind: ChatLiveKind, title: string): ChatLiveHandle {
   ensureSync();
+  const fresh = expireStale(state.sessions);
+  if (fresh !== state.sessions) setState({ ...state, sessions: fresh });
   const existing = state.sessions.find((s) => s.key === key && s.status !== "ended");
   if (!existing) {
     const now = Date.now();
@@ -238,10 +254,33 @@ export function chatLiveSeed(
     ...state,
     sessions: state.sessions.map((s) =>
       s.key === key && s.status !== "ended"
-        ? { ...s, messages: msgs, status: "active" as const, updatedAt: now }
+        ? { ...s, title: title || s.title, messages: msgs, status: "active" as const, updatedAt: now }
         : s,
     ),
   });
+}
+
+/** Session für `key` beenden, ohne eine neue anzulegen. */
+export function chatLiveEnd(key: string): void {
+  ensureSync();
+  if (!state.sessions.some((s) => s.key === key && s.status !== "ended")) return;
+  setState({
+    ...state,
+    sessions: state.sessions.map((s) =>
+      s.key === key && s.status !== "ended" ? { ...s, status: "ended" as const } : s,
+    ),
+  });
+}
+
+/** Beendete Sessions entfernen (Button »Verlauf leeren«). */
+export function chatLiveClearEnded(): void {
+  ensureSync();
+  setState({ ...state, sessions: expireStale(state.sessions).filter((s) => s.status !== "ended") });
+}
+
+/** Für die Anzeige: veraltete Sessions als beendet behandeln. */
+export function chatLiveVisibleSessions(sessions: ChatLiveSession[]): ChatLiveSession[] {
+  return expireStale(sessions);
 }
 
 export const CHAT_LIVE_KIND_LABEL: Record<ChatLiveKind, string> = {
