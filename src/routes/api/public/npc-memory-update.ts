@@ -6,7 +6,7 @@ import {
 /** Gedächtnis-Fortschreibung läuft über das günstigste Tool-fähige
  *  Modell — Zusammenfassen + Flurfunk-Extraktion braucht kein
  *  Premium-Modell. */
-const MEMORY_MODEL = "google/gemini-3.1-flash-lite";
+const MEMORY_MODEL = "openai/gpt-6-luna";
 import { createFileRoute } from "@tanstack/react-router";
 import { npcPersonas } from "@/game/npcPersonas";
 import { createClient } from "@supabase/supabase-js";
@@ -20,7 +20,7 @@ import { createClient } from "@supabase/supabase-js";
  *  - Optional: extrahiert 0–2 Flurfunk-Fakten, die der NPC anderen
  *    Bewohnern aus E67 erzählen würde.
  *
- * Läuft über OpenRouter mit Gemini 3.1 Flash Lite (OPENROUTER_API_KEY).
+ * Läuft über OpenRouter mit GPT-6 Luna (OPENROUTER_API_KEY).
  *
  * Auth: User-Token Pflicht. RLS schützt die Tabellen, hier nutzen wir
  * den Service-Client, weil wir bewusst beide Tabellen schreiben.
@@ -192,6 +192,7 @@ export const Route = createFileRoute("/api/public/npc-memory-update")({
             headers: openRouterHeaders(apiKey),
             body: JSON.stringify({
               model: MEMORY_MODEL,
+              reasoning_effort: "none",
               messages: [
                 { role: "system", content: sysPrompt },
                 {
