@@ -58,7 +58,6 @@ export function DsaCharacterSheet() {
   }
 
   const cls = DSA_CLASSES.find((c) => c.id === dsaCharacter.classId);
-  const combatant = heroCombatantFromCharacter(dsaCharacter);
   const profile =
     (CLASS_COMBAT_PROFILES as Record<string, unknown>)[dsaCharacter.classId] ??
     null;
@@ -67,6 +66,7 @@ export function DsaCharacterSheet() {
   // wir den Helden bereits als Hero, im Hauptspiel wird er beim Anzeigen
   // promotet (AP-Felder dann 0, bis das Hauptspiel sie befüllt).
   const hero = upgradeToHero(dsaCharacter as DsaHero) as DsaHero;
+  const combatant = heroCombatantFromCharacter(dsaCharacter, hero);
   const ap = availableAp(hero);
   const canAdvance = !!updateHero;
   const canEditGear = !!updateHero && !!hero.gear;
@@ -310,7 +310,8 @@ export function DsaCharacterSheet() {
                 Ausrüstung
               </div>
               {(() => {
-                const g = withWeaponIds(hero.gear!);
+                if (!hero.gear) return null;
+                const g = withWeaponIds(hero.gear);
                 const weapon = g.weaponId ? WEAPONS[g.weaponId] : null;
                 const armor = g.armorId ? ARMORS[g.armorId] : null;
                 const shield = g.shieldId ? ARMORS[g.shieldId] : null;
