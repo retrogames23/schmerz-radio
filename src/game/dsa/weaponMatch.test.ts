@@ -15,7 +15,8 @@ describe("Waffenerkennung", () => {
   });
   it("Krieger kann den Startdolch anlegen", () => {
     const g = withWeaponIds(defaultGearFor("krieger"));
-    const dolch = g.items.find((i) => i.id === "dolch_im_guertel")!;
+    const dolch = g.items.find((i) => i.id === "dolch_im_guertel");
+    assert.ok(dolch);
     expect(equipWeapon(g, dolch.id).weaponId).toBe("dolch");
   });
 });
