@@ -10,6 +10,8 @@ import {
   CHAT_LIVE_KIND_LABEL,
   useChatLiveState,
   setChatLiveOpen,
+  chatLiveClearEnded,
+  chatLiveVisibleSessions,
   type ChatLiveSession,
 } from "./chatLive";
 
