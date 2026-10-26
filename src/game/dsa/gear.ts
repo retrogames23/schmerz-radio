@@ -230,7 +230,11 @@ export function withWeaponIds(gear: HeroGear): HeroGear {
     const inferred = matchWeaponId(it.name);
     // Upgrade old generic matches when the catalog now knows the exact weapon.
     // Preserve deliberate/custom IDs when the name has no more specific match.
-    const weaponId = inferred ?? it.weaponId;
+    const previous = it.weaponId ? WEAPONS[it.weaponId] : undefined;
+    const candidate = inferred ? WEAPONS[inferred] : undefined;
+    const weaponId = candidate && (!previous || candidate.name.length >= previous.name.length)
+      ? inferred
+      : it.weaponId;
     if (!weaponId) return it;
     const weapon = WEAPONS[weaponId];
     const description = weapon && /^Waffe · TP /.test(it.description ?? "")
@@ -461,6 +465,8 @@ export function gearRestriction(
 ): string | null {
   if (next.weaponId) {
     const w = WEAPONS[next.weaponId];
+    if (w?.tp === "speziell") return `${w.name} wird erzählerisch zum Fesseln eingesetzt, nicht als normale Kampfwaffe.`;
+    if (w?.hands === 4) return `${w.name} erfordert zwei gemeinsam kämpfende Personen.`;
     if (w && classId === "magier" && maxTp(w.tp) > 8) {
       return `Magier führen keine Waffe mit mehr als 1W6+2 TP (${w.name}: ${w.tp}).`;
     }
