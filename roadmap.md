@@ -14,3 +14,8 @@
 - [x] Gefährtenrede im Solo- und Gruppenspiel ausschließlich eigenen Sprecherblöcken zuordnen.
 - [x] Outtime-Auskunft von der Erzählung trennen, einschließlich gemischter Gruppenrunden.
 - [x] Bestehende DSA-Prüfungen und aktuelle Fehlersignale kontrollieren (41 Tests erfolgreich; build OK).
+
+# DSA Waffenkammer
+- [x] Alle 177 Waffen-/Variantenzeilen aus dem KRW-Scan erfassen; Dubletten zusammenführen und bestehende Trefferpunkte korrigieren.
+- [x] Waffenerkennung, Altinventare und Heldenbogen anbinden; Sonderwaffen ohne normale TP nicht als Schadenswaffen zulassen.
+- [x] 406 Tests erfolgreich; Waffenwechsel und Speichern im Heldenbogen geprüft. WV, Fernkampfentfernung und Sondereffekte bleiben Quellendaten, keine vollständige neue Kampfsimulation.

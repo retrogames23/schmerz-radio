@@ -23,7 +23,7 @@ import { DSA_ECONOMY_BRIEF } from "./economy";
 import { DSA_CALENDAR_BRIEF } from "./calendar";
 import { DSA_LANGUAGE_BRIEF } from "./language";
 import { SPELLS } from "../rules/spells";
-import { WEAPONS } from "../rules/weapons";
+import { WEAPONS, weaponDetails } from "../rules/weapons";
 import { ARMORS } from "../rules/armor";
 import { TALENTS } from "../rules/talents";
 import { DSA_SCENE_CATALOG } from "../sceneImages";
@@ -313,7 +313,7 @@ export function resolveLoreTopic(topic: string): string {
     if (kind === "waffe") {
       const w = WEAPONS[id];
       return w
-        ? `${w.name} — TP ${w.tp}, AT${w.at >= 0 ? "+" : ""}${w.at}, PA${w.pa >= 0 ? "+" : ""}${w.pa}, ${w.hands}-händig, Reichweite ${w.reach}, ${w.kind}.`
+        ? weaponDetails(w)
         : `Unbekannte Waffe '${id}'. Versuche "liste.waffen".`;
     }
     if (kind === "ruestung") {

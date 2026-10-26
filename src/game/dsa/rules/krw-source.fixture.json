@@ -1,0 +1,1418 @@
+[
+  {
+    "id": "beil",
+    "name": "Beil",
+    "tp": "1W+3",
+    "wv": "6/2",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "byakka",
+    "name": "Byakka",
+    "tp": "1W+5",
+    "wv": "9/4",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "kriegsbeil",
+    "name": "Kriegsbeil",
+    "tp": "1W+4",
+    "wv": "8/4",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "lindwurmschlaeger",
+    "name": "Lindwurmschläger",
+    "tp": "1W+4",
+    "wv": "7/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "molokdeschnaja",
+    "name": "Molokdeschnaja",
+    "tp": "1W+4",
+    "wv": "7/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "orknase",
+    "name": "Orknase (einhändig)",
+    "tp": "1W+5",
+    "wv": "8/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "schneidzahn",
+    "name": "Schneidzahn",
+    "tp": "1W+4",
+    "wv": "5/1",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "skraja",
+    "name": "Skraja",
+    "tp": "1W+3",
+    "wv": "7/6",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "wurfbeil",
+    "name": "Wurfbeil",
+    "tp": "1W+3",
+    "wv": "6/2",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "zwergenskraja",
+    "name": "Zwergenskraja",
+    "tp": "1W+3",
+    "wv": "7/6",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "barbarenstreitaxt",
+    "name": "Barbarenstreitaxt",
+    "tp": "2W+4",
+    "wv": "10/2",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "echsische_axt",
+    "name": "Echsische Axt",
+    "tp": "1W+5",
+    "wv": "8/6",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "felsspalter",
+    "name": "Felsspalter",
+    "tp": "2W+2",
+    "wv": "9/2",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "holzfaelleraxt",
+    "name": "Holzfälleraxt",
+    "tp": "2W",
+    "wv": "9/1",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "langaxt",
+    "name": "Langaxt",
+    "tp": "2W",
+    "wv": "6/1",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "orknase_zweihaendig",
+    "name": "Orknase (zweihändig)",
+    "tp": "1W+5",
+    "wv": "9/4",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "pailos",
+    "name": "Pailos",
+    "tp": "2W+4",
+    "wv": "5/2",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "drachentoeter",
+    "name": "Drachentöter",
+    "tp": "7W",
+    "wv": "3/0",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "dreschflegel",
+    "name": "Dreschflegel",
+    "tp": "1W+2",
+    "wv": "4/2",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "glefe",
+    "name": "Glefe",
+    "tp": "1W+3",
+    "wv": "4/2",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "hakenspiess",
+    "name": "Hakenspieß",
+    "tp": "1W+3",
+    "wv": "3/1",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "hellebarde",
+    "name": "Hellebarde",
+    "tp": "1W+4",
+    "wv": "5/2",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "kriegsflegel",
+    "name": "Kriegsflegel",
+    "tp": "1W+4",
+    "wv": "5/1",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "kriegslanze",
+    "name": "Kriegslanze",
+    "tp": "1W+3",
+    "wv": "1/0",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "langaxt",
+    "name": "Langaxt",
+    "tp": "2W",
+    "wv": "6/1",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "pailos",
+    "name": "Pailos",
+    "tp": "2W+4",
+    "wv": "5/2",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "partisane",
+    "name": "Partisane",
+    "tp": "1W+5",
+    "wv": "5/3",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "pike",
+    "name": "Pike",
+    "tp": "1W+4",
+    "wv": "4/0",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "prunkhellebarde",
+    "name": "Prunkhellebarde",
+    "tp": "1W+4",
+    "wv": "5/2",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "sense",
+    "name": "Sense",
+    "tp": "1W+3",
+    "wv": "3/1",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "sturmsense",
+    "name": "Sturmsense",
+    "tp": "1W+4",
+    "wv": "4/2",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "turnierlanze",
+    "name": "Turnierlanze",
+    "tp": "1W",
+    "wv": "1/0",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "wurmspiess",
+    "name": "Wurmspieß",
+    "tp": "1W+4",
+    "wv": "5/2",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "drachentoeter_vierhaendig",
+    "name": "Drachentöter vierhändig",
+    "tp": "7W",
+    "wv": "6/0",
+    "rangeSteps": null,
+    "hands": "vierhändig"
+  },
+  {
+    "id": "pike_vierhaendig",
+    "name": "Pike vierhändig",
+    "tp": "2W+5",
+    "wv": "10/0",
+    "rangeSteps": null,
+    "hands": "vierhändig"
+  },
+  {
+    "id": "morgenstern",
+    "name": "Morgenstern",
+    "tp": "1W+5",
+    "wv": "7/2",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "ochsenherde",
+    "name": "Ochsenherde",
+    "tp": "3W+3",
+    "wv": "9/0",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "ogerschelle",
+    "name": "Ogerschelle",
+    "tp": "2W+2",
+    "wv": "8/1",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "kettenstab",
+    "name": "Kettenstab",
+    "tp": "1W+2",
+    "wv": "6/3",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "basiliskenzunge",
+    "name": "Basiliskenzunge",
+    "tp": "1W+1",
+    "wv": "2/1",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "basiliskenzunge_meisterlich",
+    "name": "Basiliskenzunge, meisterl.",
+    "tp": "1W+2",
+    "wv": "2/1",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "borndorn",
+    "name": "Borndorn",
+    "tp": "1W+2",
+    "wv": "2/0",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "dolch",
+    "name": "Dolch",
+    "tp": "1W+1",
+    "wv": "2/1",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "drachenzahn",
+    "name": "Drachenzahn",
+    "tp": "1W+2",
+    "wv": "4/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "eberfaenger",
+    "name": "Eberfänger",
+    "tp": "1W+2",
+    "wv": "4/2",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "hakendolch",
+    "name": "Hakendolch",
+    "tp": "1W+2",
+    "wv": "1/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "jagdmesser",
+    "name": "Jagdmesser",
+    "tp": "1W+1",
+    "wv": "2/1",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "jagdmesser_firnelfisches",
+    "name": "Jagdmesser, firnelfisches",
+    "tp": "1W+1",
+    "wv": "2/1",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "kurzschwert",
+    "name": "Kurzschwert",
+    "tp": "1W+2",
+    "wv": "5/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "langdolch",
+    "name": "Langdolch",
+    "tp": "1W+2",
+    "wv": "3/4",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "linkhand",
+    "name": "Linkhand",
+    "tp": "1W+1",
+    "wv": "2/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "mengbilar",
+    "name": "Mengbilar",
+    "tp": "1W+1",
+    "wv": "2/0",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "messer",
+    "name": "Messer",
+    "tp": "1W",
+    "wv": "1/0",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "ogerfaenger",
+    "name": "Ogerfänger",
+    "tp": "1W+2",
+    "wv": "3/2",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "schwerer_dolch",
+    "name": "Schwerer Dolch",
+    "tp": "1W+2",
+    "wv": "3/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "vulkanglasdolch",
+    "name": "Vulkanglasdolch",
+    "tp": "1W",
+    "wv": "2/0",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "wurfdolch",
+    "name": "Wurfdolch",
+    "tp": "1W+1",
+    "wv": "2/0",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "wurfmesser",
+    "name": "Wurfmesser",
+    "tp": "1W",
+    "wv": "1/0",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "andergaster",
+    "name": "Andergaster",
+    "tp": "3W+2",
+    "wv": "7/3",
+    "rangeSteps": null,
+    "hands": "zweihändig (Kategorie; keine eigene Händigkeitsspalte)"
+  },
+  {
+    "id": "anderthalbhand",
+    "name": "Bastardschwert",
+    "tp": "1W+5",
+    "wv": "8/6",
+    "rangeSteps": null,
+    "hands": "zweihändig (Kategorie; keine eigene Händigkeitsspalte)"
+  },
+  {
+    "id": "boronssichel",
+    "name": "Boronssichel",
+    "tp": "2W+5",
+    "wv": "8/3",
+    "rangeSteps": null,
+    "hands": "zweihändig (Kategorie; keine eigene Händigkeitsspalte)"
+  },
+  {
+    "id": "nachtwind_zweihaendig",
+    "name": "Nachtwind",
+    "tp": "1W+4",
+    "wv": "7/7",
+    "rangeSteps": null,
+    "hands": "zweihändig (Kategorie; keine eigene Händigkeitsspalte)"
+  },
+  {
+    "id": "rondrakamm_aus_arivor",
+    "name": "Rondrakamm aus Arivor",
+    "tp": "2W+2",
+    "wv": "9/6",
+    "rangeSteps": null,
+    "hands": "zweihändig (Kategorie; keine eigene Händigkeitsspalte)"
+  },
+  {
+    "id": "rondrakamm",
+    "name": "Rondrakamm",
+    "tp": "2W+2",
+    "wv": "9/6",
+    "rangeSteps": null,
+    "hands": "zweihändig (Kategorie; keine eigene Händigkeitsspalte)"
+  },
+  {
+    "id": "tuzakmesser",
+    "name": "Tuzakmesser",
+    "tp": "1W+6",
+    "wv": "7/7",
+    "rangeSteps": null,
+    "hands": "zweihändig (Kategorie; keine eigene Händigkeitsspalte)"
+  },
+  {
+    "id": "zweihaender",
+    "name": "Zweihänder",
+    "tp": "2W+4",
+    "wv": "9/5",
+    "rangeSteps": null,
+    "hands": "zweihändig (Kategorie; keine eigene Händigkeitsspalte)"
+  },
+  {
+    "id": "neunschwaenzige",
+    "name": "Neunschwänzige",
+    "tp": "1W+1",
+    "wv": "7/0",
+    "rangeSteps": null,
+    "hands": null
+  },
+  {
+    "id": "peitsche",
+    "name": "Peitsche",
+    "tp": "1W",
+    "wv": "8/0",
+    "rangeSteps": null,
+    "hands": null
+  },
+  {
+    "id": "amazonensaebel",
+    "name": "Amazonensäbel",
+    "tp": "1W+4",
+    "wv": "7/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "arbach",
+    "name": "Arbach",
+    "tp": "1W+4",
+    "wv": "7/7",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "entermesser",
+    "name": "Entermesser",
+    "tp": "1W+3",
+    "wv": "7/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "fleischerbeil",
+    "name": "Fleischerbeil",
+    "tp": "1W+2",
+    "wv": "2/1",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "haumesser",
+    "name": "Haumesser",
+    "tp": "1W+3",
+    "wv": "6/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "kharkush_arbach",
+    "name": "Kharkush-Arbach",
+    "tp": "1W+4",
+    "wv": "7/7",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "khunchomer",
+    "name": "Khunchomer",
+    "tp": "1W+4",
+    "wv": "7/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "kurzschwert",
+    "name": "Kurzschwert",
+    "tp": "1W+2",
+    "wv": "5/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "robbentoeter",
+    "name": "Robbentöter",
+    "tp": "1W+3",
+    "wv": "7/6",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "saebel",
+    "name": "Säbel",
+    "tp": "1W+3",
+    "wv": "7/7",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "schnitter",
+    "name": "Schnitter",
+    "tp": "1W+3",
+    "wv": "7/6",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "schnitter_alanfanisch",
+    "name": "Schnitter, alanfanisch",
+    "tp": "1W+3",
+    "wv": "7/6",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "sichel",
+    "name": "Sichel",
+    "tp": "1W+2",
+    "wv": "3/1",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "sklaventod",
+    "name": "Sklaventod",
+    "tp": "1W+4",
+    "wv": "7/6",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "waqqif",
+    "name": "Waqqif",
+    "tp": "1W+2",
+    "wv": "4/2",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "doppelkhunchomer",
+    "name": "Doppelkhunchomer",
+    "tp": "1W+6",
+    "wv": "10/3",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "grosser_sklaventod",
+    "name": "Großer Sklaventod",
+    "tp": "2W+4",
+    "wv": "9/4",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "schnitter_zweihaendig",
+    "name": "Schnitter",
+    "tp": "1W+5",
+    "wv": "7/7",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "schnitter_alanfanisch_zweihaendig",
+    "name": "Schnitter, alanfanisch",
+    "tp": "1W+5",
+    "wv": "7/6",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "amazonensaebel",
+    "name": "Amazonensäbel",
+    "tp": "1W+4",
+    "wv": "7/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "barbarenschwert",
+    "name": "Barbarenschwert",
+    "tp": "1W+5",
+    "wv": "8/6",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "bastardschwert_einhaendig",
+    "name": "Bastardschwert",
+    "tp": "1W+5",
+    "wv": "7/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "breitschwert",
+    "name": "Breitschwert",
+    "tp": "1W+4",
+    "wv": "7/6",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "kurzschwert",
+    "name": "Kurzschwert",
+    "tp": "1W+2",
+    "wv": "5/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "kusliker_saebel",
+    "name": "Kusliker Säbel",
+    "tp": "1W+3",
+    "wv": "7/6",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "langschwert",
+    "name": "Langschwert",
+    "tp": "1W+4",
+    "wv": "7/7",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "nachtwind",
+    "name": "Nachtwind",
+    "tp": "1W+4",
+    "wv": "7/7",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "robbentoeter",
+    "name": "Robbentöter",
+    "tp": "1W+3",
+    "wv": "7/6",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "saebel",
+    "name": "Säbel",
+    "tp": "1W+3",
+    "wv": "7/7",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "turnierschwert",
+    "name": "Turnierschwert",
+    "tp": "1W+2",
+    "wv": "7/7",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "dschadra_vom_pferd",
+    "name": "Dschadra, vom Pferd",
+    "tp": "1W+7",
+    "wv": "5/2",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "jagdspiess_einhaendig",
+    "name": "Jagdspieß",
+    "tp": "1W+3",
+    "wv": "4/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "speer",
+    "name": "Speer",
+    "tp": "1W+3",
+    "wv": "4/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "dreizack",
+    "name": "Dreizack",
+    "tp": "1W+3",
+    "wv": "4/4",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "dschadra",
+    "name": "Dschadra",
+    "tp": "1W+5",
+    "wv": "4/3",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "efferdbart",
+    "name": "Efferdbart",
+    "tp": "1W+3",
+    "wv": "5/6",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "holzspeer",
+    "name": "Holzspeer",
+    "tp": "1W+2",
+    "wv": "4/3",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "jagdspiess",
+    "name": "Jagdspieß",
+    "tp": "1W+3",
+    "wv": "5/4",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "jagdspiess_elfisch",
+    "name": "Jagdspieß, elfisch",
+    "tp": "1W+3",
+    "wv": "5/4",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "stab",
+    "name": "Kampfstab",
+    "tp": "1W+1",
+    "wv": "6/6",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "partisane",
+    "name": "Partisane",
+    "tp": "1W+5",
+    "wv": "5/3",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "speer_zweihaendig",
+    "name": "Speer",
+    "tp": "1W+3",
+    "wv": "5/4",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "stossspeer",
+    "name": "Stoßspeer",
+    "tp": "2W+2",
+    "wv": "5/4",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "zweililien",
+    "name": "Zweililien",
+    "tp": "1W+3",
+    "wv": "7/7",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "degen",
+    "name": "Degen",
+    "tp": "1W+3",
+    "wv": "6/6",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "florett",
+    "name": "Florett",
+    "tp": "1W+3",
+    "wv": "7/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "magierflorett",
+    "name": "Magierflorett",
+    "tp": "1W+2",
+    "wv": "5/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "rapier",
+    "name": "Rapier",
+    "tp": "1W+3",
+    "wv": "7/6",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "stockdegen",
+    "name": "Stockdegen",
+    "tp": "1W+3",
+    "wv": "6/4",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "wolfsmesser",
+    "name": "Wolfsmesser",
+    "tp": "1W+3",
+    "wv": "7/6",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "brabakbengel",
+    "name": "Brabakbengel",
+    "tp": "1W+5",
+    "wv": "7/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "fackel",
+    "name": "Fackel",
+    "tp": "1W",
+    "wv": "4/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "gruufhai",
+    "name": "Gruufhai",
+    "tp": "1W+6",
+    "wv": "10/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "keule",
+    "name": "Keule",
+    "tp": "1W+2",
+    "wv": "7/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "knueppel",
+    "name": "Knüppel",
+    "tp": "1W+1",
+    "wv": "5/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "rabenschnabel_vom_pferd",
+    "name": "Rabenschnabel, vom Pferd",
+    "tp": "1W+5",
+    "wv": "9/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "rabenschnabel",
+    "name": "Rabenschnabel",
+    "tp": "1W+4",
+    "wv": "8/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "rabenschnabel_rituell",
+    "name": "Rabenschnabel, rituell",
+    "tp": "1W+3",
+    "wv": "8/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "schmiedehammer",
+    "name": "Schmiedehammer",
+    "tp": "1W+4",
+    "wv": "7/4",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "sonnenzepter",
+    "name": "Sonnenzepter",
+    "tp": "1W+3",
+    "wv": "7/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "streitkolben",
+    "name": "Streitkolben",
+    "tp": "1W+4",
+    "wv": "7/5",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "stuhlbein",
+    "name": "Stuhlbein",
+    "tp": "1W",
+    "wv": "4/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "wurfkeule",
+    "name": "Wurfkeule",
+    "tp": "1W+2",
+    "wv": "5/3",
+    "rangeSteps": null,
+    "hands": "einhändig"
+  },
+  {
+    "id": "kriegshammer",
+    "name": "Kriegshammer",
+    "tp": "2W+3",
+    "wv": "9/3",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "magierstab",
+    "name": "Magierstab",
+    "tp": "1W+2",
+    "wv": "6/6",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "spitzhacke",
+    "name": "Spitzhacke",
+    "tp": "1W+6",
+    "wv": "8/1",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "vorschlaghammer",
+    "name": "Vorschlaghammer",
+    "tp": "1W+5",
+    "wv": "8/1",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "zwergenschlaegel",
+    "name": "Zwergenschlägel",
+    "tp": "1W+5",
+    "wv": "9/3",
+    "rangeSteps": null,
+    "hands": "zweihändig"
+  },
+  {
+    "id": "bock",
+    "name": "Bock",
+    "tp": "1W+2",
+    "wv": "2/5",
+    "rangeSteps": null,
+    "hands": null
+  },
+  {
+    "id": "orchidee",
+    "name": "Orchidee",
+    "tp": "1W+1",
+    "wv": "1/0",
+    "rangeSteps": null,
+    "hands": null
+  },
+  {
+    "id": "panzerarm",
+    "name": "Panzerarm",
+    "tp": "1W+2",
+    "wv": "1/3",
+    "rangeSteps": null,
+    "hands": null
+  },
+  {
+    "id": "schlagring",
+    "name": "Schlagring",
+    "tp": "1W",
+    "wv": "1/0",
+    "rangeSteps": null,
+    "hands": null
+  },
+  {
+    "id": "veteranenhand",
+    "name": "Veteranenhand",
+    "tp": "1W+2",
+    "wv": "1/1",
+    "rangeSteps": null,
+    "hands": null
+  },
+  {
+    "id": "kurzbogen",
+    "name": "Kurzbogen",
+    "tp": "1W+3",
+    "wv": null,
+    "rangeSteps": 60,
+    "hands": null
+  },
+  {
+    "id": "kompositbogen",
+    "name": "Kompositbogen",
+    "tp": "1W+4",
+    "wv": null,
+    "rangeSteps": 80,
+    "hands": null
+  },
+  {
+    "id": "kriegsbogen",
+    "name": "Kriegsbogen",
+    "tp": "1W+6",
+    "wv": null,
+    "rangeSteps": 150,
+    "hands": null
+  },
+  {
+    "id": "langbogen",
+    "name": "Langbogen",
+    "tp": "1W+4",
+    "wv": null,
+    "rangeSteps": 200,
+    "hands": null
+  },
+  {
+    "id": "elfenbogen",
+    "name": "Elfenbogen",
+    "tp": "1W+4",
+    "wv": null,
+    "rangeSteps": 200,
+    "hands": null
+  },
+  {
+    "id": "orkischer_reiterbogen",
+    "name": "Orkischer Reiterbogen",
+    "tp": "1W+4",
+    "wv": null,
+    "rangeSteps": 100,
+    "hands": null
+  },
+  {
+    "id": "armbrust",
+    "name": "Leichte Armbrust",
+    "tp": "2W+2",
+    "wv": null,
+    "rangeSteps": 60,
+    "hands": null
+  },
+  {
+    "id": "windenarmbrust",
+    "name": "Windenarmbrust",
+    "tp": "2W+6",
+    "wv": null,
+    "rangeSteps": 200,
+    "hands": null
+  },
+  {
+    "id": "eisenwalder",
+    "name": "Eisenwalder",
+    "tp": "1W+3",
+    "wv": null,
+    "rangeSteps": 40,
+    "hands": null
+  },
+  {
+    "id": "ballaester",
+    "name": "Balläster",
+    "tp": "1W+4",
+    "wv": null,
+    "rangeSteps": 100,
+    "hands": null
+  },
+  {
+    "id": "arbalone",
+    "name": "Arbalone",
+    "tp": "3W+8",
+    "wv": null,
+    "rangeSteps": 250,
+    "hands": null
+  },
+  {
+    "id": "arbalette",
+    "name": "Arbalette (Bolzen)",
+    "tp": "2W+8",
+    "wv": null,
+    "rangeSteps": 100,
+    "hands": null
+  },
+  {
+    "id": "arbalette_kugeln",
+    "name": "Arbalette (Kugeln)",
+    "tp": "2W+6",
+    "wv": null,
+    "rangeSteps": 100,
+    "hands": null
+  },
+  {
+    "id": "balestra",
+    "name": "Balestra",
+    "tp": "2W+2",
+    "wv": null,
+    "rangeSteps": 60,
+    "hands": null
+  },
+  {
+    "id": "balestrina",
+    "name": "Balestrina",
+    "tp": "1W+5",
+    "wv": null,
+    "rangeSteps": 25,
+    "hands": null
+  },
+  {
+    "id": "blasrohr",
+    "name": "Blasrohr",
+    "tp": "1W",
+    "wv": null,
+    "rangeSteps": 25,
+    "hands": null
+  },
+  {
+    "id": "stein_flasche",
+    "name": "Stein, Flasche",
+    "tp": "1W",
+    "wv": null,
+    "rangeSteps": 25,
+    "hands": null
+  },
+  {
+    "id": "dolch_geworfen",
+    "name": "Dolch",
+    "tp": "1W",
+    "wv": null,
+    "rangeSteps": 10,
+    "hands": null
+  },
+  {
+    "id": "wurfbeil_geworfen",
+    "name": "Wurfbeil",
+    "tp": "1W+3",
+    "wv": null,
+    "rangeSteps": 25,
+    "hands": null
+  },
+  {
+    "id": "schneidzahn_geworfen",
+    "name": "Schneidzahn",
+    "tp": "1W+4",
+    "wv": null,
+    "rangeSteps": 25,
+    "hands": null
+  },
+  {
+    "id": "speer_geworfen",
+    "name": "Speer",
+    "tp": "1W+3",
+    "wv": null,
+    "rangeSteps": 40,
+    "hands": null
+  },
+  {
+    "id": "wurfkeule_geworfen",
+    "name": "Wurfkeule",
+    "tp": "1W+2",
+    "wv": null,
+    "rangeSteps": 20,
+    "hands": null
+  },
+  {
+    "id": "granatapfel",
+    "name": "Granatapfel",
+    "tp": "4W",
+    "wv": null,
+    "rangeSteps": 40,
+    "hands": null
+  },
+  {
+    "id": "wurfmesser_geworfen",
+    "name": "Wurfmesser",
+    "tp": "1W",
+    "wv": null,
+    "rangeSteps": 25,
+    "hands": null
+  },
+  {
+    "id": "wurfdolch_geworfen",
+    "name": "Wurfdolch",
+    "tp": "1W+1",
+    "wv": null,
+    "rangeSteps": 25,
+    "hands": null
+  },
+  {
+    "id": "borndorn_geworfen",
+    "name": "Borndorn",
+    "tp": "1W+2",
+    "wv": null,
+    "rangeSteps": 25,
+    "hands": null
+  },
+  {
+    "id": "wurfscheibe",
+    "name": "Wurfscheibe",
+    "tp": "1W+1",
+    "wv": null,
+    "rangeSteps": 15,
+    "hands": null
+  },
+  {
+    "id": "wurfscheibe_aus_stahl",
+    "name": "Wurfscheibe aus Stahl",
+    "tp": "1W+1",
+    "wv": null,
+    "rangeSteps": 25,
+    "hands": null
+  },
+  {
+    "id": "holzspeer_geworfen",
+    "name": "Holzspeer",
+    "tp": "1W+2",
+    "wv": null,
+    "rangeSteps": 40,
+    "hands": null
+  },
+  {
+    "id": "wurfspeer",
+    "name": "Wurfspeer",
+    "tp": "1W+3",
+    "wv": null,
+    "rangeSteps": 40,
+    "hands": null
+  },
+  {
+    "id": "efferdbart_geworfen",
+    "name": "Efferdbart",
+    "tp": "1W+3",
+    "wv": null,
+    "rangeSteps": 25,
+    "hands": null
+  },
+  {
+    "id": "fledermaus",
+    "name": "Fledermaus",
+    "tp": "1W-2",
+    "wv": null,
+    "rangeSteps": 25,
+    "hands": null
+  },
+  {
+    "id": "schleuder_steine",
+    "name": "Schleuder mit Steinen",
+    "tp": "1W",
+    "wv": null,
+    "rangeSteps": 40,
+    "hands": null
+  },
+  {
+    "id": "schleuder",
+    "name": "Schleuder mit Bleigeschossen",
+    "tp": "1W+2",
+    "wv": null,
+    "rangeSteps": 40,
+    "hands": null
+  },
+  {
+    "id": "wurfnetz",
+    "name": "Wurfnetz",
+    "tp": "speziell",
+    "wv": null,
+    "rangeSteps": 5,
+    "hands": null
+  },
+  {
+    "id": "wurfnetz_schwer",
+    "name": "Wurfnetz, schwer",
+    "tp": "speziell",
+    "wv": null,
+    "rangeSteps": 5,
+    "hands": null
+  }
+]

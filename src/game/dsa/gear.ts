@@ -226,11 +226,23 @@ export function addItem(
 export function withWeaponIds(gear: HeroGear): HeroGear {
   let changed = false;
   const items = gear.items.map((it) => {
-    if (it.weaponId || it.armorId || it.shieldId) return it;
-    const weaponId = matchWeaponId(it.name);
+    if (it.armorId || it.shieldId) return it;
+    const inferred = matchWeaponId(it.name);
+    // Upgrade old generic matches when the catalog now knows the exact weapon.
+    // Preserve deliberate/custom IDs when the name has no more specific match.
+    const previous = it.weaponId ? WEAPONS[it.weaponId] : undefined;
+    const candidate = inferred ? WEAPONS[inferred] : undefined;
+    const weaponId = candidate && (!previous || candidate.name.length >= previous.name.length)
+      ? inferred
+      : it.weaponId;
     if (!weaponId) return it;
+    const weapon = WEAPONS[weaponId];
+    const description = weapon && /^Waffe · TP /.test(it.description ?? "")
+      ? `Waffe · TP ${weapon.tp}`
+      : it.description;
+    if (weaponId === it.weaponId && description === it.description) return it;
     changed = true;
-    return { ...it, weaponId };
+    return { ...it, weaponId, description };
   });
   return changed ? { ...gear, items } : gear;
 }
@@ -295,6 +307,7 @@ export function equipWeapon(rawGear: HeroGear, itemId: string): HeroGear {
   const idx = gear.items.findIndex((it) => it.id === itemId && it.weaponId);
   if (idx < 0) return gear;
   const target = gear.items[idx];
+  if (!target.weaponId || !WEAPONS[target.weaponId]) return gear;
   const items = gear.items.filter((_, i) => i !== idx);
   const prevId = gear.weaponId;
   if (prevId) {
@@ -308,7 +321,7 @@ export function equipWeapon(rawGear: HeroGear, itemId: string): HeroGear {
       });
     }
   }
-  return { ...gear, weaponId: target.weaponId!, items };
+  return { ...gear, weaponId: target.weaponId, items };
 }
 
 /** Legt die Waffe ab — Slot wird leer, Waffe als Item ins Inventar. */
@@ -452,6 +465,8 @@ export function gearRestriction(
 ): string | null {
   if (next.weaponId) {
     const w = WEAPONS[next.weaponId];
+    if (w?.tp === "speziell") return `${w.name} wird erzählerisch zum Fesseln eingesetzt, nicht als normale Kampfwaffe.`;
+    if (w?.hands === 4) return `${w.name} erfordert zwei gemeinsam kämpfende Personen.`;
     if (w && classId === "magier" && maxTp(w.tp) > 8) {
       return `Magier führen keine Waffe mit mehr als 1W6+2 TP (${w.name}: ${w.tp}).`;
     }
