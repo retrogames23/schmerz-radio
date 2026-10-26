@@ -14,3 +14,8 @@
 - [x] Gefährtenrede im Solo- und Gruppenspiel ausschließlich eigenen Sprecherblöcken zuordnen.
 - [x] Outtime-Auskunft von der Erzählung trennen, einschließlich gemischter Gruppenrunden.
 - [x] Bestehende DSA-Prüfungen und aktuelle Fehlersignale kontrollieren (41 Tests erfolgreich; build OK).
+
+# DSA Waffenkammer
+- [ ] Alle Waffenwerte aus dem hochgeladenen KRW-Scan erfassen und bestehende Werte korrigieren.
+- [ ] Vollständige Waffenerkennung und kompatible Inventar-/Kampfanbindung ergänzen.
+- [ ] Quellenwerte und Ausrüsten mit Tests prüfen.
