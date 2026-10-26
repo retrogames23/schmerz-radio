@@ -602,6 +602,30 @@ export type Database = {
         }
         Relationships: []
       }
+      llm_quarterly_reports: {
+        Row: {
+          created_at: string
+          current_model: string
+          id: string
+          recommendation: string | null
+          results: Json
+        }
+        Insert: {
+          created_at?: string
+          current_model: string
+          id?: string
+          recommendation?: string | null
+          results?: Json
+        }
+        Update: {
+          created_at?: string
+          current_model?: string
+          id?: string
+          recommendation?: string | null
+          results?: Json
+        }
+        Relationships: []
+      }
       marv_state: {
         Row: {
           created_at: string
