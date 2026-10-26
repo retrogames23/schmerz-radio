@@ -29,6 +29,7 @@ import { Route as ApiPublicNpcMemoryUpdateRouteImport } from './routes/api/publi
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as DsaGruppeRoomIdRouteImport } from './routes/dsa.gruppe.$roomId'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
+import { Route as ApiPublicHooksLlmBenchmarkRouteImport } from './routes/api/public/hooks/llm-benchmark'
 import { Route as ApiPublicHooksWeeklySignupSummaryRouteImport } from './routes/api/public/hooks/weekly-signup-summary'
 import { Route as DsaGruppeRoomIdSpielRouteImport } from './routes/dsa.gruppe.$roomId.spiel'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -135,6 +136,12 @@ const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
   path: '/lovable/email/events',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksLlmBenchmarkRoute =
+  ApiPublicHooksLlmBenchmarkRouteImport.update({
+    id: '/api/public/hooks/llm-benchmark',
+    path: '/api/public/hooks/llm-benchmark',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksWeeklySignupSummaryRoute =
   ApiPublicHooksWeeklySignupSummaryRouteImport.update({
     id: '/api/public/hooks/weekly-signup-summary',
@@ -174,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/api/public/hooks/llm-benchmark': typeof ApiPublicHooksLlmBenchmarkRoute
   '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -198,6 +206,7 @@ export interface FileRoutesByTo {
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/api/public/hooks/llm-benchmark': typeof ApiPublicHooksLlmBenchmarkRoute
   '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -224,6 +233,7 @@ export interface FileRoutesById {
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/dsa/gruppe/$roomId': typeof DsaGruppeRoomIdRouteWithChildren
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/api/public/hooks/llm-benchmark': typeof ApiPublicHooksLlmBenchmarkRoute
   '/api/public/hooks/weekly-signup-summary': typeof ApiPublicHooksWeeklySignupSummaryRoute
   '/dsa/gruppe/$roomId/spiel': typeof DsaGruppeRoomIdSpielRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -251,6 +261,7 @@ export interface FileRouteTypes {
     | '/api/public/stripe-webhook'
     | '/dsa/gruppe/$roomId'
     | '/lovable/email/events'
+    | '/api/public/hooks/llm-benchmark'
     | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
     | '/lovable/email/transactional/preview'
@@ -275,6 +286,7 @@ export interface FileRouteTypes {
     | '/api/public/stripe-webhook'
     | '/dsa/gruppe/$roomId'
     | '/lovable/email/events'
+    | '/api/public/hooks/llm-benchmark'
     | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
     | '/lovable/email/transactional/preview'
@@ -300,6 +312,7 @@ export interface FileRouteTypes {
     | '/api/public/stripe-webhook'
     | '/dsa/gruppe/$roomId'
     | '/lovable/email/events'
+    | '/api/public/hooks/llm-benchmark'
     | '/api/public/hooks/weekly-signup-summary'
     | '/dsa/gruppe/$roomId/spiel'
     | '/lovable/email/transactional/preview'
@@ -321,6 +334,7 @@ export interface RootRouteChildren {
   ApiPublicNpcMemoryUpdateRoute: typeof ApiPublicNpcMemoryUpdateRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
+  ApiPublicHooksLlmBenchmarkRoute: typeof ApiPublicHooksLlmBenchmarkRoute
   ApiPublicHooksWeeklySignupSummaryRoute: typeof ApiPublicHooksWeeklySignupSummaryRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
@@ -467,6 +481,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/llm-benchmark': {
+      id: '/api/public/hooks/llm-benchmark'
+      path: '/api/public/hooks/llm-benchmark'
+      fullPath: '/api/public/hooks/llm-benchmark'
+      preLoaderRoute: typeof ApiPublicHooksLlmBenchmarkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/weekly-signup-summary': {
       id: '/api/public/hooks/weekly-signup-summary'
       path: '/api/public/hooks/weekly-signup-summary'
@@ -547,6 +568,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicNpcMemoryUpdateRoute: ApiPublicNpcMemoryUpdateRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,
+  ApiPublicHooksLlmBenchmarkRoute: ApiPublicHooksLlmBenchmarkRoute,
   ApiPublicHooksWeeklySignupSummaryRoute:
     ApiPublicHooksWeeklySignupSummaryRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
