@@ -4,21 +4,20 @@
  * aus dem DSA3-Grundregelwerk-PDF).
  *
  * Nur aus Server-Function-/Route-Handlern aufrufen — verwendet
- * `supabaseAdmin` (Service-Role) und `LOVABLE_API_KEY`.
+ * `supabaseAdmin` (Service-Role) und `OPENROUTER_API_KEY`.
+ * Gleiches Embedding-Modell wie bei der Indexierung, Vektoren bleiben kompatibel.
  */
+import { OPENROUTER_BASE_URL, openRouterHeaders } from "@/lib/aiModel";
 
 const EMBED_MODEL = "openai/text-embedding-3-small";
-const EMBED_URL = "https://ai.gateway.lovable.dev/v1/embeddings";
+const EMBED_URL = `${OPENROUTER_BASE_URL}/embeddings`;
 
 async function embedQuery(query: string): Promise<number[]> {
-  const apiKey = process.env.LOVABLE_API_KEY;
-  if (!apiKey) throw new Error("LOVABLE_API_KEY missing");
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) throw new Error("OPENROUTER_API_KEY missing");
   const r = await fetch(EMBED_URL, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
+    headers: openRouterHeaders(apiKey),
     body: JSON.stringify({ model: EMBED_MODEL, input: query }),
   });
   if (!r.ok) {

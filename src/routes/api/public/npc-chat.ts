@@ -1,6 +1,5 @@
 import {
   AI_MODEL_MAIN,
-  AI_MODEL_LIGHT,
   OPENROUTER_CHAT_URL,
   openRouterHeaders,
 } from "@/lib/aiModel";
@@ -39,19 +38,17 @@ const ipHour = new Map<string, number[]>();
  * schon weiß, ob die Tür jetzt aufgeht.
  */
 async function rateMarvEmpathy(userMessage: string): Promise<number> {
-  const lovableApiKey = process.env['LOVABLE_API_KEY'];
-  if (!lovableApiKey) return 0;
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) return 0;
   try {
     const raterResp = await fetch(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
+      OPENROUTER_CHAT_URL,
       {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${lovableApiKey}`,
-          "Content-Type": "application/json",
-        },
+        headers: openRouterHeaders(apiKey),
         body: JSON.stringify({
-          model: AI_MODEL_LIGHT,
+          model: AI_MODEL_MAIN,
+          reasoning_effort: "none",
           messages: [
             { role: "system", content: MARV_EMPATHY_RATER_PROMPT },
             {
