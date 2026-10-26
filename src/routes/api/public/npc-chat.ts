@@ -1,6 +1,5 @@
 import {
   AI_MODEL_MAIN,
-  AI_MODEL_LIGHT,
   OPENROUTER_CHAT_URL,
   openRouterHeaders,
 } from "@/lib/aiModel";
