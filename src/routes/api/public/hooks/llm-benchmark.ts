@@ -69,7 +69,7 @@ export const Route = createFileRoute("/api/public/hooks/llm-benchmark")({
           .slice(0, MAX_CANDIDATES);
 
         const testIds = [CURRENT_MODEL, ...candidates.map((c) => c.id)];
-        const results = [];
+        const results: Array<Record<string, unknown> & { model: string; score: number; priceOut?: number | null }> = [];
         for (const id of testIds) {
           const m = models.find((x) => x.id === id);
           const t0 = Date.now();
@@ -109,7 +109,7 @@ export const Route = createFileRoute("/api/public/hooks/llm-benchmark")({
           ? `Prüfenswert: ${better[0].model} (Score ${better[0].score} vs. Luna ${base.score}). Bitte manuell im Abenteuer testen.`
           : `GPT-6 Luna bleibt die beste Wahl (Score ${base.score}).`;
 
-        await supabaseAdmin.from("llm_quarterly_reports").insert({ current_model: CURRENT_MODEL, recommendation, results });
+        await supabaseAdmin.from("llm_quarterly_reports").insert({ current_model: CURRENT_MODEL, recommendation, results: JSON.parse(JSON.stringify(results)) });
         return json(200, { ok: true, recommendation, tested: testIds.length });
       },
     },
