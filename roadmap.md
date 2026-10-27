@@ -22,4 +22,4 @@
 
 # DSA Spielbare Übergänge
 - [x] Gemeinsame Erzähl-Leitplanken auch in den Solo-Prompt aufnehmen und bloße Aufbrüche als unzureichenden Handlungsimpuls präzisieren.
-- [ ] Bestehende DSA-Prüfungen ausführen und das konkrete Reisebeispiel nach Möglichkeit live prüfen.
+- [x] 35 bestehende DSA-Prüfungen bestanden; build OK. Isolierter Luna-Test erreicht nach einer Viertelstunde den Schrein mit zwei ansprechbaren Bewohnern, ohne eine Untersuchung vorwegzunehmen. Nicht im gespeicherten Spielerabenteuer geprüft.
