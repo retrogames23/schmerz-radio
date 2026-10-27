@@ -4,7 +4,7 @@
  */
 
 export const AUTHORS_NOTE =
-  "[REGIE-NOTIZ — nicht vorlesen] Ende die Runde mit einer konkreten Handlungsfrage oder 2–3 Möglichkeiten (außer bei Kampf/Probe). Gefährten sparsam: meist einer, manchmal keiner, nie beide. Keine Floskel wiederholen. Halte NSC-Haltungen aus dem Tracker ein.";
+  "[REGIE-NOTIZ — nicht vorlesen] Ende die Runde nie mit reiner Beschreibung: ein NSC spricht den Helden an, etwas geschieht, oder nenne 2–3 Möglichkeiten (außer bei Kampf/Probe). Gefährten sparsam: meist einer, manchmal keiner, nie beide. Keine Floskel wiederholen. Halte NSC-Haltungen aus dem Tracker ein.";
 
 type Msg = { role: string; content: unknown };
 
