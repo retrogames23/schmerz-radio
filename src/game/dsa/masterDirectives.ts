@@ -4,7 +4,7 @@
  */
 
 export const AUTHORS_NOTE =
-  "[REGIE-NOTIZ — nicht vorlesen] Ende die Runde nie mit reiner Beschreibung: ein NSC spricht den Helden an, etwas geschieht, oder nenne 2–3 Möglichkeiten (außer bei Kampf/Probe). Gefährten sparsam: meist einer, manchmal keiner, nie beide. Keine Floskel wiederholen. Halte NSC-Haltungen aus dem Tracker ein.";
+  "[REGIE-NOTIZ — nicht vorlesen] Ende mit einer konkret bespielbaren Situation: Worauf kann der Held jetzt reagieren? Nicken, ‚Folgt mir‘, Aufbruch und Gefährtenblick allein reichen nicht. Bereits zugesagte ereignislose Wege knapp mit Reisezeit bis zur nächsten Begegnung, Spur oder Hürde erzählen; bei Gefahr/Wahl unterwegs dort stoppen. Keine neue Heldentat oder Untersuchung vorwegnehmen, keine Zustimmung erneut verlangen. Kein Zusatzimpuls bei reiner Outtime-Auskunft, ausstehendem Kampf/Probe oder Abenteuerende. Gefährten sparsam: meist einer, manchmal keiner. Keine Floskel wiederholen. Halte NSC-Haltungen aus dem Tracker ein.";
 
 type Msg = { role: string; content: unknown };
 
