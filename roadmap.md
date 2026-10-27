@@ -19,3 +19,7 @@
 - [x] Alle 177 Waffen-/Variantenzeilen aus dem KRW-Scan erfassen; Dubletten zusammenführen und bestehende Trefferpunkte korrigieren.
 - [x] Waffenerkennung, Altinventare und Heldenbogen anbinden; Sonderwaffen ohne normale TP nicht als Schadenswaffen zulassen.
 - [x] 406 Tests erfolgreich; Waffenwechsel und Speichern im Heldenbogen geprüft. WV, Fernkampfentfernung und Sondereffekte bleiben Quellendaten, keine vollständige neue Kampfsimulation.
+
+# DSA Spielbare Übergänge
+- [x] Gemeinsame Erzähl-Leitplanken auch in den Solo-Prompt aufnehmen und bloße Aufbrüche als unzureichenden Handlungsimpuls präzisieren.
+- [ ] Bestehende DSA-Prüfungen ausführen und das konkrete Reisebeispiel nach Möglichkeit live prüfen.
