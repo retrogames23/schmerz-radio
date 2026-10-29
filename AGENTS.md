@@ -1,5 +1,7 @@
 # Architecture rules
 
+- Embedded Amiga games use the existing Workbench window controls and shared external-game audio lifecycle; closing the Workbench unmounts them so hidden games cannot keep running.
+
 - Ambient walkers use real sprite-sheet frames and a scene-mounted shuffled finite timeline in image coordinates; pause the local clock for conversations, mobile focus sheets and hidden tabs, and use existing Hotspot controls plus registered optional dialog trees. Moving NPCs opt into direct touch interaction to avoid history-backed focus sheets interrupting conversations. Never use story flags or opacity fades, so re-renders preserve a visit and leaving resets it.
 - Generated walk-cycle sheets must be post-processed before use: drop duplicate loop-closure frames and incomplete repeated strides; keep a complete contact/support/passing sequence for both legs, isolate each connected figure and align its stable torso rather than swinging props. Use the actual retained frame count, match cycleMs to sprite height and crossing duration, and freeze the current frame during pauses rather than substituting another pose.
 - Plaza foreground occlusion uses traced alpha contours at the background's native resolution; outdoor rain shares its local image box, renders above scenery without intercepting input, and uses elapsed time rather than frame counts.

@@ -470,9 +470,11 @@ type WindowState =
   | { kind: "file"; id: string; name: string; content: ReactNode }
   | { kind: "fastweb"; id: string }
   | { kind: "shell"; id: string }
-  | { kind: "tycoon"; id: string };
+  | { kind: "tycoon"; id: string }
+  | { kind: "samenland"; id: string };
 
 const TYCOON_URL = "https://homecomputer-tycoon.lovable.app";
+const SAMENLAND_URL = "https://samenland.app/";
 
 let WIN_ID = 0;
 const nextId = () => `w${++WIN_ID}`;
@@ -538,11 +540,11 @@ export function AmigaWorkbench() {
   const [winMenuOpen, setWinMenuOpen] = useState(false);
   const screenRef = useRef<HTMLDivElement>(null);
   const music = useMusic();
-  const tycoonRunning = amigaWorkbenchOpen && windows.some((w) => w.kind === "tycoon");
+  const externalGameRunning = amigaWorkbenchOpen && windows.some((w) => w.kind === "tycoon" || w.kind === "samenland");
 
-  // Tycoon übernimmt den Sound: Hauptspielmusik pausieren + Player ausblenden.
+  // Fremdspiele übernehmen den Sound: Hauptspielmusik pausieren + Player ausblenden.
   useEffect(() => {
-    if (!tycoonRunning) return;
+    if (!externalGameRunning) return;
     music.pause();
     setExternalGameAudio(true);
     return () => {
@@ -550,11 +552,11 @@ export function AmigaWorkbench() {
       music.resume();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tycoonRunning]);
+  }, [externalGameRunning]);
 
-  // Workbench geschlossen → Tycoon-Fenster mit beenden.
+  // Workbench geschlossen → Fremdspiel-Fenster mit beenden.
   useEffect(() => {
-    if (!amigaWorkbenchOpen) setWindows((w) => w.filter((x) => x.kind !== "tycoon"));
+    if (!amigaWorkbenchOpen) setWindows((w) => w.filter((x) => x.kind !== "tycoon" && x.kind !== "samenland"));
   }, [amigaWorkbenchOpen]);
 
   if (!amigaWorkbenchOpen) return null;
@@ -602,6 +604,13 @@ export function AmigaWorkbench() {
     if (existing) { focus(existing.id); return; }
     const id = nextId();
     setWindows((w) => [...w, { kind: "tycoon", id }]);
+    setZOrder((z) => [...z, id]);
+  };
+  const openSamenland = () => {
+    const existing = windows.find((w) => w.kind === "samenland");
+    if (existing) { focus(existing.id); return; }
+    const id = nextId();
+    setWindows((w) => [...w, { kind: "samenland", id }]);
     setZOrder((z) => [...z, id]);
   };
   const openShell = () => {
@@ -658,6 +667,7 @@ export function AmigaWorkbench() {
           { label: "Workbench3.0", icon: <DiskIcon />, top: "8%", left: "86%", onOpen: () => openDrawer(WORKBENCH_DISK as FileNode & { kind: "drawer" }) },
           { label: "FastWeb", icon: <DiskIcon />, top: "25%", left: "88%", onOpen: () => openDrawer(FASTWEB_DISK as FileNode & { kind: "drawer" }) },
           { label: "HC-Tycoon", icon: <DiskIcon />, top: "30%", left: "38%", onOpen: openTycoon },
+          { label: "Samenland", icon: <DiskIcon />, top: "48%", left: "30%", onOpen: openSamenland },
           { label: "Ram Disk", icon: <RamDiskIcon />, top: "11%", left: "68%", onOpen: () => openFile("Ram Disk", <EmptyDrawerNote text="Ram Disk: 0 Dateien · 0% belegt. Alles hier ist nach dem Ausschalten weg." />) },
           { label: "Shell", icon: <ShellIcon />, top: "48%", left: "57%", onOpen: openShell },
           { label: "Trashcan", icon: <TrashIcon />, top: "70%", left: "85%", onOpen: () => openFile("Trashcan", <EmptyDrawerNote text="Der Papierkorb ist leer. Ruven leert ihn jeden Abend." />) },
@@ -679,11 +689,12 @@ export function AmigaWorkbench() {
                 w.kind === "file" ? w.name :
                 w.kind === "shell" ? "AmigaShell" :
                 w.kind === "tycoon" ? "Homecomputer Tycoon" :
+                w.kind === "samenland" ? "Samenland" :
                 "FastWeb"
               }
               z={10 + z}
               offset={offset}
-              isFastWeb={w.kind === "fastweb" || w.kind === "tycoon"}
+              isFastWeb={w.kind === "fastweb" || w.kind === "tycoon" || w.kind === "samenland"}
               isShell={w.kind === "shell"}
               active={zOrder[zOrder.length - 1] === w.id}
               layoutCmd={layoutCmds[w.id] ?? null}
@@ -703,11 +714,11 @@ export function AmigaWorkbench() {
               )}
               {w.kind === "fastweb" && <FastWebBrowser />}
               {w.kind === "shell" && <AmigaShell />}
-              {w.kind === "tycoon" && (
+              {(w.kind === "tycoon" || w.kind === "samenland") && (
                 <iframe
-                  src={TYCOON_URL}
-                  title="Homecomputer Tycoon"
-                  style={{ border: "none", width: "100%", height: "100%", background: "#000" }}
+                  src={w.kind === "samenland" ? SAMENLAND_URL : TYCOON_URL}
+                  title={w.kind === "samenland" ? "Samenland" : "Homecomputer Tycoon"}
+                  style={{ border: "none", width: "100%", height: "100%", background: WB_BLACK }}
                   allow="autoplay; fullscreen"
                 />
               )}
