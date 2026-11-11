@@ -15,6 +15,13 @@
       "when": 1793050478529,
       "tag": "0001_llm_quarterly_reports",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794415478512,
+      "tag": "0002_cron_hook_secret",
+      "breakpoints": true
     }
   ]
 }

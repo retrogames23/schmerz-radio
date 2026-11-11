@@ -632,14 +632,8 @@ export const Route = createFileRoute("/api/public/dsa-master")({
         // diesem Browser bereits eine anon_id gehört, übernimm alle
         // herrenlosen Abenteuer dieser anon_id für seinen User-Account.
         // Best effort – Fehler werden geloggt, blockieren aber nichts.
-        if (uid && anonId) {
-          const { error: adoptErr } = await admin
-            .from("dsa_llm_adventures")
-            .update({ user_id: uid })
-            .eq("anon_id", anonId)
-            .is("user_id", null);
-          if (adoptErr) console.warn("dsa adopt anon failed", adoptErr);
-        }
+        // Adoption of anonymous adventures by anon_id was removed: the
+        // anon_id is client-supplied and cannot prove ownership.
 
         // Donor-Status für Modell-Switcher: Nur Unterstützer*innen
         // dürfen vom Default-Modell abweichen. Anonyme sind nie Spender.

@@ -42,12 +42,15 @@ export const Route = createFileRoute("/api/public/hooks/llm-benchmark")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const auth = request.headers.get("authorization");
-        if (!auth?.startsWith("Bearer ")) return json(401, { error: "Unauthorized" });
+        const provided = request.headers.get("x-hook-secret") ?? "";
+        if (provided.length < 32) return json(401, { error: "Unauthorized" });
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { data: secretRow } = await supabaseAdmin
+          .from("internal_hook_secrets").select("value").eq("name", "llm_benchmark").maybeSingle();
+        if (!secretRow?.value || secretRow.value !== provided) return json(401, { error: "Unauthorized" });
         const apiKey = process.env.OPENROUTER_API_KEY;
         if (!apiKey) return json(500, { error: "OpenRouter nicht konfiguriert." });
 
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const since = new Date(Date.now() - MIN_INTERVAL_DAYS * 86400_000).toISOString();
         const { data: recent } = await supabaseAdmin
           .from("llm_quarterly_reports").select("id").gte("created_at", since).limit(1);
