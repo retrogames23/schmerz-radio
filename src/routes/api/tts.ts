@@ -1,3 +1,4 @@
+import { getRequestUserId, authRequiredResponse } from "@/lib/requestUser.server";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
@@ -343,6 +344,9 @@ export const Route = createFileRoute("/api/tts")({
         } catch {
           // Miss or transient storage error — fall through to ElevenLabs.
         }
+
+        // New audio costs ElevenLabs credits: only signed-in players may generate it.
+        if (!(await getRequestUserId(request))) return authRequiredResponse();
 
         const elResp = await fetch(
           `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voiceId)}?output_format=mp3_44100_128`,

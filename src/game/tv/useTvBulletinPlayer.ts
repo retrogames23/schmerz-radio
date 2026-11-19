@@ -1,3 +1,4 @@
+import { authHeaders } from "@/lib/authHeaders";
 import { useCallback, useEffect, useRef } from "react";
 import type { Channel } from "./channels";
 
@@ -65,16 +66,19 @@ export function useTvBulletinPlayer({
     const ac = new AbortController();
     fetchAbortRef.current = ac;
 
-    fetch("/api/tts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        voiceId: channel.voiceId,
-        text: bulletin,
-        speed: 0.95,
-      }),
-      signal: ac.signal,
-    })
+    authHeaders()
+      .then((auth) =>
+        fetch("/api/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...auth },
+          body: JSON.stringify({
+            voiceId: channel.voiceId,
+            text: bulletin,
+            speed: 0.95,
+          }),
+          signal: ac.signal,
+        }),
+      )
       .then(async (resp) => {
         if (ac.signal.aborted) return;
         if (!resp.ok) throw new Error(`TTS ${resp.status}`);

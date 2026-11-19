@@ -1,3 +1,4 @@
+import { getRequestUserId, authRequiredResponse } from "@/lib/requestUser.server";
 import {
   AI_MODEL_MAIN,
   OPENROUTER_CHAT_URL,
@@ -116,6 +117,7 @@ export const Route = createFileRoute("/api/public/fastweb-chat")({
 
         let donationUnlocked = false;
         let countAfter: number | null = null;
+        if (!(await getRequestUserId(request))) return authRequiredResponse();
         if (userToken && supabaseUrl && supabasePub && serviceKey) {
           const userClient = createClient(supabaseUrl, supabasePub, {
             global: { headers: { Authorization: `Bearer ${userToken}` } },

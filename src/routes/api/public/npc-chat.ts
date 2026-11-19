@@ -244,8 +244,11 @@ export const Route = createFileRoute("/api/public/npc-chat")({
         };
         const anonIdRaw = typeof b.anonId === "string" ? b.anonId : "";
         const anonId = /^[0-9a-zA-Z_-]{8,64}$/.test(anonIdRaw) ? anonIdRaw : null;
-        if (!uid && !anonId) {
-          return json(400, { error: "anonId oder Anmeldung erforderlich." });
+        if (!uid) {
+          return json(401, {
+            error: "Bitte melde dich an, um mit den Figuren frei zu chatten.",
+            code: "auth_required",
+          });
         }
 
         const admin = createClient(supabaseUrl, serviceKey, {

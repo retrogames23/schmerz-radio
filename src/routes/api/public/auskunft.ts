@@ -1,3 +1,4 @@
+import { getRequestUserId, authRequiredResponse } from "@/lib/requestUser.server";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   OPENROUTER_CHAT_URL,
@@ -99,6 +100,7 @@ export const Route = createFileRoute("/api/public/auskunft")({
           request.headers.get("cf-connecting-ip") ??
           request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
           "unknown";
+        if (!(await getRequestUserId(request))) return authRequiredResponse();
         if (rateLimited(ip)) {
           return json(429, { error: "Anfragekontingent erschöpft." });
         }

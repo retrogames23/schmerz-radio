@@ -1,3 +1,4 @@
+import { authHeaders } from "@/lib/authHeaders";
 /**
  * Character speech via ElevenLabs (server-proxied, cached per line).
  * Falls back to browser SpeechSynthesis if the server request fails.
@@ -487,6 +488,7 @@ async function fetchAndCache(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...(await authHeaders()),
     },
     body: JSON.stringify({
       voiceId: profile.voiceId,

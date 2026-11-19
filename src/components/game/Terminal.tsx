@@ -1,3 +1,4 @@
+import { authHeaders } from "@/lib/authHeaders";
 import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/game/GameContext";
 import { useSettings } from "@/audio/SettingsContext";
@@ -703,7 +704,7 @@ export function Terminal() {
         try {
           const resp = await fetch("/api/public/auskunft", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...(await authHeaders()) },
             body: JSON.stringify({ question: raw, history, station: auskunftStation }),
           });
           const data = (await resp.json()) as { answer?: string; error?: string };
